@@ -1,6 +1,8 @@
 /* ─────────────────────────────────────────────
-   Ressources SNT : feuille de style
-   Cahier à petits carreaux + un surligneur par thème
+   Ressources NSI et SNT : feuille de style
+   Cahier à petits carreaux, un surligneur par rubrique et par thème.
+   Les couleurs elles-mêmes sont choisies dans les listes
+   (ressources.js) et dans assets/site.js.
    ───────────────────────────────────────────── */
 
 :root {
@@ -11,6 +13,8 @@
   --rule: #C8D3E3;
   --chip: #FFFFFF;
   --focus: #1B4FD8;
+  --alert-bg: #FFF5F5;
+  --alert-line: #E03131;
   --hl: #DEE2E6;
 
   --display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
@@ -19,6 +23,10 @@
 
   color-scheme: light dark;
 }
+
+/* Chaque élément calcule son trait de surligneur à partir de la couleur
+   (--hl) de sa rubrique ou de son thème : pleine en clair, adoucie en sombre */
+:root, body * { --mark: var(--hl); }
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -29,27 +37,10 @@
     --rule: #2E3A4C;
     --chip: #18202C;
     --focus: #8DB4FF;
+    --alert-bg: #2A1517;
+    --alert-line: #FF8787;
   }
-}
-
-/* Une couleur de surligneur par thème.
-   Pour un nouveau thème : ajouter une ligne ici, puis mettre la
-   classe sur le lien du sommaire ET sur la <section>. */
-.t-prog     { --hl: #A5D8FF; }
-.t-internet { --hl: #96F2D7; }
-.t-web      { --hl: #D0BFFF; }
-.t-rs       { --hl: #FCC2D7; }
-.t-donnees  { --hl: #FFD8A8; }
-.t-loc      { --hl: #C0EB75; }
-.t-iot      { --hl: #99E9F2; }
-.t-photo    { --hl: #FFEC99; }
-.t-bureau   { --hl: #DEE2E6; }
-.t-sites    { --hl: #CED4DA; }
-
-/* Le trait de surligneur : couleur pleine en clair, adoucie en sombre */
-.index a, .surligne, .titre { --mark: var(--hl); }
-@media (prefers-color-scheme: dark) {
-  .index a, .surligne, .titre { --mark: color-mix(in srgb, var(--hl) 42%, transparent); }
+  :root, body * { --mark: color-mix(in srgb, var(--hl) 42%, transparent); }
 }
 
 /* ── Base ─────────────────────────────────── */
@@ -92,6 +83,15 @@ code {
   padding: 0 .3em;
 }
 
+.invisible {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 .evitement {
   position: absolute;
   left: -9999px;
@@ -111,10 +111,49 @@ code {
   padding: 0 16px;
 }
 
+/* ── Barre des rubriques (en haut des pages de rubrique) ───── */
+
+.barre ul {
+  list-style: none;
+  margin: 0;
+  padding: 1.25rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem 1.1rem;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.barre a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--mark);
+  text-decoration-thickness: .22em;
+  text-underline-offset: .22em;
+  text-decoration-skip-ink: none;
+}
+
+.barre a.vers-accueil {
+  color: var(--ink-soft);
+  text-decoration-color: var(--rule);
+  text-decoration-thickness: 1.5px;
+}
+
+.barre a[aria-current="page"] {
+  text-decoration: none;
+  background: var(--mark);
+  border-radius: .15em;
+  padding: 0 .25em;
+  margin: 0 -.25em;
+}
+
 /* ── En-tête ──────────────────────────────── */
 
 .entete {
   padding: 4.5rem 0 1rem;
+}
+.barre + .entete {
+  padding-top: 2.75rem;
 }
 
 h1 {
@@ -126,6 +165,14 @@ h1 {
   margin: 0 0 1.25rem;
 }
 
+.niveau {
+  font-family: var(--display);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  margin: -.4rem 0 .75rem;
+}
+
 .chapo {
   font-size: 1.125rem;
   color: var(--ink-soft);
@@ -133,7 +180,8 @@ h1 {
   margin: 0 0 2.25rem;
 }
 
-/* Le sommaire : chaque thème surligné de sa couleur */
+/* ── Sommaire des thèmes ──────────────────── */
+
 .index {
   list-style: none;
   margin: 0;
@@ -189,11 +237,121 @@ h1 {
   color: var(--ink);
 }
 
-/* ── Thèmes ───────────────────────────────── */
+/* ── Recherche ────────────────────────────── */
+
+.cherche {
+  margin: 0 0 1rem;
+}
+.entete .cherche {
+  margin-top: .25rem;
+}
+main > .cherche {
+  margin-top: 3rem;
+}
+
+.recherche {
+  display: block;
+  width: 100%;
+  max-width: 30rem;
+  font: inherit;
+  font-size: 1.05rem;
+  color: var(--ink);
+  background: var(--chip);
+  border: 1.5px solid var(--rule);
+  border-radius: .45rem;
+  padding: .7rem .9rem;
+}
+.recherche::placeholder {
+  color: var(--ink-soft);
+  opacity: 1;
+}
+.recherche:focus {
+  border-color: var(--focus);
+  outline: 2px solid var(--focus);
+  outline-offset: 0;
+}
+
+.statut {
+  min-height: 1.5em;
+  margin: .5rem 0 0;
+  font-size: .95rem;
+  color: var(--ink-soft);
+}
+
+/* ── Accueil : les rubriques ──────────────── */
+
+.rub {
+  margin-top: 3.25rem;
+}
+.rub:first-child {
+  margin-top: 1.5rem;
+}
+
+.rub h2 {
+  margin: 0;
+  line-height: 1.1;
+}
+
+.rub-nom {
+  font-family: var(--display);
+  font-size: clamp(2rem, 7vw, 2.9rem);
+  font-weight: 800;
+  letter-spacing: -.025em;
+  text-decoration: none;
+  padding: 0 .15em;
+  margin-left: -.15em;
+  border-radius: .12em;
+  background-image: linear-gradient(var(--mark), var(--mark));
+  background-repeat: no-repeat;
+  background-size: 100% .42em;
+  background-position: 0 92%;
+  transition: background-size .18s ease-out;
+}
+.rub-nom:hover,
+.rub-nom:focus-visible {
+  background-size: 100% 100%;
+}
+
+.rub .niveau {
+  margin: .55rem 0 .35rem;
+  font-size: 1.05rem;
+}
+
+.rub-texte {
+  margin: 0 0 .75rem;
+  max-width: 38em;
+}
+
+.themes-mini {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem 1rem;
+  font-size: .95rem;
+}
+.themes-mini a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--mark);
+  text-decoration-thickness: .3em;
+  text-underline-offset: .12em;
+  text-decoration-skip-ink: none;
+}
+.themes-mini a.est-vide {
+  color: var(--ink-soft);
+  text-decoration: underline dashed var(--rule) 1.5px;
+  text-underline-offset: .22em;
+}
+
+/* ── Thèmes d'une rubrique ────────────────── */
 
 .theme {
   margin-top: 4.5rem;
   scroll-margin-top: 1.5rem;
+}
+main > div > .theme:first-child {
+  margin-top: 3rem;
 }
 
 .theme h2 {
@@ -215,16 +373,20 @@ h1 {
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
+h1 .surligne {
+  background-size: 100% .38em;
+}
 
 /* Quand on arrive sur un thème depuis le sommaire, le trait se redessine */
-.theme:target .surligne {
+.theme:target .surligne,
+.theme.cible .surligne {
   animation: trace .7s cubic-bezier(.2, .7, .2, 1);
 }
 @keyframes trace {
   from { background-size: 0% .55em; }
 }
 
-/* Sous-groupe dans un thème (ex. « Pour occuper les plus fort·e·s ») */
+/* Sous-groupe dans un thème (groupe("…") dans la liste) */
 .theme h3 {
   font-family: var(--display);
   font-size: 1.15rem;
@@ -235,14 +397,22 @@ h1 {
   border-bottom: 2px solid var(--hl);
 }
 
+/* Thème encore vide : plus compact, pour ne pas allonger la page */
+.theme.est-vide {
+  margin-top: 2.75rem;
+}
+.theme.est-vide h2 {
+  font-size: clamp(1.3rem, 4vw, 1.6rem);
+  margin-bottom: .4rem;
+}
+
+/* ── Une ressource ────────────────────────── */
+
 .ressources {
   list-style: none;
   margin: 0;
   padding: 0;
 }
-
-/* Liste sans ressource : on la masque */
-.ressources:not(:has(.res)) { display: none; }
 
 .res {
   padding: 1.05rem 0;
@@ -262,11 +432,35 @@ h1 {
   text-underline-offset: .16em;
   text-decoration-skip-ink: none;
 }
-.titre:hover { text-decoration-thickness: .4em; }
+a.titre:hover { text-decoration-thickness: .4em; }
+.titre.sans-lien { text-decoration: none; }
 
 .res p {
   margin: .35rem 0 0;
   max-width: 38em;
+}
+
+.res .chemin {
+  margin-top: .15rem;
+  font-size: .9rem;
+  color: var(--ink-soft);
+}
+
+.annexes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem 1.25rem;
+  margin-top: .5rem !important;
+}
+.annexe a {
+  font-weight: 700;
+  text-decoration-color: var(--mark);
+  text-decoration-thickness: .18em;
+  text-underline-offset: .16em;
+}
+.annexe .type {
+  font-size: .85rem;
+  color: var(--ink-soft);
 }
 
 .tags {
@@ -290,28 +484,37 @@ h1 {
   color: var(--ink-soft);
 }
 
-/* Message des thèmes vides : masqué dès qu'il y a une ressource */
+.resultats {
+  margin-top: 1rem;
+}
+
 .vide {
   margin: 0;
-  padding: 1rem 1.1rem;
   color: var(--ink-soft);
-  background: var(--paper);
-  border: 1.5px dashed var(--rule);
-  border-radius: .4rem;
-}
-.theme:has(.res) .vide { display: none; }
-
-/* Thème encore vide : plus compact, pour ne pas allonger la page */
-.theme:not(:has(.res)) { margin-top: 2.75rem; }
-.theme:not(:has(.res)) h2 {
-  font-size: clamp(1.3rem, 4vw, 1.6rem);
-  margin-bottom: .4rem;
-}
-.theme:not(:has(.res)) .vide {
-  padding: 0;
-  border: 0;
-  background: none;
   font-size: .95rem;
+}
+main > .vide,
+main > div > .vide {
+  margin-top: 1.5rem;
+}
+
+/* ── Message d'erreur dans une liste ──────── */
+
+.alerte {
+  margin: 1.5rem 0;
+  padding: 1rem 1.1rem;
+  background: var(--alert-bg);
+  border: 2px solid var(--alert-line);
+  border-radius: .45rem;
+}
+.alerte p { margin: 0; }
+.alerte ul {
+  margin: .5rem 0;
+  padding-left: 1.2rem;
+}
+.alerte .petit {
+  font-size: .9rem;
+  color: var(--ink-soft);
 }
 
 /* ── Pied de page ─────────────────────────── */
@@ -331,6 +534,13 @@ h1 {
   max-width: 38em;
   margin: .5rem 0;
 }
+.pied .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.5rem;
+  margin-top: 1rem;
+  font-weight: 700;
+}
 .pied .petit {
   font-size: .9rem;
   color: var(--ink-soft);
@@ -342,13 +552,16 @@ h1 {
 @media (max-width: 560px) {
   body { font-size: 1rem; }
   .entete { padding-top: 2.75rem; }
+  .barre + .entete { padding-top: 2rem; }
   .chapo { font-size: 1.05rem; }
   .index { gap: .4rem 1rem; }
   .theme { margin-top: 3.5rem; }
+  .rub { margin-top: 2.75rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
-  .index a { transition: none; }
-  .theme:target .surligne { animation: none; }
+  .index a, .rub-nom { transition: none; }
+  .theme:target .surligne,
+  .theme.cible .surligne { animation: none; }
 }
