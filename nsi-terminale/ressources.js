@@ -32,6 +32,26 @@ theme("Histoire de l'informatique", { court: "Histoire" });
 
 theme("Structures de données");
 
+ressource({
+  titre: "POO, TD 1 : premiers pas en objets",
+  lien: "fichiers/td1-poo-premiers-pas.html",
+  texte: "Séance de 30 min en cours inversé. Trois encadrés « L'essentiel » (classe et objet, attributs et méthodes, `__init__` et `self`, le point) suivis de quatre exercices courts avec Lovelace, Pascal, Hopper et Turing. 4 pages A4.",
+  tags: ["À imprimer", "Python"],
+  annexes: {
+    "Version PDF": "fichiers/td1-poo-premiers-pas.pdf",
+  },
+});
+
+ressource({
+  titre: "POO, TD 2 : vers le bac",
+  lien: "fichiers/td2-poo-vers-le-bac.html",
+  texte: "TD dirigé type bac : l'ENIAC et la loi de Moore, les microprocesseurs, ARPANET, TCP/IP. Simuler un programme, compléter puis écrire des classes qui interagissent, avec rappels de cours et coups de pouce. 7 pages A4.",
+  tags: ["À imprimer", "Python"],
+  annexes: {
+    "Version PDF": "fichiers/td2-poo-vers-le-bac.pdf",
+  },
+});
+
 
 theme("Bases de données");
 
