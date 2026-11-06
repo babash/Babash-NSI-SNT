@@ -10,12 +10,12 @@
 
   /* Couleurs de surligneur utilisables dans les listes : theme("…", "vert") */
   var COULEURS = {
-    bleu: '#A5D8FF', vert: '#96F2D7', violet: '#D0BFFF', rose: '#FCC2D7',
-    orange: '#FFD8A8', citron: '#C0EB75', cyan: '#99E9F2', jaune: '#FFEC99',
-    lavande: '#BAC8FF', corail: '#FFC9C9', gris: '#DEE2E6'
+    bleu: '#38BDF8', vert: '#34D399', violet: '#A78BFA', rose: '#F472B6',
+    orange: '#FB923C', citron: '#A3E635', cyan: '#22D3EE', jaune: '#FACC15',
+    lavande: '#818CF8', corail: '#F87171', gris: '#94A3B8'
   };
   /* Ordre des couleurs quand un thème n'en précise pas */
-  var CYCLE = ['bleu', 'vert', 'violet', 'rose', 'orange', 'citron', 'cyan', 'jaune', 'lavande', 'corail'];
+  var CYCLE = ['cyan', 'rose', 'violet', 'vert', 'orange', 'bleu', 'jaune', 'lavande', 'citron', 'corail'];
 
   var CHAMPS = ['titre', 'lien', 'texte', 'tags', 'annexes'];
   var TYPES = {
@@ -134,6 +134,7 @@
       court: infos.court || infos.nom || d.id,
       niveau: infos.niveau || '',
       presentation: infos.presentation || '',
+      programme: infos.programme || null,
       couleur: couleur(infos.couleur, Object.keys(rubriques).length),
       themes: []
     };
@@ -149,7 +150,7 @@
 
   function themeEnCours(rub) {
     if (!rub.themes.length) {
-      rub.themes.push({ nom: null, court: null, id: 'ressources', couleur: rub.couleur, blocs: [{ groupe: null, ressources: [] }] });
+      rub.themes.push({ nom: null, court: null, id: 'ressources', couleur: rub.couleur, programme: [], blocs: [{ groupe: null, ressources: [] }] });
     }
     return rub.themes[rub.themes.length - 1];
   }
@@ -211,6 +212,7 @@
       court: court,
       id: id,
       couleur: couleur(options.couleur, rang),
+      programme: liste(options.programme),
       blocs: [{ groupe: null, ressources: [] }]
     });
   };
@@ -301,9 +303,11 @@
       else type = TYPES[ext] || 'Fichier .' + ext;
     } else {
       var hote = url.hostname.replace(/^www\./, '');
+      var morceaux = url.pathname.split('/').filter(Boolean);
       if (/\.github\.io$/.test(hote)) {
-        var dossier = url.pathname.split('/').filter(Boolean)[0];
-        if (dossier && !/\.[a-z0-9]+$/i.test(dossier)) hote += '/' + dossier;
+        if (morceaux[0] && !/\.[a-z0-9]+$/i.test(morceaux[0])) hote += '/' + morceaux[0];
+      } else if (hote === 'github.com' && morceaux.length >= 2) {
+        hote += '/' + morceaux[0] + '/' + morceaux[1];
       }
       type = TYPES[ext] ? TYPES[ext] + ', ' + hote : hote;
     }
@@ -401,14 +405,32 @@
     return li;
   }
 
+  function idGroupe(t, nom) {
+    return t.id + '--' + slug(nom);
+  }
+
+  function lignePrograme(t) {
+    var pleins = {};
+    t.blocs.forEach(function (b) { if (b.groupe && b.ressources.length) pleins[b.groupe] = true; });
+    return el('div', { class: 'programme' }, [
+      el('p', { class: 'programme-titre' }, 'Au programme'),
+      el('ul', null, t.programme.map(function (c) {
+        return el('li', null, pleins[c]
+          ? el('a', { href: '#' + idGroupe(t, c) }, c)
+          : el('span', null, c));
+      }))
+    ]);
+  }
+
   function sectionTheme(t, filtre) {
     var s = el('section', { class: 'theme', id: t.id, style: '--hl:' + t.couleur });
     if (t.nom) s.appendChild(el('h2', null, el('span', { class: 'surligne' }, t.nom)));
+    if (t.programme.length && !filtre) s.appendChild(lignePrograme(t));
     var n = 0;
     t.blocs.forEach(function (b) {
       var res = filtre ? b.ressources.filter(filtre) : b.ressources;
       if (!res.length) return;
-      if (b.groupe) s.appendChild(el('h3', null, b.groupe));
+      if (b.groupe) s.appendChild(el('h3', { id: idGroupe(t, b.groupe) }, b.groupe));
       s.appendChild(el('ul', { class: 'ressources' }, res.map(function (r) { return blocRessource(r); })));
       n += res.length;
     });
@@ -420,27 +442,183 @@
     return s;
   }
 
-  function sommaire(themes) {
-    return el('nav', { 'aria-label': 'Thèmes' }, el('ul', { class: 'index' }, themes.map(function (t) {
-      var n = compterTheme(t);
-      return el('li', null, el('a', {
-        href: '#' + t.id,
-        class: n ? null : 'est-vide',
-        style: '--hl:' + t.couleur
-      }, [t.court, el('span', { class: 'nb', 'aria-hidden': 'true' }, String(n))]));
-    })));
+  /* ── Affichage clair / obscur ─────────────────────────────────── */
+
+  var ICONES = {
+    auto: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg>',
+    light: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3 3l1.1 1.1M11.9 11.9 13 13M3 13l1.1-1.1M11.9 4.1 13 3"/></svg>',
+    dark: '<svg viewBox="0 0 16 16"><path d="M13.6 10.2A6 6 0 0 1 5.8 2.4a6 6 0 1 0 7.8 7.8z" fill="currentColor"/></svg>'
+  };
+  var MODES = [
+    { id: 'auto', nom: 'Auto', aide: 'Suivre le réglage de l\'appareil' },
+    { id: 'light', nom: 'Clair', aide: 'Affichage clair' },
+    { id: 'dark', nom: 'Obscur', aide: 'Affichage obscur' }
+  ];
+
+  function lireMode() {
+    try { return localStorage.getItem('theme') || 'auto'; } catch (e) { return 'auto'; }
   }
 
-  function barre(active) {
-    var ul = el('ul', null, el('li', null, el('a', { href: urlAccueil(), class: 'vers-accueil' }, 'Accueil')));
-    ordreRubriques().forEach(function (r) {
-      ul.appendChild(el('li', { style: '--hl:' + r.couleur }, el('a', {
-        href: urlRubrique(r),
-        'aria-current': r === active ? 'page' : null
-      }, r.court)));
-    });
-    return el('nav', { class: 'barre', 'aria-label': 'Rubriques' }, ul);
+  function appliquerMode(m) {
+    var html = document.documentElement;
+    if (m === 'light' || m === 'dark') html.setAttribute('data-theme', m);
+    else html.removeAttribute('data-theme');
+    try {
+      if (m === 'light' || m === 'dark') localStorage.setItem('theme', m);
+      else localStorage.removeItem('theme');
+    } catch (e) { /* navigation privée : le choix vaut pour cette page */ }
   }
+
+  function choixMode() {
+    var actuel = lireMode();
+    var groupe = el('div', { class: 'mode', role: 'group', 'aria-label': 'Affichage' });
+    MODES.forEach(function (m) {
+      var b = el('button', {
+        type: 'button', class: 'mode-btn', title: m.aide,
+        'aria-pressed': m.id === actuel ? 'true' : 'false'
+      }, [
+        el('span', { class: 'mode-ico', 'aria-hidden': 'true', html: ICONES[m.id] }),
+        el('span', { class: 'mode-nom' }, m.nom)
+      ]);
+      b.addEventListener('click', function () {
+        appliquerMode(m.id);
+        Array.prototype.forEach.call(groupe.children, function (x) {
+          x.setAttribute('aria-pressed', x === b ? 'true' : 'false');
+        });
+      });
+      groupe.appendChild(b);
+    });
+    return groupe;
+  }
+
+  /* ── Décor : la ville et sa liaison montante (dessin original) ── */
+
+  var LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2.2 20.5 7v10L12 21.8 3.5 17V7z"/><path d="M7.5 12h4l2.2-3.2h2.3M11.5 12l2.2 3.2h2.3"/><circle cx="17.4" cy="8.8" r="1.2" fill="currentColor"/><circle cx="17.4" cy="15.2" r="1.2" fill="currentColor"/></svg>';
+
+  function scene(couleur, graine) {
+    var W = 1200, H = 420, horizon = 318, ux = 858;
+    var r = graine || 11;
+    function alea() { r = (r * 9301 + 49297) % 233280; return r / 233280; }
+    function n(x) { return Math.round(x * 10) / 10; }
+    var s = [];
+    s.push('<svg class="scene" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">');
+    s.push('<defs>' +
+      '<linearGradient id="sc-ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04060E"/><stop offset=".6" stop-color="#110F30"/><stop offset="1" stop-color="#2A1046"/></linearGradient>' +
+      '<radialGradient id="sc-halo" cx=".71" cy=".76" r=".5"><stop offset="0" stop-color="' + couleur + '" stop-opacity=".38"/><stop offset="1" stop-color="' + couleur + '" stop-opacity="0"/></radialGradient>' +
+      '<linearGradient id="sc-sol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#170A2B"/><stop offset="1" stop-color="#03050B"/></linearGradient>' +
+      '<filter id="sc-flou" x="-200%" y="-10%" width="500%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>' +
+      '</defs>');
+    s.push('<rect width="' + W + '" height="' + H + '" fill="url(#sc-ciel)"/>');
+    s.push('<rect width="' + W + '" height="' + H + '" fill="url(#sc-halo)"/>');
+
+    // Pluie de données
+    for (var i = 0; i < 80; i++) {
+      s.push('<rect x="' + n(alea() * W) + '" y="' + n(alea() * horizon * 0.85) + '" width="1.2" height="' +
+        n(6 + alea() * 42) + '" fill="' + (alea() < 0.25 ? '#FF3D9A' : couleur) + '" opacity="' + n(0.06 + alea() * 0.28) + '"/>');
+    }
+
+    // Liaison montante
+    s.push('<line x1="' + ux + '" y1="0" x2="' + ux + '" y2="' + horizon + '" stroke="' + couleur + '" stroke-width="9" opacity=".45" filter="url(#sc-flou)"/>');
+    s.push('<line x1="' + ux + '" y1="0" x2="' + ux + '" y2="' + horizon + '" stroke="#F2FDFF" stroke-width="1.6" opacity=".9"/>');
+    s.push('<rect class="impulsion" x="' + (ux - 2) + '" y="' + (horizon - 40) + '" width="4" height="30" fill="#FFFFFF"/>');
+
+    // Tours et fenêtres allumées
+    var x = -10, teintes = [couleur, '#FF3D9A', '#FFD166'];
+    while (x < W) {
+      var w = 24 + alea() * 64;
+      var proche = Math.abs(x + w / 2 - ux) < 170;
+      var h = 26 + alea() * 104 + (proche ? 70 : 0);
+      var y = horizon - h;
+      s.push('<rect x="' + n(x) + '" y="' + n(y) + '" width="' + n(w) + '" height="' + n(h) + '" fill="#03050C"/>');
+      if (h > 120 && alea() < 0.6) {
+        s.push('<line x1="' + n(x + w / 2) + '" y1="' + n(y) + '" x2="' + n(x + w / 2) + '" y2="' + n(y - 14 - alea() * 18) + '" stroke="#03050C" stroke-width="2"/>');
+      }
+      for (var fy = y + 8; fy < horizon - 6; fy += 9) {
+        for (var fx = x + 5; fx < x + w - 6; fx += 8) {
+          if (alea() < 0.13) {
+            s.push('<rect x="' + n(fx) + '" y="' + n(fy) + '" width="3" height="4" fill="' +
+              teintes[Math.floor(alea() * 3)] + '" opacity="' + n(0.5 + alea() * 0.5) + '"/>');
+          }
+        }
+      }
+      x += w + 1 + alea() * 6;
+    }
+
+    // Sol quadrillé
+    s.push('<rect y="' + horizon + '" width="' + W + '" height="' + (H - horizon) + '" fill="url(#sc-sol)"/>');
+    s.push('<line x1="0" y1="' + horizon + '" x2="' + W + '" y2="' + horizon + '" stroke="' + couleur + '" stroke-width="1.6" opacity=".85"/>');
+    for (var k = 1; k <= 8; k++) {
+      var gy = horizon + Math.pow(k / 8, 2) * (H - horizon);
+      s.push('<line x1="0" y1="' + n(gy) + '" x2="' + W + '" y2="' + n(gy) + '" stroke="' + couleur + '" stroke-width="1" opacity=".22"/>');
+    }
+    for (var v = -16; v <= 16; v++) {
+      s.push('<line x1="' + (600 + v * 7) + '" y1="' + horizon + '" x2="' + (600 + v * 95) + '" y2="' + H + '" stroke="' + couleur + '" stroke-width="1" opacity=".18"/>');
+    }
+    s.push('</svg>');
+    return s.join('');
+  }
+
+  /* ── Barre du haut ────────────────────────────────────────────── */
+
+  function barreHaut(active) {
+    return el('header', { class: 'barre-haut' }, el('div', { class: 'barre-int' }, [
+      el('a', { class: 'marque', href: urlAccueil() }, [
+        el('span', { class: 'marque-logo', 'aria-hidden': 'true', html: LOGO }),
+        el('span', { class: 'marque-nom' }, titreSite())
+      ]),
+      el('nav', { class: 'nav', 'aria-label': 'Rubriques' }, el('ul', null, ordreRubriques().map(function (r) {
+        return el('li', { style: '--hl:' + r.couleur }, el('a', {
+          href: urlRubrique(r),
+          'aria-current': r === active ? 'page' : null
+        }, r.court));
+      }))),
+      choixMode()
+    ]));
+  }
+
+  /* ── Sommaire des thèmes (colonne de gauche sur grand écran) ──── */
+
+  function sommaire(themes) {
+    var details = el('details', { class: 'sommaire' }, [
+      el('summary', null, ['Thèmes ', el('span', { class: 'nb' }, String(themes.length))]),
+      el('ul', null, themes.map(function (t) {
+        var nb = compterTheme(t);
+        return el('li', { style: '--hl:' + t.couleur }, el('a', {
+          href: '#' + t.id,
+          class: nb ? null : 'est-vide',
+          'data-theme-id': t.id
+        }, [el('span', { class: 'sommaire-nom' }, t.court), el('span', { class: 'nb' }, String(nb))]));
+      }))
+    ]);
+    var large = window.matchMedia ? window.matchMedia('(min-width: 1080px)') : null;
+    function ajuster() { details.open = !!(large && large.matches); }
+    ajuster();
+    if (large) {
+      if (large.addEventListener) large.addEventListener('change', ajuster);
+      else if (large.addListener) large.addListener(ajuster);
+    }
+    return details;
+  }
+
+  /* Signale dans le sommaire le thème en cours de lecture */
+  function suivreLecture(zone, details) {
+    if (!('IntersectionObserver' in window) || !details) return;
+    var liens = {};
+    Array.prototype.forEach.call(details.querySelectorAll('a[data-theme-id]'), function (a) {
+      liens[a.getAttribute('data-theme-id')] = a;
+    });
+    var obs = new IntersectionObserver(function (entrees) {
+      entrees.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        Object.keys(liens).forEach(function (id) { liens[id].removeAttribute('aria-current'); });
+        var a = liens[e.target.id];
+        if (a) a.setAttribute('aria-current', 'location');
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    Array.prototype.forEach.call(zone.querySelectorAll('.theme'), function (s) { obs.observe(s); });
+  }
+
+  /* ── Recherche ────────────────────────────────────────────────── */
 
   function champRecherche(texte, quandOnTape) {
     var input = el('input', {
@@ -468,7 +646,9 @@
     });
     return {
       bloc: el('div', { class: 'cherche', role: 'search' }, [
-        el('label', { for: 'recherche', class: 'invisible' }, texte), input, statut
+        el('label', { for: 'recherche', class: 'invisible' }, texte),
+        el('span', { class: 'cherche-ico', 'aria-hidden': 'true', html: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="7" cy="7" r="4.6"/><path d="m10.5 10.5 3.6 3.6"/></svg>' }),
+        input, statut
       ]),
       input: input,
       statut: statut
@@ -489,14 +669,16 @@
     ]);
   }
 
-  function blocRubrique(r) {
+  /* ── Accueil ──────────────────────────────────────────────────── */
+
+  function carteRubrique(r) {
     var n = ressourcesDe(r).length;
     var themes = r.themes.filter(function (t) { return t.nom; });
-    var infos = [r.niveau, n ? pluriel(n, 'ressource', 'ressources') : ''].filter(Boolean).join(', ');
-    return el('section', { class: 'rub' + (n ? '' : ' est-vide'), style: '--hl:' + r.couleur }, [
-      el('h2', null, el('a', { class: 'rub-nom', href: urlRubrique(r) }, r.nom)),
-      infos ? el('p', { class: 'niveau' }, infos) : null,
-      r.presentation ? el('p', { class: 'rub-texte', html: mettreEnForme(r.presentation) }) : null,
+    var infos = [r.niveau, n ? pluriel(n, 'ressource', 'ressources') : 'à venir'].filter(Boolean).join(', ');
+    return el('section', { class: 'noeud' + (n ? '' : ' est-vide'), style: '--hl:' + r.couleur }, [
+      el('p', { class: 'noeud-meta' }, infos),
+      el('h2', null, el('a', { class: 'noeud-nom', href: urlRubrique(r) }, r.nom)),
+      r.presentation ? el('p', { class: 'noeud-texte', html: mettreEnForme(r.presentation) }) : null,
       themes.length ? el('ul', { class: 'themes-mini' }, themes.map(function (t) {
         return el('li', null, el('a', {
           href: urlRubrique(r, t.id),
@@ -507,21 +689,28 @@
     ]);
   }
 
-  /* ── Pages ────────────────────────────────────────────────────── */
-
   function pageAccueil(racine) {
     document.title = titreSite();
-    var recherche = champRecherche('Chercher dans toutes les ressources', maj);
-    racine.appendChild(el('header', { class: 'entete' }, [
+    racine.appendChild(barreHaut(null));
+
+    var page = el('div', { class: 'page' });
+    racine.appendChild(page);
+
+    var recherche = champRecherche('Chercher une ressource', maj);
+    page.appendChild(el('header', { class: 'hero', style: '--hl:#22D3EE', html: scene('#22D3EE', 11) }));
+    var hero = page.lastChild;
+    hero.appendChild(el('div', { class: 'hero-contenu' }, [
+      el('p', { class: 'invite', 'aria-hidden': 'true' }, '~/ressources'),
       el('h1', null, titreSite()),
       reglagesSite.presentation ? el('p', { class: 'chapo', html: mettreEnForme(reglagesSite.presentation) }) : null,
       recherche.bloc
     ]));
+
     var alerte = blocAlertes(null);
-    if (alerte) racine.appendChild(alerte);
+    if (alerte) page.appendChild(alerte);
 
     var vue = el('main', { id: 'contenu' });
-    racine.appendChild(vue);
+    page.appendChild(vue);
 
     var toutes = [];
     ordreRubriques().forEach(function (r) { toutes = toutes.concat(ressourcesDe(r)); });
@@ -531,7 +720,7 @@
       var filtre = filtreRecherche(q);
       if (!filtre) {
         recherche.statut.textContent = '';
-        ordreRubriques().forEach(function (r) { vue.appendChild(blocRubrique(r)); });
+        vue.appendChild(el('div', { class: 'noeuds' }, ordreRubriques().map(carteRubrique)));
         return;
       }
       var trouvees = toutes.filter(filtre);
@@ -544,35 +733,59 @@
     }
     maj(recherche.input.value.trim());
 
-    var pied = el('footer', { class: 'pied' }, [
+    page.appendChild(el('footer', { class: 'pied' }, [
       el('h2', null, 'Ajouter une ressource'),
       el('p', null, 'Chaque rubrique a sa liste dans un petit fichier texte de son dossier. On y ajoute un lien vers une ressource en ligne, ou vers un fichier (PDF, fiche, diaporama) déposé dans le dossier de la rubrique. Le lien « Modifier la liste » se trouve en bas de chaque rubrique.'),
       reglagesSite.depot ? el('p', { class: 'actions' }, el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi complet')) : null,
-      el('p', { class: 'petit' }, 'Les ressources externes restent la propriété de leurs auteurs.')
+      el('p', { class: 'petit' }, 'Les ressources externes restent la propriété de leurs auteurs. Décor du site : dessin original.')
+    ]));
+  }
+
+  /* ── Page d'une rubrique ──────────────────────────────────────── */
+
+  function referenceProgramme(rub) {
+    var p = typeof rub.programme === 'string' ? { texte: rub.programme } : rub.programme;
+    var info = p.lien ? analyser(p.lien, rub.base) : null;
+    return el('p', { class: 'reference' }, [
+      el('span', { class: 'reference-titre' }, 'Texte officiel'), ' ',
+      info ? lienVers(info, p.texte) : p.texte
     ]);
-    racine.appendChild(pied);
   }
 
   function pageRubrique(racine, rub) {
     document.title = rub.nom + ' – ' + titreSite();
-    racine.appendChild(barre(rub));
+    racine.appendChild(barreHaut(rub));
+
+    var page = el('div', { class: 'page' });
+    racine.appendChild(page);
 
     var nommes = rub.themes.filter(function (t) { return t.nom; });
     var total = ressourcesDe(rub).length;
-    var entete = el('header', { class: 'entete', style: '--hl:' + rub.couleur }, [
-      el('h1', null, el('span', { class: 'surligne' }, rub.nom)),
-      rub.niveau ? el('p', { class: 'niveau' }, rub.niveau) : null,
+    var graine = rub.id.split('').reduce(function (a, c) { return a + c.charCodeAt(0); }, 0);
+
+    var bandeau = el('header', { class: 'hero hero-rubrique', style: '--hl:' + rub.couleur, html: scene(rub.couleur, graine) });
+    bandeau.appendChild(el('div', { class: 'hero-contenu' }, [
+      el('p', { class: 'invite', 'aria-hidden': 'true' }, '~/ressources/' + rub.id),
+      el('h1', null, rub.nom),
+      rub.niveau ? el('p', { class: 'niveau' }, rub.niveau) : null
+    ]));
+    page.appendChild(bandeau);
+
+    var intro = el('div', { class: 'intro' }, [
       rub.presentation ? el('p', { class: 'chapo', html: mettreEnForme(rub.presentation) }) : null,
-      nommes.length > 1 ? sommaire(nommes) : null
+      rub.programme ? referenceProgramme(rub) : null
     ]);
-    racine.appendChild(entete);
+    if (intro.childNodes.length) page.appendChild(intro);
 
     var alerte = blocAlertes([rub.id + '/ressources.js', 'reglages.js']);
-    if (alerte) racine.appendChild(alerte);
+    if (alerte) page.appendChild(alerte);
 
+    var corps = el('div', { class: 'rub-corps' });
+    var cote = el('aside', { class: 'cote' });
     var main = el('main', { id: 'contenu' });
-    var zone = el('div');
+    var zone = el('div', { class: 'zone' });
     var recherche = null;
+    var details = nommes.length > 1 ? sommaire(nommes) : null;
 
     function rendre(q) {
       vider(zone);
@@ -591,14 +804,20 @@
     }
 
     if (total >= SEUIL_RECHERCHE) {
-      recherche = champRecherche('Chercher dans ' + rub.nom, rendre);
-      main.appendChild(recherche.bloc);
+      recherche = champRecherche('Chercher dans cette rubrique', rendre);
+      cote.appendChild(recherche.bloc);
     }
-    main.appendChild(zone);
-    rendre(recherche ? recherche.input.value.trim() : '');
-    racine.appendChild(main);
+    if (details) cote.appendChild(details);
+    if (cote.childNodes.length) corps.appendChild(cote);
+    else corps.className += ' sans-cote';
 
-    var pied = el('footer', { class: 'pied' }, [
+    main.appendChild(zone);
+    corps.appendChild(main);
+    page.appendChild(corps);
+    rendre(recherche ? recherche.input.value.trim() : '');
+    suivreLecture(zone, details);
+
+    page.appendChild(el('footer', { class: 'pied' }, [
       el('h2', null, 'Ajouter une ressource'),
       el('p', null, [
         'La liste de cette page est dans ', el('code', null, rub.id + '/ressources.js'),
@@ -611,8 +830,7 @@
         el('a', { href: urlGithub('upload', rub.id + '/fichiers') }, 'Déposer un fichier'),
         el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi')
       ]) : null
-    ]);
-    racine.appendChild(pied);
+    ]));
   }
 
   function afficher() {

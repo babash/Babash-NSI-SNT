@@ -1,8 +1,8 @@
 /* ═══════════════════════════════════════════════════════════════
    SNT : la liste des ressources de la page
 
-   AJOUTER UNE RESSOURCE : copier ce bloc sous le bon theme(…),
-   puis changer les valeurs entre guillemets.
+   AJOUTER UNE RESSOURCE : copier ce bloc sous le bon theme(…) ou
+   groupe(…), puis changer les valeurs entre guillemets.
 
      ressource({
        titre: "Nom de la ressource",
@@ -17,19 +17,46 @@
    Champs facultatifs : texte, tags, et annexes pour des liens en plus :
        annexes: { "Corrigé": "fichiers/corrige.pdf", "Version Capytale": "https://…" },
 
+   Les thèmes suivent le programme officiel. La liste « programme »
+   d'un thème reprend la colonne « Contenus » du BO : une ressource
+   placée sous groupe("…") avec le même intitulé y est reliée.
+
    Étiquettes déjà utilisées : En ligne, À imprimer, Débranché, Python,
-   Connexion ENT, Pour aller plus loin.
+   Connexion ENT, Pour aller plus loin, À adapter.
    ═══════════════════════════════════════════════════════════════ */
 
 rubrique({
   nom: "SNT",
   niveau: "Seconde",
   couleur: "bleu",
-  presentation: "Sciences numériques et technologie : les sept thèmes du programme, plus la prise en main de Python et de la bureautique.",
+  presentation: "Sciences numériques et technologie : les sept thèmes du programme et les notions transversales de programmation en Python. Une révision du programme, avec une place pour l'intelligence artificielle, est annoncée pour la rentrée 2027.",
+  programme: {
+    texte: "Programme de SNT, BO spécial n° 1 du 22 janvier 2019",
+    lien: "https://eduscol.education.gouv.fr/5841/programmes-et-ressources-en-sciences-numeriques-et-technologie-voie-gt",
+  },
 });
 
 
-theme("Programmation");
+theme("Première séance", { couleur: "gris" });
+
+ressource({
+  titre: "SNT 1er jour : brise-glace et découverte",
+  lien: "https://github.com/babash/SNT-1er-Jour",
+  texte: "Formulaire de première séance : les élèves se présentent (mots-clés, goûts culturels, citation d'informaticien, question au professeur) et voient le nuage de mots de leur classe se construire. Jeu de frappe au clavier en bonus pour ceux qui finissent en avance.\n**À adapter** : la page est réglée pour les classes 209 à 212 et envoie les réponses dans la base de données de son auteur. La dupliquer et la brancher sur sa propre base avant de l'utiliser.",
+  tags: ["En ligne", "À adapter"],
+});
+
+
+theme("Notions transversales de programmation", {
+  court: "Programmation",
+  programme: [
+    "Affectations, variables",
+    "Séquences",
+    "Instructions conditionnelles",
+    "Boucles bornées et non bornées",
+    "Définitions et appels de fonctions",
+  ],
+});
 
 ressource({
   titre: "Compute-it, progression Python",
@@ -58,6 +85,24 @@ ressource({
   lien: "https://execubot.fr",
   texte: "Jeu de lecture de code : à partir d'un programme Python, les élèves prévoient le déplacement d'un robot sur une grille de couleurs. Conçu par des enseignants d'informatique de lycée.",
   tags: ["En ligne", "Python"],
+});
+
+groupe("Affectations, variables");
+
+ressource({
+  titre: "Fiche : les variables et opérateurs en Python",
+  lien: "https://github.com/babash/FichesNSI/blob/main/content/variable.md",
+  texte: "Créer une variable, règles de nommage, types de base, opérateurs arithmétiques, de comparaison et d'affectation combinée.",
+  tags: ["À imprimer", "Python"],
+});
+
+groupe("Instructions conditionnelles");
+
+ressource({
+  titre: "Fiche : les structures de contrôle en Python",
+  lien: "https://github.com/babash/FichesNSI/blob/main/content/ficheSNT.md",
+  texte: "Conditions `if` / `elif` / `else`, boucles `for` et `while`, opérateurs logiques `not`, `and`, `or`, avec des exemples commentés.",
+  tags: ["À imprimer", "Python"],
 });
 
 groupe("Pour occuper les plus fort·e·s");
@@ -103,6 +148,12 @@ theme("Bureautique", "gris");
 
 
 theme("Sites ressources", "gris");
+
+ressource({
+  titre: "Éduscol : programme et ressources de SNT",
+  lien: "https://eduscol.education.gouv.fr/5841/programmes-et-ressources-en-sciences-numeriques-et-technologie-voie-gt",
+  texte: "Le programme officiel et les ressources d'accompagnement de chaque thème.",
+});
 
 ressource({
   titre: "Kit starter SNT, académie d'Aix-Marseille",

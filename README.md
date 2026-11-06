@@ -9,6 +9,18 @@ Chaque rubrique a **sa propre liste de ressources**, dans un petit fichier texte
 directement sur GitHub. Une ressource peut être un lien vers un site, ou un fichier déposé
 sur le site (PDF, fiche HTML, diaporama…).
 
+Les rubriques suivent les **textes officiels** :
+
+| Rubrique | Texte de référence | Thèmes du site |
+|---|---|---|
+| SNT | Programme de SNT, BO spécial n° 1 du 22 janvier 2019 | Les 7 thèmes et les notions transversales de programmation |
+| NSI Première | Programme de NSI de première, BO spécial n° 1 du 22 janvier 2019 | Les 8 rubriques, avec la colonne « Contenus » |
+| NSI Terminale | Programme de NSI de terminale, BO spécial n° 8 du 25 juillet 2019 | Les 6 rubriques, avec la colonne « Contenus » |
+| Professeur principal | Circulaire n° 2018-108 du 10 octobre 2018 | Les missions du professeur principal |
+
+Le site s'affiche en clair ou en obscur : par défaut il suit le réglage de l'appareil, et le
+choix fait dans la barre du haut (Auto, Clair, Obscur) est retenu par le navigateur.
+
 ```
 reglages.js                 titre du site et liste des rubriques
 snt/
@@ -92,8 +104,9 @@ ressource({
 | `tags` | non | Des étiquettes entre crochets : `["En ligne", "Python"]` |
 | `annexes` | non | Des liens en plus (voir ci-dessus) |
 
-Étiquettes déjà utilisées : `En ligne`, `À imprimer`, `Débranché`, `Python`, `Connexion ENT`,
-`Pour aller plus loin`. On peut en inventer d'autres.
+Étiquettes déjà utilisées : `En ligne`, `À imprimer`, `Débranché`, `Python`, `SQL`, `Jeu`,
+`Cours`, `Notebook`, `Connexion ENT`, `Rien à installer`, `À adapter`, `Pour aller plus loin`.
+On peut en inventer d'autres.
 
 La recherche de la page d'accueil fouille les titres, textes, étiquettes et thèmes de
 toutes les rubriques. On peut partager une recherche : `…/Babash-NSI-SNT/?q=débranché`.
@@ -111,6 +124,38 @@ Dans `ressources.js` :
   orange, citron, cyan, jaune, lavande, corail, gris. Sans couleur, le site en choisit une.
 - `groupe("Pour aller plus loin");` ajoute un sous-titre à l'intérieur d'un thème.
 - Un thème sans ressource affiche « Rien ici pour l'instant » : on peut le laisser en attendant.
+
+### Ranger selon le programme officiel
+
+Chaque thème de NSI et de SNT liste les contenus du BO dans `programme` :
+
+```js
+theme("Structures de données", {
+  programme: [
+    "Structures de données, interface et implémentation",
+    "Vocabulaire de la programmation objet",
+    "Arbres",
+  ],
+});
+
+groupe("Arbres");          // exactement le même intitulé que dans la liste
+
+ressource({ titre: "Fiche : les arbres", lien: "…" });
+```
+
+Sur la page, la ligne « Au programme » affiche tous les contenus. Ceux qui ont au moins une
+ressource deviennent des liens vers leur sous-section ; les autres restent en pointillés,
+ce qui montre d'un coup d'œil ce qui reste à couvrir.
+
+La référence du texte officiel s'affiche sous la présentation de la rubrique. Elle se règle
+dans `rubrique({ … })` :
+
+```js
+programme: {
+  texte: "Programme de NSI de terminale, BO spécial n° 8 du 25 juillet 2019",
+  lien: "https://…",
+},
+```
 
 ## Ajouter une rubrique
 
@@ -150,6 +195,14 @@ dans le navigateur. Tout fonctionne sans connexion, sauf les polices et les lien
 
 **Settings → Pages**, puis *Build and deployment* : **Deploy from a branch**,
 **Branch : main**, dossier **/ (root)**, et **Save**.
+
+---
+
+## Le décor
+
+La ville, sa liaison montante et le sol quadrillé du bandeau sont un dessin original, généré
+par `assets/site.js` (fonction `scene`) dans la couleur de chaque rubrique. Les couleurs
+générales des deux affichages sont en haut de `assets/style.css`.
 
 ---
 
