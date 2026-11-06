@@ -15,7 +15,7 @@
    nsi-premiere/fichiers, puis écrire  lien: "fichiers/nom-du-fichier.pdf"
 
    Champs facultatifs : texte, tags, et annexes pour des liens en plus :
-       annexes: { "Corrigé": "fichiers/corrige.pdf", "Version Capytale": "https://…" },
+       annexes: { "Corrigé": "fichiers/corrige.pdf", "Version Capytale": "https://capytale2.ac-paris.fr/p/basthon/…" },
 
    Les thèmes sont les rubriques du programme officiel. La liste
    « programme » de chaque thème reprend la colonne « Contenus » du BO.

@@ -15,7 +15,7 @@
    nsi-terminale/fichiers, puis écrire  lien: "fichiers/nom-du-fichier.pdf"
 
    Champs facultatifs : texte, tags, et annexes pour des liens en plus :
-       annexes: { "Corrigé": "fichiers/corrige.pdf", "Version Capytale": "https://…" },
+       annexes: { "Corrigé": "fichiers/corrige.pdf", "Version Capytale": "https://capytale2.ac-paris.fr/p/basthon/…" },
 
    Les thèmes sont les rubriques du programme officiel. La liste
    « programme » de chaque thème reprend la colonne « Contenus » du BO.
@@ -251,14 +251,14 @@ groupe("Gestion des processus et des ressources par un système d'exploitation")
 
 ressource({
   titre: "Système d'exploitation humain",
-  lien: "https://babash.github.io/Ex-cution-d-branch-e/slide.html",
+  lien: "fichiers/os-humain/diaporama.html",
   texte: "Activité débranchée : la classe devient un ordinateur. Chaque élève est un processus, avec un PID et une priorité, qui exécute une fiche d'instructions (prendre, poser, dessiner). Le professeur joue l'ordonnanceur. Trois activités : tourniquet sur un cœur, priorités, puis interblocage. Le lien ouvre le diaporama à projeter ; les fiches processus à imprimer sont en dessous.",
   tags: ["Débranché", "À imprimer"],
   annexes: {
-    "Fiches processus, activité 1 (PDF)": "https://babash.github.io/Ex-cution-d-branch-e/Activites/A1_mono_sans_interblocage/Mono_sans_interblocage.pdf",
-    "Fiches processus, activité 2 (PDF)": "https://babash.github.io/Ex-cution-d-branch-e/Activites/A2_priorite/scriptsA2.pdf",
-    "Fiches processus, activité 3 (PDF)": "https://babash.github.io/Ex-cution-d-branch-e/Activites/A3_mono_interblocage/scriptsA3.pdf",
-    "Guide complet de l'activité": "https://babash.github.io/Ex-cution-d-branch-e/specifications.txt",
+    "Guide de l'activité": "fichiers/os-humain/guide.html",
+    "Fiches processus, activité 1": "fichiers/os-humain/fiches-activite-1.pdf",
+    "Fiches processus, activité 2": "fichiers/os-humain/fiches-activite-2.pdf",
+    "Fiches processus, activité 3": "fichiers/os-humain/fiches-activite-3.pdf",
     "Code source": "https://github.com/babash/Ex-cution-d-branch-e",
   },
 });

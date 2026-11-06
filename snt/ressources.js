@@ -15,7 +15,7 @@
    snt/fichiers, puis écrire  lien: "fichiers/nom-du-fichier.pdf"
 
    Champs facultatifs : texte, tags, et annexes pour des liens en plus :
-       annexes: { "Corrigé": "fichiers/corrige.pdf", "Version Capytale": "https://…" },
+       annexes: { "Corrigé": "fichiers/corrige.pdf", "Version Capytale": "https://capytale2.ac-paris.fr/p/basthon/…" },
 
    Les thèmes suivent le programme officiel. La liste « programme »
    d'un thème reprend la colonne « Contenus » du BO : une ressource

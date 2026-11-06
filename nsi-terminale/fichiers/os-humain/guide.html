@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guide : le système d'exploitation humain – NSI Terminale</title>
+<style>
+  body { font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif; line-height: 1.55;
+         max-width: 46rem; margin: 2rem auto; padding: 0 1.2rem; color: #1b1b1f; background: #fff; }
+  h1 { font-size: 1.7rem; } h2 { margin-top: 2rem; font-size: 1.3rem; }
+  table { border-collapse: collapse; margin: 1rem 0; } th, td { border: 1px solid #ccc; padding: .35rem .6rem; }
+  pre { background: #f4f4f6; padding: .8rem; overflow-x: auto; border-radius: 6px; }
+  code { background: #f4f4f6; padding: 0 .2rem; border-radius: 3px; }
+  .retour { display: inline-block; margin-bottom: 1rem; }
+  @media print { .retour { display: none; } }
+</style>
+</head>
+<body>
+<a class="retour" href="../../#architecture-os-et-reseaux">← Retour aux ressources de NSI Terminale</a>
+<h1>📔 Guide Complet : L'Activité Débranchée "Système d'Exploitation Humain"</h1>
+<h2>🏗️ 1. Fondements Théoriques et Objectifs</h2>
+<h3>Le lien avec l'Architecture de von Neumann</h3>
+<p>L'activité révise les quatre blocs fondamentaux :
+1.  <strong>L'Unité de Commande (UC) :</strong> L'élève décode sa fiche ; l'enseignant rythme le cycle.
+2.  <strong>L'Unité Arithmétique et Logique (UAL) :</strong> L'action de "Dessiner".
+3.  <strong>La Mémoire :</strong> La fiche (RAM). La <strong>case cochée</strong> = <strong>Registre d'Instruction</strong> (RI) et <strong>Compteur Ordinal</strong> (PC).
+4.  <strong>Les Bus et E/S :</strong> Déplacements (Bus) et dessin final (Sortie).</p>
+<p>[Image of Von Neumann architecture diagram]</p>
+<hr />
+<h2>🛠️ 2. Organisation Logistique et Matériel</h2>
+<ul>
+<li><strong>Zones :</strong> Processeur (Tableau), File des Prêts (Gauche), File des Bloqués (Droite), Zone Finis (Bureaux).</li>
+<li><strong>Ressources :</strong> Table avec 4 marqueurs (Rouge, Bleu, Vert, Noir).</li>
+<li><strong>Fiches :</strong> Chaque fiche comporte en haut : <strong>PID (ex: 102)</strong> et <strong>Priorité (1 à 3)</strong>.</li>
+</ul>
+<hr />
+<h2>💻 3. Spécifications du Support Visuel (Slides)</h2>
+<p>Pour garantir une lecture inclusive et lointaine sur tableau blanc, les supports doivent respecter les normes suivantes (HTML/CSS) :</p>
+<ul>
+<li><strong>Contraste :</strong> Fond <code>#FFFFFF</code> pur, texte <code>#000000</code>. Accents en <code>#0000FF</code> (Bleu saturé) pour les mots-clés.</li>
+<li><strong>Typographie :</strong> Police Sans-Serif (ex: <code>Arial</code>, <code>Inter</code>) avec une taille minimale de <code>4vh</code>.</li>
+<li><strong>Design :</strong> Épuré, pas de bordures fines. Utilisation de zones colorées pleines pour séparer les concepts.</li>
+</ul>
+<pre><code class="language-css">/* Extrait de la feuille de style recommandée */
+body { background: white; color: black; font-family: sans-serif; padding: 50px; }
+h1 { font-size: 8vh; text-transform: uppercase; border-left: 15px solid blue; padding-left: 20px; }
+.instruction { font-size: 5vh; background: #f0f0f0; margin: 20px 0; padding: 20px; border-radius: 10px; }
+.keyword { color: blue; font-weight: bold; }
+</code></pre>
+<hr />
+<h2>📜 4. Phase d'Immersion (Slide 0)</h2>
+<blockquote>
+<h3>📢 Slide 0 : Les Règles du Système</h3>
+<ul>
+<li><strong>Identité :</strong> Ton <strong>PID</strong> est ton nom. Ta <strong>Priorité</strong> définit ton urgence.</li>
+<li><strong>Élection :</strong> Tu ne vas au tableau que si l'Ordonnanceur (le prof) t'appelle.</li>
+<li><strong>Quantum :</strong> Tu n'exécutes qu'UNE SEULE ligne, puis tu retournes en file d'attente.</li>
+<li><strong>Le PC (Compteur Ordinal) :</strong><ul>
+<li>Si l'action est réussie : <strong>Coche la case</strong> et retourne en file "Prêt".</li>
+<li>Si l'action échoue (<code>PRENDRE</code> impossible) : <strong>Ne coche rien</strong> et va en file "Bloqué".</li>
+</ul>
+</li>
+<li><strong>Instructions :</strong> &gt;     * <code>PRENDRE(Couleur)</code><ul>
+<li><code>POSER(Couleur)</code></li>
+<li><code>DESSINER(Couleur, [Liste de Cases])</code> : <strong>Action groupée</strong>. Tu colories toutes les cases listées avant de partir.</li>
+</ul>
+</li>
+</ul>
+</blockquote>
+<hr />
+<h2>🕹️ 5. Séquence des Activités et Débriefings</h2>
+<h3>Activité 1 : Le Tourniquet (Monocœur)</h3>
+<ul>
+<li><strong>Déroulement :</strong> 6 élèves, passage équitable (premier arrivé, premier servi).</li>
+</ul>
+<blockquote>
+<p><strong>Slide Analyse (Socio-constructiviste) :</strong> "Comment vous êtes-vous sentis dans la file ? Avez-vous eu l'impression que le dessin avançait vite ? Que se passait-il quand vous attendiez un feutre ?"</p>
+<p><strong>Slide Synthèse Experte :</strong> <strong>Les États du Processus.</strong>
+Le passage physique d'une zone à l'autre correspond au diagramme de transition d'états. Un processus ne peut pas passer de "Bloqué" à "Élu" sans repasser par "Prêt".
+</p>
+</blockquote>
+<hr />
+<h3>Activité 2 : La Gestion des Priorités</h3>
+<ul>
+<li><strong>Déroulement :</strong> L'enseignant choisit toujours les PID ayant la priorité la plus haute.</li>
+</ul>
+<blockquote>
+<p><strong>Slide Analyse (Socio-constructiviste) :</strong> "PID 105 (priorité basse), combien de fois es-tu passé ? Est-ce juste ? Le système est-il efficace si les petites tâches ne sont jamais faites ?"</p>
+<p><strong>Slide Synthèse Experte :</strong> <strong>Le Phénomène de Famine (Starvation).</strong>
+La famine survient quand l'ordonnanceur néglige un processus au profit d'autres jugés plus critiques. Solution : Le "vieillissement" (augmenter la priorité de ceux qui attendent trop longtemps).</p>
+</blockquote>
+<hr />
+<h3>Activité 3 : L'Interblocage (Deadlock)</h3>
+<ul>
+<li><strong>Déroulement :</strong> Codes croisés (A prend Rouge, B prend Bleu, A veut Bleu, B veut Rouge).</li>
+</ul>
+<blockquote>
+<p><strong>Slide Analyse (Socio-constructiviste) :</strong> "Pourquoi tout s'est arrêté ? Qui peut bouger ? Qui possède quoi ? Pouvez-vous résoudre le problème sans tricher ?"</p>
+<p><strong>Slide Synthèse Experte :</strong> <strong>L'Interblocage.</strong>
+Il survient avec 4 conditions (Coffman) : exclusion mutuelle, rétention et attente, pas de réquisition, et attente circulaire.
+</p>
+</blockquote>
+<hr />
+<h3>Activité 4 &amp; 5 : Le Multicœur (Parallélisme)</h3>
+<ul>
+<li><strong>Déroulement :</strong> 3 élèves au tableau. A4 : pas de conflit. A5 : compétition pour les feutres.</li>
+</ul>
+<blockquote>
+<p><strong>Slide Analyse (Socio-constructiviste) :</strong> "Est-ce que travailler à trois a divisé le temps par trois ? Qu'est-ce qui a créé de la frustration en A5 malgré les 3 processeurs ?"</p>
+<p><strong>Slide Synthèse Experte :</strong> <strong>Parallélisme vs Concurrence.</strong>
+Le multicœur augmente la puissance brute, mais la gestion des ressources (verrous sur les feutres) devient le nouveau goulot d'étranglement.</p>
+</blockquote>
+<hr />
+<h2>📚 6. Lexique et Correspondances</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Objet Physique</th>
+<th style="text-align: left;">Équivalent Informatique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>L'élève</strong></td>
+<td style="text-align: left;"><strong>Le Processus (Instance)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>La fiche</strong></td>
+<td style="text-align: left;"><strong>Le Programme (Fichier)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cases cochées</strong></td>
+<td style="text-align: left;"><strong>Compteur Ordinal (PC)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>L'Enseignant</strong></td>
+<td style="text-align: left;"><strong>L'Ordonnanceur (Scheduler)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Tableau / Marqueurs</strong></td>
+<td style="text-align: left;"><strong>CPU / Ressources (Mutex)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2>⚠️ 7. Synthèse Finale et Limites</h2>
+<ul>
+<li><strong>Confusion CPU/RAM :</strong> Le tableau est une sortie, pas le stockage de calcul.</li>
+<li><strong>Vitesse :</strong> Un humain = 10s. Un CPU = $10^{-9}$s.</li>
+</ul>
+<hr />
+<h2>🚀 8. Pour aller plus loin</h2>
+<ul>
+<li><strong>Dissociation CPU/RAM :</strong> Éloigner la zone de dessin (latence).</li>
+<li><strong>Les Threads :</strong> Partage d'une même grille par plusieurs élèves (même PID, fiches différentes).</li>
+<li><strong>Politiques :</strong> Tester le <strong>SJF</strong> (Shortest Job First) : l'élève ayant le moins de cases à cocher passe en premier.</li>
+</ul>
+<hr />
+</body>
+</html>
