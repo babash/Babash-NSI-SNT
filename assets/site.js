@@ -733,6 +733,9 @@
     }
     maj(recherche.input.value.trim());
 
+    /* L'équipage de runners (assets/equipage.js), sous les rubriques */
+    if (window.sectionEquipage) page.appendChild(window.sectionEquipage(RACINE));
+
     page.appendChild(el('footer', { class: 'pied' }, [
       el('h2', null, 'Ajouter une ressource'),
       el('p', null, 'Chaque rubrique a sa liste dans un petit fichier texte de son dossier. On y ajoute un lien vers une ressource en ligne, ou vers un fichier (PDF, fiche, diaporama) déposé dans le dossier de la rubrique. Le lien « Modifier la liste » se trouve en bas de chaque rubrique.'),

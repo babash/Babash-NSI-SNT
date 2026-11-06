@@ -24,9 +24,10 @@
   --alerte-trait: #E11D48;
   --hl: #22D3EE;
 
-  --display: "Chakra Petch", "Bahnschrift", "Arial Narrow", system-ui, sans-serif;
-  --text: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  /* Polices et couleurs communes : assets/charte.css (chargé avant ce fichier) */
+  --display: var(--police-titre);
+  --text: var(--police-texte);
+  --mono: var(--police-code);
 
   --coupe: 18px;
   color-scheme: light;
@@ -66,6 +67,21 @@
   --alerte-trait: #FB7185;
   color-scheme: dark;
 }
+
+
+/* Couleur de rubrique ou de thème utilisée pour les traits et les textes :
+   le néon (--hl) en affichage obscur, sa version foncée en affichage clair
+   (≥ 4,5:1 sur blanc, lisible au vidéoprojecteur et à l'impression). */
+*, ::before, ::after { --c: color-mix(in srgb, var(--hl) 42%, #0B1020); }
+.hero, .hero *, .carte-runner, .carte-runner * { --c: var(--hl); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) *,
+  :root:not([data-theme="light"]) ::before,
+  :root:not([data-theme="light"]) ::after { --c: var(--hl); }
+}
+:root[data-theme="dark"] *,
+:root[data-theme="dark"] ::before,
+:root[data-theme="dark"] ::after { --c: var(--hl); }
 
 /* ── Base ─────────────────────────────────── */
 
@@ -211,7 +227,7 @@ code {
   right: .7rem;
   bottom: .2rem;
   height: 2px;
-  background: var(--hl);
+  background: var(--c);
   opacity: .45;
   transition: opacity .15s;
 }
@@ -219,7 +235,7 @@ code {
 .nav a:hover::after { opacity: 1; }
 .nav a[aria-current="page"] {
   color: var(--ink);
-  background: color-mix(in srgb, var(--hl) 16%, transparent);
+  background: color-mix(in srgb, var(--c) 16%, transparent);
 }
 .nav a[aria-current="page"]::after {
   opacity: 1;
@@ -325,7 +341,7 @@ code {
 .invite {
   font-family: var(--mono);
   font-size: .82rem;
-  color: var(--hl);
+  color: var(--c);
   margin: 0;
   letter-spacing: .02em;
 }
@@ -458,12 +474,12 @@ code {
   top: -1px;
   width: 42%;
   height: 3px;
-  background: var(--hl);
+  background: var(--c);
   box-shadow: 0 0 calc(var(--lueur) * 14px) var(--hl);
 }
 .noeud:hover,
 .noeud:focus-within {
-  border-color: color-mix(in srgb, var(--hl) 60%, var(--line));
+  border-color: color-mix(in srgb, var(--c) 60%, var(--line));
 }
 
 .noeud-meta {
@@ -513,10 +529,10 @@ code {
   line-height: 1.3;
   padding: .2rem .5rem;
   text-decoration: none;
-  border: 1px solid color-mix(in srgb, var(--hl) 55%, var(--line));
-  background: color-mix(in srgb, var(--hl) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 55%, var(--line));
+  background: color-mix(in srgb, var(--c) 9%, transparent);
 }
-.themes-mini a:hover { border-color: var(--hl); }
+.themes-mini a:hover { border-color: var(--c); }
 .themes-mini a.est-vide {
   color: var(--ink-soft);
   border: 1px dashed var(--line);
@@ -618,10 +634,10 @@ code {
   text-decoration: none;
   border-left: 2px solid var(--line);
 }
-.sommaire a:hover { border-left-color: var(--hl); background: color-mix(in srgb, var(--hl) 8%, transparent); }
+.sommaire a:hover { border-left-color: var(--c); background: color-mix(in srgb, var(--c) 8%, transparent); }
 .sommaire a[aria-current] {
-  border-left-color: var(--hl);
-  background: color-mix(in srgb, var(--hl) 14%, transparent);
+  border-left-color: var(--c);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
   font-weight: 700;
 }
 .sommaire a.est-vide { color: var(--ink-soft); }
@@ -648,7 +664,7 @@ code {
   line-height: 1.15;
   margin: 0 0 .9rem;
   padding-left: .85rem;
-  border-left: 4px solid var(--hl);
+  border-left: 4px solid var(--c);
   text-shadow: 0 0 calc(var(--lueur) * 22px) color-mix(in srgb, var(--hl) 35%, transparent);
 }
 
@@ -658,7 +674,7 @@ code {
   animation: signal .9s ease-out;
 }
 @keyframes signal {
-  0%   { border-left-width: 14px; background: color-mix(in srgb, var(--hl) 25%, transparent); }
+  0%   { border-left-width: 14px; background: color-mix(in srgb, var(--c) 25%, transparent); }
   100% { border-left-width: 4px; background: transparent; }
 }
 
@@ -695,10 +711,10 @@ code {
   color: var(--ink);
   font-weight: 700;
   text-decoration: none;
-  border: 1px solid var(--hl);
-  background: color-mix(in srgb, var(--hl) 12%, transparent);
+  border: 1px solid var(--c);
+  background: color-mix(in srgb, var(--c) 12%, transparent);
 }
-.programme li > a:hover { background: color-mix(in srgb, var(--hl) 24%, transparent); }
+.programme li > a:hover { background: color-mix(in srgb, var(--c) 24%, transparent); }
 
 .theme h3 {
   display: flex;
@@ -717,7 +733,7 @@ code {
   flex: none;
   width: .55rem;
   height: .55rem;
-  background: var(--hl);
+  background: var(--c);
   box-shadow: 0 0 calc(var(--lueur) * 8px) var(--hl);
 }
 
@@ -743,8 +759,8 @@ code {
 .res + .res { margin-top: .4rem; }
 .res:hover,
 .res:focus-within {
-  border-left-color: var(--hl);
-  background: linear-gradient(90deg, color-mix(in srgb, var(--hl) 9%, transparent), transparent 70%);
+  border-left-color: var(--c);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 9%, transparent), transparent 70%);
 }
 
 .titre {
@@ -754,12 +770,12 @@ code {
   line-height: 1.25;
   color: var(--ink);
   text-decoration-line: underline;
-  text-decoration-color: color-mix(in srgb, var(--hl) 75%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--c) 75%, transparent);
   text-decoration-thickness: 2px;
   text-underline-offset: .24em;
 }
 a.titre:hover {
-  text-decoration-color: var(--hl);
+  text-decoration-color: var(--c);
   text-shadow: 0 0 calc(var(--lueur) * 12px) color-mix(in srgb, var(--hl) 55%, transparent);
 }
 .titre.sans-lien { text-decoration: none; }
@@ -794,7 +810,7 @@ a.titre:hover {
   font-size: .9rem;
 }
 .annexe:hover,
-.annexe:focus-within { border-color: var(--hl); }
+.annexe:focus-within { border-color: var(--c); }
 .annexe a {
   font-weight: 700;
   text-decoration: none;
@@ -802,7 +818,7 @@ a.titre:hover {
 .annexe a::before {
   content: "+";
   font-family: var(--mono);
-  color: var(--hl);
+  color: var(--c);
   margin-right: .35rem;
 }
 .annexe .type {
@@ -928,3 +944,63 @@ a.titre:hover {
   .hero::after { display: none; }
   .hero h1 { color: #000; text-shadow: none; animation: none; }
 }
+
+/* ── Accueil : l'équipage ─────────────────── */
+
+.equipage { margin-top: 4.5rem; }
+.equipage-intro { max-width: 46rem; }
+.equipage-intro .invite { color: var(--accent); }
+.equipage h2 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4.5vw, 2.5rem);
+  line-height: 1.1;
+  margin: .35rem 0 .6rem;
+}
+.equipage-intro > p { margin: 0; color: var(--ink-soft); }
+.profils {
+  list-style: none;
+  margin: .9rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem 1.4rem;
+  font-size: .95rem;
+  color: var(--ink-soft);
+}
+.profils li::before {
+  content: "";
+  display: inline-block;
+  width: .7rem;
+  height: .8rem;
+  margin-right: .45rem;
+  vertical-align: -.05em;
+  background: var(--prof-encre);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+}
+.profils b { color: var(--ink); font-family: var(--display); margin-right: .3rem; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .profils li::before { background: var(--prof); } }
+:root[data-theme="dark"] .profils li::before { background: var(--prof); }
+
+.cartes-runners {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));  /* une ligne par profil */
+  gap: 1.1rem;
+  margin-top: 1.6rem;
+  max-width: 62rem;
+}
+.carte-runner .cr-art img { width: 100%; height: auto; display: block; }
+@media (max-width: 640px) {
+  /* Sur téléphone : les cartes défilent de côté, comme une main de cartes */
+  .cartes-runners {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 76%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: .6rem;
+    margin-right: -16px;
+  }
+  .carte-runner { scroll-snap-align: start; }
+}
+@media print { .equipage { display: none; } }
