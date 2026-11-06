@@ -32,7 +32,14 @@ nsi-terminale/  …
 pp/             …
 autres/         …
 assets/                     mise en page et fonctionnement (ne pas toucher)
+.github/                    vérification automatique des liens et des pages (voir plus bas)
 ```
+
+**Règle des liens** : le lien principal d'une ressource mène **directement** à la ressource
+(la page de l'activité, la fiche, le PDF), jamais à un dépôt GitHub ou à un fichier affiché
+par GitHub. Le dépôt peut figurer discrètement en annexe, sous le nom « Code source ».
+Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans le dossier
+`fichiers` de la rubrique (c'est le cas de `nsi-terminale/fichiers/os-humain/`).
 
 ---
 
@@ -105,8 +112,12 @@ ressource({
 | `annexes` | non | Des liens en plus (voir ci-dessus) |
 
 Étiquettes déjà utilisées : `En ligne`, `À imprimer`, `Débranché`, `Python`, `SQL`, `Jeu`,
-`Cours`, `Notebook`, `Connexion ENT`, `Rien à installer`, `À adapter`, `Pour aller plus loin`.
-On peut en inventer d'autres.
+`Cours`, `Notebook`, `Connexion ENT`, `Rien à installer`, `À adapter`, `Pour aller plus loin`,
+`Ressource du mois`. On peut en inventer d'autres.
+
+L'étiquette `Ressource du mois` met en avant une ressource (en ce moment : CyberCase, en SNT
+et en NSI Terminale). Chercher « ressource du mois » sur l'accueil la retrouve ; il suffit
+d'enlever l'étiquette le mois suivant.
 
 La recherche de la page d'accueil fouille les titres, textes, étiquettes et thèmes de
 toutes les rubriques. On peut partager une recherche : `…/Babash-NSI-SNT/?q=débranché`.
@@ -188,6 +199,24 @@ Les virgules en trop, elles, ne gênent pas : on peut en laisser une après chaq
 
 Télécharger le dépôt (**Code → Download ZIP**), le décompresser et ouvrir `index.html`
 dans le navigateur. Tout fonctionne sans connexion, sauf les polices et les liens externes.
+
+## Vérification automatique
+
+Le fichier `.github/workflows/verifier.yml` lance deux contrôles, visibles dans l'onglet
+**Actions** du dépôt (coche verte : tout va bien ; croix rouge : cliquer pour voir le détail) :
+
+- **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
+  fichiers `ressources.js` sont testés. Le résumé liste les liens morts, fichier et ligne.
+  Ne sont pas testés : les pages qui demandent une connexion (Capytale, claude.ai) et
+  algorea.org, qui refuse les robots. Les sites qui répondent « accès refusé » (403) aux
+  robots sont comptés comme valides.
+- **Site en ligne**, après chaque modification de `main` : le contrôle attend que GitHub Pages
+  serve la nouvelle version, puis affiche chaque rubrique dans Chrome et vérifie qu'aucune
+  erreur n'apparaît et que le nombre de ressources affichées est celui de `ressources.js`.
+
+Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du site :
+`python3 -m http.server 8000`, puis dans un autre terminal
+`python3 .github/verifier-site.py http://localhost:8000`.
 
 ---
 

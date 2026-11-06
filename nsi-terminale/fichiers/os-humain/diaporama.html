@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>OS Masterclass - Terminale NSI</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reset.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root { --blue: #42a5f5; --red: #ff5252; --green: #69f0ae; --purple: #e040fb; --yellow: #ffd740; }
+        .reveal h1 { color: var(--blue); text-transform: none; font-weight: 800; font-size: 2.2em; }
+        .reveal h2 { color: var(--green); text-transform: none; }
+        .reveal h3 { color: var(--yellow); text-transform: none; }
+        .rule-card { background: rgba(255,255,255,0.05); border-radius: 15px; padding: 25px; border-left: 10px solid var(--blue); margin: 15px 0 !important; text-align: left; font-size: 0.8em; }
+        .expert-block { background: rgba(105, 240, 174, 0.1); border: 2px solid var(--green); padding: 25px; border-radius: 15px; font-size: 0.75em; text-align: left; margin-top: 20px; }
+        .retro-block { background: rgba(224, 64, 251, 0.1); border: 2px solid var(--purple); padding: 25px; border-radius: 15px; font-size: 0.75em; text-align: left; }
+        .keyword { color: var(--blue); font-weight: bold; }
+        .instruction-code { font-family: monospace; color: var(--purple); background: #222; padding: 5px 10px; border-radius: 5px; }
+        
+        /* State Diagram Styles */
+        .diag-container { display: flex; justify-content: space-around; align-items: center; margin-top: 50px; position: relative; }
+        .state-node { border: 4px solid white; padding: 20px; border-radius: 50px; width: 200px; font-weight: bold; font-size: 0.8em; text-align: center; }
+        .state-ready { border-color: var(--yellow); color: var(--yellow); }
+        .state-running { border-color: var(--green); color: var(--green); }
+        .state-blocked { border-color: var(--red); color: var(--red); }
+        .arrow { font-size: 1.5em; color: white; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <section data-background-gradient="linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d)">
+                <h1>Système d'Exploitation</h1>
+                <h3>L'Activité Débranchée</h3>
+                <p style="font-size: 0.6em; opacity: 0.8;">Incarner l'Architecture de Von Neumann</p>
+            </section>
+
+            <section>
+                <h2><i class="fas fa-bullseye"></i> Objectifs de la séance</h2>
+                <div class="expert-block">
+                    <p>À la fin de cette activité, vous serez capables de :</p>
+                    <ul>
+                        <li>Identifier les composants de l'architecture de <strong>Von Neumann</strong>.</li>
+                        <li>Distinguer un <strong>programme</strong> d'un <strong>processus</strong>.</li>
+                        <li>Comprendre comment l'<strong>ordonnanceur</strong> gère le temps CPU.</li>
+                        <li>Repérer les situations d'<strong>interblocage</strong>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>Le Rôle de Chacun</h2>
+                <div class="rule-card">
+                    <p><i class="fas fa-user-graduate keyword"></i> <strong>Élève :</strong> Processus (Le programme en action).</p>
+                    <p><i class="fas fa-chalkboard keyword"></i> <strong>Tableau :</strong> Processeur (CPU).</p>
+                    <p><i class="fas fa-user-tie keyword"></i> <strong>Professeur :</strong> Ordonnanceur (Scheduler).</p>
+                    <p><i class="fas fa-pen-fancy keyword"></i> <strong>Marqueurs :</strong> Ressources critiques.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2><i class="fas fa-gavel"></i> Protocole d'Exécution</h2>
+                <div class="rule-card">
+                    <p>1. <strong>Identité :</strong> Ton <span class="keyword">PID</span> et ta <span class="keyword">PRIO</span> sont sur ta fiche.</p>
+                    <p>2. <strong>Quantum :</strong> Tu n'exécutes qu'une seule ligne par passage.</p>
+                    <p>3. <strong>PC (Compteur Ordinal) :</strong> Tu coches la ligne <span class="keyword">UNIQUEMENT</span> si l'action est terminée.</p>
+                </div>
+            </section>
+
+            <section>
+                <section>
+                    <h2>Le Jeu d'Instructions</h2>
+                    <div class="rule-card" style="border-left-color: var(--purple);">
+                        <p><span class="instruction-code">PRENDRE(Couleur)</span> : Tente de récupérer le feutre.</p>
+                        <p><span class="instruction-code">POSER(Couleur)</span> : Libère le feutre.</p>
+                        <p><span class="instruction-code">DESSINER(Coul, [Cases])</span> : Colorie la liste de cases d'un coup.</p>
+                    </div>
+                </section>
+                <section>
+                    <h2>Zones de la Classe</h2>
+                    <ul>
+                        <li><span class="keyword">À gauche :</span> File d'attente des processus <strong>PRÊTS</strong>.</li>
+                        <li><span class="keyword">Au tableau :</span> Zone du processus <strong>ÉLU</strong>.</li>
+                        <li><span class="keyword">À droite :</span> Zone des processus <strong>BLOQUÉS</strong>.</li>
+                    </ul>
+                </section>
+            </section>
+
+            <section>
+                <section data-background="#2c3e50">
+                    <h3>Activité 1 : Round-Robin</h3>
+                    <p class="stat-box" style="background: var(--blue);">POLITIQUE : ÉQUITÉ TOTALE</p>
+                </section>
+                <section>
+                    <div class="retro-block">
+                        <h3>Rétro-Analyse A1</h3>
+                        <p>"L'ordre de passage était-il juste ? Qu'avez-vous fait quand le feutre n'était pas là ?"</p>
+                    </div>
+                </section>
+                <section>
+                    <h3>Cours : États d'un processus</h3>
+                    <div class="expert-block">
+                        <p>Le système gère les processus via 3 états :</p>
+                        <ul>
+                            <li><strong>Prêt :</strong> J'attends que le prof m'appelle.</li>
+                            <li><strong>Élu :</strong> Je suis au tableau, je dessine.</li>
+                            <li><strong>Bloqué :</strong> J'attends un feutre utilisé par un autre.</li>
+                        </ul>
+                    </div>
+                </section>
+                <section>
+                    <h3>Schéma Contextualisé</h3>
+                    <div class="diag-container">
+                        <div class="state-node state-ready">FILE GAUCHE<br>(Prêt)</div>
+                        <div class="arrow">➔</div>
+                        <div class="state-node state-running">TABLEAU<br>(Élu)</div>
+                    </div>
+                    <div class="diag-container">
+                        <div class="arrow">↖</div>
+                        <div class="state-node state-blocked" style="margin: 0 auto;">FILE DROITE<br>(Bloqué)</div>
+                        <div class="arrow">↙</div>
+                    </div>
+                </section>
+                <!-- <section>
+                    <h3>Rappel des rôles (Tableau)</h3>
+                    <table style="width: 100%; border: 1px solid white;">
+                        <tr><th class="keyword">Composant</th><th class="keyword">Analogie</th></tr>
+                        <tr><td>Unité de Commande</td><td>L'élève qui lit sa ligne</td></tr>
+                        <tr><td>UAL</td><td>Le bras qui dessine</td></tr>
+                        <tr><td>Registres (PC)</td><td>La case cochée</td></tr>
+                        <tr><td>Bus</td><td>Le déplacement de l'élève</td></tr>
+                    </table>
+                </section> -->
+                <section>
+                    <h3>Programme vs Processus</h3>
+                    <div class="expert-block">
+                        <p><i class="fas fa-file-code"></i> <strong>Programme :</strong> La fiche papier (inerte, stockée sur disque).</p>
+                        <p><i class="fas fa-running"></i> <strong>Processus :</strong> L'élève qui exécute la fiche (vivant, consomme du temps CPU).</p>
+                    </div>
+                </section>
+            </section>
+
+            <section>
+                <section data-background="#2c3e50">
+                    <h3>Activité 2 : Priorités</h3>
+                    <p class="stat-box" style="background: var(--yellow); color: black;">POLITIQUE : PRIORITÉ STATIQUE</p>
+                </section>
+                <section>
+                    <div class="retro-block">
+                        <h3>Rétro-Analyse A2</h3>
+                        <p>"Certains sont-ils passés plus souvent ? Qui n'est jamais passé ?"</p>
+                    </div>
+                </section>
+                <section>
+                    <h3>Cours : La Famine</h3>
+                    <div class="expert-block">
+                        <p><strong>Starvation (Famine) :</strong> Situation où un processus de basse priorité n'accède jamais au processeur car des processus plus "urgents" arrivent sans cesse.</p>
+                    </div>
+                </section>
+            </section>
+
+            <section>
+                <section data-background="#2c3e50">
+                    <h3>Activité 3 : Ressources</h3>
+                    <p class="stat-box" style="background: var(--red);">DANGER : CONFLITS</p>
+                </section>
+                <section>
+                    <div class="retro-block">
+                        <h3>Rétro-Analyse A3</h3>
+                        <p>"Pourquoi le système est-il totalement figé ? Qui peut débloquer la situation ?"</p>
+                    </div>
+                </section>
+                <section>
+                    <h3>Cours : L'Interblocage</h3>
+                    <div class="expert-block">
+                        <p><strong>Deadlock :</strong> État où deux processus s'attendent mutuellement, bloquant toute progression.</p>
+                    </div>
+                </section>
+                <section>
+                    <h3>Exemple Minimaliste</h3>
+                    <div style="display: flex; gap: 10px; font-size: 0.5em;">
+                        <div class="box" style="border: 1px solid var(--purple); padding: 10px;">
+                            <strong>Processus A</strong><br>
+                            1. PRENDRE(ROUGE)<br>
+                            2. PRENDRE(BLEU)
+                        </div>
+                        <div class="box" style="border: 1px solid var(--purple); padding: 10px;">
+                            <strong>Processus B</strong><br>
+                            1. PRENDRE(BLEU)<br>
+                            2. PRENDRE(ROUGE)
+                        </div>
+                    </div>
+                    <p style="font-size: 0.6em; margin-top: 20px;">Si A prend ROUGE et B prend BLEU simultanément : <strong>BLOCAGE</strong>.</p>
+                </section>
+                <section>
+                    <h3>Les 4 conditions de Coffman</h3>
+                    <ol style="font-size: 0.7em;">
+                        <li><strong>Exclusion Mutuelle :</strong> Un seul feutre par élève.</li>
+                        <li><strong>Rétention et attente :</strong> Je garde mon feutre en attendant le suivant.</li>
+                        <li><strong>Pas de réquisition :</strong> On ne peut pas voler un feutre tenu.</li>
+                        <li><strong>Attente Circulaire :</strong> A attend B qui attend A.</li>
+                    </ol>
+                </section>
+            </section>
+
+            <section>
+                <section data-background="#2c3e50">
+                    <h3>Activité 4 : Multicœur</h3>
+                    <p class="stat-box" style="background: var(--green); color: black;">CONFIG : 3 PROCESSEURS</p>
+                </section>
+                <section>
+                    <div class="rule-card">
+                        <p><i class="fas fa-bolt"></i> <strong>Règle :</strong> L'ordonnanceur appelle 3 élèves simultanément au tableau.</p>
+                    </div>
+                </section>
+                <section>
+                    <div class="retro-block">
+                        <h3>Rétro-Analyse A4</h3>
+                        <p>"Est-ce 3 fois plus rapide ? Qu'avez-vous découvert sur les ressources ?"</p>
+                    </div>
+                </section>
+                <section>
+                    <h3>Cours : Parallélisme</h3>
+                    <div class="expert-block">
+                        <p>Un système multicœur permet d'exécuter plusieurs processus physiquement en même temps. Cependant, la gestion des ressources partagées devient le défi majeur.</p>
+                    </div>
+                </section>
+            </section>
+
+            <section>
+                <section data-background="#2c3e50">
+                    <h3>Activité 5 : Stress Test</h3>
+                    <p class="stat-box" style="background: var(--purple);">CONFIG : MULTICŒUR & CONCURRENCE</p>
+                </section>
+                <section>
+                    <div class="retro-block">
+                        <h3>Rétro-Analyse A5</h3>
+                        <p>"Qu'est-ce qui a provoqué le plus de lenteur ou d'erreurs ?"</p>
+                    </div>
+                </section>
+            </section>
+
+            <section>
+                <h2><i class="fas fa-check-double"></i> Ce que nous avons appris</h2>
+                <div class="expert-block" style="font-size: 0.7em;">
+                    <ul>
+                        <li>Un <strong>processus</strong> est une instance d'un programme qui vit dans le CPU.</li>
+                        <li>L'<strong>ordonnanceur</strong> simule le multitâche en découpant le temps (Quantum).</li>
+                        <li>Les ressources limitées créent des <strong>états bloqués</strong>.</li>
+                        <li>L'<strong>interblocage</strong> est un risque réel de la programmation concurrente.</li>
+                        <li>Le <strong>multicœur</strong> multiplie la puissance mais complexifie la synchronisation.</li>
+                    </ul>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            center: true,
+            transition: 'slide',
+            height: 700,
+            width: 1000
+        });
+    </script>
+</body>
+</html>

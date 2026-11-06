@@ -1,0 +1,69 @@
+# Vérification automatique du site
+#  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources
+#  - après chaque mise en ligne de main : chaque page du site, affichée dans Chrome
+# Résultat : onglet « Actions » du dépôt (coche verte ou croix rouge).
+# Pages exclues : celles qui demandent une connexion (Capytale, claude.ai) et
+# algorea.org, qui refuse les connexions des robots de GitHub.
+
+name: Vérifier le site
+
+on:
+  push:
+  schedule:
+    - cron: "23 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  liens:
+    name: Liens des ressources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier les liens
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-retries 4
+            --retry-wait-time 10
+            --timeout 60
+            --max-concurrency 8
+            --accept 200..=299,403,429
+            --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+            --exclude "adresse-de-la-ressource"
+            --exclude "^https://claude\.ai/"
+            --exclude "^https://capytale2\.ac-paris\.fr/(p|web)/"
+            --exclude "^https://algorea\.org/"
+            "reglages.js" "snt/ressources.js" "nsi-premiere/ressources.js"
+            "nsi-terminale/ressources.js" "pp/ressources.js" "autres/ressources.js"
+          fail: true
+          jobSummary: true
+
+  site:
+    name: Site en ligne
+    if: github.ref == 'refs/heads/main' && github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Attendre la mise en ligne de cette version
+        run: |
+          base="https://babash.github.io/Babash-NSI-SNT"
+          for essai in $(seq 1 40); do
+            a_jour=1
+            for f in reglages.js */ressources.js; do
+              curl -fsS "$base/$f?v=$GITHUB_SHA-$essai" -o /tmp/en-ligne || { a_jour=0; break; }
+              cmp -s /tmp/en-ligne "$f" || { a_jour=0; break; }
+            done
+            if [ "$a_jour" = 1 ]; then echo "La version en ligne est à jour."; exit 0; fi
+            sleep 15
+          done
+          echo "::error::Au bout de 10 minutes, la version en ligne ne correspond toujours pas au dépôt."
+          exit 1
+
+      - name: Afficher chaque page dans Chrome
+        run: python3 .github/verifier-site.py https://babash.github.io/Babash-NSI-SNT
