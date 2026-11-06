@@ -49,6 +49,7 @@ def main():
     base = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "https://babash.github.io/Babash-NSI-SNT"
     problemes = []
     total = 0
+    pages_internes = set()
 
     for rub in rubriques():
         # sans les commentaires /* … */, qui contiennent des exemples
@@ -57,8 +58,11 @@ def main():
         total += attendu
 
         for fichier in re.findall(r'"(fichiers/[^"]+)"', source):
+            fichier = re.split(r"[#?]", fichier)[0]
             if not os.path.exists(os.path.join(RACINE, rub, fichier)):
                 problemes.append(f"{rub} : le fichier {fichier} n'existe pas")
+            elif fichier.endswith((".html", "/")):
+                pages_internes.add(f"{rub}/{fichier}")
 
         page = afficher(f"{base}/{rub}/")
         if 'class="alerte"' in page:
@@ -75,6 +79,18 @@ def main():
         problemes.append("accueil : la page affiche une erreur")
     print(f"{'accueil':15} {'erreur' if erreur_accueil else 'ok'}")
     print(f"Total : {total} ressources")
+
+    # Pages déposées sur le site (TD, fiches, diaporamas, applications) : elles doivent
+    # s'afficher avec un vrai contenu, et non une page vide ou une erreur 404.
+    vides = []
+    for chemin in sorted(pages_internes):
+        page = afficher(f"{base}/{chemin}")
+        corps = re.sub(r"<(script|style)\b.*?</\1>", " ", page, flags=re.S | re.I)
+        texte = re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", corps)).strip()
+        if len(texte) < 80 or re.search(r"<title>[^<]*(404|not found)", page, re.I):
+            vides.append(chemin)
+            problemes.append(f"{chemin} : page vide ou introuvable")
+    print(f"Pages déposées : {len(pages_internes) - len(vides)} / {len(pages_internes)} s'affichent")
 
     if problemes:
         print("\nProblèmes :")

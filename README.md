@@ -200,6 +200,23 @@ Les virgules en trop, elles, ne gênent pas : on peut en laisser une après chaq
 Télécharger le dépôt (**Code → Download ZIP**), le décompresser et ouvrir `index.html`
 dans le navigateur. Tout fonctionne sans connexion, sauf les polices et les liens externes.
 
+## Applications avec une base de données
+
+Certaines ressources enregistrent la progression des élèves dans **Supabase** :
+
+| Application | Dossier | Projet Supabase | Tables |
+|---|---|---|---|
+| Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour » | `alien_classes`, `alien_students`, `alien_progress` |
+
+- L'adresse du projet et sa clé publique (« anon ») sont dans `config.js`. Cette clé est publique
+  par conception : les tables sont verrouillées et le site ne passe que par les fonctions
+  `alien_*`, qui vérifient les codes (code enseignant haché).
+- N'importe qui connaissant l'adresse peut créer une classe : les classes des collègues
+  arrivent dans la même base. Surveiller la table `alien_classes` dans Supabase si besoin.
+- Ne faire saisir que des prénoms. Supprimer un élève se fait dans Supabase (*Table Editor*).
+- Pour une base à soi : coller `supabase.sql` dans *SQL Editor* de son projet Supabase,
+  puis mettre son adresse et sa clé « anon public » dans `config.js`.
+
 ## Vérification automatique
 
 Le fichier `.github/workflows/verifier.yml` lance deux contrôles, visibles dans l'onglet
@@ -213,6 +230,8 @@ Le fichier `.github/workflows/verifier.yml` lance deux contrôles, visibles dans
 - **Site en ligne**, après chaque modification de `main` : le contrôle attend que GitHub Pages
   serve la nouvelle version, puis affiche chaque rubrique dans Chrome et vérifie qu'aucune
   erreur n'apparaît et que le nombre de ressources affichées est celui de `ressources.js`.
+  Il ouvre aussi chaque page déposée dans un dossier `fichiers/` (TD, fiches, diaporamas,
+  applications) et vérifie qu'elle s'affiche avec un vrai contenu.
 
 Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du site :
 `python3 -m http.server 8000`, puis dans un autre terminal

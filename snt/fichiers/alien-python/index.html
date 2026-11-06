@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alien Python – Entraînement</title>
+<style>
+:root{--bg:#f3f6f4;--ink:#17211c;--card:#fff;--line:#cdd8d2;--acc:#0b6b4f;--acc2:#e8f5ef;--warn:#b45309;--soft:#58665f}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible","Trebuchet MS",Verdana,system-ui,sans-serif}
+main{max-width:980px;margin:0 auto;padding:16px}
+h1{font-size:1.5rem;margin:.2em 0}h2{font-size:1.15rem;margin:1em 0 .4em}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.sp{justify-content:space-between}
+.col2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.col2{grid-template-columns:1fr}}
+button,.btn{font:inherit;border:2px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:8px 14px;cursor:pointer}
+button.alt{background:#fff;color:var(--acc)}button.ghost{border-color:var(--line);background:#fff;color:var(--ink)}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
+input,textarea{font:inherit;width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+label{display:block;margin:8px 0 2px;font-weight:700}
+pre,textarea.code{font:14px/1.5 ui-monospace,Menlo,Consolas,monospace;background:#f6f8f7;border:1px solid var(--line);border-radius:8px;padding:10px;white-space:pre-wrap;margin:0}
+.bar{height:12px;background:#e3eae6;border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+.tiles{display:flex;flex-wrap:wrap;gap:6px}
+.t{min-width:44px;padding:6px 8px;background:#fff;color:var(--ink);border:2px solid var(--line)}
+.t.tr{border-color:var(--warn)}.t.pk{background:#fde9cf;border-color:var(--warn)}.t.ok{background:var(--acc);border-color:var(--acc);color:#fff}
+.badge{display:inline-flex;gap:6px;align-items:center;background:var(--acc2);border:1.5px solid var(--acc);border-radius:20px;padding:3px 10px;margin:3px 4px 3px 0;font-size:.9rem}
+.badge.off{background:#f0f0f0;border-color:var(--line);color:#8a8f8c;filter:grayscale(1)}
+.fb{margin:10px 0;padding:10px 12px;border-radius:8px;background:var(--acc2);border:1.5px solid var(--acc)}.fb.no{background:#fdf1e2;border-color:var(--warn)}
+.gr{width:100%;max-width:460px;background:#fff;border:1.5px solid #17211c}.ck .c{fill:transparent;cursor:pointer}.ck .c:hover{fill:rgba(11,107,79,.25)}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border:1px solid var(--line);padding:5px 8px;text-align:center}td:first-child,th:first-child{text-align:left}
+.tw{overflow-x:auto}small,.muted{color:var(--soft)}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#17211c;color:#fff;padding:10px 16px;border-radius:10px;z-index:9}
+.code{letter-spacing:.15em;font-weight:700}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="defs"></defs></svg>
+<main id="app"></main>
+<script src="config.js"></script>
+<script src="data.js"></script>
+<script>
+var CFG=window.CFG||{},$=function(s){return document.querySelector(s)},app=$("#app"),ALL=[],S=null,P={},V="login",cur=null,T=null,tab="join",msg="";
+F.forEach(function(f){ALL=ALL.concat(f[1])});
+function esc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function cell(x,y){return String.fromCharCode(64+x)+y}
+function endOf(id){var p=EX[id].p,n=p.length;return n?[p[n-2],p[n-1]]:[8,8]}
+function inv(id){return !!EX[id].s}
+function fk(id){for(var k=0;k<F.length;k++)if(F[k][1].indexOf(id)>-1)return k}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function note(t){var d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},3500)}
+try{S=JSON.parse(localStorage.getItem("ap_s")||"null")}catch(e){}
+/* ---------- grille ---------- */
+var g='<rect width="160" height="160" fill="#fff"/><rect width="160" height="10" fill="#e6ece8"/><rect width="10" height="160" fill="#e6ece8"/><rect x="80" y="80" width="10" height="10" fill="#cfd9d3"/>';
+for(var i=0;i<=16;i++){g+='<path d="M'+10*i+' 0V160M0 '+10*i+'H160" stroke="#17211c" stroke-width="'+((i<2||i==16)?.9:(i==6||i==11)?.7:.3)+'"/>'}
+for(i=0;i<15;i++){g+='<text x="'+(15+i*10)+'" y="7.4" font-size="6.6" text-anchor="middle" font-weight="700">'+String.fromCharCode(65+i)+'</text><text x="5" y="'+(17.4+i*10)+'" font-size="6.6" text-anchor="middle" font-weight="700">'+(i+1)+'</text>'}
+g+='<circle cx="85" cy="85" r="3.3" fill="#fff" stroke="#17211c" stroke-width=".7"/><circle cx="83.8" cy="84.4" r=".6"/><circle cx="86.2" cy="84.4" r=".6"/><path d="M83.8 86.2Q85 87.2 86.2 86.2" fill="none" stroke="#17211c" stroke-width=".5"/>';
+$("#defs").innerHTML='<g id="g">'+g+'</g>';
+function grid(o){var p=EX[o.id].p,n=o.n==null?p.length/2:o.n,s='<svg class="gr'+(o.click?" ck":"")+'" viewBox="0 0 160 160" role="img" aria-label="Grille A1 à O15"><use href="#g" width="160" height="160"/>';
+if(n>0){var q=[8,8].concat(p.slice(0,n*2)),pts=[];for(var j=0;j<q.length;j+=2)pts.push((10*q[j]+5)+","+(10*q[j+1]+5));
+s+='<polyline fill="none" stroke="#0b6b4f" stroke-width="1.4" stroke-linejoin="round" points="'+pts.join(" ")+'"/>';
+for(j=2;j<q.length;j+=2)s+='<circle cx="'+(10*q[j]+5)+'" cy="'+(10*q[j+1]+5)+'" r="1.2" fill="#0b6b4f"/><text x="'+(10*q[j]+9.3)+'" y="'+(10*q[j+1]+9.3)+'" font-size="3.8" text-anchor="end" font-weight="700" stroke="#fff" stroke-width=".9" paint-order="stroke">'+j/2+'</text>';
+if(o.final)s+='<circle cx="'+(10*q[q.length-2]+5)+'" cy="'+(10*q[q.length-1]+5)+'" r="3.8" fill="none" stroke="#0b6b4f" stroke-width="1.3"/>'}
+if(o.pick)s+='<circle cx="'+(10*o.pick[0]+5)+'" cy="'+(10*o.pick[1]+5)+'" r="4" fill="rgba(245,158,11,.35)" stroke="#b45309" stroke-width="1.2"/>';
+if(o.click)for(var x=1;x<=15;x++)for(var y=1;y<=15;y++)s+='<rect class="c" data-act="pick" data-x="'+x+'" data-y="'+y+'" x="'+10*x+'" y="'+10*y+'" width="10" height="10"><title>'+cell(x,y)+'</title></rect>';
+return s+'</svg>'}
+/* ---------- API Supabase (REST/RPC) ---------- */
+function rpc(fn,a){if(!CFG.url||!CFG.key)return Promise.reject(new Error("Le site n’est pas encore relié à Supabase (voir config.js)."));
+return fetch(CFG.url.replace(/\/$/,"")+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:CFG.key,Authorization:"Bearer "+CFG.key,"Content-Type":"application/json"},body:JSON.stringify(a)})
+.then(function(r){return r.json().catch(function(){return null}).then(function(j){if(!r.ok)throw new Error((j&&j.message)||"Erreur réseau");return j})})}
+function save(id,c){var o=P[id]||(P[id]={solved:false,attempts:0,hints:0,peeked:false});
+if(c.solved)o.solved=true;if(c.attempt)o.attempts++;if((c.hints||0)>o.hints)o.hints=c.hints;if(c.peeked)o.peeked=true;
+rpc("alien_save_progress",{p_class:S.c,p_code:S.k,p_ex:id,p_solved:!!c.solved,p_attempt:!!c.attempt,p_hints:c.hints||0,p_peeked:!!c.peeked}).catch(function(){note("Sauvegarde impossible : vérifie ta connexion.")})}
+/* ---------- progression & badges ---------- */
+function st(id){return P[id]||{}}
+function nOK(f){return f.filter(function(id){return st(id).solved}).length}
+function clean(id){var o=st(id);return o.solved&&!o.hints&&!o.peeked}
+var BD=[["🌱","Premier pas",function(){return nOK(ALL)>=1}],["🔟","10 exercices réussis",function(){return nOK(ALL)>=10}],
+["🧠","Autonome : 5 réussis sans aide",function(){return ALL.filter(clean).length>=5}],
+["🎯","Du premier coup ×3",function(){return ALL.filter(function(id){return clean(id)&&st(id).attempts==1}).length>=3}],
+["📘","Une fiche terminée",function(){return F.some(function(f){return nOK(f[1])==f[1].length})}],
+["🚀","Mi-parcours (39)",function(){return nOK(ALL)>=39}],["👽","Maître alien (78)",function(){return nOK(ALL)>=78}]];
+function earned(){return BD.filter(function(b){return b[2]()}).map(function(b){return b[1]})}
+/* ---------- vues ---------- */
+function vLogin(){var j=tab=="join";
+return '<h1>👽 Alien Python</h1><p class="muted">Entraîne-toi à lire du code Python en suivant l’alien sur la grille.</p><div class="card"><div class="row"><button class="'+(j?"":"alt")+'" data-act="tab" data-v="join">Nouvel élève</button><button class="'+(j?"alt":"")+'" data-act="tab" data-v="back">J’ai déjà un code</button></div>'+
+(msg?'<div class="fb no">'+esc(msg)+'</div>':'')+
+'<form data-f="'+(j?"join":"login")+'"><label>Code de la classe</label><input name="c" required maxlength="6" autocapitalize="characters" placeholder="ex. 3FA9C1">'+
+(j?'<label>Ton prénom</label><input name="n" required maxlength="30">':'<label>Ton code personnel</label><input name="k" required maxlength="4" inputmode="numeric" placeholder="4 chiffres">')+
+'<p><button>'+(j?"Commencer":"Me connecter")+'</button></p></form></div><p><a href="#prof" data-act="prof">Espace enseignant</a></p>'}
+function vHome(){var tot=nOK(ALL),bd=earned();
+return '<div class="row sp"><h1>👽 Salut '+esc(S.n)+' !</h1><div><span class="muted">Mon code : </span><span class="code">'+esc(S.k)+'</span> <button class="ghost" data-act="out">Quitter</button></div></div>'+
+'<div class="card"><div class="row sp"><b>'+tot+' / '+ALL.length+' exercices réussis</b><button class="alt" data-act="cls">Voir ma classe</button></div><div class="bar"><i style="width:'+100*tot/ALL.length+'%"></i></div><p>'+
+BD.map(function(b){return '<span class="badge'+(bd.indexOf(b[1])<0?" off":"")+'">'+b[0]+' '+b[1]+'</span>'}).join("")+'</p></div>'+
+F.map(function(f,k){var n=nOK(f[1]);return '<div class="card"><div class="row sp"><b>Fiche '+(k+1)+' – '+esc(f[0])+'</b><span>'+n+'/'+f[1].length+'</span></div><div class="bar"><i style="width:'+100*n/f[1].length+'%"></i></div><p class="tiles">'+
+f[1].map(function(id){var o=st(id);return '<button class="t '+(o.solved?"ok":o.peeked?"pk":o.attempts?"tr":"")+'" data-act="ex" data-id="'+id+'">'+id+'</button>'}).join("")+'</p></div>'}).join("")+
+'<p class="muted"><small>Vert : réussi · orange : correction vue · contour orange : déjà essayé. Exercices : Alien-Python, M. Degrange (licence MIT).</small></p>'}
+function vEx(){var id=cur.id,k=fk(id),i=ALL.indexOf(id),e=EX[id],iv=inv(id),o=st(id),full=cur.corr||o.solved&&cur.ok;
+var nav='<div class="row sp"><button class="ghost" data-act="home">← Fiches</button><span><button class="ghost" data-act="nav" data-id="'+(ALL[i-1]||"")+'"'+(i?"":" disabled")+'>Précédent</button> <button class="ghost" data-act="nav" data-id="'+(ALL[i+1]||"")+'"'+(i<ALL.length-1?"":" disabled")+'>Suivant</button></span></div>';
+var left=iv?'<p>Le parcours de l’alien est tracé. <b>Complète le programme</b> pour qu’il le produise.</p><textarea class="code" id="txt" rows="'+(e.c.split("\n").length+1)+'" spellcheck="false">'+esc(cur.txt)+'</textarea>':
+'<p>L’alien part de <b>H8</b>. Exécute le programme, puis <b>clique sur la case d’arrivée</b>.</p><pre>'+esc(e.c)+'</pre><p>'+(cur.pick?'Case choisie : <b>'+cell(cur.pick[0],cur.pick[1])+'</b>':'<span class="muted">Aucune case choisie</span>')+'</p>';
+var help=cur.h?'<div class="fb"><b>Aide</b><br>'+RAP[k].map(function(a){return(a[0]?'<code>'+esc(a[0])+'</code> ':'')+esc(a[1])}).join("<br>")+
+(cur.h>1?'<br><br>'+(iv?'Lignes de la solution dévoilées : '+cur.h2+'<pre>'+esc(e.s.split("\n").slice(0,cur.h2).join("\n"))+'</pre>':'Étape '+cur.n+' : l’alien est en <b>'+cell.apply(null,cur.n?[e.p[cur.n*2-2],e.p[cur.n*2-1]]:[8,8])+'</b>'):'')+'</div>':'';
+var corr=cur.corr?'<div class="fb no"><b>Correction</b><br>'+(iv?'<pre>'+esc(e.s)+'</pre>':'Case d’arrivée : <b>'+cell.apply(null,endOf(id))+'</b> (trajet tracé sur la grille).')+'</div>':'';
+return nav+'<h1>Exercice '+id+' <small class="muted">· Fiche '+(k+1)+'</small></h1><div class="col2"><div class="card">'+left+
+'<div class="row"><button data-act="ok">Valider</button><button class="alt" data-act="help">Un coup de pouce</button><button class="ghost" data-act="corr">Correction</button></div>'+
+(cur.fb?'<div class="fb'+(cur.fb[0]?"":" no")+'">'+esc(cur.fb[1])+'</div>':'')+help+corr+'</div><div class="card">'+
+grid({id:id,click:!iv&&!cur.ok&&!cur.corr,pick:iv?null:cur.pick,n:iv||full?null:cur.n,final:iv||full})+'</div></div>'}
+function vCls(){var d=cur&&cur.cls;
+return '<div class="row sp"><button class="ghost" data-act="home">← Retour</button><h1>Ma classe</h1></div>'+(!d?'<p>Chargement…</p>':(function(){var tot=d.reduce(function(a,s){return a+s.solved},0),max=d.length*ALL.length;
+return '<div class="card"><b>Ensemble, la classe a réussi '+tot+' exercices</b> <span class="muted">('+d.length+' élèves)</span><div class="bar"><i style="width:'+100*tot/Math.max(max,1)+'%"></i></div><p class="muted">Chacun avance à son rythme : les prénoms sont classés par ordre alphabétique.</p></div>'+
+'<div class="card">'+d.map(function(s){return '<div class="row sp"><span'+(s.name==S.n?' style="font-weight:700"':'')+'>'+esc(s.name)+'</span><span>'+s.solved+'/'+ALL.length+'</span></div><div class="bar"><i style="width:'+100*s.solved/ALL.length+'%"></i></div>'}).join("<br>")+'</div>'})())}
+function vProf(){if(!T)return '<div class="row sp"><button class="ghost" data-act="home">← Élèves</button><h1>Espace enseignant</h1></div>'+(msg?'<div class="fb no">'+esc(msg)+'</div>':'')+
+'<div class="col2"><div class="card"><h2>Voir ma classe</h2><form data-f="tlogin"><label>Code de la classe</label><input name="c" required maxlength="6"><label>Code enseignant</label><input name="t" type="password" required><p><button>Ouvrir</button></p></form></div>'+
+'<div class="card"><h2>Créer une classe</h2><form data-f="tnew"><label>Nom de la classe</label><input name="n" required placeholder="ex. 2de 5"><label>Choisis ton code enseignant (4 caractères min.)</label><input name="t" type="password" required minlength="4"><p><button class="alt">Créer</button></p></form></div></div>';
+var D=T.d.students;
+return '<div class="row sp"><button class="ghost" data-act="home">← Élèves</button><div><button class="alt" data-act="refresh">Actualiser</button> <button class="ghost" data-act="tout">Quitter</button></div></div><h1>'+esc(T.d.name)+' <small class="muted">· code classe <span class="code">'+esc(T.c)+'</span></small></h1>'+
+(D.length?'<div class="card tw"><table><tr><th>Élève</th><th>Code</th>'+F.map(function(f,k){return '<th title="'+esc(f[0])+'">F'+(k+1)+'</th>'}).join("")+'<th>Total</th><th>Aides</th><th>Dernière activité</th></tr>'+
+D.map(function(s){var m={},h=0;s.ex.forEach(function(e){m[e.ex]=e;h+=e.hints+(e.peeked?1:0)});var t=0;
+return '<tr><td>'+esc(s.name)+'</td><td class="code">'+esc(s.code)+'</td>'+F.map(function(f){var n=f[1].filter(function(id){return m[id]&&m[id].solved}).length;t+=n;return '<td style="background:rgba(11,107,79,'+(.5*n/f[1].length)+')">'+n+'/'+f[1].length+'</td>'}).join("")+'<td><b>'+t+'</b>/'+ALL.length+'</td><td>'+h+'</td><td>'+(s.last?new Date(s.last).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):"–")+'</td></tr>'}).join("")+
+'</table><p class="muted"><small>F1…F7 = fiches. « Aides » = coups de pouce + corrections consultées.</small></p></div>':'<div class="card">Aucun élève pour le moment. Donne-leur le code classe <b class="code">'+esc(T.c)+'</b>.</div>')}
+function draw(){app.innerHTML=({login:vLogin,home:vHome,ex:vEx,cls:vCls,prof:vProf})[V]();window.scrollTo(0,0)}
+function go(v,m){V=v;msg=m||"";draw()}
+function open(id){if(!id)return;cur={id:id,pick:null,n:0,h:0,h2:0,corr:false,ok:false,fb:null,txt:EX[id].c};go("ex")}
+function loadStudent(c,k){return rpc("alien_student_login",{p_class:c,p_code:k}).then(function(r){P={};r.progress.forEach(function(o){P[o.ex]=o});S={c:c.toUpperCase().trim(),k:k.trim(),n:r.name};try{localStorage.setItem("ap_s",JSON.stringify(S))}catch(e){};go("home")})}
+function teacher(c,t){return rpc("alien_teacher_overview",{p_class:c,p_teacher:t}).then(function(d){T={c:c.toUpperCase().trim(),t:t,d:d};try{sessionStorage.setItem("ap_t",JSON.stringify({c:T.c,t:t}))}catch(e){};go("prof")})}
+/* ---------- événements ---------- */
+app.addEventListener("input",function(e){if(e.target.id=="txt")cur.txt=e.target.value});
+app.addEventListener("submit",function(e){e.preventDefault();var f=e.target,d=Object.fromEntries(new FormData(f)),w=f.dataset.f,p;
+if(w=="join")p=rpc("alien_join_class",{p_class:d.c,p_name:d.n}).then(function(r){return loadStudent(d.c,r.code).then(function(){note("Ton code personnel : "+r.code+" — note-le bien !")})});
+else if(w=="login")p=loadStudent(d.c,d.k);
+else if(w=="tlogin")p=teacher(d.c,d.t);
+else p=rpc("alien_create_class",{p_name:d.n,p_teacher:d.t}).then(function(c){return teacher(c,d.t).then(function(){note("Classe créée : code "+c)})});
+p.catch(function(er){go(V,er.message)})});
+app.addEventListener("click",function(e){var b=e.target.closest("[data-act]");if(!b)return;var a=b.dataset.act,id=b.dataset.id;
+if(a=="tab"){tab=b.dataset.v=="join"?"join":"login";go("login")}
+else if(a=="prof"){e.preventDefault();go("prof")}
+else if(a=="out"){S=null;P={};try{localStorage.removeItem("ap_s")}catch(x){};go("login")}
+else if(a=="home"){go(S?"home":"login")}
+else if(a=="ex"||a=="nav")open(id)
+else if(a=="pick"){cur.pick=[+b.dataset.x,+b.dataset.y];draw()}
+else if(a=="help"){cur.h++;if(cur.h>1){if(inv(cur.id))cur.h2=Math.min(cur.h2+1,EX[cur.id].s.split("\n").length);else cur.n=Math.min(cur.n+1,EX[cur.id].p.length/2)}save(cur.id,{hints:cur.h});draw()}
+else if(a=="corr"){if(cur.corr||confirm("Voir la correction ? Elle sera notée dans ta progression.")){cur.corr=true;save(cur.id,{peeked:true});draw()}}
+else if(a=="ok"){var id2=cur.id,e2=EX[id2],good,before=earned();
+if(inv(id2))good=cur.txt.replace(/\s+/g,"")==e2.s.replace(/\s+/g,"");
+else{if(!cur.pick){cur.fb=[false,"Clique d’abord sur la case où tu penses que l’alien arrive."];return draw()}var en=endOf(id2);good=cur.pick[0]==en[0]&&cur.pick[1]==en[1]}
+if(good){cur.ok=true;cur.fb=[true,pick(["Bravo, c’est exact !","Bien joué, l’alien est arrivé à bon port !","Exact ! Tu lis le code comme un pro.","Parfait !"])];save(id2,{solved:true,attempt:true,hints:cur.h});var nw=earned().filter(function(x){return before.indexOf(x)<0});if(nw.length)setTimeout(function(){note("🏅 Nouveau badge : "+nw.join(", "))},300)}
+else{cur.fb=[false,inv(id2)?"Ce n’est pas tout à fait ça. Compare avec le parcours, ou demande un coup de pouce.":pick(["Pas tout à fait… refais le trajet ligne par ligne.","Presque ! Essaie de suivre l’alien étape par étape (coup de pouce).","Ce n’est pas la bonne case, mais continue !"])];save(id2,{attempt:true,hints:cur.h})}draw()}
+else if(a=="cls"){cur={cls:null};V="cls";draw();rpc("alien_class_view",{p_class:S.c,p_code:S.k}).then(function(d){cur.cls=d;draw()}).catch(function(er){go("home");note(er.message)})}
+else if(a=="refresh")teacher(T.c,T.t).catch(function(er){note(er.message)});
+else if(a=="tout"){T=null;try{sessionStorage.removeItem("ap_t")}catch(x){};go("prof")}});
+/* ---------- démarrage ---------- */
+if(location.hash=="#prof"){try{var tt=JSON.parse(sessionStorage.getItem("ap_t")||"null");if(tt)teacher(tt.c,tt.t).catch(function(){go("prof")});else go("prof")}catch(e){go("prof")}}
+else if(S)loadStudent(S.c,S.k).catch(function(){go("login")});
+else draw();
+</script>
+</body>
+</html>
