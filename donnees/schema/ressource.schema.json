@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://babash.github.io/Babash-NSI-SNT/donnees/schema/ressource.schema.json",
+  "title": "Fiche d'une ressource",
+  "description": "Une ressource de la bibliothèque (cahier des charges, § 3.1) et ses documents (§ 3.2). Format validé par l'enseignant le 07/11/2026. Un fichier par ressource : donnees/ressources/<id>.json. Les valeurs des classements (enseignements, niveaux, types, usages, origine, langages, statut, rôles, formats) sont des identifiants des référentiels (donnees/referentiels/valeurs.json) ; les références au programme sont des identifiants de donnees/referentiels/programmes.json. Le script scripts/valider_donnees.py vérifie ces références, qu'un schéma seul ne peut pas vérifier.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "titre", "resume", "enseignements", "niveaux", "programme", "types", "usages", "origine", "donnees_eleves", "statut", "documents"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": {
+      "$ref": "#/$defs/identifiant",
+      "description": "Identifiant stable, sans accents ni majuscules, mots séparés par des tirets. C'est aussi le nom du fichier (cybercase → cybercase.json) et l'adresse de la fiche (bibliotheque/?r=cybercase). Ne change jamais une fois publié."
+    },
+    "titre": { "type": "string", "minLength": 3, "maxLength": 140, "description": "Le nom de la ressource." },
+    "accroche": { "type": "string", "minLength": 3, "maxLength": 200, "description": "Une phrase d'accroche." },
+    "resume": { "type": "string", "minLength": 10, "maxLength": 400, "description": "Une ou deux phrases, affichées dans les listes." },
+    "presentation": { "type": "string", "minLength": 10, "maxLength": 4000, "description": "Texte long de la fiche complète. Mise en forme permise : `code`, **gras**, retours à la ligne." },
+    "objectif": { "type": "string", "minLength": 3, "maxLength": 600, "description": "Ce que l'élève apprend ou fait." },
+    "criteres_reussite": {
+      "type": "array", "minItems": 1, "maxItems": 5,
+      "items": { "type": "string", "minLength": 5, "maxLength": 200 },
+      "description": "Facultatif, au cas par cas : les critères de réussite donnés à l'élève, du plus simple au plus exigeant (niveau 1 en premier), par exemple « Je peux expliquer avec mes mots ce qu'est une condition. » (philosophie éducative, § 5 et § 14)."
+    },
+    "competences_pix": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Facultatif, pour les ressources de SNT : les compétences du cadre de référence (donnees/referentiels/competences-pix.json) travaillées par la ressource, par exemple programmer."
+    },
+    "enseignements": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Référentiel « enseignements » (snt, nsi, pp, transversal). Plusieurs possibles."
+    },
+    "niveaux": {
+      "type": "array", "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Référentiel « niveaux » (seconde, premiere, terminale). Plusieurs possibles ; liste vide pour une ressource sans niveau (formation des enseignants…)."
+    },
+    "programme": {
+      "type": "array", "uniqueItems": true,
+      "items": { "$ref": "#/$defs/noeud_programme" },
+      "description": "Thèmes ou contenus des textes officiels (programmes.json), par exemple snt-2019.donnees-structurees.traitement. Plusieurs possibles ; liste vide pour une ressource hors programme."
+    },
+    "types": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Référentiel « types » : un ou plusieurs types pédagogiques, le principal en premier (décision du 07/11/2026)."
+    },
+    "usages": {
+      "type": "array", "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Référentiel « usages » : modalités (en ligne, à imprimer, utilisable sur téléphone, débranché…) et prérequis (compte ENT, installation…)."
+    },
+    "origine": { "$ref": "#/$defs/identifiant", "description": "Référentiel « origines »." },
+    "auteurs": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/auteur" },
+      "description": "Qui a fait la ressource. Jamais de nom d'élève."
+    },
+    "licence": { "type": "string", "minLength": 2, "maxLength": 120, "description": "Licence en clair : « CC BY-SA 4.0 » pour les documents de l'enseignant, « MIT » pour le code de ses applications ; pour une ressource externe, celle de son site d'origine, ou « inconnue »." },
+    "credits": { "type": "string", "minLength": 3, "maxLength": 600, "description": "D'après quoi la ressource est faite." },
+    "duree": { "type": "string", "minLength": 2, "maxLength": 60, "description": "Durée indicative : « 1 h 30 », « 2 séances »." },
+    "langages": {
+      "type": "array", "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Référentiel « langages »."
+    },
+    "mots_cles": {
+      "type": "array", "uniqueItems": true,
+      "items": { "type": "string", "minLength": 2, "maxLength": 40 },
+      "description": "Mots libres, utilisés par la recherche."
+    },
+    "liees": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/liee" },
+      "description": "Ressources liées de la bibliothèque."
+    },
+    "donnees_eleves": { "$ref": "#/$defs/donnees_eleves" },
+    "statut": { "$ref": "#/$defs/identifiant", "description": "Référentiel « statuts » (brouillon, prete, a-revoir, obsolete)." },
+    "dates": { "$ref": "#/$defs/dates" },
+    "notes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/note" },
+      "description": "Notes personnelles de l'enseignant. Affichées seulement dans l'admin, mais lisibles dans le dépôt public : jamais de mot de passe, d'identifiant ni de nom d'élève."
+    },
+    "documents": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "#/$defs/document" },
+      "description": "Un ou plusieurs documents, dont exactement un principal."
+    }
+  },
+  "$defs": {
+    "identifiant": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 60
+    },
+    "noeud_programme": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*){0,2}$",
+      "maxLength": 120
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "auteur": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nom"],
+      "properties": {
+        "nom": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "role": { "type": "string", "minLength": 2, "maxLength": 120, "description": "« autrice », « auteur », « idée originale », « moteur »…" },
+        "lien": { "$ref": "#/$defs/url" }
+      }
+    },
+    "liee": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ressource", "relation"],
+      "properties": {
+        "ressource": { "$ref": "#/$defs/identifiant" },
+        "relation": {
+          "enum": ["suite-de", "voir-aussi"],
+          "description": "suite-de : cette ressource fait suite à l'autre (CounterCase est la suite de CyberCase) ; voir-aussi : ressource proche."
+        }
+      }
+    },
+    "donnees_eleves": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["collecte"],
+      "description": "La ressource collecte-t-elle des données d'élèves ? Toujours renseigné, même pour dire non.",
+      "properties": {
+        "collecte": { "type": "boolean" },
+        "facultative": { "type": "boolean", "description": "true si l'élève peut utiliser la ressource sans rien transmettre (par exemple, un compte qui sert seulement à garder l'avancement)." },
+        "detail": { "type": "string", "minLength": 10, "maxLength": 800, "description": "Quelles données, où elles vont, qui les voit." }
+      },
+      "if": { "properties": { "collecte": { "const": true } } },
+      "then": { "required": ["detail"] }
+    },
+    "dates": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Remplies automatiquement.",
+      "properties": {
+        "ajout": { "$ref": "#/$defs/date" },
+        "modification": { "$ref": "#/$defs/date" },
+        "verification_liens": { "$ref": "#/$defs/date" }
+      }
+    },
+    "note": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["texte"],
+      "properties": {
+        "date": { "$ref": "#/$defs/date" },
+        "texte": { "type": "string", "minLength": 2, "maxLength": 2000 }
+      }
+    },
+    "url": {
+      "type": "string",
+      "pattern": "^https?://[^\\s/$.?#][^\\s]*$",
+      "maxLength": 600
+    },
+    "fichier": {
+      "type": "string",
+      "description": "Chemin depuis la racine du dépôt, sans « / » au début (nsi-terminale/fichiers/td1-poo-premiers-pas.html). Une ancre est permise (snt/fichiers/alien-python/#prof).",
+      "pattern": "^[A-Za-z0-9_][A-Za-z0-9._/-]*([#?][^\\s]*)?$",
+      "not": { "pattern": "(^|/)\\.\\.(/|$)" },
+      "maxLength": 300
+    },
+    "visible": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exterieur", "eleve"],
+      "description": "Deux réglages indépendants. L'admin voit toujours tout.",
+      "properties": {
+        "exterieur": { "type": "boolean" },
+        "eleve": { "type": "boolean" }
+      }
+    },
+    "document": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "visible"],
+      "properties": {
+        "role": { "$ref": "#/$defs/identifiant", "description": "Référentiel « roles »." },
+        "titre": { "type": "string", "minLength": 2, "maxLength": 140, "description": "Libellé affiché ; par défaut, le libellé du rôle." },
+        "url": { "$ref": "#/$defs/url", "description": "Lien direct vers le document. Jamais une page GitHub, sauf pour le rôle « code source »." },
+        "fichier": { "$ref": "#/$defs/fichier", "description": "Fichier hébergé sur le site." },
+        "format": { "$ref": "#/$defs/identifiant", "description": "Facultatif : déduit automatiquement de l'adresse. À n'écrire que pour corriger une déduction fausse." },
+        "principal": { "type": "boolean", "default": false, "description": "Le document qu'ouvre un clic sur le titre. Exactement un par ressource." },
+        "visible": { "$ref": "#/$defs/visible" }
+      },
+      "oneOf": [
+        { "required": ["url"], "not": { "required": ["fichier"] } },
+        { "required": ["fichier"], "not": { "required": ["url"] } }
+      ]
+    }
+  }
+}

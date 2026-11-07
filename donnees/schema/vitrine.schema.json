@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://babash.github.io/Babash-NSI-SNT/donnees/schema/vitrine.schema.json",
+  "title": "Vitrine de la partie extérieure",
+  "description": "La mise en avant (cahier des charges, § 3.4) : pour chaque rubrique du site, ses sections dans l'ordre d'affichage, et pour chacune la liste ordonnée des identifiants de ressources à montrer. Une section suit un thème des programmes (programmes.json) ou porte un titre libre (« Sites ressources », « Préparer le bac »). Une ressource peut figurer dans plusieurs listes. « a_la_une » liste les ressources mises en avant sur l'accueil. Fichier : donnees/vitrine.json.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["a_la_une", "rubriques"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "a_la_une": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/une" },
+      "description": "Dans l'ordre d'affichage sur l'accueil."
+    },
+    "rubriques": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/rubrique" },
+      "description": "Dans l'ordre du menu et de l'accueil."
+    }
+  },
+  "$defs": {
+    "identifiant": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 60
+    },
+    "noeud_programme": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*){0,2}$",
+      "maxLength": 120
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "couleur": {
+      "type": "string",
+      "pattern": "^[a-z]+$",
+      "description": "Nom d'une couleur de la charte (cyan, rose, violet, vert, orange, bleu, jaune, lavande, citron, corail, gris). Facultatif."
+    },
+    "liste": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Identifiants de ressources, dans l'ordre d'affichage."
+    },
+    "une": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ressource"],
+      "properties": {
+        "ressource": { "$ref": "#/$defs/identifiant" },
+        "etiquette": { "type": "string", "minLength": 2, "maxLength": 40, "description": "Par exemple « Ressource du mois »." },
+        "debut": { "$ref": "#/$defs/date", "description": "Facultatif : à partir de quand la montrer." },
+        "fin": { "$ref": "#/$defs/date", "description": "Facultatif : jusqu'à quand." }
+      }
+    },
+    "rubrique": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "titre", "sections"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifiant", "description": "Le dossier de la page (snt, nsi-premiere…)." },
+        "titre": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "court": { "type": "string", "minLength": 2, "maxLength": 30, "description": "Nom court pour le menu." },
+        "niveau": { "type": "string", "minLength": 2, "maxLength": 60, "description": "Ligne affichée sous le titre (« Première, spécialité »)." },
+        "presentation": { "type": "string", "minLength": 10, "maxLength": 1000 },
+        "couleur": { "$ref": "#/$defs/couleur" },
+        "programme": { "$ref": "#/$defs/noeud_programme", "description": "Le programme suivi par la rubrique (snt-2019…). Ses thèmes deviennent les sections officielles, et son texte officiel s'affiche sous la présentation." },
+        "reference_officielle": { "$ref": "#/$defs/noeud_programme", "description": "Un texte officiel cité sous la présentation, sans structurer les sections (rubrique Professeur principal et circulaire pp-2018, décision du 07/11/2026). Exclut « programme »." },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/section" }
+        }
+      },
+      "not": { "required": ["programme", "reference_officielle"] }
+    },
+    "section": {
+      "oneOf": [
+        { "$ref": "#/$defs/section_programme" },
+        { "$ref": "#/$defs/section_libre" }
+      ]
+    },
+    "section_programme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["programme", "ressources"],
+      "description": "Un thème des programmes. Son titre vient de programmes.json.",
+      "properties": {
+        "programme": { "$ref": "#/$defs/noeud_programme" },
+        "couleur": { "$ref": "#/$defs/couleur" },
+        "ressources": { "$ref": "#/$defs/liste", "description": "Ressources placées directement sous le thème." },
+        "sous_sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sous_section" }
+        }
+      }
+    },
+    "section_libre": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "titre", "ressources"],
+      "description": "Une section hors programme (« Première séance », « Sites ressources »).",
+      "properties": {
+        "id": { "$ref": "#/$defs/identifiant", "description": "Unique dans la rubrique ; sert d'ancre dans l'adresse (…/snt/#sites-ressources)." },
+        "titre": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "court": { "type": "string", "minLength": 2, "maxLength": 40 },
+        "couleur": { "$ref": "#/$defs/couleur" },
+        "ressources": { "$ref": "#/$defs/liste" },
+        "sous_sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sous_section" }
+        }
+      }
+    },
+    "sous_section": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["programme", "ressources"],
+          "description": "Un contenu du thème de la section.",
+          "properties": {
+            "programme": { "$ref": "#/$defs/noeud_programme" },
+            "ressources": { "$ref": "#/$defs/liste" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["id", "titre", "ressources"],
+          "description": "Un sous-titre libre (« Pour aller plus loin », « Grand oral »).",
+          "properties": {
+            "id": { "$ref": "#/$defs/identifiant" },
+            "titre": { "type": "string", "minLength": 2, "maxLength": 120 },
+            "ressources": { "$ref": "#/$defs/liste" }
+          }
+        }
+      ]
+    }
+  }
+}

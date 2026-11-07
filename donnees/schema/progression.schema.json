@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://babash.github.io/Babash-NSI-SNT/donnees/schema/progression.schema.json",
+  "title": "Progression annuelle (brouillon)",
+  "description": "BROUILLON, rien n'est construit dessus (cahier des charges, § 3.5). Une progression correspond à une classe (ou un niveau) et une année scolaire : une liste de chapitres, chacun avec une période et des ressources de la bibliothèque. Fichier prévu : donnees/progressions/<id>.json. Restent à trancher avec l'enseignant : chapitres calqués sur les thèmes du BO ou découpage personnel (les deux sont possibles ici : « programme » est facultatif) ; une progression par classe ou par niveau (« classe » est facultatif) ; lien avec le calendrier annuel du dépôt Visualisation-progression (non prévu ici). Jamais de nom d'élève.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "titre", "annee_scolaire", "enseignement", "niveau", "statut", "chapitres"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "$ref": "#/$defs/identifiant", "description": "Par exemple nsi-tle-2026-2027." },
+    "titre": { "type": "string", "minLength": 3, "maxLength": 120 },
+    "annee_scolaire": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{4}$", "description": "« 2026-2027 »." },
+    "enseignement": { "$ref": "#/$defs/identifiant", "description": "Référentiel « enseignements »." },
+    "niveau": { "$ref": "#/$defs/identifiant", "description": "Référentiel « niveaux »." },
+    "classe": { "type": "string", "minLength": 1, "maxLength": 40, "description": "Facultatif : nom de la classe ou du groupe (« 2de 4 », « Tle NSI groupe 1 »). Absent pour une progression commune au niveau." },
+    "statut": { "enum": ["brouillon", "publiee", "archivee"] },
+    "chapitres": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/chapitre" }
+    }
+  },
+  "$defs": {
+    "identifiant": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 60
+    },
+    "noeud_programme": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*){0,2}$",
+      "maxLength": 120
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "chapitre": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "numero", "titre", "ressources"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifiant", "description": "Unique dans la progression." },
+        "numero": { "type": "integer", "minimum": 1 },
+        "titre": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "programme": {
+          "type": "array", "uniqueItems": true,
+          "items": { "$ref": "#/$defs/noeud_programme" },
+          "description": "Facultatif : thèmes ou contenus du BO traités."
+        },
+        "periode": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "debut": { "$ref": "#/$defs/date" },
+            "fin": { "$ref": "#/$defs/date" }
+          }
+        },
+        "ressources": {
+          "type": "array", "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifiant" },
+          "description": "Identifiants de ressources, dans l'ordre. Seuls leurs documents visibles des élèves seront montrés."
+        }
+      }
+    }
+  }
+}
