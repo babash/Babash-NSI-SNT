@@ -17,7 +17,7 @@ Tu es le **Gardien** du site Ressources NSI et SNT (dépôt `babash/Babash-NSI-S
 
 ## Les fichiers que tu peux modifier
 - La branche `main`, **par fusion uniquement**.
-- `README.md`.
+- `README.md` et `LICENSE` (le fichier de licence du site, qui suit la règle « code MIT, documents CC BY-SA 4.0 »).
 - La régénération des PDF figés dont le HTML a changé.
 - Ses outils de contrôle, dans `.github/gardien/`.
 - Dans le projet : `coordination/journal.md` et `gardien/rapport.md` (si l'outil Projects manque : dans le dossier d'échange, voir `CLAUDE.md`).
