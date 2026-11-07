@@ -1,7 +1,12 @@
 # Vérification automatique du site
-#  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources
-#  - après chaque mise en ligne de main : chaque page du site, affichée dans Chrome
-# Résultat : onglet « Actions » du dépôt (coche verte ou croix rouge).
+#  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources.
+#    Un lien en échec est revérifié deux minutes plus tard : il n'est déclaré mort que s'il
+#    échoue aux deux passes (les pannes passagères ne déclenchent plus d'alerte).
+#  - après chaque mise en ligne de main : chaque page du site, affichée dans Chrome, une fois
+#    que GitHub Pages a réellement déployé ce commit (scripts/attendre_deploiement.py).
+#  - à la demande (onglet Actions, « Run workflow ») : les liens de la branche choisie, et le
+#    site en ligne tel que main l'a déployé.
+# Résultat : onglet « Actions » du dépôt (coche verte ou croix rouge, détail dans le résumé).
 # Pages exclues : celles qui demandent une connexion (Capytale, claude.ai) et
 # algorea.org, qui refuse les connexions des robots de GitHub.
 
@@ -23,7 +28,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Vérifier les liens
+      - name: Préparer le dossier des rapports
+        run: mkdir -p lychee
+
+      # Les deux passes utilisent les mêmes réglages : les modifier aux deux endroits.
+      - name: Vérifier les liens (première passe)
         uses: lycheeverse/lychee-action@v2
         with:
           args: >-
@@ -40,30 +49,66 @@ jobs:
             --exclude "^https://algorea\.org/"
             "reglages.js" "snt/ressources.js" "nsi-premiere/ressources.js"
             "nsi-terminale/ressources.js" "pp/ressources.js" "autres/ressources.js"
-          fail: true
-          jobSummary: true
+          format: json
+          output: lychee/premiere.json
+          fail: false
+          jobSummary: false
+
+      - name: Relever les liens en échec
+        id: relever
+        run: python3 scripts/liens_seconde_passe.py relever lychee/premiere.json lychee/a-revoir.txt
+
+      - name: Laisser passer une éventuelle panne passagère
+        if: steps.relever.outputs.nombre != '0'
+        run: sleep 120
+
+      - name: Vérifier les liens en échec (seconde passe)
+        if: steps.relever.outputs.nombre != '0'
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --no-progress
+            --max-retries 4
+            --retry-wait-time 10
+            --timeout 60
+            --max-concurrency 8
+            --accept 200..=299,403,429
+            --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+            "lychee/a-revoir.txt"
+          format: json
+          output: lychee/seconde.json
+          fail: false
+          jobSummary: false
+
+      - name: Bilan des liens
+        run: python3 scripts/liens_seconde_passe.py bilan lychee/premiere.json lychee/seconde.json
 
   site:
     name: Site en ligne
-    if: github.ref == 'refs/heads/main' && github.event_name != 'schedule'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: read
     steps:
       - uses: actions/checkout@v4
 
-      - name: Attendre la mise en ligne de cette version
-        run: |
-          base="https://babash.github.io/Babash-NSI-SNT"
-          for essai in $(seq 1 40); do
-            a_jour=1
-            for f in reglages.js */ressources.js; do
-              curl -fsS "$base/$f?v=$GITHUB_SHA-$essai" -o /tmp/en-ligne || { a_jour=0; break; }
-              cmp -s /tmp/en-ligne "$f" || { a_jour=0; break; }
-            done
-            if [ "$a_jour" = 1 ]; then echo "La version en ligne est à jour."; exit 0; fi
-            sleep 15
-          done
-          echo "::error::Au bout de 10 minutes, la version en ligne ne correspond toujours pas au dépôt."
-          exit 1
+      # Après un envoi sur main : ce commit. À la demande : le dernier commit de main.
+      - name: Attendre que GitHub Pages ait déployé ce commit
+        id: deploiement
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHA: ${{ github.event_name == 'push' && github.sha || '' }}
+        run: python3 scripts/attendre_deploiement.py --depot "$GITHUB_REPOSITORY" ${SHA:+--sha "$SHA"}
+
+      # Les listes et le contrôle de la version déployée, pour comparer avec ce qui est en ligne
+      - name: Récupérer la version déployée
+        if: steps.deploiement.outputs.a_verifier == 'oui'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.deploiement.outputs.sha }}
+          path: deploye
 
       - name: Afficher chaque page dans Chrome
-        run: python3 .github/verifier-site.py https://babash.github.io/Babash-NSI-SNT
+        if: steps.deploiement.outputs.a_verifier == 'oui'
+        run: python3 deploye/.github/verifier-site.py https://babash.github.io/Babash-NSI-SNT
