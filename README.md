@@ -22,7 +22,7 @@ Le site s'affiche en clair ou en obscur : par défaut il suit le réglage de l'a
 choix fait dans la barre du haut (Auto, Clair, Obscur) est retenu par le navigateur.
 
 ```
-reglages.js                 titre du site et liste des rubriques
+reglages.js                 titre du site, liste des rubriques, textes du pied de page
 snt/
   ressources.js             ← la liste de la rubrique SNT
   fichiers/                 ← les PDF et fiches de la rubrique SNT
@@ -182,7 +182,36 @@ l'accueil ni dans le menu : pratique pour une page réservée à une classe.
 ## Réglages généraux
 
 `reglages.js` contient le titre du site, sa phrase de présentation, le nom du dépôt GitHub
-(pour les liens « Modifier ») et l'ordre des rubriques.
+(pour les liens « Modifier »), l'ordre des rubriques et les textes du pied de page (voir
+ci-dessous).
+
+## Le pied de page : auteur, licences et IA
+
+En bas de l'accueil et de chaque rubrique, un pied de page rappelle :
+
+- qui conçoit les ressources, et la place de l'IA : « Ces ressources sont conçues par
+  Babash - NSI Tani Malandi ; beaucoup le sont avec l'aide de l'IA. » ;
+- les licences : les documents sous licence CC BY-SA 4.0 et le code des applications sous
+  licence MIT, chacune avec un lien vers son texte officiel ;
+- la réutilisation : « Tu peux les réutiliser et les modifier en mentionnant Babash - NSI
+  Tani Malandi et la licence ; un document modifié se partage sous la même licence. », suivie
+  d'une invitation : « Si tu utilises l'IA pour les modifier, merci de le préciser. » C'est
+  une invitation, et non une condition, car la licence CC BY-SA 4.0 ne permet pas d'en ajouter ;
+- que les ressources externes restent la propriété de leurs auteurs et autrices (leur site
+  d'origine est indiqué sur chaque ressource), et que le décor du site est un dessin original.
+
+Quatre réglages de `reglages.js` changent ces textes sans toucher au code :
+
+| Réglage | Contenu |
+|---|---|
+| `auteur` | le nom affiché, « Babash - NSI Tani Malandi » ; il remplace `{auteur}` dans les trois textes suivants |
+| `mention_ia` | la phrase sur l'auteur et l'IA |
+| `reutilisation` | la phrase sur la réutilisation |
+| `invitation_ia` | l'invitation à préciser l'usage de l'IA |
+
+Pour `mention_ia`, `reutilisation` et `invitation_ia`, un texte vide (`""`) retire la phrase ;
+un réglage absent reprend le texte validé par l'enseignant, écrit dans `assets/site.js`. Les
+deux licences, elles, sont fixées dans `assets/site.js`.
 
 ---
 
