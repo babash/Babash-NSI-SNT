@@ -270,6 +270,10 @@ scripts/valider_donnees.py      la validation des données
 Une fiche décrit une ressource et ses documents (activité, version PDF, corrigé, code
 source…). Chaque document a deux réglages de visibilité, pour l'extérieur et pour les élèves.
 La fiche signale aussi si la ressource collecte des données d'élèves (`donnees_eleves`).
+Elle crédite ses auteurs et autrices (`auteurs`, `credits`) ; une ressource reprise et
+modifiée crédite toute la chaîne. Par exemple, la fiche de CyberCase cite Etienne Clave
+(exomorphisme.fr, lycée de Sada), l'idée de Marion Dufour, le moteur SQL Noir de Hristo
+Bogoev, puis la reprise par Babash - NSI Tani Malandi.
 
 Quand c'est utile, la fiche note aussi :
 
