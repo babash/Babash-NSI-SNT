@@ -40,6 +40,7 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 - **Toute ressource qui collecte des données d'élèves** est signalée : dans le champ `donnees_eleves` de sa fiche (nouveau format), ou dans le rapport tant que l'ancien format est en place (un champ inconnu des listes `*/ressources.js` y provoque une erreur). Toute nouvelle collecte est soumise à l'enseignant. Règle par défaut : un pseudo ou un prénom, au choix de l'élève, jamais de nom de famille (exceptions décidées : Alien Python, SNT 1er jour).
 - **La structure suit les textes officiels** : programmes de SNT et de NSI de 2019. La rubrique Professeur principal garde ses thèmes actuels (décision du 07/11) ; la circulaire n° 2018-108 sert de référence. Les thèmes hors programme sont des sections de la vitrine. Tout autre écart est soumis à l'enseignant.
 - **Licences et auteur** : documents pédagogiques de l'enseignant en CC BY-SA, code de ses applications en MIT, auteur affiché « Babash - NSI Tani Malandi ». Une ressource externe est créditée à son site d'origine.
+- **TD et éditeurs de code** (philosophie éducative, § 14, règles 19 et 20) : un TD existe toujours en PDF imprimable et en page HTML responsive, auto-corrective par formulaire, corrigée dans le navigateur ; un éditeur de code a toujours la coloration syntaxique, l'indentation, et l'erreur affichée telle quelle, puis traduite ou expliquée en français à la demande.
 - **Écriture** : français clair, formulations épicènes et double flexion, **pas de point médian**.
 - **Design** : la charte « Réseau la nuit » (`design/charte.md`). Tant qu'elle n'est pas validée et publiée, ses fichiers n'existent que sur la branche `design/charte-v1` : une ressource suit alors le style actuel du site. Dessin original : aucun personnage, logo ou illustration d'Android: Netrunner.
 
@@ -48,9 +49,9 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 |---|---|
 | `CLAUDE.md`, `.claude/agents/` | Chef d'orchestre |
 | `README.md`, `.github/gardien/`, la fusion dans `main` | Gardien |
-| `assets/*.js` (sauf `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`), `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `.gitignore`, `admin/`, `bibliotheque/`, `eleve/`, `donnees/schema/`, `donnees/referentiels/`, `scripts/`, `.github/workflows/` et `.github/verifier-site.py` (avec l'accord du Gardien) | Architecte |
-| `*/ressources.js` (anciennes listes, jusqu'à leur conversion), `donnees/ressources/`, `<rubrique>/fichiers/` | Bibliothécaire |
-| `assets/charte.css`, `assets/style.css`, `assets/fiche.css`, `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`, `assets/equipage/`, `assets/fonts/`, `charte/`, `design/`, la mise en forme des documents internes | Designer |
+| `assets/*.js` (sauf `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`), `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `.gitignore`, `admin/`, `bibliotheque/`, `eleve/`, `donnees/` (sauf `donnees/ressources/` et `donnees/vitrine.json`), `scripts/`, `.github/workflows/` et `.github/verifier-site.py` (avec l'accord du Gardien) | Architecte |
+| `*/ressources.js` (anciennes listes, jusqu'à leur conversion), `donnees/ressources/`, `donnees/vitrine.json`, `<rubrique>/fichiers/` | Bibliothécaire |
+| `assets/charte.css`, `assets/style.css`, `assets/fiche.css`, `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`, `assets/equipage/`, `assets/fonts/`, `assets/favicon.svg`, `charte/`, `design/`, la mise en forme des documents internes | Designer |
 | Les fichiers d'une ressource en cours de création (`<rubrique>/fichiers/<nom>/`) | l'Atelier chargé de cette ressource |
 
 Le décor du bandeau est encore dans `assets/site.js` (fonction `scene`) : il passera dans `assets/decor.js` quand la charte sera publiée. D'ici là, toute modification du décor est demandée à l'Architecte dans un rapport.

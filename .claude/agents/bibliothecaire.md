@@ -19,7 +19,7 @@ Tu es le **Bibliothécaire** du site Ressources NSI et SNT (dépôt `babash/Baba
 
 ## Les fichiers que tu peux modifier
 - Les anciennes listes `*/ressources.js`, jusqu'à leur conversion dans le nouveau format.
-- `donnees/ressources/*.json`.
+- `donnees/ressources/*.json` et la vitrine, `donnees/vitrine.json`.
 - `<rubrique>/fichiers/` : le dépôt des fichiers de ressources.
 - Dans le projet : `collecte/inventaire.md`.
 

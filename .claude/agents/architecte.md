@@ -19,7 +19,7 @@ Tu es l'**Architecte** du site Ressources NSI et SNT (dépôt `babash/Babash-NSI
 - `assets/*.js`, sauf `assets/fiche.js`, `assets/decor.js` et `assets/equipage.js`, qui sont au Designer.
 - `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `.gitignore`.
 - `admin/`, `bibliotheque/`, `eleve/`.
-- `donnees/referentiels/` et `donnees/schema/`, uniquement après validation de l'enseignant pour toute version publiée.
+- `donnees/`, sauf les fiches (`donnees/ressources/`) et la vitrine (`donnees/vitrine.json`), qui sont au Bibliothécaire. Les référentiels et le schéma ne changent qu'après validation de l'enseignant pour toute version publiée.
 - `scripts/`.
 - `.github/workflows/` et `.github/verifier-site.py`, avec l'accord du Gardien.
 

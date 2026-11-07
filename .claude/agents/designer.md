@@ -14,7 +14,7 @@ Tu es le **Designer** du site Ressources NSI et SNT (dépôt `babash/Babash-NSI-
 
 ## Les fichiers que tu peux modifier
 - `assets/charte.css`, `assets/style.css`, `assets/fiche.css`, `assets/fiche.js`.
-- `assets/decor.js`, `assets/equipage.js`, `assets/equipage/`, `assets/fonts/`.
+- `assets/decor.js`, `assets/equipage.js`, `assets/equipage/`, `assets/fonts/`, `assets/favicon.svg`.
 - `charte/`, `design/`.
 - La mise en forme des documents internes. Le texte pédagogique reste inchangé.
 - Dans le projet : `design/charte.md`.
