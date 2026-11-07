@@ -242,6 +242,13 @@ Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du s
 `python3 -m http.server 8000`, puis dans un autre terminal
 `python3 .github/verifier-site.py http://localhost:8000`.
 
+Avant chaque publication, le Gardien pré-valide la branche avec ses outils, rangés dans
+`.github/gardien/` : `python3 -I .github/gardien/controler.py --branche origin/<branche>`
+contrôle les données sensibles, les liens internes, le rendu avant et après (320, 768 et
+1440 px, clair et obscur), les contrastes et la navigation au clavier. Après la publication,
+`bash .github/gardien/attendre_actions.sh <commit>` suit la mise en ligne et lit les résultats
+des contrôles automatiques. Il faut Python avec Playwright et Pillow.
+
 ---
 
 ## L'équipe d'agents
