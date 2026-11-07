@@ -10,7 +10,8 @@ Contrôles :
   - chaque ressource a exactement un document principal ;
   - aucun document ne pointe vers une page GitHub, sauf le rôle « code source » ;
   - visibilité (cahier des charges, § 3.2) : ce que voient l'extérieur et les élèves ;
-  - règle 19 (un TD de l'enseignant en PDF et en page HTML), licences et auteurs : avertissements ;
+  - règles 19 et 20 (TD en PDF et en page HTML, critères de la page HTML et de l'éditeur de code),
+    licences et auteurs : avertissements pour une création de l'enseignant, information sinon ;
   - aucune donnée sensible : mot de passe, identifiant, clé secrète, jeton.
 
 Python 3 standard, sans dépendance. Si le module jsonschema est installé, il sert de
@@ -42,6 +43,9 @@ HOTES_GITHUB = {"github.com", "gist.github.com"}
 AUTEUR = "Babash - NSI Tani Malandi"
 LICENCES_ENSEIGNANT = re.compile(r"CC BY-SA 4\.0|\bMIT\b")
 ORIGINES_A_CREDITER = {"externe", "institutionnelle", "communaute"}
+# Règles 19 et 20 (décision du 07/11/2026) : champ de la fiche, liste et valeur du référentiel, champ des libellés
+CRITERES = [("editeur_code", "usages", "editeur-de-code", "criteres"),
+            ("td_en_ligne", "types", "td", "criteres_en_ligne")]
 
 
 # ── Le rapport ──────────────────────────────────────────────────────────────
@@ -365,6 +369,7 @@ class Validation:
         self.rapport = Rapport()
         self.schemas = {}
         self.valeurs = {}       # liste → {id: entrée}
+        self.criteres = {}      # editeur_code, td_en_ligne → {critère: libellé}
         self.noeuds = {}        # id → {"niveau", "racine", "parent", "intitule", "enseignement", "niveaux"}
         self.fiches = {}        # id → (fichier, fiche)
         self.visibles = {}      # id → {"exterieur": bool, "eleve": bool}
@@ -451,6 +456,7 @@ class Validation:
         defauts = [f for f in self.valeurs.get("formats", {}).values() if f.get("par_defaut")]
         if len(defauts) != 1:
             self.rapport.erreur(fichier, "formats", "exactement un format doit avoir « par_defaut »: true")
+        self.charger_criteres(fichier)
 
         chemin = os.path.join(self.donnees, "referentiels", "programmes.json")
         fichier = self.nom(chemin)
@@ -514,6 +520,25 @@ class Validation:
                 for k, co in enumerate(th.get("contenus", [])):
                     noeud(co, joindre(joindre(cth, "contenus"), k), "contenu", tid, pid)
         return True
+
+    def charger_criteres(self, fichier):
+        """Les critères des règles 19 et 20 : libellés dans valeurs.json, champs dans le schéma. Ils doivent concorder."""
+        self.criteres = {}
+        for cle, liste, vid, champ in CRITERES:
+            entree = self.valeurs.get(liste, {}).get(vid)
+            crit = entree.get(champ) if isinstance(entree, dict) else None
+            if not isinstance(crit, list) or not crit or not all(
+                    isinstance(c, dict) and isinstance(c.get("id"), str) and isinstance(c.get("libelle"), str) for c in crit):
+                self.rapport.erreur(fichier, f"{liste} › {vid}", f"« {champ} » manquant ou incomplet : une liste de "
+                                                                 "{ \"id\": …, \"libelle\": … }")
+                self.criteres[cle] = {}
+                continue
+            self.criteres[cle] = {c["id"]: c["libelle"] for c in crit}
+            definition = self.schemas.get("ressource", {}).get("$defs", {}).get(cle)
+            if isinstance(definition, dict) and set(definition.get("required", [])) != set(self.criteres[cle]):
+                self.rapport.erreur(fichier, f"{liste} › {vid} › {champ}",
+                                    f"les critères ({', '.join(self.criteres[cle])}) ne concordent pas avec le champ « {cle} » "
+                                    f"du schéma ({', '.join(definition.get('required', []))})")
 
     def charger_pix(self):
         """Le référentiel des compétences Pix (cadre de référence des compétences numériques)."""
@@ -666,6 +691,7 @@ class Validation:
                                     f"aucune fiche « {cible} » dans donnees/ressources/")
 
         self.verifier_credits(fichier, f)
+        self.verifier_regles(fichier, f)
 
         de = f.get("donnees_eleves")
         if isinstance(de, dict) and de.get("collecte") is True:
@@ -775,6 +801,38 @@ class Validation:
                 self.rapport.attention(fichier, "documents",
                                        f"pour {qui}, un clic sur le titre ouvrirait une page GitHub : rendre visible un autre document")
         self.visibles[rid] = vu
+
+    def verifier_regles(self, fichier, f):
+        """Règles 19 et 20 de la philosophie éducative, d'après les critères notés dans la fiche.
+
+        Création de l'enseignant : avertissement. Ressource externe : simple information, car une ressource
+        externe ne se modifie pas (§ 14) ; sa fiche signale seulement ce qui lui manque."""
+        createur = f.get("origine") == "ma-creation"
+        signaler = self.rapport.attention if createur else self.rapport.info
+        externe = "" if createur else "ressource externe, pour information : "
+        usages = f.get("usages") if isinstance(f.get("usages"), list) else []
+        types = f.get("types") if isinstance(f.get("types"), list) else []
+
+        def manques(objet, cle):
+            return ", ".join(lib[0].lower() + lib[1:] for cid, lib in self.criteres.get(cle, {}).items()
+                             if objet.get(cid) is False)
+
+        ec = f.get("editeur_code")
+        if isinstance(ec, dict) and "editeur-de-code" not in usages:
+            self.rapport.attention(fichier, "usages", "« editeur_code » est rempli : ajouter l'usage « editeur-de-code », "
+                                                      "sans quoi la ressource échappe au filtre « Éditeur de code »")
+        if "editeur-de-code" in usages and not isinstance(ec, dict):
+            signaler(fichier, "editeur_code", externe + "règle 20 : noter les critères de l'éditeur dans « editeur_code » ("
+                     + ", ".join(self.criteres.get("editeur_code", {})) + "), chacun à true ou false")
+        if isinstance(ec, dict) and manques(ec, "editeur_code"):
+            signaler(fichier, "editeur_code", externe + "règle 20 : il manque à l'éditeur de code : " + manques(ec, "editeur_code"))
+
+        tl = f.get("td_en_ligne")
+        if isinstance(tl, dict):
+            if "td" not in types:
+                self.rapport.attention(fichier, "td_en_ligne", "« td_en_ligne » concerne un TD : ajouter le type « td », ou retirer ce champ")
+            elif manques(tl, "td_en_ligne"):
+                signaler(fichier, "td_en_ligne", externe + "règle 19 : il manque à la page HTML du TD : " + manques(tl, "td_en_ligne"))
 
     def verifier_credits(self, fichier, f):
         """Licences et auteurs (décision du 07/11/2026). Simples avertissements."""

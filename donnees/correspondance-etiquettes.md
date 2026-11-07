@@ -38,6 +38,7 @@ elle-même est la tâche suivante : rien n'est converti ici, en dehors des 6 fic
 | — | `resume` | la première phrase de `texte`, à reprendre par le Bibliothécaire |
 | — | `accroche`, `objectif`, `duree`, `mots_cles`, `liees` | à écrire par le Bibliothécaire (souvent déjà dans `texte` : durée) |
 | — | `competences_pix`, `criteres_reussite` | facultatifs : compétences Pix pour les ressources de SNT, critères de réussite au cas par cas ; laissés vides par la conversion |
+| — | usage `editeur-de-code`, `editeur_code`, `td_en_ligne` | règles 20 et 19 : l'usage est ajouté à toute ressource où l'élève écrit du code ; les critères sont notés par l'audit T18 (en attendant, le script avertit pour les créations de l'enseignant) |
 | — | `auteurs`, `licence`, `credits` | ressource de l'enseignant (origine `ma-creation`) : auteur « Babash - NSI Tani Malandi », licence CC BY-SA 4.0 pour les documents, MIT pour le code des applications. Ressource externe : créditée à son site d'origine (`credits`, et `auteurs` avec le rôle « site d'origine »). |
 | `tags` | `usages`, `langages`, `types`, `niveaux`, vitrine | voir § 3 |
 | `annexes` | les autres `documents` | voir § 4 |

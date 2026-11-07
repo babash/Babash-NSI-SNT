@@ -52,6 +52,8 @@
       "items": { "$ref": "#/$defs/identifiant" },
       "description": "Référentiel « usages » : modalités (en ligne, à imprimer, utilisable sur téléphone, débranché…) et prérequis (compte ENT, installation…)."
     },
+    "editeur_code": { "$ref": "#/$defs/editeur_code" },
+    "td_en_ligne": { "$ref": "#/$defs/td_en_ligne" },
     "origine": { "$ref": "#/$defs/identifiant", "description": "Référentiel « origines »." },
     "auteurs": {
       "type": "array",
@@ -141,6 +143,31 @@
       },
       "if": { "properties": { "collecte": { "const": true } } },
       "then": { "required": ["detail"] }
+    },
+    "editeur_code": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coloration", "indentation", "guides_indentation", "autocompletion", "erreurs_expliquees"],
+      "description": "Règle 20 (décision du 07/11/2026) : les critères de l'éditeur de code d'une ressource qui a l'usage « editeur-de-code ». Les cinq critères sont toujours notés, true ou false (libellés dans valeurs.json, usage « editeur-de-code », champ « criteres »). Pour une ressource externe, la fiche signale seulement ce qui manque.",
+      "properties": {
+        "coloration": { "type": "boolean", "description": "Coloration syntaxique." },
+        "indentation": { "type": "boolean", "description": "Indentation automatique ; la touche Tab indente." },
+        "guides_indentation": { "type": "boolean", "description": "Guides d'indentation : les blocs et leurs liens sont visibles (modèle : Lagon Arena)." },
+        "autocompletion": { "type": "boolean", "description": "Autocomplétion contextualisée : mots-clés, variables et fonctions définies, méthodes du type en cours." },
+        "erreurs_expliquees": { "type": "boolean", "description": "Erreur affichée telle quelle, puis traduite ou expliquée en français, sans service commercial." },
+        "remarque": { "type": "string", "minLength": 3, "maxLength": 400, "description": "Facultatif : ce qui a été constaté, ou ce qui manque." }
+      }
+    },
+    "td_en_ligne": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["responsive", "auto_corrective"],
+      "description": "Facultatif, pour un TD (type « td ») : la page HTML en ligne de la règle 19 (libellés dans valeurs.json, type « td », champ « criteres_en_ligne »). La présence d'un PDF et d'une page HTML se déduit des documents.",
+      "properties": {
+        "responsive": { "type": "boolean", "description": "Utilisable du téléphone au grand écran, sans défilement horizontal." },
+        "auto_corrective": { "type": "boolean", "description": "Réponses dans un formulaire, correction aussitôt, dans le navigateur." },
+        "remarque": { "type": "string", "minLength": 3, "maxLength": 400, "description": "Facultatif : ce qui a été constaté, ou ce qui manque." }
+      }
     },
     "dates": {
       "type": "object",
