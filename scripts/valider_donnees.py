@@ -739,6 +739,17 @@ class Validation:
                 self.rapport.attention(fichier, ou(i, d, "role"),
                                        f"un document « {r.get('libelle', role)} » comme document principal : est-ce voulu ?")
 
+        # Règle 19 de la philosophie éducative : un TD de l'enseignant existe en PDF et en page HTML.
+        # Simple avertissement, pour que les TD actuels ne bloquent pas la conversion.
+        if "td" in (f.get("types") or []) and f.get("origine") == "ma-creation":
+            formats = {d.get("format") or self.deduire_format(d) for d in docs}
+            manque = [quoi for quoi, fmt in (("version PDF", "pdf"), ("page HTML en ligne", "page-web"))
+                      if fmt not in formats]
+            if manque:
+                self.rapport.attention(fichier, "documents",
+                                       f"TD sans {' ni '.join(manque)} : un TD existe toujours en PDF imprimable et en page "
+                                       "HTML en ligne, responsive et auto-corrective (philosophie éducative, § 14, règle 19)")
+
         # Visibilité (§ 3.2) : ce que voit chaque public
         vu = {}
         for public, qui in PUBLICS.items():

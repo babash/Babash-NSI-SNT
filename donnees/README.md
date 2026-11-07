@@ -152,6 +152,7 @@ Ce qui est vérifié :
 - cohérence : l'enseignement d'un contenu cité figure dans `enseignements` (son niveau dans `niveaux`, sinon avertissement) ;
 - exactement un document principal ; aucune page GitHub hors du rôle `code-source` ;
 - visibilité : ce que voit chaque public, remplacement du document principal caché, corrigé ou guide visible des élèves ;
+- règle 19 de la philosophie éducative : un TD de l'enseignant sans version PDF ou sans page HTML donne un avertissement ;
 - vitrine : ressources existantes, sections rangées dans le bon programme, contenus sous leur thème, thèmes du programme absents ;
 - progressions : ressources existantes et visibles des élèves ;
 - motifs interdits : mots de passe, identifiants, identifiants de démonstration, clés secrètes (Supabase `service_role`
