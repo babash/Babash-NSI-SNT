@@ -4,8 +4,8 @@ Ce document dit comment chaque champ et chaque étiquette des listes actuelles (
 `nsi-premiere/ressources.js`, `nsi-terminale/ressources.js`, `pp/ressources.js`, `autres/ressources.js`)
 passera dans les fiches (`donnees/ressources/<id>.json`) et dans la vitrine (`donnees/vitrine.json`).
 
-**Statut : proposition (tâche T02), à valider par l'enseignant.** La conversion elle-même est la tâche
-suivante : rien n'est converti ici, en dehors des 6 fiches d'exemple.
+**Statut : validé par l'enseignant le 07/11/2026 (tâche T02), décisions intégrées.** La conversion
+elle-même est la tâche suivante : rien n'est converti ici, en dehors des 6 fiches d'exemple.
 
 ## 1. En chiffres
 
@@ -36,14 +36,15 @@ suivante : rien n'est converti ici, en dehors des 6 fiches d'exemple.
 | `lien` | le **document principal** (`documents`, `"principal": true`) | une adresse va dans `url` ; un fichier `fichiers/x.pdf` va dans `fichier`, complété par le dossier de la rubrique (`nsi-terminale/fichiers/x.pdf`). Rôle : `enonce` pour une activité, `page` pour un site ou une fiche, `diaporama`, `version-eleve`… Visible de l'extérieur et des élèves. |
 | `texte` | `presentation` | tel quel, avec la même mise en forme (`code`, **gras**, retours à la ligne) |
 | — | `resume` | la première phrase de `texte`, à reprendre par le Bibliothécaire |
-| — | `accroche`, `objectif`, `duree`, `auteurs`, `licence`, `credits`, `mots_cles`, `liees` | à écrire par le Bibliothécaire (souvent déjà dans `texte` : durée, crédits) |
-| `tags` | `usages`, `langages`, `type`, `niveaux`, vitrine | voir § 3 |
+| — | `accroche`, `objectif`, `duree`, `mots_cles`, `liees` | à écrire par le Bibliothécaire (souvent déjà dans `texte` : durée) |
+| — | `auteurs`, `licence`, `credits` | ressource de l'enseignant (origine `ma-creation`) : auteur « Babash - NSI Tani Malandi », licence CC BY-SA pour les documents, MIT pour le code des applications. Ressource externe : créditée à son site d'origine (`credits`, et `auteurs` avec le rôle « site d'origine »). |
+| `tags` | `usages`, `langages`, `types`, `niveaux`, vitrine | voir § 3 |
 | `annexes` | les autres `documents` | voir § 4 |
 | la rubrique (le fichier) | `enseignements` et `niveaux` | `snt` → SNT, seconde ; `nsi-premiere` → NSI, première ; `nsi-terminale` → NSI, terminale ; `pp` → PP, niveau selon la ressource ; `autres` → transversal (ou SNT, NSI), niveaux selon la ressource |
 | `theme(…)` et `groupe(…)` | `programme` de la fiche, et la place dans la vitrine | voir § 5 |
 | l'ordre dans le fichier | l'ordre des listes de la vitrine | tel quel : la vitrine reprend exactement l'affichage actuel |
 | `// À compléter` | `statut` : `a-revoir` | toutes les fiches converties partent en `a-revoir` ; elles passent en `prete` après relecture |
-| — | `donnees_eleves` | « non » par défaut, **sauf** les ressources connues pour collecter des données (SNT 1er jour, Alien Python, Lagon Arena, Expédition Gombessa, CyberCase…). Toute ressource avec un espace professeur, un tableau de bord, un compte ou une connexion ENT est listée pour vérification. |
+| — | `donnees_eleves` | « non » par défaut, **sauf** les ressources connues pour collecter des données (SNT 1er jour, Alien Python, Lagon Arena, Expédition Gombessa, CyberCase…). Quand l'élève peut s'en servir sans rien transmettre (CyberCase : le compte sert seulement à garder l'avancement), on ajoute `"facultative": true`. Toute ressource avec un espace professeur, un tableau de bord, un compte ou une connexion ENT est listée pour vérification. |
 | — | `dates.ajout` | la date de la conversion |
 
 ## 3. Les étiquettes (`tags`)
@@ -53,23 +54,24 @@ suivante : rien n'est converti ici, en dehors des 6 fiches d'exemple.
 | En ligne (45) | usage `en-ligne` |
 | Python (40) | langage `python` |
 | À imprimer (27) | usage `a-imprimer` |
-| Jeu (7) | type `jeu` |
-| Débranché (6) | usage `debranche` ; et type `activite-debranchee` quand c'est une activité |
-| Pour aller plus loin (6) | usage `pour-aller-plus-loin` (**valeur proposée**, absente du cahier) |
+| Jeu (7) | ajoute le type `jeu` |
+| Débranché (6) | usage `debranche` ; et ajoute le type `activite-debranchee` quand c'est une activité |
+| Pour aller plus loin (6) | usage `pour-aller-plus-loin` (ajout validé le 07/11) |
 | Rien à installer (4) | rien à écrire : c'est l'absence du prérequis `installation`, que l'affichage peut signaler |
 | Connexion ENT (4) | usage (prérequis) `compte-ent` |
 | SQL (4) | langage `sql` |
-| À adapter (2) | usage (prérequis) `a-adapter` (**valeur proposée**), l'explication restant dans la présentation |
+| À adapter (2) | usage (prérequis) `a-adapter` (ajout validé le 07/11), l'explication restant dans la présentation |
 | Ressource du mois (2) | sort de la fiche : la ressource va dans `a_la_une` de la vitrine, avec l'étiquette « Ressource du mois » |
-| Cours (1) | type `cours` |
+| Cours (1) | ajoute le type `cours` |
 | Notebook (1) | rien à écrire : le format « notebook » est déduit de l'adresse |
 | Terminale (1) | niveau `terminale` |
 
-Le **type** est unique (un seul par ressource). Quand aucune étiquette ne le donne, le Bibliothécaire le
-choisit ; par défaut : « Sites ressources » → `site-ressource`, « S'entraîner en autonomie » → `exerciseur`,
-« Concours et défis » → `concours`, « Se former et échanger » → `formation`, « Outils pour la classe » →
-`outil-classe`, fiches « Fiche : … » → `fiche`. Une ressource étiquetée à la fois « Jeu » et « Débranché »
-reçoit le type `jeu` et l'usage `debranche`.
+Une ressource a **un ou plusieurs types** (`types`, au moins un, le principal en premier : décision du
+07/11). Les étiquettes en ajoutent ; quand aucune ne le donne, le Bibliothécaire choisit. Par défaut :
+« Sites ressources » → `site-ressource`, « S'entraîner en autonomie » → `exerciseur`, « Concours et défis » →
+`concours`, « Se former et échanger » → `formation`, « Outils pour la classe » → `outil-classe`, fiches
+« Fiche : … » → `fiche`. Une ressource étiquetée à la fois « Jeu » et « Débranché » qui est une activité reçoit
+les types `jeu` et `activite-debranchee`, et l'usage `debranche`.
 
 ## 4. Les annexes et leur rôle
 
@@ -79,18 +81,22 @@ Chaque annexe devient un document : son libellé actuel devient `titre`, son lie
 |---|---|
 | Version PDF (16) | `version-pdf` |
 | Code source (5), Code source et générateur de cartes (2), Code source, à dupliquer (1), Sources LaTeX (1), Installer sa propre base (Supabase) (1) | `code-source` |
-| Espace enseignant (2), Tableau de bord du professeur (1), Essayer en mode démo (1) | `espace-professeur` (**proposé**) |
+| Espace enseignant (2), Tableau de bord du professeur (1), Essayer en mode démo (1) | `espace-professeur` |
 | Fiche professeur (2), Guide de l'activité (1), Guide pédagogique (1) | `guide-professeur` |
 | Fiches processus, activité 1, 2 et 3 | `version-eleve` |
 | Notebook à télécharger (.ipynb) | `enonce` |
 | Données des pokémons (JSON) | `donnees` |
 | Les vidéos « Comprendre l'informatique en jouant », Chaîne YouTube « Python au lycée » | `video` |
-| Terminal JSLinux (2) | `outil` (**proposé**) |
-| Programme de première (PDF), Programme de terminale (PDF), Tome 2, Banque d'exercices d'origine (M. Degrange), Licence, Version Quizizz (compte enseignant), VisuAlgo, autre visualisation, Découvrez le fonctionnement des algorithmes, Wiki Capytale, Bibliothèque partagée entre enseignants, Auto-évaluation des notebooks, Se préparer avec Pyxel (cahier numérique), S'entraîner : Challenges Kids, S'entraîner : Root Me | `complement` (**proposé**) |
+| Terminal JSLinux (2) | `outil` |
+| Programme de première (PDF), Programme de terminale (PDF), Tome 2, Banque d'exercices d'origine (M. Degrange), Licence, Version Quizizz (compte enseignant), VisuAlgo, autre visualisation, Découvrez le fonctionnement des algorithmes, Wiki Capytale, Bibliothèque partagée entre enseignants, Auto-évaluation des notebooks, Se préparer avec Pyxel (cahier numérique), S'entraîner : Challenges Kids, S'entraîner : Root Me | `complement` |
 
-**Visibilité au départ** (proposition) : tout ce qui est affiché aujourd'hui reste visible de l'extérieur.
-Pour les élèves, tout est visible **sauf** les rôles `espace-professeur`, `guide-professeur`, `corrige` et
-`code-source`, cachés aux élèves. L'enseignant change ensuite ce qu'il veut dans l'admin.
+Les rôles `page`, `espace-professeur`, `outil` et `complement` sont des ajouts au cahier, validés le 07/11.
+
+**Visibilité au départ** (validée le 07/11, et inscrite pour chaque rôle dans `valeurs.json`,
+champ `visible_par_defaut`) : tout ce qui est affiché aujourd'hui reste visible de l'extérieur. Pour les
+élèves, tout est visible **sauf** les rôles `espace-professeur`, `guide-professeur`, `corrige` et
+`code-source`. Les corrigés sont donc visibles de l'extérieur, pour les collègues : l'enseignant accepte que
+des élèves puissent les y trouver. Il change ensuite ce qu'il veut dans l'admin.
 
 **Liens GitHub** : aucun lien principal actuel ne pointe vers GitHub. Les annexes vers github.com sont
 toutes des codes source (rôle `code-source`, seul autorisé). Les liens `raw.githubusercontent.com`
@@ -127,23 +133,21 @@ avec un identifiant et un titre :
 | NSI Tle | Rentrée : reprendre la première | `rentree` | `programme` : les contenus de première revus ; `niveaux` : terminale (le script l'accepte, avec un avertissement) |
 | NSI Tle | Préparer le bac, et ses groupes Épreuve écrite, Épreuve pratique, Grand oral | `preparer-le-bac`, `epreuve-ecrite`, `epreuve-pratique`, `grand-oral` | type `evaluation` pour les sujets |
 | NSI Tle | Sites ressources | `sites-ressources` | type `site-ressource` |
+| PP | Coordination de l'équipe et conseils de classe (court : Conseils de classe) | `conseils-de-classe` | — |
+| PP | Suivi des élèves | `suivi-des-eleves` | — |
+| PP | Orientation, et ses trois sous-titres (Seconde, Première, Terminale) | `orientation`, `orientation-seconde`, `orientation-premiere`, `orientation-terminale` | niveaux selon la classe concernée |
+| PP | Lien avec les familles (court : Familles) | `familles` | — |
+| PP | Vie de classe | `vie-de-classe` | — |
 | PP | Textes officiels | `textes-officiels` | — |
 | Autres | Outils pour la classe | `outils` | type `outil-classe` |
 | Autres | Concours et défis | `concours` | type `concours` |
 | Autres | Se former et échanger | `se-former` | type `formation` |
 
-**Professeur principal** : les thèmes actuels ne suivent pas exactement la circulaire n° 2018-108. Proposition
-(option A) : la rubrique suit la circulaire (deux missions et leurs volets), et les thèmes actuels se rangent ainsi :
-
-| Thème actuel | Devient |
-|---|---|
-| Coordination de l'équipe et conseils de classe | `pp-2018.coordination.suivi-acquis` |
-| Suivi des élèves | `pp-2018.coordination.suivi-acquis` (ou `besoins-particuliers` selon la ressource) |
-| Orientation | `pp-2018.orientation` ; ses trois sous-titres actuels (seconde, première, terminale) deviennent les **niveaux** des fiches |
-| Lien avec les familles | `pp-2018.coordination.vie-de-classe` (à vérifier : la circulaire traite des familles dans la mission de coordination) |
-| Vie de classe | `pp-2018.coordination.vie-de-classe` |
-
-Option B : garder les cinq thèmes actuels comme sections libres de la vitrine, les fiches citant quand même la circulaire.
+**Professeur principal** (décision du 07/11) : la rubrique garde ses thèmes actuels, qui deviennent les
+sections libres du tableau ci-dessus. La circulaire n° 2018-108 reste dans `programmes.json` comme
+référence : la rubrique la cite avec `"reference_officielle": "pp-2018"` (affichée sous la présentation),
+sans que ses missions structurent les sections. Une fiche de PP peut citer une mission ou un volet dans
+`programme` si c'est utile ; la conversion laisse ce champ vide.
 
 ## 6. Le reste
 

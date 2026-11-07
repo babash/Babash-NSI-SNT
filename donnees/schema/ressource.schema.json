@@ -2,10 +2,10 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://babash.github.io/Babash-NSI-SNT/donnees/schema/ressource.schema.json",
   "title": "Fiche d'une ressource",
-  "description": "Une ressource de la bibliothèque (cahier des charges, § 3.1) et ses documents (§ 3.2). Un fichier par ressource : donnees/ressources/<id>.json. Les valeurs des classements (enseignements, niveaux, type, usages, origine, langages, statut, rôles, formats) sont des identifiants des référentiels (donnees/referentiels/valeurs.json) ; les références au programme sont des identifiants de donnees/referentiels/programmes.json. Le script scripts/valider_donnees.py vérifie ces références, qu'un schéma seul ne peut pas vérifier.",
+  "description": "Une ressource de la bibliothèque (cahier des charges, § 3.1) et ses documents (§ 3.2). Format validé par l'enseignant le 07/11/2026. Un fichier par ressource : donnees/ressources/<id>.json. Les valeurs des classements (enseignements, niveaux, types, usages, origine, langages, statut, rôles, formats) sont des identifiants des référentiels (donnees/referentiels/valeurs.json) ; les références au programme sont des identifiants de donnees/referentiels/programmes.json. Le script scripts/valider_donnees.py vérifie ces références, qu'un schéma seul ne peut pas vérifier.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "titre", "resume", "enseignements", "niveaux", "programme", "type", "usages", "origine", "donnees_eleves", "statut", "documents"],
+  "required": ["id", "titre", "resume", "enseignements", "niveaux", "programme", "types", "usages", "origine", "donnees_eleves", "statut", "documents"],
   "properties": {
     "$schema": { "type": "string" },
     "id": {
@@ -32,7 +32,11 @@
       "items": { "$ref": "#/$defs/noeud_programme" },
       "description": "Thèmes ou contenus des textes officiels (programmes.json), par exemple snt-2019.donnees-structurees.traitement. Plusieurs possibles ; liste vide pour une ressource hors programme."
     },
-    "type": { "$ref": "#/$defs/identifiant", "description": "Référentiel « types » : un seul type pédagogique." },
+    "types": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/identifiant" },
+      "description": "Référentiel « types » : un ou plusieurs types pédagogiques, le principal en premier (décision du 07/11/2026)."
+    },
     "usages": {
       "type": "array", "uniqueItems": true,
       "items": { "$ref": "#/$defs/identifiant" },
@@ -122,6 +126,7 @@
       "description": "La ressource collecte-t-elle des données d'élèves ? Toujours renseigné, même pour dire non.",
       "properties": {
         "collecte": { "type": "boolean" },
+        "facultative": { "type": "boolean", "description": "true si l'élève peut utiliser la ressource sans rien transmettre (par exemple, un compte qui sert seulement à garder l'avancement)." },
         "detail": { "type": "string", "minLength": 10, "maxLength": 800, "description": "Quelles données, où elles vont, qui les voit." }
       },
       "if": { "properties": { "collecte": { "const": true } } },

@@ -203,8 +203,11 @@ class ValidateurSchema:
                 else:
                     out.append((chemin, f"forme interdite (motif {s['not']['pattern']})"))
             elif s["not"].get("required"):
-                interdits = ", ".join("« " + n + " »" for n in s["not"]["required"])
-                out.append((chemin, f"le champ {interdits} ne doit pas être présent ici"))
+                noms = ["« " + n + " »" for n in s["not"]["required"]]
+                if len(noms) > 1:
+                    out.append((chemin, f"les champs {' et '.join(noms)} ne vont pas ensemble : n'en garder qu'un"))
+                else:
+                    out.append((chemin, f"le champ {noms[0]} ne doit pas être présent ici"))
             else:
                 out.append((chemin, "valeur interdite"))
         if "if" in s and isinstance(v, dict):
@@ -434,6 +437,11 @@ class Validation:
                 self.valeurs[liste][e["id"]] = e
                 if liste == "usages" and e.get("famille") not in ("modalite", "prerequis"):
                     self.rapport.erreur(fichier, champ, "« famille » vaut « modalite » ou « prerequis »")
+                if liste == "roles":
+                    vpd = e.get("visible_par_defaut")
+                    if not (isinstance(vpd, dict) and isinstance(vpd.get("exterieur"), bool) and isinstance(vpd.get("eleve"), bool)):
+                        self.rapport.erreur(fichier, champ, f"le rôle « {e['id']} » a besoin de « visible_par_defaut » : "
+                                                            "{ \"exterieur\": true ou false, \"eleve\": true ou false }")
         defauts = [f for f in self.valeurs.get("formats", {}).values() if f.get("par_defaut")]
         if len(defauts) != 1:
             self.rapport.erreur(fichier, "formats", "exactement un format doit avoir « par_defaut »: true")
@@ -581,12 +589,12 @@ class Validation:
             self.fiches[rid] = (fichier, fiche)
 
     def verifier_fiche(self, rid, fichier, f):
-        for champ, liste in (("enseignements", "enseignements"), ("niveaux", "niveaux"),
+        for champ, liste in (("enseignements", "enseignements"), ("niveaux", "niveaux"), ("types", "types"),
                              ("usages", "usages"), ("langages", "langages")):
             for i, val in enumerate(f.get(champ, []) if isinstance(f.get(champ), list) else []):
                 if isinstance(val, str):
                     self.verifier_valeur(fichier, joindre(champ, i), val, liste)
-        for champ, liste in (("type", "types"), ("origine", "origines"), ("statut", "statuts")):
+        for champ, liste in (("origine", "origines"), ("statut", "statuts")):
             if isinstance(f.get(champ), str):
                 self.verifier_valeur(fichier, champ, f[champ], liste)
 
@@ -615,7 +623,14 @@ class Validation:
         de = f.get("donnees_eleves")
         if isinstance(de, dict) and de.get("collecte") is True:
             self.compteurs["collecte"] += 1
-            self.rapport.info(fichier, "donnees_eleves", "la ressource collecte des données d'élèves : signalée à l'enseignant")
+            if de.get("facultative") is True:
+                self.rapport.info(fichier, "donnees_eleves",
+                                  "collecte facultative de données d'élèves (la ressource s'utilise aussi sans) : signalée à l'enseignant")
+            else:
+                self.rapport.info(fichier, "donnees_eleves", "la ressource collecte des données d'élèves : signalée à l'enseignant")
+        elif isinstance(de, dict) and de.get("facultative") is True:
+            self.rapport.erreur(fichier, "donnees_eleves.facultative",
+                                "« facultative » n'a de sens que si « collecte » vaut true")
 
         docs = f.get("documents")
         if not isinstance(docs, list):
@@ -675,9 +690,6 @@ class Validation:
             if r.get("sensible") and vis.get("eleve") is True:
                 self.rapport.attention(fichier, ou(i, d, "visible.eleve"),
                                        f"un document « {r.get('libelle', role)} » est visible des élèves : est-ce voulu ?")
-            if role == "corrige" and vis.get("exterieur") is True:
-                self.rapport.attention(fichier, ou(i, d, "visible.exterieur"),
-                                       "un corrigé visible de l'extérieur est lisible par tout le monde, élèves compris")
             if vis.get("exterieur") is False or vis.get("eleve") is False:
                 self.compteurs["caches"] += 1
                 badge = ("tous" if vis.get("exterieur") is False and vis.get("eleve") is False
@@ -749,6 +761,12 @@ class Validation:
                     prog = None
                 elif not n:
                     prog = None
+            ref = rub.get("reference_officielle")
+            if ref:
+                n = self.verifier_noeud(fichier, joindre(cr, "reference_officielle"), ref)
+                if n and n["niveau"] != "programme":
+                    self.rapport.erreur(fichier, joindre(cr, "reference_officielle"),
+                                        f"« {ref} » n'est pas un texte entier (exemple : pp-2018)")
             ids_libres, themes_vus = set(), set()
             for j, s in enumerate(rub["sections"]):
                 cs = joindre(joindre(cr, "sections"), j)

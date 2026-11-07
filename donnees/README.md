@@ -1,7 +1,7 @@
 # Les données de la bibliothèque
 
-**Statut : proposition (tâche T02), à valider par l'enseignant.** Le site actuel ne lit pas encore ces
-fichiers : il continue d'utiliser les listes `*/ressources.js`.
+**Statut : format validé par l'enseignant le 07/11/2026 (tâche T02).** Le site actuel ne lit pas encore
+ces fichiers : il continue d'utiliser les listes `*/ressources.js`.
 
 ```
 donnees/
@@ -22,21 +22,28 @@ scripts/valider_donnees.py    la vérification automatique
 
 **Une ressource = une fiche.** CyberCase, le TD 1 de POO ou la Timeline ont chacun leur fiche. Elle dit
 ce qu'est la ressource (titre, accroche, résumé, présentation, objectif, durée), pour qui (enseignement,
-niveau, thème ou contenu du programme), comment elle s'utilise (type, usages, prérequis, langages), d'où
-elle vient (origine, auteurs, licence, crédits), si elle **collecte des données d'élèves**, et son état
-(brouillon, prête, à revoir, obsolète).
+niveau, thème ou contenu du programme), comment elle s'utilise (un ou plusieurs types, usages, prérequis,
+langages), d'où elle vient (origine, auteurs, licence, crédits), si elle **collecte des données d'élèves**,
+et son état (brouillon, prête, à revoir, obsolète). Tes ressources sont signées « Babash - NSI Tani
+Malandi », sous licence CC BY-SA pour les documents et MIT pour le code des applications ; une ressource
+externe est créditée à son site d'origine.
 
 **Une ressource a un ou plusieurs documents** : l'activité, sa version PDF, le corrigé, le guide du
 professeur, le code source… Un seul est le **document principal** : celui qu'ouvre un clic sur le titre.
 
 **Chaque document a deux réglages de visibilité** : visible de l'extérieur (oui ou non), visible des élèves
-(oui ou non). Vous, dans l'admin, voyez tout. Les règles :
+(oui ou non). Toi, dans l'admin, tu vois tout. Les règles :
 - une ressource apparaît pour un public si au moins un de ses documents lui est visible ;
 - si le document principal est caché pour un public, le premier document visible le remplace ;
 - pour cacher une ressource, on cache tous ses documents.
 
 > Exemple (fiche `operation-mirage`) : la fiche élève et le terminal sont visibles de tous ; la fiche
-> professeur est cachée à tous (badge « caché : tous ») ; le code source est caché aux élèves seulement.
+> professeur et le code source sont visibles de l'extérieur, pour les collègues, et cachés aux élèves
+> (badge « caché : élèves »).
+
+**Au départ**, tout ce qui est affiché aujourd'hui reste visible de l'extérieur ; l'espace professeur, le
+guide du professeur, le corrigé et le code source sont cachés aux élèves. Les corrigés restent donc
+visibles de l'extérieur pour les collègues, même si des élèves peuvent les y trouver.
 
 **À savoir** : le dépôt est public. Un document caché n'est pas affiché, mais il reste lisible par qui
 consulte le dépôt ou connaît son adresse. C'est pourquoi les fiches et les notes ne contiennent jamais de
@@ -50,10 +57,12 @@ et en NSI Terminale. « À la une » met quelques ressources en avant sur l'accu
 
 **Les programmes** sont rangés comme les textes officiels, chaque thème et chaque contenu ayant un
 identifiant qui ne changera plus (`snt-2019.internet.dns`). Quand la SNT révisée arrivera (annoncée pour
-2027), elle s'ajoutera à côté (`snt-2027`), sans rien casser.
+2027), elle s'ajoutera à côté (`snt-2027`), sans rien casser. La rubrique Professeur principal garde ses
+thèmes actuels (Conseils de classe, Suivi des élèves, Orientation, Familles, Vie de classe, Textes
+officiels) ; la circulaire de 2018 y est citée comme référence.
 
-**Les listes de valeurs** reprennent celles du cahier des charges. Les quelques ajouts proposés sont
-marqués `"propose": true` dans `valeurs.json`.
+**Les listes de valeurs** reprennent celles du cahier des charges. Les ajouts validés le 07/11 (quatre
+rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.json`.
 
 ---
 
@@ -65,13 +74,21 @@ marqués `"propose": true` dans `valeurs.json`.
   dans les adresses (`bibliotheque/?r=td1-poo`), la vitrine et les progressions.
 - **Classements** : on écrit l'`id` d'une valeur des référentiels, jamais son libellé. Une valeur qui manque
   se demande dans le rapport ; les référentiels ne changent qu'après validation de l'enseignant.
+- **Types** : une liste (`types`), au moins un, le principal en premier.
 - **Programme** : on cite un thème ou un contenu de `programmes.json`, le plus précis possible.
+- **Auteurs et licences** : ressource de l'enseignant → `{ "nom": "Babash - NSI Tani Malandi", "role": "auteur" }`,
+  licence « CC BY-SA » pour les documents, « MIT » pour le code des applications. Ressource externe → créditée à
+  son site d'origine (`credits`, et un auteur avec le rôle « site d'origine »).
 - **Documents** : `url` (lien direct) **ou** `fichier` (chemin depuis la racine du dépôt, par exemple
   `nsi-terminale/fichiers/td1-poo-premiers-pas.pdf`, ancre permise). Jamais de page GitHub, sauf pour le
   rôle `code-source`. Le `format` est déduit de l'adresse (règles dans `valeurs.json`) : ne l'écrire que pour
   corriger une déduction fausse.
-- **`visible`** est obligatoire sur chaque document, avec ses deux réglages : rien n'est caché ou montré par défaut.
+- **`visible`** est obligatoire sur chaque document, avec ses deux réglages : rien n'est caché ou montré par oubli.
+  La valeur de départ d'un nouveau document est celle du rôle (`visible_par_defaut` dans `valeurs.json`).
 - **`donnees_eleves`** est obligatoire : `{ "collecte": false }`, ou `{ "collecte": true, "detail": "…" }`.
+  Ajouter `"facultative": true` quand l'élève peut s'en servir sans rien transmettre (CyberCase).
+- **Vitrine** : une rubrique suit un programme (`"programme": "snt-2019"`) ou cite seulement un texte de
+  référence (`"reference_officielle": "pp-2018"`), jamais les deux.
 - **`dates`** sont remplies automatiquement ; **`notes`** sont réservées à l'enseignant (`[{ "date": "…", "texte": "…" }]`).
 - Textes : français clair, formulations épicènes et double flexion, pas de point médian. Mise en forme permise :
   `code`, **gras**, retours à la ligne.
@@ -86,7 +103,7 @@ marqués `"propose": true` dans `valeurs.json`.
   "enseignements": ["nsi"],
   "niveaux": ["terminale"],
   "programme": ["nsi-tle-2019.structures-de-donnees.poo"],
-  "type": "td",
+  "types": ["td"],
   "usages": ["a-imprimer"],
   "origine": "ma-creation",
   "donnees_eleves": { "collecte": false },
@@ -102,12 +119,12 @@ marqués `"propose": true` dans `valeurs.json`.
 
 | Fiche | Le cas qu'elle illustre |
 |---|---|
-| `cybercase` | ressource externe, « à la une », placée en SNT et en NSI Tle, collecte signalée, aucun identifiant de démonstration |
+| `cybercase` | ressource externe créditée à son site d'origine, « à la une », placée en SNT et en NSI Tle, collecte facultative, aucun identifiant de démonstration |
 | `td1-poo` | ressource interne : page HTML du site et sa version PDF |
 | `timeline-histoire-informatique` | placée en NSI 1re et en NSI Tle ; code source sur GitHub, caché aux élèves |
-| `alien-python` | collecte de données d'élèves (`donnees_eleves`), crédits et licence d'un tiers, espace professeur |
+| `alien-python` | collecte de données d'élèves (`donnees_eleves`, à titre d'information), crédits d'un tiers, espace professeur |
 | `fiche-variables-python` | fiche FichesNSI et sa version PDF, deux enseignements (SNT et NSI 1re) |
-| `operation-mirage` | document caché à tous (fiche professeur), et document caché aux élèves seulement |
+| `operation-mirage` | plusieurs types (TP et jeu) ; fiche professeur et code source visibles de l'extérieur, cachés aux élèves |
 
 Ces fiches illustrent le format : leur contenu sera repris par le Bibliothécaire.
 
@@ -141,4 +158,4 @@ Elles sont citées dans `referentiels/programmes.json` (champ `sources`). En ré
 - NSI 1re et Tle 2019 : repris des listes `programme` du site actuel ; une relecture contre les PDF du BO reste à faire
   (certains intitulés y sont abrégés).
 - PP : circulaire n° 2018-108 du 10 octobre 2018 (BO n° 37 du 11 octobre 2018), partie « I. Leurs missions » ;
-  un intitulé est marqué `a_verifier`.
+  un intitulé est marqué `a_verifier`. Elle sert de référence et ne structure pas la rubrique.
