@@ -345,6 +345,33 @@
     return reglagesSite.titre || 'Ressources';
   }
 
+  /* ── Licences, auteur et mention de l'IA (bas de chaque page) ──── */
+
+  /* Décision de l'enseignant du 07/11/2026 : documents en CC BY-SA 4.0, code des applications en MIT */
+  var LICENCES = [
+    { nom: 'CC BY-SA 4.0', quoi: 'documents', lien: 'https://creativecommons.org/licenses/by-sa/4.0/deed.fr' },
+    { nom: 'MIT', quoi: 'code des applications', lien: 'https://opensource.org/license/mit' }
+  ];
+  var AUTEUR = 'Babash - NSI Tani Malandi';
+
+  function mentions() {
+    var auteur = reglagesSite.auteur || AUTEUR;
+    var licences = [];
+    LICENCES.forEach(function (l, i) {
+      if (i) licences.push(', ');
+      licences.push(l.quoi + ' sous licence ', el('a', { href: l.lien, rel: 'license' }, l.nom));
+    });
+    return el('p', { class: 'petit mentions' }, [
+      'Ressources créées par ', el('strong', null, auteur), ' : '
+    ].concat(licences, [
+      '. Tu peux les réutiliser et les modifier en citant leur source ; un document modifié se partage sous la même licence.',
+      el('br'),
+      'Les ressources externes restent la propriété de leurs auteurs et autrices : leur site d\'origine est indiqué sur chaque ressource. Décor du site : dessin original.',
+      reglagesSite.mention_ia ? el('br') : null,
+      reglagesSite.mention_ia || null
+    ]));
+  }
+
   function lireRecherche() {
     try { return new URLSearchParams(location.search).get('q') || ''; } catch (e) { return ''; }
   }
@@ -737,7 +764,7 @@
       el('h2', null, 'Ajouter une ressource'),
       el('p', null, 'Chaque rubrique a sa liste dans un petit fichier texte de son dossier. On y ajoute un lien vers une ressource en ligne, ou vers un fichier (PDF, fiche, diaporama) déposé dans le dossier de la rubrique. Le lien « Modifier la liste » se trouve en bas de chaque rubrique.'),
       reglagesSite.depot ? el('p', { class: 'actions' }, el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi complet')) : null,
-      el('p', { class: 'petit' }, 'Les ressources externes restent la propriété de leurs auteurs. Décor du site : dessin original.')
+      mentions()
     ]));
   }
 
@@ -829,7 +856,8 @@
         el('a', { href: urlGithub('edit', rub.id + '/ressources.js') }, 'Modifier la liste'),
         el('a', { href: urlGithub('upload', rub.id + '/fichiers') }, 'Déposer un fichier'),
         el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi')
-      ]) : null
+      ]) : null,
+      mentions()
     ]));
   }
 
