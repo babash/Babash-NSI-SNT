@@ -1,9 +1,11 @@
 # Vérification automatique du site
 #  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources.
-#    Un lien en échec est revérifié deux minutes plus tard : il n'est déclaré mort que s'il
-#    échoue aux deux passes (les pannes passagères ne déclenchent plus d'alerte).
+#    Un lien en échec est revérifié par un second job, donc sur une autre machine, une à deux
+#    minutes plus tard : il n'est déclaré mort que s'il échoue aux deux passes (les pannes
+#    passagères, ou un site qui ignore une machine de GitHub, ne déclenchent plus d'alerte).
 #  - après chaque mise en ligne de main : chaque page du site, affichée dans Chrome, une fois
-#    que GitHub Pages a réellement déployé ce commit (scripts/attendre_deploiement.py).
+#    que GitHub Pages a réellement déployé ce commit (scripts/attendre_deploiement.py), et après
+#    avoir vérifié que les fichiers modifiés par ce commit sont bien ceux servis en ligne.
 #  - à la demande (onglet Actions, « Run workflow ») : les liens de la branche choisie, et le
 #    site en ligne tel que main l'a déployé.
 # Résultat : onglet « Actions » du dépôt (coche verte ou croix rouge, détail dans le résumé).
@@ -21,28 +23,35 @@ on:
 permissions:
   contents: read
 
+env:
+  # Réglages communs aux deux passes du contrôle des liens
+  LIENS_REGLAGES: >-
+    --no-progress
+    --max-retries 4
+    --retry-wait-time 10
+    --timeout 60
+    --max-concurrency 8
+    --accept 200..=299,403,429
+    --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+
 jobs:
   liens:
     name: Liens des ressources
     runs-on: ubuntu-latest
+    outputs:
+      nombre: ${{ steps.relever.outputs.nombre }}
+      releve: ${{ steps.relever.outputs.releve }}
     steps:
       - uses: actions/checkout@v4
 
       - name: Préparer le dossier des rapports
         run: mkdir -p lychee
 
-      # Les deux passes utilisent les mêmes réglages : les modifier aux deux endroits.
       - name: Vérifier les liens (première passe)
         uses: lycheeverse/lychee-action@v2
         with:
           args: >-
-            --no-progress
-            --max-retries 4
-            --retry-wait-time 10
-            --timeout 60
-            --max-concurrency 8
-            --accept 200..=299,403,429
-            --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
+            ${{ env.LIENS_REGLAGES }}
             --exclude "adresse-de-la-ressource"
             --exclude "^https://claude\.ai/"
             --exclude "^https://capytale2\.ac-paris\.fr/(p|web)/"
@@ -54,34 +63,41 @@ jobs:
           fail: false
           jobSummary: false
 
+      # Les liens en échec passent au job suivant ; ce job reste vert.
       - name: Relever les liens en échec
         id: relever
-        run: python3 scripts/liens_seconde_passe.py relever lychee/premiere.json lychee/a-revoir.txt
+        run: python3 scripts/liens_seconde_passe.py relever lychee/premiere.json lychee/releve.json
+
+  liens-seconde-passe:
+    name: Liens en échec, seconde passe
+    needs: liens
+    if: needs.liens.outputs.nombre != '0'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reprendre les liens en échec de la première passe
+        env:
+          RELEVE: ${{ needs.liens.outputs.releve }}
+        run: |
+          mkdir -p lychee
+          printf '%s' "$RELEVE" > lychee/releve.json
+          python3 scripts/liens_seconde_passe.py liste lychee/releve.json lychee/a-revoir.txt
 
       - name: Laisser passer une éventuelle panne passagère
-        if: steps.relever.outputs.nombre != '0'
-        run: sleep 120
+        run: sleep 60
 
       - name: Vérifier les liens en échec (seconde passe)
-        if: steps.relever.outputs.nombre != '0'
         uses: lycheeverse/lychee-action@v2
         with:
-          args: >-
-            --no-progress
-            --max-retries 4
-            --retry-wait-time 10
-            --timeout 60
-            --max-concurrency 8
-            --accept 200..=299,403,429
-            --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
-            "lychee/a-revoir.txt"
+          args: ${{ env.LIENS_REGLAGES }} "lychee/a-revoir.txt"
           format: json
           output: lychee/seconde.json
           fail: false
           jobSummary: false
 
       - name: Bilan des liens
-        run: python3 scripts/liens_seconde_passe.py bilan lychee/premiere.json lychee/seconde.json
+        run: python3 scripts/liens_seconde_passe.py bilan lychee/releve.json lychee/seconde.json
 
   site:
     name: Site en ligne
@@ -108,6 +124,11 @@ jobs:
         with:
           ref: ${{ steps.deploiement.outputs.sha }}
           path: deploye
+          fetch-depth: 2
+
+      - name: Vérifier que les fichiers de ce commit sont en ligne
+        if: steps.deploiement.outputs.a_verifier == 'oui'
+        run: python3 scripts/attendre_deploiement.py --comparer deploye --site https://babash.github.io/Babash-NSI-SNT
 
       - name: Afficher chaque page dans Chrome
         if: steps.deploiement.outputs.a_verifier == 'oui'
