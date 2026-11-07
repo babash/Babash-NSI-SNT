@@ -37,7 +37,8 @@ elle-même est la tâche suivante : rien n'est converti ici, en dehors des 6 fic
 | `texte` | `presentation` | tel quel, avec la même mise en forme (`code`, **gras**, retours à la ligne) |
 | — | `resume` | la première phrase de `texte`, à reprendre par le Bibliothécaire |
 | — | `accroche`, `objectif`, `duree`, `mots_cles`, `liees` | à écrire par le Bibliothécaire (souvent déjà dans `texte` : durée) |
-| — | `auteurs`, `licence`, `credits` | ressource de l'enseignant (origine `ma-creation`) : auteur « Babash - NSI Tani Malandi », licence CC BY-SA pour les documents, MIT pour le code des applications. Ressource externe : créditée à son site d'origine (`credits`, et `auteurs` avec le rôle « site d'origine »). |
+| — | `competences_pix`, `criteres_reussite` | facultatifs : compétences Pix pour les ressources de SNT, critères de réussite au cas par cas ; laissés vides par la conversion |
+| — | `auteurs`, `licence`, `credits` | ressource de l'enseignant (origine `ma-creation`) : auteur « Babash - NSI Tani Malandi », licence CC BY-SA 4.0 pour les documents, MIT pour le code des applications. Ressource externe : créditée à son site d'origine (`credits`, et `auteurs` avec le rôle « site d'origine »). |
 | `tags` | `usages`, `langages`, `types`, `niveaux`, vitrine | voir § 3 |
 | `annexes` | les autres `documents` | voir § 4 |
 | la rubrique (le fichier) | `enseignements` et `niveaux` | `snt` → SNT, seconde ; `nsi-premiere` → NSI, première ; `nsi-terminale` → NSI, terminale ; `pp` → PP, niveau selon la ressource ; `autres` → transversal (ou SNT, NSI), niveaux selon la ressource |
@@ -58,6 +59,7 @@ elle-même est la tâche suivante : rien n'est converti ici, en dehors des 6 fic
 | Débranché (6) | usage `debranche` ; et ajoute le type `activite-debranchee` quand c'est une activité |
 | Pour aller plus loin (6) | usage `pour-aller-plus-loin` (ajout validé le 07/11) |
 | Rien à installer (4) | rien à écrire : c'est l'absence du prérequis `installation`, que l'affichage peut signaler |
+| (aucune) | usage `sur-telephone` (« Utilisable sur téléphone ») : aucune étiquette actuelle ne le donne ; le Bibliothécaire le renseigne après essai sur téléphone. Il n'y a pas de prérequis « téléphone » (décision du 07/11). |
 | Connexion ENT (4) | usage (prérequis) `compte-ent` |
 | SQL (4) | langage `sql` |
 | À adapter (2) | usage (prérequis) `a-adapter` (ajout validé le 07/11), l'explication restant dans la présentation |

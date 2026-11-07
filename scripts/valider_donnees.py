@@ -5,7 +5,8 @@ Contrôles :
   - chaque fichier est un JSON valide et conforme à son schéma (donnees/schema/) ;
   - les identifiants sont uniques, et chaque fiche s'appelle <id>.json ;
   - toutes les références existent : référentiels (donnees/referentiels/valeurs.json),
-    programmes (programmes.json), autres fiches, fichiers déposés sur le site ;
+    programmes (programmes.json), compétences Pix (competences-pix.json), autres fiches,
+    fichiers déposés sur le site ;
   - chaque ressource a exactement un document principal ;
   - aucun document ne pointe vers une page GitHub, sauf le rôle « code source » ;
   - visibilité (cahier des charges, § 3.2) : ce que voient l'extérieur et les élèves ;
@@ -483,6 +484,8 @@ class Validation:
                 self.noeuds[parent]["enfants"].append(nid)
             return nid
 
+        self.charger_pix()
+
         progs = p.get("programmes")
         if not isinstance(progs, list) or not progs:
             self.rapport.erreur(fichier, "programmes", "liste manquante ou vide")
@@ -506,6 +509,40 @@ class Validation:
                 for k, co in enumerate(th.get("contenus", [])):
                     noeud(co, joindre(joindre(cth, "contenus"), k), "contenu", tid, pid)
         return True
+
+    def charger_pix(self):
+        """Le référentiel des compétences Pix (cadre de référence des compétences numériques)."""
+        chemin = os.path.join(self.donnees, "referentiels", "competences-pix.json")
+        fichier = self.nom(chemin)
+        self.valeurs["competences_pix"] = {}
+        if not os.path.exists(chemin):
+            self.rapport.erreur(fichier, "", "référentiel introuvable")
+            return
+        c = lire_json(self.racine, chemin, self.rapport)
+        if not isinstance(c, dict):
+            return
+        chercher_secrets(fichier, c, self.rapport)
+        domaines = {d.get("numero") for d in c.get("domaines", []) if isinstance(d, dict) and d.get("libelle")}
+        if not domaines:
+            self.rapport.erreur(fichier, "domaines", "liste manquante ou vide")
+        competences = c.get("competences")
+        if not isinstance(competences, list) or not competences:
+            self.rapport.erreur(fichier, "competences", "liste manquante ou vide")
+            return
+        for i, e in enumerate(competences):
+            champ = joindre("competences", i)
+            if not isinstance(e, dict) or not isinstance(e.get("id"), str) or not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", e["id"]):
+                self.rapport.erreur(fichier, champ, "chaque compétence a un « id » en minuscules, sans accents, avec des tirets")
+                continue
+            if e["id"] in self.valeurs["competences_pix"]:
+                self.rapport.erreur(fichier, champ, f"l'identifiant « {e['id']} » figure deux fois")
+            if not isinstance(e.get("libelle"), str) or not e["libelle"].strip():
+                self.rapport.erreur(fichier, champ, f"la compétence « {e['id']} » n'a pas de « libelle »")
+            if e.get("domaine") not in domaines:
+                self.rapport.erreur(fichier, champ, f"la compétence « {e['id']} » cite un domaine inconnu ({e.get('domaine')})")
+            if not re.fullmatch(r"[1-9]\.[1-9]", str(e.get("numero", ""))) or not str(e["numero"]).startswith(f"{e.get('domaine')}."):
+                self.rapport.erreur(fichier, champ, f"le numéro de « {e['id']} » doit s'écrire <domaine>.<rang> (exemple : 3.4)")
+            self.valeurs["competences_pix"][e["id"]] = e
 
     def verifier_valeur(self, fichier, champ, valeur, liste):
         if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", valeur):
@@ -590,10 +627,13 @@ class Validation:
 
     def verifier_fiche(self, rid, fichier, f):
         for champ, liste in (("enseignements", "enseignements"), ("niveaux", "niveaux"), ("types", "types"),
-                             ("usages", "usages"), ("langages", "langages")):
+                             ("usages", "usages"), ("langages", "langages"), ("competences_pix", "competences_pix")):
             for i, val in enumerate(f.get(champ, []) if isinstance(f.get(champ), list) else []):
                 if isinstance(val, str):
                     self.verifier_valeur(fichier, joindre(champ, i), val, liste)
+        if f.get("competences_pix") and "snt" not in (f.get("enseignements") or []):
+            self.rapport.attention(fichier, "competences_pix",
+                                   "les compétences Pix sont prévues pour les ressources de SNT : ajouter « snt » aux enseignements, ou retirer ce champ")
         for champ, liste in (("origine", "origines"), ("statut", "statuts")):
             if isinstance(f.get(champ), str):
                 self.verifier_valeur(fichier, champ, f[champ], liste)

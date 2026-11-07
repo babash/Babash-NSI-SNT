@@ -11,6 +11,7 @@ donnees/
   referentiels/
     programmes.json           l'arbre des textes officiels : SNT 2019, NSI 1re et Tle 2019, missions du PP
     valeurs.json              les listes de valeurs : types, usages, origines, rôles, langages…
+    competences-pix.json      les 16 compétences numériques évaluées par Pix (champ facultatif en SNT)
   schema/                     la description exacte du format (JSON Schema)
   correspondance-etiquettes.md  comment les listes actuelles passeront dans ce format
 scripts/valider_donnees.py    la vérification automatique
@@ -21,11 +22,12 @@ scripts/valider_donnees.py    la vérification automatique
 ## Pour l'enseignant : le format en bref
 
 **Une ressource = une fiche.** CyberCase, le TD 1 de POO ou la Timeline ont chacun leur fiche. Elle dit
-ce qu'est la ressource (titre, accroche, résumé, présentation, objectif, durée), pour qui (enseignement,
-niveau, thème ou contenu du programme), comment elle s'utilise (un ou plusieurs types, usages, prérequis,
-langages), d'où elle vient (origine, auteurs, licence, crédits), si elle **collecte des données d'élèves**,
+ce qu'est la ressource (titre, accroche, résumé, présentation, durée), ce qu'elle vise (objectif, et au
+besoin des critères de réussite), pour qui (enseignement, niveau, thème ou contenu du programme), comment
+elle s'utilise (un ou plusieurs types, usages dont « utilisable sur téléphone », prérequis, langages, et en
+SNT les compétences Pix), d'où elle vient (origine, auteurs, licence, crédits), si elle **collecte des données d'élèves**,
 et son état (brouillon, prête, à revoir, obsolète). Tes ressources sont signées « Babash - NSI Tani
-Malandi », sous licence CC BY-SA pour les documents et MIT pour le code des applications ; une ressource
+Malandi », sous licence CC BY-SA 4.0 pour les documents et MIT pour le code des applications ; une ressource
 externe est créditée à son site d'origine.
 
 **Une ressource a un ou plusieurs documents** : l'activité, sa version PDF, le corrigé, le guide du
@@ -75,9 +77,13 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 - **Classements** : on écrit l'`id` d'une valeur des référentiels, jamais son libellé. Une valeur qui manque
   se demande dans le rapport ; les référentiels ne changent qu'après validation de l'enseignant.
 - **Types** : une liste (`types`), au moins un, le principal en premier.
+- **Usages** : « utilisable sur téléphone » est une modalité (`sur-telephone`) ; il n'y a pas de prérequis « téléphone ».
+- **Compétences Pix** (facultatif, ressources de SNT) : `competences_pix`, identifiants de
+  `referentiels/competences-pix.json` (les 16 compétences du cadre de référence, par exemple `programmer`).
+- **Critères de réussite** (facultatif, au cas par cas) : `criteres_reussite`, du niveau 1 au plus exigeant.
 - **Programme** : on cite un thème ou un contenu de `programmes.json`, le plus précis possible.
 - **Auteurs et licences** : ressource de l'enseignant → `{ "nom": "Babash - NSI Tani Malandi", "role": "auteur" }`,
-  licence « CC BY-SA » pour les documents, « MIT » pour le code des applications. Ressource externe → créditée à
+  licence « CC BY-SA 4.0 » pour les documents, « MIT » pour le code des applications. Ressource externe → créditée à
   son site d'origine (`credits`, et un auteur avec le rôle « site d'origine »).
 - **Documents** : `url` (lien direct) **ou** `fichier` (chemin depuis la racine du dépôt, par exemple
   `nsi-terminale/fichiers/td1-poo-premiers-pas.pdf`, ancre permise). Jamais de page GitHub, sauf pour le
@@ -157,5 +163,7 @@ Elles sont citées dans `referentiels/programmes.json` (champ `sources`). En ré
   deux copies concordantes du BO (SNES), la page Éduscol n'ayant pas pu être ouverte.
 - NSI 1re et Tle 2019 : repris des listes `programme` du site actuel ; une relecture contre les PDF du BO reste à faire
   (certains intitulés y sont abrégés).
+- Compétences Pix : cadre de référence des compétences numériques, annexe du décret n° 2019-919 du
+  30 août 2019 (BO n° 37 du 10 octobre 2019 et JO du 1er septembre 2019), sources citées dans `competences-pix.json`.
 - PP : circulaire n° 2018-108 du 10 octobre 2018 (BO n° 37 du 11 octobre 2018), partie « I. Leurs missions » ;
   un intitulé est marqué `a_verifier`. Elle sert de référence et ne structure pas la rubrique.
