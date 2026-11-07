@@ -14,6 +14,8 @@
 # Résultat : onglet « Actions » du dépôt (coche verte ou croix rouge, détail dans le résumé).
 # Pages exclues : celles qui demandent une connexion (Capytale, claude.ai) et
 # algorea.org, qui refuse les connexions des robots de GitHub.
+# Machines : ubuntu-26.04, fixé (et non ubuntu-latest) pour qu'un changement d'image se décide.
+# C'est l'image sur laquelle ce workflow a toujours tourné, depuis son premier run du 06/11/2026.
 
 name: Vérifier le site
 
@@ -42,10 +44,10 @@ jobs:
     name: Données de la bibliothèque
     # Les données ne changent pas sans envoi : rien à revérifier le lundi.
     if: github.event_name != 'schedule'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Python standard, rien à installer. Pas de --strict tant que restent les deux
       # avertissements voulus (éditeur d'Alien Python, page du TD 1 de POO : tâche T18).
@@ -54,12 +56,12 @@ jobs:
 
   liens:
     name: Liens des ressources
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     outputs:
       nombre: ${{ steps.relever.outputs.nombre }}
       releve: ${{ steps.relever.outputs.releve }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Préparer le dossier des rapports
         run: mkdir -p lychee
@@ -89,9 +91,9 @@ jobs:
     name: Liens en échec, seconde passe
     needs: liens
     if: needs.liens.outputs.nombre != '0'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Reprendre les liens en échec de la première passe
         env:
@@ -119,12 +121,12 @@ jobs:
   site:
     name: Site en ligne
     if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       deployments: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       # Après un envoi sur main : ce commit. À la demande : le dernier commit de main.
       - name: Attendre que GitHub Pages ait déployé ce commit
@@ -137,7 +139,7 @@ jobs:
       # Les listes et le contrôle de la version déployée, pour comparer avec ce qui est en ligne
       - name: Récupérer la version déployée
         if: steps.deploiement.outputs.a_verifier == 'oui'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           ref: ${{ steps.deploiement.outputs.sha }}
           path: deploye
