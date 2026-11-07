@@ -345,6 +345,65 @@
     return reglagesSite.titre || 'Ressources';
   }
 
+  /* ── Licences, auteur et mention de l'IA (bas de chaque page) ──── */
+
+  /* Décision de l'enseignant du 07/11/2026 : documents en CC BY-SA 4.0, code des applications en MIT */
+  var LICENCES = [
+    { nom: 'CC BY-SA 4.0', quoi: 'documents', lien: 'https://creativecommons.org/licenses/by-sa/4.0/deed.fr' },
+    { nom: 'MIT', quoi: 'code des applications', lien: 'https://opensource.org/license/mit' }
+  ];
+  /* Textes validés par l'enseignant (07/11/2026). reglages.js peut les remplacer ; un texte vide ("") les retire.
+     {auteur} est remplacé par le nom de l'auteur. */
+  var MENTIONS = {
+    auteur: 'Babash - NSI Tani Malandi',
+    mention_ia: 'Ces ressources sont conçues par {auteur} ; beaucoup le sont avec l\'aide de l\'IA.',
+    reutilisation: 'Tu peux les réutiliser et les modifier en mentionnant {auteur} et la licence ; un document modifié se partage sous la même licence.',
+    invitation_ia: 'Si tu utilises l\'IA pour les modifier, merci de le préciser.'
+  };
+
+  function mention(cle) {
+    var v = reglagesSite[cle];
+    return typeof v === 'string' ? v.trim() : MENTIONS[cle];
+  }
+
+  /* Un texte où {auteur} devient le nom (en gras la première fois qu'il apparaît dans le bloc) */
+  function avecAuteur(texte, auteur, gras) {
+    var morceaux = [];
+    auteur = auteur.replace(/ - /g, ' - '); // pas de retour à la ligne autour du tiret
+    texte.split('{auteur}').forEach(function (t, i) {
+      if (i) morceaux.push(gras ? el('strong', null, auteur) : auteur);
+      if (t) morceaux.push(t);
+    });
+    return morceaux;
+  }
+
+  function mentions() {
+    var auteur = mention('auteur') || MENTIONS.auteur;
+    var lignes = [];
+    var ia = mention('mention_ia');
+    if (ia) lignes.push(avecAuteur(ia, auteur, true));
+
+    var licences = [];
+    LICENCES.forEach(function (l, i) {
+      licences.push(i ? ', ' + l.quoi : l.quoi.charAt(0).toUpperCase() + l.quoi.slice(1));
+      licences.push(' sous licence ', el('a', { href: l.lien, rel: 'license' }, l.nom));
+    });
+    licences.push('.');
+    lignes.push(licences);
+
+    var reutiliser = [mention('reutilisation'), mention('invitation_ia')].filter(Boolean).join(' ');
+    if (reutiliser) lignes.push(avecAuteur(reutiliser, auteur, !ia));
+
+    lignes.push(['Les ressources externes restent la propriété de leurs auteurs et autrices : leur site d\'origine est indiqué sur chaque ressource. Décor du site : dessin original.']);
+
+    var contenu = [];
+    lignes.forEach(function (l, i) {
+      if (i) contenu.push(el('br'));
+      contenu = contenu.concat(l);
+    });
+    return el('p', { class: 'petit mentions' }, contenu);
+  }
+
   function lireRecherche() {
     try { return new URLSearchParams(location.search).get('q') || ''; } catch (e) { return ''; }
   }
@@ -737,7 +796,7 @@
       el('h2', null, 'Ajouter une ressource'),
       el('p', null, 'Chaque rubrique a sa liste dans un petit fichier texte de son dossier. On y ajoute un lien vers une ressource en ligne, ou vers un fichier (PDF, fiche, diaporama) déposé dans le dossier de la rubrique. Le lien « Modifier la liste » se trouve en bas de chaque rubrique.'),
       reglagesSite.depot ? el('p', { class: 'actions' }, el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi complet')) : null,
-      el('p', { class: 'petit' }, 'Les ressources externes restent la propriété de leurs auteurs. Décor du site : dessin original.')
+      mentions()
     ]));
   }
 
@@ -829,7 +888,8 @@
         el('a', { href: urlGithub('edit', rub.id + '/ressources.js') }, 'Modifier la liste'),
         el('a', { href: urlGithub('upload', rub.id + '/fichiers') }, 'Déposer un fichier'),
         el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi')
-      ]) : null
+      ]) : null,
+      mentions()
     ]));
   }
 
