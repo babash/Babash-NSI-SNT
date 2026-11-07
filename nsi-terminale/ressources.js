@@ -59,7 +59,7 @@ groupe("Événements clés de l'histoire de l'informatique");
 ressource({
   titre: "Timeline de l'histoire de l'informatique",
   lien: "https://babash.github.io/TimelineNSI/",
-  texte: "Frise interactive de l'histoire de l'informatique, de l'Antiquité à nos jours, filtrable par catégorie, période et date. Chaque événement existe aussi en carte A5 illustrée, à imprimer pour construire une fresque en classe.",
+  texte: "Frise interactive de l'histoire de l'informatique, de l'Antiquité à nos jours, filtrable par catégorie, période et date. Chaque événement existe aussi en carte A5 à imprimer pour construire une fresque en classe.",
   tags: ["En ligne", "À imprimer"],
   annexes: {
     "Code source et générateur de cartes": "https://github.com/babash/TimelineNSI",
