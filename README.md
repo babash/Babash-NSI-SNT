@@ -32,7 +32,7 @@ nsi-terminale/  …
 pp/             …
 autres/         …
 assets/                     mise en page et fonctionnement (ne pas toucher)
-.github/                    vérification automatique des liens et des pages (voir plus bas)
+.github/                    vérification automatique et outils du Gardien (voir plus bas)
 ```
 
 **Règle des liens** : le lien principal d'une ressource mène **directement** à la ressource
@@ -244,10 +244,14 @@ Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du s
 
 Avant chaque publication, le Gardien pré-valide la branche avec ses outils, rangés dans
 `.github/gardien/` : `python3 -I .github/gardien/controler.py --branche origin/<branche>`
-contrôle les données sensibles, les liens internes, le rendu avant et après (320, 768 et
-1440 px, clair et obscur), les contrastes et la navigation au clavier. Après la publication,
-`bash .github/gardien/attendre_actions.sh <commit>` suit la mise en ligne et lit les résultats
-des contrôles automatiques. Il faut Python avec Playwright et Pillow.
+vérifie que la branche part du dernier `main`, puis contrôle les données sensibles, les liens
+internes, le rendu avant et après (320, 768 et 1440 px, clair et obscur), les contrastes, la
+navigation au clavier et l'impression A4 des documents touchés ; il lance aussi le contrôle
+des pages décrit ci-dessus. La conformité, elle, se vérifie à la lecture : cahier des charges,
+décisions de l'enseignant et règles de conception (voir « L'équipe d'agents »). Après la
+publication, `bash .github/gardien/attendre_actions.sh <commit>` suit la mise en ligne et lit
+les résultats des contrôles automatiques. Il faut Python avec Playwright et Pillow, Chrome ou
+Chromium, et l'outil `gh` de GitHub pour suivre la mise en ligne.
 
 ---
 
@@ -260,14 +264,42 @@ Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`,
 
 Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possède quoi » de
 `CLAUDE.md` : par exemple, les listes `ressources.js` au Bibliothécaire, le moteur
-(`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style au Designer,
-ce README au Gardien. Un agent ne modifie que ses fichiers ; pour les autres, il le signale
-dans son rapport. Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile,
-après avoir vérifié qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
+(`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style et l'icône
+du site (`assets/favicon.svg`) au Designer, ce README et les outils de `.github/gardien/` au
+Gardien. Le dossier `donnees/`, qui accueillera la future bibliothèque, est à l'Architecte
+(notamment le format des données et les référentiels), sauf les fiches des ressources
+(`donnees/ressources/`) et la vitrine (`donnees/vitrine.json`), qui sont au Bibliothécaire.
+Un agent ne modifie que ses fichiers ; pour les autres, il le signale dans son rapport.
+Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile, après avoir vérifié
+qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
+
+Toute ressource produite ou retravaillée suit les règles de conception de la philosophie
+éducative de l'enseignant : une version en ligne utilisable sur téléphone et une version
+papier A4 en noir et blanc, peu de texte, des erreurs expliquées, la correction automatique
+chaque fois que c'est possible… Deux règles s'appliquent toujours aux créations de
+l'enseignant :
+
+- un **TD** existe en deux versions : un PDF imprimable (A4, noir et blanc) et une page HTML
+  qui s'adapte à l'écran, du téléphone au grand écran, et se corrige seule : l'élève répond
+  dans un formulaire et la correction s'affiche aussitôt. La correction se fait dans le
+  navigateur, sans envoyer les réponses ailleurs (ce serait une collecte de données, soumise
+  à l'enseignant) ;
+- un **éditeur de code** (toute ressource où l'élève écrit du code) a la coloration
+  syntaxique ; l'indentation automatique (la touche Tab indente) ; des guides d'indentation
+  qui montrent les blocs (quel `if`, quelle boucle contient quelle ligne), sur le modèle de
+  l'éditeur de Lagon Arena ; l'autocomplétion contextualisée, qui propose ce qui a du sens à
+  cet endroit (mots-clés, variables et fonctions déjà définies, méthodes du type en cours) ;
+  et des erreurs lisibles : l'erreur s'affiche d'abord telle que le langage la donne, puis
+  l'élève peut la faire traduire ou expliquer en français, grâce à des explications intégrées
+  à la ressource, sans service commercial.
+
+Une ressource externe ne se modifie pas : sa fiche peut signaler ce qui lui manque. Le Gardien
+vérifie ces règles avant de publier une ressource. Les ressources déjà en ligne n'ont pas
+encore été revues sous cet angle.
 
 Les documents de coordination (cahier des charges, philosophie éducative, registre des
-décisions, organisation des agents, tableau des tâches, journal des publications) sont dans
-le projet claude.ai « Site SNT-NSI ».
+décisions, organisation des agents, tableau des tâches, journal des publications, rapport du
+Gardien) sont dans le projet claude.ai « Site SNT-NSI ».
 
 ---
 
