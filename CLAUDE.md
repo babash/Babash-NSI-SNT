@@ -4,14 +4,20 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 
 ## Le contexte
 - Site publié par GitHub Pages : https://babash.github.io/Babash-NSI-SNT/ (dépôt public `babash/Babash-NSI-SNT`).
-- Une refonte est en cours : une bibliothèque unique de ressources et trois parties (extérieur, admin, élève). La référence est le cahier des charges, dans le projet claude.ai « Site SNT-NSI ».
+- Une refonte est en cours : une bibliothèque unique de ressources et trois parties (l'extérieur, qui comprend la bibliothèque ; l'admin ; l'élève). La référence est le cahier des charges, dans le projet claude.ai « Site SNT-NSI ».
 - Documents du projet à lire **avant tout travail** (outil Projects) :
+  - `coordination/philosophie-educative.md` : le public, la pédagogie et les valeurs de l'enseignant ; **ses règles de conception (§ 14) s'appliquent à toute ressource** ;
   - `coordination/cahier-des-charges.md` : ce qu'on construit ;
   - `coordination/organisation-des-agents.md` : qui fait quoi ;
   - `coordination/decisions.md` : ce que l'enseignant a décidé ; la décision la plus récente l'emporte ;
   - `coordination/taches.md` : le tableau des tâches ;
   - `design/charte.md` : la charte graphique ;
-  - `claude/etat-du-site.md` : l'état laissé par l'ancienne collecte.
+  - `claude/etat-du-site.md` : l'état laissé par l'ancienne collecte ;
+  - `gardien/rapport.md` et `coordination/journal.md` : les contrôles et les publications.
+- **Si l'outil Projects n'est pas disponible** (c'est le cas dans les copies isolées des agents) :
+  - le chef d'orchestre exporte ces documents dans le dossier d'échange de la copie principale du dépôt, `.claude/echanges/projet/` (un fichier par document, `/` remplacé par `-` : `coordination-decisions.md`…) ;
+  - un agent écrit ses livrables destinés au projet dans `.claude/echanges/livrables/` **de sa propre copie** (même chemin relatif) et donne leur chemin complet dans son rapport ; le chef d'orchestre les publie ;
+  - ce dossier est exclu de Git : ne jamais le commiter.
 
 ## L'organisation
 - **Le chef d'orchestre** est le seul interlocuteur de l'enseignant. Il lance les agents, leur écrit et reçoit leurs rapports. Un agent ne pose pas de question à l'enseignant : il la met dans son rapport.
@@ -19,22 +25,35 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 - **Le Gardien est le seul à publier sur `main`.**
 
 ## Les règles Git
-- Une branche par tâche, partant de `origin/main` à jour. Préfixes : `biblio/`, `archi/`, `design/`, `atelier/`, `orga/`.
+- Une branche par tâche, partant de `origin/main` à jour. Préfixes : `biblio/`, `archi/`, `design/`, `atelier/`, `gardien/`, `orga/`, suivis du numéro de la tâche.
   Exemple : `archi/t02-format-donnees`.
-- Avant de commencer et avant de pousser : `git fetch origin`, puis `git rebase origin/main` si `main` a avancé.
+- Avant de commencer et avant de pousser : `git fetch origin '+refs/heads/*:refs/remotes/origin/*'` (un simple `git fetch origin` ne met pas `origin/main` à jour dans les copies des agents), puis `git rebase origin/main` si `main` a avancé.
 - Messages de commit : `[T02][archi] Format des données : schéma et référentiels`.
 - Auteur des commits : `git config user.name Claude` et `git config user.email noreply@anthropic.com`.
 - **Jamais d'envoi forcé** sur `main`. Sur sa propre branche, seulement `--force-with-lease`.
 - **Pousser sa branche avant de rendre son rapport** : les espaces de travail sont effacés après un temps d'inactivité.
-- Ne jamais supprimer une branche qui n'est pas la sienne.
+- Ne jamais supprimer une branche qui n'est pas la sienne. Seule exception : le Gardien peut supprimer une branche déjà fusionnée ou obsolète, après vérification et avec l'accord du chef d'orchestre (décision du 07/11).
 
 ## Les règles de contenu
 - **Le lien principal** d'une ressource pointe directement vers elle (page, fiche, PDF), jamais vers une page GitHub. Le dépôt peut apparaître en document « code source ».
 - **Aucune donnée sensible dans le dépôt**, qui est public : ni mot de passe, ni identifiant (par exemple ceux de démonstration de CyberCase), ni clé secrète, ni nom d'élève. Une clé Supabase « anon » ou « publishable » est publique par conception ; une clé « service_role » ou « secret », jamais.
-- **Toute ressource qui collecte des données d'élèves** est signalée (`donnees_eleves`) et soumise à l'enseignant.
-- **La structure suit les textes officiels** : programmes de SNT et de NSI de 2019, circulaire PP n° 2018-108. Tout écart est soumis à l'enseignant.
+- **Toute ressource qui collecte des données d'élèves** est signalée : dans le champ `donnees_eleves` de sa fiche (nouveau format), ou dans le rapport tant que l'ancien format est en place (un champ inconnu des listes `*/ressources.js` y provoque une erreur). Toute nouvelle collecte est soumise à l'enseignant. Règle par défaut : un pseudo ou un prénom, au choix de l'élève, jamais de nom de famille (exceptions décidées : Alien Python, SNT 1er jour).
+- **La structure suit les textes officiels** : programmes de SNT et de NSI de 2019. La rubrique Professeur principal garde ses thèmes actuels (décision du 07/11) ; la circulaire n° 2018-108 sert de référence. Les thèmes hors programme sont des sections de la vitrine. Tout autre écart est soumis à l'enseignant.
+- **Licences et auteur** : documents pédagogiques de l'enseignant en CC BY-SA, code de ses applications en MIT, auteur affiché « Babash - NSI Tani Malandi ». Une ressource externe est créditée à son site d'origine.
 - **Écriture** : français clair, formulations épicènes et double flexion, **pas de point médian**.
-- **Design** : la charte « Réseau la nuit » (`design/charte.md`, branche `design/charte-v1` tant qu'elle n'est pas validée). Dessin original : aucun personnage, logo ou illustration d'Android: Netrunner.
+- **Design** : la charte « Réseau la nuit » (`design/charte.md`). Tant qu'elle n'est pas validée et publiée, ses fichiers n'existent que sur la branche `design/charte-v1` : une ressource suit alors le style actuel du site. Dessin original : aucun personnage, logo ou illustration d'Android: Netrunner.
+
+## Qui possède quoi
+| Fichiers | Rôle |
+|---|---|
+| `CLAUDE.md`, `.claude/agents/` | Chef d'orchestre |
+| `README.md`, `.github/gardien/`, la fusion dans `main` | Gardien |
+| `assets/*.js` (sauf `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`), `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `admin/`, `bibliotheque/`, `eleve/`, `donnees/schema/`, `donnees/referentiels/`, `scripts/`, `.github/workflows/` et `.github/verifier-site.py` (avec l'accord du Gardien) | Architecte |
+| `*/ressources.js` (anciennes listes, jusqu'à leur conversion), `donnees/ressources/`, `<rubrique>/fichiers/` | Bibliothécaire |
+| `assets/charte.css`, `assets/style.css`, `assets/fiche.css`, `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`, `assets/equipage/`, `assets/fonts/`, `charte/`, `design/`, la mise en forme des documents internes | Designer |
+| Les fichiers d'une ressource en cours de création (`<rubrique>/fichiers/<nom>/`) | l'Atelier chargé de cette ressource |
+
+Le décor du bandeau est encore dans `assets/site.js` (fonction `scene`) : il passera dans `assets/decor.js` quand la charte sera publiée. D'ici là, toute modification du décor est demandée à l'Architecte dans un rapport.
 
 ## Vérifier
 - `babash.github.io` est inaccessible depuis les sessions. Pour vérifier le site en ligne, on passe par GitHub Actions : le workflow `.github/workflows/verifier.yml` contrôle les liens et le rendu des pages en ligne, et on lit ses résultats avec `gh api repos/babash/Babash-NSI-SNT/actions/runs` (puis les jobs et les logs).
