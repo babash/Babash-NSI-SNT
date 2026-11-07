@@ -1,4 +1,7 @@
 # Vérification automatique du site
+#  - à chaque modification, sur toutes les branches, et à la demande : les données de la
+#    bibliothèque (dossier donnees/, scripts/valider_donnees.py). Une erreur fait échouer le job ;
+#    les avertissements sont dans le résumé, sans échec.
 #  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources.
 #    Un lien en échec est revérifié par un second job, donc sur une autre machine, une à deux
 #    minutes plus tard : il n'est déclaré mort que s'il échoue aux deux passes (les pannes
@@ -35,6 +38,20 @@ env:
     --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36"
 
 jobs:
+  donnees:
+    name: Données de la bibliothèque
+    # Les données ne changent pas sans envoi : rien à revérifier le lundi.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # Python standard, rien à installer. Pas de --strict tant que restent les deux
+      # avertissements voulus (éditeur d'Alien Python, page du TD 1 de POO : tâche T18).
+      - name: Valider les fiches, la vitrine et les référentiels
+        run: python3 scripts/valider_donnees.py --github
+
   liens:
     name: Liens des ressources
     runs-on: ubuntu-latest

@@ -21,6 +21,8 @@ Usage :
   python3 scripts/valider_donnees.py              données du dépôt
   python3 scripts/valider_donnees.py --racine DIR  données d'une autre copie du dépôt
   python3 scripts/valider_donnees.py --strict     les avertissements comptent comme des erreurs
+  python3 scripts/valider_donnees.py --github     dans GitHub Actions : annotations sur les fichiers et
+                                                  résumé du run (job « Données de la bibliothèque »)
 
 Code de retour : 0 si tout est valide, 1 s'il y a au moins une erreur.
 """
@@ -71,11 +73,60 @@ class Rapport:
     def nombre(self, niveau):
         return sum(1 for l in self.lignes if l[0] == niveau)
 
-    def afficher(self):
+    def triees(self, niveau=None):
         # Regroupées par fichier, dans l'ordre où elles ont été trouvées
-        for niveau, fichier, champ, message in sorted(self.lignes, key=lambda l: l[1]):
+        return [l for l in sorted(self.lignes, key=lambda l: l[1]) if niveau is None or l[0] == niveau]
+
+    def afficher(self):
+        for niveau, fichier, champ, message in self.triees():
             ou = fichier + (" › " + champ if champ else "")
             print(f"{self.NIVEAUX[niveau]}  {ou} : {message}")
+
+    def annoter(self):
+        """Annotations de GitHub Actions, sur le fichier concerné : une par erreur et par avertissement.
+
+        Les informations restent dans le résumé. GitHub n'affiche que les 10 premières annotations de
+        chaque sorte : le résumé, lui, donne tout."""
+        for niveau, fichier, champ, message in self.triees():
+            commande = {"erreur": "error", "attention": "warning"}.get(niveau)
+            if commande:
+                texte = (champ + " : " if champ else "") + message
+                print(f"::{commande} file={annotation(fichier, True)},title={annotation('Données de la bibliothèque', True)}"
+                      f"::{annotation(texte)}")
+
+    def resume(self, bilan, verdict, strict):
+        """Le résumé du run (Markdown), avec chaque message dans un tableau."""
+        lignes = ["## Données de la bibliothèque", "", bilan, "", verdict, ""]
+        for niveau in ("erreur", "attention", "info"):
+            messages = self.triees(niveau)
+            if not messages:
+                continue
+            n = len(messages)
+            tableau = ["| Fichier | Champ | Message |", "|---|---|---|"]
+            tableau += [f"| {cellule(f)} | {cellule(c) or '—'} | {cellule(m)} |" for _, f, c, m in messages]
+            if niveau == "erreur":
+                lignes += [f"### {pluriel(n, 'erreur')}, à corriger", "",
+                           ("Elle fait" if n == 1 else "Elles font") + " échouer ce contrôle.", ""] + tableau + [""]
+            elif niveau == "attention":
+                effet = ("font échouer ce contrôle (option --strict)." if strict else "ne font pas échouer ce contrôle.")
+                if n == 1:
+                    effet = effet.replace("font", "fait", 1)
+                lignes += [f"### {pluriel(n, 'avertissement')}, à regarder", "",
+                           ("Il " if n == 1 else "Ils ") + effet, ""] + tableau + [""]
+            else:
+                lignes += [f"<details><summary>{pluriel(n, 'information')}</summary>", ""] + tableau + ["", "</details>", ""]
+        return "\n".join(lignes) + "\n"
+
+
+def annotation(t, propriete=False):
+    """Échappe un texte pour une commande de GitHub Actions (::error …::texte)."""
+    t = str(t).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
+    return t.replace(":", "%3A").replace(",", "%2C") if propriete else t
+
+
+def cellule(t):
+    """Un texte dans une case de tableau Markdown."""
+    return str(t).replace("|", "\\|").replace("\n", " ")
 
 
 def pluriel(n, un, plusieurs=None):
@@ -1024,6 +1075,8 @@ def main():
     parser = argparse.ArgumentParser(description="Vérifie les données de la bibliothèque (dossier donnees/).")
     parser.add_argument("--racine", default=RACINE_DEFAUT, help="racine du dépôt à vérifier (par défaut : ce dépôt)")
     parser.add_argument("--strict", action="store_true", help="les avertissements comptent comme des erreurs")
+    parser.add_argument("--github", action="store_true",
+                        help="dans GitHub Actions : annotations sur les fichiers et résumé du run (GITHUB_STEP_SUMMARY)")
     args = parser.parse_args()
 
     v = Validation(args.racine)
@@ -1031,14 +1084,23 @@ def main():
     v.rapport.afficher()
     c = v.compteurs
     ne, na, ni = (v.rapport.nombre(n) for n in ("erreur", "attention", "info"))
-    print()
-    print(f"Bilan : {pluriel(c['fiches'], 'fiche')}, {pluriel(c['vitrines'], 'vitrine')}, {pluriel(c['progressions'], 'progression')} ; "
-          f"{pluriel(ne, 'erreur')}, {pluriel(na, 'avertissement')}, {pluriel(ni, 'information')}.")
+    bilan = (f"Bilan : {pluriel(c['fiches'], 'fiche')}, {pluriel(c['vitrines'], 'vitrine')}, "
+             f"{pluriel(c['progressions'], 'progression')} ; "
+             f"{pluriel(ne, 'erreur')}, {pluriel(na, 'avertissement')}, {pluriel(ni, 'information')}.")
     echec = ne > 0 or (args.strict and na > 0)
     if echec:
-        print("Les données ne sont pas valides : corriger les lignes ERREUR" + (" et ATTENTION." if args.strict else "."))
+        verdict = "Les données ne sont pas valides : corriger les lignes ERREUR" + (" et ATTENTION." if args.strict else ".")
     else:
-        print("Les données sont valides." + (" Lire les lignes ATTENTION." if na else ""))
+        verdict = "Les données sont valides." + (" Lire les lignes ATTENTION." if na else "")
+    print()
+    print(bilan)
+    print(verdict)
+    if args.github:
+        v.rapport.annoter()
+        chemin = os.environ.get("GITHUB_STEP_SUMMARY")
+        if chemin:
+            with open(chemin, "a", encoding="utf-8") as f:
+                f.write(v.rapport.resume(bilan, verdict, args.strict))
     sys.exit(1 if echec else 0)
 
 

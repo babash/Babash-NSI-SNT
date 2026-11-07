@@ -150,11 +150,17 @@ Ces fiches illustrent le format : leur contenu sera repris par le Bibliothécair
 python3 scripts/valider_donnees.py                 les données de ce dépôt
 python3 scripts/valider_donnees.py --racine DIR    une autre copie du dépôt
 python3 scripts/valider_donnees.py --strict        les avertissements bloquent aussi
+python3 scripts/valider_donnees.py --github        dans GitHub Actions : annotations et résumé du run
 ```
 
 Python 3 standard, sans dépendance (le module `jsonschema`, s'il est installé, sert de contrôle supplémentaire).
 Chaque message donne le fichier et le champ. Trois niveaux : **ERREUR** (à corriger, code de retour 1),
 **ATTENTION** (à regarder), **INFO** (pour information : documents cachés, collecte de données, intitulés à vérifier).
+
+Le même contrôle tourne dans GitHub Actions à chaque envoi, sur toutes les branches : job « Données de la
+bibliothèque » de `.github/workflows/verifier.yml`. Une erreur le fait échouer (croix rouge). Les avertissements
+et les informations sont dans le résumé du run, sans échec ; erreurs et avertissements apparaissent aussi en
+annotations sur les fichiers.
 
 Ce qui est vérifié :
 - JSON valide et conforme aux schémas ; identifiants uniques ; chaque fiche nommée `<id>.json` ;
