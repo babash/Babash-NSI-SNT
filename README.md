@@ -216,6 +216,8 @@ Certaines ressources enregistrent la progression des élèves dans **Supabase** 
 - Ne faire saisir que des prénoms. Supprimer un élève se fait dans Supabase (*Table Editor*).
 - Pour une base à soi : coller `supabase.sql` dans *SQL Editor* de son projet Supabase,
   puis mettre son adresse et sa clé « anon public » dans `config.js`.
+- Les exercices d'Alien Python sont d'Alien-Python (© 2021 Mathieu Degrange, licence MIT) :
+  la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder en cas de copie.
 
 ## Vérification automatique
 

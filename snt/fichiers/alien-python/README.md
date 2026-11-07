@@ -16,3 +16,6 @@ Site statique (HTML/JS) pour s'entraîner sur les 78 exercices d'[Alien-Python](
 ## Limites actuelles
 - Exercices 1–62 : réponse = clic sur la case d'arrivée. Séries A/B : le programme complété est comparé à la solution (espaces ignorés) ; une solution équivalente mais écrite autrement sera refusée (la correction reste disponible).
 - Pas de mot de passe élève, pas de suppression d'élève depuis le site (à faire dans Supabase > Table Editor).
+
+## Licence
+Les exercices viennent d'[Alien-Python](https://forge.apps.education.fr/DegrangeM/alien-python), © 2021 Mathieu Degrange, sous licence MIT : la notice complète est dans [`LICENCE.txt`](LICENCE.txt), à garder avec `data.js` en cas de copie.

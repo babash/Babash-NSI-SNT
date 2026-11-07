@@ -93,12 +93,13 @@ ressource({
 ressource({
   titre: "Alien Python : lire du code en suivant l'alien",
   lien: "fichiers/alien-python/",
-  texte: "Les 78 exercices d'Alien-Python : l'élève lit un programme et clique sur la case de la grille où il mène l'alien, puis complète lui-même des programmes dans deux séries inversées. Sept fiches progressives : déplacements et variables, boucles `for`, conditions, boucles `while`, fonctions. Validation immédiate, coups de pouce, correction, badges et avancement de la classe.\n**Suivi de la classe** : dans l'espace enseignant, créer une classe avec un code secret et donner le code classe aux élèves. Chacun reçoit un code personnel à 4 chiffres pour retrouver sa progression d'une séance à l'autre. Ne saisir que des prénoms.\nExercices de M. Degrange (licence MIT).",
+  texte: "Les 78 exercices d'Alien-Python : l'élève lit un programme et clique sur la case de la grille où il mène l'alien, puis complète lui-même des programmes dans deux séries inversées. Sept fiches progressives : déplacements et variables, boucles `for`, conditions, boucles `while`, fonctions. Validation immédiate, coups de pouce, correction, badges et avancement de la classe.\n**Suivi de la classe** : dans l'espace enseignant, créer une classe avec un code secret et donner le code classe aux élèves. Chacun reçoit un code personnel à 4 chiffres pour retrouver sa progression d'une séance à l'autre. Ne saisir que des prénoms.\nExercices de Mathieu Degrange (licence MIT).",
   tags: ["En ligne", "Python", "Rien à installer"],
   annexes: {
     "Espace enseignant": "fichiers/alien-python/#prof",
     "Banque d'exercices d'origine (M. Degrange)": "https://forge.apps.education.fr/DegrangeM/alien-python",
     "Installer sa propre base (Supabase)": "fichiers/alien-python/supabase.sql",
+    "Licence": "fichiers/alien-python/LICENCE.txt",
   },
 });
 
