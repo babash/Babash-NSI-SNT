@@ -32,8 +32,9 @@ nsi-terminale/  …
 pp/             …
 autres/         …
 assets/                     mise en page et fonctionnement (ne pas toucher)
+donnees/                    le format de la future bibliothèque (voir plus bas)
 .github/                    vérification automatique et outils du Gardien (voir plus bas)
-scripts/                    scripts de la vérification automatique
+scripts/                    vérification automatique et validation des données
 ```
 
 **Règle des liens** : le lien principal d'une ressource mène **directement** à la ressource
@@ -220,6 +221,34 @@ Certaines ressources enregistrent la progression des élèves dans **Supabase** 
 - Les exercices d'Alien Python sont d'Alien-Python (© 2021 Mathieu Degrange, licence MIT) :
   la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder en cas de copie.
 
+## La future bibliothèque (dossier `donnees/`)
+
+Le site va réunir toutes les ressources dans une bibliothèque unique. Son format a été validé
+par l'enseignant le 7 novembre 2026, mais **le site ne le lit pas encore** : les pages
+continuent d'utiliser les listes `ressources.js` décrites plus haut.
+
+```
+donnees/
+  README.md                     le format en détail, pour l'enseignant et pour les agents
+  ressources/<id>.json          une fiche par ressource (6 fiches d'exemple pour l'instant)
+  vitrine.exemple.json          un exemple de mise en avant pour la partie extérieure
+  referentiels/                 l'arbre des programmes, les listes de valeurs, les compétences Pix
+  schema/                       la description exacte du format (JSON Schema)
+  correspondance-etiquettes.md  comment les listes actuelles seront converties
+scripts/valider_donnees.py      la validation des données
+```
+
+Une fiche décrit une ressource et ses documents (activité, version PDF, corrigé, code
+source…). Chaque document a deux réglages de visibilité, pour l'extérieur et pour les élèves.
+La fiche signale aussi si la ressource collecte des données d'élèves (`donnees_eleves`).
+
+Pour valider les données, depuis le dossier du site : `python3 scripts/valider_donnees.py`
+(Python 3 seul, rien à installer ; avec `--strict`, les avertissements bloquent aussi). Chaque
+message donne le fichier et le champ. Le script signale comme erreur, entre autres, un lien
+principal vers GitHub, un identifiant en double, une référence inexistante, un document sans
+réglage de visibilité, et tout ce qui ressemble à un mot de passe, un identifiant ou une clé
+secrète.
+
 ## Vérification automatique
 
 Le fichier `.github/workflows/verifier.yml` lance deux contrôles, visibles dans l'onglet
@@ -273,9 +302,10 @@ Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possèd
 `CLAUDE.md` : par exemple, les listes `ressources.js` au Bibliothécaire, le moteur
 (`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style et l'icône
 du site (`assets/favicon.svg`) au Designer, ce README et les outils de `.github/gardien/` au
-Gardien. Le dossier `donnees/`, qui accueillera la future bibliothèque, est à l'Architecte
-(notamment le format des données et les référentiels), sauf les fiches des ressources
-(`donnees/ressources/`) et la vitrine (`donnees/vitrine.json`), qui sont au Bibliothécaire.
+Gardien. Le dossier `donnees/` de la future bibliothèque est à l'Architecte (notamment le
+format des données et les référentiels), sauf les fiches des ressources (`donnees/ressources/`)
+et la vitrine (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer
+des fiches d'exemple pour illustrer le format.
 Un agent ne modifie que ses fichiers ; pour les autres, il le signale dans son rapport.
 Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile, après avoir vérifié
 qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.

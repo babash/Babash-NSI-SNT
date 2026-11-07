@@ -34,7 +34,7 @@ for run in $(echo "$lignes" | cut -f1); do
     case "$nom" in
       "Liens des ressources"|"Liens en échec, seconde passe"|"Site en ligne")
         gh api "$depot/actions/jobs/$job/logs" 2>/dev/null | sed -E 's/^[0-9TZ:.-]+ //' |
-          grep -E '^\| .*(Total|Successful|Errors|Excluded|Timeouts)|\[ERROR\]|Tous les liens répondent|lien\(s\) en échec|Liens vérifiés|En échec à la première|Revenus|Morts|Lien mort|commit attendu|le commit est en ligne|remplacé|fichier\(s\) servi|identique|différent|La version en ligne|ressources affichées|^accueil|^Total|Pages déposées|correctement|^ - |::error|##\[(error|warning|notice)\]' |
+          grep -E '^\| .*(Total|Successful|Errors|Excluded|Timeouts)|\[ERROR\]|Tous les liens répondent|lien\(s\) en échec|Liens vérifiés|En échec à la première|Revenus|Morts|Lien mort|commit attendu|déploiement (n.a pas|en cours|dans un état)|a échoué|n.est pas sur|le commit est en ligne|remplacé|fichier\(s\) servi|identique|différent|La version en ligne|ressources affichées|^accueil|^Total|Pages déposées|correctement|^ - |::error|##\[(error|warning|notice)\]' |
           grep -v -e 'echo ' -e '\[36;1m' ;;
     esac
   done
