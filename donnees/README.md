@@ -29,7 +29,8 @@ langages, et en SNT les compétences Pix), ce que respectent son éditeur de cod
 (règles 20 et 19), d'où elle vient (origine, auteurs, licence, crédits), si elle **collecte des données d'élèves**,
 et son état (brouillon, prête, à revoir, obsolète). Tes ressources sont signées « Babash - NSI Tani
 Malandi », sous licence CC BY-SA 4.0 pour les documents et MIT pour le code des applications ; une ressource
-externe est créditée à son site d'origine.
+externe est créditée à son site d'origine, et une ressource reprise et modifiée à toute la chaîne de ses auteurs
+et autrices.
 
 **Une ressource a un ou plusieurs documents** : l'activité, sa version PDF, le corrigé, le guide du
 professeur, le code source… Un seul est le **document principal** : celui qu'ouvre un clic sur le titre.
@@ -94,7 +95,12 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 - **Programme** : on cite un thème ou un contenu de `programmes.json`, le plus précis possible.
 - **Auteurs et licences** : ressource de l'enseignant → `{ "nom": "Babash - NSI Tani Malandi", "role": "auteur" }`,
   licence « CC BY-SA 4.0 » pour les documents, « MIT » pour le code des applications. Ressource externe → créditée à
-  son site d'origine (`credits`, et un auteur avec le rôle « site d'origine »).
+  son site d'origine : `credits`, et dans `auteurs` la personne qui l'a faite, avec le site dans son rôle et un `lien`
+  (« auteur (exomorphisme.fr, lycée de Sada) ») ; si on ne la connaît pas, un auteur au nom du site, rôle « site d'origine ».
+- **Crédits en chaîne** (décision du 07/11) : une ressource reprise et modifiée crédite toute la chaîne de ses auteurs
+  et autrices, dans l'ordre, dans `auteurs` comme dans `credits` : la personne qui l'a faite, ses sources, puis la
+  reprise. Exemple, CyberCase : Etienne Clave (exomorphisme.fr, lycée de Sada), d'après une idée de Marion Dufour,
+  avec le moteur SQL Noir de Hristo Bogoev (licence MIT), repris par Babash - NSI Tani Malandi (rôle « reprise »).
 - **Documents** : `url` (lien direct) **ou** `fichier` (chemin depuis la racine du dépôt, par exemple
   `nsi-terminale/fichiers/td1-poo-premiers-pas.pdf`, ancre permise). Jamais de page GitHub, sauf pour le
   rôle `code-source`. Le `format` est déduit de l'adresse (règles dans `valeurs.json`) : ne l'écrire que pour
@@ -137,7 +143,7 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 
 | Fiche | Le cas qu'elle illustre |
 |---|---|
-| `cybercase` | ressource externe créditée à son site d'origine, « à la une », placée en SNT et en NSI Tle, collecte facultative, aucun identifiant de démonstration |
+| `cybercase` | ressource externe reprise, créditée en chaîne (auteur, idée originale, moteur, reprise), « à la une », placée en SNT et en NSI Tle, collecte facultative, aucun identifiant de démonstration |
 | `td1-poo` | ressource interne : page HTML du site et sa version PDF ; `td_en_ligne` (règle 19), avec ce qui manque |
 | `timeline-histoire-informatique` | placée en NSI 1re et en NSI Tle ; code source sur GitHub, caché aux élèves |
 | `alien-python` | collecte de données d'élèves (`donnees_eleves`, à titre d'information), crédits d'un tiers, espace professeur ; usage `editeur-de-code` et `editeur_code` (règle 20), avec ce qui manque |
