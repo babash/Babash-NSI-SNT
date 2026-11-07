@@ -24,8 +24,9 @@ scripts/valider_donnees.py    la vérification automatique
 **Une ressource = une fiche.** CyberCase, le TD 1 de POO ou la Timeline ont chacun leur fiche. Elle dit
 ce qu'est la ressource (titre, accroche, résumé, présentation, durée), ce qu'elle vise (objectif, et au
 besoin des critères de réussite), pour qui (enseignement, niveau, thème ou contenu du programme), comment
-elle s'utilise (un ou plusieurs types, usages dont « utilisable sur téléphone », prérequis, langages, et en
-SNT les compétences Pix), d'où elle vient (origine, auteurs, licence, crédits), si elle **collecte des données d'élèves**,
+elle s'utilise (un ou plusieurs types, usages dont « utilisable sur téléphone » et « éditeur de code », prérequis,
+langages, et en SNT les compétences Pix), ce que respectent son éditeur de code et la page en ligne d'un TD
+(règles 20 et 19), d'où elle vient (origine, auteurs, licence, crédits), si elle **collecte des données d'élèves**,
 et son état (brouillon, prête, à revoir, obsolète). Tes ressources sont signées « Babash - NSI Tani
 Malandi », sous licence CC BY-SA 4.0 pour les documents et MIT pour le code des applications ; une ressource
 externe est créditée à son site d'origine.
@@ -80,6 +81,15 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 - **Usages** : « utilisable sur téléphone » est une modalité (`sur-telephone`) ; il n'y a pas de prérequis « téléphone ».
 - **Compétences Pix** (facultatif, ressources de SNT) : `competences_pix`, identifiants de
   `referentiels/competences-pix.json` (les 16 compétences du cadre de référence, par exemple `programmer`).
+  Les pages affichent les intitulés de la plateforme Pix, que voient les élèves.
+- **Éditeur de code** (règle 20) : une ressource où l'élève écrit du code a l'usage `editeur-de-code`
+  (filtrable) et le champ `editeur_code`, avec ses cinq critères toujours notés, `true` ou `false` :
+  `coloration`, `indentation` (la touche Tab indente), `guides_indentation` (les blocs visibles, modèle :
+  Lagon Arena), `autocompletion` (contextualisée), `erreurs_expliquees` (telles quelles, puis traduites
+  ou expliquées en français), plus une `remarque` facultative. Ressource externe : on note ce qui lui
+  manque, sans rien lui reprocher.
+- **Page en ligne d'un TD** (règle 19, facultatif) : `td_en_ligne`, avec `responsive` et `auto_corrective`
+  (`true` ou `false`) et une `remarque`. Le PDF et la page HTML se déduisent des documents.
 - **Critères de réussite** (facultatif, au cas par cas) : `criteres_reussite`, du niveau 1 au plus exigeant.
 - **Programme** : on cite un thème ou un contenu de `programmes.json`, le plus précis possible.
 - **Auteurs et licences** : ressource de l'enseignant → `{ "nom": "Babash - NSI Tani Malandi", "role": "auteur" }`,
@@ -126,9 +136,9 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 | Fiche | Le cas qu'elle illustre |
 |---|---|
 | `cybercase` | ressource externe créditée à son site d'origine, « à la une », placée en SNT et en NSI Tle, collecte facultative, aucun identifiant de démonstration |
-| `td1-poo` | ressource interne : page HTML du site et sa version PDF |
+| `td1-poo` | ressource interne : page HTML du site et sa version PDF ; `td_en_ligne` (règle 19), avec ce qui manque |
 | `timeline-histoire-informatique` | placée en NSI 1re et en NSI Tle ; code source sur GitHub, caché aux élèves |
-| `alien-python` | collecte de données d'élèves (`donnees_eleves`, à titre d'information), crédits d'un tiers, espace professeur |
+| `alien-python` | collecte de données d'élèves (`donnees_eleves`, à titre d'information), crédits d'un tiers, espace professeur ; usage `editeur-de-code` et `editeur_code` (règle 20), avec ce qui manque |
 | `fiche-variables-python` | fiche FichesNSI et sa version PDF, deux enseignements (SNT et NSI 1re) |
 | `operation-mirage` | plusieurs types (TP et jeu) ; fiche professeur et code source visibles de l'extérieur, cachés aux élèves |
 
@@ -152,7 +162,11 @@ Ce qui est vérifié :
 - cohérence : l'enseignement d'un contenu cité figure dans `enseignements` (son niveau dans `niveaux`, sinon avertissement) ;
 - exactement un document principal ; aucune page GitHub hors du rôle `code-source` ;
 - visibilité : ce que voit chaque public, remplacement du document principal caché, corrigé ou guide visible des élèves ;
-- règle 19 de la philosophie éducative : un TD de l'enseignant sans version PDF ou sans page HTML donne un avertissement ;
+- règle 19 de la philosophie éducative : un TD de l'enseignant sans version PDF ou sans page HTML donne un avertissement,
+  de même qu'un critère à `false` dans `td_en_ligne` ;
+- règle 20 : pour une création de l'enseignant, l'usage `editeur-de-code` sans `editeur_code`, ou un critère à `false`,
+  donne un avertissement ; pour une ressource externe, une simple information. `editeur_code` sans l'usage donne aussi
+  un avertissement. Les critères de `valeurs.json` et du schéma doivent concorder ;
 - licences et auteurs : une création de l'enseignant sans l'auteur « Babash - NSI Tani Malandi », sans licence ou sous une
   autre licence que CC BY-SA 4.0 ou MIT, et une ressource externe sans crédit, donnent un avertissement ;
 - vitrine : ressources existantes, sections rangées dans le bon programme, contenus sous leur thème, thèmes du programme absents ;
@@ -168,7 +182,9 @@ Elles sont citées dans `referentiels/programmes.json` (champ `sources`). En ré
   (certains intitulés y sont abrégés).
 - Compétences Pix : cadre de référence des compétences numériques, annexe du décret n° 2019-919 du
   30 août 2019 (BO n° 37 du 10 octobre 2019 et JO du 1er septembre 2019), revérifié mot pour mot le 07/11/2026,
-  et fiche RS6894 du certificat Pix (France Compétences). Pix nomme autrement deux intitulés (« Création de contenu »,
-  « Construire un environnement numérique ») : noté dans `libelle_pix`. Sources citées dans `competences-pix.json`.
+  et fiche RS6894 du certificat Pix (France Compétences). Les intitulés affichés sont ceux de Pix (décision du
+  07/11/2026) ; deux diffèrent du décret, dont le texte est gardé dans `libelle_decret` : « Création de contenu »
+  (« de contenus ») et « Construire un environnement numérique » (« Évoluer dans… »). Sources citées dans
+  `competences-pix.json`.
 - PP : circulaire n° 2018-108 du 10 octobre 2018 (BO n° 37 du 11 octobre 2018), partie « I. Leurs missions » ;
   un intitulé est marqué `a_verifier`. Elle sert de référence et ne structure pas la rubrique.
