@@ -11,6 +11,8 @@ elle-même est la tâche suivante : rien n'est converti ici, en dehors des 6 fic
 
 - **89 entrées** dans les 5 listes, pour **82 ressources distinctes** : 7 ressources sont placées à deux endroits.
   Chacune deviendra **une seule fiche**, placée deux fois dans la vitrine.
+- L'« Activité interactive » de SNT, ancien lien vers Alien Python, est retirée du site (T25) : elle n'est pas
+  convertie. Restent **88 entrées** pour **81 ressources**.
 
   | Ressource | Placée en |
   |---|---|
@@ -126,7 +128,7 @@ avec un identifiant et un titre :
 | Rubrique | Thème ou groupe actuel | Section libre (`id`) | Sur les fiches concernées |
 |---|---|---|---|
 | SNT | Première séance | `premiere-seance` | — |
-| SNT | Pour occuper les plus fort·e·s (groupe) | `pour-les-plus-rapides`, titre « Pour les élèves les plus rapides » (sans point médian, tâche T07 à valider) | usage `pour-aller-plus-loin` |
+| SNT | Pour occuper les plus fort·e·s (groupe) | `pour-occuper-les-plus-forts`, titre « Pour occuper les plus fort·e·s » (titre actuel gardé) | usage `pour-aller-plus-loin` |
 | SNT | Bureautique | `bureautique` | — |
 | SNT | Sites ressources | `sites-ressources` | type `site-ressource` |
 | SNT | Informatique sans ordinateur (groupe) | `informatique-sans-ordinateur` | usage `debranche` |
@@ -157,7 +159,8 @@ sans que ses missions structurent les sections. Une fiche de PP peut citer une m
 - **`reglages.js`** : le titre, la phrase de présentation et le dépôt restent pour l'instant dans `reglages.js`.
   L'ordre des rubriques passe dans la vitrine (ordre de `rubriques`), pour n'avoir qu'une seule source.
   À trancher quand les pages seront branchées sur les données.
-- **Point médian** : deux libellés actuels en contiennent. « Pour occuper les plus fort·e·s » (voir T07) et
-  « Forum des enseignant·e·s NSI » (Autres), qui deviendra « Forum des enseignantes et enseignants de NSI ».
+- **Point médian** : les libellés qui en ont un le gardent, « Pour occuper les plus fort·e·s » (SNT) comme
+  « Forum des enseignant·e·s NSI » (Autres). Le site est en langage inclusif complet chaque fois que c'est
+  pertinent, point médian compris (décision du 07/11). Seuls les identifiants restent en ASCII, sans point médian.
 - **Les listes `*/ressources.js`** restent en place et le site actuel continue de les lire tant que les pages
   ne sont pas branchées sur les données (cahier des charges, § 5). Elles seront retirées ensuite.

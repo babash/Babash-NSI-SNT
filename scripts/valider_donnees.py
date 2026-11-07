@@ -91,7 +91,8 @@ TYPES_FR = {
 
 AIDES_MOTIFS = {
     "^[a-z0-9]+(-[a-z0-9]+)*$":
-        "un identifiant s'écrit en minuscules, sans accents ni espaces, avec des tirets entre les mots (exemple : td1-poo)",
+        "un identifiant s'écrit en minuscules, sans accents, espaces ni point médian, avec des tirets entre les mots "
+        "(exemple : td1-poo)",
     "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*){0,2}$":
         "un identifiant de programme s'écrit comme snt-2019.donnees-structurees.traitement",
     "^[0-9]{4}-[0-9]{2}-[0-9]{2}$": "une date s'écrit AAAA-MM-JJ (exemple : 2026-11-07)",
