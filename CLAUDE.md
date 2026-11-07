@@ -48,7 +48,7 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 |---|---|
 | `CLAUDE.md`, `.claude/agents/` | Chef d'orchestre |
 | `README.md`, `.github/gardien/`, la fusion dans `main` | Gardien |
-| `assets/*.js` (sauf `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`), `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `admin/`, `bibliotheque/`, `eleve/`, `donnees/schema/`, `donnees/referentiels/`, `scripts/`, `.github/workflows/` et `.github/verifier-site.py` (avec l'accord du Gardien) | Architecte |
+| `assets/*.js` (sauf `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`), `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `.gitignore`, `admin/`, `bibliotheque/`, `eleve/`, `donnees/schema/`, `donnees/referentiels/`, `scripts/`, `.github/workflows/` et `.github/verifier-site.py` (avec l'accord du Gardien) | Architecte |
 | `*/ressources.js` (anciennes listes, jusqu'à leur conversion), `donnees/ressources/`, `<rubrique>/fichiers/` | Bibliothécaire |
 | `assets/charte.css`, `assets/style.css`, `assets/fiche.css`, `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`, `assets/equipage/`, `assets/fonts/`, `charte/`, `design/`, la mise en forme des documents internes | Designer |
 | Les fichiers d'une ressource en cours de création (`<rubrique>/fichiers/<nom>/`) | l'Atelier chargé de cette ressource |

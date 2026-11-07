@@ -17,7 +17,7 @@ Tu es l'**Architecte** du site Ressources NSI et SNT (dépôt `babash/Babash-NSI
 
 ## Les fichiers que tu peux modifier
 - `assets/*.js`, sauf `assets/fiche.js`, `assets/decor.js` et `assets/equipage.js`, qui sont au Designer.
-- `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`.
+- `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `.gitignore`.
 - `admin/`, `bibliotheque/`, `eleve/`.
 - `donnees/referentiels/` et `donnees/schema/`, uniquement après validation de l'enseignant pour toute version publiée.
 - `scripts/`.
