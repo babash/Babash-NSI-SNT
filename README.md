@@ -241,6 +241,18 @@ Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du s
 
 ---
 
+## L'équipe d'agents
+
+Le site est entretenu par une équipe d'agents Claude (Gardien, Architecte, Bibliothécaire,
+Designer, Atelier et Vigie), coordonnés par un chef d'orchestre. Leurs règles communes sont
+dans `CLAUDE.md`, à la racine du dépôt, et la fiche de chaque rôle dans `.claude/agents/`.
+Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`, après ses contrôles.
+
+Les documents de coordination (cahier des charges, registre des décisions, organisation des
+agents, tableau des tâches, journal des publications) sont dans le projet claude.ai « Site SNT-NSI ».
+
+---
+
 ## Activer GitHub Pages (une seule fois)
 
 **Settings → Pages**, puis *Build and deployment* : **Deploy from a branch**,
