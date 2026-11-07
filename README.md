@@ -312,9 +312,16 @@ secrète.
 
 ## Vérification automatique
 
-Le fichier `.github/workflows/verifier.yml` lance deux contrôles, visibles dans l'onglet
+Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dans l'onglet
 **Actions** du dépôt (coche verte : tout va bien ; croix rouge : cliquer pour voir le détail) :
 
+- **Données de la bibliothèque**, à chaque modification, sur toutes les branches, et à la
+  demande : `scripts/valider_donnees.py --github` vérifie les fiches, la vitrine et les
+  référentiels du dossier `donnees/` (voir « La future bibliothèque »). Une erreur fait
+  échouer le contrôle (croix rouge). Les avertissements et les informations sont dans le
+  résumé du run, sans échec, et les erreurs et avertissements apparaissent aussi en
+  annotations sur les fichiers concernés. Les deux avertissements voulus des fiches d'exemple
+  (Alien Python, TD 1 de POO) y figurent donc à chaque run.
 - **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
   fichiers `ressources.js` sont testés. Un lien en échec est revérifié par un second job,
   « Liens en échec, seconde passe », donc sur une autre machine de GitHub, une à deux minutes

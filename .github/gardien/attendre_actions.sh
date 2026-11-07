@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Après une publication : attend la fin des workflows GitHub Actions du commit
 # (déploiement GitHub Pages et « Vérifier le site »), puis affiche leurs jobs et les lignes
-# utiles des journaux (liens en échec et seconde passe, mise en ligne du commit, chiffres du
-# site en ligne).
+# utiles des journaux (erreurs et bilan des données de la bibliothèque, liens en échec et
+# seconde passe, mise en ligne du commit, chiffres du site en ligne).
 # Usage : bash .github/gardien/attendre_actions.sh SHA [DELAI_MAX_SECONDES=900] [PAS=45]
 # Attention : l'API veut le SHA complet ; un SHA court est complété par git si possible.
 # Depuis T12, le job « Site en ligne » attend le déploiement de ce commit précis
@@ -32,9 +32,9 @@ for run in $(echo "$lignes" | cut -f1); do
   while IFS=$'\t' read -r job nom conclusion quand; do
     echo "-- job $job « $nom » : $conclusion ($quand)"
     case "$nom" in
-      "Liens des ressources"|"Liens en échec, seconde passe"|"Site en ligne")
+      "Données de la bibliothèque"|"Liens des ressources"|"Liens en échec, seconde passe"|"Site en ligne")
         gh api "$depot/actions/jobs/$job/logs" 2>/dev/null | sed -E 's/^[0-9TZ:.-]+ //' |
-          grep -E '^\| .*(Total|Successful|Errors|Excluded|Timeouts)|\[ERROR\]|Tous les liens répondent|lien\(s\) en échec|Liens vérifiés|En échec à la première|Revenus|Morts|Lien mort|commit attendu|déploiement (n.a pas|en cours|dans un état)|a échoué|n.est pas sur|le commit est en ligne|remplacé|fichier\(s\) servi|identique|différent|La version en ligne|ressources affichées|^accueil|^Total|Pages déposées|correctement|^ - |::error|##\[(error|warning|notice)\]' |
+          grep -E '^ERREUR|^Bilan :|Les données|^\| .*(Total|Successful|Errors|Excluded|Timeouts)|\[ERROR\]|Tous les liens répondent|lien\(s\) en échec|Liens vérifiés|En échec à la première|Revenus|Morts|Lien mort|commit attendu|déploiement (n.a pas|en cours|dans un état)|a échoué|n.est pas sur|le commit est en ligne|remplacé|fichier\(s\) servi|identique|différent|La version en ligne|ressources affichées|^accueil|^Total|Pages déposées|correctement|^ - |::error|##\[(error|warning|notice)\]' |
           grep -v -e 'echo ' -e '\[36;1m' ;;
     esac
   done
