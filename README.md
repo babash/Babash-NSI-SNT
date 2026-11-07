@@ -227,13 +227,16 @@ Le fichier `.github/workflows/verifier.yml` lance deux contrôles, visibles dans
 - **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
   fichiers `ressources.js` sont testés. Le résumé liste les liens morts, fichier et ligne.
   Ne sont pas testés : les pages qui demandent une connexion (Capytale, claude.ai) et
-  algorea.org, qui refuse les robots. Les sites qui répondent « accès refusé » (403) aux
-  robots sont comptés comme valides.
+  algorea.org, qui refuse les robots. Les sites qui répondent « accès refusé » (403) ou
+  « trop de requêtes » (429) aux robots sont comptés comme valides.
 - **Site en ligne**, après chaque modification de `main` : le contrôle attend que GitHub Pages
-  serve la nouvelle version, puis affiche chaque rubrique dans Chrome et vérifie qu'aucune
-  erreur n'apparaît et que le nombre de ressources affichées est celui de `ressources.js`.
-  Il ouvre aussi chaque page déposée dans un dossier `fichiers/` (TD, fiches, diaporamas,
-  applications) et vérifie qu'elle s'affiche avec un vrai contenu.
+  serve la nouvelle version des listes (`reglages.js` et les `ressources.js`), puis affiche
+  chaque rubrique dans Chrome et vérifie qu'aucune erreur n'apparaît et que le nombre de
+  ressources affichées est celui de `ressources.js`. Il ouvre aussi chaque page déposée dans
+  un dossier `fichiers/` (TD, fiches, diaporamas, applications) et vérifie qu'elle s'affiche
+  avec un vrai contenu. Quand une modification ne touche pas les listes, ce contrôle peut
+  passer avant la fin de la mise en ligne : on le relance alors une fois la mise en ligne
+  terminée (**Re-run jobs** dans l'onglet Actions).
 
 Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du site :
 `python3 -m http.server 8000`, puis dans un autre terminal
@@ -248,8 +251,16 @@ Designer, Atelier et Vigie), coordonnés par un chef d'orchestre. Leurs règles 
 dans `CLAUDE.md`, à la racine du dépôt, et la fiche de chaque rôle dans `.claude/agents/`.
 Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`, après ses contrôles.
 
-Les documents de coordination (cahier des charges, registre des décisions, organisation des
-agents, tableau des tâches, journal des publications) sont dans le projet claude.ai « Site SNT-NSI ».
+Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possède quoi » de
+`CLAUDE.md` : par exemple, les listes `ressources.js` au Bibliothécaire, le moteur
+(`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style au Designer,
+ce README au Gardien. Un agent ne modifie que ses fichiers ; pour les autres, il le signale
+dans son rapport. Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile,
+après avoir vérifié qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
+
+Les documents de coordination (cahier des charges, philosophie éducative, registre des
+décisions, organisation des agents, tableau des tâches, journal des publications) sont dans
+le projet claude.ai « Site SNT-NSI ».
 
 ---
 
