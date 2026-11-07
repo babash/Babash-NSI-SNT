@@ -153,6 +153,8 @@ Ce qui est vérifié :
 - exactement un document principal ; aucune page GitHub hors du rôle `code-source` ;
 - visibilité : ce que voit chaque public, remplacement du document principal caché, corrigé ou guide visible des élèves ;
 - règle 19 de la philosophie éducative : un TD de l'enseignant sans version PDF ou sans page HTML donne un avertissement ;
+- licences et auteurs : une création de l'enseignant sans l'auteur « Babash - NSI Tani Malandi », sans licence ou sous une
+  autre licence que CC BY-SA 4.0 ou MIT, et une ressource externe sans crédit, donnent un avertissement ;
 - vitrine : ressources existantes, sections rangées dans le bon programme, contenus sous leur thème, thèmes du programme absents ;
 - progressions : ressources existantes et visibles des élèves ;
 - motifs interdits : mots de passe, identifiants, identifiants de démonstration, clés secrètes (Supabase `service_role`
@@ -165,6 +167,8 @@ Elles sont citées dans `referentiels/programmes.json` (champ `sources`). En ré
 - NSI 1re et Tle 2019 : repris des listes `programme` du site actuel ; une relecture contre les PDF du BO reste à faire
   (certains intitulés y sont abrégés).
 - Compétences Pix : cadre de référence des compétences numériques, annexe du décret n° 2019-919 du
-  30 août 2019 (BO n° 37 du 10 octobre 2019 et JO du 1er septembre 2019), sources citées dans `competences-pix.json`.
+  30 août 2019 (BO n° 37 du 10 octobre 2019 et JO du 1er septembre 2019), revérifié mot pour mot le 07/11/2026,
+  et fiche RS6894 du certificat Pix (France Compétences). Pix nomme autrement deux intitulés (« Création de contenu »,
+  « Construire un environnement numérique ») : noté dans `libelle_pix`. Sources citées dans `competences-pix.json`.
 - PP : circulaire n° 2018-108 du 10 octobre 2018 (BO n° 37 du 11 octobre 2018), partie « I. Leurs missions » ;
   un intitulé est marqué `a_verifier`. Elle sert de référence et ne structure pas la rubrique.

@@ -10,6 +10,7 @@ Contrôles :
   - chaque ressource a exactement un document principal ;
   - aucun document ne pointe vers une page GitHub, sauf le rôle « code source » ;
   - visibilité (cahier des charges, § 3.2) : ce que voient l'extérieur et les élèves ;
+  - règle 19 (un TD de l'enseignant en PDF et en page HTML), licences et auteurs : avertissements ;
   - aucune donnée sensible : mot de passe, identifiant, clé secrète, jeton.
 
 Python 3 standard, sans dépendance. Si le module jsonschema est installé, il sert de
@@ -37,6 +38,10 @@ RACINE_DEFAUT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LISTES = ["enseignements", "niveaux", "types", "usages", "origines", "roles", "formats", "langages", "statuts"]
 PUBLICS = {"exterieur": "l'extérieur", "eleve": "les élèves"}
 HOTES_GITHUB = {"github.com", "gist.github.com"}
+# Licences et auteurs (décision du 07/11/2026)
+AUTEUR = "Babash - NSI Tani Malandi"
+LICENCES_ENSEIGNANT = re.compile(r"CC BY-SA 4\.0|\bMIT\b")
+ORIGINES_A_CREDITER = {"externe", "institutionnelle", "communaute"}
 
 
 # ── Le rapport ──────────────────────────────────────────────────────────────
@@ -660,6 +665,8 @@ class Validation:
                 self.rapport.erreur(fichier, joindre(joindre("liees", i), "ressource"),
                                     f"aucune fiche « {cible} » dans donnees/ressources/")
 
+        self.verifier_credits(fichier, f)
+
         de = f.get("donnees_eleves")
         if isinstance(de, dict) and de.get("collecte") is True:
             self.compteurs["collecte"] += 1
@@ -768,6 +775,28 @@ class Validation:
                 self.rapport.attention(fichier, "documents",
                                        f"pour {qui}, un clic sur le titre ouvrirait une page GitHub : rendre visible un autre document")
         self.visibles[rid] = vu
+
+    def verifier_credits(self, fichier, f):
+        """Licences et auteurs (décision du 07/11/2026). Simples avertissements."""
+        origine = f.get("origine")
+        auteurs = [a for a in f.get("auteurs", []) if isinstance(a, dict)] if isinstance(f.get("auteurs"), list) else []
+        licence = f.get("licence") if isinstance(f.get("licence"), str) else ""
+        if origine == "ma-creation":
+            if not any(a.get("nom") == AUTEUR for a in auteurs):
+                self.rapport.attention(fichier, "auteurs",
+                                       f"création de l'enseignant : ajouter l'auteur {{ \"nom\": \"{AUTEUR}\", \"role\": \"auteur\" }}")
+            if not licence:
+                self.rapport.attention(fichier, "licence",
+                                       "création de l'enseignant sans licence : « CC BY-SA 4.0 » pour les documents, "
+                                       "« MIT » pour le code des applications")
+            elif not LICENCES_ENSEIGNANT.search(licence):
+                self.rapport.attention(fichier, "licence",
+                                       f"« {licence} » : les créations de l'enseignant sont sous « CC BY-SA 4.0 » (documents) "
+                                       "ou « MIT » (code des applications)")
+        elif origine in ORIGINES_A_CREDITER and not f.get("credits") and not auteurs:
+            self.rapport.attention(fichier, "credits",
+                                   "ressource externe : la créditer à son site d'origine (champ « credits », ou un auteur "
+                                   "avec le rôle « site d'origine » et son lien)")
 
     # Vitrine -------------------------------------------------------------
     def verifier_vitrine(self, chemin):
