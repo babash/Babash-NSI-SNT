@@ -76,14 +76,6 @@ ressource({
 });
 
 ressource({
-  // À compléter : préciser ce que font les élèves
-  titre: "Activité interactive",
-  lien: "https://claude.ai/artifact/3zvYLmqgkXk1T8BxDCs4q8",
-  texte: "Activité en ligne pour accompagner la séquence de programmation.",
-  tags: ["En ligne"],
-});
-
-ressource({
   titre: "Execubot",
   lien: "https://execubot.fr",
   texte: "Jeu de lecture de code : à partir d'un programme Python, les élèves prévoient le déplacement d'un robot sur une grille de couleurs. Conçu par des enseignants d'informatique de lycée.",
