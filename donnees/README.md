@@ -106,7 +106,9 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 - **Vitrine** : une rubrique suit un programme (`"programme": "snt-2019"`) ou cite seulement un texte de
   référence (`"reference_officielle": "pp-2018"`), jamais les deux.
 - **`dates`** sont remplies automatiquement ; **`notes`** sont réservées à l'enseignant (`[{ "date": "…", "texte": "…" }]`).
-- Textes : français clair, formulations épicènes et double flexion, pas de point médian. Mise en forme permise :
+- Textes : français clair, et langage inclusif complet chaque fois que c'est pertinent : formulations épicènes,
+  double flexion, féminisation des fonctions et point médian (« enseignant·e·s », « fort·e·s »), décision du 07/11.
+  Les identifiants restent en ASCII, sans point médian (`pour-occuper-les-plus-forts`). Mise en forme permise :
   `code`, **gras**, retours à la ligne.
 
 ### Une fiche minimale
