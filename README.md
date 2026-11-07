@@ -358,11 +358,12 @@ Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`,
 Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possède quoi » de
 `CLAUDE.md` : par exemple, les listes `ressources.js` au Bibliothécaire, le moteur
 (`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style et l'icône
-du site (`assets/favicon.svg`) au Designer, ce README et les outils de `.github/gardien/` au
-Gardien. Le dossier `donnees/` de la future bibliothèque est à l'Architecte (notamment le
-format des données et les référentiels), sauf les fiches des ressources (`donnees/ressources/`)
-et la vitrine (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer
-des fiches d'exemple pour illustrer le format.
+du site (`assets/favicon.svg`) au Designer, ce README, le fichier de licence du dépôt
+(`LICENSE`, à venir) et les outils de `.github/gardien/` au Gardien. Le dossier `donnees/` de
+la future bibliothèque est à l'Architecte (notamment le format des données et les
+référentiels), sauf les fiches des ressources (`donnees/ressources/`) et la vitrine
+(`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer des fiches
+d'exemple pour illustrer le format.
 Un agent ne modifie que ses fichiers ; pour les autres, il le signale dans son rapport.
 Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile, après avoir vérifié
 qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
@@ -390,6 +391,11 @@ l'enseignant :
 Une ressource externe ne se modifie pas : sa fiche peut signaler ce qui lui manque. Le Gardien
 vérifie ces règles avant de publier une ressource. Les ressources déjà en ligne n'ont pas
 encore été revues sous cet angle.
+
+Règle d'écriture : les pages du site et les documents pour les élèves s'écrivent en langage
+inclusif chaque fois que c'est pertinent (formulations épicènes, double flexion, féminisation
+des fonctions et point médian, comme « enseignant·e·s »), selon la décision de l'enseignant du
+7 novembre 2026.
 
 Les documents de coordination (cahier des charges, philosophie éducative, registre des
 décisions, organisation des agents, tableau des tâches, journal des publications, rapport du
