@@ -33,6 +33,7 @@ pp/             …
 autres/         …
 assets/                     mise en page et fonctionnement (ne pas toucher)
 .github/                    vérification automatique et outils du Gardien (voir plus bas)
+scripts/                    scripts de la vérification automatique
 ```
 
 **Règle des liens** : le lien principal d'une ressource mène **directement** à la ressource
@@ -225,18 +226,24 @@ Le fichier `.github/workflows/verifier.yml` lance deux contrôles, visibles dans
 **Actions** du dépôt (coche verte : tout va bien ; croix rouge : cliquer pour voir le détail) :
 
 - **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
-  fichiers `ressources.js` sont testés. Le résumé liste les liens morts, fichier et ligne.
+  fichiers `ressources.js` sont testés. Un lien en échec est revérifié par un second job,
+  « Liens en échec, seconde passe », donc sur une autre machine de GitHub, une à deux minutes
+  plus tard : il n'est déclaré mort que s'il échoue aux deux passes, ce qui écarte les pannes
+  passagères. Un lien qui ne répond pas à temps aux deux passes compte aussi comme mort.
+  Le résumé liste les liens morts, avec le fichier et la ligne, et les pannes passagères.
   Ne sont pas testés : les pages qui demandent une connexion (Capytale, claude.ai) et
   algorea.org, qui refuse les robots. Les sites qui répondent « accès refusé » (403) ou
   « trop de requêtes » (429) aux robots sont comptés comme valides.
 - **Site en ligne**, après chaque modification de `main` : le contrôle attend que GitHub Pages
-  serve la nouvelle version des listes (`reglages.js` et les `ressources.js`), puis affiche
-  chaque rubrique dans Chrome et vérifie qu'aucune erreur n'apparaît et que le nombre de
-  ressources affichées est celui de `ressources.js`. Il ouvre aussi chaque page déposée dans
-  un dossier `fichiers/` (TD, fiches, diaporamas, applications) et vérifie qu'elle s'affiche
-  avec un vrai contenu. Quand une modification ne touche pas les listes, ce contrôle peut
-  passer avant la fin de la mise en ligne : on le relance alors une fois la mise en ligne
-  terminée (**Re-run jobs** dans l'onglet Actions).
+  ait réellement mis en ligne ce commit (`scripts/attendre_deploiement.py`), puis télécharge
+  les fichiers du site que le commit ajoute ou modifie et vérifie qu'ils sont identiques à
+  ceux du dépôt. Ensuite, il affiche chaque rubrique dans Chrome et vérifie qu'aucune erreur
+  n'apparaît et que le nombre de ressources affichées est celui de `ressources.js`. Il ouvre
+  aussi chaque page déposée dans un dossier `fichiers/` (TD, fiches, diaporamas,
+  applications) et vérifie qu'elle s'affiche avec un vrai contenu. Le résumé donne l'heure de
+  chaque étape. Si un commit plus récent est mis en ligne entre-temps, c'est son propre
+  contrôle qui vérifie le site. Lancé à la main (**Run workflow** dans l'onglet Actions), ce
+  contrôle vérifie le site tel que `main` l'a mis en ligne.
 
 Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du site :
 `python3 -m http.server 8000`, puis dans un autre terminal
