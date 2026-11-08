@@ -25,8 +25,9 @@ import commun  # noqa: E402
 from PIL import Image  # noqa: E402
 from playwright.sync_api import sync_playwright  # noqa: E402
 
-TEXTES = r"""() => {
+TEXTES = r"""(zone) => {
   const out = [];
+  const zones = zone ? [...document.querySelectorAll(zone)] : null;   // contraste_zone.py
   const marche = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   const vus = new Set();
   let n;
@@ -34,6 +35,7 @@ TEXTES = r"""() => {
     if (!n.nodeValue.trim()) continue;
     const e = n.parentElement;
     if (!e || vus.has(e)) continue;
+    if (zones && !zones.some(z => z.contains(e))) continue;
     if (e.closest('script, style, noscript, svg, [aria-hidden="true"], .invisible')) continue;
     if (e.checkVisibility && !e.checkVisibility({ contentVisibilityAuto: true, opacityProperty: true, visibilityProperty: true })) continue;
     const ferme = e.closest('details:not([open])');
@@ -111,8 +113,9 @@ def ratio(l1, l2):
     return (a + 0.05) / (b + 0.05)
 
 
-def mesurer(page, image, seuil, seuil_grand):
-    textes = page.evaluate(TEXTES)
+def mesurer(page, image, seuil, seuil_grand, zone=None):
+    """Textes sous le seuil ; avec zone (sélecteur CSS), seulement ceux qu'elle contient."""
+    textes = page.evaluate(TEXTES, zone)
     defauts, mesures = [], 0
     for t in textes:
         r, g, b, a = rgba(t["fill"] if t.get("fill") and "0, 0, 0, 0" not in t["fill"] else t["couleur"])
