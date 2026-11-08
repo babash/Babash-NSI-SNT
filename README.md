@@ -357,6 +357,18 @@ publication, `bash .github/gardien/attendre_actions.sh <commit>` suit la mise en
 les résultats des contrôles automatiques. Il faut Python avec Playwright et Pillow, Chrome ou
 Chromium, et l'outil `gh` de GitHub pour suivre la mise en ligne.
 
+D'autres outils du même dossier servent au cas par cas : `caracteres.py` relève, dans les lignes
+qu'ajoute une branche, les caractères invisibles et les points qui imitent le point médian (le
+vrai point médian, lui, est permis) ; `zones.py` situe les différences de rendu entre avant et
+après, pour vérifier par exemple qu'un changement se limite au pied de page ; `contraste_zone.py`
+donne le contraste le plus faible d'une zone de la page, le pied de page par défaut ;
+`chemins_readme.py` vérifie que les chemins cités dans un README existent. Les tests de
+non-régression du Gardien se lancent d'un coup :
+`python3 -I .github/gardien/tests/lancer.py --ref origin/<branche>`. Ils vérifient notamment que
+la validation des données détecte toujours les fautes graves, applique les règles 19 et 20 et
+accepte le point médian dans les textes, que les scripts du contrôle en ligne décident juste, et
+que le pied de page suit ses réglages. L'en-tête de chaque fichier en décrit l'usage.
+
 ---
 
 ## L'équipe d'agents
