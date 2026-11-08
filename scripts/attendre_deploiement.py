@@ -17,6 +17,11 @@ inactive quand un déploiement plus récent le remplace.
    du README envoyés ensemble sont donc comparés tous les deux (constat N9 du Gardien).
    Sans --depuis utilisable (lancement manuel, SHA nul d'une création de branche, commit
    absent de la copie), repli sur le dernier commit seul : HEAD~1 à HEAD.
+   Deux envois très rapprochés : si le déploiement du premier est remplacé avant que son
+   contrôle l'ait vu en ligne, ce contrôle ne compare rien, et celui du second ne compare que
+   depuis le premier ; pour tout comparer, relancer le workflow à la main avec « depuis » = la
+   pointe de main avant le premier envoi.
+   Au plus 200 fichiers sont comparés (les suivants sont signalés), téléchargés 8 à la fois.
 
 Usage :
   python3 scripts/attendre_deploiement.py --sha <commit>   attendre ce commit
@@ -45,11 +50,13 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 EN_COURS = {"waiting", "queued", "pending", "in_progress"}
 ECHECS = {"failure", "error"}
 SITE = "https://babash.github.io/Babash-NSI-SNT"
-MAX_FICHIERS = 40
+MAX_FICHIERS = 200  # la conversion des listes (T21) arrivera en une fusion de 89 fichiers ou plus
+TELECHARGEMENTS = 8  # téléchargements simultanés
 MAX_OCTETS = 5_000_000
 
 
@@ -341,9 +348,10 @@ def comparer(a):
     while restants:
         essai += 1
         encore = []
-        for chemin in restants:
-            url = f"{base}/{urllib.parse.quote(chemin)}?v={sha[:12]}-{essai}"
-            contenu, erreur = telecharger(url)
+        urls = [f"{base}/{urllib.parse.quote(chemin)}?v={sha[:12]}-{essai}" for chemin in restants]
+        with ThreadPoolExecutor(max_workers=TELECHARGEMENTS) as groupe:
+            reponses = list(groupe.map(telecharger, urls))
+        for chemin, (contenu, erreur) in zip(restants, reponses):
             if contenu == attendus[chemin]:
                 resultats[chemin] = f"identique (essai {essai}, {heure()})"
             else:
