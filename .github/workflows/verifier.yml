@@ -8,9 +8,11 @@
 #    passagères, ou un site qui ignore une machine de GitHub, ne déclenchent plus d'alerte).
 #  - après chaque mise en ligne de main : chaque page du site, affichée dans Chrome, une fois
 #    que GitHub Pages a réellement déployé ce commit (scripts/attendre_deploiement.py), et après
-#    avoir vérifié que les fichiers modifiés par ce commit sont bien ceux servis en ligne.
+#    avoir vérifié que les fichiers ajoutés ou modifiés par l'envoi (tous ses commits, depuis
+#    la pointe de main avant l'envoi) sont bien ceux servis en ligne.
 #  - à la demande (onglet Actions, « Run workflow ») : les liens de la branche choisie, et le
-#    site en ligne tel que main l'a déployé.
+#    site en ligne tel que main l'a déployé ; la comparaison porte sur le dernier commit de
+#    main, ou sur tous les commits qui suivent le commit indiqué dans « depuis ».
 # Résultat : onglet « Actions » du dépôt (coche verte ou croix rouge, détail dans le résumé).
 # Pages exclues : celles qui demandent une connexion (Capytale, claude.ai) et
 # algorea.org, qui refuse les connexions des robots de GitHub.
@@ -24,6 +26,12 @@ on:
   schedule:
     - cron: "23 3 * * 1"
   workflow_dispatch:
+    inputs:
+      depuis:
+        description: "Site en ligne : comparer les fichiers modifiés depuis ce commit (SHA, facultatif ; vide = le dernier commit de main seul)"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -136,18 +144,30 @@ jobs:
           SHA: ${{ github.event_name == 'push' && github.sha || '' }}
         run: python3 scripts/attendre_deploiement.py --depot "$GITHUB_REPOSITORY" ${SHA:+--sha "$SHA"}
 
-      # Les listes et le contrôle de la version déployée, pour comparer avec ce qui est en ligne
+      # Les listes et le contrôle de la version déployée, pour comparer avec ce qui est en ligne.
+      # Tout l'historique (fetch-depth 0), pour que le commit de départ de la comparaison soit
+      # présent quel que soit le nombre de commits de l'envoi ; mais sans le contenu des
+      # anciennes versions des fichiers (filter blob:none), dont la liste des fichiers modifiés
+      # n'a pas besoin : seule la version déployée est téléchargée en entier.
       - name: Récupérer la version déployée
         if: steps.deploiement.outputs.a_verifier == 'oui'
         uses: actions/checkout@v5
         with:
           ref: ${{ steps.deploiement.outputs.sha }}
           path: deploye
-          fetch-depth: 2
+          fetch-depth: 0
+          filter: blob:none
 
-      - name: Vérifier que les fichiers de ce commit sont en ligne
+      # Après un envoi : depuis le commit qui était à la pointe de main avant l'envoi
+      # (github.event.before), pour comparer la fusion d'une branche et le commit du README
+      # envoyés ensemble (constat N9). À la demande : depuis le commit indiqué, ou le dernier
+      # commit seul. Le script se replie sur le dernier commit seul si le commit de départ
+      # est nul (création de la branche) ou absent, et le signale.
+      - name: Vérifier que les fichiers modifiés sont en ligne
         if: steps.deploiement.outputs.a_verifier == 'oui'
-        run: python3 scripts/attendre_deploiement.py --comparer deploye --site https://babash.github.io/Babash-NSI-SNT
+        env:
+          DEPUIS: ${{ github.event_name == 'push' && github.event.before || inputs.depuis }}
+        run: python3 scripts/attendre_deploiement.py --comparer deploye --site https://babash.github.io/Babash-NSI-SNT ${DEPUIS:+--depuis "$DEPUIS"}
 
       - name: Afficher chaque page dans Chrome
         if: steps.deploiement.outputs.a_verifier == 'oui'

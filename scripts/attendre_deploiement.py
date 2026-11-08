@@ -9,16 +9,27 @@ inactive quand un déploiement plus récent le remplace.
 1. Attendre : le script interroge ces déploiements jusqu'à ce que le commit soit en ligne,
    sans se fier au contenu des fichiers. Un envoi qui ne change ni reglages.js ni les listes
    de ressources est donc attendu lui aussi (constat I1 du Gardien).
-2. Comparer (--comparer) : une fois le déploiement terminé, les fichiers que le commit ajoute
+2. Comparer (--comparer) : une fois le déploiement terminé, les fichiers que l'envoi ajoute
    ou modifie, et que le site sert, sont téléchargés et comparés octet par octet à ceux du
    dépôt. C'est la preuve que la version en ligne est bien celle de ce commit.
+   L'envoi, ce sont tous les commits arrivés depuis --depuis, le commit qui était à la pointe
+   de la branche avant l'envoi (github.event.before) : la fusion d'une branche et le commit
+   du README envoyés ensemble sont donc comparés tous les deux (constat N9 du Gardien).
+   Sans --depuis utilisable (lancement manuel, SHA nul d'une création de branche, commit
+   absent de la copie), repli sur le dernier commit seul : HEAD~1 à HEAD.
+   Deux envois très rapprochés : si le déploiement du premier est remplacé avant que son
+   contrôle l'ait vu en ligne, ce contrôle ne compare rien, et celui du second ne compare que
+   depuis le premier ; pour tout comparer, relancer le workflow à la main avec « depuis » = la
+   pointe de main avant le premier envoi.
+   Au plus 200 fichiers sont comparés (les suivants sont signalés), téléchargés 8 à la fois.
 
 Usage :
   python3 scripts/attendre_deploiement.py --sha <commit>   attendre ce commit
   python3 scripts/attendre_deploiement.py                  attendre le dernier commit de main
-  python3 scripts/attendre_deploiement.py --comparer DOSSIER [--site URL]
-      comparer au site en ligne les fichiers modifiés par le dernier commit de DOSSIER (une
-      copie du dépôt avec au moins deux commits d'historique : fetch-depth 2)
+  python3 scripts/attendre_deploiement.py --comparer DOSSIER [--depuis COMMIT] [--site URL]
+      comparer au site en ligne les fichiers ajoutés ou modifiés depuis COMMIT jusqu'au
+      dernier commit de DOSSIER, une copie du dépôt qui contient COMMIT (fetch-depth 0) ;
+      sans --depuis, ceux du dernier commit seul (il faut alors au moins fetch-depth 2)
 Options : --depot babash/Babash-NSI-SNT  --delai 900 (secondes)  --pause 15 (secondes)
 
 Résultat :
@@ -39,11 +50,13 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 
 EN_COURS = {"waiting", "queued", "pending", "in_progress"}
 ECHECS = {"failure", "error"}
 SITE = "https://babash.github.io/Babash-NSI-SNT"
-MAX_FICHIERS = 40
+MAX_FICHIERS = 200  # la conversion des listes (T21) arrivera en une fusion de 89 fichiers ou plus
+TELECHARGEMENTS = 8  # téléchargements simultanés
 MAX_OCTETS = 5_000_000
 
 
@@ -200,9 +213,50 @@ def servi(chemin):
     return not any(p.startswith(".") for p in chemin.split("/"))
 
 
-def fichiers_a_comparer(dossier):
-    """Les fichiers ajoutés ou modifiés par le dernier commit (par rapport à son premier parent)."""
-    sortie = git(dossier, "diff", "--name-only", "--no-renames", "--diff-filter=AM", "-z", "HEAD~1", "HEAD")
+def resoudre(dossier, revision):
+    """Le SHA complet du commit désigné par revision, ou None s'il n'est pas dans la copie."""
+    if not revision or revision.startswith("-"):
+        return None
+    try:
+        return git(dossier, "rev-parse", "--verify", "--quiet", "--end-of-options", f"{revision}^{{commit}}").strip() or None
+    except ErreurApi:
+        return None
+
+
+def commit_de_depart(dossier, depuis):
+    """Le commit à partir duquel comparer (exclu), et la raison d'un éventuel repli.
+
+    depuis : le commit qui était à la pointe de la branche avant l'envoi (github.event.before),
+    ou None. Renvoie (base, repli, niveau) :
+      - depuis est utilisable : (son SHA complet, None, None) ;
+      - sinon, repli sur le premier parent du dernier commit (HEAD~1) : repli dit pourquoi, et
+        niveau vaut None (cas normal d'un lancement manuel), "notice" (SHA nul) ou "warning"
+        (commit absent de la copie : la comparaison sera partielle).
+    Lève ErreurApi si HEAD~1 n'existe pas non plus (copie à un seul commit d'historique).
+    """
+    depuis = (depuis or "").strip()
+    if not depuis:
+        repli, niveau = "lancement manuel ou planifié, sans commit de départ", None
+    elif set(depuis) == {"0"}:
+        repli, niveau = "commit de départ nul, car l'envoi a créé la branche", "notice"
+    else:
+        base = resoudre(dossier, depuis)
+        if base:
+            return base, None, None
+        repli, niveau = f"le commit de départ « {depuis[:40]} » est absent de la copie", "warning"
+    base = resoudre(dossier, "HEAD~1")
+    if not base:
+        raise ErreurApi(f"{repli}, et le commit précédent (HEAD~1) est absent lui aussi")
+    return base, repli, niveau
+
+
+def fichiers_a_comparer(dossier, base):
+    """Les fichiers ajoutés ou modifiés entre le commit base (exclu) et le dernier commit.
+
+    On compare les deux versions du dépôt, pas commit par commit : un fichier modifié puis
+    remis dans son état de départ n'est pas comparé, un fichier supprimé non plus.
+    """
+    sortie = git(dossier, "diff", "--name-only", "--no-renames", "--diff-filter=AM", "-z", base, "HEAD")
     choisis, ignores = [], []
     for chemin in (c for c in sortie.split("\0") if c):
         complet = os.path.join(dossier, *chemin.split("/"))
@@ -228,24 +282,62 @@ def telecharger(url):
         return None, f"pas de réponse ({getattr(e, 'reason', e)})"
 
 
+def etendue(dossier, sha, depart, repli):
+    """Les commits comparés, en quelques mots, à placer après « ajoutés ou modifiés »."""
+    if repli:
+        return f"par ce commit seul, par rapport à son premier parent {depart[:7]} (repli : {repli})"
+    descend = subprocess.run(["git", "-C", dossier, "merge-base", "--is-ancestor", depart, sha],
+                             capture_output=True).returncode == 0
+    if not descend:
+        return f"entre {depart[:7]} et ce commit, qui n'en descend pas (envoi forcé ?)"
+    try:
+        nombre = int(git(dossier, "rev-list", "--count", f"{depart}..{sha}").strip())
+    except (ErreurApi, ValueError):
+        return f"depuis {depart[:7]}"
+    return f"depuis {depart[:7]} ({nombre} commit(s))"
+
+
 def comparer(a):
     dossier, base = a.comparer, a.site.rstrip("/")
     try:
         sha = git(dossier, "rev-parse", "HEAD").strip()
-        fichiers, ignores = fichiers_a_comparer(dossier)
+        depart, repli, niveau = commit_de_depart(dossier, a.depuis)
+        fichiers, ignores = fichiers_a_comparer(dossier, depart)
     except ErreurApi as e:
-        print(f"::error::Impossible de lister les fichiers modifiés par le commit (fetch-depth 2 ?) : {e}")
+        print(f"::error::Impossible de lister les fichiers à comparer (historique de la copie trop court ? "
+              f"fetch-depth 0 attendu) : {e}")
         return 1
-    print(f"{heure()}  commit {sha[:7]} : {len(fichiers)} fichier(s) servi(s) par le site à comparer à la version en ligne")
+    portee = etendue(dossier, sha, depart, repli)
+    if niveau:
+        print(f"::{niveau}::Commit {sha[:7]} : comparaison limitée à ce commit seul ({repli}). "
+              "Les fichiers des commits précédents du même envoi ne sont pas comparés.")
+    print(f"{heure()}  commit {sha[:7]} : {len(fichiers)} fichier(s) servi(s) par le site à comparer à la "
+          f"version en ligne, ajoutés ou modifiés {portee}")
     for chemin, raison in ignores:
         print(f"  non comparé : {chemin} ({raison})")
     lignes = [f"## Version en ligne du commit {sha[:7]}", ""]
-    if not fichiers:
-        message = ("Ce commit ne modifie aucun fichier servi par le site : l'état du déploiement de GitHub Pages "
-                   "suffit à dire que cette version est en ligne.")
+    ecartes = [c for c, raison in ignores if raison != "non servi par le site"]
+    if ecartes:
+        print(f"::notice::{len(ecartes)} fichier(s) servi(s) par le site ne sont pas comparés (plus de 5 Mo, "
+              f"ou au-delà des {MAX_FICHIERS} premiers) : voir la liste « non comparé » du journal.")
+    if not fichiers and ecartes:
+        message = (f"Aucun fichier comparé : les {len(ecartes)} fichier(s) servi(s) par le site ajoutés ou modifiés "
+                   f"{portee} font tous plus de 5 Mo. Seul l'état du déploiement de GitHub Pages dit que cette "
+                   "version est en ligne.")
         print(message)
         ecrire_resume(lignes + [message])
         return 0
+    if not fichiers:
+        message = (f"Aucun fichier servi par le site n'est ajouté ou modifié {portee} : l'état du déploiement "
+                   "de GitHub Pages suffit à dire que cette version est en ligne.")
+        print(message)
+        ecrire_resume(lignes + [message])
+        return 0
+    lignes += [f"Fichiers comparés : ceux que le site sert, ajoutés ou modifiés {portee}.", ""]
+    if ecartes:
+        lignes += [f"Non comparés (plus de 5 Mo, ou au-delà des {MAX_FICHIERS} premiers) : "
+                   + ", ".join(f"`{c}`" for c in ecartes[:20])
+                   + (f" et {len(ecartes) - 20} autre(s), dans le journal" if len(ecartes) > 20 else "") + ".", ""]
 
     attendus = {}
     for chemin in fichiers:
@@ -256,9 +348,10 @@ def comparer(a):
     while restants:
         essai += 1
         encore = []
-        for chemin in restants:
-            url = f"{base}/{urllib.parse.quote(chemin)}?v={sha[:12]}-{essai}"
-            contenu, erreur = telecharger(url)
+        urls = [f"{base}/{urllib.parse.quote(chemin)}?v={sha[:12]}-{essai}" for chemin in restants]
+        with ThreadPoolExecutor(max_workers=TELECHARGEMENTS) as groupe:
+            reponses = list(groupe.map(telecharger, urls))
+        for chemin, (contenu, erreur) in zip(restants, reponses):
             if contenu == attendus[chemin]:
                 resultats[chemin] = f"identique (essai {essai}, {heure()})"
             else:
@@ -293,10 +386,14 @@ def main():
     p.add_argument("--branche", default="main", help="la branche publiée par GitHub Pages")
     p.add_argument("--delai", type=int, default=900, help="attente maximale du déploiement, en secondes")
     p.add_argument("--pause", type=int, default=15, help="intervalle entre deux essais, en secondes")
-    p.add_argument("--comparer", metavar="DOSSIER", help="comparer au site en ligne les fichiers modifiés par le dernier commit de DOSSIER")
+    p.add_argument("--comparer", metavar="DOSSIER", help="comparer au site en ligne les fichiers ajoutés ou modifiés dans DOSSIER, une copie du dépôt")
+    p.add_argument("--depuis", metavar="COMMIT", help="avec --comparer : le commit de départ, exclu (en général github.event.before) ; "
+                   "sans lui, ou s'il est nul ou absent de la copie, le dernier commit seul")
     p.add_argument("--site", default=SITE, help=f"adresse du site (par défaut : {SITE})")
     p.add_argument("--delai-comparaison", type=int, default=180, help="attente maximale de la comparaison, en secondes")
     a = p.parse_args()
+    if a.depuis is not None and not a.comparer:
+        p.error("--depuis ne sert qu'avec --comparer")
     return comparer(a) if a.comparer else attendre(a)
 
 
