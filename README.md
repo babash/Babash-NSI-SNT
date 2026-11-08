@@ -333,14 +333,19 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   « trop de requêtes » (429) aux robots sont comptés comme valides.
 - **Site en ligne**, après chaque modification de `main` : le contrôle attend que GitHub Pages
   ait réellement mis en ligne ce commit (`scripts/attendre_deploiement.py`), puis télécharge
-  les fichiers du site que le commit ajoute ou modifie et vérifie qu'ils sont identiques à
-  ceux du dépôt. Ensuite, il affiche chaque rubrique dans Chrome et vérifie qu'aucune erreur
-  n'apparaît et que le nombre de ressources affichées est celui de `ressources.js`. Il ouvre
-  aussi chaque page déposée dans un dossier `fichiers/` (TD, fiches, diaporamas,
-  applications) et vérifie qu'elle s'affiche avec un vrai contenu. Le résumé donne l'heure de
-  chaque étape. Si un commit plus récent est mis en ligne entre-temps, c'est son propre
-  contrôle qui vérifie le site. Lancé à la main (**Run workflow** dans l'onglet Actions), ce
-  contrôle vérifie le site tel que `main` l'a mis en ligne.
+  les fichiers du site que l'envoi ajoute ou modifie, sur tous ses commits (par exemple la
+  fusion d'une branche et le commit du README envoyés ensemble), et vérifie qu'ils sont
+  identiques à ceux du dépôt. Les fichiers du site qui ne sont pas comparés (plus de 5 Mo, ou
+  au-delà des 200 premiers) sont signalés dans le résumé. Ensuite, il affiche chaque rubrique
+  dans Chrome et vérifie qu'aucune erreur n'apparaît et que le nombre de ressources affichées
+  est celui de `ressources.js`. Il ouvre aussi chaque page déposée dans un dossier `fichiers/`
+  (TD, fiches, diaporamas, applications) et vérifie qu'elle s'affiche avec un vrai contenu. Le
+  résumé donne l'heure de chaque étape. Si un commit plus récent est mis en ligne entre-temps,
+  c'est son propre contrôle qui vérifie le site, en ne comparant que les fichiers de son envoi ;
+  pour comparer aussi ceux de l'envoi précédent, relancer le contrôle à la main avec le champ
+  « depuis ». Lancé à la main (**Run workflow** dans l'onglet Actions), ce contrôle vérifie le
+  site tel que `main` l'a mis en ligne ; la comparaison porte sur le dernier commit de `main`,
+  ou sur tous les commits qui suivent celui qu'on indique dans le champ « depuis ».
 
 Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du site :
 `python3 -m http.server 8000`, puis dans un autre terminal
