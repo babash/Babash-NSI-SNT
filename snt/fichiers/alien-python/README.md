@@ -15,7 +15,7 @@ Alien Python fait partie des [Ressources NSI et SNT](https://babash.github.io/Ba
 ## Une séance en trois étapes
 
 1. **Tu** ouvres l'[espace enseignant](https://babash.github.io/Babash-NSI-SNT/snt/fichiers/alien-python/#prof), choisis « Créer une classe », donnes un nom de classe et ton code enseignant (4 caractères au moins). Tu obtiens un **code classe** de 6 caractères.
-2. **Les élèves** ouvrent l'adresse ci-dessus, choisissent « Nouvel élève », saisissent le code classe et leur prénom. Chaque élève reçoit un **code personnel à 4 chiffres** et le réutilise ensuite avec « J'ai déjà un code ».
+2. **Les élèves** ouvrent l'adresse ci-dessus, choisissent « Nouvel élève », saisissent le code classe et leur prénom. Chaque élève reçoit un **code personnel à 4 chiffres** et le réutilise ensuite avec « J’ai déjà un code ».
 3. **Tu suis la classe en direct** : l'espace enseignant (« Voir ma classe ») affiche pour chaque élève les exercices réussis par fiche, les aides demandées et la dernière activité.
 
 ## Ce que font les élèves
@@ -79,7 +79,8 @@ Une question, une idée, un bug ? Les [issues GitHub](https://github.com/babash/
 
 **D'après** [Alien-Python](https://forge.apps.education.fr/DegrangeM/alien-python), de Mathieu Degrange (MIT). Cette version ajoute la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
 
-- **Le code** (`index.html`, `config.js`, `supabase.sql`) est sous licence MIT (fichier `LICENSE` du site).
-- **Les exercices** (`data.js`) restent © 2021 Mathieu Degrange, sous licence MIT : la notice complète est dans [`LICENCE.txt`](LICENCE.txt), à garder avec `data.js` en cas de copie.
+- **Le code** (`index.html`, `config.js`, `supabase.sql`) est sous licence MIT (fichier `LICENSE` du site). C'est lui qui apporte la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
+- **Les documents** (ce README) sont sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr).
+- **Les exercices** (`data.js`, qui contient les 78 exercices et leur rangement en fiches) viennent d'Alien-Python : © 2021 Mathieu Degrange, licence MIT, notice dans [`LICENCE.txt`](LICENCE.txt), à garder avec `data.js` en cas de copie. Les images d'aliens du projet d'origine (Kenney, CC0) ne sont pas reprises : ici, l'alien est un emoji.
 
 Tu peux les réutiliser et les modifier, y compris pour tes classes, en mentionnant Babash - NSI Tani Malandi et la licence ; un document modifié se partage sous la même licence. Si tu utilises l'IA pour les modifier, merci de le préciser.

@@ -64,7 +64,7 @@ theme("Notions transversales de programmation", {
 ressource({
   titre: "Compute-it, progression Python",
   lien: "https://compute-it.toxicode.fr/?progression=python",
-  texte: "Les élèves jouent l'ordinateur : ils lisent un programme Python et l'exécutent eux-mêmes avec les flèches du clavier. On avance des instructions simples jusqu'aux boucles et aux conditions.",
+  texte: "Les élèves jouent l'ordinateur : ils et elles lisent un programme Python et l'exécutent avec les flèches du clavier. On avance des instructions simples jusqu'aux boucles et aux conditions.",
   tags: ["En ligne", "Python"],
 });
 
@@ -78,7 +78,7 @@ ressource({
 ressource({
   titre: "Execubot",
   lien: "https://execubot.fr",
-  texte: "Jeu de lecture de code : à partir d'un programme Python, les élèves prévoient le déplacement d'un robot sur une grille de couleurs. Conçu par des enseignants d'informatique de lycée.",
+  texte: "Jeu de lecture de code : à partir d'un programme Python, les élèves prévoient le déplacement d'un robot sur une grille de couleurs. Conçu par des enseignantes et enseignants d'informatique de lycée.",
   tags: ["En ligne", "Python"],
 });
 
@@ -167,7 +167,7 @@ theme("Les données structurées et leur traitement", { court: "Données structu
 ressource({
   titre: "CyberCase : apprendre SQL en menant l'enquête",
   lien: "https://exomorphisme.fr/cybercase/",
-  texte: "Une photo truquée circule sur le réseau social du lycée. Pour remonter jusqu'au commanditaire, l'élève interroge la base de données du réseau avec des requêtes SQL : il sélectionne, filtre, compte et trie des données structurées pour faire avancer l'enquête. Huit affaires, déverrouillées au fil de l'XP (recrue, analyste, expert), vont du simple `SELECT` à la sous-requête ; le Journal du détective tient lieu de cours.\n**En ligne, sans installation, environ 1 h 30.** Conçue pour la terminale NSI : en seconde, les premières affaires (`SELECT`, `WHERE`, `ORDER BY`, `COUNT`) suffisent pour le thème des données structurées.\nComptes élèves sur demande : aucun nom ne quitte le lycée et l'avancement est conservé d'une séance à l'autre. D'après une idée de Marion Dufour ; moteur dérivé de SQL Noir de Hristo Bogoev (licence MIT).",
+  texte: "Une photo truquée circule sur le réseau social du lycée. Pour remonter jusqu'au commanditaire, les élèves interrogent la base de données du réseau avec des requêtes SQL : ils et elles sélectionnent, filtrent, comptent et trient des données structurées pour faire avancer l'enquête. Huit affaires, déverrouillées au fil de l'XP (recrue, analyste, expert·e), vont du simple `SELECT` à la sous-requête ; le Journal du détective tient lieu de cours.\n**En ligne, sans installation, environ 1 h 30.** Conçue pour la terminale NSI : en seconde, les premières affaires (`SELECT`, `WHERE`, `ORDER BY`, `COUNT`) suffisent pour le thème des données structurées.\nComptes élèves sur demande : aucun nom ne quitte le lycée et l'avancement est conservé d'une séance à l'autre. D'après une idée de Marion Dufour ; moteur dérivé de SQL Noir de Hristo Bogoev (licence MIT).",
   tags: ["Ressource du mois", "En ligne", "Jeu"],
 });
 

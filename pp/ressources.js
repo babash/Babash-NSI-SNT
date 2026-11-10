@@ -67,7 +67,7 @@ theme("Vie de classe");
 theme("Textes officiels", "gris");
 
 ressource({
-  titre: "Circulaire sur le rôle du professeur principal",
+  titre: "Circulaire sur le rôle de professeur·e principal·e",
   lien: "https://www.education.gouv.fr/bo/18/Hebdo33/MENE1823888C.htm",
-  texte: "Circulaire n° 2018-108 du 10 octobre 2018 : missions de professeur·e principal·e au collège et au lycée.",
+  texte: "Circulaire n° 2018-108 du 10 octobre 2018 : « Missions du professeur principal au collège et au lycée ».",
 });
