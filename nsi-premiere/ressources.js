@@ -212,7 +212,7 @@ groupe("Constructions élémentaires");
 ressource({
   titre: "Lagon Arena",
   lien: "https://babash.github.io/lagon-arena/",
-  texte: "Le chapitre des conditions transformé en tournoi : chaque élève programme le cerveau d'une tortue de mer avec `if`, `elif` et `else`, puis toutes les tortues de la classe s'affrontent dans le même lagon, projeté au tableau. Après le match, l'élève revoit ce que sa tortue a « pensé » tour par tour et la corrige. Gratuit, sans compte, avec un tutoriel de 15 minutes.",
+  texte: "Le chapitre des conditions transformé en tournoi : chaque élève programme le cerveau d'une tortue de mer avec `if`, `elif` et `else`, puis toutes les tortues de la classe s'affrontent dans le même lagon, projeté au tableau. Après le match, l'élève revoit ce que sa tortue a « pensé » tour par tour et la corrige. Gratuit, sans compte, avec un parcours de 4 missions pour débuter (dès la Seconde), dont la première se fait sans code.\n**Ce qui est enregistré** : des pseudos, en ligne. Le Panthéon affiche le pseudo, la classe, l'établissement et la date.",
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
     "Espace enseignant·e": "https://babash.github.io/lagon-arena/prof.html",
