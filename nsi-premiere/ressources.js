@@ -171,7 +171,7 @@ ressource({
   texte: "Quinze missions d'infiltration dans un terminal Linux qui tourne dans le navigateur : se déplacer dans l'arborescence, manipuler des fichiers, gérer les droits, puis arrêter un processus. Correction automatique et indices progressifs. Conçu pour la terminale, il couvre les commandes et les droits du programme de première.",
   tags: ["En ligne", "Rien à installer"],
   annexes: {
-    "Fiche professeur": "https://babash.github.io/TP-commandes-hacker/fiche_prof_mirage.html",
+    "Fiche de l'enseignant·e": "https://babash.github.io/TP-commandes-hacker/fiche_prof_mirage.html",
     "Terminal JSLinux": "https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&mem=192",
     "Code source": "https://github.com/babash/TP-commandes-hacker",
   },
@@ -211,7 +211,7 @@ ressource({
   texte: "Le chapitre des conditions transformé en tournoi : chaque élève programme le cerveau d'une tortue de mer avec `if`, `elif` et `else`, puis toutes les tortues de la classe s'affrontent dans le même lagon, projeté au tableau. Après le match, l'élève revoit ce que sa tortue a « pensé » tour par tour et la corrige. Gratuit, sans compte, avec un tutoriel de 15 minutes.",
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
-    "Espace enseignant": "https://babash.github.io/lagon-arena/prof.html",
+    "Espace enseignant·e": "https://babash.github.io/lagon-arena/prof.html",
     "Essayer en mode démo": "https://babash.github.io/lagon-arena/prof.html?demo",
   },
 });
@@ -239,7 +239,7 @@ ressource({
 ressource({
   titre: "Code Puzzle",
   lien: "https://www.codepuzzle.io/",
-  texte: "Des puzzles de Parsons : les lignes d'un programme Python sont mélangées, l'élève les remet dans l'ordre et les indente. Le professeur crée ses propres puzzles et défis et les partage par un simple lien.",
+  texte: "Des puzzles de Parsons : les lignes d'un programme Python sont mélangées, l'élève les remet dans l'ordre et les indente. L'enseignant·e crée ses propres puzzles et défis et les partage par un simple lien.",
   tags: ["En ligne", "Python"],
 });
 
@@ -302,7 +302,7 @@ groupe("Cours en ligne");
 ressource({
   titre: "Première NSI, lycée François Mauriac (Bordeaux)",
   lien: "https://glassus.github.io/premiere_nsi/",
-  texte: "Le cours complet de première d'un collègue, rangé par thème du programme, avec de nombreux exercices.",
+  texte: "Le cours complet de première d'un·e collègue, rangé par thème du programme, avec de nombreux exercices.",
   tags: ["En ligne"],
 });
 
@@ -332,7 +332,7 @@ ressource({
 ressource({
   titre: "futurecoder",
   lien: "https://futurecoder.forge.apps.education.fr/",
-  texte: "Cours interactif de Python pour grands débutants, traduit en français : chaque notion se teste aussitôt dans l'éditeur, avec des indices et un assistant de débogage.",
+  texte: "Cours interactif de Python pour grand·e·s débutant·e·s, traduit en français : chaque notion se teste aussitôt dans l'éditeur, avec des indices et un assistant de débogage.",
   tags: ["En ligne", "Python"],
 });
 

@@ -25,7 +25,7 @@ rubrique({
   nom: "Professeur principal",
   court: "PP",
   couleur: "vert",
-  presentation: "Les missions du professeur principal au lycée : coordonner l'équipe, suivre chaque élève, accompagner l'orientation, faire le lien avec les familles.",
+  presentation: "Les missions de professeur·e principal·e au lycée : coordonner l'équipe, suivre chaque élève, accompagner l'orientation, faire le lien avec les familles.",
   programme: {
     texte: "Circulaire n° 2018-108 du 10 octobre 2018, BO n° 37 du 11 octobre 2018",
     lien: "https://www.education.gouv.fr/bo/18/Hebdo33/MENE1823888C.htm",
@@ -41,7 +41,7 @@ theme("Suivi des élèves");
 ressource({
   titre: "Simulateur de note au bac général, session 2027",
   lien: "https://babash.github.io/simulateur-bac/",
-  texte: "L'élève saisit ses moyennes par semestre et voit ses points, ce qu'il lui reste à obtenir pour le bac et pour chaque mention, et la note nécessaire à l'oral de rattrapage. Coefficients de la session 2027, rien n'est envoyé : les notes restent dans le navigateur.",
+  texte: "L'élève saisit ses moyennes par semestre et voit ses points, ce qu'il reste à obtenir pour le bac et pour chaque mention, et la note nécessaire à l'oral de rattrapage. Coefficients de la session 2027, rien n'est envoyé : les notes restent dans le navigateur.",
   tags: ["En ligne", "Terminale"],
   annexes: {
     "Code source": "https://github.com/babash/simulateur-bac",
@@ -67,7 +67,7 @@ theme("Vie de classe");
 theme("Textes officiels", "gris");
 
 ressource({
-  titre: "Circulaire sur le rôle du professeur principal",
+  titre: "Circulaire sur le rôle de professeur·e principal·e",
   lien: "https://www.education.gouv.fr/bo/18/Hebdo33/MENE1823888C.htm",
-  texte: "Circulaire n° 2018-108 du 10 octobre 2018 : missions du professeur principal au collège et au lycée.",
+  texte: "Circulaire n° 2018-108 du 10 octobre 2018 : « Missions du professeur principal au collège et au lycée ».",
 });

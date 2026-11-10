@@ -44,7 +44,7 @@ ressource({
   texte: "Une plongée en Python à la recherche du cœlacanthe, racontée comme un manga, pour réviser les listes, les dictionnaires et les algorithmes de base de première. Parcours principal de 13 missions (environ 1 h 15), puis 5 expéditions bonus. Activités variées, souvent sans coder, et suivi de 7 compétences.",
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
-    "Tableau de bord du professeur": "https://babash.github.io/Rappel-1er/prof.html",
+    "Tableau de bord de l'enseignant·e": "https://babash.github.io/Rappel-1er/prof.html",
   },
 });
 
@@ -85,7 +85,7 @@ ressource({
   texte: "Cours complet du premier chapitre du thème « Structures de données ».",
   tags: ["À imprimer", "Cours"],
   annexes: {
-    "Sources LaTeX": "https://github.com/babash/NSI-Terminale/tree/main/Th%C3%A8me%201%20%E2%80%93%20Structures%20de%20donn%C3%A9es",
+    "Code source : sources LaTeX": "https://github.com/babash/NSI-Terminale/tree/main/Th%C3%A8me%201%20%E2%80%93%20Structures%20de%20donn%C3%A9es",
   },
 });
 
@@ -117,8 +117,8 @@ ressource({
   texte: "Notebook Jupyter : créer une classe `Pokemon`, instancier des pokémons avec leurs attributs et les faire interagir. Les données des pokémons sont fournies en JSON.",
   tags: ["Python", "Notebook"],
   annexes: {
-    "Notebook à télécharger (.ipynb)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
-    "Données des pokémons (JSON)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/pokemon_data_light.json",
+    "Code source : notebook à télécharger (.ipynb)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
+    "Code source : données des pokémons (JSON)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/pokemon_data_light.json",
     "Code source": "https://github.com/babash/NSI-Terminale/tree/main/tp-poo-pokemons",
   },
 });
@@ -208,14 +208,14 @@ groupe("Langage SQL : requêtes d'interrogation et de mise à jour");
 ressource({
   titre: "CyberCase : apprendre SQL en menant l'enquête",
   lien: "https://exomorphisme.fr/cybercase/",
-  texte: "Une photo truquée circule sur le réseau social du lycée. Pour remonter jusqu'au commanditaire, l'élève n'a qu'un outil : des requêtes SQL sur la base du réseau. Huit affaires, déverrouillées au fil de l'XP (recrue, analyste, expert), mènent du simple `SELECT` à la sous-requête en passant par `WHERE`, `AND` / `OR`, `DISTINCT`, `COUNT`, `LIKE` et `ORDER BY`. Le Journal du détective tient lieu de cours entre deux enquêtes.\n**Terminale NSI, 1 h 30, en ligne, sans installation.** Deux suites dans le même univers : CounterCase pour `UPDATE`, `INSERT` et `DELETE`, et CrossCase pour les jointures.\nComptes élèves sur demande : aucun nom ne quitte le lycée et l'avancement est conservé d'une séance à l'autre. D'après une idée de Marion Dufour ; moteur dérivé de SQL Noir de Hristo Bogoev (licence MIT).",
+  texte: "Une photo truquée circule sur le réseau social du lycée. Pour remonter jusqu'au commanditaire, l'élève n'a qu'un outil : des requêtes SQL sur la base du réseau. Huit affaires, déverrouillées au fil de l'XP (recrue, analyste, expert·e), mènent du simple `SELECT` à la sous-requête en passant par `WHERE`, `AND` / `OR`, `DISTINCT`, `COUNT`, `LIKE` et `ORDER BY`. Le Journal du détective tient lieu de cours entre deux enquêtes.\n**Terminale NSI, 1 h 30, en ligne, sans installation.** Deux suites dans le même univers : CounterCase pour `UPDATE`, `INSERT` et `DELETE`, et CrossCase pour les jointures.\nComptes élèves sur demande : aucun nom ne quitte le lycée et l'avancement est conservé d'une séance à l'autre. D'après une idée de Marion Dufour ; moteur dérivé de SQL Noir de Hristo Bogoev (licence MIT).",
   tags: ["Ressource du mois", "En ligne", "SQL", "Jeu"],
 });
 
 ressource({
   titre: "The SQL Murder Mystery",
   lien: "https://mystery.knightlab.com/",
-  texte: "Une enquête policière en anglais à résoudre en interrogeant une base de données en SQL, directement dans le navigateur. Une bonne suite à CyberCase pour les plus rapides.",
+  texte: "Une enquête policière en anglais à résoudre en interrogeant une base de données en SQL, directement dans le navigateur. Une bonne suite à CyberCase pour les élèves les plus rapides.",
   tags: ["En ligne", "SQL", "Pour aller plus loin"],
 });
 
@@ -252,7 +252,7 @@ groupe("Gestion des processus et des ressources par un système d'exploitation")
 ressource({
   titre: "Système d'exploitation humain",
   lien: "fichiers/os-humain/diaporama.html",
-  texte: "Activité débranchée : la classe devient un ordinateur. Chaque élève est un processus, avec un PID et une priorité, qui exécute une fiche d'instructions (prendre, poser, dessiner). Le professeur joue l'ordonnanceur. Trois activités : tourniquet sur un cœur, priorités, puis interblocage. Le lien ouvre le diaporama à projeter ; les fiches processus à imprimer sont en dessous.",
+  texte: "Activité débranchée : la classe devient un ordinateur. Chaque élève est un processus, avec un PID et une priorité, qui exécute une fiche d'instructions (prendre, poser, dessiner). L'enseignant·e joue l'ordonnanceur. Trois activités : tourniquet sur un cœur, priorités, puis interblocage. Le lien ouvre le diaporama à projeter ; les fiches processus à imprimer sont en dessous.",
   tags: ["Débranché", "À imprimer"],
   annexes: {
     "Guide de l'activité": "fichiers/os-humain/guide.html",
@@ -269,7 +269,7 @@ ressource({
   texte: "Quinze missions d'infiltration dans un terminal Linux qui tourne dans le navigateur : arborescence, fichiers, droits, puis repérer un processus espion avec `ps` et l'arrêter avec `kill`. Correction automatique et indices progressifs.",
   tags: ["En ligne", "Rien à installer"],
   annexes: {
-    "Fiche professeur": "https://babash.github.io/TP-commandes-hacker/fiche_prof_mirage.html",
+    "Fiche de l'enseignant·e": "https://babash.github.io/TP-commandes-hacker/fiche_prof_mirage.html",
     "Terminal JSLinux": "https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&mem=192",
     "Code source": "https://github.com/babash/TP-commandes-hacker",
   },
@@ -374,7 +374,7 @@ ressource({
 ressource({
   titre: "NSI Terminale (jerome.courtois2.free.fr)",
   lien: "http://jerome.courtois2.free.fr/NSI_Terminale.html",
-  texte: "Cours et activités de terminale NSI d'un collègue, par thème.",
+  texte: "Cours et activités de terminale NSI d'un·e collègue, par thème.",
   tags: ["En ligne"],
 });
 

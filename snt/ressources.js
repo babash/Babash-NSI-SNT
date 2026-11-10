@@ -42,7 +42,7 @@ theme("Première séance", { couleur: "gris" });
 ressource({
   titre: "SNT 1er jour : brise-glace et découverte",
   lien: "https://babash.github.io/SNT-1er-Jour/",
-  texte: "Formulaire de première séance : les élèves se présentent (mots-clés, goûts culturels, citation d'informaticien, question au professeur) et voient le nuage de mots de leur classe se construire. Jeu de frappe au clavier en bonus pour ceux qui finissent en avance.\n**À adapter** : la page est réglée pour les classes 209 à 212 et envoie les réponses dans la base de données de son auteur. La dupliquer et la brancher sur sa propre base avant de l'utiliser.",
+  texte: "Formulaire de première séance : les élèves se présentent (mots-clés, goûts culturels, citation d'informaticien·ne, question à l'enseignant·e) et voient le nuage de mots de leur classe se construire. Jeu de frappe au clavier en bonus pour les élèves qui finissent en avance.\n**À adapter** : la page est réglée pour les classes 209 à 212 et envoie les réponses dans la base de données de son auteur·rice. La dupliquer et la brancher sur sa propre base avant de l'utiliser.",
   tags: ["En ligne", "À adapter"],
   annexes: {
     "Code source, à dupliquer": "https://github.com/babash/SNT-1er-Jour",
@@ -64,7 +64,7 @@ theme("Notions transversales de programmation", {
 ressource({
   titre: "Compute-it, progression Python",
   lien: "https://compute-it.toxicode.fr/?progression=python",
-  texte: "Les élèves jouent l'ordinateur : ils lisent un programme Python et l'exécutent eux-mêmes avec les flèches du clavier. On avance des instructions simples jusqu'aux boucles et aux conditions.",
+  texte: "Les élèves jouent l'ordinateur : ils et elles lisent un programme Python et l'exécutent avec les flèches du clavier. On avance des instructions simples jusqu'aux boucles et aux conditions.",
   tags: ["En ligne", "Python"],
 });
 
@@ -78,14 +78,14 @@ ressource({
 ressource({
   titre: "Execubot",
   lien: "https://execubot.fr",
-  texte: "Jeu de lecture de code : à partir d'un programme Python, les élèves prévoient le déplacement d'un robot sur une grille de couleurs. Conçu par des enseignants d'informatique de lycée.",
+  texte: "Jeu de lecture de code : à partir d'un programme Python, les élèves prévoient le déplacement d'un robot sur une grille de couleurs. Conçu par des enseignantes et enseignants d'informatique de lycée.",
   tags: ["En ligne", "Python"],
 });
 
 ressource({
   titre: "Alien Python : lire du code en suivant l'alien",
   lien: "fichiers/alien-python/",
-  texte: "Les 78 exercices d'Alien-Python : l'élève lit un programme et clique sur la case de la grille où il mène l'alien, puis complète lui-même des programmes dans deux séries inversées. Sept fiches progressives : déplacements et variables, boucles `for`, conditions, boucles `while`, fonctions. Validation immédiate, coups de pouce, correction, badges et avancement de la classe.\n**Suivi de la classe** : dans l'espace enseignant, créer une classe avec un code secret et donner le code classe aux élèves. Chacun reçoit un code personnel à 4 chiffres pour retrouver sa progression d'une séance à l'autre. Ne saisir que des prénoms.\nExercices de Mathieu Degrange (licence MIT).",
+  texte: "Les 78 exercices d'Alien-Python : l'élève lit un programme et clique sur la case de la grille où il mène l'alien, puis complète des programmes dans deux séries inversées. Sept fiches progressives : déplacements et variables, boucles `for`, conditions, boucles `while`, fonctions. Validation immédiate, coups de pouce, correction, badges et avancement de la classe.\n**Suivi de la classe** : dans l'espace enseignant, créer une classe avec un code secret et donner le code classe aux élèves. Chaque élève reçoit un code personnel à 4 chiffres pour retrouver sa progression d'une séance à l'autre. Ne saisir que des prénoms.\nExercices de Mathieu Degrange (licence MIT).",
   tags: ["En ligne", "Python", "Rien à installer"],
   annexes: {
     "Espace enseignant": "fichiers/alien-python/#prof",
@@ -167,7 +167,7 @@ theme("Les données structurées et leur traitement", { court: "Données structu
 ressource({
   titre: "CyberCase : apprendre SQL en menant l'enquête",
   lien: "https://exomorphisme.fr/cybercase/",
-  texte: "Une photo truquée circule sur le réseau social du lycée. Pour remonter jusqu'au commanditaire, l'élève interroge la base de données du réseau avec des requêtes SQL : il sélectionne, filtre, compte et trie des données structurées pour faire avancer l'enquête. Huit affaires, déverrouillées au fil de l'XP (recrue, analyste, expert), vont du simple `SELECT` à la sous-requête ; le Journal du détective tient lieu de cours.\n**En ligne, sans installation, environ 1 h 30.** Conçue pour la terminale NSI : en seconde, les premières affaires (`SELECT`, `WHERE`, `ORDER BY`, `COUNT`) suffisent pour le thème des données structurées.\nComptes élèves sur demande : aucun nom ne quitte le lycée et l'avancement est conservé d'une séance à l'autre. D'après une idée de Marion Dufour ; moteur dérivé de SQL Noir de Hristo Bogoev (licence MIT).",
+  texte: "Une photo truquée circule sur le réseau social du lycée. Pour remonter jusqu'au commanditaire, les élèves interrogent la base de données du réseau avec des requêtes SQL : ils et elles sélectionnent, filtrent, comptent et trient des données structurées pour faire avancer l'enquête. Huit affaires, déverrouillées au fil de l'XP (recrue, analyste, expert·e), vont du simple `SELECT` à la sous-requête ; le Journal du détective tient lieu de cours.\n**En ligne, sans installation, environ 1 h 30.** Conçue pour la terminale NSI : en seconde, les premières affaires (`SELECT`, `WHERE`, `ORDER BY`, `COUNT`) suffisent pour le thème des données structurées.\nComptes élèves sur demande : aucun nom ne quitte le lycée et l'avancement est conservé d'une séance à l'autre. D'après une idée de Marion Dufour ; moteur dérivé de SQL Noir de Hristo Bogoev (licence MIT).",
   tags: ["Ressource du mois", "En ligne", "Jeu"],
 });
 
