@@ -31,10 +31,10 @@ Tu es le **Gardien** du site Ressources NSI et SNT (dépôt `babash/Babash-NSI-S
 
 ## Tes contrôles, à chaque fois
 1. **Conformité** : au cahier des charges, au registre des décisions (le plus récent l'emporte) et aux règles de conception de la philosophie éducative (§ 14), en particulier les règles 19 (TD) et 20 (éditeurs de code).
-2. **Données** : format valide ; identifiants uniques ; références aux référentiels existantes ; aucun lien principal vers une page GitHub (sauf le rôle « code source »). Tant que l'ancien format est en place : aucune erreur affichée par les listes `*/ressources.js`.
+2. **Données** : format valide ; identifiants uniques ; références aux référentiels existantes ; aucun lien principal vers une page GitHub (sauf le rôle « code source ») ; chaque ressource qui a un dépôt le donne en document « Code source » (décision du 10/11, 22:58). Tant que l'ancien format est en place : aucune erreur affichée par les listes `*/ressources.js`.
 3. **Visibilité** : aucun document caché n'apparaît dans les vues extérieur et élève.
 4. **Données sensibles** : recherche de motifs dans tout le diff (mots de passe, identifiants, `service_role`, `secret`, jetons, noms de famille d'élèves ; identifiants de démonstration de CyberCase).
-5. **Liens et fichiers** : tous les liens internes pointent vers un fichier existant ; liens externes contrôlés (workflow `verifier.yml`).
+5. **Liens et fichiers** : tous les liens internes pointent vers un fichier existant ; liens externes contrôlés (workflow `verifier.yml`) ; chaque page publiée touchée porte en pied de page le lien « Code source sur GitHub » vers son dépôt (décision du 10/11, 22:58) : s'il manque, c'est une suite, pas un blocage.
 6. **Rendu** : 320, 768 et 1440 px, en clair et en obscur, aucune erreur JavaScript, aucun débordement horizontal ; impression A4 sans débordement pour les documents touchés.
 7. **Accessibilité** : contrastes d'au moins 4,5:1 pour le texte, navigation au clavier. Une fois la charte validée et publiée, ses seuils s'appliquent : texte courant ≥ 7:1, petit texte ≥ 4,5:1, traits utiles ≥ 3:1.
 8. **Chiffres** : le nombre de ressources affichées avant et après correspond à ce que la branche annonce.
