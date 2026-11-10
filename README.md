@@ -241,13 +241,17 @@ Les virgules en trop, elles, ne gênent pas : tu peux en laisser une après chaq
 Télécharge le dépôt (**Code → Download ZIP**), décompresse-le et ouvre `index.html`
 dans ton navigateur. Tout fonctionne sans connexion, sauf les polices et les liens externes.
 
-## Applications avec une base de données
+## Applications qui utilisent Supabase
 
-Certaines ressources enregistrent la progression des élèves dans **Supabase** :
+Deux ressources passent par **Supabase** : Alien Python y enregistre la progression des élèves ;
+Court-circuit n'y enregistre rien et n'en utilise que le temps réel.
 
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
+| Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | aucune : seulement les canaux temps réel (diffusion et présence) |
+
+**Alien Python**
 
 - L'adresse du projet et sa clé publique (« anon ») sont dans `config.js`. Cette clé est publique
   par conception : les tables sont verrouillées et le site ne passe que par les fonctions
@@ -259,6 +263,22 @@ Certaines ressources enregistrent la progression des élèves dans **Supabase** 
   puis mets son adresse et sa clé « anon public » dans `config.js`.
 - Les exercices d'Alien Python sont d'Alien-Python (© 2021 Mathieu Degrange, licence MIT) :
   la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder en cas de copie.
+
+**Court-circuit**
+
+- Rien n'est enregistré en ligne : le duel en direct passe par les canaux temps réel de
+  Supabase (diffusion et présence), sans table ni fonction. Le prénom ou le pseudo et le code de
+  chaque élève ne vont qu'aux élèves de sa salle, pendant la séance. Seules la page de la salle
+  (`prof.html`) et l'entrée d'un·e élève dans une salle se connectent à Supabase ; l'entraînement
+  et le défi contre Zéro marchent sans réseau.
+- C'est une exception voulue par l'enseignant (10 novembre 2026) aux règles des bases, qui
+  n'utilisaient pas le temps réel. La clé de `snt/fichiers/court-circuit/config.js` est la même
+  clé publique « anon ».
+- Pour ta propre copie : mets l'adresse et la clé « anon public » de ton projet Supabase dans
+  `config.js`, ou laisse l'adresse vide : le jeu passe en mode démo, où une salle passe entre
+  les onglets d'un même navigateur (comme avec `?demo` à la fin de l'adresse).
+- Les codes d'élèves des applications de jeu viendront plus tard : pour l'instant, rien n'est
+  gardé en ligne, et les étoiles et le niveau de Zéro restent un jour au plus sur l'appareil.
 
 Les règles communes des bases sont dans `CLAUDE.md`, section « Les bases Supabase » : une seule
 base pour toutes les applications, un schéma par application, l'accès par des fonctions, des
@@ -274,7 +294,7 @@ continuent d'utiliser les listes `ressources.js` décrites plus haut.
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource (6 fiches d'exemple pour l'instant)
+  ressources/<id>.json          une fiche par ressource (7 pour l'instant : 6 d'exemple et Court-circuit)
   vitrine.exemple.json          un exemple de mise en avant pour la partie extérieure
   referentiels/                 l'arbre des programmes, les listes de valeurs, les compétences Pix
   schema/                       la description exacte du format (JSON Schema)
@@ -492,6 +512,7 @@ Une question, une idée, un lien cassé ? Les [issues GitHub](https://github.com
 - **Le code du site** (`assets/*.js`, `assets/*.css`, les pages `index.html`, `reglages.js`, `scripts/`, `.github/`) est sous licence [MIT](LICENSE).
 - **Les documents** (les fiches, TD, cours, guides et diaporamas des dossiers `fichiers/`, les textes des listes de ressources, le décor du bandeau) sont sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr).
 - **Alien Python** (`snt/fichiers/alien-python/`) : d'après [Alien-Python](https://forge.apps.education.fr/DegrangeM/alien-python), de Mathieu Degrange (MIT) ; la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder avec `data.js` en cas de copie.
+- **Court-circuit** (`snt/fichiers/court-circuit/`) : code MIT et documents CC BY-SA 4.0 de Babash - NSI Tani Malandi ; les bibliothèques incluses (CodeMirror 6, client temps réel de Supabase, QR Code Generator) gardent leur licence MIT, avec leur notice dans `snt/fichiers/court-circuit/vendor/LICENCES-BIBLIOTHEQUES.txt`, et les polices intégrées (Chakra Petch, JetBrains Mono, Atkinson Hyperlegible) la leur, la SIL Open Font License 1.1, avec leurs copyrights et son texte dans `snt/fichiers/court-circuit/LICENCE.txt`.
 - **La fiche Python de SNT** (`snt/fichiers/python-compute-it.html`) : d'après la fiche Compute-it d'Etienne Clave, sur le site exomorphisme.fr (lycée de Sada).
 - **Les ressources externes** restent la propriété de leurs auteurs et autrices : leur site d'origine est indiqué sur chaque ressource.
 
