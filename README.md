@@ -241,7 +241,7 @@ Certaines ressources enregistrent la progression des élèves dans **Supabase** 
 
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
-| Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour » | `alien_classes`, `alien_students`, `alien_progress` |
+| Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
 
 - L'adresse du projet et sa clé publique (« anon ») sont dans `config.js`. Cette clé est publique
   par conception : les tables sont verrouillées et le site ne passe que par les fonctions
@@ -254,10 +254,10 @@ Certaines ressources enregistrent la progression des élèves dans **Supabase** 
 - Les exercices d'Alien Python sont d'Alien-Python (© 2021 Mathieu Degrange, licence MIT) :
   la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder en cas de copie.
 
-Les règles communes des bases (les deux projets, le préfixe de chaque application, l'accès par
-des fonctions, les migrations) sont dans `CLAUDE.md`, section « Les bases Supabase ». Aucune
-base n'est modifiée sans que l'enseignant ait vu le SQL exact, et les agents n'en lisent que
-les métadonnées, jamais les données des élèves.
+Les règles communes des bases sont dans `CLAUDE.md`, section « Les bases Supabase » : une seule
+base pour toutes les applications, un schéma par application, l'accès par des fonctions, des
+migrations avec leur fichier inverse. Aucune base n'est modifiée sans que l'enseignant ait vu le
+SQL exact, et les agents n'en lisent que les métadonnées, jamais les données des élèves.
 
 ## La future bibliothèque (dossier `donnees/`)
 
