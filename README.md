@@ -43,7 +43,13 @@ scripts/                    vérification automatique et validation des données
 
 **Règle des liens** : le lien principal d'une ressource mène **directement** à la ressource
 (la page de l'activité, la fiche, le PDF), jamais à un dépôt GitHub ou à un fichier affiché
-par GitHub. Le dépôt peut figurer discrètement en annexe, sous le nom « Code source ».
+par GitHub. Le dépôt, lui, doit toujours être indiqué, en lien secondaire (décision de
+l'enseignant du 10 novembre 2026) : une ressource qui a un dépôt le donne en annexe, sous le
+nom « Code source », et chaque page publiée (ce site, les applications, les pages en ligne des
+TD) porte en pied de page un lien « Code source sur GitHub » vers son dépôt, à côté de l'auteur
+et de la licence. Pour une ressource externe, qu'on ne modifie pas, on donne son dépôt en
+annexe s'il est public. Ces liens sont en cours d'ajout : le pied de page de ce site, plusieurs
+applications et plusieurs ressources des listes ne les ont pas encore.
 Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans le dossier
 `fichiers` de la rubrique (c'est le cas de `nsi-terminale/fichiers/os-humain/`).
 
@@ -366,10 +372,13 @@ vérifie que la branche part du dernier `main`, puis contrôle les données sens
 internes, le rendu avant et après (320, 768 et 1440 px, clair et obscur), les contrastes, la
 navigation au clavier et l'impression A4 des documents touchés ; il lance aussi le contrôle
 des pages décrit ci-dessus. La conformité, elle, se vérifie à la lecture : cahier des charges,
-décisions de l'enseignant et règles de conception (voir « L'équipe d'agents »). Après la
-publication, `bash .github/gardien/attendre_actions.sh <commit>` suit la mise en ligne et lit
-les résultats des contrôles automatiques. Il faut Python avec Playwright et Pillow, Chrome ou
-Chromium, et l'outil `gh` de GitHub pour suivre la mise en ligne.
+décisions de l'enseignant et règles de conception (voir « L'équipe d'agents »). Il vérifie de
+même les liens vers les dépôts (voir « Règle des liens ») : chaque ressource qui a un dépôt le
+donne en « Code source », et chaque page touchée porte en pied de page le lien « Code source sur
+GitHub » ; si ce lien du pied de page manque, il est ajouté dans une branche de suite, sans
+bloquer la publication. Après la publication, `bash .github/gardien/attendre_actions.sh <commit>`
+suit la mise en ligne et lit les résultats des contrôles automatiques. Il faut Python avec
+Playwright et Pillow, Chrome ou Chromium, et l'outil `gh` de GitHub pour suivre la mise en ligne.
 
 D'autres outils du même dossier servent au cas par cas : `caracteres.py` relève, dans les lignes
 qu'ajoute une branche, les caractères invisibles et les points qui imitent le point médian (le
