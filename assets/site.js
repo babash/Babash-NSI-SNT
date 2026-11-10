@@ -30,7 +30,12 @@
   var RACINE = new URL('..', document.currentScript.src).href;
   var SUR_DISQUE = location.protocol === 'file:';
 
+  /* Le dépôt du site, si reglages.js n'en donne pas (depot: "propriétaire/nom").
+     Décision de l'enseignant du 10/11/2026 : chaque page a un lien « Code source sur GitHub ». */
+  var DEPOT = 'babash/Babash-NSI-SNT';
+
   var reglagesSite = {};
+  var depotSite = null; // celui de reglages.js, vérifié ; null s'il manque ou s'il est mal écrit
   var rubriques = {};
   var erreurs = [];
 
@@ -155,8 +160,19 @@
     return rub.themes[rub.themes.length - 1];
   }
 
+  /* « propriétaire/nom » ; une adresse https://github.com/… est acceptée et raccourcie */
+  function lireDepot(v) {
+    if (v == null || v === '') return null;
+    var s = String(v).trim().replace(/^https?:\/\/(www\.)?github\.com\//i, '').replace(/(\.git)?\/*$/i, '');
+    if (/^[A-Za-z0-9-]+\/[A-Za-z0-9._-]+$/.test(s)) return s;
+    signaler('reglages.js', '« depot » doit s\'écrire "propriétaire/nom", par exemple "' + DEPOT +
+      '" (valeur lue : « ' + v + ' »). En attendant, le lien « Code source sur GitHub » mène à ' + DEPOT + '.');
+    return null;
+  }
+
   window.reglages = function (r) {
     reglagesSite = r || {};
+    depotSite = lireDepot(reglagesSite.depot);
     var dossiers = liste(reglagesSite.rubriques).slice();
     var ici = rubriqueDeLaPage();
     if (ici && dossiers.indexOf(ici) < 0) dossiers.push(ici); // rubrique non listée : accessible par son adresse
@@ -338,7 +354,12 @@
   }
 
   function urlGithub(action, chemin) {
-    return 'https://github.com/' + reglagesSite.depot + '/' + action + '/' + (reglagesSite.branche || 'main') + '/' + chemin;
+    return urlDepot() + '/' + action + '/' + (reglagesSite.branche || 'main') + '/' + chemin;
+  }
+
+  /* L'accueil du dépôt : celui de reglages.js, sinon celui du site */
+  function urlDepot() {
+    return 'https://github.com/' + (depotSite || DEPOT);
   }
 
   function titreSite() {
@@ -388,7 +409,8 @@
       licences.push(i ? ', ' + l.quoi : l.quoi.charAt(0).toUpperCase() + l.quoi.slice(1));
       licences.push(' sous licence ', el('a', { href: l.lien, rel: 'license' }, l.nom));
     });
-    licences.push('.');
+    /* Décision du 10/11/2026 (22:58) : le lien vers le dépôt, à côté de l'auteur et de la licence */
+    licences.push('. ', el('a', { href: urlDepot() }, 'Code source sur GitHub'), '.');
     lignes.push(licences);
 
     var reutiliser = [mention('reutilisation'), mention('invitation_ia')].filter(Boolean).join(' ');
@@ -795,7 +817,7 @@
     page.appendChild(el('footer', { class: 'pied' }, [
       el('h2', null, 'Ajouter une ressource'),
       el('p', null, 'Chaque rubrique a sa liste dans un petit fichier texte de son dossier. On y ajoute un lien vers une ressource en ligne, ou vers un fichier (PDF, fiche, diaporama) déposé dans le dossier de la rubrique. Le lien « Modifier la liste » se trouve en bas de chaque rubrique.'),
-      reglagesSite.depot ? el('p', { class: 'actions' }, el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi complet')) : null,
+      depotSite ? el('p', { class: 'actions' }, el('a', { href: urlDepot() + '#readme' }, 'Mode d\'emploi complet')) : null,
       mentions()
     ]));
   }
@@ -884,10 +906,10 @@
         el('code', null, rub.id + '/fichiers'), ', puis l\'ajouter à la liste avec ',
         el('code', null, 'lien: "fichiers/nom-du-fichier.pdf"'), '.'
       ]),
-      reglagesSite.depot ? el('p', { class: 'actions' }, [
+      depotSite ? el('p', { class: 'actions' }, [
         el('a', { href: urlGithub('edit', rub.id + '/ressources.js') }, 'Modifier la liste'),
         el('a', { href: urlGithub('upload', rub.id + '/fichiers') }, 'Déposer un fichier'),
-        el('a', { href: 'https://github.com/' + reglagesSite.depot + '#readme' }, 'Mode d\'emploi')
+        el('a', { href: urlDepot() + '#readme' }, 'Mode d\'emploi')
       ]) : null,
       mentions()
     ]));

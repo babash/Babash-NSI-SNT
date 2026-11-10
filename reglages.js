@@ -6,7 +6,8 @@ reglages({
   titre: "Ressources NSI et SNT",
   presentation: "Cours, activités et outils pour la classe, rangés par niveau et par thème.",
 
-  // Le dépôt GitHub du site : sert aux liens « Modifier la liste » et « Déposer un fichier »
+  // Le dépôt GitHub du site, sous la forme "propriétaire/nom" : sert au lien « Code source sur GitHub »
+  // en bas de chaque page, et aux liens « Modifier la liste », « Déposer un fichier » et « Mode d'emploi »
   depot: "babash/Babash-NSI-SNT",
 
   // En bas de chaque page, avec les licences (CC BY-SA 4.0 pour les documents, MIT pour le code).
