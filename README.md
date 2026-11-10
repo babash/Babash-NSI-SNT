@@ -1,11 +1,15 @@
-# Ressources NSI et SNT
+# 🗂️ Ressources NSI et SNT
 
-Cours, activités et outils pour la classe, rangés par niveau et par thème.
+**Cours, activités et outils pour la classe, rangés par niveau et par thème.** Pour la SNT, la NSI de 1re et de terminale, et le rôle de professeur·e principal·e.
 
-**Le site : https://babash.github.io/Babash-NSI-SNT/**
+> Pour chaque thème du programme, les collègues trouvent des ressources prêtes pour la classe : des jeux et des applications où les élèves programment, des TD à imprimer, des activités débranchées, et une sélection de sites ressources. Chaque ressource dit ce que font les élèves, sur ordinateur, sur téléphone ou sur papier.
+
+## 👉 [Ouvrir le site : babash.github.io/Babash-NSI-SNT](https://babash.github.io/Babash-NSI-SNT/)
+
+**Gratuit · sans compte · rien à installer · le site n'enregistre rien sur les élèves ; les ressources qui le font le signalent**
 
 Le site a cinq rubriques : SNT, NSI Première, NSI Terminale, Professeur principal et Autres.
-Chaque rubrique a **sa propre liste de ressources**, dans un petit fichier texte qu'on modifie
+Chaque rubrique a **sa propre liste de ressources**, dans un petit fichier texte que tu modifies
 directement sur GitHub. Une ressource peut être un lien vers un site, ou un fichier déposé
 sur le site (PDF, fiche HTML, diaporama…).
 
@@ -16,7 +20,7 @@ Les rubriques suivent les **textes officiels** :
 | SNT | Programme de SNT, BO spécial n° 1 du 22 janvier 2019 | Les 7 thèmes et les notions transversales de programmation |
 | NSI Première | Programme de NSI de première, BO spécial n° 1 du 22 janvier 2019 | Les 8 rubriques, avec la colonne « Contenus » |
 | NSI Terminale | Programme de NSI de terminale, BO spécial n° 8 du 25 juillet 2019 | Les 6 rubriques, avec la colonne « Contenus » |
-| Professeur principal | Circulaire n° 2018-108 du 10 octobre 2018 | Les missions du professeur principal |
+| Professeur principal | Circulaire n° 2018-108 du 10 octobre 2018 | Les missions de professeur·e principal·e |
 
 Le site s'affiche en clair ou en obscur : par défaut il suit le réglage de l'appareil, et le
 choix fait dans la barre du haut (Auto, Clair, Obscur) est retenu par le navigateur.
@@ -47,9 +51,9 @@ Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans l
 
 ## Ajouter une ressource en ligne
 
-1. En bas de la page de la rubrique, cliquer sur **Modifier la liste**.
-   Ou bien, sur GitHub : ouvrir le fichier `ressources.js` de la rubrique, puis le crayon.
-2. Repérer le bon thème (les lignes `theme("…");`) et coller ce bloc en dessous :
+1. En bas de la page de la rubrique, clique sur **Modifier la liste**.
+   Ou bien, sur GitHub : ouvre le fichier `ressources.js` de la rubrique, puis clique sur le crayon.
+2. Repère le bon thème (les lignes `theme("…");`) et colle ce bloc en dessous :
 
 ```js
 ressource({
@@ -60,16 +64,16 @@ ressource({
 });
 ```
 
-3. Cliquer sur **Commit changes**. Le site se met à jour en une minute environ.
+3. Clique sur **Commit changes**. Le site se met à jour en une minute environ.
 
 L'ordre dans le fichier est l'ordre sur la page. Le compteur du thème, le nom du site
 affiché sous la ressource et l'ouverture dans un nouvel onglet se font tout seuls.
 
 ## Ajouter un PDF (ou n'importe quel fichier)
 
-1. En bas de la page de la rubrique, cliquer sur **Déposer un fichier** : le fichier va
-   directement dans le dossier `fichiers` de la rubrique. Valider avec **Commit changes**.
-2. L'ajouter à la liste comme une ressource en ligne, avec le nom du fichier :
+1. En bas de la page de la rubrique, clique sur **Déposer un fichier** : le fichier va
+   directement dans le dossier `fichiers` de la rubrique. Valide avec **Commit changes**.
+2. Ajoute-le à la liste comme une ressource en ligne, avec le nom du fichier :
 
 ```js
 ressource({
@@ -82,13 +86,13 @@ ressource({
 
 Le site affiche « PDF » sous la ressource et l'ouvre dans un nouvel onglet.
 Les fichiers que le navigateur ne sait pas afficher (`.py`, `.odt`, `.docx`, `.zip`…)
-sont téléchargés quand on clique dessus.
+sont téléchargés quand tu cliques dessus.
 
 > Conseil : des noms de fichiers sans espaces ni accents (`tp-graphes.pdf` plutôt que `TP Graphes é.pdf`).
 
 ## Une ressource avec plusieurs liens (sujet, corrigé, version en ligne…)
 
-Ajouter `annexes`. Chaque ligne donne le texte du lien, puis son adresse ou son fichier :
+Ajoute `annexes`. Chaque ligne donne le texte du lien, puis son adresse ou son fichier :
 
 ```js
 ressource({
@@ -109,20 +113,20 @@ ressource({
 |---|---|---|
 | `titre` | oui | Le nom affiché, en gros |
 | `lien` | non | Une adresse `https://…` ou un fichier `fichiers/…` |
-| `texte` | non | La description. On peut écrire du `code` entre accents graves et du **gras** entre doubles étoiles |
+| `texte` | non | La description. Tu peux écrire du `code` entre accents graves et du **gras** entre doubles étoiles |
 | `tags` | non | Des étiquettes entre crochets : `["En ligne", "Python"]` |
 | `annexes` | non | Des liens en plus (voir ci-dessus) |
 
 Étiquettes déjà utilisées : `En ligne`, `À imprimer`, `Débranché`, `Python`, `SQL`, `Jeu`,
 `Cours`, `Notebook`, `Connexion ENT`, `Rien à installer`, `À adapter`, `Pour aller plus loin`,
-`Ressource du mois`. On peut en inventer d'autres.
+`Ressource du mois`. Tu peux en inventer d'autres.
 
 L'étiquette `Ressource du mois` met en avant une ressource (en ce moment : CyberCase, en SNT
 et en NSI Terminale). Chercher « ressource du mois » sur l'accueil la retrouve ; il suffit
 d'enlever l'étiquette le mois suivant.
 
 La recherche de la page d'accueil fouille les titres, textes, étiquettes et thèmes de
-toutes les rubriques. On peut partager une recherche : `…/Babash-NSI-SNT/?q=débranché`.
+toutes les rubriques. Tu peux partager une recherche : `…/Babash-NSI-SNT/?q=débranché`.
 
 ---
 
@@ -136,7 +140,7 @@ Dans `ressources.js` :
 - Couleur : `theme("Sites ressources", "gris");` Couleurs possibles : bleu, vert, violet, rose,
   orange, citron, cyan, jaune, lavande, corail, gris. Sans couleur, le site en choisit une.
 - `groupe("Pour aller plus loin");` ajoute un sous-titre à l'intérieur d'un thème.
-- Un thème sans ressource affiche « Rien ici pour l'instant » : on peut le laisser en attendant.
+- Un thème sans ressource affiche « Rien ici pour l'instant » : tu peux le laisser en attendant.
 
 ### Ranger selon le programme officiel
 
@@ -172,9 +176,9 @@ programme: {
 
 ## Ajouter une rubrique
 
-1. Créer un dossier, par exemple `mathematiques`, avec une copie de `autres/index.html`
-   et de `autres/ressources.js`. Changer le nom dans `rubrique({ … })`.
-2. Dans `reglages.js`, ajouter `"mathematiques",` à la liste des rubriques.
+1. Crée un dossier, par exemple `mathematiques`, avec une copie de `autres/index.html`
+   et de `autres/ressources.js`. Change le nom dans `rubrique({ … })`.
+2. Dans `reglages.js`, ajoute `"mathematiques",` à la liste des rubriques.
 
 Une rubrique absente de `reglages.js` reste visible à son adresse, mais n'apparaît ni sur
 l'accueil ni dans le menu : pratique pour une page réservée à une classe.
@@ -221,15 +225,15 @@ Le message indique le fichier et la ligne. Presque toujours, juste avant cette l
 
 - une **virgule oubliée** à la fin d'une ligne `titre: "…"` ;
 - un **guillemet** pas refermé, ou un guillemet `"` à l'intérieur d'un texte
-  (écrire plutôt les guillemets français « … » ou une apostrophe) ;
+  (écris plutôt les guillemets français « … » ou une apostrophe) ;
 - une **accolade** `}` ou une **parenthèse** `)` pas refermée à la fin du bloc `});`.
 
-Les virgules en trop, elles, ne gênent pas : on peut en laisser une après chaque ligne.
+Les virgules en trop, elles, ne gênent pas : tu peux en laisser une après chaque ligne.
 
-## Tester sur son ordinateur
+## Tester sur ton ordinateur
 
-Télécharger le dépôt (**Code → Download ZIP**), le décompresser et ouvrir `index.html`
-dans le navigateur. Tout fonctionne sans connexion, sauf les polices et les liens externes.
+Télécharge le dépôt (**Code → Download ZIP**), décompresse-le et ouvre `index.html`
+dans ton navigateur. Tout fonctionne sans connexion, sauf les polices et les liens externes.
 
 ## Applications avec une base de données
 
@@ -243,10 +247,10 @@ Certaines ressources enregistrent la progression des élèves dans **Supabase** 
   par conception : les tables sont verrouillées et le site ne passe que par les fonctions
   `alien_*`, qui vérifient les codes (code enseignant haché).
 - N'importe qui connaissant l'adresse peut créer une classe : les classes des collègues
-  arrivent dans la même base. Surveiller la table `alien_classes` dans Supabase si besoin.
-- Ne faire saisir que des prénoms. Supprimer un élève se fait dans Supabase (*Table Editor*).
-- Pour une base à soi : coller `supabase.sql` dans *SQL Editor* de son projet Supabase,
-  puis mettre son adresse et sa clé « anon public » dans `config.js`.
+  arrivent dans la même base. Surveille la table `alien_classes` dans Supabase si besoin.
+- Ne fais saisir que des prénoms. Pour supprimer un·e élève : Supabase, *Table Editor*.
+- Pour ta propre base : colle `supabase.sql` dans *SQL Editor* de ton projet Supabase,
+  puis mets son adresse et sa clé « anon public » dans `config.js`.
 - Les exercices d'Alien Python sont d'Alien-Python (© 2021 Mathieu Degrange, licence MIT) :
   la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder en cas de copie.
 
@@ -313,7 +317,7 @@ secrète.
 ## Vérification automatique
 
 Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dans l'onglet
-**Actions** du dépôt (coche verte : tout va bien ; croix rouge : cliquer pour voir le détail) :
+**Actions** du dépôt (coche verte : tout va bien ; croix rouge : clique pour voir le détail) :
 
 - **Données de la bibliothèque**, à chaque modification, sur toutes les branches, et à la
   demande : `scripts/valider_donnees.py --github` vérifie les fiches, la vitrine et les
@@ -342,12 +346,12 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   (TD, fiches, diaporamas, applications) et vérifie qu'elle s'affiche avec un vrai contenu. Le
   résumé donne l'heure de chaque étape. Si un commit plus récent est mis en ligne entre-temps,
   c'est son propre contrôle qui vérifie le site, en ne comparant que les fichiers de son envoi ;
-  pour comparer aussi ceux de l'envoi précédent, relancer le contrôle à la main avec le champ
+  pour comparer aussi ceux de l'envoi précédent, relance le contrôle à la main avec le champ
   « depuis ». Lancé à la main (**Run workflow** dans l'onglet Actions), ce contrôle vérifie le
   site tel que `main` l'a mis en ligne ; la comparaison porte sur le dernier commit de `main`,
-  ou sur tous les commits qui suivent celui qu'on indique dans le champ « depuis ».
+  ou sur tous les commits qui suivent celui que tu indiques dans le champ « depuis ».
 
-Le même contrôle des pages se lance sur son ordinateur, depuis le dossier du site :
+Le même contrôle des pages se lance sur ton ordinateur, depuis le dossier du site :
 `python3 -m http.server 8000`, puis dans un autre terminal
 `python3 .github/verifier-site.py http://localhost:8000`.
 
@@ -387,7 +391,7 @@ Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possèd
 `CLAUDE.md` : par exemple, les listes `ressources.js` au Bibliothécaire, le moteur
 (`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style et l'icône
 du site (`assets/favicon.svg`) au Designer, ce README, le fichier de licence du dépôt
-(`LICENSE`, à venir) et les outils de `.github/gardien/` au Gardien. Le dossier `donnees/` de
+(`LICENSE`) et les outils de `.github/gardien/` au Gardien. Le dossier `donnees/` de
 la future bibliothèque est à l'Architecte (notamment le format des données et les
 référentiels), sauf les fiches des ressources (`donnees/ressources/`) et la vitrine
 (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer des fiches
@@ -448,8 +452,27 @@ générales des deux affichages sont en haut de `assets/style.css`.
 
 ## Fiche Python (SNT) : modifications par rapport à l'original
 
+L'original est la fiche Compute-it d'Etienne Clave, sur le site exomorphisme.fr (lycée de Sada).
+
 - Bouton de retour vers la rubrique SNT (non imprimé).
 - Cases rouges réellement hachurées, couleurs imprimées sans réglage du navigateur.
 - **Exercice 3 : départ déplacé de A1 à A2.** Depuis A1, le personnage restait sur la ligne 1
   et ne passait jamais sur une case rouge, donc le `if` n'était jamais vrai.
 - Sur téléphone, la feuille A4 est réduite pour tenir dans l'écran.
+
+---
+
+## Contact
+
+Conçu par Babash - NSI Tani Malandi pour les classes de SNT et de NSI de l'académie de Mayotte ; beaucoup de ressources le sont avec l'aide de l'IA, et le site est entretenu par une équipe d'agents Claude (voir « L'équipe d'agents »).
+Une question, une idée, un lien cassé ? Les [issues GitHub](https://github.com/babash/Babash-NSI-SNT/issues) du dépôt.
+
+## Licence
+
+- **Le code du site** (`assets/*.js`, `assets/*.css`, les pages `index.html`, `reglages.js`, `scripts/`, `.github/`) est sous licence [MIT](LICENSE).
+- **Les documents** (les fiches, TD, cours, guides et diaporamas des dossiers `fichiers/`, les textes des listes de ressources, le décor du bandeau) sont sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr).
+- **Alien Python** (`snt/fichiers/alien-python/`) : d'après [Alien-Python](https://forge.apps.education.fr/DegrangeM/alien-python), de Mathieu Degrange (MIT) ; la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder avec `data.js` en cas de copie.
+- **La fiche Python de SNT** (`snt/fichiers/python-compute-it.html`) : d'après la fiche Compute-it d'Etienne Clave, sur le site exomorphisme.fr (lycée de Sada).
+- **Les ressources externes** restent la propriété de leurs auteurs et autrices : leur site d'origine est indiqué sur chaque ressource.
+
+Tu peux les réutiliser et les modifier, y compris pour tes classes, en mentionnant Babash - NSI Tani Malandi et la licence ; un document modifié se partage sous la même licence. Si tu utilises l'IA pour les modifier, merci de le préciser.
