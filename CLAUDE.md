@@ -47,13 +47,15 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 - **Caractères spéciaux** : les outils d'écriture de fichiers remplacent une séquence `\uXXXX` par le caractère lui-même (un `\u202e` devient un vrai caractère invisible de contrôle). Un caractère invisible ou spécial s'écrit donc par son code : `chr(0x…)` en Python, `String.fromCharCode(0x…)` en JavaScript, `&#x…;` en HTML, jamais par `\u`. Pour relire une branche : `python3 -I .github/gardien/caracteres.py --diff origin/main...origin/<branche>`.
 
 ## Les bases Supabase
-- Deux projets, organisation « babash », offre gratuite (2 projets au plus, **aucune sauvegarde**) : `cukahpyqkljiddmimpyi` (SNT 1er jour, Gombessa, Alien Python) et `gkyvaugipddjqjvvpopw` (Lagon Arena). Règles complètes : `architecture/regles-supabase.md` du projet.
+- Une seule base pour toutes les applications (T42) : `cukahpyqkljiddmimpyi` (« Babash - applications »), organisation « babash », offre gratuite (2 projets au plus, aucune sauvegarde). Lagon Arena y déménage depuis `gkyvaugipddjqjvvpopw`, qui ne garde que les objets `guilde_*`, auxquels on ne touche pas. Règles : `architecture/regles-supabase.md` ; plan : `architecture/base-unique.md` ; liste des tables : `architecture/registre-tables.md`.
 - Les agents lisent les **métadonnées seulement** (tables, colonnes, fonctions, règles d'accès, droits, conseillers, `count(*)`), jamais une valeur d'une colonne de données d'élèves, même une ligne, même pour essayer.
-- **Aucune modification de base sans que l'enseignant ait vu le SQL exact.** Le chef d'orchestre l'applique (`apply_migration`, au nom du fichier) ; le Gardien vérifie (métadonnées et conseillers) et l'inscrit au journal. Modèle : T36 (SNT 1er jour).
-- Une migration est un fichier du dépôt de l'application (`supabase/NNNN-….sql`), avec son SQL inverse et `LISEZMOI.md` ; le script complet (`schema.sql`) change dans le même commit ; un retrait se fait en deux temps (ajouter, publier la page, retirer).
-- Chaque objet porte le préfixe de son application (`snt_`, `gb_`, `alien_`, `lagon_`) ; `commun` est réservé à l'identité commune future. Une nouvelle application va dans le projet partagé, après inscription au registre des préfixes.
+- Aucune modification de base sans que l'enseignant ait vu le SQL exact. Le chef d'orchestre l'applique (`apply_migration`, au nom du fichier) ; le Gardien vérifie (métadonnées et conseillers) et l'inscrit au journal. Modèle : T36 (SNT 1er jour).
+- Une migration est un fichier du dépôt de l'application (`supabase/NNNN-….sql`, avec `begin;` et `commit;`), avec son inverse `NNNN-…-inverse.sql` et `LISEZMOI.md` ; le script complet (`schema.sql`) change dans le même commit ; un retrait se fait en deux temps (ajouter, publier la page, retirer). Par `apply_migration`, on retire seulement `begin` et `commit`.
+- Un schéma par application (`snt_premier_jour`, `gombessa`, `alien`, `lagon`, `commun`), jamais exposé à l'API, avec des tables en français et un commentaire sur chaque table et chaque colonne ; seules les fonctions d'entrée sont dans `public`, avec le préfixe de l'application (`snt_`, `gb_`, `alien_`, `lagon_`, `commun_`). Une nouvelle application y prend son schéma, après inscription au registre.
+- Les sessions de développement d'une application, lancées par l'enseignant hors de l'orchestre, suivent les mêmes règles ; le chef d'orchestre leur transmet les règles.
 - Tables : RLS partout, aucun droit direct d'`anon`, accès par des fonctions `security definer` à `search_path` fixé ; les exceptions sont listées dans les règles.
 - Jamais de clé `service_role` ou « secret » dans un dépôt, une page ou un message.
+- Codes des applications de jeu : spécification T39 (`architecture/codes-acces.md`) ; aucun plafond du nombre d'élèves ; chaque application tire ses mots de sa propre liste du registre.
 
 ## Qui possède quoi
 | Fichiers | Rôle |
