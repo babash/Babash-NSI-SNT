@@ -96,6 +96,18 @@ ressource({
 });
 
 ressource({
+  titre: "Court-circuit : les boucles et les conditions en duel de robots",
+  lien: "fichiers/court-circuit/",
+  texte: "Les élèves écrivent en Python le code d'un robot qui colorie le sol (`for`, `while`, `if`, `and`, `not`, comparaisons). Entraînement seul·e (15 minutes), défi contre Zéro, ou duel en direct dans une salle projetée : 1 minute pour écrire, 30 secondes de duel, le code de l'adversaire s'affiche. Séance de 45 minutes avec manches. Sans compte, rien à installer, rien d'enregistré en ligne.",
+  tags: ["En ligne", "Python", "Jeu", "À imprimer"],
+  annexes: {
+    "Salle de classe (enseignant·e)": "fichiers/court-circuit/prof.html",
+    "Mémo à imprimer": "fichiers/court-circuit/memo.pdf",
+    "Code source": "https://github.com/babash/Babash-NSI-SNT/tree/main/snt/fichiers/court-circuit",
+  },
+});
+
+ressource({
   titre: "Pyrates",
   lien: "https://py-rates.fr/",
   texte: "Jeu de plateforme : on guide un pirate jusqu'au trésor en écrivant de vrais programmes Python. Les niveaux introduisent pas à pas les déplacements, les variables, les boucles et les conditions. Issu d'une thèse en didactique de l'informatique, il assure la transition des blocs (Scratch) vers le texte.",
