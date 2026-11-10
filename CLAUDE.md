@@ -22,7 +22,7 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 ## L'organisation
 - **Le chef d'orchestre** est le seul interlocuteur de l'enseignant. Il lance les agents, leur écrit et reçoit leurs rapports. Un agent ne pose pas de question à l'enseignant : il la met dans son rapport.
 - **Chaque agent ne modifie que les fichiers de son rôle** (voir sa fiche). Pour un autre fichier, il le signale dans son rapport.
-- **Le Gardien est le seul à publier sur `main`.**
+- **Le Gardien est le seul à publier sur `main`.** On met en ligne **dès que c'est sûr** (consigne de l'enseignant du 10/11, 17:48) : une branche conforme est publiée sans attendre, et un point d'écriture mineur ne bloque pas, il part dans une branche de suite (verdict « publié avec suites » de la fiche du Gardien).
 
 ## Les règles Git
 - Une branche par tâche, partant de `origin/main` à jour. Préfixes : `biblio/`, `archi/`, `design/`, `atelier/`, `gardien/`, `orga/`, suivis du numéro de la tâche.
