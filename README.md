@@ -48,8 +48,9 @@ l'enseignant du 10 novembre 2026) : une ressource qui a un dépôt le donne en a
 nom « Code source », et chaque page publiée (ce site, les applications, les pages en ligne des
 TD) porte en pied de page un lien « Code source sur GitHub » vers son dépôt, à côté de l'auteur
 et de la licence. Pour une ressource externe, qu'on ne modifie pas, on donne son dépôt en
-annexe s'il est public. Ces liens sont en cours d'ajout : le pied de page de ce site, plusieurs
-applications et plusieurs ressources des listes ne les ont pas encore.
+annexe s'il est public. Le pied de page de ce site a ce lien depuis le 11 novembre 2026 ; il est
+en cours d'ajout dans les applications et les pages déposées dans les dossiers `fichiers`, et
+une vingtaine de ressources des listes n'ont pas encore leur annexe « Code source ».
 Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans le dossier
 `fichiers` de la rubrique (c'est le cas de `nsi-terminale/fichiers/os-humain/`).
 
@@ -192,8 +193,12 @@ l'accueil ni dans le menu : pratique pour une page réservée à une classe.
 ## Réglages généraux
 
 `reglages.js` contient le titre du site, sa phrase de présentation, le nom du dépôt GitHub
-(pour les liens « Modifier »), l'ordre des rubriques et les textes du pied de page (voir
-ci-dessous).
+(pour le lien « Code source sur GitHub » et les liens « Modifier »), l'ordre des rubriques et
+les textes du pied de page (voir ci-dessous). Le dépôt s'écrit `"propriétaire/nom"`, par
+exemple `"babash/Babash-NSI-SNT"` ; une adresse `https://github.com/…` est aussi acceptée. Une
+valeur mal écrite affiche une erreur sur la page. Dans ce cas, comme quand le réglage manque,
+les liens « Modifier la liste », « Déposer un fichier » et « Mode d'emploi » disparaissent, et
+le lien « Code source sur GitHub » mène au dépôt du site, écrit dans `assets/site.js`.
 
 ## Le pied de page : auteur, licences et IA
 
@@ -202,7 +207,8 @@ En bas de l'accueil et de chaque rubrique, un pied de page rappelle :
 - qui conçoit les ressources, et la place de l'IA : « Ces ressources sont conçues par
   Babash - NSI Tani Malandi ; beaucoup le sont avec l'aide de l'IA. » ;
 - les licences : les documents sous licence CC BY-SA 4.0 et le code des applications sous
-  licence MIT, chacune avec un lien vers son texte officiel ;
+  licence MIT, chacune avec un lien vers son texte officiel, puis le lien « Code source sur
+  GitHub » vers le dépôt du site (réglage `depot`, voir « Réglages généraux ») ;
 - la réutilisation : « Tu peux les réutiliser et les modifier en mentionnant Babash - NSI
   Tani Malandi et la licence ; un document modifié se partage sous la même licence. », suivie
   d'une invitation : « Si tu utilises l'IA pour les modifier, merci de le préciser. » C'est
@@ -222,6 +228,11 @@ Quatre réglages de `reglages.js` changent ces textes sans toucher au code :
 Pour `mention_ia`, `reutilisation` et `invitation_ia`, un texte vide (`""`) retire la phrase ;
 un réglage absent reprend le texte validé par l'enseignant, écrit dans `assets/site.js`. Les
 deux licences, elles, sont fixées dans `assets/site.js`.
+
+Sans JavaScript, chaque page affiche un message (« Ce site a besoin de JavaScript pour afficher
+les ressources. ») et, dessous, l'auteur, les deux licences et le lien « Code source sur
+GitHub ». Ces textes-là sont écrits directement dans chaque page `index.html` : ils ne suivent
+pas `reglages.js`.
 
 ---
 
@@ -393,12 +404,13 @@ internes, le rendu avant et après (320, 768 et 1440 px, clair et obscur), les c
 navigation au clavier et l'impression A4 des documents touchés ; il lance aussi le contrôle
 des pages décrit ci-dessus. La conformité, elle, se vérifie à la lecture : cahier des charges,
 décisions de l'enseignant et règles de conception (voir « L'équipe d'agents »). Il vérifie de
-même les liens vers les dépôts (voir « Règle des liens ») : chaque ressource qui a un dépôt le
-donne en « Code source », et chaque page touchée porte en pied de page le lien « Code source sur
-GitHub » ; si ce lien du pied de page manque, il est ajouté dans une branche de suite, sans
-bloquer la publication. Après la publication, `bash .github/gardien/attendre_actions.sh <commit>`
-suit la mise en ligne et lit les résultats des contrôles automatiques. Il faut Python avec
-Playwright et Pillow, Chrome ou Chromium, et l'outil `gh` de GitHub pour suivre la mise en ligne.
+même les liens vers les dépôts (voir « Règle des liens ») : chaque ressource que la branche
+ajoute ou modifie et qui a un dépôt le donne en « Code source », et chaque page touchée porte en
+pied de page le lien « Code source sur GitHub » ; si l'un de ces liens manque, il est ajouté
+dans une branche de suite, sans bloquer la publication. Après la publication,
+`bash .github/gardien/attendre_actions.sh <commit>` suit la mise en ligne et lit les résultats
+des contrôles automatiques. Il faut Python avec Playwright et Pillow, Chrome ou Chromium, et
+l'outil `gh` de GitHub pour suivre la mise en ligne.
 
 D'autres outils du même dossier servent au cas par cas : `caracteres.py` relève, dans les lignes
 qu'ajoute une branche, les caractères invisibles et les points qui imitent le point médian (le
