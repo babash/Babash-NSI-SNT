@@ -35,7 +35,11 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 - Ne jamais supprimer une branche qui n'est pas la sienne. Seule exception : le Gardien peut supprimer une branche déjà fusionnée ou obsolète, après vérification et avec l'accord du chef d'orchestre (décision du 07/11).
 
 ## Les règles de contenu
-- **Le lien principal** d'une ressource pointe directement vers elle (page, fiche, PDF), jamais vers une page GitHub. Le dépôt peut apparaître en document « code source ».
+- **Le lien principal** d'une ressource pointe directement vers elle (page, fiche, PDF), jamais vers une page GitHub.
+- **Le lien vers le dépôt GitHub apparaît sur tous les sites** (décision de l'enseignant du 10/11, 22:58) :
+  - chaque page publiée (le site Ressources, les applications, les mini-sites des TD) porte en pied de page un lien « Code source sur GitHub » vers son dépôt, à côté de l'auteur et de la licence ;
+  - la fiche de chaque ressource qui a un dépôt le donne en document « Code source » ;
+  - c'est toujours un lien secondaire, jamais le lien principal ; pour une ressource externe, on ne modifie pas son site, mais sa fiche donne son dépôt s'il est public.
 - **Aucune donnée sensible dans le dépôt**, qui est public : ni mot de passe, ni identifiant (par exemple ceux de démonstration de CyberCase), ni clé secrète, ni nom d'élève. Une clé Supabase « anon » ou « publishable » est publique par conception ; une clé « service_role » ou « secret », jamais.
 - **Toute ressource qui collecte des données d'élèves** est signalée : dans le champ `donnees_eleves` de sa fiche (nouveau format), ou dans le rapport tant que l'ancien format est en place (un champ inconnu des listes `*/ressources.js` y provoque une erreur). Toute nouvelle collecte est soumise à l'enseignant. Règle par défaut : un pseudo ou un prénom, au choix de l'élève, jamais de nom de famille (exceptions décidées : Alien Python, SNT 1er jour).
 - **La structure suit les textes officiels** : programmes de SNT et de NSI de 2019. La rubrique Professeur principal garde ses thèmes actuels (décision du 07/11) ; la circulaire n° 2018-108 sert de référence. Les thèmes hors programme sont des sections de la vitrine. Tout autre écart est soumis à l'enseignant.
