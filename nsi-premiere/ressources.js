@@ -224,6 +224,7 @@ ressource({
   annexes: {
     "Salle de classe (enseignant·e)": "https://babash.github.io/Babash-NSI-SNT/snt/fichiers/court-circuit/prof.html",
     "Mémo à imprimer": "https://babash.github.io/Babash-NSI-SNT/snt/fichiers/court-circuit/memo.pdf",
+    "Code source": "https://github.com/babash/Babash-NSI-SNT/tree/main/snt/fichiers/court-circuit",
   },
 });
 
