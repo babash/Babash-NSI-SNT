@@ -72,6 +72,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/chaines-de-caracteres.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -103,6 +104,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/tuple.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -115,6 +117,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/liste.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -127,6 +130,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/dict.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -213,6 +217,7 @@ ressource({
   annexes: {
     "Espace enseignant·e": "https://babash.github.io/lagon-arena/prof.html",
     "Essayer en mode démo": "https://babash.github.io/lagon-arena/prof.html?demo",
+    "Code source": "https://github.com/babash/lagon-arena",
   },
 });
 
@@ -235,6 +240,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/variable.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -245,6 +251,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/ficheSNT.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -291,6 +298,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/fonction-usuelles.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 

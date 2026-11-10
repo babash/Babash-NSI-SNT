@@ -73,6 +73,9 @@ ressource({
   lien: "fichiers/python-compute-it.html",
   texte: "Recto : indentation, `if` / `elif` / `else`, opérateurs logiques, `while` et `for`. Verso : cinq exercices papier dans l'esprit de Compute-it, avec des grilles à suivre case par case. Format A4 recto-verso.",
   tags: ["À imprimer", "Débranché"],
+  annexes: {
+    "Code source": "https://github.com/babash/Babash-NSI-SNT/blob/main/snt/fichiers/python-compute-it.html",
+  },
 });
 
 ressource({
@@ -92,6 +95,7 @@ ressource({
     "Banque d'exercices d'origine (M. Degrange)": "https://forge.apps.education.fr/DegrangeM/alien-python",
     "Installer sa propre base (Supabase)": "fichiers/alien-python/supabase.sql",
     "Licence": "fichiers/alien-python/LICENCE.txt",
+    "Code source": "https://github.com/babash/Babash-NSI-SNT/tree/main/snt/fichiers/alien-python",
   },
 });
 
@@ -133,6 +137,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/variable.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -145,6 +150,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/ficheSNT.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
