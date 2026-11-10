@@ -1,0 +1,234 @@
+/* ═══════════════════════════════════════════════════════════════
+   TD EN LIGNE — mini-site auto-correctif d'un TD (règle 19)
+   Charte « Réseau la nuit », modèle de fiche et de TD (T38).
+
+   À charger après charte.css et fiche.css : la page en ligne reprend
+   les composants du TD papier (encadrés, en-têtes d'exercice, code),
+   pour que l'élève retrouve à l'écran ce qu'elle ou il a sur papier.
+
+     <link rel="stylesheet" href="…/assets/charte.css">
+     <link rel="stylesheet" href="…/assets/fiche.css">
+     <link rel="stylesheet" href="…/td-en-ligne.css">
+     <script src="…/td-en-ligne.js" defer></script>
+     <body class="niv-tle tl" data-td="…" data-sel="…">
+
+   Responsive : une colonne sur téléphone (320 px), deux au-delà.
+   Deux affichages : clair (encres de la charte) et obscur (néons),
+   selon l'appareil ou le bouton de la barre (même réglage que le site).
+   ═══════════════════════════════════════════════════════════════ */
+
+:root { --tl-fond: #E4E8EF; --tl-num-fond: var(--encre); --tl-num-encre: #fff; --tl-zoom: 1.2; color-scheme: light; }
+
+/* ── Affichage obscur : les néons remplacent les encres ──────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --tl-fond: #070B16;
+    --papier: #0B1222; --voile: #121B30;
+    --encre: #E6EEFF; --encre-2: #A9B6D0; --encre-3: #93A1BF;
+    --trait: #5B6B8C; --trait-doux: #24324F; --pointille: #6B7A99;
+    --essentiel: #34D399; --essentiel-fond: #0D2620;
+    --definition: #34D399; --definition-fond: #0D2620;
+    --methode: #7CB8FF; --methode-fond: #0E1D36;
+    --eureka: #B9A4FF; --eureka-fond: #1A1533;
+    --pouce: #FACC15; --pouce-fond: #261F08;
+    --attention: #FF8FA3; --attention-fond: #2A0F1A;
+    --code-fond: #070B16; --code-num: #7D8AA8; --code-mot: #FF7AB8; --code-texte: #C4B5FD;
+    --code-nombre: #7DD3FC; --code-commentaire: #86EFAC; --code-special: #FDBA74;
+    --tl-num-fond: #1B2742; --tl-num-encre: #E6EEFF;
+    color-scheme: dark;
+  }
+  :root:not([data-theme="light"]) body { --niv: var(--niv-neon); }
+}
+:root[data-theme="dark"] {
+  --tl-fond: #070B16;
+  --papier: #0B1222; --voile: #121B30;
+  --encre: #E6EEFF; --encre-2: #A9B6D0; --encre-3: #93A1BF;
+  --trait: #5B6B8C; --trait-doux: #24324F; --pointille: #6B7A99;
+  --essentiel: #34D399; --essentiel-fond: #0D2620;
+  --definition: #34D399; --definition-fond: #0D2620;
+  --methode: #7CB8FF; --methode-fond: #0E1D36;
+  --eureka: #B9A4FF; --eureka-fond: #1A1533;
+  --pouce: #FACC15; --pouce-fond: #261F08;
+  --attention: #FF8FA3; --attention-fond: #2A0F1A;
+  --code-fond: #070B16; --code-num: #7D8AA8; --code-mot: #FF7AB8; --code-texte: #C4B5FD;
+  --code-nombre: #7DD3FC; --code-commentaire: #86EFAC; --code-special: #FDBA74;
+  --tl-num-fond: #1B2742; --tl-num-encre: #E6EEFF;
+  color-scheme: dark;
+}
+:root[data-theme="dark"] body { --niv: var(--niv-neon); }
+
+/* ── Page ───────────────────────────────────────────────────── */
+body.tl { background: var(--tl-fond); color: var(--encre); }
+.tl-page {
+  zoom: var(--tl-zoom);              /* 10 pt × 1,2 = 16 px à l'écran */
+  max-width: 182mm; margin: 0 auto 10mm;
+  padding: 5mm 5mm 4mm;
+  background: var(--papier);
+  display: flex; flex-direction: column; gap: 3mm;
+}
+@media (min-width: 900px) { .tl-page { margin-top: 5mm; box-shadow: 0 8px 28px rgba(7, 11, 22, .18); } }
+@media (max-width: 480px) { :root { --tl-zoom: 1.12; } .tl-page { padding: 3.5mm 3mm 3mm; } }
+.tl-vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.tl a { color: inherit; }
+.tl :focus-visible { outline: .6mm solid var(--niv); outline-offset: .5mm; }
+
+/* Barre du haut : celle des documents (fiche.css), plus la progression */
+.tl .toolbar { gap: 2mm; }
+.tl .toolbar .back { margin-right: auto; }
+.tl-progression { display: inline-flex; align-items: center; gap: 2mm; font: 600 9.4pt var(--police-titre); color: var(--nuit-encre); }
+.tl-progression i { display: inline-block; width: 18mm; height: 1.6mm; background: var(--nuit-trait); position: relative; }
+.tl-progression i::after { content: ""; position: absolute; inset: 0 auto 0 0; width: calc(var(--fait, 0) * 100%); background: var(--niv-neon); }
+@media (max-width: 560px) { .tl .toolbar .libelle-long { display: none; } .tl-progression i { width: 10mm; } }
+
+/* ── En-tête du TD en ligne ─────────────────────────────────── */
+.tl-tete { border: .35mm solid var(--encre); position: relative; }
+.tl-tete .tb-top { display: flex; flex-wrap: wrap; gap: .5mm 4mm; }
+:root[data-theme="dark"] .tl-tete .tb-top { background: var(--tl-num-fond); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tl-tete .tb-top { background: var(--tl-num-fond); } }
+.tl-tete-corps { display: flex; gap: 3.4mm; align-items: center; padding: 2.4mm 3.4mm 2mm; flex-wrap: wrap; }
+.tl-tete .tb-td { color: var(--encre); }
+.tl-tete h1 { font: 700 17pt/1.08 var(--police-titre); margin: 0 0 1mm; }
+.tl-tete .tb-titles p { font-size: 9.8pt; }
+.tl-meta { display: flex; flex-wrap: wrap; gap: 1.4mm 3mm; align-items: center; padding: 0 3.4mm 2.4mm; font-size: 8.8pt; color: var(--encre-2); }
+.tl-meta .tag { color: var(--encre); border-color: var(--encre); }
+.tl-tete .frise { flex-wrap: wrap; row-gap: 1.6mm; }
+@media (max-width: 640px) {
+  .tl-tete .tb-piste { flex-wrap: wrap; }
+  .tl-tete .tb-guide { padding-top: 1.6mm; }
+  .tl-tete .frise { flex: 1 1 100%; background: none; padding-top: 1mm; }
+  .tl-tete .frise li { flex: 1 1 45%; }
+}
+@media (max-width: 480px) {
+  .tl-tete .tb-td { min-width: 14mm; padding: .6mm 2mm 1mm; font-size: 18pt; }
+  .tl-tete h1 { font-size: 14pt; }
+  .tl .exo-num { min-width: 13mm; }
+  .tl .exo-num b { font-size: 16pt; }
+}
+
+/* Ressources de cours (les QR du papier deviennent des liens) */
+.tl-cours { display: grid; grid-template-columns: repeat(auto-fit, minmax(52mm, 1fr)); gap: 2mm; }
+.tl-cours a {
+  display: flex; gap: 2.4mm; align-items: center; text-decoration: none;
+  border: .3mm solid var(--trait); padding: 1.8mm 2.6mm; background: var(--papier);
+  clip-path: polygon(0 0, calc(100% - 2mm) 0, 100% 2mm, 100% 100%, 0 100%);
+}
+.tl-cours a:hover, .tl-cours a:focus-visible { border-color: var(--niv); }
+.tl-cours .ic { width: 6mm; height: 6mm; color: var(--niv); }
+.tl-cours b { display: block; font: 600 9.6pt var(--police-titre); }
+.tl-cours small { display: block; font-size: 8pt; color: var(--encre-3); }
+.tl-cap { margin: 0; font: 600 7.6pt var(--police-titre); letter-spacing: .08em; text-transform: uppercase; color: var(--encre-3); }
+
+/* ── Composants du papier, adaptés à l'écran ────────────────── */
+.tl-exo { display: flex; flex-direction: column; gap: 2.4mm; }
+.tl .ctx { margin: 0; }
+.tl .exo { flex-wrap: wrap; row-gap: 1.6mm; margin-top: 2mm; scroll-margin-top: 16mm; }
+.tl .exo-num { background: var(--tl-num-fond); color: var(--tl-num-encre); }
+.tl .lbl { background: var(--tl-num-fond); color: var(--tl-num-encre); }
+.tl .box { scroll-margin-top: 16mm; }
+.tl .exo-title .skill a { color: var(--niv); font-style: normal; font-weight: 700; }
+.tl .code pre { white-space: pre; overflow-x: auto; }
+.tl .code .l { width: max-content; min-width: 100%; }
+.tl .tablo { overflow-x: auto; }
+@media (max-width: 640px) {
+  .tl .cols, .tl .cols.c64, .tl .cols.c46, .tl .cols.c73, .tl .cols.trois { grid-template-columns: 1fr; }
+  .tl .exo-title h2 { font-size: 12.5pt; }
+  .tl .chip { order: 3; }
+}
+
+/* ── Questions auto-corrigées ───────────────────────────────── */
+form.tl-q { display: flex; gap: 2.4mm; padding-top: 2mm; border-top: .25mm dashed var(--trait-doux); }
+form.tl-q:first-of-type { border-top: 0; }
+form.tl-q .q-b { display: flex; flex-direction: column; gap: 1.6mm; }
+form.tl-q .q-b > p { margin: 0; }
+form.tl-q.reussie .q-n { background: var(--essentiel); color: var(--papier); border-color: var(--essentiel); }
+form.tl-q.reussie .q-n::after { display: none; }
+
+/* Saisie d'une valeur, d'un mot ou d'un nombre */
+.tl-saisie {
+  font: inherit; color: var(--encre); background: var(--voile);
+  border: 0; border-bottom: .4mm dotted var(--pointille);
+  padding: 1.4mm 2mm; min-height: 9mm; width: min(100%, 70mm);
+}
+.tl-saisie.code { font-family: var(--police-code); font-size: .92em; }
+.tl-ligne { display: flex; flex-wrap: wrap; align-items: center; gap: 1.4mm 2.4mm; }
+.tl-ligne label { font-weight: 700; }
+/* Trou dans un code */
+.tl-trou {
+  font: inherit; color: var(--encre); background: var(--papier);
+  border: 0; border-bottom: .35mm dashed var(--encre-3);
+  width: calc(var(--w, 6) * 1ch + 2.4mm); padding: 0 1mm; height: 1.35em; vertical-align: baseline;
+}
+/* Choix */
+fieldset.tl-choix { border: 0; margin: 0; padding: 0; display: grid; gap: 1.4mm; }
+fieldset.tl-choix legend { padding: 0; margin-bottom: 1.4mm; }
+fieldset.tl-choix label {
+  display: flex; gap: 2.4mm; align-items: flex-start; cursor: pointer;
+  border: .3mm solid var(--trait-doux); padding: 1.8mm 2.4mm; min-height: 9mm;
+}
+fieldset.tl-choix label:has(input:checked) { border-color: var(--encre); border-width: .45mm; }
+fieldset.tl-choix input { accent-color: var(--niv); width: 4.4mm; height: 4.4mm; margin: .4mm 0 0; flex: none; }
+fieldset.tl-choix .lettre { font: 700 9.4pt var(--police-titre); }
+/* Remise en ordre */
+ol.tl-ordre { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.4mm; counter-reset: tl-ordre; }
+ol.tl-ordre li {
+  counter-increment: tl-ordre; display: flex; gap: 2.4mm; align-items: center;
+  border: .3mm solid var(--trait); padding: 1mm 1mm 1mm 2.4mm; background: var(--papier);
+}
+ol.tl-ordre li::before { content: counter(tl-ordre); font: 700 10pt var(--police-titre); min-width: 4mm; color: var(--niv); }
+ol.tl-ordre li > span:first-child { flex: 1; }
+.tl-fleches { display: flex; gap: 1mm; }
+.tl-fleches button, .tl-actions button {
+  font: 600 9.6pt var(--police-titre); color: var(--encre); background: var(--papier);
+  border: .3mm solid var(--encre); min-width: 10mm; min-height: 9mm; padding: 0 2.6mm; cursor: pointer;
+}
+.tl-fleches button { font-size: 11pt; padding: 0; }
+.tl-fleches button:hover, .tl-actions button:hover { border-color: var(--niv); }
+
+/* Boutons et retour */
+.tl-actions { display: flex; flex-wrap: wrap; gap: 2mm; align-items: center; }
+.tl-actions button { clip-path: polygon(0 0, calc(100% - 2mm) 0, 100% 2mm, 100% 100%, 0 100%); }
+.tl-actions button[type="submit"] { background: var(--tl-num-fond); color: var(--tl-num-encre); border-color: var(--tl-num-fond); border-left: 1.2mm solid var(--niv); }
+.tl-retour:empty { display: none; }
+.tl-retour { margin: 0; padding: 1.4mm 2.6mm; font-weight: 700; font-size: 9.6pt; }
+.tl-retour.juste { color: var(--essentiel); border-left: 1.2mm solid var(--essentiel); background: var(--essentiel-fond); }
+.tl-retour.faux { color: var(--attention); background: var(--attention-fond); position: relative; padding-left: 4.6mm; }
+.tl-retour.faux::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2mm; background: repeating-linear-gradient(-45deg, var(--attention) 0 .6mm, transparent .6mm 1.3mm); }
+.tl-retour.info { color: var(--encre-2); border-left: 1.2mm dotted var(--encre-3); background: var(--voile); }
+
+/* Marques sur les champs : icône + mot + style de trait */
+.juste.tl-saisie, .juste.tl-trou { border-bottom: .5mm solid var(--essentiel); }
+.faux.tl-saisie, .faux.tl-trou { border-bottom: .5mm dashed var(--attention); }
+fieldset.juste label:has(input:checked) { border-color: var(--essentiel); border-style: solid; }
+fieldset.faux label:has(input:checked), ol.faux li { border-color: var(--attention); border-style: dashed; }
+.tl-marque { font: 700 8.4pt var(--police-titre); white-space: nowrap; }
+.tl-marque.juste { color: var(--essentiel); }
+.tl-marque.faux { color: var(--attention); }
+.tl-trou + .tl-marque { margin-left: .6mm; font-size: 8pt; }
+
+/* Coups de pouce gradués (même texte que l'encadré du papier) */
+ol.tl-pouces { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.2mm; }
+ol.tl-pouces li { background: var(--pouce-fond); border: .45mm dotted var(--pouce); padding: 1.6mm 3mm; font-size: 9.4pt; }
+ol.tl-pouces li b:first-child { color: var(--pouce); font-family: var(--police-titre); margin-right: 1.4mm; }
+
+/* Correction (codée dans la page, affichée à la demande ou après réussite) */
+.tl-correction { border: .35mm solid var(--encre); padding: 2mm 3mm; background: var(--papier); }
+.tl-correction-titre { font: 600 9.4pt var(--police-titre); margin: 0 0 1mm; color: var(--encre-2); letter-spacing: .02em; }
+.tl-correction > :last-child { margin-bottom: 0; }
+
+/* Bilan « Je sais… » : de vraies cases à cocher */
+.tl-bilan li label { display: flex; gap: 2mm; align-items: flex-start; cursor: pointer; }
+.tl-bilan input { accent-color: var(--niv); width: 4mm; height: 4mm; margin: .4mm 0 0; flex: none; }
+@media (max-width: 640px) { .tl ul.check { columns: 1; } }
+
+/* Note pour l'éditeur de code (règle 20) */
+.tl-editeur { border: .3mm dashed var(--trait); padding: 2mm 3mm; font-size: 9.2pt; color: var(--encre-2); }
+
+/* Pied de page */
+.tl-pied { font-size: 8.4pt; color: var(--encre-3); border-top: .25mm solid var(--trait-doux); padding-top: 2mm; display: grid; gap: 1mm; }
+.tl-pied p { margin: 0; }
+.tl-pied button { font: 600 8.6pt var(--police-titre); color: var(--encre-2); background: none; border: .25mm solid var(--trait); padding: 1mm 2.4mm; cursor: pointer; justify-self: start; }
+
+@media print {
+  .tl .toolbar, .tl-actions, .tl-fleches, .tl-pied button { display: none !important; }
+  .tl-page { zoom: 1; box-shadow: none; max-width: none; }
+}

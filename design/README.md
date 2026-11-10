@@ -25,6 +25,30 @@ Ce dossier ne sert pas au site : il contient de quoi reprendre et régénérer l
 | `outils/` | `capture.py` (captures et PDF avec Chrome, polices et CDN servis en local), `contrast.py` (contrastes WCAG), `debord.py` et `hauteurs.py` (débordement des feuilles A4), fichiers de travail CSS, `jobs/` (listes de captures) |
 | `revue/` | La page avant / après présentée à l'enseignant, avec ses images |
 
+## Modèle de fiche et de TD (T38, proposition)
+D'après le TD 1 de POO. Le modèle est décrit dans le document de projet `design/modele-fiche.md`.
+
+| Fichier | Rôle |
+|---|---|
+| `charte/gabarit-td.html` | TD papier (3 pages ; 4 au plus) : en-tête, QR de cours, lien vers le TD en ligne, frise, L'essentiel avant chaque exercice, bilan |
+| `charte/gabarit-td-en-ligne.html` | Le même TD en ligne : responsive, auto-correctif, clair ou obscur. Réponses en empreintes, corrections codées |
+| `charte/gabarit-fiche.html` | Fiche (2 pages) : cartes de notion, chacune avec L'essentiel et « Je m'entraîne » |
+| `charte/td-en-ligne.css`, `charte/td-en-ligne.js` | Moteur du TD en ligne (à déplacer dans `assets/` à la publication) |
+| `design/sources/gabarit-*.source.html` | Sources des trois gabarits (réponses en clair pour la version en ligne) |
+| `design/build/assembler.py` | Assemble une source : icônes, QR, badge de runner ; pour une page en ligne, empreintes et corrections codées |
+| `design/build/qr.py` | Générateur de QR en SVG, Python pur, sans service en ligne. `--test` relit les QR avec OpenCV |
+| `design/build/td_en_ligne.py` | Empreintes des réponses (même calcul que `td-en-ligne.js`) |
+
+```
+python3 design/build/assembler.py --gabarits                 # reconstruit les trois gabarits
+python3 design/build/assembler.py SOURCE.html SORTIE.html    # un document
+python3 design/build/qr.py https://youtu.be/… --libelle "La notion" --source "La chaîne"
+python3 design/build/qr.py --test                            # contrôle du générateur
+```
+Ces trois scripts utilisent des chemins relatifs au dépôt : pas de correspondance `/tmp/design` à recréer.
+
+Contrôles faits : impression A4 sans débordement (`outils/debord.py`), 3 et 2 pages au PDF ; TD en ligne à 320, 768 et 1440 px, en clair et en obscur, sans défilement horizontal ; 29 essais du moteur (bonnes et mauvaises réponses de chaque type, coups de pouce, correction, mémoire après rechargement) ; contrastes de l'affichage obscur ≥ 7:1 pour le texte, ≥ 4,5:1 pour les petits textes.
+
 ## Reprendre le travail
 Les scripts ont été écrits avec des chemins absolus. Avant de les lancer, recréer cette correspondance (ou adapter les chemins) :
 - `/tmp/design/equipage/` ← `design/equipage/`

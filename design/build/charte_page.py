@@ -100,6 +100,7 @@ html = f'''<!doctype html>
 
 <h2>Composants des documents</h2>
 <p>Feuille commune : <code>assets/fiche.css</code>. Modèle à copier : <a href="../snt/fichiers/python-compute-it.html">la fiche Python de SNT</a> (2 pages) ; document long : <a href="../nsi-terminale/fichiers/td1-poo-premiers-pas.html">le TD 1 de POO</a>.</p>
+<p>Modèle de fiche et de TD (proposition T38) : <a href="gabarit-td.html">gabarit de TD papier</a> (3 pages, 4 au plus), <a href="gabarit-td-en-ligne.html">sa version en ligne auto-corrective</a>, <a href="gabarit-fiche.html">gabarit de fiche</a> (2 pages). Contenu factice.</p>
 <div class="papier niv-snt"><div class="stack">
 <header class="exo"><div class="exo-num"><span>Exercice</span><b>1</b></div><div class="exo-title"><p class="type">Run 01 · ◆◇◇</p><h2>Titre de l'exercice</h2><p class="skill">Compétence travaillée</p></div><div class="chip">10 min</div></header>
 <div class="cols">
