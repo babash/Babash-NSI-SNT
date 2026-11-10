@@ -44,7 +44,7 @@ ressource({
   texte: "Une plongée en Python à la recherche du cœlacanthe, racontée comme un manga, pour réviser les listes, les dictionnaires et les algorithmes de base de première. Parcours principal de 13 missions (environ 1 h 15), puis 5 expéditions bonus. Activités variées, souvent sans coder, et suivi de 7 compétences.",
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
-    "Tableau de bord du professeur": "https://babash.github.io/Rappel-1er/prof.html",
+    "Tableau de bord de l'enseignant·e": "https://babash.github.io/Rappel-1er/prof.html",
   },
 });
 

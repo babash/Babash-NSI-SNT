@@ -79,7 +79,7 @@ Une question, une idée, un bug ? Les [issues GitHub](https://github.com/babash/
 
 **D'après** [Alien-Python](https://forge.apps.education.fr/DegrangeM/alien-python), de Mathieu Degrange (MIT). Cette version ajoute la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
 
-- **Le code** (`index.html`, `config.js`, `supabase.sql`) est sous licence MIT (fichier `LICENSE` du site). C'est lui qui apporte la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
+- **Le code** (`index.html`, `config.js`, `supabase.sql`) est sous licence MIT ([fichier `LICENSE` du site](../../../LICENSE)). C'est lui qui apporte la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
 - **Les documents** (ce README) sont sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr).
 - **Les exercices** (`data.js`, qui contient les 78 exercices et leur rangement en fiches) viennent d'Alien-Python : © 2021 Mathieu Degrange, licence MIT, notice dans [`LICENCE.txt`](LICENCE.txt), à garder avec `data.js` en cas de copie. Les images d'aliens du projet d'origine (Kenney, CC0) ne sont pas reprises : ici, l'alien est un emoji.
 

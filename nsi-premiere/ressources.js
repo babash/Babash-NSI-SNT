@@ -211,7 +211,7 @@ ressource({
   texte: "Le chapitre des conditions transformé en tournoi : chaque élève programme le cerveau d'une tortue de mer avec `if`, `elif` et `else`, puis toutes les tortues de la classe s'affrontent dans le même lagon, projeté au tableau. Après le match, l'élève revoit ce que sa tortue a « pensé » tour par tour et la corrige. Gratuit, sans compte, avec un tutoriel de 15 minutes.",
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
-    "Espace enseignant": "https://babash.github.io/lagon-arena/prof.html",
+    "Espace enseignant·e": "https://babash.github.io/lagon-arena/prof.html",
     "Essayer en mode démo": "https://babash.github.io/lagon-arena/prof.html?demo",
   },
 });
