@@ -42,7 +42,7 @@ theme("Première séance", { couleur: "gris" });
 ressource({
   titre: "SNT 1er jour : brise-glace et découverte",
   lien: "https://babash.github.io/SNT-1er-Jour/",
-  texte: "Formulaire de première séance : les élèves se présentent (mots-clés, goûts culturels, citation d'informaticien, question au professeur) et voient le nuage de mots de leur classe se construire. Jeu de frappe au clavier en bonus pour ceux qui finissent en avance.\n**À adapter** : la page est réglée pour les classes 209 à 212 et envoie les réponses dans la base de données de son auteur. La dupliquer et la brancher sur sa propre base avant de l'utiliser.",
+  texte: "Formulaire de première séance : les élèves se présentent (mots-clés, goûts culturels, citation d'informaticien·ne, question à l'enseignant·e) et voient le nuage de mots de leur classe se construire. Jeu de frappe au clavier en bonus pour les élèves qui finissent en avance.\n**À adapter** : la page est réglée pour les classes 209 à 212 et envoie les réponses dans la base de données de son auteur·rice. La dupliquer et la brancher sur sa propre base avant de l'utiliser.",
   tags: ["En ligne", "À adapter"],
   annexes: {
     "Code source, à dupliquer": "https://github.com/babash/SNT-1er-Jour",
@@ -85,7 +85,7 @@ ressource({
 ressource({
   titre: "Alien Python : lire du code en suivant l'alien",
   lien: "fichiers/alien-python/",
-  texte: "Les 78 exercices d'Alien-Python : l'élève lit un programme et clique sur la case de la grille où il mène l'alien, puis complète lui-même des programmes dans deux séries inversées. Sept fiches progressives : déplacements et variables, boucles `for`, conditions, boucles `while`, fonctions. Validation immédiate, coups de pouce, correction, badges et avancement de la classe.\n**Suivi de la classe** : dans l'espace enseignant, créer une classe avec un code secret et donner le code classe aux élèves. Chacun reçoit un code personnel à 4 chiffres pour retrouver sa progression d'une séance à l'autre. Ne saisir que des prénoms.\nExercices de Mathieu Degrange (licence MIT).",
+  texte: "Les 78 exercices d'Alien-Python : l'élève lit un programme et clique sur la case de la grille où il mène l'alien, puis complète des programmes dans deux séries inversées. Sept fiches progressives : déplacements et variables, boucles `for`, conditions, boucles `while`, fonctions. Validation immédiate, coups de pouce, correction, badges et avancement de la classe.\n**Suivi de la classe** : dans l'espace enseignant, créer une classe avec un code secret et donner le code classe aux élèves. Chaque élève reçoit un code personnel à 4 chiffres pour retrouver sa progression d'une séance à l'autre. Ne saisir que des prénoms.\nExercices de Mathieu Degrange (licence MIT).",
   tags: ["En ligne", "Python", "Rien à installer"],
   annexes: {
     "Espace enseignant": "fichiers/alien-python/#prof",

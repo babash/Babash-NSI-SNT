@@ -31,11 +31,11 @@ theme("Outils pour la classe", { court: "Outils" });
 ressource({
   titre: "Capytale",
   lien: "https://capytale2.ac-paris.fr/web/my",
-  texte: "La plateforme de notebooks Python et d'activités de programmation accessible par l'ENT : le professeur crée ou copie une activité, la distribue par un code et récupère le travail des élèves.",
+  texte: "La plateforme de notebooks Python et d'activités de programmation accessible par l'ENT : l'enseignant·e crée ou copie une activité, la distribue par un code et récupère le travail des élèves.",
   tags: ["Connexion ENT", "Python"],
   annexes: {
     "Wiki Capytale": "https://capytale2.ac-paris.fr/wiki/doku.php?id=start",
-    "Bibliothèque partagée entre enseignants": "https://capytale2.ac-paris.fr/web/bibliotheque_pr",
+    "Bibliothèque partagée entre enseignant·e·s": "https://capytale2.ac-paris.fr/web/bibliotheque_pr",
     "Auto-évaluation des notebooks": "https://capytale.forge.apps.education.fr/basthon/basthon-capytale/parts/auto-evaluation.html",
   },
 });
@@ -43,14 +43,14 @@ ressource({
 ressource({
   titre: "QCMCam",
   lien: "https://qcmcam.net/",
-  texte: "QCM et sondages en classe sans équipement pour les élèves : chacun lève un carton imprimé, la webcam ou le smartphone du professeur lit toutes les réponses d'un coup.",
+  texte: "QCM et sondages en classe sans équipement pour les élèves : chaque élève lève un carton imprimé, la webcam ou le smartphone de l'enseignant·e lit toutes les réponses d'un coup.",
   tags: ["En ligne", "À imprimer"],
 });
 
 ressource({
   titre: "Bibliothèque de QCM Pronote",
   lien: "https://www.index-education.com/fr/qcm-liste.php",
-  texte: "Des QCM partagés par des enseignants, à importer dans Pronote.",
+  texte: "Des QCM partagés par des enseignantes et enseignants, à importer dans Pronote.",
 });
 
 
