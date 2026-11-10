@@ -254,6 +254,11 @@ Certaines ressources enregistrent la progression des élèves dans **Supabase** 
 - Les exercices d'Alien Python sont d'Alien-Python (© 2021 Mathieu Degrange, licence MIT) :
   la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder en cas de copie.
 
+Les règles communes des bases (les deux projets, le préfixe de chaque application, l'accès par
+des fonctions, les migrations) sont dans `CLAUDE.md`, section « Les bases Supabase ». Aucune
+base n'est modifiée sans que l'enseignant ait vu le SQL exact, et les agents n'en lisent que
+les métadonnées, jamais les données des élèves.
+
 ## La future bibliothèque (dossier `donnees/`)
 
 Le site va réunir toutes les ressources dans une bibliothèque unique. Son format a été validé
@@ -385,7 +390,8 @@ que le pied de page suit ses réglages. L'en-tête de chaque fichier en décrit 
 Le site est entretenu par une équipe d'agents Claude (Gardien, Architecte, Bibliothécaire,
 Designer, Atelier et Vigie), coordonnés par un chef d'orchestre. Leurs règles communes sont
 dans `CLAUDE.md`, à la racine du dépôt, et la fiche de chaque rôle dans `.claude/agents/`.
-Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`, après ses contrôles.
+Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`, après ses contrôles,
+et dès que c'est sûr : un point d'écriture mineur ne bloque pas, il part dans une branche de suite.
 
 Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possède quoi » de
 `CLAUDE.md` : par exemple, les listes `ressources.js` au Bibliothécaire, le moteur
@@ -403,7 +409,7 @@ qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
 Toute ressource produite ou retravaillée suit les règles de conception de la philosophie
 éducative de l'enseignant : une version en ligne utilisable sur téléphone et une version
 papier A4 en noir et blanc, peu de texte, des erreurs expliquées, la correction automatique
-chaque fois que c'est possible… Deux règles s'appliquent toujours aux créations de
+chaque fois que c'est possible… Trois règles s'appliquent toujours aux créations de
 l'enseignant :
 
 - un **TD** existe en deux versions : un PDF imprimable (A4, noir et blanc) et une page HTML
@@ -418,7 +424,12 @@ l'enseignant :
   cet endroit (mots-clés, variables et fonctions déjà définies, méthodes du type en cours) ;
   et des erreurs lisibles : l'erreur s'affiche d'abord telle que le langage la donne, puis
   l'élève peut la faire traduire ou expliquer en français, grâce à des explications intégrées
-  à la ressource, sans service commercial.
+  à la ressource, sans service commercial ;
+- une **application de jeu** (Lagon Arena, Expédition Gombessa, Alien Python…) donne à chaque
+  élève un code unique en mots et chiffres (comme `CORAIL-MANTA-482`), qui suffit pour revenir
+  depuis n'importe où ; l'enseignant·e a aussi un code et voit ceux de ses élèves, et un lien
+  de classe, avec son QR code, permet de rejoindre la classe. Les pages en ligne des TD, elles,
+  restent sans compte ni envoi de données.
 
 Une ressource externe ne se modifie pas : sa fiche peut signaler ce qui lui manque. Le Gardien
 vérifie ces règles avant de publier une ressource. Les ressources déjà en ligne n'ont pas
