@@ -45,6 +45,7 @@ ressource({
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
     "Tableau de bord de l'enseignant·e": "https://babash.github.io/Rappel-1er/prof.html",
+    "Code source": "https://github.com/babash/Rappel-1er",
   },
 });
 
@@ -98,6 +99,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "fichiers/td1-poo-premiers-pas.pdf",
+    "Code source": "https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/td1-poo-premiers-pas.html",
   },
 });
 
@@ -108,6 +110,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "fichiers/td2-poo-vers-le-bac.pdf",
+    "Code source": "https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/td2-poo-vers-le-bac.html",
   },
 });
 
@@ -130,6 +133,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/poo.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -149,6 +153,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/piles-files.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -178,6 +183,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/arbres.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -190,6 +196,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/graphes.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -233,6 +240,7 @@ ressource({
   tags: ["À imprimer", "SQL"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/sql.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 

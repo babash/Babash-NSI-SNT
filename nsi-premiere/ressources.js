@@ -72,6 +72,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/chaines-de-caracteres.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -103,6 +104,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/tuple.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -115,6 +117,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/liste.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -127,6 +130,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/dict.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -208,11 +212,12 @@ groupe("Constructions élémentaires");
 ressource({
   titre: "Lagon Arena",
   lien: "https://babash.github.io/lagon-arena/",
-  texte: "Le chapitre des conditions transformé en tournoi : chaque élève programme le cerveau d'une tortue de mer avec `if`, `elif` et `else`, puis toutes les tortues de la classe s'affrontent dans le même lagon, projeté au tableau. Après le match, l'élève revoit ce que sa tortue a « pensé » tour par tour et la corrige. Gratuit, sans compte, avec un tutoriel de 15 minutes.",
+  texte: "Le chapitre des conditions transformé en tournoi : chaque élève programme le cerveau d'une tortue de mer avec `if`, `elif` et `else`, puis toutes les tortues de la classe s'affrontent dans le même lagon, projeté au tableau. Après le match, l'élève revoit ce que sa tortue a « pensé » tour par tour et la corrige. Gratuit, sans compte, avec un parcours de 4 missions pour débuter (dès la Seconde), dont la première se fait sans code.\n**Ce qui est enregistré** : en ligne, le pseudo de chaque élève, le programme de sa tortue et ses scores (ni nom ni adresse électronique). L'enseignant·e de la salle voit les programmes pendant la manche ; la classe les voit après le match. Le Panthéon public affiche le pseudo, la classe, l'établissement, la date et la moyenne, jamais le programme.",
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
     "Espace enseignant·e": "https://babash.github.io/lagon-arena/prof.html",
     "Essayer en mode démo": "https://babash.github.io/lagon-arena/prof.html?demo",
+    "Code source": "https://github.com/babash/lagon-arena",
   },
 });
 
@@ -235,6 +240,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/variable.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -245,6 +251,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/ficheSNT.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
@@ -291,6 +298,7 @@ ressource({
   tags: ["À imprimer", "Python"],
   annexes: {
     "Version PDF": "https://babash.github.io/FichesNSI/fiches/fonction-usuelles.pdf",
+    "Code source": "https://github.com/babash/FichesNSI",
   },
 });
 
