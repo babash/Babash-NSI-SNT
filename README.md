@@ -456,17 +456,43 @@ dans une branche de suite, sans bloquer la publication. Après la publication,
 des contrôles automatiques. Il faut Python avec Playwright et Pillow, Chrome ou Chromium, et
 l'outil `gh` de GitHub pour suivre la mise en ligne.
 
-D'autres outils du même dossier servent au cas par cas : `caracteres.py` relève, dans les lignes
-qu'ajoute une branche, les caractères invisibles et les points qui imitent le point médian (le
-vrai point médian, lui, est permis) ; `zones.py` situe les différences de rendu entre avant et
-après, pour vérifier par exemple qu'un changement se limite au pied de page ; `contraste_zone.py`
-donne le contraste le plus faible d'une zone de la page, le pied de page par défaut ;
-`chemins_readme.py` vérifie que les chemins cités dans un README existent. Les tests de
-non-régression du Gardien se lancent d'un coup :
+D'autres outils du même dossier servent au cas par cas. Pour le site :
+
+- `caracteres.py` relève, dans les lignes qu'ajoute une branche, les caractères invisibles et
+  les points qui imitent le point médian (le vrai point médian, lui, est permis) ;
+- `zones.py` situe les différences de rendu entre avant et après, pour vérifier par exemple
+  qu'un changement se limite au pied de page ; `contraste_zone.py` donne le contraste le plus
+  faible d'une zone de la page, le pied de page par défaut ;
+- `texte_rendu.py` montre les textes et les liens affichés qu'une branche ajoute ou retire,
+  page par page, sans lire le code ;
+- `annexes_code_source.py` liste les ressources qui ont un dépôt sans le donner en
+  « Code source » ; `chemins_readme.py` vérifie que les chemins cités dans un README existent.
+
+Pour les autres dépôts de l'enseignant (applications, mini-sites des TD, diaporamas) :
+
+- `pages_depot.py` compare les pages avant et après une branche : erreurs JavaScript,
+  débordement, lien « Code source sur GitHub » (adresse, contraste, accès au clavier),
+  contrastes et impression A4 ; seul ce qui est nouveau est une alerte. Il fonctionne sans
+  réseau : les bibliothèques des CDN sont servies depuis leurs paquets, et Supabase est remplacé
+  par un faux client, qui ne lit ni n'écrit aucune donnée ;
+- `diapo_dessous.py` vérifie que le pied de page d'un diaporama reveal.js ne cache ni contenu ni
+  commande, sur chaque diapositive ;
+- `pdf_comparer.py` compare deux versions d'un PDF : pages, mots perdus ou nouveaux, et la
+  mention de l'auteur et de la licence sur chaque page ;
+- `empreintes_migration.py` vérifie qu'une migration Supabase commence par `begin;` et finit
+  par `commit;`, et calcule l'empreinte qui montre que le fichier du dépôt est bien celui qui a
+  été appliqué à la base (en ne lisant que des métadonnées) ;
+- `depots.sh` suit la mise en ligne de ces dépôts et dit si une branche est déjà contenue dans
+  leur `main`.
+
+Les tests de non-régression du Gardien se lancent d'un coup :
 `python3 -I .github/gardien/tests/lancer.py --ref origin/<branche>`. Ils vérifient notamment que
 la validation des données détecte toujours les fautes graves, applique les règles 19 et 20 et
-accepte le point médian dans les textes, que les scripts du contrôle en ligne décident juste, et
-que le pied de page suit ses réglages. L'en-tête de chaque fichier en décrit l'usage.
+accepte le point médian dans les textes, que les scripts du contrôle en ligne décident juste,
+que le pied de page suit ses réglages et porte le lien « Code source sur GitHub », que l'encadré
+d'erreur nomme sa cause, et que les outils du Gardien eux-mêmes trouvent ce qu'ils doivent
+trouver. Chaque outil se lance avec `python3 -I` (ou `bash`) ; son en-tête et `--help` en
+décrivent l'usage.
 
 ---
 

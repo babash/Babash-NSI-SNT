@@ -7,8 +7,11 @@ Usage (depuis la copie du dépôt) :
 Lit FICHIER.md (par défaut DOSSIER_DU_SITE/README.md) hors des blocs de code, qui sont des
 exemples, et relève chaque mot cité entre accents graves qui ressemble à un chemin : il contient
 « / », ou finit par .md, .js, .json, .html, .py, .sh, .yml, .svg, .css, .sql ou .txt. Sont
-ignorés : les adresses (http…), les gabarits (<id>, …), les options (-x) et les extensions
-seules (`.py`). Ce qui suit « ? » ou « # » ne compte pas.
+ignorés : les adresses (http…, file://…, tout « schéma:// »), les gabarits (<id>, …), les
+options (-x), les extensions seules (`.py`) et les valeurs entre guillemets (`"propriétaire/nom"`,
+une valeur de réglage, pas un chemin). Ce qui suit « ? » ou « # » ne compte pas. Un passage entre
+accents graves qui contient des espaces est d'abord essayé en entier, comme un seul chemin
+(`Thème 1 – Structures de données/`) ; s'il n'existe pas, ses mots sont examinés un à un.
 Un chemin est trouvé s'il existe :
   - depuis la racine du site, depuis le dossier du fichier lu, ou depuis le dossier d'une
     rubrique (reglages.js) ;
@@ -32,8 +35,8 @@ import commun  # noqa: E402
 EXTENSION = re.compile(r"\.(md|js|json|html|py|sh|yml|svg|css|sql|txt)$")
 
 
-def cites(lignes):
-    """(numéro de ligne, mot) de chaque mot entre accents graves, hors des blocs de code."""
+def passages(lignes):
+    """(numéro de ligne, texte) de chaque passage entre accents graves, hors des blocs de code."""
     dans_code = False
     for i, l in enumerate(lignes, 1):
         if l.lstrip().startswith("```"):
@@ -42,13 +45,18 @@ def cites(lignes):
         if dans_code:
             continue
         for m in re.finditer(r"`([^`\n]+)`", l):
-            for mot in m.group(1).split():
-                yield i, mot.strip(",;:()«»")
+            yield i, m.group(1)
+
+
+def mots(passage):
+    return [mot.strip(",;:()«»") for mot in passage.split()]
 
 
 def est_chemin(mot):
-    if not mot or mot.startswith(("http", "-", "<", "…")) or "<" in mot or "…" in mot:
+    if not mot or mot.startswith(("http", "-", "<", "…", '"', "'")) or "<" in mot or "…" in mot:
         return False
+    if re.match(r"[A-Za-z][A-Za-z0-9+.-]*://", mot):
+        return False  # une adresse : `file://`, `ftp://…`
     if re.fullmatch(r"\.[A-Za-z0-9]+", mot):
         return False  # une extension seule : `.py`
     return "/" in mot or bool(EXTENSION.search(mot))
@@ -67,16 +75,21 @@ def main():
     racine = os.path.abspath(o.site)
     fichier = os.path.abspath(o.fichier or os.path.join(racine, "README.md"))
     lignes = commun.lire(fichier).splitlines()
-    premiers = {}
-    for i, mot in cites(lignes):
-        chemin = re.split(r"[?#]", mot)[0]
-        if est_chemin(mot) and chemin:
-            premiers.setdefault(chemin, i)
     try:
         rubriques = commun.rubriques(racine)
     except (OSError, AttributeError):
         rubriques = []
     bases = [racine, os.path.dirname(fichier)] + [os.path.join(racine, r) for r in rubriques]
+    premiers = {}
+    for i, passage in passages(lignes):
+        entier = passage.strip().strip(",;:()«»")
+        if " " in entier and est_chemin(entier) and any(existe(b, entier) for b in bases):
+            premiers.setdefault(entier, i)  # un chemin qui contient des espaces, trouvé en entier
+            continue
+        for mot in mots(passage):
+            chemin = re.split(r"[?#]", mot)[0]
+            if est_chemin(mot) and chemin:
+                premiers.setdefault(chemin, i)
     bases += [os.path.join(racine, c) for c in premiers if c.endswith("/") and existe(racine, c)]
     noms = set()
     for dossier, sous, fichiers in os.walk(racine):

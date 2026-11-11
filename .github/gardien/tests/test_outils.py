@@ -9,7 +9,8 @@ dossier de travail :
     puces entre deux lettres, espace insécable, ligne ajoutée qui commence par « ++ ») ; un diff
     propre ; l'option --diff sur une plage vide de cette copie ;
   - chemins_readme.py : un petit site et son README (chemins présents, absents, relatifs à un
-    dossier cité, nom seul, motif, extension seule, adresse, gabarit, bloc de code) ;
+    dossier cité, nom seul, motif, extension seule, adresse, gabarit, bloc de code) ; puis N16 :
+    adresses file://, valeurs entre guillemets, chemin qui contient des espaces, commande ;
   - zones.py : des captures synthétiques (pied de page seul, bande modifiée, bruit de 1/255,
     capture d'un seul côté), avec et sans --tolerance ;
   - contraste_zone.py : une page témoin aux contrastes connus, servie en local (Chrome).
@@ -121,6 +122,28 @@ attendre("chemins_readme.py : présents, absents et cas ignorés", code, sortie,
     r"^ABSENT snt/fichiers/absent\.pdf \(ligne 7\)$", r"^ABSENT docs/ \(ligne 7\)$",
     r"README\.md : 11 chemin\(s\) cité\(s\), 2 absent\(s\) : docs/, snt/fichiers/absent\.pdf$",
 ], absents=[r"\.py \(", r"\.odt", r"https", r"<id>", r"dans/un/bloc\.js"])
+
+# N16 : ni les adresses file://, ni les valeurs entre guillemets ; un chemin à espaces trouvé en entier.
+TIRET = chr(0x2013)
+ecrire(os.path.join(site, "snt", "fichiers", "Thème 1 " + TIRET + " Données", "cours.pdf"), "")
+ecrire(os.path.join(site, "scripts", "outil.py"), "")
+ecrire(os.path.join(site, "N16.md"), "\n".join([
+    "Les adresses `file://` et `file:///home/x/a.html` ne sont pas des chemins.",            # 1
+    "Le réglage `depot: \"propriétaire/nom\"` et la valeur `'snt/absent.js'` non plus.",      # 2
+    "Le dossier `snt/fichiers/Thème 1 " + TIRET + " Données/`, avec "
+    "`snt/fichiers/Thème 1 " + TIRET + " Données/cours.pdf`.",                                # 3
+    "La commande `python3 -I scripts/outil.py snt/` : un mot à la fois.",                     # 4
+    "Absent, avec des espaces : `snt/fichiers/Thème 9/`.",                                    # 5
+    "",
+]))
+code, sortie = outil("chemins_readme.py", site, os.path.join(site, "N16.md"))
+attendre("chemins_readme.py (N16) : file://, guillemets, chemin à espaces, commande", code, sortie, 1, presents=[
+    r"^ok     snt/fichiers/Thème 1 " + TIRET + r" Données/ \(ligne 3\)$",
+    r"^ok     snt/fichiers/Thème 1 " + TIRET + r" Données/cours\.pdf \(ligne 3\)$",
+    r"^ok     scripts/outil\.py \(ligne 4\)$", r"^ok     snt/ \(ligne 4\)$",
+    r"^ABSENT snt/fichiers/Thème \(ligne 5\)$",
+    r"N16\.md : 6 chemin\(s\) cité\(s\), 2 absent\(s\)",
+], absents=[r"file", r"propriétaire", r"absent\.js", r"depot", r"python3", r"^ABSENT snt/fichiers/Thème 1"])
 
 # ── zones.py ────────────────────────────────────────────────────────────────
 

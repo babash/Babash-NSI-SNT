@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Compare deux sorties de rendu.py (avant / après) : mesures et captures, pixel à pixel.
 
-Usage : python3 comparer.py DOSSIER_AVANT DOSSIER_APRES
+Usage : python3 -I .github/gardien/comparer.py DOSSIER_AVANT DOSSIER_APRES
 Affiche, pour chaque page, largeur et mode : écart du nombre de ressources, nouvelles erreurs,
 nouveaux débordements, et la part de pixels qui diffèrent entre les deux captures.
 Code de sortie 1 si une différence est trouvée.
@@ -24,6 +24,9 @@ def charger(d):
 
 
 def main():
+    if len(sys.argv) < 3 or sys.argv[1] in ("-h", "--help"):
+        print(__doc__.strip())
+        sys.exit(0 if sys.argv[1:2] in (["-h"], ["--help"]) else 2)
     avant_d, apres_d = sys.argv[1], sys.argv[2]
     avant, apres = charger(avant_d), charger(apres_d)
     differences = 0

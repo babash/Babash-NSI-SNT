@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Recherche de données sensibles dans le dépôt (Gardien).
 
-Usage :
-  python3 sensibles.py DEPOT                      fichiers suivis par git (version actuelle)
-  python3 sensibles.py DEPOT --historique         + lignes ajoutées dans tous les commits de toutes les branches
-  python3 sensibles.py DEPOT --diff BASE..TETE    seulement les lignes ajoutées par une branche
+Usage (depuis la copie du dépôt) :
+  python3 -I .github/gardien/sensibles.py DEPOT                    fichiers suivis par git (version actuelle)
+  python3 -I .github/gardien/sensibles.py DEPOT --historique       + lignes ajoutées dans tous les commits de toutes les branches
+  python3 -I .github/gardien/sensibles.py DEPOT --diff BASE..TETE  seulement les lignes ajoutées par une branche
+  python3 -I .github/gardien/sensibles.py --help                   cette aide
 
 Motifs : mots de passe, identifiants, adresses électroniques, clés et jetons (service_role,
 secret, sb_secret_, ghp_, github_pat_, sk_live_, AKIA…, clés privées), jetons JWT (le rôle
@@ -99,6 +100,9 @@ def lignes_ajoutees(depot, plage):
 
 
 def main():
+    if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):
+        print(__doc__.strip())
+        sys.exit(0 if len(sys.argv) >= 2 else 2)
     depot = sys.argv[1]
     if "--diff" in sys.argv:
         lignes = lignes_ajoutees(depot, sys.argv[sys.argv.index("--diff") + 1])

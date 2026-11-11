@@ -14,11 +14,16 @@ propre processus :
   t26b      4 cas   point médian permis dans les textes, refusé dans les identifiants (T26b)
   t12      24 cas   scripts du contrôle en ligne : attendre_deploiement.py, liens_seconde_passe.py (T12)
   t19      10 cas   pied de page de l'accueil et de SNT selon reglages.js, dans Chrome (T19)
-  outils   10 cas   outils du Gardien : caracteres, chemins_readme, zones, contraste_zone (T32)
-Les tests lancent les scripts de la copie (scripts/valider_donnees.py…) : à rejouer quand une
-branche modifie ces scripts, les données d'exemple de donnees/, assets/site.js ou reglages.js.
-Les outils du Gardien essayés par « outils » sont ceux de la copie d'où l'on lance ce fichier.
-Il faut Python avec Playwright et Pillow, et Chrome ou Chromium (t19, outils).
+  t45      33 cas   lien « Code source sur GitHub », encadré d'erreur, verifier-site.py (T45)
+  outils   11 cas   outils du Gardien : caracteres, chemins_readme (et N16), zones, contraste_zone (T32)
+  harnais  19 cas   harnais du Gardien : empreintes_migration, annexes_code_source, depots.sh,
+                    pdf_comparer, texte_rendu, diapo_dessous, pages_depot (T47)
+Les tests lancent les scripts de la copie (scripts/valider_donnees.py, .github/verifier-site.py…) :
+à rejouer quand une branche modifie ces scripts, les données d'exemple de donnees/,
+assets/site.js ou reglages.js. Les outils du Gardien essayés par « outils » et « harnais » sont
+ceux de la copie d'où l'on lance ce fichier.
+Il faut Python avec Playwright et Pillow, et Chrome ou Chromium (t19, t45, outils, harnais) ;
+pour « harnais », aussi git, bash et poppler (pdfinfo, pdftotext, pdftoppm).
 Le dossier de travail créé par défaut est effacé si tout est vert ; sinon, il est gardé pour
 l'examen. Résumé à la fin. Code de sortie : 0 tout est vert, 1 sinon.
 """
@@ -36,7 +41,8 @@ sys.path.insert(0, ICI)
 import cadre  # noqa: E402
 
 # nom, utilise la copie du site
-TESTS = [("t02", True), ("t02b", True), ("t26b", True), ("t12", True), ("t19", True), ("outils", False)]
+TESTS = [("t02", True), ("t02b", True), ("t26b", True), ("t12", True), ("t19", True), ("t45", True),
+         ("outils", False), ("harnais", False)]
 
 
 def main():

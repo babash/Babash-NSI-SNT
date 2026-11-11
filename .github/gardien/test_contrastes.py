@@ -1,4 +1,10 @@
-"""Test de la mesure de contraste sur une page témoin aux ratios connus."""
+"""Test de la mesure de contraste sur une page témoin aux ratios connus.
+
+Usage : python3 -I .github/gardien/test_contrastes.py (sans argument ; Chrome)
+Affiche le nombre de textes mesurés (5 : le texte d'un <details> fermé n'est pas compté), puis le
+ratio et le texte de chaque défaut : on attend un seul défaut, le gris 999 (2,85:1). Le même
+calcul est vérifié automatiquement dans tests/test_outils.py (contraste_zone.py).
+"""
 import io
 import os
 import sys
@@ -17,6 +23,9 @@ PAGE = """<!doctype html><html><body style="margin:0;background:#fff;font:16px s
 <details><summary>résumé</summary><p style="color:#eee">caché dans un details fermé</p></details>
 </body></html>"""
 
+if sys.argv[1:2] in (["-h"], ["--help"]):
+    print(__doc__.strip())
+    sys.exit(0)
 with sync_playwright() as p:
     nav = commun.lancer(p)
     page = nav.new_page(viewport={"width": 800, "height": 600})
