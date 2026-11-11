@@ -38,7 +38,8 @@ autres/         …
 assets/                     mise en page et fonctionnement (ne pas toucher)
 donnees/                    le format de la future bibliothèque (voir plus bas)
 .github/                    vérification automatique et outils du Gardien (voir plus bas)
-scripts/                    vérification automatique et validation des données
+scripts/                    vérification automatique, validation des données, script complet de la base
+supabase/                   le socle commun de la base des applications (voir « Applications qui utilisent Supabase »)
 ```
 
 **Règle des liens** : le lien principal d'une ressource mène **directement** à la ressource
@@ -302,10 +303,35 @@ Court-circuit n'y enregistre rien et n'en utilise que le temps réel.
 - Les codes d'élèves des applications de jeu viendront plus tard : pour l'instant, rien n'est
   gardé en ligne, et les étoiles et le niveau de Zéro restent un jour au plus sur l'appareil.
 
+**Le socle commun de la base (dossier `supabase/`)**
+
+- La base commune porte SNT 1er jour, Expédition Gombessa, Alien Python et le temps réel de
+  Court-circuit. Le dossier `supabase/` du site garde les migrations qui ne relèvent d'aucune
+  application (n° 2 du plan de la base unique), appliquées le 11 novembre 2026 après l'accord
+  de l'enseignant :
+  - `0001` ferme les droits par défaut : un objet créé plus tard n'est ouvert à personne sans un
+    droit exprès ;
+  - `0002` retire à `authenticated` le droit d'appeler les fonctions de `public` (sauf
+    `snt_taille_max`, dont se sert une contrainte de SNT 1er jour) et ferme les séquences ; les
+    droits d'`anon` ne changent pas ;
+  - `0003` crée le schéma `commun` : le compteur des essais de saisie de code (par empreinte du
+    réseau, jamais l'adresse), son sel secret, et le registre des tables de toutes les
+    applications (dans Supabase : *Table Editor*, schéma `commun`, vue `registre`) ;
+  - `0004` retire à `anon` ses droits sur la séquence du Panthéon, dans l'ancien projet de
+    Lagon Arena.
+- Chaque migration a son fichier inverse. `supabase/LISEZMOI.md` donne l'ordre, les contrôles
+  et le retour en arrière. Les migrations d'une application restent dans son propre dépôt.
+- Pour ta propre copie : lance `supabase/schema.sql` dans *SQL Editor* d'un projet neuf, avant le
+  script d'une application. Il ne se modifie pas à la main : `python3 scripts/supabase_schema.py`
+  le fabrique à partir des migrations, et `python3 scripts/supabase_schema.py --verifier` dit
+  s'il est à jour.
+
 Les règles communes des bases sont dans `CLAUDE.md`, section « Les bases Supabase » : une seule
 base pour toutes les applications, un schéma par application, l'accès par des fonctions, des
 migrations avec leur fichier inverse. Aucune base n'est modifiée sans que l'enseignant ait vu le
-SQL exact, et les agents n'en lisent que les métadonnées, jamais les données des élèves.
+SQL exact, et les agents n'en lisent que les métadonnées, jamais les données des élèves. Ils ne
+font aucun essai sur une table d'élèves de la base en ligne : les essais d'écriture se font sur
+une reproduction locale, avec des données inventées.
 
 ## La future bibliothèque (dossier `donnees/`)
 
@@ -536,7 +562,7 @@ Une question, une idée, un lien cassé ? Les [issues GitHub](https://github.com
 
 ## Licence
 
-- **Le code du site** (`assets/*.js`, `assets/*.css`, les pages `index.html`, `reglages.js`, `scripts/`, `.github/`) est sous licence [MIT](LICENSE).
+- **Le code du site** (`assets/*.js`, `assets/*.css`, les pages `index.html`, `reglages.js`, `scripts/`, `supabase/`, `.github/`) est sous licence [MIT](LICENSE).
 - **Les documents** (les fiches, TD, cours, guides et diaporamas des dossiers `fichiers/`, les textes des listes de ressources, le décor du bandeau) sont sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr).
 - **Alien Python** (`snt/fichiers/alien-python/`) : d'après [Alien-Python](https://forge.apps.education.fr/DegrangeM/alien-python), de Mathieu Degrange (MIT) ; la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder avec `data.js` en cas de copie.
 - **Court-circuit** (`snt/fichiers/court-circuit/`) : code MIT et documents CC BY-SA 4.0 de Babash - NSI Tani Malandi ; les bibliothèques incluses (CodeMirror 6, client temps réel de Supabase, QR Code Generator) gardent leur licence MIT, avec leur notice dans `snt/fichiers/court-circuit/vendor/LICENCES-BIBLIOTHEQUES.txt`, et les polices intégrées (Chakra Petch, JetBrains Mono, Atkinson Hyperlegible) la leur, la SIL Open Font License 1.1, avec leurs copyrights et son texte dans `snt/fichiers/court-circuit/LICENCE.txt`.
