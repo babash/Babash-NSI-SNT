@@ -51,7 +51,8 @@ et de la licence. Pour une ressource externe, qu'on ne modifie pas, on donne son
 annexe s'il est public. Depuis le 11 novembre 2026, toutes les ressources des listes conçues
 par Babash - NSI Tani Malandi qui ont un dépôt le donnent en annexe, et le lien « Code source
 sur GitHub » est en bas des pages de ce site, de ses pages déposées dans les dossiers `fichiers`
-et des applications, sauf Lagon Arena, où il arrive avec sa prochaine mise à jour.
+et des applications, sauf Lagon Arena, où il arrive avec sa prochaine mise à jour. Pour ce
+site, le contrôle du site en ligne le vérifie (voir « Vérification automatique »).
 Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans le dossier
 `fichiers` de la rubrique (c'est le cas de `nsi-terminale/fichiers/os-humain/`).
 
@@ -197,7 +198,8 @@ l'accueil ni dans le menu : pratique pour une page réservée à une classe.
 (pour le lien « Code source sur GitHub » et les liens « Modifier »), l'ordre des rubriques et
 les textes du pied de page (voir ci-dessous). Le dépôt s'écrit `"propriétaire/nom"`, par
 exemple `"babash/Babash-NSI-SNT"` ; une adresse `https://github.com/…` est aussi acceptée. Une
-valeur mal écrite affiche une erreur sur la page. Dans ce cas, comme quand le réglage manque,
+valeur mal écrite affiche une erreur sur la page (voir « Si la page affiche une erreur »). Dans
+ce cas, comme quand le réglage manque,
 les liens « Modifier la liste », « Déposer un fichier » et « Mode d'emploi » disparaissent, et
 le lien « Code source sur GitHub » mène au dépôt du site, écrit dans `assets/site.js`.
 
@@ -237,9 +239,17 @@ pas `reglages.js`.
 
 ---
 
-## Si la page affiche « Une liste de ressources contient une erreur »
+## Si la page affiche une erreur
 
-Le message indique le fichier et la ligne. Presque toujours, juste avant cette ligne :
+L'encadré d'erreur dit, dans son titre, quel fichier est en cause :
+
+- « **Une liste de ressources contient une erreur** » : un fichier `ressources.js` ;
+- « **Les réglages du site contiennent une erreur** » : `reglages.js`, par exemple le réglage
+  `depot` mal écrit (voir « Réglages généraux ») ; le message dit ce qu'il faut écrire ;
+- « **Les réglages du site et une liste de ressources contiennent des erreurs** » : les deux.
+
+Pour une liste, le message indique le fichier et la ligne. Presque toujours, juste avant cette
+ligne :
 
 - une **virgule oubliée** à la fin d'une ligne `titre: "…"` ;
 - un **guillemet** pas refermé, ou un guillemet `"` à l'intérieur d'un texte
@@ -386,7 +396,11 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   au-delà des 200 premiers) sont signalés dans le résumé. Ensuite, il affiche chaque rubrique
   dans Chrome et vérifie qu'aucune erreur n'apparaît et que le nombre de ressources affichées
   est celui de `ressources.js`. Il ouvre aussi chaque page déposée dans un dossier `fichiers/`
-  (TD, fiches, diaporamas, applications) et vérifie qu'elle s'affiche avec un vrai contenu. Le
+  (TD, fiches, diaporamas, applications) et vérifie qu'elle s'affiche avec un vrai contenu. Il
+  vérifie enfin le lien « Code source sur GitHub » : l'accueil et chaque rubrique doivent l'avoir,
+  vers le dépôt du réglage `depot`, sinon le contrôle échoue ; une page déposée qui ne l'a pas
+  encore est seulement signalée dans le résumé, sans échec (la liste `CODE_SOURCE_EXCEPTIONS` de
+  `.github/verifier-site.py` peut en dispenser une page, avec sa raison ; elle est vide). Le
   résumé donne l'heure de chaque étape. Si un commit plus récent est mis en ligne entre-temps,
   c'est son propre contrôle qui vérifie le site, en ne comparant que les fichiers de son envoi ;
   pour comparer aussi ceux de l'envoi précédent, relance le contrôle à la main avec le champ
