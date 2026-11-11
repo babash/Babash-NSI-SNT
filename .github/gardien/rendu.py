@@ -2,7 +2,7 @@
 """Contrôle du rendu (Gardien) : chaque page, à plusieurs largeurs, en clair et en obscur.
 
 Usage :
-  python3 rendu.py URL_DE_BASE DOSSIER_SORTIE --racine DOSSIER_DU_SITE
+  python3 -I .github/gardien/rendu.py URL_DE_BASE DOSSIER_SORTIE --racine DOSSIER_DU_SITE
                    [--polices DOSSIER_FONTSOURCE] [--largeurs 320,768,1440]
                    [--modes light,dark] [--fichiers] [--sans-captures]
 
@@ -117,7 +117,7 @@ def controler(navigateur, base, page_id, chemin, largeur, mode, sortie, polices,
 
 
 def main():
-    a = argparse.ArgumentParser()
+    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     a.add_argument("base")
     a.add_argument("sortie")
     a.add_argument("--racine", required=True)

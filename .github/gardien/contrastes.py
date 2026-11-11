@@ -2,7 +2,7 @@
 """Contrastes et navigation au clavier (Gardien).
 
 Usage :
-  python3 contrastes.py URL_DE_BASE DOSSIER_SORTIE --racine DOSSIER_DU_SITE
+  python3 -I .github/gardien/contrastes.py URL_DE_BASE DOSSIER_SORTIE --racine DOSSIER_DU_SITE
                         [--polices DOSSIER_FONTSOURCE] [--largeurs 320,1440] [--modes light,dark]
                         [--seuil 4.5] [--seuil-grand 3]
 
@@ -168,7 +168,7 @@ def clavier(page, maximum=400):
 
 
 def main():
-    a = argparse.ArgumentParser()
+    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     a.add_argument("base")
     a.add_argument("sortie")
     a.add_argument("--racine", required=True)
