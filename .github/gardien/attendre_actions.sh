@@ -10,6 +10,10 @@
 # Pour un commit publié avant T12, la relance reste : gh api -X POST
 # repos/babash/Babash-NSI-SNT/actions/jobs/ID/rerun.
 set -u
+case "${1:-}" in
+  -h|--help) sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+  "") sed -n '2,11p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+esac
 sha="$1"; max="${2:-900}"; pas="${3:-45}"
 if [ "${#sha}" -lt 40 ]; then sha=$(git rev-parse "$sha" 2>/dev/null || echo "$sha"); fi
 depot="repos/babash/Babash-NSI-SNT"

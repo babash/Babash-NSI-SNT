@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Liens du site (Gardien) : liens internes, liens principaux vers GitHub, doublons.
 
-Usage : python3 liens.py DOSSIER_DU_SITE
+Usage : python3 -I .github/gardien/liens.py DOSSIER_DU_SITE
 
 1. Dans chaque */ressources.js : chaque `lien:` et chaque annexe relative doit mener à un
    fichier existant (un dossier « …/ » doit contenir index.html).
@@ -40,6 +40,9 @@ def existe(base_dir, u, racine):
 
 
 def main():
+    if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):
+        print(__doc__.strip())
+        sys.exit(0 if sys.argv[1:2] in (["-h"], ["--help"]) else 2)
     racine = os.path.abspath(sys.argv[1])
     casses, github, annexes_github, toutes = [], [], [], collections.defaultdict(list)
     for rub in sorted(set(commun.rubriques(racine)) | {os.path.basename(os.path.dirname(f)) for f in glob.glob(os.path.join(racine, "*", "ressources.js"))}):

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Impression A4 des documents déposés (Gardien).
 
-Usage : python3 impression.py URL_DE_BASE DOSSIER_SORTIE --racine DOSSIER_DU_SITE
+Usage : python3 -I .github/gardien/impression.py URL_DE_BASE DOSSIER_SORTIE --racine DOSSIER_DU_SITE
                               [--polices DOSSIER_FONTSOURCE] [FICHIER.html …]
 
 Pour chaque page HTML de */fichiers/ (ou celles données) :
@@ -39,7 +39,7 @@ def pages_pdf(chemin):
 
 
 def main():
-    a = argparse.ArgumentParser()
+    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     a.add_argument("base")
     a.add_argument("sortie")
     a.add_argument("--racine", required=True)

@@ -90,7 +90,7 @@ def etape(titre, cmd, resultats, cle, si_echec="ROUGE"):
 
 
 def main():
-    a = argparse.ArgumentParser()
+    a = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     a.add_argument("--branche", default="HEAD")
     a.add_argument("--base", default="origin/main")
     a.add_argument("--travail")

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Extrait le texte des PDF du site (pdftotext) et y cherche des motifs sensibles.
 
-Usage : python3 pdf_texte.py DOSSIER_DU_SITE DOSSIER_SORTIE
+Usage : python3 -I .github/gardien/pdf_texte.py DOSSIER_DU_SITE DOSSIER_SORTIE
 Affiche, pour chaque PDF : nombre de pages, nombre de mots, et les lignes suspectes.
 Les noms propres trouvés (mots à majuscule répétés) sont listés pour relecture humaine.
 """
@@ -14,6 +14,9 @@ import sys
 MOTIF = re.compile(r"mots? de passe|password|identifiant|login|secret|token|jeton|"
                    r"[\w.+-]+@[\w-]+\.[a-z]{2,}|eyJ[A-Za-z0-9_-]{10,}", re.I)
 
+if len(sys.argv) < 3 or sys.argv[1] in ("-h", "--help"):
+    print(__doc__.strip())
+    sys.exit(0 if sys.argv[1:2] in (["-h"], ["--help"]) else 2)
 racine, sortie = sys.argv[1], sys.argv[2]
 os.makedirs(sortie, exist_ok=True)
 for pdf in sorted(glob.glob(os.path.join(racine, "**", "*.pdf"), recursive=True)):
