@@ -129,7 +129,7 @@ ecrire(os.path.join(site, "snt", "fichiers", "Thème 1 " + TIRET + " Données", 
 ecrire(os.path.join(site, "scripts", "outil.py"), "")
 ecrire(os.path.join(site, "N16.md"), "\n".join([
     "Les adresses `file://` et `file:///home/x/a.html` ne sont pas des chemins.",            # 1
-    "Le réglage `depot: \"propriétaire/nom\"` et la valeur `'snt/absent.js'` non plus.",      # 2
+    "Le réglage `depot: \"propriétaire/nom\"`, la valeur `'snt/absent.js'` et `titre: \"TD 1/2\"` non plus.",  # 2
     "Le dossier `snt/fichiers/Thème 1 " + TIRET + " Données/`, avec "
     "`snt/fichiers/Thème 1 " + TIRET + " Données/cours.pdf`.",                                # 3
     "La commande `python3 -I scripts/outil.py snt/` : un mot à la fois.",                     # 4
@@ -143,7 +143,7 @@ attendre("chemins_readme.py (N16) : file://, guillemets, chemin à espaces, comm
     r"^ok     scripts/outil\.py \(ligne 4\)$", r"^ok     snt/ \(ligne 4\)$",
     r"^ABSENT snt/fichiers/Thème \(ligne 5\)$",
     r"N16\.md : 6 chemin\(s\) cité\(s\), 2 absent\(s\)",
-], absents=[r"file", r"propriétaire", r"absent\.js", r"depot", r"python3", r"^ABSENT snt/fichiers/Thème 1"])
+], absents=[r"file", r"propriétaire", r"absent\.js", r"depot", r"python3", r"1/2", r"^ABSENT snt/fichiers/Thème 1"])
 
 # ── zones.py ────────────────────────────────────────────────────────────────
 

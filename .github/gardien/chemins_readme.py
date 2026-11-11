@@ -9,7 +9,7 @@ exemples, et relève chaque mot cité entre accents graves qui ressemble à un c
 « / », ou finit par .md, .js, .json, .html, .py, .sh, .yml, .svg, .css, .sql ou .txt. Sont
 ignorés : les adresses (http…, file://…, tout « schéma:// »), les gabarits (<id>, …), les
 options (-x), les extensions seules (`.py`) et les valeurs entre guillemets (`"propriétaire/nom"`,
-une valeur de réglage, pas un chemin). Ce qui suit « ? » ou « # » ne compte pas. Un passage entre
+une valeur de réglage, pas un chemin ; un mot qui commence ou finit par un guillemet). Ce qui suit « ? » ou « # » ne compte pas. Un passage entre
 accents graves qui contient des espaces est d'abord essayé en entier, comme un seul chemin
 (`Thème 1 – Structures de données/`) ; s'il n'existe pas, ses mots sont examinés un à un.
 Un chemin est trouvé s'il existe :
@@ -53,8 +53,10 @@ def mots(passage):
 
 
 def est_chemin(mot):
-    if not mot or mot.startswith(("http", "-", "<", "…", '"', "'")) or "<" in mot or "…" in mot:
+    if not mot or mot.startswith(("http", "-", "<", "…")) or "<" in mot or "…" in mot:
         return False
+    if mot.startswith(('"', "'")) or mot.endswith(('"', "'")):
+        return False  # une valeur entre guillemets, même en plusieurs mots : `titre: "TD 1/2"`
     if re.match(r"[A-Za-z][A-Za-z0-9+.-]*://", mot):
         return False  # une adresse : `file://`, `ftp://…`
     if re.fullmatch(r"\.[A-Za-z0-9]+", mot):
