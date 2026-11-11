@@ -752,7 +752,11 @@
           el('code', null, e.fichier), e.ligne ? ', ligne ' + e.ligne : '', ' : ', e.message
         ]);
       })),
-      el('p', { class: 'petit' }, 'Souvent : une virgule oubliée en fin de ligne, ou un guillemet, une parenthèse ou une accolade pas refermés, juste avant la ligne indiquée.')
+      /* L'astuce vaut pour une erreur d'écriture, que le navigateur situe à une ligne ;
+         pas pour un champ inconnu ni pour le réglage depot, qui n'en ont pas */
+      liste_.some(function (e) { return e.ligne; })
+        ? el('p', { class: 'petit' }, 'Souvent : une virgule oubliée en fin de ligne, ou un guillemet, une parenthèse ou une accolade pas refermés, juste avant la ligne indiquée.')
+        : null
     ]);
   }
 
