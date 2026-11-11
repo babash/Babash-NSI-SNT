@@ -739,8 +739,14 @@
   function blocAlertes(fichiers) {
     var liste_ = erreurs.filter(function (e) { return !fichiers || fichiers.indexOf(e.fichier) >= 0; });
     if (!liste_.length) return null;
+    /* Le titre nomme ce qui est en cause : les réglages (reglages.js), une liste, ou les deux */
+    var reglagesEnCause = liste_.some(function (e) { return e.fichier === 'reglages.js'; });
+    var listeEnCause = liste_.some(function (e) { return e.fichier !== 'reglages.js'; });
+    var titre = !reglagesEnCause ? 'Une liste de ressources contient une erreur'
+      : listeEnCause ? 'Les réglages du site et une liste de ressources contiennent des erreurs'
+      : 'Les réglages du site contiennent une erreur';
     return el('div', { class: 'alerte', role: 'alert' }, [
-      el('p', null, el('strong', null, 'Une liste de ressources contient une erreur')),
+      el('p', null, el('strong', null, titre)),
       el('ul', null, liste_.map(function (e) {
         return el('li', null, [
           el('code', null, e.fichier), e.ligne ? ', ligne ' + e.ligne : '', ' : ', e.message
