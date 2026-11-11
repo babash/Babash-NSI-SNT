@@ -33,6 +33,13 @@ Ce dossier contient les migrations qui ne relèvent d'aucune application : les p
 On ne fait jamais d'essai sur une table de données d'élèves de la base en ligne, même dans une transaction annulée : les essais d'écriture se font sur la reproduction locale, avec des données inventées (voir « L'essai local »).
 
 **Reste à confirmer au premier essai en ligne :** l'en-tête qui donne l'adresse du réseau dans `commun.reseau()`, `cf-connecting-ip` ou, à défaut, le premier élément de `x-forwarded-for`. Aucune application ne se sert encore du compteur ; la première qui s'en servira (SNT 1er jour, `snt_repondre()`, au n° 3) le vérifiera.
+- **Le risque :** si l'API ne transmettait aucun des deux en-têtes, l'adresse vaudrait « inconnu » pour tout le monde. Tous les élèves partageraient alors le même compteur.
+- **La vérification**, sans lire aucune valeur : après une première réponse envoyée depuis une page, et le même jour, on lance la requête ci-dessous dans l'éditeur SQL. Il n'y a pas d'en-tête : `commun.reseau()` y donne l'empreinte de « inconnu », et on compte les lignes qui la portent.
+
+  ```sql
+  -- attendu : 0 (l'empreinte enregistrée vient d'une vraie adresse)
+  select count(*) from commun.essais where application = 'snt_premier_jour' and reseau = commun.reseau();
+  ```
 
 ## Les fichiers
 
@@ -71,7 +78,7 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
 ### 0002 : authenticated retiré, séquences fermées (règles P2 et P4)
 
 - **Les séquences :** `public.gb_evenements_id_seq` et `public.snt_responses_id_seq` perdent tout droit pour `anon` et `authenticated`.
-  - Ce sont les séquences de deux colonnes d'identité : Postgres les remplit sans vérifier de droit, et l'essai le confirme (ajout d'une réponse de SNT 1er jour en `anon`, journal de Gombessa).
+  - Ce sont les séquences de deux colonnes d'identité : Postgres les remplit sans vérifier de droit, et l'essai local le confirme (ajout d'une réponse de SNT 1er jour en `anon`, journal de Gombessa).
   - Le garde-fou s'arrête si l'une n'est pas une séquence d'identité.
 - **Les fonctions de `public` qui appartiennent à `postgres` :**
   - chaque fonction qu'`anon` peut appeler reçoit d'abord un droit exprès pour `anon`, qu'il avait déjà ;
