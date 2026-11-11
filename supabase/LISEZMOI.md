@@ -71,7 +71,7 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
 ### 0002 : authenticated retiré, séquences fermées (règles P2 et P4)
 
 - **Les séquences :** `public.gb_evenements_id_seq` et `public.snt_responses_id_seq` perdent tout droit pour `anon` et `authenticated`.
-  - Ce sont les séquences de deux colonnes d'identité : Postgres les remplit sans vérifier de droit, et l'essai le confirme (ajout d'une réponse de SNT 1er jour en `anon`, journal de Gombessa).
+  - Ce sont les séquences de deux colonnes d'identité : Postgres les remplit sans vérifier de droit, et l'essai local le confirme (ajout d'une réponse de SNT 1er jour en `anon`, journal de Gombessa).
   - Le garde-fou s'arrête si l'une n'est pas une séquence d'identité.
 - **Les fonctions de `public` qui appartiennent à `postgres` :**
   - chaque fonction qu'`anon` peut appeler reçoit d'abord un droit exprès pour `anon`, qu'il avait déjà ;
