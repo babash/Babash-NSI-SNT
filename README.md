@@ -48,9 +48,10 @@ l'enseignant du 10 novembre 2026) : une ressource qui a un dépôt le donne en a
 nom « Code source », et chaque page publiée (ce site, les applications, les pages en ligne des
 TD) porte en pied de page un lien « Code source sur GitHub » vers son dépôt, à côté de l'auteur
 et de la licence. Pour une ressource externe, qu'on ne modifie pas, on donne son dépôt en
-annexe s'il est public. Le pied de page de ce site a ce lien depuis le 11 novembre 2026 ; il est
-en cours d'ajout dans les applications et les pages déposées dans les dossiers `fichiers`, et
-une vingtaine de ressources des listes n'ont pas encore leur annexe « Code source ».
+annexe s'il est public. Depuis le 11 novembre 2026, toutes les ressources des listes conçues
+par Babash - NSI Tani Malandi qui ont un dépôt le donnent en annexe, et le lien « Code source
+sur GitHub » est en bas des pages de ce site, de ses pages déposées dans les dossiers `fichiers`
+et des applications, sauf Lagon Arena, où il arrive avec sa prochaine mise à jour.
 Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans le dossier
 `fichiers` de la rubrique (c'est le cas de `nsi-terminale/fichiers/os-humain/`).
 
