@@ -249,8 +249,8 @@ L'encadré d'erreur dit, dans son titre, quel fichier est en cause :
   `depot` mal écrit (voir « Réglages généraux ») ; le message dit ce qu'il faut écrire ;
 - « **Les réglages du site et une liste de ressources contiennent des erreurs** » : les deux.
 
-Pour une liste, le message indique le fichier et la ligne. Presque toujours, juste avant cette
-ligne :
+Pour une erreur d'écriture, le message indique le fichier et la ligne, et l'encadré rappelle
+les causes les plus fréquentes. Presque toujours, juste avant la ligne indiquée :
 
 - une **virgule oubliée** à la fin d'une ligne `titre: "…"` ;
 - un **guillemet** pas refermé, ou un guillemet `"` à l'intérieur d'un texte
@@ -258,6 +258,9 @@ ligne :
 - une **accolade** `}` ou une **parenthèse** `)` pas refermée à la fin du bloc `});`.
 
 Les virgules en trop, elles, ne gênent pas : tu peux en laisser une après chaque ligne.
+
+Les autres erreurs n'ont pas de numéro de ligne : un champ inconnu, une ressource sans titre, un
+fichier introuvable, le réglage `depot` mal écrit… Le message dit alors ce qui ne va pas.
 
 ## Tester sur ton ordinateur
 
