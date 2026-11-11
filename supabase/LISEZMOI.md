@@ -10,7 +10,7 @@ Ce dossier contient les migrations qui ne relèvent d'aucune application : les p
 
 **Les quatre migrations sont appliquées**, après l'accord de l'enseignant (« Ok base 2 », 11/11 à 16:29, heure de Mayotte).
 - Le chef d'orchestre les a appliquées par `apply_migration`, sans leurs lignes `begin;` et `commit;`.
-- Chaque texte enregistré a la même empreinte que le fichier du commit `88c4cd7` (md5 sans commentaires, espaces ni `;`) : **les fichiers SQL de ce dossier sont exactement ceux qui ont été appliqués**, et ne se modifient plus.
+- Chaque texte enregistré a la même empreinte que le fichier du commit `cff652e` (le même texte qu'en `88c4cd7` et `d113879`, ses identifiants avant les rebases ; md5 sans commentaires, espaces ni `;`) : **les fichiers SQL de ce dossier sont exactement ceux qui ont été appliqués**, et ne se modifient plus.
 - **L'ordre recommandé a été suivi :** l'étape 0 de Gombessa (`gombessa_0001_espaces`, version 20261110161938) était déjà appliquée. Il n'y a donc pas de `0002` à relancer.
 
 | Fichier | Projet | Migration | Version | Heure (Mayotte) |
@@ -24,11 +24,13 @@ Ce dossier contient les migrations qui ne relèvent d'aucune application : les p
 - **0001 :** les droits par défaut de `postgres` ne donnent plus rien qu'à `postgres` et `service_role`, dans `public` comme pour toutes les fonctions. Ceux du schéma `storage`, qui viennent de la plateforme, sont inchangés.
 - **0002, les fonctions :** 33 fonctions de `public` restent appelables par `anon`, comme avant. Pour `authenticated`, il ne reste que `snt_taille_max`, comme prévu.
 - **0002, les séquences et les tables :** les deux séquences sont fermées à `anon` et à `authenticated`. Sur les tables, il reste seulement INSERT sur `snt_responses`, pour `anon` et pour `authenticated`.
-- **0002, un essai réel :** un ajout dans `snt_responses` en rôle `anon` passe toujours, dans une transaction annulée ensuite (rien n'est resté).
+- **0002, les ajouts sans droit sur les séquences :** les deux séquences sont celles de colonnes d'identité (`pg_depend`, `deptype = 'i'`, ce que vérifie aussi le garde-fou), et Postgres remplit une colonne d'identité sans vérifier de droit sur sa séquence. Les ajouts de Gombessa et de Lagon Arena passent par des fonctions `security definer`, propriété de `postgres`.
 - **0003, le schéma commun :** `essais` et `secret` ont la RLS ; `secret` a une ligne et `essais` aucune. Les 6 fonctions ne sont ouvertes à personne, et `anon` n'a pas l'usage du schéma.
 - **0003, le registre :** la vue liste 11 tables. La colonne `donnees_eleves` reste vide pour les tables d'application qui n'ont pas encore de commentaire : elles en recevront un à leur déplacement dans leur schéma.
 - **0004 :** `anon` n'a plus de droit sur `pantheon_id_seq` ; `authenticated` garde le sien ; les objets `guilde_*` sont intacts. Seules des fonctions `security definer` ajoutent au Panthéon.
 - **Les conseillers :** seulement « RLS sans règle » (INFO, 9 tables) et « security definer appelable par anon » (WARN, 31 : les fonctions d'entrée des pages). L'avertissement sur `authenticated` (0029) a disparu.
+
+On ne fait jamais d'essai sur une table de données d'élèves de la base en ligne, même dans une transaction annulée : les essais d'écriture se font sur la reproduction locale, avec des données inventées (voir « L'essai local »).
 
 **Reste à confirmer au premier essai en ligne :** l'en-tête qui donne l'adresse du réseau dans `commun.reseau()`, `cf-connecting-ip` ou, à défaut, le premier élément de `x-forwarded-for`. Aucune application ne se sert encore du compteur ; la première qui s'en servira (SNT 1er jour, `snt_repondre()`, au n° 3) le vérifiera.
 
