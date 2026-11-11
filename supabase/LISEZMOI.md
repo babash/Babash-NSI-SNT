@@ -6,6 +6,32 @@ Ce dossier contient les migrations qui ne relèvent d'aucune application : les p
 - **Une exception :** `0004` vise l'ancien projet de Lagon Arena, `gkyvaugipddjqjvvpopw`. Il n'y touche à aucun objet `guilde_*`.
 - **Les règles suivies :** `architecture/regles-supabase.md` (P2, P4, P8 corrigée, M1 à M8) et la spécification des codes, `architecture/codes-acces.md` (§ 1.10).
 
+## Où en est la base (11/11/2026)
+
+**Les quatre migrations sont appliquées**, après l'accord de l'enseignant (« Ok base 2 », 11/11 à 16:29, heure de Mayotte).
+- Le chef d'orchestre les a appliquées par `apply_migration`, sans leurs lignes `begin;` et `commit;`.
+- Chaque texte enregistré a la même empreinte que le fichier du commit `88c4cd7` (md5 sans commentaires, espaces ni `;`) : **les fichiers SQL de ce dossier sont exactement ceux qui ont été appliqués**, et ne se modifient plus.
+- **L'ordre recommandé a été suivi :** l'étape 0 de Gombessa (`gombessa_0001_espaces`, version 20261110161938) était déjà appliquée. Il n'y a donc pas de `0002` à relancer.
+
+| Fichier | Projet | Migration | Version | Heure (Mayotte) |
+|---|---|---|---|---|
+| `0001` | `cukahpyqkljiddmimpyi` | `base_unique_0001_droits_par_defaut` | 20261111133048 | 11/11, 16:30 |
+| `0002` | `cukahpyqkljiddmimpyi` | `base_unique_0002_retrait_authenticated_et_sequences` | 20261111133115 | 11/11, 16:31 |
+| `0003` | `cukahpyqkljiddmimpyi` | `base_unique_0003_schema_commun` | 20261111133240 | 11/11, 16:32 |
+| `0004` | `gkyvaugipddjqjvvpopw` | `base_unique_0004_ancien_projet_sequence_pantheon` | 20261111133334 | 11/11, 16:33 |
+
+**Les contrôles après l'application**, par les métadonnées seulement :
+- **0001 :** les droits par défaut de `postgres` ne donnent plus rien qu'à `postgres` et `service_role`, dans `public` comme pour toutes les fonctions. Ceux du schéma `storage`, qui viennent de la plateforme, sont inchangés.
+- **0002, les fonctions :** 33 fonctions de `public` restent appelables par `anon`, comme avant. Pour `authenticated`, il ne reste que `snt_taille_max`, comme prévu.
+- **0002, les séquences et les tables :** les deux séquences sont fermées à `anon` et à `authenticated`. Sur les tables, il reste seulement INSERT sur `snt_responses`, pour `anon` et pour `authenticated`.
+- **0002, un essai réel :** un ajout dans `snt_responses` en rôle `anon` passe toujours, dans une transaction annulée ensuite (rien n'est resté).
+- **0003, le schéma commun :** `essais` et `secret` ont la RLS ; `secret` a une ligne et `essais` aucune. Les 6 fonctions ne sont ouvertes à personne, et `anon` n'a pas l'usage du schéma.
+- **0003, le registre :** la vue liste 11 tables. La colonne `donnees_eleves` reste vide pour les tables d'application qui n'ont pas encore de commentaire : elles en recevront un à leur déplacement dans leur schéma.
+- **0004 :** `anon` n'a plus de droit sur `pantheon_id_seq` ; `authenticated` garde le sien ; les objets `guilde_*` sont intacts. Seules des fonctions `security definer` ajoutent au Panthéon.
+- **Les conseillers :** seulement « RLS sans règle » (INFO, 9 tables) et « security definer appelable par anon » (WARN, 31 : les fonctions d'entrée des pages). L'avertissement sur `authenticated` (0029) a disparu.
+
+**Reste à confirmer au premier essai en ligne :** l'en-tête qui donne l'adresse du réseau dans `commun.reseau()`, `cf-connecting-ip` ou, à défaut, le premier élément de `x-forwarded-for`. Aucune application ne se sert encore du compteur ; la première qui s'en servira (SNT 1er jour, `snt_repondre()`, au n° 3) le vérifiera.
+
 ## Les fichiers
 
 | Fichier | Projet | Nom de migration (`apply_migration`) | Ce qu'il fait |
@@ -64,7 +90,7 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
 | schéma `commun` | Ce qui sert à toutes les applications. Il n'est pas exposé à l'API, et `anon` comme `authenticated` n'y ont aucun droit. |
 | table `commun.secret` | Une ligne : un sel de 32 octets, tiré une fois au hasard. **Ne se lit jamais** : ni par un agent, ni dans un message. On compte ses lignes, sans plus. |
 | table `commun.essais` | Les échecs de saisie de code, par application, réseau, type (`eleve`, `enseignant`, `classe`, `creation`) et heure. Le réseau est une empreinte, jamais l'adresse. Les lignes de plus de 24 h sont effacées. |
-| `commun.reseau()` | L'empreinte du réseau de la requête : SHA-256 de l'adresse (`cf-connecting-ip`, sinon le premier élément de `x-forwarded-for`), du sel et de la date du jour (UTC). Sans en-tête, par exemple dans l'éditeur SQL, l'adresse vaut « inconnu ». |
+| `commun.reseau()` | L'empreinte du réseau de la requête : SHA-256 de l'adresse (`cf-connecting-ip`, sinon le premier élément de `x-forwarded-for`), du sel et de la date du jour (UTC). Sans en-tête, par exemple dans l'éditeur SQL, l'adresse vaut « inconnu ». L'en-tête est à confirmer au premier essai en ligne. |
 | `commun.essai_permis(app, type, max)` | Vrai si ce réseau a fait moins de `max` échecs de ce type dans l'heure. |
 | `commun.noter_echec(app, type)` | Compte un échec (ou une création), fait le ménage des compteurs de plus de 24 h, et renvoie le nombre de l'heure. |
 | `commun.debloquer_reseau(app)` | Remet à zéro les compteurs de ce réseau pour une application : c'est « débloquer le réseau » depuis l'espace enseignant·e. |
@@ -85,6 +111,8 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
 - **Ce qui reste :** les droits d'`authenticated` sur cette séquence, parce que la consigne de T42 se limite à `anon` pour ce projet.
 
 ## Avant
+
+*Cette section et la suivante décrivent la marche suivie le 11/11 ; elles restent comme modèle pour une relance ou pour une copie.*
 
 1. **L'enseignant lit le SQL exact** des quatre fichiers et donne son accord.
 2. Rien d'autre : aucune donnée n'est modifiée.
@@ -142,7 +170,7 @@ select has_sequence_privilege('anon', 'public.pantheon_id_seq', 'usage, select, 
 | SNT 1er jour (`SNT-1er-Jour`, `7242eb7`) | `snt_nuage()`, et l'ajout direct dans `snt_responses`, qui passe par la contrainte `snt_taille_max` | inchangé |
 | Expédition Gombessa (`Rappel-1er`, `646c38a`), après l'étape 0 | `gb_classe_par_code`, `gb_connexion`, `gb_equipage`, `gb_inscription`, `gb_journal`, `gb_presence`, `gb_prof_classes`, `gb_prof_creer_classe`, `gb_prof_creer_espace`, `gb_prof_eleves`, `gb_prof_evenements`, `gb_prof_flux`, `gb_prof_modifier_classe`, `gb_prof_modifier_espace`, `gb_prof_nouveau_code`, `gb_prof_nouveau_code_classe`, `gb_prof_nouvelle_cle`, `gb_prof_ouvrir`, `gb_prof_renommer_eleve`, `gb_prof_supprimer_classe`, `gb_prof_supprimer_eleve`, `gb_prof_supprimer_espace`, `gb_reprise`, `gb_sauvegarde` (24) | les 24 restent appelables |
 | Alien Python (`snt/fichiers/alien-python/`) | `alien_class_view`, `alien_create_class`, `alien_join_class`, `alien_save_progress`, `alien_student_login`, `alien_teacher_overview` | inchangé |
-| Lagon Arena (`lagon-arena`, `c3d8acd`), ancien projet | 25 fonctions présentes en ligne, et la lecture directe de `salles`, `joueurs`, `tortues` et `scores` ; `pantheon_classe` n'est pas encore en ligne (migration Panthéon en attente de l'accord de l'enseignant), et la page s'en passe | inchangé |
+| Lagon Arena (`lagon-arena`, `c3d8acd`), ancien projet | 26 fonctions, dont `pantheon_classe`, et la lecture directe de `salles`, `joueurs`, `tortues` et `scores`. La migration du Panthéon automatique est appliquée depuis le 10/11 à 23:09 (`lagon_0001_pantheon_automatique`, version 20261110200903) : `pantheon_classe` est en ligne, `security definer`, appelable par `anon` (métadonnées du 11/11). | inchangé : les 26 restent appelables par `anon` |
 
 Le contrôle, nom par nom (attendu : `true` partout) :
 
@@ -193,8 +221,8 @@ end if;
 
 ## Ce que fait l'enseignant
 
-1. **Lire et accepter le SQL** des quatre fichiers.
-2. **Accepter la confirmation de Supabase** au moment où le chef d'orchestre applique.
+1. **Lire et accepter le SQL** des quatre fichiers : fait le 11/11 à 16:29.
+2. **Accepter la confirmation de Supabase** au moment où le chef d'orchestre applique : fait le 11/11.
 3. **Renommer le projet, quand il veut :** dans le tableau de bord, Project Settings, puis General, puis Project name : « Babash - applications », puis Save. L'adresse et l'identifiant du projet ne changent pas : aucune page n'est touchée.
 
 ## L'essai local (10/11/2026)
