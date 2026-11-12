@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fiches NSI - Adressage IPv4 et masquage</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --text: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border: #d1d8e0;
+            --net-color: #1a2a6c;
+            --host-color: #b21f1f;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        code, pre, .calcul-box, .box-fill, .url-decode, .ip-bin { font-variant-ligatures: none; }
+
+        body { background: #515151; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; color: var(--text); }
+
+        .page {
+            width: 210mm; min-height: 297mm;
+            padding: 11mm; margin: 10mm auto;
+            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; page-break-after: always; }
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 6px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1 { margin: 0; font-size: 1.45rem; color: var(--primary); letter-spacing: -0.5px; }
+        .badge { font-size: 0.7rem; font-weight: 700; background: var(--secondary); color: white; padding: 2px 7px; border-radius: 3px; }
+
+        h2 { 
+            font-size: 0.95rem; background: var(--light-gray); 
+            padding: 4px 9px; border-left: 5px solid var(--primary);
+            margin: 10px 0 6px 0; text-transform: uppercase;
+        }
+        h3 { font-size: 0.88rem; margin: 6px 0 3px 0; color: var(--secondary); }
+
+        p, li { font-size: 0.83rem; line-height: 1.4; margin: 3px 0; }
+        ul { margin: 4px 0; padding-left: 22px; }
+
+        .write-zone { border-bottom: 1px dotted #999; min-height: 18px; margin: 3px 0; display: block; width: 100%; }
+        .fill-inline { border-bottom: 1px dotted #999; display: inline-block; min-width: 110px; min-height: 14px; vertical-align: bottom; }
+
+        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 0.78rem; }
+        th, td { border: 1px solid var(--border); padding: 5px 7px; text-align: left; vertical-align: top; }
+        th { background: var(--primary); color: white; font-weight: 500; }
+
+        code { font-family: 'Fira Code', monospace; background: #eee; padding: 1px 3px; border-radius: 2px; font-size: 0.77rem; }
+        strong { color: var(--primary); }
+
+        .info-box {
+            border: 1px solid var(--primary);
+            border-radius: 4px; padding: 6px 9px;
+            margin: 5px 0; background: #f0f4ff;
+            font-size: 0.8rem;
+        }
+        .tip-box {
+            border: 1px dashed var(--secondary);
+            border-radius: 4px; padding: 5px 9px;
+            margin: 5px 0; background: #fff8f8;
+            font-size: 0.8rem;
+        }
+
+        .col2 { display: flex; gap: 10px; margin: 5px 0; }
+        .col2 > div { flex: 1; }
+
+        .box-fill { border: 1.5px solid var(--border); border-radius: 4px; padding: 7px; margin: 5px 0; min-height: 50px; background: #fff; }
+
+        /* Binary representation of an IP */
+        .ip-bin {
+            display: flex; gap: 5px; justify-content: center;
+            font-family: 'Fira Code', monospace; font-size: 0.85rem;
+            margin: 8px 0; flex-wrap: wrap;
+        }
+        .ip-octet {
+            display: flex; flex-direction: column; align-items: center;
+            border: 1px solid var(--primary); border-radius: 3px;
+            padding: 4px 8px; min-width: 95px; background: #f8f9fa;
+        }
+        .ip-octet-dec { font-weight: 700; color: var(--primary); font-size: 0.9rem; }
+        .ip-octet-bin { font-size: 0.75rem; color: #555; letter-spacing: 0.5px; }
+        .ip-net { background: #e0f0ff; }
+        .ip-host { background: #ffe0e0; }
+        .ip-mixed { background: linear-gradient(90deg, #e0f0ff 0%, #e0f0ff 50%, #ffe0e0 50%, #ffe0e0 100%); }
+
+        .calcul-box {
+            font-family: 'Fira Code', monospace;
+            background: #f8f9fa; border: 1px solid var(--border);
+            border-radius: 3px; padding: 6px 10px;
+            margin: 5px 0; font-size: 0.78rem;
+            line-height: 1.55;
+        }
+        .calcul-box .net { color: var(--primary); font-weight: 700; }
+        .calcul-box .host { color: var(--secondary); font-weight: 700; }
+
+        .exo-num { 
+            display: inline-block; background: var(--primary); color: white; 
+            border-radius: 50%; width: 18px; height: 18px; 
+            text-align: center; line-height: 18px; font-size: 0.75rem; 
+            font-weight: 700; margin-right: 4px; 
+        }
+
+        footer { 
+            margin-top: auto; padding-top: 6px; 
+            border-top: 1px solid var(--border); 
+            font-size: 0.68rem; color: #666; 
+            display: flex; justify-content: space-between; 
+        }
+
+        .legend { 
+            display: flex; gap: 12px; font-size: 0.75rem; 
+            margin: 4px 0; justify-content: center; 
+        }
+        .legend span { display: inline-flex; align-items: center; gap: 4px; }
+        .legend .sw { width: 12px; height: 12px; display: inline-block; border: 1px solid var(--primary); }
+
+        /* Impression : espacements resserrés pour que chaque feuille tienne sur une page A4 */
+        @media print {
+            .page { padding: 9mm 11mm; }
+            header { margin-bottom: 7px; }
+            h2 { margin: 7px 0 4px 0; padding: 3px 9px; }
+            h3 { margin: 4px 0 2px 0; }
+            p, li { line-height: 1.33; margin: 2px 0; }
+            ul { margin: 3px 0; }
+            table { margin: 4px 0; }
+            th, td { padding: 3px 6px; }
+            .info-box, .tip-box, .warn-box { padding: 4px 8px; margin: 4px 0; }
+            .calcul-box { padding: 4px 8px; margin: 4px 0; line-height: 1.45; }
+            .topo-svg-wrap { margin: 4px 0; }
+            footer { padding-top: 4px; }
+            td .write-zone { margin: 0; }
+            /* feuilles de cours denses : texte réduit à 88 % à l'impression seulement */
+            .page.resserree > :not(footer) { zoom: 0.88; }
+        }
+
+        /* Impression : une feuille A4 par .page, sans marges ajoutées par le navigateur */
+        @page { size: A4; margin: 0; }
+
+        /* Pied : auteur, licence et code source */
+        footer { flex-wrap: wrap; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; }
+        footer a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (la largeur de 210 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box, .tip-box { overflow-wrap: break-word; }
+            code, .calcul-box, .box-fill { overflow-wrap: anywhere; }
+            pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 360px) {
+            td, th { overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            h1 { font-size: 1.2rem; }
+            .col2 { flex-direction: column; gap: 0; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; hyphens: auto; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE 1 : COURS — Structure d'une IP         -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Adressage IPv4 — Structure et masque (1/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>1. Structure d'une adresse IPv4</h2>
+    <p>Une adresse IPv4 est codée sur <strong>32 bits</strong> répartis en <strong>4 octets</strong> de 8 bits, séparés par des points en notation décimale pointée.</p>
+
+    <div class="ip-bin">
+        <div class="ip-octet"><span class="ip-octet-dec">192</span><span class="ip-octet-bin">11000000</span></div>
+        <div class="ip-octet"><span class="ip-octet-dec">168</span><span class="ip-octet-bin">10101000</span></div>
+        <div class="ip-octet"><span class="ip-octet-dec">1</span><span class="ip-octet-bin">00000001</span></div>
+        <div class="ip-octet"><span class="ip-octet-dec">42</span><span class="ip-octet-bin">00101010</span></div>
+    </div>
+
+    <p>Chaque octet code une valeur décimale comprise entre <code>0</code> et <code>255</code> (<em>soit 2<sup>8</sup> valeurs</em>).</p>
+
+    <div class="info-box">
+        <strong>Conversion binaire ↔ décimal d'un octet</strong> <br>
+        On lit les bits de gauche à droite, chaque position valant une puissance de 2 décroissante :<br>
+        <code>128 &nbsp; 64 &nbsp; 32 &nbsp; 16 &nbsp; 8 &nbsp; 4 &nbsp; 2 &nbsp; 1</code><br>
+        Exemple : <code>10101000</code> = 128 + 32 + 8 = <strong>168</strong>
+    </div>
+
+    <h2>2. Partie réseau et partie hôte</h2>
+    <p>Une adresse IPv4 se compose toujours de <strong>deux parties</strong> :</p>
+    <ul>
+        <li>La <strong style="color:var(--net-color)">partie réseau</strong> : identifie le <em>sous-réseau</em> auquel appartient la machine.</li>
+        <li>La <strong style="color:var(--host-color)">partie hôte</strong> : identifie la machine <em>au sein</em> de ce sous-réseau.</li>
+    </ul>
+    <p>Toutes les machines du même sous-réseau partagent une partie réseau <strong>identique</strong>.</p>
+
+    <h2>3. Le masque de sous-réseau</h2>
+    <p>Le <strong>masque de sous-réseau</strong> indique <em>où</em> se situe la frontière entre partie réseau et partie hôte. Il est lui-même codé sur 32 bits : les bits à <code>1</code> correspondent à la partie réseau, les bits à <code>0</code> à la partie hôte.</p>
+
+    <div class="ip-bin">
+        <div class="ip-octet ip-net"><span class="ip-octet-dec">255</span><span class="ip-octet-bin">11111111</span></div>
+        <div class="ip-octet ip-net"><span class="ip-octet-dec">255</span><span class="ip-octet-bin">11111111</span></div>
+        <div class="ip-octet ip-net"><span class="ip-octet-dec">255</span><span class="ip-octet-bin">11111111</span></div>
+        <div class="ip-octet ip-host"><span class="ip-octet-dec">0</span><span class="ip-octet-bin">00000000</span></div>
+    </div>
+    <div class="legend">
+        <span><span class="sw" style="background:#e0f0ff"></span> Partie réseau (24 bits à 1)</span>
+        <span><span class="sw" style="background:#ffe0e0"></span> Partie hôte (8 bits à 0)</span>
+    </div>
+
+    <h2>4. Notation CIDR</h2>
+    <p>La <strong>notation CIDR</strong> (<em>Classless Inter-Domain Routing</em>) condense le masque sous la forme <code>/n</code>, où <strong>n</strong> est le nombre de bits à 1 dans le masque.</p>
+
+    <p>Ainsi <code>192.168.1.0/24</code> est équivalent à <code>192.168.1.0</code> avec masque <code>255.255.255.0</code>.</p>
+
+    <h3>Correspondances usuelles</h3>
+    <table>
+        <tr><th>Notation CIDR</th><th>Masque binaire</th><th>Masque décimal</th></tr>
+        <tr><td><code>/8</code></td><td><code>11111111.00000000.00000000.00000000</code></td><td><code>255.0.0.0</code></td></tr>
+        <tr><td><code>/16</code></td><td><code>11111111.11111111.00000000.00000000</code></td><td><code>255.255.0.0</code></td></tr>
+        <tr><td><code>/17</code></td><td><code>11111111.11111111.10000000.00000000</code></td><td><code>255.255.128.0</code></td></tr>
+        <tr><td><code>/21</code></td><td><code>11111111.11111111.11111000.00000000</code></td><td><code>255.255.248.0</code></td></tr>
+        <tr><td><code>/24</code></td><td><code>11111111.11111111.11111111.00000000</code></td><td><code>255.255.255.0</code></td></tr>
+        <tr><td><code>/30</code></td><td><code>11111111.11111111.11111111.11111100</code></td><td><code>255.255.255.252</code></td></tr>
+    </table>
+
+    <div class="tip-box">
+        <strong>Astuce de calcul rapide :</strong> pour un masque <code>/n</code>, on remplit <em>n</em> bits à 1 de gauche à droite, puis on découpe en blocs de 8 bits.<br>
+        Exemple : <code>/21</code> → <code>11111111 . 11111111 . 11111<u>000</u> . 00000000</code> → <code>255.255.248.0</code> (car <code>11111000</code><sub>2</sub> = 248).
+    </div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 3 — Cours (1)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 2 : COURS — Calculs binaires           -->
+<!-- ============================================ -->
+<div class="page resserree">
+    <header>
+        <h1>Adressage IPv4 — Calculs : réseau, diffusion, hôtes (2/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>5. Adresse réseau (ET logique bit à bit)</h2>
+    <p>Pour obtenir l'<strong>adresse réseau</strong> d'une machine, on applique un <strong>ET logique</strong> (∧) entre l'adresse IP et le masque, bit par bit.</p>
+
+    <div class="info-box">
+        Table de l'opération <strong>ET logique</strong> :<br>
+        <code>0 ∧ 0 = 0</code> &nbsp;·&nbsp; <code>0 ∧ 1 = 0</code> &nbsp;·&nbsp; <code>1 ∧ 0 = 0</code> &nbsp;·&nbsp; <code>1 ∧ 1 = 1</code><br>
+        ⇒ le résultat vaut 1 <em>uniquement</em> si les deux bits valent 1.
+    </div>
+
+    <h3>Exemple : <code>192.168.1.42 / 24</code></h3>
+    <div class="calcul-box">
+IP&nbsp;&nbsp;&nbsp;&nbsp;: 11000000.10101000.00000001.00101010 &nbsp;→&nbsp; 192.168.1.42<br>
+Masque : 11111111.11111111.11111111.00000000 &nbsp;→&nbsp; 255.255.255.0<br>
+─────────────────────────────────────── ET logique<br>
+<span class="net">Réseau : 11000000.10101000.00000001.00000000 &nbsp;→&nbsp; 192.168.1.0</span>
+    </div>
+
+    <h2>6. Adresse de diffusion (broadcast)</h2>
+    <p>L'<strong>adresse de diffusion</strong> permet d'envoyer un paquet à <em>toutes</em> les machines du sous-réseau. Elle s'obtient en mettant tous les bits de la partie hôte à <strong>1</strong>.</p>
+
+    <div class="calcul-box">
+<span class="net">Réseau : 11000000.10101000.00000001</span>.<span class="host">11111111</span> &nbsp;→&nbsp; 192.168.1.255
+    </div>
+
+    <h2>7. Nombre de machines configurables</h2>
+    <p>Pour un sous-réseau de masque <code>/n</code>, la partie hôte occupe <code>32 − n</code> bits, soit <strong>2<sup>32−n</sup></strong> combinaisons possibles.</p>
+
+    <div class="info-box">
+        On <strong>retire 2 adresses</strong> non attribuables à une machine :<br>
+        • L'adresse <strong>réseau</strong> (partie hôte entièrement à 0).<br>
+        • L'adresse de <strong>diffusion</strong> (partie hôte entièrement à 1).<br><br>
+        <strong>Formule à retenir :</strong> &nbsp; <code style="font-size: 0.9rem; background:#e0f0ff; padding: 3px 6px;">N = 2<sup>32−n</sup> − 2</code>
+    </div>
+
+    <table>
+        <tr><th>Masque CIDR</th><th>Bits hôte (32−n)</th><th>Nb d'adresses (2<sup>32−n</sup>)</th><th>Nb machines (−2)</th></tr>
+        <tr><td><code>/24</code></td><td>8</td><td>256</td><td><strong>254</strong></td></tr>
+        <tr><td><code>/21</code></td><td>11</td><td>2 048</td><td><strong>2 046</strong></td></tr>
+        <tr><td><code>/16</code></td><td>16</td><td>65 536</td><td><strong>65 534</strong></td></tr>
+        <tr><td><code>/30</code></td><td>2</td><td>4</td><td><strong>2</strong></td></tr>
+    </table>
+
+    <h2>8. Étude détaillée : <code>172.16.19.40/21</code></h2>
+    <p>Le suffixe <code>/21</code> signifie que les <strong>21 premiers bits</strong> appartiennent à la partie réseau et les <strong>11 derniers</strong> à la partie hôte.</p>
+
+    <h3>Masque associé</h3>
+    <div class="ip-bin">
+        <div class="ip-octet ip-net"><span class="ip-octet-dec">255</span><span class="ip-octet-bin">11111111</span></div>
+        <div class="ip-octet ip-net"><span class="ip-octet-dec">255</span><span class="ip-octet-bin">11111111</span></div>
+        <div class="ip-octet ip-mixed"><span class="ip-octet-dec">248</span><span class="ip-octet-bin">11111<span style="color:var(--secondary)">000</span></span></div>
+        <div class="ip-octet ip-host"><span class="ip-octet-dec">0</span><span class="ip-octet-bin">00000000</span></div>
+    </div>
+
+    <h3>Adresse réseau (ET logique sur le 3<sup>e</sup> octet)</h3>
+    <div class="calcul-box">
+Octet&nbsp;3 IP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 00010011 (19)<br>
+Octet&nbsp;3 masque : 11111000 (248)<br>
+──────────────── ET<br>
+<span class="net">Octet&nbsp;3 réseau&nbsp;: 00010000 (16)</span><br>
+<br>
+<strong>⇒ Adresse réseau : <span class="net">172.16.16.0/21</span></strong>
+    </div>
+
+    <h3>Adresse de diffusion (partie hôte à 1)</h3>
+    <div class="calcul-box">
+Octet&nbsp;3 : 00010<span class="host">111</span> = 16 + 4 + 2 + 1 = 23<br>
+Octet&nbsp;4 : <span class="host">11111111</span> = 255<br>
+<br>
+<strong>⇒ Adresse de diffusion : <span class="host">172.16.23.255</span></strong>
+    </div>
+
+    <h3>Nombre de machines</h3>
+    <p>N = 2<sup>32−21</sup> − 2 = 2<sup>11</sup> − 2 = 2048 − 2 = <strong>2046 machines configurables</strong>.</p>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 3 — Cours (2)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 3 : COURS — Plages spéciales           -->
+<!-- ============================================ -->
+<div class="page resserree">
+    <header>
+        <h1>Adressage IPv4 — Plages spéciales et passerelles (3/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>9. Plages d'adresses privées (RFC 1918)</h2>
+    <p>Certaines plages sont <strong>non routables</strong> sur Internet : elles sont réservées aux <strong>réseaux privés</strong> (LAN). Toute machine du monde peut utiliser <code>192.168.1.42</code> chez elle sans conflit.</p>
+
+    <table>
+        <tr><th>Plage d'adresses</th><th>Notation CIDR</th><th>Usage typique</th></tr>
+        <tr><td><code>10.0.0.0 – 10.255.255.255</code></td><td><code>10.0.0.0/8</code></td><td>Grandes entreprises, opérateurs.</td></tr>
+        <tr><td><code>172.16.0.0 – 172.31.255.255</code></td><td><code>172.16.0.0/12</code></td><td>Universités, réseaux moyens.</td></tr>
+        <tr><td><code>192.168.0.0 – 192.168.255.255</code></td><td><code>192.168.0.0/16</code></td><td>Réseaux domestiques, box internet.</td></tr>
+    </table>
+
+    <h2>10. Autres adresses spéciales</h2>
+    <table>
+        <tr><th>Plage</th><th>CIDR</th><th>Rôle</th></tr>
+        <tr><td><code>127.0.0.0 – 127.255.255.255</code></td><td><code>127.0.0.0/8</code></td><td><strong>Loopback</strong> : auto-référence, accès à la machine elle-même (<code>127.0.0.1</code> = <code>localhost</code>).</td></tr>
+        <tr><td><code>169.254.0.0 – 169.254.255.255</code></td><td><code>169.254.0.0/16</code></td><td><strong>APIPA</strong> : auto-attribution quand aucun DHCP ne répond.</td></tr>
+        <tr><td><code>224.0.0.0 – 239.255.255.255</code></td><td><code>224.0.0.0/4</code></td><td><strong>Multicast</strong> : diffusion groupée à un sous-ensemble de machines.</td></tr>
+    </table>
+
+    <div class="tip-box">
+        <strong>NAT (Network Address Translation) :</strong> à la frontière d'un réseau privé, la box ou le routeur traduit les adresses privées internes en une (ou plusieurs) adresse(s) publique(s) routable(s) sur Internet. C'est ce mécanisme qui permet à des millions de réseaux domestiques de partager la même plage <code>192.168.x.x</code>.
+    </div>
+
+    <h2>11. Passerelle par défaut</h2>
+    <p>Lorsqu'une machine veut joindre une IP <strong>hors de son sous-réseau</strong>, elle envoie le paquet à sa <strong>passerelle par défaut</strong> (généralement le routeur du réseau).</p>
+
+    <p>Par convention administrative, on attribue souvent à la passerelle :</p>
+    <ul>
+        <li>soit la <strong>première</strong> adresse valide du sous-réseau (juste après l'adresse réseau),</li>
+        <li>soit la <strong>dernière</strong> adresse valide (juste avant l'adresse de diffusion).</li>
+    </ul>
+
+    <h3>Exemple — sous-réseau <code>192.168.1.0/24</code></h3>
+    <table>
+        <tr><th>Élément</th><th>Adresse</th></tr>
+        <tr><td>Adresse réseau</td><td><code>192.168.1.0</code> (non attribuable)</td></tr>
+        <tr><td>Première adresse valide</td><td><code>192.168.1.1</code> (souvent la passerelle)</td></tr>
+        <tr><td>Dernière adresse valide</td><td><code>192.168.1.254</code></td></tr>
+        <tr><td>Adresse de diffusion</td><td><code>192.168.1.255</code> (non attribuable)</td></tr>
+    </table>
+
+    <h2>12. Décision de routage côté machine</h2>
+    <p>Avant d'envoyer un paquet, la machine se pose une question : <em>« la destination est-elle dans mon sous-réseau ? »</em></p>
+
+    <div class="info-box">
+        <strong>Algorithme local :</strong><br>
+        1. Calculer <em>réseau_local</em> = IP_source <strong>ET</strong> masque.<br>
+        2. Calculer <em>réseau_dest</em> = IP_destination <strong>ET</strong> masque.<br>
+        3. <strong>Si</strong> <em>réseau_local</em> = <em>réseau_dest</em> &nbsp; → envoi direct au destinataire (via le switch).<br>
+        &nbsp;&nbsp;&nbsp;<strong>Sinon</strong> → envoi à la <strong>passerelle par défaut</strong>, qui poursuivra le routage.
+    </div>
+
+    <h3>Exemple concret</h3>
+    <p>Une machine <code>192.168.1.42/24</code> souhaite contacter <code>192.168.1.99</code> :</p>
+    <div class="calcul-box">
+192.168.1.42 ∧ 255.255.255.0 = 192.168.1.0<br>
+192.168.1.99 ∧ 255.255.255.0 = 192.168.1.0<br>
+⇒ même réseau → envoi <span class="net">direct</span>.
+    </div>
+
+    <p>La même machine veut contacter <code>8.8.8.8</code> :</p>
+    <div class="calcul-box">
+192.168.1.42 ∧ 255.255.255.0 = 192.168.1.0<br>
+8.8.8.8&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;∧ 255.255.255.0 = 8.8.8.0<br>
+⇒ réseaux différents → envoi à la <span class="host">passerelle par défaut</span>.
+    </div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 3 — Cours (3)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 4 : EXERCICES                          -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Adressage IPv4 — Exercices (4/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2><span class="exo-num">1</span> Conversion binaire ↔ décimal</h2>
+    <p><strong>1.1</strong> Convertir en binaire les octets suivants :</p>
+    <p>192 = <span class="fill-inline" style="min-width:120px"></span> &nbsp;·&nbsp; 168 = <span class="fill-inline" style="min-width:120px"></span> &nbsp;·&nbsp; 248 = <span class="fill-inline" style="min-width:120px"></span></p>
+
+    <p><strong>1.2</strong> Convertir en décimal :</p>
+    <p><code>11000000</code> = <span class="fill-inline" style="min-width:80px"></span> &nbsp;·&nbsp; <code>10101100</code> = <span class="fill-inline" style="min-width:80px"></span> &nbsp;·&nbsp; <code>11111000</code> = <span class="fill-inline" style="min-width:80px"></span></p>
+
+    <h2><span class="exo-num">2</span> Lecture de masques CIDR</h2>
+    <p>Donner le masque décimal et le nombre maximal de machines correspondant à chaque notation CIDR :</p>
+    <table>
+        <tr><th>CIDR</th><th>Masque décimal</th><th>Nb hôtes possibles</th></tr>
+        <tr><td><code>/24</code></td><td><div class="write-zone"></div></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>/26</code></td><td><div class="write-zone"></div></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>/30</code></td><td><div class="write-zone"></div></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>/16</code></td><td><div class="write-zone"></div></td><td><div class="write-zone"></div></td></tr>
+    </table>
+
+    <h2><span class="exo-num">3</span> Calcul d'adresse réseau et de diffusion</h2>
+    <p>On considère la machine <strong>M1</strong> de configuration <code>192.168.5.130/26</code>.</p>
+
+    <p><strong>3.1</strong> Donner le masque sous forme décimale :</p>
+    <div class="write-zone"></div>
+
+    <p><strong>3.2</strong> Compléter le calcul de l'adresse réseau par ET logique (sur le dernier octet uniquement) :</p>
+    <div class="calcul-box">
+Octet 4 IP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: ............ (130)<br>
+Octet 4 masque : ............ (...)<br>
+──────────────── ET<br>
+Octet 4 réseau&nbsp;: ............ (....) → Adresse réseau : ........................<br>
+    </div>
+
+    <p><strong>3.3</strong> En déduire l'adresse de diffusion :</p>
+    <div class="write-zone"></div>
+
+    <p><strong>3.4</strong> Combien de machines peut-on connecter dans ce sous-réseau ?</p>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">4</span> Cohabitation dans un sous-réseau</h2>
+    <p>Quatre machines sont configurées comme suit :</p>
+    <table>
+        <tr><th>Machine</th><th>Adresse IP / masque</th></tr>
+        <tr><td>A</td><td><code>172.16.18.5 / 21</code></td></tr>
+        <tr><td>B</td><td><code>172.16.22.200 / 21</code></td></tr>
+        <tr><td>C</td><td><code>172.16.24.10 / 21</code></td></tr>
+        <tr><td>D</td><td><code>172.16.19.99 / 21</code></td></tr>
+    </table>
+    <p><strong>4.1</strong> Calculer l'adresse réseau pour ce masque <code>/21</code> (rappel : <code>masque = 255.255.248.0</code>) :</p>
+    <div class="write-zone"></div>
+
+    <p><strong>4.2</strong> Indiquer les couples de machines qui peuvent communiquer <em>directement</em> (sans routeur) :</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 3 — Exercices</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE SUIVANTE : EXERCICES (SUITE)           -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Adressage IPv4 — Exercices, suite (5/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2><span class="exo-num">5</span> Adresses privées et NAT</h2>
+    <p><strong>5.1</strong> Pour chaque adresse, indiquer si elle est <strong>privée</strong> ou <strong>publique</strong> :</p>
+    <table>
+        <tr><th>Adresse</th><th>Privée ou publique ?</th></tr>
+        <tr><td><code>10.42.0.1</code></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>172.32.5.1</code></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>192.168.0.254</code></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>8.8.8.8</code></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>127.0.0.1</code></td><td><div class="write-zone"></div></td></tr>
+    </table>
+
+    <p><strong>5.2</strong> Expliquer pourquoi des millions de réseaux domestiques peuvent utiliser <code>192.168.0.0/16</code> sans conflit sur Internet. Citer le mécanisme employé par la box.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">6</span> Décision de routage</h2>
+    <p>Une machine <strong>M</strong> a pour configuration : IP <code>10.0.4.50/22</code>, passerelle <code>10.0.4.254</code>.</p>
+    <p>Pour chaque IP de destination ci-dessous, dire si M envoie le paquet <em>directement</em> au destinataire ou <em>à la passerelle</em>. Justifier brièvement.</p>
+    <table>
+        <tr><th>Destination</th><th>Direct / Passerelle</th><th>Justification</th></tr>
+        <tr><td><code>10.0.5.12</code></td><td><div class="write-zone"></div></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>10.0.8.1</code></td><td><div class="write-zone"></div></td><td><div class="write-zone"></div></td></tr>
+        <tr><td><code>192.168.1.10</code></td><td><div class="write-zone"></div></td><td><div class="write-zone"></div></td></tr>
+    </table>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 3 — Exercices (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+</body>
+</html>

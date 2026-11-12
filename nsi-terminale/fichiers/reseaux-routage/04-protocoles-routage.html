@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fiches NSI - Protocoles de routage : RIP et OSPF</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --text: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border: #d1d8e0;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        code, pre, .calcul-box, .box-fill, .url-decode, .ip-bin { font-variant-ligatures: none; }
+
+        body { background: #515151; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; color: var(--text); }
+
+        .page {
+            width: 210mm; min-height: 297mm;
+            padding: 11mm; margin: 10mm auto;
+            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; page-break-after: always; }
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 6px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1 { margin: 0; font-size: 1.45rem; color: var(--primary); letter-spacing: -0.5px; }
+        .badge { font-size: 0.7rem; font-weight: 700; background: var(--secondary); color: white; padding: 2px 7px; border-radius: 3px; }
+
+        h2 { 
+            font-size: 0.95rem; background: var(--light-gray); 
+            padding: 4px 9px; border-left: 5px solid var(--primary);
+            margin: 10px 0 6px 0; text-transform: uppercase;
+        }
+        h3 { font-size: 0.88rem; margin: 6px 0 3px 0; color: var(--secondary); }
+
+        p, li { font-size: 0.83rem; line-height: 1.4; margin: 3px 0; }
+        ul { margin: 4px 0; padding-left: 22px; }
+
+        .write-zone { border-bottom: 1px dotted #999; min-height: 18px; margin: 3px 0; display: block; width: 100%; }
+        .fill-inline { border-bottom: 1px dotted #999; display: inline-block; min-width: 110px; min-height: 14px; vertical-align: bottom; }
+
+        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 0.78rem; }
+        th, td { border: 1px solid var(--border); padding: 5px 7px; text-align: left; vertical-align: top; }
+        th { background: var(--primary); color: white; font-weight: 500; }
+
+        code { font-family: 'Fira Code', monospace; background: #eee; padding: 1px 3px; border-radius: 2px; font-size: 0.77rem; }
+        strong { color: var(--primary); }
+
+        .info-box {
+            border: 1px solid var(--primary);
+            border-radius: 4px; padding: 6px 9px;
+            margin: 5px 0; background: #f0f4ff;
+            font-size: 0.8rem;
+        }
+        .tip-box {
+            border: 1px dashed var(--secondary);
+            border-radius: 4px; padding: 5px 9px;
+            margin: 5px 0; background: #fff8f8;
+            font-size: 0.8rem;
+        }
+        .warn-box {
+            border: 1px solid var(--secondary);
+            border-left: 5px solid var(--secondary);
+            border-radius: 3px; padding: 6px 9px;
+            margin: 5px 0; background: #fff5f5;
+            font-size: 0.8rem;
+        }
+
+        .col2 { display: flex; gap: 10px; margin: 5px 0; }
+        .col2 > div { flex: 1; }
+
+        .box-fill { border: 1.5px solid var(--border); border-radius: 4px; padding: 7px; margin: 5px 0; min-height: 50px; background: #fff; }
+
+        .topo-svg-wrap { display: flex; justify-content: center; margin: 6px 0; }
+        .topo-svg-wrap svg { max-width: 100%; height: auto; }
+
+        .calcul-box {
+            font-family: 'Fira Code', monospace;
+            background: #f8f9fa; border: 1px solid var(--border);
+            border-radius: 3px; padding: 6px 10px;
+            margin: 5px 0; font-size: 0.78rem;
+            line-height: 1.55;
+        }
+
+        .exo-num { 
+            display: inline-block; background: var(--primary); color: white; 
+            border-radius: 50%; width: 18px; height: 18px; 
+            text-align: center; line-height: 18px; font-size: 0.75rem; 
+            font-weight: 700; margin-right: 4px; 
+        }
+
+        footer { 
+            margin-top: auto; padding-top: 6px; 
+            border-top: 1px solid var(--border); 
+            font-size: 0.68rem; color: #666; 
+            display: flex; justify-content: space-between; 
+        }
+
+        .formula {
+            background: #e0f0ff; border: 1px solid var(--primary);
+            border-radius: 4px; padding: 8px 12px;
+            margin: 6px 0; font-family: 'Fira Code', monospace;
+            text-align: center; font-size: 0.95rem;
+            color: var(--primary); font-weight: 700;
+        }
+
+        /* Impression : espacements resserrés pour que chaque feuille tienne sur une page A4 */
+        @media print {
+            .page { padding: 9mm 11mm; }
+            header { margin-bottom: 7px; }
+            h2 { margin: 7px 0 4px 0; padding: 3px 9px; }
+            h3 { margin: 4px 0 2px 0; }
+            p, li { line-height: 1.33; margin: 2px 0; }
+            ul { margin: 3px 0; }
+            table { margin: 4px 0; }
+            th, td { padding: 3px 6px; }
+            .info-box, .tip-box, .warn-box { padding: 4px 8px; margin: 4px 0; }
+            .calcul-box { padding: 4px 8px; margin: 4px 0; line-height: 1.45; }
+            .topo-svg-wrap { margin: 4px 0; }
+            footer { padding-top: 4px; }
+            td .write-zone { margin: 0; }
+            /* feuilles de cours denses : texte réduit à 90 % à l'impression seulement */
+            .page.resserree > :not(footer) { zoom: 0.9; }
+        }
+
+        /* Impression : une feuille A4 par .page, sans marges ajoutées par le navigateur */
+        @page { size: A4; margin: 0; }
+
+        /* Pied : auteur, licence et code source */
+        footer { flex-wrap: wrap; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; }
+        footer a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (la largeur de 210 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box, .tip-box { overflow-wrap: break-word; }
+            code, .calcul-box, .box-fill { overflow-wrap: anywhere; }
+            pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 360px) {
+            td, th { overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            h1 { font-size: 1.2rem; }
+            .col2 { flex-direction: column; gap: 0; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; hyphens: auto; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE 1 : COURS — Routage et tables          -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Protocoles de routage — Principes et tables (1/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>1. Qu'est-ce que le routage ?</h2>
+    <div class="info-box">
+        Le <strong>routage</strong> est le mécanisme qui permet à un paquet de données de traverser plusieurs réseaux interconnectés pour atteindre sa destination. À chaque <em>saut</em>, un <strong>routeur</strong> consulte sa <strong>table de routage</strong> pour décider sur quelle interface envoyer le paquet.
+    </div>
+
+    <p>Le réseau Internet est modélisé comme un <strong>graphe</strong> dont :</p>
+    <ul>
+        <li>les <strong>sommets</strong> sont les routeurs (et les sous-réseaux),</li>
+        <li>les <strong>arêtes</strong> sont les liaisons physiques (câble, fibre…),</li>
+        <li>chaque arête peut être <strong>pondérée</strong> par une métrique (nombre de sauts, coût lié au débit…).</li>
+    </ul>
+
+    <h2>2. Table de routage</h2>
+    <p>Chaque routeur maintient une table indiquant, pour chaque destination connue, l'interface de sortie à emprunter et la métrique associée.</p>
+
+    <table>
+        <tr><th>Destination (réseau)</th><th>Passerelle (prochain saut)</th><th>Interface</th><th>Métrique</th></tr>
+        <tr><td><code>192.168.1.0/24</code></td><td>—</td><td>eth0</td><td>0 (directement connecté)</td></tr>
+        <tr><td><code>10.0.0.0/8</code></td><td><code>192.168.1.254</code></td><td>eth0</td><td>2</td></tr>
+        <tr><td><code>0.0.0.0/0</code> (défaut)</td><td><code>192.168.1.1</code></td><td>eth0</td><td>1</td></tr>
+    </table>
+
+    <p>La ligne <code>0.0.0.0/0</code> est la <strong>route par défaut</strong> : si aucune destination plus spécifique ne correspond, le paquet est envoyé vers cette passerelle.</p>
+
+    <h2>3. Routage statique vs dynamique</h2>
+    <div class="col2">
+        <div>
+            <h3>Statique</h3>
+            <ul>
+                <li>Tables configurées <strong>manuellement</strong> par l'administrateur·rice.</li>
+                <li>Simple, prévisible, mais <strong>peu adaptatif</strong>.</li>
+                <li>Inadapté aux grands réseaux : maintenance lourde.</li>
+            </ul>
+        </div>
+        <div>
+            <h3>Dynamique</h3>
+            <ul>
+                <li>Tables construites <strong>automatiquement</strong> par un <em>protocole de routage</em>.</li>
+                <li>Adaptation aux pannes : c'est la <strong>convergence</strong>.</li>
+                <li>Protocoles étudiés en Terminale : <strong>RIP</strong> et <strong>OSPF</strong>.</li>
+            </ul>
+        </div>
+    </div>
+
+    <h2>4. Notion de convergence</h2>
+    <p>La <strong>convergence</strong> est l'état stable dans lequel tous les routeurs partagent une vision cohérente du réseau. Après un changement (panne, ajout d'un lien), les routeurs s'échangent des informations jusqu'à atteindre un nouvel état stable.</p>
+
+    <h2>5. Vue d'ensemble : RIP vs OSPF</h2>
+    <table>
+        <tr><th></th><th>RIP</th><th>OSPF</th></tr>
+        <tr><td><strong>Métrique</strong></td><td>Nombre de sauts</td><td>Coût = 10<sup>8</sup> / débit (bps)</td></tr>
+        <tr><td><strong>Algorithme</strong></td><td>Bellman-Ford</td><td>Dijkstra</td></tr>
+        <tr><td><strong>Échanges</strong></td><td>Tables complètes vers les voisins, toutes les 30 s</td><td>États de liens diffusés à tout le réseau</td></tr>
+        <tr><td><strong>Limite</strong></td><td>15 sauts max</td><td>Pas de limite pratique</td></tr>
+        <tr><td><strong>Réseaux adaptés</strong></td><td>Petits réseaux</td><td>Grands réseaux d'entreprise / opérateurs</td></tr>
+    </table>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 4 — Cours (1)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 2 : COURS — RIP                        -->
+<!-- ============================================ -->
+<div class="page resserree">
+    <header>
+        <h1>Protocole RIP — Routing Information Protocol (2/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>6. Principe de RIP</h2>
+    <p>Le protocole <strong>RIP</strong> (<em>Routing Information Protocol</em>) calcule les routes en minimisant le <strong>nombre de sauts</strong> (nombre de routeurs traversés). Il s'appuie sur l'algorithme de <strong>Bellman-Ford</strong>.</p>
+
+    <div class="info-box">
+        <strong>Règles de fonctionnement :</strong>
+        <ul style="margin-top:3px;">
+            <li>Chaque routeur connaît initialement uniquement ses <strong>voisins directs</strong> (à 1 saut).</li>
+            <li>Périodiquement (toutes les 30 s), chaque routeur envoie sa <strong>table de routage complète</strong> à ses voisins directs.</li>
+            <li>À la réception, le routeur met à jour sa table : si un voisin propose une route plus courte vers une destination, ou une destination encore inconnue, il <strong>l'enregistre</strong> en ajoutant <code>+1</code> au nombre de sauts.</li>
+            <li>Sinon, il <strong>ignore</strong> l'information.</li>
+        </ul>
+    </div>
+
+    <div class="warn-box">
+        <strong>Limites de RIP :</strong>
+        <ul style="margin-top: 3px;">
+            <li>Métrique limitée à <strong>15 sauts</strong> (16 = « infini » = inaccessible).</li>
+            <li>Ne tient <strong>pas compte du débit</strong> : une route de 2 sauts par un lien à 10 Mbps sera préférée à une route de 3 sauts en fibre Gigabit.</li>
+            <li>Convergence lente sur les grands réseaux et trafic important (envoi de tables complètes).</li>
+        </ul>
+    </div>
+
+    <h2>7. Exemple : construction d'une table RIP</h2>
+    <p>Considérons le réseau suivant :</p>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 580 160" width="580" height="160" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="60" cy="80" r="22" fill="#1a2a6c"/>
+            <text x="60" y="85" text-anchor="middle" font-size="14" fill="white" font-weight="700">R1</text>
+            <circle cx="200" cy="40" r="22" fill="#1a2a6c"/>
+            <text x="200" y="45" text-anchor="middle" font-size="14" fill="white" font-weight="700">R2</text>
+            <circle cx="200" cy="125" r="22" fill="#1a2a6c"/>
+            <text x="200" y="130" text-anchor="middle" font-size="14" fill="white" font-weight="700">R3</text>
+            <circle cx="370" cy="80" r="22" fill="#1a2a6c"/>
+            <text x="370" y="85" text-anchor="middle" font-size="14" fill="white" font-weight="700">R4</text>
+            <circle cx="510" cy="80" r="22" fill="#b21f1f"/>
+            <text x="510" y="85" text-anchor="middle" font-size="13" fill="white" font-weight="700">L</text>
+            <line x1="82" y1="80" x2="178" y2="40" stroke="#555" stroke-width="1.5"/>
+            <line x1="82" y1="80" x2="178" y2="125" stroke="#555" stroke-width="1.5"/>
+            <line x1="222" y1="40" x2="348" y2="80" stroke="#555" stroke-width="1.5"/>
+            <line x1="222" y1="125" x2="348" y2="80" stroke="#555" stroke-width="1.5"/>
+            <line x1="392" y1="80" x2="488" y2="80" stroke="#555" stroke-width="1.5"/>
+            <text x="510" y="50" text-anchor="middle" font-size="9" fill="#555">Réseau cible L</text>
+        </svg>
+    </div>
+
+    <h3>Table du routeur R1 à convergence (vers le réseau L)</h3>
+    <table>
+        <tr><th>Destination</th><th>Via</th><th>Métrique (sauts)</th></tr>
+        <tr><td><strong>L</strong></td><td>R2</td><td>3</td></tr>
+        <tr><td><strong>L</strong></td><td>R3</td><td>3</td></tr>
+    </table>
+    <p>Les deux routes sont équivalentes au sens de RIP. À égalité, RIP <em>garde la route qu'il connaît déjà</em> (la première reçue). Si un énoncé donne une règle pour départager, toujours appliquer celle de l'énoncé.</p>
+
+    <h2>8. Algorithme de Bellman-Ford (vision synthétique)</h2>
+    <div class="info-box" style="font-size: 0.78rem;">
+<pre style="margin:0; font-family:'Fira Code',monospace;">Initialisation :
+    distance[soi]      ← 0
+    distance[voisins]  ← 1
+    distance[autres]   ← ∞
+
+À chaque cycle (toutes les 30 s) :
+    Pour chaque voisin v :
+        Recevoir la table de v
+        Pour chaque (destination d, distance d_v) reçue :
+            Si d_v + 1 &lt; distance[d] :
+                distance[d]   ← d_v + 1
+                via[d]        ← v</pre>
+    </div>
+
+    <h2>9. Gestion d'une panne</h2>
+    <p>Si une liaison tombe en panne, le routeur concerné met sa métrique à 16 (≡ infini) dans sa table et la diffuse à ses voisins. Au tour suivant, ces voisins propagent l'information ; chacun cherche une route alternative dans les annonces reçues. Après quelques cycles, le réseau <strong>converge</strong> vers un nouvel état stable utilisant le chemin de secours.</p>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 4 — Cours (2)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 3 : COURS — OSPF                       -->
+<!-- ============================================ -->
+<div class="page resserree">
+    <header>
+        <h1>Protocole OSPF — Open Shortest Path First (3/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>10. Principe d'OSPF</h2>
+    <p>Le protocole <strong>OSPF</strong> (<em>Open Shortest Path First</em>) pondère chaque liaison par un <strong>coût</strong> dépendant de son <strong>débit</strong>. Il sélectionne le chemin de coût total minimal, via l'algorithme de <strong>Dijkstra</strong>.</p>
+
+    <div class="formula">Coût = 10<sup>8</sup> / débit (en bits/s)</div>
+
+    <div class="tip-box">
+        Certains sujets utilisent <strong>10<sup>9</sup></strong> au numérateur pour adapter la formule aux réseaux Gigabit et éviter des coûts inférieurs à 1. <em>Toujours utiliser la formule donnée dans l'énoncé.</em>
+    </div>
+
+    <h2>11. Calcul de coûts — référence</h2>
+    <table>
+        <tr><th>Technologie / Débit</th><th>Débit (bps)</th><th>Coût OSPF (10<sup>8</sup>/d)</th></tr>
+        <tr><td>Ethernet 10 Mbps</td><td>10<sup>7</sup></td><td><strong>10</strong></td></tr>
+        <tr><td>Fast Ethernet 100 Mbps</td><td>10<sup>8</sup></td><td><strong>1</strong></td></tr>
+        <tr><td>Gigabit Ethernet 1 Gbps</td><td>10<sup>9</sup></td><td><strong>0,1</strong></td></tr>
+        <tr><td>10 Gigabit Ethernet</td><td>10<sup>10</sup></td><td><strong>0,01</strong></td></tr>
+    </table>
+
+    <h2>12. Échanges entre routeurs OSPF</h2>
+    <ul>
+        <li>Chaque routeur OSPF envoie périodiquement des messages <strong>Hello</strong> pour découvrir et surveiller ses voisins.</li>
+        <li>Il diffuse l'<strong>état de ses liens</strong> (LSA — Link State Advertisement) à tout le réseau, pas seulement à ses voisins.</li>
+        <li>Tous les routeurs construisent ainsi une <strong>base d'états de liens</strong> (LSDB) <em>identique</em>, image complète du graphe.</li>
+        <li>Chacun applique alors <strong>l'algorithme de Dijkstra</strong> sur ce graphe depuis sa position, pour construire sa table de routage.</li>
+    </ul>
+
+    <h2>13. Exemple comparatif RIP / OSPF</h2>
+    <p>Soit le réseau ci-dessous, où chaque arête est pondérée par son débit :</p>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 580 200" width="580" height="200" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="80" cy="100" r="24" fill="#1a2a6c"/>
+            <text x="80" y="105" text-anchor="middle" font-size="14" fill="white" font-weight="700">A</text>
+            <circle cx="290" cy="40" r="24" fill="#1a2a6c"/>
+            <text x="290" y="45" text-anchor="middle" font-size="14" fill="white" font-weight="700">B</text>
+            <circle cx="500" cy="100" r="24" fill="#b21f1f"/>
+            <text x="500" y="105" text-anchor="middle" font-size="14" fill="white" font-weight="700">C</text>
+            <circle cx="290" cy="160" r="24" fill="#1a2a6c"/>
+            <text x="290" y="165" text-anchor="middle" font-size="14" fill="white" font-weight="700">D</text>
+            <line x1="103" y1="93" x2="267" y2="47" stroke="#1a2a6c" stroke-width="2"/>
+            <text x="170" y="60" font-size="11" font-weight="700" fill="#1a2a6c">100 Mbps</text>
+            <line x1="313" y1="47" x2="477" y2="93" stroke="#b21f1f" stroke-width="2"/>
+            <text x="380" y="60" font-size="11" font-weight="700" fill="#b21f1f">10 Mbps</text>
+            <line x1="103" y1="107" x2="267" y2="153" stroke="#1a2a6c" stroke-width="2"/>
+            <text x="155" y="148" font-size="11" font-weight="700" fill="#1a2a6c">1 Gbps</text>
+            <line x1="313" y1="153" x2="477" y2="107" stroke="#b21f1f" stroke-width="2"/>
+            <text x="385" y="148" font-size="11" font-weight="700" fill="#b21f1f">10 Mbps</text>
+        </svg>
+    </div>
+
+    <h3>Calcul des coûts unitaires (formule 10<sup>8</sup>/d)</h3>
+    <table>
+        <tr><th>Liaison</th><th>Débit</th><th>Coût OSPF</th><th>Sauts RIP</th></tr>
+        <tr><td>A — B</td><td>100 Mbps</td><td>1</td><td>1</td></tr>
+        <tr><td>B — C</td><td>10 Mbps</td><td>10</td><td>1</td></tr>
+        <tr><td>A — D</td><td>1 Gbps</td><td>0,1</td><td>1</td></tr>
+        <tr><td>D — C</td><td>10 Mbps</td><td>10</td><td>1</td></tr>
+    </table>
+
+    <h3>Trafic de A vers C</h3>
+    <div class="col2">
+        <div>
+            <strong>Avec RIP</strong> (nombre de sauts) :<br>
+            • A → B → C : 2 sauts<br>
+            • A → D → C : 2 sauts<br>
+            ⇒ <strong>égalité</strong>. RIP garde la route qu'il a reçue en premier.
+        </div>
+        <div>
+            <strong>Avec OSPF</strong> (coût) :<br>
+            • A → B → C : 1 + 10 = <strong>11</strong><br>
+            • A → D → C : 0,1 + 10 = <strong>10,1</strong><br>
+            ⇒ OSPF emprunte <strong>A → D → C</strong>, qui utilise la liaison gigabit.
+        </div>
+    </div>
+
+    <div class="info-box">
+        <strong>À retenir :</strong> RIP minimise le <em>nombre de routeurs</em> traversés, OSPF minimise le <em>temps de transmission</em> en tenant compte du débit. OSPF est généralement plus performant sur les réseaux hétérogènes.
+    </div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 4 — Cours (3)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 4 : EXERCICES                          -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Protocoles de routage — Exercices (4/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2><span class="exo-num">1</span> Compréhension générale</h2>
+    <p><strong>1.1</strong> Donner une définition d'une <strong>table de routage</strong> et préciser le rôle de la <em>route par défaut</em>.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>1.2</strong> Quelle différence essentielle distingue le routage <em>statique</em> du routage <em>dynamique</em> ?</p>
+    <div class="write-zone"></div>
+
+    <p><strong>1.3</strong> Définir la <strong>convergence</strong> d'un protocole de routage dynamique.</p>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">2</span> Application RIP — construction de table</h2>
+    <p>Soit le réseau ci-dessous (toutes les liaisons ont le même débit) :</p>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 600 170" width="420" height="119" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="70" cy="85" r="22" fill="#1a2a6c"/>
+            <text x="70" y="90" text-anchor="middle" font-size="13" fill="white" font-weight="700">R1</text>
+            <circle cx="210" cy="40" r="22" fill="#1a2a6c"/>
+            <text x="210" y="45" text-anchor="middle" font-size="13" fill="white" font-weight="700">R2</text>
+            <circle cx="210" cy="130" r="22" fill="#1a2a6c"/>
+            <text x="210" y="135" text-anchor="middle" font-size="13" fill="white" font-weight="700">R3</text>
+            <circle cx="370" cy="85" r="22" fill="#1a2a6c"/>
+            <text x="370" y="90" text-anchor="middle" font-size="13" fill="white" font-weight="700">R4</text>
+            <circle cx="520" cy="85" r="22" fill="#b21f1f"/>
+            <text x="520" y="90" text-anchor="middle" font-size="13" fill="white" font-weight="700">R5</text>
+            <line x1="92" y1="85" x2="188" y2="40" stroke="#555" stroke-width="1.5"/>
+            <line x1="92" y1="85" x2="188" y2="130" stroke="#555" stroke-width="1.5"/>
+            <line x1="232" y1="40" x2="348" y2="85" stroke="#555" stroke-width="1.5"/>
+            <line x1="232" y1="130" x2="348" y2="85" stroke="#555" stroke-width="1.5"/>
+            <line x1="392" y1="85" x2="498" y2="85" stroke="#555" stroke-width="1.5"/>
+        </svg>
+    </div>
+
+    <p><strong>2.1</strong> Quels sont les voisins directs (à 1 saut) de R1, R2, R3, R4 et R5 ?</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>2.2</strong> Donner la métrique RIP de R1 vers R5 à l'état stable. Donner les deux routes possibles.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>2.3</strong> La liaison <code>R1 — R2</code> tombe en panne. Décrire la nouvelle route empruntée par un paquet de R1 vers R5 et la nouvelle métrique.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">3</span> Application OSPF — choix de chemin</h2>
+    <p>On reprend le réseau précédent en pondérant cette fois les liaisons par leur débit :</p>
+    <table>
+        <tr><th>Liaison</th><th>Débit</th><th>Coût OSPF (10<sup>8</sup>/d)</th></tr>
+        <tr><td>R1 — R2</td><td>1 Gbps</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>R1 — R3</td><td>100 Mbps</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>R2 — R4</td><td>10 Mbps</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>R3 — R4</td><td>100 Mbps</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>R4 — R5</td><td>1 Gbps</td><td><div class="write-zone"></div></td></tr>
+    </table>
+
+    <p><strong>3.1</strong> Calculer le coût total OSPF de chaque chemin de R1 à R5 :</p>
+    <p>Chemin <code>R1→R2→R4→R5</code> : ........................................................</p>
+    <p>Chemin <code>R1→R3→R4→R5</code> : ........................................................</p>
+
+    <p><strong>3.2</strong> Quel chemin OSPF emprunte-t-il ? Pourquoi peut-il différer du choix de RIP ?</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 4 — Exercices</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE SUIVANTE : EXERCICES (SUITE)           -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Protocoles de routage — Exercices, suite (5/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2><span class="exo-num">4</span> Lecture inverse d'un coût</h2>
+    <p>Dans la table de routage d'un routeur OSPF, on lit que le coût d'une liaison directe vaut <strong>0,1</strong>.</p>
+    <p>Quel est le débit binaire de cette liaison ? Quelle technologie peut-on en déduire ?</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">5</span> Algorithme — Python</h2>
+    <p>Une table de routage est représentée par une liste de tuples <code>(reseau, masque_cidr, interface, metrique)</code> où <code>reseau</code> est un tuple de 4 entiers et <code>masque_cidr</code> est l'entier <em>n</em> de la notation <code>/n</code>.</p>
+
+    <p>On dispose de deux fonctions auxiliaires :</p>
+    <ul>
+        <li><code>et_bit_a_bit(a, b)</code> : retourne le ET logique bit à bit entre deux entiers (octets).</li>
+        <li><code>mask_for_size(n)</code> : retourne le masque sous forme de tuple de 4 entiers pour une notation <code>/n</code>.</li>
+    </ul>
+
+    <p>Compléter la fonction <code>choose_interface</code> qui retourne l'interface de sortie pour une IP de destination donnée, ou <code>None</code> si aucune ligne ne correspond.</p>
+
+    <div class="box-fill" style="min-height: 170px; font-family: 'Fira Code', monospace; font-size: 0.78rem; line-height: 1.5;">
+        <span style="color: #555;">def</span> choose_interface(t_routage, destination_ip):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">for</span> reseau, n, interface, _ <span style="color: #555;">in</span> t_routage:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;masque = ............................................................<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;correspondance = True<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">for</span> i <span style="color: #555;">in</span> range(4):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;octet_calcule = ..................................................<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">if</span> octet_calcule != ...........................................:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;correspondance = False<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">break</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">if</span> correspondance:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">return</span> .......................................................<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">return</span> .....................................
+    </div>
+
+    <p><strong>Test :</strong> avec la table <code>[((192,168,1,0), 24, "eth0", 1), ((10,0,0,0), 8, "eth1", 2)]</code>, que renvoie l'appel <code>choose_interface(t, (192,168,5,12))</code> ? Justifier.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 4 — Exercices (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+</body>
+</html>

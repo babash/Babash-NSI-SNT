@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grille d'évaluation - Grand oral</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 10mm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 9pt;
+            color: #1a1a1a;
+            background: white;
+        }
+
+        .page {
+            width: 210mm;
+            height: 297mm;
+            padding: 10mm;
+            page-break-after: always;
+        }
+
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .header h1 {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .identification {
+            margin-bottom: 6px;
+            font-size: 8pt;
+        }
+
+        .info-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 4px;
+        }
+
+        .field {
+            display: flex;
+            align-items: center;
+            flex: 1;
+        }
+
+        .field label {
+            font-weight: 500;
+            color: #475569;
+            margin-right: 6px;
+            white-space: nowrap;
+        }
+
+        .field input {
+            border: none;
+            border-bottom: 1px solid #cbd5e1;
+            outline: none;
+            flex: 1;
+            font-size: 8pt;
+            padding: 2px 4px;
+            background: transparent;
+        }
+
+        .subject-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 6px;
+            padding: 5px 8px;
+            background: #f8fafc;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .subject-row label {
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 8pt;
+            white-space: nowrap;
+            padding-top: 2px;
+        }
+
+        .subject-content {
+            flex: 1;
+        }
+
+        .subject-content input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #cbd5e1;
+            outline: none;
+            font-size: 8.5pt;
+            padding: 2px 0;
+            background: transparent;
+            margin-bottom: 3px;
+        }
+
+        .duration {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
+            padding: 5px;
+            background: #f8fafc;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .duration-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .duration-item label {
+            font-weight: 500;
+            color: #64748b;
+            font-size: 7.5pt;
+            white-space: nowrap;
+        }
+
+        .duration-item input {
+            flex: 1;
+            padding: 3px 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 3px;
+            text-align: center;
+            font-size: 8pt;
+            background: white;
+        }
+
+        .evaluation-grid {
+            border: 1px solid #cbd5e1;
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 8px;
+            font-size: 8pt;
+        }
+
+        .evaluation-grid th {
+            background: #1e40af;
+            color: white;
+            padding: 4px 3px;
+            font-weight: 500;
+            text-align: center;
+            border: 1px solid #1e3a8a;
+            font-size: 7pt;
+        }
+
+        .evaluation-grid td {
+            border: 1px solid #e2e8f0;
+            padding: 4px 3px;
+            vertical-align: middle;
+            background: white;
+        }
+
+        .evaluation-grid tbody tr:nth-child(odd):not(.total-row) td {
+            background: #fafafa;
+        }
+
+        .criterion {
+            font-weight: 500;
+            color: #334155;
+            font-size: 7.5pt;
+        }
+
+        .rating-cell {
+            text-align: center;
+            width: 48px;
+        }
+
+        .rating-cell input[type="radio"] {
+            width: 13px;
+            height: 13px;
+            cursor: pointer;
+        }
+
+        .total-row {
+            background: #dbeafe !important;
+            font-weight: 600;
+        }
+
+        .total-row td {
+            font-size: 9pt;
+            padding: 6px !important;
+            color: #1e40af;
+        }
+
+        .section-title {
+            font-size: 9pt;
+            font-weight: 600;
+            margin-bottom: 6px;
+            padding-bottom: 3px;
+            border-bottom: 2px solid #2563eb;
+            color: #1e40af;
+        }
+
+        .observations-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+        }
+
+        .observation-item {
+            padding: 5px 7px;
+            background: #fafafa;
+            border-radius: 3px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .observation-label {
+            font-weight: 600;
+            color: #1e40af;
+            font-size: 8pt;
+            margin-bottom: 3px;
+            display: block;
+        }
+
+        .observation-options {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 2px 5px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 2px;
+            font-size: 7pt;
+        }
+
+        .option input[type="radio"] {
+            width: 12px;
+            height: 12px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .option label {
+            cursor: pointer;
+            color: #475569;
+            flex: 1;
+            line-height: 1.3;
+        }
+
+        .remarks-container {
+            height: calc(297mm - 20mm - 7mm);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .remarks-header {
+            text-align: center;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .remarks-header h2 {
+            font-size: 12pt;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .remarks-content {
+            flex: 1;
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 4px;
+        }
+
+        .remarks-content textarea {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 9.5pt;
+            line-height: 1.8;
+            resize: none;
+            background: white;
+            border-radius: 3px;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+            }
+
+            .page {
+                margin: 0;
+                padding: 10mm;
+            }
+
+            @page {
+                margin: 0;
+            }
+
+            .evaluation-grid th {
+                background: #1e40af !important;
+                color: white !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .total-row {
+                background: #dbeafe !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            /* Les observations en trois colonnes : la page 1 tient sur une feuille A4 */
+            .observations-container { grid-template-columns: 1fr 1fr 1fr; }
+            .observation-item { padding: 4px 5px; }
+            .observation-options { gap: 1px; }
+            .option { padding: 1px 4px; }
+        }
+
+        /* Pied : auteur, licence et code source */
+        .pied { margin-top: 6px; font-size: 7pt; color: #475569; text-align: right; }
+        .pied a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (210 × 297 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; height: auto; padding: 12px; }
+            .remarks-container { height: auto; }
+            .remarks-content textarea { min-height: 260px; }
+        }
+        @media screen and (max-width: 600px) {
+            .info-row { flex-wrap: wrap; }
+            .field { flex: 1 1 140px; min-width: 0; }
+            .field input, .duration-item input { min-width: 0; width: 100%; }
+            .subject-row { flex-wrap: wrap; }
+            .duration { grid-template-columns: 1fr; }
+            .observations-container { grid-template-columns: 1fr; }
+            .evaluation-grid th { padding: 3px 1px; font-size: 6.5pt; hyphens: auto; overflow-wrap: anywhere; }
+            .criterion { overflow-wrap: anywhere; }
+            .rating-cell { width: auto; }
+            .pied { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+    <!-- PAGE 1 - RECTO -->
+    <div class="page">
+        <div class="header">
+            <h1>Grille d'évaluation - Grand oral</h1>
+        </div>
+
+        <div class="identification">
+            <div class="info-row">
+                <div class="field">
+                    <label>Nom :</label>
+                    <input type="text">
+                </div>
+                <div class="field">
+                    <label>Prénom :</label>
+                    <input type="text">
+                </div>
+                <div class="field">
+                    <label>Classe :</label>
+                    <input type="text">
+                </div>
+            </div>
+            <div class="info-row">
+                <div class="field">
+                    <label>Examinateur·rice 1 :</label>
+                    <input type="text">
+                </div>
+                <div class="field">
+                    <label>Examinateur·rice 2 :</label>
+                    <input type="text">
+                </div>
+            </div>
+        </div>
+
+        <div class="subject-row">
+            <label>Sujet :</label>
+            <div class="subject-content">
+                <input type="text">
+                <input type="text">
+            </div>
+        </div>
+
+        <div class="duration">
+            <div class="duration-item">
+                <label>Durée :</label>
+                <input type="text" placeholder="20 min">
+            </div>
+            <div class="duration-item">
+                <label>Début :</label>
+                <input type="text" placeholder="14:00">
+            </div>
+            <div class="duration-item">
+                <label>Fin :</label>
+                <input type="text" placeholder="14:20">
+            </div>
+        </div>
+
+        <table class="evaluation-grid">
+            <thead>
+                <tr>
+                    <th style="width: 35%;">Critère</th>
+                    <th style="width: 13%;">Très<br>insuffisant (1)</th>
+                    <th style="width: 13%;">Insuffisant<br>(2)</th>
+                    <th style="width: 13%;">Satisfaisant<br>(3)</th>
+                    <th style="width: 13%;">Très<br>satisfaisant (4)</th>
+                    <th style="width: 13%;">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="criterion">Qualité orale de l'épreuve</td>
+                    <td class="rating-cell"><input type="radio" name="crit1" value="1" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit1" value="2" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit1" value="3" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit1" value="4" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><span id="note1">-</span></td>
+                </tr>
+                <tr>
+                    <td class="criterion">Qualité de la prise de parole en continu</td>
+                    <td class="rating-cell"><input type="radio" name="crit2" value="1" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit2" value="2" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit2" value="3" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit2" value="4" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><span id="note2">-</span></td>
+                </tr>
+                <tr>
+                    <td class="criterion">Qualité des connaissances</td>
+                    <td class="rating-cell"><input type="radio" name="crit3" value="1" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit3" value="2" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit3" value="3" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit3" value="4" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><span id="note3">-</span></td>
+                </tr>
+                <tr>
+                    <td class="criterion">Qualité de l'interaction</td>
+                    <td class="rating-cell"><input type="radio" name="crit4" value="1" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit4" value="2" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit4" value="3" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit4" value="4" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><span id="note4">-</span></td>
+                </tr>
+                <tr>
+                    <td class="criterion">Qualité et construction de l'argumentation</td>
+                    <td class="rating-cell"><input type="radio" name="crit5" value="1" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit5" value="2" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit5" value="3" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><input type="radio" name="crit5" value="4" onchange="updateTotal()"></td>
+                    <td class="rating-cell"><span id="note5">-</span></td>
+                </tr>
+                <tr class="total-row">
+                    <td colspan="5" style="text-align: right; padding-right: 8px;">NOTE FINALE / 20</td>
+                    <td class="rating-cell"><strong><span id="total">-</span></strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="section-title">Observations complémentaires</div>
+
+        <div class="observations-container">
+            <div class="observation-item">
+                <div class="observation-label">Consultation des notes</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q1" value="1" id="q1-1"><label for="q1-1">En permanence, tête baissée</label></div>
+                    <div class="option"><input type="radio" name="q1" value="2" id="q1-2"><label for="q1-2">Fréquemment, contact visuel limité</label></div>
+                    <div class="option"><input type="radio" name="q1" value="3" id="q1-3"><label for="q1-3">De temps en temps, brefs coups d'œil</label></div>
+                    <div class="option"><input type="radio" name="q1" value="4" id="q1-4"><label for="q1-4">Jamais ou presque, regard vers le jury</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Débit de parole</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q2" value="1" id="q2-1"><label for="q2-1">Beaucoup trop lent, traînant</label></div>
+                    <div class="option"><input type="radio" name="q2" value="2" id="q2-2"><label for="q2-2">Un peu trop lent</label></div>
+                    <div class="option"><input type="radio" name="q2" value="3" id="q2-3"><label for="q2-3">Adapté et fluide</label></div>
+                    <div class="option"><input type="radio" name="q2" value="4" id="q2-4"><label for="q2-4">Un peu trop rapide</label></div>
+                    <div class="option"><input type="radio" name="q2" value="5" id="q2-5"><label for="q2-5">Beaucoup trop rapide, précipité</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Présence de gestes parasites</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q3" value="1" id="q3-1"><label for="q3-1">Très nombreux et très gênants</label></div>
+                    <div class="option"><input type="radio" name="q3" value="2" id="q3-2"><label for="q3-2">Nombreux et parfois distrayants</label></div>
+                    <div class="option"><input type="radio" name="q3" value="3" id="q3-3"><label for="q3-3">Quelques-uns, peu perturbateurs</label></div>
+                    <div class="option"><input type="radio" name="q3" value="4" id="q3-4"><label for="q3-4">Aucun geste parasite notable</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Gestuelle pour illustrer le propos</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q4" value="1" id="q4-1"><label for="q4-1">Totalement absente, bras le long du corps</label></div>
+                    <div class="option"><input type="radio" name="q4" value="2" id="q4-2"><label for="q4-2">Rare et timide</label></div>
+                    <div class="option"><input type="radio" name="q4" value="3" id="q4-3"><label for="q4-3">Présente et cohérente</label></div>
+                    <div class="option"><input type="radio" name="q4" value="4" id="q4-4"><label for="q4-4">Riche, naturelle et très pertinente</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Contact visuel avec le jury</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q5" value="1" id="q5-1"><label for="q5-1">Absent, évite systématiquement le regard</label></div>
+                    <div class="option"><input type="radio" name="q5" value="2" id="q5-2"><label for="q5-2">Rare et fuyant</label></div>
+                    <div class="option"><input type="radio" name="q5" value="3" id="q5-3"><label for="q5-3">Régulier et équilibré</label></div>
+                    <div class="option"><input type="radio" name="q5" value="4" id="q5-4"><label for="q5-4">Constant, naturel et engageant</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Volume et puissance de la voix</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q6" value="1" id="q6-1"><label for="q6-1">Inaudible ou à peine perceptible</label></div>
+                    <div class="option"><input type="radio" name="q6" value="2" id="q6-2"><label for="q6-2">Faible, nécessite de tendre l'oreille</label></div>
+                    <div class="option"><input type="radio" name="q6" value="3" id="q6-3"><label for="q6-3">Adapté, bien audible</label></div>
+                    <div class="option"><input type="radio" name="q6" value="4" id="q6-4"><label for="q6-4">Puissant, clair et bien projeté</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Intonation et variation de la voix</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q7" value="1" id="q7-1"><label for="q7-1">Totalement monotone, monocorde</label></div>
+                    <div class="option"><input type="radio" name="q7" value="2" id="q7-2"><label for="q7-2">Peu variée, assez plate</label></div>
+                    <div class="option"><input type="radio" name="q7" value="3" id="q7-3"><label for="q7-3">Variée et dynamique</label></div>
+                    <div class="option"><input type="radio" name="q7" value="4" id="q7-4"><label for="q7-4">Très expressive et captivante</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Plan annoncé et respecté</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q8" value="1" id="q8-1"><label for="q8-1">Aucun plan identifiable</label></div>
+                    <div class="option"><input type="radio" name="q8" value="2" id="q8-2"><label for="q8-2">Plan évoqué mais confus ou non suivi</label></div>
+                    <div class="option"><input type="radio" name="q8" value="3" id="q8-3"><label for="q8-3">Plan annoncé et globalement respecté</label></div>
+                    <div class="option"><input type="radio" name="q8" value="4" id="q8-4"><label for="q8-4">Plan explicite, clair et rigoureusement suivi</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Qualité de l'introduction</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q9" value="1" id="q9-1"><label for="q9-1">Absente ou totalement inadéquate</label></div>
+                    <div class="option"><input type="radio" name="q9" value="2" id="q9-2"><label for="q9-2">Présente mais faible ou peu claire</label></div>
+                    <div class="option"><input type="radio" name="q9" value="3" id="q9-3"><label for="q9-3">Correcte, accroche et problématique identifiables</label></div>
+                    <div class="option"><input type="radio" name="q9" value="4" id="q9-4"><label for="q9-4">Excellente : accroche percutante et claire</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Qualité de la conclusion</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q10" value="1" id="q10-1"><label for="q10-1">Absente, arrêt brutal de l'exposé</label></div>
+                    <div class="option"><input type="radio" name="q10" value="2" id="q10-2"><label for="q10-2">Présente mais superficielle ou bâclée</label></div>
+                    <div class="option"><input type="radio" name="q10" value="3" id="q10-3"><label for="q10-3">Correcte avec synthèse des idées</label></div>
+                    <div class="option"><input type="radio" name="q10" value="4" id="q10-4"><label for="q10-4">Excellente : synthèse claire et ouverture</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Transitions entre les parties</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q11" value="1" id="q11-1"><label for="q11-1">Absentes, discours décousu et haché</label></div>
+                    <div class="option"><input type="radio" name="q11" value="2" id="q11-2"><label for="q11-2">Peu claires ou maladroites</label></div>
+                    <div class="option"><input type="radio" name="q11" value="3" id="q11-3"><label for="q11-3">Présentes et compréhensibles</label></div>
+                    <div class="option"><input type="radio" name="q11" value="4" id="q11-4"><label for="q11-4">Fluides, explicites et naturelles</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Exemples concrets et illustrations</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q12" value="1" id="q12-1"><label for="q12-1">Absents ou totalement hors sujet</label></div>
+                    <div class="option"><input type="radio" name="q12" value="2" id="q12-2"><label for="q12-2">Rares ou peu convaincants</label></div>
+                    <div class="option"><input type="radio" name="q12" value="3" id="q12-3"><label for="q12-3">Présents, pertinents et bien choisis</label></div>
+                    <div class="option"><input type="radio" name="q12" value="4" id="q12-4"><label for="q12-4">Nombreux, variés, précis et très pertinents</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Précision et richesse du vocabulaire</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q13" value="1" id="q13-1"><label for="q13-1">Imprécis, approximatif ou très pauvre</label></div>
+                    <div class="option"><input type="radio" name="q13" value="2" id="q13-2"><label for="q13-2">Basique, vocabulaire courant limité</label></div>
+                    <div class="option"><input type="radio" name="q13" value="3" id="q13-3"><label for="q13-3">Adapté et assez varié</label></div>
+                    <div class="option"><input type="radio" name="q13" value="4" id="q13-4"><label for="q13-4">Riche, précis et nuancé</label></div>
+                </div>
+            </div>
+
+            <div class="observation-item">
+                <div class="observation-label">Utilisation du vocabulaire spécialisé</div>
+                <div class="observation-options">
+                    <div class="option"><input type="radio" name="q14" value="1" id="q14-1"><label for="q14-1">Absent, aucun terme technique</label></div>
+                    <div class="option"><input type="radio" name="q14" value="2" id="q14-2"><label for="q14-2">Rare et parfois inadapté</label></div>
+                    <div class="option"><input type="radio" name="q14" value="3" id="q14-3"><label for="q14-3">Présent et globalement bien utilisé</label></div>
+                    <div class="option"><input type="radio" name="q14" value="4" id="q14-4"><label for="q14-4">Maîtrisé, précis et à bon escient</label></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAGE 2 - VERSO -->
+    <div class="page">
+        <div class="remarks-container">
+            <div class="remarks-header">
+                <h2>Remarques et observations</h2>
+            </div>
+            <div class="remarks-content">
+                <textarea placeholder="Commentaires détaillés sur la prestation de l'élève…"></textarea>
+            </div>
+        </div>
+        <p class="pied">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/grille-grand-oral/grille-evaluation-grand-oral.html" target="_blank" rel="noopener">Code source sur GitHub</a></p>
+    </div>
+
+    <script>
+        function updateTotal() {
+            let total = 0;
+            let count = 0;
+
+            for (let i = 1; i <= 5; i++) {
+                const radios = document.getElementsByName('crit' + i);
+                let value = 0;
+
+                for (let radio of radios) {
+                    if (radio.checked) {
+                        value = parseInt(radio.value);
+                        count++;
+                        break;
+                    }
+                }
+
+                document.getElementById('note' + i).textContent = value > 0 ? value : '-';
+                total += value;
+            }
+
+            document.getElementById('total').textContent = count === 5 ? total : '-';
+        }
+    </script>
+</body>
+</html>

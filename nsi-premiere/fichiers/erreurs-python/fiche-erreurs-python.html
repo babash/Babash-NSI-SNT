@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Déboguer en Python — 1re NSI</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@800&family=DM+Sans:wght@400;500;600&display=swap');
+
+/* ═══════════════════════════════════════════════
+   VARIABLES
+   ═══════════════════════════════════════════════ */
+:root {
+  --col-name : #1e3a8a;
+  --col-type : #7c1d1d;
+  --col-syn  : #78350f;
+  --col-ind  : #134e4a;
+  --col-val  : #4c1d95;
+  --col-idx  : #14532d;
+  --col-attr : #1f2937;
+  --col-key  : #164e63;
+  --col-zero : #881337;
+
+  --ink      : #111827;
+  --ink-soft : #4b5563;
+  --border   : #e5e7eb;
+  --row-alt  : #f9fafb;
+  --term-bg  : #f1f3f8;
+  --term-err : #b91c1c;
+  --term-dim : #4b5563;
+
+  --f-sans : 'DM Sans', sans-serif;
+  --f-mono : 'DM Mono', monospace;
+  --f-head : 'Syne',    sans-serif;
+
+  --cols : 39% 30% 31%;
+  --pad  : 1.3mm 2.5mm;
+}
+
+/* ═══════════════════════════════════════════════
+   RESET
+   ═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: var(--f-sans); font-size: 7pt; color: var(--ink); background: #c0c0c8; }
+b    { font-weight: 700; }
+code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; padding: 0 2px; border-radius: 2px; }
+
+/* ═══════════════════════════════════════════════
+   PAGE A4
+   ═══════════════════════════════════════════════ */
+.page {
+  width: 210mm; background: #fff;
+  margin: 7mm auto 10mm;
+  padding: 5.5mm 7mm 5mm;
+}
+@media print {
+  body  { background: #fff; }
+  .page { margin: 0 auto; padding: 5mm 7mm 4mm; }
+  /* espacements resserrés : chaque face tient sur une page A4 */
+  :root { --pad: .85mm 2.5mm; }
+  .page-break { page-break-after: always; }
+  @page { size: A4 portrait; margin: 0; }
+}
+
+/* ═══════════════════════════════════════════════
+   EN-TÊTE
+   ═══════════════════════════════════════════════ */
+.page-header {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 2mm; margin-bottom: 2.5mm;
+}
+.page-header h1 {
+  font-family: var(--f-head); font-size: 13pt; font-weight: 800; line-height: 1;
+}
+.page-header p { font-size: 7pt; color: var(--ink-soft); margin-top: 1.5mm; }
+
+.verso-header {
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 2mm; margin-bottom: 2.5mm;
+  display: flex; align-items: baseline; gap: 6px;
+}
+.verso-header h2 { font-family: var(--f-head); font-size: 11pt; font-weight: 800; }
+.verso-header p  { font-size: 6.5pt; color: var(--ink-soft); }
+
+/* ═══════════════════════════════════════════════
+   BLOC INTRO (autopsie + protocole)
+   ═══════════════════════════════════════════════ */
+.intro-block {
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  border: 1.5px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1.8mm;
+}
+
+.intro-block__title {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  background: var(--ink); color: #fff;
+  font-size: 6.8pt; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .7px;
+}
+.intro-block__title span { padding: 1.6mm 3.5mm; }
+.intro-block__title .sep { background: rgba(255,255,255,.25); }
+
+.intro-block__divider { background: var(--border); }
+
+.intro-panel {
+  padding: 1.8mm 2.5mm;
+  background: var(--row-alt);
+}
+.intro-panel__label {
+  font-size: 5.5pt; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .5px;
+  color: var(--ink-soft); margin-bottom: 1.2mm;
+}
+
+/* traceback */
+.traceback {
+  font-family: var(--f-mono); font-size: 6.2pt; line-height: 1.7;
+  background: var(--term-bg); border-left: 3px solid #cbd5e1;
+  padding: 1.8mm 2.5mm; border-radius: 3px;
+  white-space: pre-wrap;
+}
+.hl      { font-weight: 800; padding: 0 2px; border-radius: 2px; }
+.hl-line { color: #1d4ed8; background: #dbeafe; }
+.hl-code { color: #b45309; background: #fef3c7; }
+.hl-type { color: #15803d; background: #dcfce7; }
+.hl-desc { color: #b91c1c; background: #fee2e2; }
+
+.annotations { margin-top: 1.5mm; display: flex; flex-direction: column; gap: .5mm; }
+.annotation  { display: flex; align-items: flex-start; gap: 2mm; font-size: 6.8pt; line-height: 1.3; }
+.annotation__chip {
+  font-size: 5.5pt; font-weight: 800; color: #fff;
+  padding: 0 3px; border-radius: 2px;
+  flex-shrink: 0; margin-top: 1px; white-space: nowrap;
+}
+
+/* étapes du protocole */
+.steps { display: flex; flex-direction: column; gap: .4mm; }
+.step {
+  display: flex; align-items: flex-start; gap: 2mm;
+  font-size: 6.8pt; line-height: 1.32;
+  padding: .55mm 0; border-bottom: 1px dotted var(--border);
+}
+.step:last-child { border-bottom: none; }
+.step__num {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--ink); color: #fff;
+  font-size: 6pt; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: .5mm;
+}
+.step__num--ok { background: #15803d; font-size: 7pt; }
+
+/* ═══════════════════════════════════════════════
+   SECTION D'ERREUR
+   Composant uniforme : header / col-labels / rows
+   ═══════════════════════════════════════════════ */
+.error-section {
+  --c: var(--col-name); /* surchargé par modificateur */
+  border: 1.5px solid var(--c);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 1.8mm;
+}
+.error-section:last-of-type { margin-bottom: 0; }
+
+/* modificateurs de couleur */
+.error-section--name { --c: var(--col-name); }
+.error-section--type { --c: var(--col-type); }
+.error-section--syn  { --c: var(--col-syn);  }
+.error-section--ind  { --c: var(--col-ind);  }
+.error-section--val  { --c: var(--col-val);  }
+.error-section--idx  { --c: var(--col-idx);  }
+.error-section--attr { --c: var(--col-attr); }
+.error-section--key  { --c: var(--col-key);  }
+.error-section--zero { --c: var(--col-zero); }
+
+/* en-tête */
+.error-section__header {
+  background: var(--c);
+  padding: 1.3mm 3mm;
+  display: flex; align-items: baseline; justify-content: space-between; gap: 4mm;
+}
+.error-section__header h2 {
+  font-family: var(--f-head); font-size: 8.8pt; font-weight: 800;
+  color: #fff; white-space: nowrap; line-height: 1;
+}
+.error-section__header .hint {
+  font-size: 6pt; color: rgba(255,255,255,.85); font-style: italic; text-align: right;
+}
+
+/* labels de colonnes */
+.error-section__cols {
+  display: grid; grid-template-columns: var(--cols);
+  background: #f3f4f6;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.error-section__cols span {
+  font-size: 5.8pt; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .6px;
+  color: var(--ink-soft); padding: .9mm 2.5mm;
+  border-right: 1px solid var(--border);
+}
+.error-section__cols span:last-child { border-right: none; }
+
+/* ligne de données */
+.error-section__row {
+  display: grid; grid-template-columns: var(--cols);
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+}
+.error-section__row:last-child { border-bottom: none; }
+.error-section__row:nth-child(even) { background: var(--row-alt); }
+
+/* cellule 1 : message terminal */
+.row-msg { border-right: 1px solid var(--border); }
+.msg-block {
+  background: var(--term-bg); border-left: 3px solid #cbd5e1;
+  padding: var(--pad); height: 100%;
+  font-family: var(--f-mono); font-size: 6.5pt; line-height: 1.48;
+}
+.msg-block__error { color: var(--term-err); font-weight: 700; display: block; }
+.msg-block__error--suite { margin-top: .8mm; }
+.msg-block__note  { color: var(--term-dim); font-size: 5.9pt; font-style: italic; display: block; margin-top: 1px; }
+
+/* cellule 2 : explication */
+.row-cause { padding: var(--pad); border-right: 1px solid var(--border); line-height: 1.38; }
+
+/* cellule 3 : protocole */
+.row-fix { padding: var(--pad); }
+.fix-list { display: flex; flex-direction: column; gap: .15mm; }
+.fix-step {
+  display: flex; gap: 2mm; line-height: 1.32;
+  padding: .35mm 0; border-bottom: 1px dotted #e5e7eb;
+}
+.fix-step:last-child { border-bottom: none; }
+.fix-step__num { font-weight: 800; flex-shrink: 0; width: 9px; color: var(--c); }
+
+/* ═══════════════════════════════════════════════
+   IMPRESSION : espacements resserrés (après les règles de base,
+   pour qu'elles s'appliquent) : chaque face tient sur une page A4
+   ═══════════════════════════════════════════════ */
+@media print {
+  .page-header, .verso-header { padding-bottom: 1mm; margin-bottom: 1.5mm; }
+  .intro-block, .error-section { margin-bottom: 1.3mm; }
+  .intro-panel { padding: 1.4mm 2.5mm; }
+  .intro-block__title span { padding: 1.2mm 3.5mm; }
+  .traceback { line-height: 1.45; padding: 1.4mm 2.5mm; }
+  .annotations { margin-top: 1mm; }
+  .intro-panel__label { margin-bottom: .8mm; }
+  .step { padding: .35mm 0; }
+  .error-section__header { padding: .9mm 3mm; }
+  .error-section__cols span { padding: .6mm 2.5mm; }
+  .msg-block { line-height: 1.4; }
+  .pied { margin-top: 1.2mm; }
+}
+
+/* ═══════════════════════════════════════════════
+   PIED : auteur, licence, code source
+   ═══════════════════════════════════════════════ */
+.pied { margin-top: 1.6mm; font-size: 5.8pt; color: var(--ink-soft); text-align: right; }
+.pied a { color: inherit; }
+
+/* ═══════════════════════════════════════════════
+   ÉCRAN ÉTROIT : la feuille suit la largeur de l'écran
+   (la largeur de 210 mm ne vaut que pour l'impression)
+   ═══════════════════════════════════════════════ */
+@media screen and (max-width: 230mm) {
+  .page { width: auto; max-width: 210mm; margin: 8px; padding: 12px 10px; }
+  .msg-block, .row-cause, .row-fix, .annotation, .step, .traceback { overflow-wrap: anywhere; }
+}
+@media screen and (max-width: 600px) {
+  .page { zoom: 1.25; }
+  .intro-block { grid-template-columns: 1fr; }
+  .intro-block__title { display: contents; }
+  .intro-block__title > span:first-child { order: 1; background: var(--ink); }
+  .intro-block > .intro-panel:nth-child(2) { order: 2; }
+  .intro-block__title > span:last-child { order: 3; background: var(--ink); }
+  .intro-block > .intro-panel:nth-child(4) { order: 4; }
+  .intro-block__title .sep, .intro-block__divider { display: none; }
+  .error-section__header { flex-wrap: wrap; gap: 1mm 4mm; }
+  .error-section__header h2 { white-space: normal; }
+  .error-section__header .hint { text-align: left; }
+  .error-section__cols { display: none; }
+  .error-section__row { grid-template-columns: 1fr; }
+  .row-msg, .row-cause { border-right: none; border-bottom: 1px dotted var(--border); }
+  .pied { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ PAGE 1 — RECTO ═══ -->
+<div class="page page-break">
+
+  <div class="page-header">
+    <h1>Déboguer en Python</h1>
+    <p>Protocole de résolution d'erreurs — 1re NSI &nbsp;·&nbsp; Recto : NameError · TypeError · ValueError</p>
+  </div>
+
+  <div class="intro-block">
+    <div class="intro-block__title">
+      <span>🔬 Autopsie d'un message d'erreur</span>
+      <span class="sep"></span>
+      <span>⚡ Protocole — que faire face à une erreur ?</span>
+    </div>
+
+    <div class="intro-panel">
+      <p class="intro-panel__label">Ce que Python affiche dans la console</p>
+      <div class="traceback"><span style="color:var(--term-dim)">Traceback (most recent call last):</span>
+<span style="color:var(--term-dim)">  File "prog.py", <span class="hl hl-line">line 5</span>, in &lt;module&gt;</span>
+<span style="color:var(--term-dim)">    <span class="hl hl-code">age = int(saisie) + 1</span></span>
+<span style="color:var(--term-dim)">          ~~~^^^^^^^^</span>
+<span class="hl hl-type">ValueError</span><span style="color:var(--ink)">: <span class="hl hl-desc">invalid literal for int() with base 10: 'abc'</span></span></div>
+      <div class="annotations">
+        <div class="annotation"><span class="annotation__chip" style="background:#1d4ed8">ligne&nbsp;5</span><span><b>Numéro de ligne</b> — va directement à cette ligne dans ton code.</span></div>
+        <div class="annotation"><span class="annotation__chip" style="background:#b45309">code</span><span><b>Ligne fautive</b> — c'est ici que Python a bloqué. Depuis Python 3.11, des <code>^</code> soulignent l'endroit exact.</span></div>
+        <div class="annotation"><span class="annotation__chip" style="background:#15803d">type</span><span><b>Type d'erreur</b> — cherche ce nom dans les sections ci-dessous.</span></div>
+        <div class="annotation"><span class="annotation__chip" style="background:#b91c1c">desc</span><span><b>Description</b> — cherche cette phrase dans la colonne de gauche de la section correspondante.</span></div>
+      </div>
+    </div>
+
+    <div class="intro-block__divider"></div>
+
+    <div class="intro-panel">
+      <p class="intro-panel__label">Étapes à suivre dans l'ordre</p>
+      <div class="steps">
+        <div class="step"><div class="step__num">1</div><span><b>Lis le message en entier</b> — ne t'arrête pas au premier mot.</span></div>
+        <div class="step"><div class="step__num">2</div><span><b>Repère le numéro de ligne</b> et va à cet endroit dans ton code.</span></div>
+        <div class="step"><div class="step__num">3</div><span><b>Identifie le type d'erreur</b> (premier mot en majuscules) et trouve la section correspondante.</span></div>
+        <div class="step"><div class="step__num">4</div><span><b>Trouve ton message exact</b> dans la colonne de gauche et lis la cause.</span></div>
+        <div class="step"><div class="step__num">5</div><span><b>Applique le protocole</b> étape par étape.</span></div>
+        <div class="step"><div class="step__num step__num--ok">✓</div><span><b>Relance le programme</b> — si une nouvelle erreur apparaît, recommence à l'étape 1.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NameError -->
+  <div class="error-section error-section--name">
+    <div class="error-section__header"><h2>NameError &amp; UnboundLocalError</h2><span class="hint">Python ne reconnaît pas le nom utilisé (variable, fonction, mot-clé)</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">NameError: name 'score' is not defined</span><span class="msg-block__note">(ou 'prnit', 'calucl', tout nom inconnu…)</span></div></div>
+      <div class="row-cause">Python cherche quelque chose appelé <b>score</b> — variable ou fonction — mais ne le trouve nulle part : inexistant ou mal orthographié.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Va à la ligne indiquée.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Vérifie l'<b>orthographe exacte</b> (majuscules, tirets bas).</span></div>
+        <div class="fix-step"><span class="fix-step__num">3.</span><span>La variable est-elle <b>créée avant</b> d'être utilisée ?</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">NameError: name 'true' is not defined</span><span class="msg-block__note">(ou 'false', 'none'…)</span></div></div>
+      <div class="row-cause">Un <b>mot-clé Python</b> est mal capitalisé — ex. <code>true</code> au lieu de <code>True</code>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span><code>True</code>, <code>False</code>, <code>None</code> → <b>majuscule initiale obligatoire.</b></span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">NameError: name 'x' is not defined</span><span class="msg-block__note">(à l'intérieur d'une fonction)</span></div></div>
+      <div class="row-cause">Au moment de l'appel, <code>x</code> <b>n'existe pas encore</b>, ou n'existe que dans une autre fonction. (Une fonction peut <b>lire</b> une variable du programme principal créée avant l'appel.)</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Passe <code>x</code> en paramètre : <code>def f(x):</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Ou définis <code>x</code> à l'intérieur de la fonction.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">UnboundLocalError: cannot access local variable 'x' where it is not associated with a value</span><span class="msg-block__note">(avant Python 3.11 : local variable 'x' referenced before assignment)</span></div></div>
+      <div class="row-cause">La fonction <b>modifie</b> <code>x</code> (ex. <code>x = x + 1</code>) : pour Python, <code>x</code> devient une variable <b>locale</b>, qui n'a pas encore de valeur.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Passe <code>x</code> en paramètre et renvoie le résultat : <code>return x</code>.</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- TypeError -->
+  <div class="error-section error-section--type">
+    <div class="error-section__header"><h2>TypeError</h2><span class="hint">Python reçoit un type de donnée qu'il n'attendait pas (texte, nombre, liste…)</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">TypeError: can only concatenate str (not "int") to str</span><span class="msg-block__note">(ou : unsupported operand type(s) for +: 'int' and 'str')</span></div></div>
+      <div class="row-cause">Tu additionnes un <b>texte et un nombre</b> avec <code>+</code>. Attention : <code>input()</code> renvoie <b>toujours du texte</b>, même si l'utilisateur·rice tape un chiffre.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Pour afficher : utilise <code>f"valeur : {n}"</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Pour calculer : convertis d'abord — <code>int(val)</code> ou <code>float(val)</code></span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">TypeError: 'int' object is not subscriptable</span><span class="msg-block__note">(ou 'float', 'bool'…)</span></div></div>
+      <div class="row-cause">Tu utilises des crochets <code>[ ]</code> sur un entier comme si c'était une <b>liste ou un texte</b>. Python ne peut pas accéder à un "élément" d'un nombre.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche le type : <code>print(type(variable))</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Tu as sans doute confondu une variable simple et une liste — vérifie comment elle a été définie.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">TypeError: 'int' object is not iterable</span><span class="msg-block__note">(ou 'NoneType' object is not iterable)</span></div></div>
+      <div class="row-cause">Tu essaies de parcourir avec <code>for</code> une valeur qui <b>n'est pas une liste ou un texte</b> — on ne peut pas boucler sur un entier ou sur <code>None</code>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche le type : <code>print(type(variable))</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>La variable devrait-elle être une liste ici ? Vérifie qu'elle est bien initialisée comme telle.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">TypeError: 'int' object is not callable</span><span class="msg-block__note">(ou 'list', 'str'…)</span></div></div>
+      <div class="row-cause">Tu appelles une <b>variable comme si c'était une fonction</b> — ex. <code>resultat()</code> alors que <code>resultat</code> est un entier.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Repère les <code>()</code> suspects — retire-les si ce n'est pas un appel de fonction.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Vérifie que tu n'as pas écrasé une fonction avec une variable du même nom.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">TypeError: maFonction() takes 2 positional arguments but 3 were given</span></div></div>
+      <div class="row-cause">Tu appelles la fonction avec <b>trop d'arguments</b> (valeurs fournies) par rapport à ce qu'elle attend.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Compte les <b>paramètres</b> dans <code>def maFonction(…):</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Compte les <b>arguments</b> dans l'appel — corrige l'écart.</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ValueError -->
+  <div class="error-section error-section--val">
+    <div class="error-section__header"><h2>ValueError</h2><span class="hint">La valeur fournie est incompatible avec l'opération demandée</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">ValueError: invalid literal for int() with base 10: 'abc'</span><span class="msg-block__note">(ou : invalid literal for int() with base 10: '')</span></div></div>
+      <div class="row-cause">Tu convertis avec <code>int()</code> quelque chose qui <b>n'est pas un nombre</b> — texte non numérique ou saisie vide.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche la variable <b>avant</b> la conversion.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Si la saisie est vide <code>''</code> : l'utilisateur·rice a appuyé sur Entrée sans rien taper.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">ValueError: not enough values to unpack (expected 2, got 1)</span></div></div>
+      <div class="row-cause">Tu attends 2 valeurs dans <code>a, b = …</code> mais le résultat <b>n'en contient qu'une</b>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Vérifie la taille : <code>print(len(liste))</code>.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">ValueError: could not convert string to float: 'abc'</span><span class="msg-block__note">(ou : could not convert string to float: '3,14')</span></div></div>
+      <div class="row-cause">Tu convertis un texte en nombre décimal avec <code>float()</code> — même cause qu'avec <code>int()</code>. Attention : Python utilise le <b>point</b> et non la virgule (<code>3.14</code>).</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche la variable avant la conversion.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Remplace la virgule par un point dans la saisie.</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <p class="pied">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/erreurs-python/fiche-erreurs-python.html" target="_blank" rel="noopener">Code source sur GitHub</a></p>
+
+</div><!-- fin recto -->
+
+
+<!-- ═══════════════════════════════════════ PAGE 2 — VERSO ═══ -->
+<div class="page">
+
+  <div class="verso-header">
+    <h2>Déboguer en Python — suite</h2>
+    <p>SyntaxError · IndentationError · IndexError · AttributeError · KeyError · ZeroDivisionError</p>
+  </div>
+
+  <!-- SyntaxError -->
+  <div class="error-section error-section--syn">
+    <div class="error-section__header"><h2>SyntaxError</h2><span class="hint">La grammaire du code est incorrecte — Python ne peut même pas lire le programme</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">SyntaxError: invalid syntax</span><span class="msg-block__note">⚠ Le curseur pointe souvent sur la ligne après l'erreur réelle</span><span class="msg-block__error msg-block__error--suite">SyntaxError: expected ':'</span><span class="msg-block__note">(deux-points oubliés ; ou invalid syntax dans les versions plus anciennes)</span></div></div>
+      <div class="row-cause">Python ne comprend pas la ligne indiquée. <b>L'erreur réelle est souvent une ligne au-dessus</b> — regarde la ligne précédente en priorité.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Vérifie les <b>deux-points</b> manquants après <code>if</code>, <code>for</code>, <code>def</code>, <code>while</code>.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Si la ligne signalée semble juste, remonte d'une ligne.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">SyntaxError: unterminated string literal (detected at line 3)</span><span class="msg-block__note">(le numéro de ligne varie)</span></div></div>
+      <div class="row-cause">Un texte n'est <b>pas fermé</b> — il manque un guillemet <code>"</code> ou <code>'</code>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Chaque guillemet ouvrant doit avoir son <b>homologue fermant</b> du même type.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">SyntaxError: '(' was never closed</span><span class="msg-block__note">(ou '[' was never closed, '{' was never closed)</span></div></div>
+      <div class="row-cause">Le programme se termine alors qu'une <b>parenthèse ou un crochet</b> est encore ouvert.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Compte les <code>(</code> et <code>)</code> — ils doivent être en <b>nombre égal</b>. Idem pour <code>[</code>&nbsp;<code>]</code> et <code>{</code>&nbsp;<code>}</code>.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">SyntaxError: cannot assign to literal</span></div></div>
+      <div class="row-cause">Tu as écrit <code>5 = x</code> au lieu de <code>x = 5</code> — on n'affecte pas une valeur à un nombre.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Le <b>nom de variable</b> est toujours à <b>gauche</b> du <code>=</code>.</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- IndentationError -->
+  <div class="error-section error-section--ind">
+    <div class="error-section__header"><h2>IndentationError &amp; TabError</h2><span class="hint">Le décalage des lignes est incorrect</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">IndentationError: expected an indented block</span></div></div>
+      <div class="row-cause">Après <code>if</code>, <code>for</code>, <code>def</code>… Python attend un bloc <b>décalé vers la droite</b>, mais la ligne suivante n'est pas décalée.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Ajoute <b>4 espaces</b> devant chaque ligne du bloc.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Bloc vide provisoire : écris <code>pass</code>.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">IndentationError: unexpected indent</span></div></div>
+      <div class="row-cause">Une ligne commence avec des espaces <b>qui n'ont pas lieu d'être</b> — elle est décalée sans raison.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Supprime les espaces en début de la ligne signalée.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Toutes les lignes d'un même bloc doivent commencer au <b>même niveau</b>.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">TabError: inconsistent use of tabs and spaces in indentation</span></div></div>
+      <div class="row-cause">Tu mélanges <b>tabulations et espaces</b> pour décaler les lignes — Python interdit ce mélange.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span><b>Uniquement des espaces</b> : 4 espaces = 1 niveau.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>La plupart des éditeurs proposent une option pour convertir les tabulations en espaces.</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- IndexError -->
+  <div class="error-section error-section--idx">
+    <div class="error-section__header"><h2>IndexError</h2><span class="hint">Indice hors des limites d'une liste ou d'un texte</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">IndexError: list index out of range</span></div></div>
+      <div class="row-cause">Tu utilises un indice trop grand — la liste ne contient <b>pas autant d'éléments</b>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche la liste et sa taille : <code>print(liste, len(liste))</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Indices valides : <code>0</code> à <code>len(liste)−1</code>.</span></div>
+        <div class="fix-step"><span class="fix-step__num">3.</span><span>En boucle : <code>range(len(liste))</code>.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">IndexError: string index out of range</span></div></div>
+      <div class="row-cause">Même erreur qu'au-dessus, mais avec un <b>texte</b> accédé caractère par caractère.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Longueur : <code>len(texte)</code>. Indice max : <code>len(texte)−1</code>.</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- AttributeError -->
+  <div class="error-section error-section--attr">
+    <div class="error-section__header"><h2>AttributeError</h2><span class="hint">Méthode inexistante pour ce type, ou variable valant None</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">AttributeError: 'list' object has no attribute 'upper'</span><span class="msg-block__note">(n'importe quelle méthode sur le mauvais type)</span></div></div>
+      <div class="row-cause">Tu appelles <code>.upper()</code> sur une liste — cette méthode n'existe que pour les <b>textes</b>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche le type : <code>print(type(variable))</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>La méthode appelée existe-t-elle pour ce type ? Ex. <code>.upper()</code> → texte, <code>.append()</code> → liste.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">AttributeError: 'NoneType' object has no attribute 'append'</span></div></div>
+      <div class="row-cause">Ta variable vaut <code>None</code> — une fonction a été appelée mais elle <b>ne renvoie rien</b>. On ne peut pas appeler une méthode sur <code>None</code>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Vérifie que la fonction appelée contient bien un <code>return</code> avec une valeur.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Affiche la variable avant d'appeler la méthode : <code>print(variable)</code></span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- KeyError -->
+  <div class="error-section error-section--key">
+    <div class="error-section__header"><h2>KeyError</h2><span class="hint">La clé demandée est absente du dictionnaire</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">KeyError: 'prenom'</span></div></div>
+      <div class="row-cause">La clé <code>'prenom'</code> <b>n'existe pas</b> dans le dictionnaire.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche les clés disponibles : <code>print(dico.keys())</code></span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Vérifie l'orthographe exacte (espaces, casse).</span></div>
+        <div class="fix-step"><span class="fix-step__num">3.</span><span>Accès sans erreur : <code>dico.get('prenom')</code></span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ZeroDivisionError -->
+  <div class="error-section error-section--zero">
+    <div class="error-section__header"><h2>ZeroDivisionError</h2><span class="hint">Division par zéro — interdit</span></div>
+    <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">ZeroDivisionError: division by zero</span></div></div>
+      <div class="row-cause">La valeur en bas de ta division vaut <b>zéro</b> — diviser par zéro est <b>interdit</b>.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche le diviseur avant l'opération.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Vérifie que l'utilisateur·rice n'a pas saisi <code>0</code>.</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <p class="pied">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/erreurs-python/fiche-erreurs-python.html" target="_blank" rel="noopener">Code source sur GitHub</a></p>
+
+</div><!-- fin verso -->
+</body>
+</html>

@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Fiches NSI - Réseaux : Architecture et adressage</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --text: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border: #d1d8e0;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        code, pre, .calcul-box, .box-fill, .url-decode, .ip-bin { font-variant-ligatures: none; }
+
+        body { 
+            background: #515151; 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; padding: 0; 
+            color: var(--text);
+        }
+
+        .page {
+            width: 210mm; min-height: 297mm;
+            padding: 11mm; margin: 10mm auto;
+            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; page-break-after: always; }
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 6px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; color: var(--primary); letter-spacing: -0.5px; }
+        .badge { font-size: 0.7rem; font-weight: 700; background: var(--secondary); color: white; padding: 2px 7px; border-radius: 3px; }
+
+        h2 { 
+            font-size: 0.95rem; background: var(--light-gray); 
+            padding: 4px 9px; border-left: 5px solid var(--primary);
+            margin: 10px 0 6px 0; text-transform: uppercase;
+        }
+
+        h3 { font-size: 0.88rem; margin: 6px 0 3px 0; color: var(--secondary); }
+
+        p, li { font-size: 0.83rem; line-height: 1.4; margin: 3px 0; }
+        ul { margin: 4px 0; padding-left: 22px; }
+
+        .write-zone { 
+            border-bottom: 1px dotted #999; 
+            min-height: 18px; margin: 3px 0; 
+            display: block; width: 100%; 
+        }
+        .fill-inline { 
+            border-bottom: 1px dotted #999; display: inline-block; 
+            min-width: 110px; min-height: 14px; vertical-align: bottom; 
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 0.78rem; }
+        th, td { border: 1px solid var(--border); padding: 5px 7px; text-align: left; vertical-align: top; }
+        th { background: var(--primary); color: white; font-weight: 500; }
+
+        code { font-family: 'Fira Code', monospace; background: #eee; padding: 1px 3px; border-radius: 2px; font-size: 0.77rem; }
+        strong { color: var(--primary); }
+
+        .info-box {
+            border: 1px solid var(--primary);
+            border-radius: 4px; padding: 6px 9px;
+            margin: 5px 0; background: #f0f4ff;
+            font-size: 0.8rem;
+        }
+
+        .tip-box {
+            border: 1px dashed var(--secondary);
+            border-radius: 4px; padding: 5px 9px;
+            margin: 5px 0; background: #fff8f8;
+            font-size: 0.8rem;
+        }
+
+        .col2 { display: flex; gap: 10px; margin: 5px 0; }
+        .col2 > div { flex: 1; }
+
+        .box-fill {
+            border: 1.5px solid var(--border);
+            border-radius: 4px; padding: 7px;
+            margin: 5px 0; min-height: 50px;
+            background: #fff;
+        }
+
+        /* Schéma topologie */
+        .topo-svg-wrap { 
+            display: flex; justify-content: center; 
+            margin: 6px 0; 
+        }
+        .topo-svg-wrap svg { 
+            max-width: 100%; 
+            height: auto; 
+        }
+
+        .exo-num { 
+            display: inline-block; background: var(--primary); color: white; 
+            border-radius: 50%; width: 18px; height: 18px; 
+            text-align: center; line-height: 18px; font-size: 0.75rem; 
+            font-weight: 700; margin-right: 4px; 
+        }
+
+        footer { 
+            margin-top: auto; padding-top: 6px; 
+            border-top: 1px solid var(--border); 
+            font-size: 0.68rem; color: #666; 
+            display: flex; justify-content: space-between; 
+        }
+
+        /* Impression : espacements resserrés pour que chaque feuille tienne sur une page A4 */
+        @media print {
+            .page { padding: 9mm 11mm; }
+            header { margin-bottom: 7px; }
+            h2 { margin: 7px 0 4px 0; padding: 3px 9px; }
+            h3 { margin: 4px 0 2px 0; }
+            p, li { line-height: 1.33; margin: 2px 0; }
+            ul { margin: 3px 0; }
+            table { margin: 4px 0; }
+            th, td { padding: 3px 6px; }
+            .info-box, .tip-box, .warn-box { padding: 4px 8px; margin: 4px 0; }
+            .calcul-box { padding: 4px 8px; margin: 4px 0; line-height: 1.45; }
+            .topo-svg-wrap { margin: 4px 0; }
+            footer { padding-top: 4px; }
+            td .write-zone { margin: 0; }
+        }
+
+        /* Impression : une feuille A4 par .page, sans marges ajoutées par le navigateur */
+        @page { size: A4; margin: 0; }
+
+        /* Pied : auteur, licence et code source */
+        footer { flex-wrap: wrap; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; }
+        footer a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (la largeur de 210 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box, .tip-box { overflow-wrap: break-word; }
+            code, .calcul-box, .box-fill { overflow-wrap: anywhere; }
+            pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 360px) {
+            td, th { overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            h1 { font-size: 1.2rem; }
+            .col2 { flex-direction: column; gap: 0; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; hyphens: auto; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE 1 : COURS — Concepts et adressage      -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Réseaux — Architecture et adressage (1/4)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <div class="info-box">
+        Un <strong>réseau informatique</strong> est un ensemble de machines (ordinateurs, serveurs, smartphones, objets connectés) reliées entre elles par des supports physiques (câble, fibre, ondes) afin d'<strong>échanger des données</strong> et de <strong>partager des ressources</strong> (fichiers, imprimantes, accès Internet).
+    </div>
+
+    <h2>1. Équipements physiques d'un réseau</h2>
+    <table>
+        <tr><th style="width:24%">Équipement</th><th>Rôle</th><th style="width:28%">À compléter</th></tr>
+        <tr><td><strong>Carte réseau (NIC)</strong></td><td>Interface matérielle qui permet à une machine de se connecter au réseau. Chaque carte possède une adresse MAC unique gravée en usine.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td><strong>Câble RJ45 (Ethernet)</strong></td><td>Support physique filaire le plus courant en réseau local.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td><strong>Commutateur (switch)</strong></td><td>Interconnecte plusieurs machines d'un <em>même</em> réseau local. Travaille au niveau des adresses MAC.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td><strong>Routeur</strong></td><td>Interconnecte des réseaux <em>différents</em>. Travaille au niveau des adresses IP et choisit la route à emprunter.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td><strong>Point d'accès Wi-Fi</strong></td><td>Permet la connexion sans fil au réseau via des ondes radio.</td><td><div class="write-zone"></div></td></tr>
+    </table>
+
+    <h2>2. Deux niveaux d'identification : MAC et IP</h2>
+
+    <div class="col2">
+        <div>
+            <h3>Adresse MAC (physique)</h3>
+            <ul>
+                <li>Codée sur <strong>6 octets</strong> (48 bits)</li>
+                <li>Notée en hexadécimal : <code>A4:5E:60:91:2F:0C</code></li>
+                <li><strong>Unique au monde</strong>, fixée par le fabricant (beaucoup de téléphones en montrent une aléatoire sur les réseaux Wi-Fi)</li>
+                <li>Niveau « <em>liaison</em> » : acheminement local au sein du LAN</li>
+                <li>Utilisée par les <strong>switchs</strong></li>
+            </ul>
+        </div>
+        <div>
+            <h3>Adresse IP (logique)</h3>
+            <ul>
+                <li>IPv4 : <strong>4 octets</strong> (32 bits), notée <code>192.168.1.42</code></li>
+                <li>IPv6 : 16 octets (128 bits), notée en hexadécimal</li>
+                <li><strong>Attribuable</strong> (statique ou dynamique via DHCP)</li>
+                <li>Niveau « <em>réseau</em> » : acheminement de bout en bout</li>
+                <li>Utilisée par les <strong>routeurs</strong></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tip-box">
+        <strong>Analogie postale :</strong> l'adresse IP est comparable à une <em>adresse postale</em> (qui peut changer si l'on déménage), tandis que l'adresse MAC est comparable au <em>numéro de série</em> d'un appareil (qui, en principe, ne change pas).
+    </div>
+
+    <h2>3. Du protocole IPv4 au protocole IPv6</h2>
+    <table>
+        <tr><th style="width:25%"></th><th>IPv4</th><th>IPv6</th></tr>
+        <tr><td><strong>Taille</strong></td><td>32 bits (4 octets)</td><td>128 bits (16 octets)</td></tr>
+        <tr><td><strong>Notation</strong></td><td>Décimale pointée : <code>172.16.19.40</code></td><td>Hexadécimale par blocs : <code>2001:0db8::1</code></td></tr>
+        <tr><td><strong>Nombre d'adresses</strong></td><td>≈ 4,3 × 10<sup>9</sup> (saturé)</td><td>≈ 3,4 × 10<sup>38</sup></td></tr>
+        <tr><td><strong>Raison d'être d'IPv6</strong></td><td colspan="2"><span class="fill-inline" style="min-width:min(480px,100%);"></span></td></tr>
+    </table>
+
+    <h2>4. Réseau minimal — de deux machines à un LAN</h2>
+    <p>Pour comprendre la construction d'un réseau, on part du cas le plus simple :</p>
+    <ul>
+        <li><strong>2 machines reliées par un câble RJ45 :</strong> chaque carte reconnaît directement l'autre via son adresse MAC. Pas besoin de routeur.</li>
+        <li><strong>Plusieurs machines + 1 switch :</strong> on obtient un <strong>réseau local (LAN)</strong>. Les machines partagent un même domaine d'adressage.</li>
+        <li><strong>Plusieurs LAN + 1 routeur :</strong> le routeur sert de <em>passerelle</em> et permet l'échange entre réseaux distincts. L'<strong>adresse IP</strong> devient alors indispensable.</li>
+    </ul>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 1 — Recto cours</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 2 : COURS — Étendue et topologies      -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Réseaux — Étendue, topologies, encapsulation (2/4)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>5. Classification par étendue géographique</h2>
+    <table>
+        <tr><th style="width:20%">Type</th><th style="width:25%">Étendue</th><th>Exemple concret</th></tr>
+        <tr><td><strong>PAN</strong> (Personal Area N.)</td><td>Quelques mètres</td><td>Bluetooth entre un smartphone et des écouteurs.</td></tr>
+        <tr><td><strong>LAN</strong> (Local Area N.)</td><td>Un bâtiment, une salle</td><td>Salle informatique du lycée, réseau domestique.</td></tr>
+        <tr><td><strong>MAN</strong> (Metropolitan A.N.)</td><td>Une ville</td><td>Réseau d'une mairie reliant plusieurs sites.</td></tr>
+        <tr><td><strong>WAN</strong> (Wide Area N.)</td><td>Pays / continent</td><td>Internet, réseau d'un opérateur télécom.</td></tr>
+    </table>
+
+    <h2>6. Topologies de réseaux locaux</h2>
+    <p>La <strong>topologie</strong> décrit la façon dont les machines sont reliées entre elles.</p>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 700 180" width="700" height="180" xmlns="http://www.w3.org/2000/svg">
+            <!-- ÉTOILE -->
+            <g>
+                <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2a6c">Étoile</text>
+                <circle cx="80" cy="90" r="14" fill="#1a2a6c"/>
+                <text x="80" y="94" text-anchor="middle" font-size="9" fill="white">SW</text>
+                <line x1="80" y1="76" x2="80" y2="40" stroke="#555" stroke-width="1.5"/>
+                <line x1="66" y1="90" x2="30" y2="90" stroke="#555" stroke-width="1.5"/>
+                <line x1="94" y1="90" x2="130" y2="90" stroke="#555" stroke-width="1.5"/>
+                <line x1="80" y1="104" x2="80" y2="140" stroke="#555" stroke-width="1.5"/>
+                <rect x="68" y="22" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="18" y="81" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="118" y="81" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="68" y="140" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            </g>
+            <!-- BUS -->
+            <g transform="translate(170,0)">
+                <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2a6c">Bus</text>
+                <line x1="10" y1="90" x2="150" y2="90" stroke="#1a2a6c" stroke-width="3"/>
+                <line x1="35" y1="90" x2="35" y2="70" stroke="#555" stroke-width="1.5"/>
+                <line x1="70" y1="90" x2="70" y2="70" stroke="#555" stroke-width="1.5"/>
+                <line x1="100" y1="90" x2="100" y2="70" stroke="#555" stroke-width="1.5"/>
+                <line x1="130" y1="90" x2="130" y2="70" stroke="#555" stroke-width="1.5"/>
+                <rect x="23" y="52" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="58" y="52" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="88" y="52" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="118" y="52" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <line x1="35" y1="90" x2="35" y2="120" stroke="#555" stroke-width="1.5"/>
+                <line x1="100" y1="90" x2="100" y2="120" stroke="#555" stroke-width="1.5"/>
+                <rect x="23" y="120" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="88" y="120" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            </g>
+            <!-- ANNEAU -->
+            <g transform="translate(340,0)">
+                <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2a6c">Anneau</text>
+                <circle cx="80" cy="90" r="50" fill="none" stroke="#1a2a6c" stroke-width="2"/>
+                <rect x="68" y="32" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="120" y="80" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="68" y="130" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="16" y="80" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            </g>
+            <!-- MAILLÉ -->
+            <g transform="translate(510,0)">
+                <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2a6c">Maillé</text>
+                <line x1="40" y1="50" x2="120" y2="50" stroke="#555" stroke-width="1.2"/>
+                <line x1="40" y1="50" x2="40" y2="130" stroke="#555" stroke-width="1.2"/>
+                <line x1="40" y1="50" x2="120" y2="130" stroke="#555" stroke-width="1.2"/>
+                <line x1="120" y1="50" x2="40" y2="130" stroke="#555" stroke-width="1.2"/>
+                <line x1="120" y1="50" x2="120" y2="130" stroke="#555" stroke-width="1.2"/>
+                <line x1="40" y1="130" x2="120" y2="130" stroke="#555" stroke-width="1.2"/>
+                <rect x="28" y="38" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="108" y="38" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="28" y="122" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+                <rect x="108" y="122" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            </g>
+        </svg>
+    </div>
+
+    <table>
+        <tr><th>Topologie</th><th>Avantages</th><th>Inconvénients</th></tr>
+        <tr><td><strong>Étoile</strong></td><td>Panne d'une machine sans impact ; simple à étendre.</td><td>Panne du switch central = panne totale.</td></tr>
+        <tr><td><strong>Bus</strong></td><td>Économique, peu de câbles.</td><td>Coupure du bus = panne totale ; collisions.</td></tr>
+        <tr><td><strong>Anneau</strong></td><td>Trafic ordonné, débit prévisible.</td><td>Panne d'un nœud peut interrompre le tout.</td></tr>
+        <tr><td><strong>Maillé</strong></td><td>Très <strong>résilient</strong> : plusieurs chemins possibles.</td><td>Coût élevé (beaucoup de liaisons).</td></tr>
+    </table>
+
+    <div class="tip-box">
+        <strong>Topologie d'Internet :</strong> Internet est globalement un réseau <strong>maillé</strong> de routeurs ; cette redondance assure la résilience en cas de coupure d'une liaison (câble sous-marin, panne d'opérateur…).
+    </div>
+
+    <h2>7. Encapsulation : empilement des protocoles</h2>
+    <p>Quand un message traverse le réseau, chaque couche logicielle ajoute son propre en-tête : c'est l'<strong>encapsulation</strong>.</p>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 700 100" width="700" height="100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="40" width="660" height="40" fill="none" stroke="#1a2a6c" stroke-width="1.5"/>
+            <rect x="20" y="40" width="120" height="40" fill="#e8f0fe" stroke="#1a2a6c"/>
+            <text x="80" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">Trame Ethernet</text>
+            <rect x="140" y="40" width="110" height="40" fill="#d0e0ff" stroke="#1a2a6c"/>
+            <text x="195" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">En-tête IP</text>
+            <rect x="250" y="40" width="110" height="40" fill="#b8d0ff" stroke="#1a2a6c"/>
+            <text x="305" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">En-tête TCP</text>
+            <rect x="360" y="40" width="280" height="40" fill="#ffffff" stroke="#1a2a6c"/>
+            <text x="500" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#b21f1f">Données applicatives (HTTP…)</text>
+            <rect x="640" y="40" width="40" height="40" fill="#e8f0fe" stroke="#1a2a6c"/>
+            <text x="660" y="65" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">FCS</text>
+            <text x="350" y="25" text-anchor="middle" font-size="10" fill="#555">↓ De la donnée applicative à la trame physique : encapsulation successive ↓</text>
+        </svg>
+    </div>
+
+    <p>À l'arrivée, chaque couche <em>retire</em> son en-tête (décapsulation) pour transmettre le contenu utile à la couche supérieure jusqu'à atteindre l'application.</p>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 1 — Cours (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 3 : EXERCICES                          -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Réseaux — Exercices (3/4)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2><span class="exo-num">1</span> Distinction MAC / IP</h2>
+    <p>Sur une machine, on relève ces deux identifiants : <code>192.168.1.42</code> et <code>A4:5E:60:91:2F:0C</code>.</p>
+    <p><strong>1.1</strong> Indiquer pour chaque identifiant son type, sa taille en bits et la notation utilisée :</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>1.2</strong> L'utilisateur·rice déplace son ordinateur portable du lycée à son domicile. Laquelle des deux adresses est susceptible de changer ? Justifier.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>1.3</strong> Donner le nombre théorique maximal d'adresses MAC distinctes. Calcul attendu :</p>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">2</span> Choix de l'équipement</h2>
+    <p>Pour chaque besoin, indiquer l'équipement le plus adapté (<em>switch, routeur, point d'accès Wi-Fi, carte réseau</em>) :</p>
+    <table>
+        <tr><th style="width:60%">Besoin exprimé</th><th>Équipement</th></tr>
+        <tr><td>Connecter 12 postes d'une salle informatique entre eux.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Relier le réseau du lycée à celui de l'académie via Internet.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Permettre aux smartphones des élèves de se connecter sans câble.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Ajouter la connectivité réseau à un PC fixe qui n'en a pas.</td><td><div class="write-zone"></div></td></tr>
+    </table>
+
+    <h2><span class="exo-num">3</span> Topologies</h2>
+    <p><strong>3.1</strong> Sur le schéma ci-dessous, identifier la topologie utilisée et indiquer ce qui se passe si le nœud central tombe en panne.</p>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 280 140" width="280" height="140" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="140" cy="70" r="16" fill="#1a2a6c"/>
+            <text x="140" y="74" text-anchor="middle" font-size="9" fill="white">SW</text>
+            <line x1="140" y1="54" x2="140" y2="25" stroke="#555" stroke-width="1.5"/>
+            <line x1="124" y1="70" x2="80" y2="70" stroke="#555" stroke-width="1.5"/>
+            <line x1="156" y1="70" x2="200" y2="70" stroke="#555" stroke-width="1.5"/>
+            <line x1="140" y1="86" x2="140" y2="115" stroke="#555" stroke-width="1.5"/>
+            <rect x="128" y="8" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            <rect x="60" y="61" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            <rect x="196" y="61" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            <rect x="128" y="115" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+        </svg>
+    </div>
+    <p>Topologie : <span class="fill-inline" style="min-width:200px;"></span></p>
+    <div class="write-zone"></div>
+
+    <p><strong>3.2</strong> Pourquoi Internet repose-t-il sur une topologie globalement <strong>maillée</strong> ? Citer un avantage concret.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 1 — Exercices</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE SUIVANTE : EXERCICES (SUITE)           -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Réseaux — Exercices, suite (4/4)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2><span class="exo-num">4</span> Encapsulation</h2>
+    <p>On envoie une requête web depuis un navigateur. Ordonner ces couches du <strong>plus haut niveau</strong> (le plus proche de l'utilisateur·rice) au <strong>plus bas niveau</strong> (le plus proche du câble) :</p>
+    <p style="font-style: italic; font-size: 0.82rem;">IP, Trame Ethernet, HTTP, TCP</p>
+    <p>Ordre : <span class="fill-inline" style="min-width:80px;"></span> → <span class="fill-inline" style="min-width:80px;"></span> → <span class="fill-inline" style="min-width:80px;"></span> → <span class="fill-inline" style="min-width:140px;"></span></p>
+
+    <h2><span class="exo-num">5</span> Lecture de schéma</h2>
+    <p>Soit le réseau suivant :</p>
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 620 130" width="620" height="130" xmlns="http://www.w3.org/2000/svg">
+            <!-- LAN A -->
+            <rect x="20" y="20" width="180" height="90" fill="none" stroke="#1a2a6c" stroke-dasharray="3,3"/>
+            <text x="110" y="15" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">LAN A — 192.168.1.0/24</text>
+            <circle cx="110" cy="65" r="13" fill="#1a2a6c"/>
+            <text x="110" y="69" text-anchor="middle" font-size="9" fill="white">SW</text>
+            <rect x="40" y="55" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            <rect x="155" y="55" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            <line x1="64" y1="64" x2="97" y2="64" stroke="#555" stroke-width="1.5"/>
+            <line x1="123" y1="64" x2="155" y2="64" stroke="#555" stroke-width="1.5"/>
+            <!-- Routeur -->
+            <rect x="270" y="55" width="80" height="22" fill="#b21f1f" stroke="#1a2a6c"/>
+            <text x="310" y="70" text-anchor="middle" font-size="11" font-weight="700" fill="white">Routeur</text>
+            <line x1="200" y1="66" x2="270" y2="66" stroke="#555" stroke-width="2"/>
+            <line x1="350" y1="66" x2="420" y2="66" stroke="#555" stroke-width="2"/>
+            <!-- LAN B -->
+            <rect x="420" y="20" width="180" height="90" fill="none" stroke="#1a2a6c" stroke-dasharray="3,3"/>
+            <text x="510" y="15" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">LAN B — 10.0.0.0/24</text>
+            <circle cx="510" cy="65" r="13" fill="#1a2a6c"/>
+            <text x="510" y="69" text-anchor="middle" font-size="9" fill="white">SW</text>
+            <rect x="440" y="55" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            <rect x="555" y="55" width="24" height="18" rx="2" fill="#f8f9fa" stroke="#1a2a6c"/>
+            <line x1="464" y1="64" x2="497" y2="64" stroke="#555" stroke-width="1.5"/>
+            <line x1="523" y1="64" x2="555" y2="64" stroke="#555" stroke-width="1.5"/>
+        </svg>
+    </div>
+    <p><strong>5.1</strong> Sans le routeur, une machine du LAN A peut-elle envoyer un message à une machine du LAN B ? Justifier.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>5.2</strong> Combien de cartes réseau possède au minimum le routeur central ? Pourquoi ?</p>
+    <div class="write-zone"></div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 1 — Exercices (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+</body>
+</html>
