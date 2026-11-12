@@ -9,10 +9,12 @@ continuent d'utiliser les listes `ressources.js` ([LISTES.md](LISTES.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 82 fiches, pour les 90 entrées des listes
-                                (une ressource placée dans deux rubriques n'a qu'une fiche)
+  ressources/<id>.json          une fiche par ressource : 90 fiches, dont 82 pour les 90 entrées des
+                                listes (une ressource placée dans deux rubriques n'a qu'une fiche)
+                                et 8 pour des fichiers récupérés des conversations de l'enseignant
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
+                                et la grille d'évaluation du Grand oral
   vitrine.exemple.json          l'exemple de mise en avant qui a servi à valider le format
   referentiels/                 l'arbre des programmes, le thésaurus des notions, les listes de valeurs,
                                 les compétences Pix
@@ -77,8 +79,12 @@ Compute-it, n'est pas connue ; deux sites de collègues ne sont qu'en `http://`.
 seront repris lors de la revue des ressources publiées ; d'ici là, la validation avec
 `--strict` (ci-dessous) échoue sur ces six avertissements.
 
-Les fiches converties le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira.
-Comme la vitrine, elles ne s'affichent pas encore : l'onglet « Bibliothèque » les lira.
+Les fiches écrites le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira.
+Comme la vitrine, elles ne s'affichent pas encore : l'onglet « Bibliothèque » les lira. Les huit
+ressources récupérées des conversations (quatre fiches de réseaux de terminale, les commandes
+Linux de première et leur corrigé, la fiche des erreurs Python, le diaporama sur l'IA en SNT, la
+grille du Grand oral) sont déjà en ligne dans les dossiers `fichiers/` des rubriques, mais les
+listes `ressources.js` ne les montrent pas encore.
 
 Pour valider les données, depuis le dossier du site : `python3 scripts/valider_donnees.py`
 (Python 3 seul, rien à installer ; avec `--strict`, les avertissements bloquent aussi). Chaque
