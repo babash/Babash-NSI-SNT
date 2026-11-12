@@ -11,10 +11,12 @@ donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
   ressources/<id>.json          une fiche par ressource (7 pour l'instant : 6 d'exemple et Court-circuit)
   vitrine.exemple.json          un exemple de mise en avant pour la partie extérieure
-  referentiels/                 l'arbre des programmes, les listes de valeurs, les compétences Pix
+  referentiels/                 l'arbre des programmes, le thésaurus des notions, les listes de valeurs,
+                                les compétences Pix
   schema/                       la description exacte du format (JSON Schema)
   correspondance-etiquettes.md  comment les listes actuelles seront converties
 scripts/valider_donnees.py      la validation des données
+scripts/tests/test_notions.py   ses tests pour le thésaurus, les notions des fiches et la visibilité
 ```
 
 Une fiche décrit une ressource et ses documents (activité, version PDF, corrigé, code
@@ -26,6 +28,20 @@ Elle crédite ses auteurs et autrices (`auteurs`, `credits`) ; une ressource rep
 modifiée crédite toute la chaîne. Par exemple, la fiche de CyberCase cite Etienne Clave
 (exomorphisme.fr, lycée de Sada), l'idée de Marion Dufour, le moteur SQL Noir de Hristo
 Bogoev, puis la reprise par Babash - NSI Tani Malandi.
+
+Une fiche range aussi la ressource selon ce qu'elle fait apprendre, plus finement que le
+programme : ses **notions** (`notions`), tirées du thésaurus `referentiels/notions.json`, avec
+leur rôle : enseignées (`enseignees`), évaluées (`evaluees`) ou prérequises (`prerequises`),
+les trois propriétés que schema.org a reprises de LRMI pour les ressources pédagogiques. Le
+thésaurus suit le modèle de SKOS (W3C) et de la norme ISO 25964 : 161 notions en 12 domaines,
+de la plus large à la plus précise (programmation › structures de contrôle › boucle › boucle
+bornée), avec leurs synonymes, leurs termes anglais, les mots du code, les thèmes du programme
+où elles sont enseignées, leurs correspondances avec le *K–12 Computer Science Framework*,
+l'*Informatics Reference Framework for School* et CS2023, et, pour 27 d'entre elles, 43
+difficultés connues des élèves, avec leurs sources. Il servira à la recherche de l'onglet
+Bibliothèque, à venir. Proposé par l'Architecte, il est publié depuis le 12 novembre 2026 ;
+l'enseignant le relit, et ses remarques viendront dans une mise à jour. Les mots-clés libres
+(`mots_cles`) restent.
 
 Quand c'est utile, la fiche note aussi :
 
@@ -58,8 +74,10 @@ avertissements.
 Pour valider les données, depuis le dossier du site : `python3 scripts/valider_donnees.py`
 (Python 3 seul, rien à installer ; avec `--strict`, les avertissements bloquent aussi). Chaque
 message donne le fichier et le champ. Le script signale comme erreur, entre autres, un lien
-principal vers GitHub, un identifiant en double, une référence inexistante, un document sans
-réglage de visibilité, et tout ce qui ressemble à un mot de passe, un identifiant ou une clé
-secrète.
+principal vers GitHub, un identifiant en double, une référence inexistante (une notion absente
+du thésaurus comprise), un document sans réglage de visibilité, et tout ce qui ressemble à un
+mot de passe, un identifiant ou une clé secrète. Il vérifie aussi le thésaurus lui-même :
+notions plus larges et associées existantes, hiérarchie sans cycle, libellés préférés uniques.
+Ses tests : `python3 -I -B scripts/tests/test_notions.py`.
 
 Le format en détail, pour l'enseignant et pour les agents : [`donnees/README.md`](../donnees/README.md).

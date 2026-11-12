@@ -53,7 +53,7 @@ Tu peux copier le site pour tes classes, avec tes rubriques et tes ressources : 
 | [Les listes de ressources](docs/LISTES.md) | ajouter une ressource ou un fichier, ranger une rubrique, les réglages et le pied de page, les erreurs |
 | [Réutiliser le site](docs/REUTILISER.md) | ta copie du site, GitHub Pages, l'essai sur ton ordinateur, ce qui vient d'ailleurs |
 | [L'organisation du dépôt](docs/ORGANISATION.md) | les dossiers et les fichiers, le décor |
-| [Les données de la bibliothèque](docs/BIBLIOTHEQUE.md) | le format des fiches du dossier `donnees/` et leur validation |
+| [Les données de la bibliothèque](docs/BIBLIOTHEQUE.md) | le format des fiches du dossier `donnees/`, le thésaurus des notions et leur validation |
 | [La vérification automatique](docs/VERIFICATION.md) | les contrôles de l'onglet Actions, et le même contrôle sur ton ordinateur |
 | [Les bases Supabase](docs/SUPABASE.md) | Alien Python, Court-circuit et le socle commun de la base |
 | [L'équipe d'agents](docs/AGENTS.md) | les rôles, qui possède quels fichiers, les règles de conception des ressources |
