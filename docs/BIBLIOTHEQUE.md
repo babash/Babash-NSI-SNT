@@ -19,6 +19,8 @@ scripts/valider_donnees.py      la validation des données
 
 Une fiche décrit une ressource et ses documents (activité, version PDF, corrigé, code
 source…). Chaque document a deux réglages de visibilité, pour l'extérieur et pour les élèves.
+Pour l'instant, on ne cache rien : tous les documents sont visibles de l'extérieur comme des
+élèves, et l'enseignant réglera lui-même la visibilité, à la main (consigne du 12 novembre 2026).
 La fiche signale aussi si la ressource collecte des données d'élèves (`donnees_eleves`).
 Elle crédite ses auteurs et autrices (`auteurs`, `credits`) ; une ressource reprise et
 modifiée crédite toute la chaîne. Par exemple, la fiche de CyberCase cite Etienne Clave

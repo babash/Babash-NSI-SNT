@@ -62,7 +62,7 @@ Avant de publier une branche, le Gardien vérifie :
 
 1. **La conformité** : au cahier des charges, aux décisions de l'enseignant (la plus récente l'emporte) et aux règles de conception des ressources, en particulier celles des TD et des éditeurs de code ([docs/AGENTS.md](docs/AGENTS.md)).
 2. **Les données** : un format valide, des identifiants uniques, des références qui existent, aucun lien principal vers une page GitHub (§ 12) ; tant que les listes `ressources.js` servent, aucune erreur affichée.
-3. **La visibilité** : un document caché n'apparaît ni au public ni aux élèves (sans objet tant que les listes `ressources.js` servent).
+3. **La visibilité** : un document caché n'apparaît ni au public ni aux élèves (sans objet tant que les listes `ressources.js` servent). Pour l'instant, on ne cache rien : l'enseignant réglera lui-même la visibilité, à la main (consigne du 12 novembre 2026).
 4. **Les données sensibles** (§ 7), cherchées dans tout ce que la branche ajoute.
 5. **Les liens et les fichiers** : chaque lien interne mène à un fichier qui existe ; les liens externes sont testés par la vérification automatique ; le lien « Code source sur GitHub » (§ 12).
 6. **Le rendu** : à 320, 768 et 1440 px de large, en clair et en obscur, sans erreur JavaScript ni défilement horizontal ; l'impression A4 des documents touchés, sans débordement.
