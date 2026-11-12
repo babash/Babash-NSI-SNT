@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fiches NSI Première - Commandes Linux — CORRIGÉ</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
@@ -41,11 +42,42 @@
         .col2 > div { flex: 1; }
         .tree { font-family: 'Fira Code', monospace; font-size: 0.73rem; background: #f8f9fa; border: 1px solid var(--border); border-radius: 3px; padding: 5px 10px; margin: 4px 0; line-height: 1.55; }
         .exo-num { display: inline-block; background: var(--primary); color: white; border-radius: 50%; width: 16px; height: 16px; text-align: center; line-height: 16px; font-size: 0.7rem; font-weight: 700; margin-right: 3px; }
-        footer { margin-top: auto; padding-top: 5px; border-top: 1px solid var(--border); font-size: 0.68rem; color: #888; display: flex; justify-content: space-between; }
+        footer { margin-top: auto; padding-top: 5px; border-top: 1px solid var(--border); font-size: 0.68rem; color: #666; display: flex; justify-content: space-between; }
         .term { background:#1e1e1e; color:#d4d4d4; font-family:'Fira Code',monospace; font-size:0.76rem; padding:5px 9px; border-radius:3px; margin:3px 0; line-height:1.7; }
         .note { font-size:0.72rem; color:#555; font-style:italic; margin-left:8px; }
         .page::before { content:"CORRIGÉ"; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) rotate(-30deg); font-size:6rem; font-weight:900; color:rgba(0,86,179,0.05); pointer-events:none; user-select:none; white-space:nowrap; z-index:0; }
         .page > * { position:relative; z-index:1; }
+        code, .box-fill, .tree, .term, .fill-inline { font-variant-ligatures: none; }
+        .tree-legende { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0 12px; }
+
+        /* Impression : une feuille A4 par .page, sans marges ajoutées par le navigateur */
+        @page { size: A4; margin: 0; }
+
+        /* Pied : auteur, licence et code source */
+        footer { flex-wrap: wrap; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; }
+        footer a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (la largeur et la hauteur A4 ne valent que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; height: auto; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box, .tip-box { overflow-wrap: break-word; }
+            code, .tree, .term, .box-fill, .fill-inline { overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            h1 { font-size: 1.2rem; }
+            .col2 { flex-direction: column; gap: 0; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; hyphens: auto; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+            .page::before { font-size: 3rem; }
+        }
+        @media screen and (max-width: 360px) {
+            td, th { overflow-wrap: anywhere; }
+        }
     </style>
 </head>
 <body>
@@ -62,7 +94,7 @@
 
     <div class="info-box">
         Le <strong>terminal (Shell)</strong> contrôle l'OS par des commandes textuelles. Tout est organisé en <strong>arborescence</strong> depuis la <strong>racine <code>/</code></strong>.
-        Symboles essentiels : <code>.</code> (répertoire courant) &nbsp;·&nbsp; <code>..</code> (répertoire parent) &nbsp;·&nbsp; <code>~</code> (dossier personnel de l'utilisateur)
+        Symboles essentiels : <code>.</code> (répertoire courant) &nbsp;·&nbsp; <code>..</code> (répertoire parent) &nbsp;·&nbsp; <code>~</code> (dossier personnel de l'utilisateur·rice)
     </div>
 
     <h2>1. Navigation dans l'arborescence</h2>
@@ -72,7 +104,7 @@
         <tr><td><code>ls</code></td><td><span class="answer">Lister le contenu (fichiers et dossiers) du répertoire courant ou d'un autre répertoire</span></td><td><code>ls</code> &nbsp;·&nbsp; <code>ls ..</code></td></tr>
         <tr><td><code>cd [chemin]</code></td><td><span class="answer">Changer de répertoire — se déplacer dans l'arborescence (Change Directory)</span></td><td><code>cd Documents/</code></td></tr>
         <tr><td><code>cd ..</code></td><td><span class="answer">Remonter d'un niveau vers le répertoire parent</span></td><td><code>cd ../../home</code></td></tr>
-        <tr><td><code>cd ~</code></td><td><span class="answer">Retourner directement dans le répertoire personnel de l'utilisateur</span></td><td><code>cd ~</code></td></tr>
+        <tr><td><code>cd ~</code></td><td><span class="answer">Retourner directement dans le répertoire personnel de l'utilisateur·rice</span></td><td><code>cd ~</code></td></tr>
     </table>
 
     <div class="col2">
@@ -114,6 +146,7 @@
     <footer>
         <span>NSI — Première Générale &nbsp;|&nbsp; Systèmes d'exploitation</span>
         <span>Recto — Cours (CORRIGÉ)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/commandes-linux-premiere/commandes-premiere-corrige.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
@@ -130,7 +163,7 @@
 
     <p style="margin-bottom:3px;"><strong>Arborescence de référence</strong> — utilisateur connecté : <code>eleve</code>, répertoire personnel : <code>/home/eleve</code></p>
     <div class="tree">
-/ (racine) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(D) : Dossier &nbsp;&nbsp; (F) : Fichier<br>
+<div class="tree-legende"><span>/ (racine)</span><span>(D) : Dossier &nbsp;&nbsp; (F) : Fichier</span></div>
 ├── bin/ (D)<br>
 └── home/ (D)<br>
 &nbsp;&nbsp;&nbsp;&nbsp;├── prof/ (D) &nbsp;→&nbsp; examens/ (D) &nbsp;·&nbsp; notes.csv (F)<br>
@@ -141,25 +174,25 @@
     <p>L'utilisateur <code>eleve</code> se trouve dans le dossier <code>nsi</code>.</p>
 
     <p style="margin-top:5px;"><strong>1.1</strong> Donner le <strong>chemin absolu</strong> du répertoire <code>nsi</code> :</p>
-    <p style="margin:2px 0;"><code>$ pwd</code> &nbsp;→&nbsp; <span class="fill-inline" style="min-width:270px;">/home/eleve/devoirs/nsi</span></p>
+    <p style="margin:2px 0;"><code>$ pwd</code> &nbsp;→&nbsp; <span class="fill-inline" style="min-width:min(270px,100%);">/home/eleve/devoirs/nsi</span></p>
 
     <p style="margin-top:6px;"><strong>1.2</strong> Copier <code>notes.csv</code> (chez <code>prof</code>) vers <code>projets</code> en <strong>chemins relatifs</strong> (on est dans <code>nsi</code>) :</p>
-    <p style="margin:2px 0;"><code>$ cp</code> &nbsp;<span class="fill-inline" style="min-width:370px;">../../../prof/notes.csv &nbsp;../../projets/</span></p>
+    <p style="margin:2px 0;"><code>$ cp</code> &nbsp;<span class="fill-inline" style="min-width:min(370px,100%);">../../../prof/notes.csv &nbsp;../../projets/</span></p>
     <p class="note">Depuis nsi : <code>../..</code> → eleve &nbsp;·&nbsp; <code>../../..</code> → home &nbsp;·&nbsp; <code>../../../prof/notes.csv</code> = source &nbsp;·&nbsp; <code>../../projets/</code> = destination</p>
 
     <p style="margin-top:5px;"><strong>1.3</strong> Créer le fichier <code>exam1.txt</code> dans <code>examens</code> (on est dans <code>nsi</code>) :</p>
-    <p style="margin:2px 0;"><span class="fill-inline" style="min-width:350px;">cd ../../../prof/examens</span> <span class="note">&nbsp;(ou chemin absolu : cd /home/prof/examens)</span></p>
+    <p style="margin:2px 0;"><span class="fill-inline" style="min-width:min(350px,100%);">cd ../../../prof/examens</span> <span class="note">&nbsp;(ou chemin absolu : cd /home/prof/examens)</span></p>
     <p style="margin:2px 0;"><code>$ touch exam1.txt</code></p>
 
     <p style="margin-top:5px;"><strong>1.4</strong> Depuis <code>nsi</code>, on tape : <code style="font-size:0.76rem">eleve@serveur:~/devoirs/nsi$ ls ../..</code> — Qu'affiche cette commande ?</p>
-    <p style="margin:2px 0;"><code>→ </code><span class="fill-inline" style="min-width:180px;">devoirs &nbsp;&nbsp; projets</span> <span class="note">&nbsp;../.. depuis nsi remonte à /home/eleve</span></p>
+    <p style="margin:2px 0;"><code>→ </code><span class="fill-inline" style="min-width:min(180px,100%);">devoirs &nbsp;&nbsp; projets</span> <span class="note">&nbsp;../.. depuis nsi remonte à /home/eleve</span></p>
 
     <h2><span class="exo-num">2</span> Réorganisation de l'arborescence</h2>
-    <p>L'administrateur exécute depuis <code>/home/eleve</code> :</p>
+    <p>L'administrateur·rice exécute depuis <code>/home/eleve</code> :</p>
     <div class="term">$ mkdir archives &nbsp;&nbsp;&nbsp; $ cd devoirs &nbsp;&nbsp;&nbsp; $ mv nsi ../archives/ &nbsp;&nbsp;&nbsp; $ ls ../archives</div>
 
     <p style="margin-top:4px;"><strong>2.1</strong> Qu'affiche la commande <code>ls ../archives</code> ?</p>
-    <p style="margin:2px 0;"><code>→ </code><span class="fill-inline" style="min-width:80px;">nsi</span> <span class="note">&nbsp;le dossier nsi a été déplacé dans archives</span></p>
+    <p style="margin:2px 0;"><code>→ </code><span class="fill-inline" style="min-width:min(80px,100%);">nsi</span> <span class="note">&nbsp;le dossier nsi a été déplacé dans archives</span></p>
 
     <p style="margin-top:5px;"><strong>2.2</strong> Dessiner l'arborescence modifiée sous <code>/home/eleve</code> :</p>
     <div class="box-fill">
@@ -173,11 +206,12 @@
 
     <p style="margin-top:5px;"><strong>3.2</strong> Expliquer le rôle de <code>sudo</code>, puis écrire la commande qui transfère la propriété de <code>notes.csv</code> à l'utilisateur <code>directeur</code> :</p>
     <div class="write-zone"><code>sudo</code> exécute une commande avec les droits du super-utilisateur (root/administrateur). Nécessaire pour les opérations système (changer un propriétaire, modifier des fichiers système…)</div>
-    <p style="margin:3px 0;"><code>$ sudo </code><span class="fill-inline" style="min-width:320px;">chown directeur notes.csv</span></p>
+    <p style="margin:3px 0;"><code>$ sudo </code><span class="fill-inline" style="min-width:min(320px,100%);">chown directeur notes.csv</span></p>
 
     <footer>
         <span>NSI — Première Générale &nbsp;|&nbsp; Systèmes d'exploitation</span>
         <span>Verso — Exercices (CORRIGÉ)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/commandes-linux-premiere/commandes-premiere-corrige.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
