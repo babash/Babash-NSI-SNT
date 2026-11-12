@@ -2,9 +2,11 @@
 """Fabrique ou vérifie supabase/schema.sql, le script complet du socle commun (règle M2).
 
 supabase/schema.sql réunit, dans une seule transaction, le texte des migrations
-0001-droits-par-defaut.sql (les droits par défaut) et 0003-schema-commun.sql (le schéma
-commun), sans le contrôle du projet de l'enseignant : un·e collègue le lance dans son propre
-projet Supabase. Le texte des migrations est recopié tel quel ; seul ce contrôle est retiré.
+0001-droits-par-defaut.sql (les droits par défaut), 0003-schema-commun.sql (le schéma
+commun) et 0005-registre-court-circuit.sql (Court-circuit dans le registre), sans le contrôle
+du projet de l'enseignant : un·e collègue le lance dans son propre projet Supabase. Le texte
+des migrations est recopié tel quel ; seul ce contrôle est retiré (pour 0005, tout son
+garde-fou : celui de 0003, en tête, vérifie déjà le rôle et l'origine du registre).
 
 Usage :
   python3 scripts/supabase_schema.py             récrit supabase/schema.sql
@@ -29,7 +31,8 @@ ENTETE = """begin;
 --  Il réunit, dans une seule transaction :
 --   A. les droits par défaut fermés (migration 0001) ;
 --   B. le schéma commun : compteur d'essais, sel secret, fonctions internes
---      et registre des tables (migration 0003).
+--      et registre des tables (migration 0003) ;
+--   C. le registre mis à jour : Court-circuit en plus (migration 0005).
 --  La migration 0002 n'y est pas : elle corrige les droits d'objets qui
 --  existaient déjà dans le projet de l'enseignant.
 --
@@ -37,9 +40,10 @@ ENTETE = """begin;
 --  tout le fichier, puis Run. Il peut être relancé sans risque : il ne crée
 --  que ce qui manque, et ne tire jamais un second sel.
 --
---  NE PAS MODIFIER À LA MAIN : ce fichier est fabriqué à partir de 0001 et
---  de 0003 par scripts/supabase_schema.py (même texte, sans le contrôle du
---  projet de l'enseignant). Il change dans le même commit qu'eux (règle M2).
+--  NE PAS MODIFIER À LA MAIN : ce fichier est fabriqué à partir de 0001, de
+--  0003 et de 0005 par scripts/supabase_schema.py (même texte, sans le
+--  contrôle du projet de l'enseignant). Il change dans le même commit qu'eux
+--  (règle M2).
 --  Détails : LISEZMOI.md.
 -- =============================================================================
 
@@ -61,7 +65,7 @@ def entre(texte, debut, fin, nom):
 
 
 def fabriquer():
-    p1, p3 = lire("0001-droits-par-defaut.sql"), lire("0003-schema-commun.sql")
+    p1, p3, p5 = lire("0001-droits-par-defaut.sql"), lire("0003-schema-commun.sql"), lire("0005-registre-court-circuit.sql")
     droits = entre(p1, "-- 1. Schéma public", "\ncommit;", "0001")
     garde = entre(p3, "-- Garde-fou : le bon rôle", "\n-- ----", "0003")
     garde = garde.replace("-- Garde-fou : le bon rôle, le bon projet, pgcrypto, et aucun objet « commun »\n-- venu d'ailleurs.",
@@ -74,11 +78,17 @@ def fabriquer():
                    "\ncommit;", "0003")
     for n in range(1, 7):
         commun = re.sub(rf"^-- {n}\. ", f"-- B{n}. ", commun, count=1, flags=re.M)
+    registre = entre(p5, "-- -----------------------------------------------------------------------------\n-- 1. Le registre",
+                     "\ncommit;", "0005")
+    for n in range(1, 3):
+        registre = re.sub(rf"^-- {n}\. ", f"-- C{n}. ", registre, count=1, flags=re.M)
     droits = droits.replace("-- 1. Schéma public", "-- A1. Schéma public").replace("-- 2. Tous les schémas", "-- A2. Tous les schémas")
     barre = "-- =============================================================================\n"
     return (ENTETE + garde.rstrip() + "\n\n"
             + barre + "-- A. Les droits par défaut (migration 0001)\n" + barre + droits.rstrip() + "\n\n"
-            + barre + "-- B. Le schéma commun (migration 0003)\n" + barre + commun.rstrip() + "\n\ncommit;\n")
+            + barre + "-- B. Le schéma commun (migration 0003)\n" + barre + commun.rstrip() + "\n\n"
+            + barre + "-- C. Le registre : Court-circuit en plus (migration 0005)\n" + barre + registre.rstrip()
+            + "\n\ncommit;\n")
 
 
 def main():
@@ -89,7 +99,7 @@ def main():
             print("supabase/schema.sql n'est pas à jour : lancer python3 scripts/supabase_schema.py et le commiter "
                   "avec les migrations (règle M2).")
             return 1
-        print("supabase/schema.sql est à jour (0001 + 0003).")
+        print("supabase/schema.sql est à jour (0001 + 0003 + 0005).")
         return 0
     with open(CIBLE, "w", encoding="utf-8") as f:
         f.write(texte)
