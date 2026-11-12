@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://babash.github.io/Babash-NSI-SNT/donnees/schema/notions.schema.json",
+  "title": "Thésaurus des notions",
+  "description": "Le référentiel des notions de la bibliothèque (donnees/referentiels/notions.json), construit sur le modèle de SKOS (W3C, 2009) et de la norme ISO 25964-1:2011. Chaque notion a un libellé préféré, des libellés alternatifs et cachés, des notions plus larges (les plus étroites s'en déduisent) et associées, une note d'usage, des correspondances avec le référentiel des programmes et avec des référentiels externes, et parfois les difficultés connues des élèves. Le script scripts/valider_donnees.py vérifie ce qu'un schéma seul ne peut pas vérifier : références existantes, absence de cycle, libellés uniques et disjoints.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "statut", "explication", "domaines", "referentiels_externes", "sources", "notions"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "$ref": "#/$defs/date" },
+    "statut": { "type": "string", "minLength": 3, "maxLength": 300 },
+    "explication": { "type": "string", "minLength": 10, "maxLength": 3000 },
+    "modele": {
+      "type": "object",
+      "description": "Correspondance des champs avec SKOS et LRMI, pour les personnes qui lisent le fichier."
+    },
+    "domaines": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "$ref": "#/$defs/id_notion" },
+      "description": "Les notions de premier niveau (skos:topConceptOf), dans l'ordre d'affichage."
+    },
+    "referentiels_externes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/referentiel" },
+      "description": "Les référentiels cités dans les « correspondances » des notions."
+    },
+    "sources": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "#/$defs/source" },
+      "description": "Les textes consultés : normes, référentiels, recherches. Chacun avec sa date de lecture."
+    },
+    "notions": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "#/$defs/notion" }
+    }
+  },
+  "$defs": {
+    "identifiant": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 60
+    },
+    "id_notion": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)*$",
+      "maxLength": 80,
+      "description": "Identifiant stable d'une notion : des mots en minuscules avec des tirets, séparés par des points (prog.boucle.bornee). Il ne change jamais une fois publié, même si la notion change de place dans la hiérarchie."
+    },
+    "noeud_programme": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*){0,2}$",
+      "maxLength": 120
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "format": "date"
+    },
+    "url": {
+      "type": "string",
+      "pattern": "^https?://[^\\s/$.?#][^\\s]*$",
+      "maxLength": 600
+    },
+    "libelle": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "libelles": {
+      "type": "array", "uniqueItems": true,
+      "items": { "$ref": "#/$defs/libelle" }
+    },
+    "referentiel": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "titre", "url", "source"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifiant" },
+        "titre": { "type": "string", "minLength": 3, "maxLength": 200 },
+        "edition": { "type": "string", "minLength": 2, "maxLength": 80 },
+        "editeur": { "type": "string", "minLength": 2, "maxLength": 200 },
+        "url": { "$ref": "#/$defs/url" },
+        "codes": { "type": "string", "minLength": 5, "maxLength": 300, "description": "Comment s'écrivent les codes de ce référentiel dans les correspondances." },
+        "source": { "$ref": "#/$defs/identifiant", "description": "La source qui le décrit, dans « sources »." }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "nature", "reference", "consulte_le"],
+      "properties": {
+        "id": { "$ref": "#/$defs/identifiant" },
+        "nature": {
+          "enum": ["norme", "referentiel", "recherche", "these", "synthese", "releve-enseignants"],
+          "description": "norme, référentiel, recherche publiée, thèse, synthèse pour enseignant·e·s, relevé d'enseignant·e·s sans protocole de recherche."
+        },
+        "reference": { "type": "string", "minLength": 10, "maxLength": 600 },
+        "url": { "$ref": "#/$defs/url" },
+        "lu": { "type": "string", "minLength": 5, "maxLength": 400, "description": "Ce qui a été lu, quand ce n'est pas l'adresse « url » elle-même (notice, résumé, citation par une autre source)." },
+        "consulte_le": { "$ref": "#/$defs/date" }
+      },
+      "anyOf": [
+        { "required": ["url"] },
+        { "required": ["lu"] }
+      ]
+    },
+    "correspondance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["referentiel", "relation", "code"],
+      "properties": {
+        "referentiel": { "$ref": "#/$defs/identifiant", "description": "Un identifiant de « referentiels_externes »." },
+        "relation": {
+          "enum": ["exactMatch", "closeMatch", "broadMatch", "narrowMatch", "relatedMatch"],
+          "description": "Propriétés de correspondance de SKOS : même notion (exactMatch), notion très proche (closeMatch), plus large (broadMatch), plus étroite (narrowMatch), apparentée (relatedMatch)."
+        },
+        "code": { "type": "string", "minLength": 2, "maxLength": 120 },
+        "libelle": { "type": "string", "minLength": 2, "maxLength": 160 }
+      }
+    },
+    "difficulte": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["texte", "sources"],
+      "properties": {
+        "texte": { "type": "string", "minLength": 10, "maxLength": 400, "description": "Une conception erronée ou une difficulté, en une phrase." },
+        "sources": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": { "$ref": "#/$defs/identifiant" },
+          "description": "Identifiants de « sources »."
+        },
+        "reference": { "type": "string", "minLength": 1, "maxLength": 40, "description": "Le numéro dans le catalogue de la source (M9 : catalogue de Sorva, cité par Swidan et al.)." },
+        "precision": { "type": "string", "minLength": 3, "maxLength": 200, "description": "Fréquence observée et public interrogé." }
+      }
+    },
+    "notion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "libelle", "plus_larges", "note"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id_notion" },
+        "libelle": { "$ref": "#/$defs/libelle", "description": "skos:prefLabel en français : unique dans le thésaurus." },
+        "alternatifs": { "$ref": "#/$defs/libelles", "description": "skos:altLabel en français : synonymes, sigles, formulations courantes." },
+        "anglais": { "$ref": "#/$defs/libelles", "description": "skos:altLabel en anglais." },
+        "code": {
+          "type": "array", "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1, "maxLength": 40 },
+          "description": "skos:altLabel sans langue : mots du code (for, while, range, SELECT)."
+        },
+        "caches": { "$ref": "#/$defs/libelles", "description": "skos:hiddenLabel : fautes et graphies fréquentes, termes déconseillés ; pour la recherche seulement." },
+        "plus_larges": {
+          "type": "array", "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id_notion" },
+          "description": "skos:broader. Liste vide pour un domaine. Les notions plus étroites s'en déduisent."
+        },
+        "associees": {
+          "type": "array", "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id_notion" },
+          "description": "skos:related, symétrique : il suffit de l'écrire d'un côté."
+        },
+        "note": { "type": "string", "minLength": 10, "maxLength": 300, "description": "skos:scopeNote : ce que la notion recouvre, en une phrase." },
+        "programme": {
+          "type": "array", "uniqueItems": true,
+          "items": { "$ref": "#/$defs/noeud_programme" },
+          "description": "Thèmes ou contenus de donnees/referentiels/programmes.json où la notion est au programme."
+        },
+        "correspondances": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/correspondance" }
+        },
+        "difficultes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/difficulte" },
+          "description": "Difficultés connues des élèves, tirées de la recherche ou de relevés d'enseignant·e·s, avec leurs sources."
+        },
+        "obsolete": { "type": "boolean", "description": "true pour une notion abandonnée : elle reste, pour que son identifiant ne serve jamais à autre chose." },
+        "remplacee_par": { "$ref": "#/$defs/id_notion", "description": "La notion à citer à la place d'une notion obsolète." }
+      }
+    }
+  }
+}
