@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fiches NSI - Adressage IPv4 et masquage</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
@@ -17,6 +18,7 @@
         }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        code, pre, .calcul-box, .box-fill, .url-decode, .ip-bin { font-variant-ligatures: none; }
 
         body { background: #515151; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; color: var(--text); }
 
@@ -117,7 +119,7 @@
         footer { 
             margin-top: auto; padding-top: 6px; 
             border-top: 1px solid var(--border); 
-            font-size: 0.68rem; color: #888; 
+            font-size: 0.68rem; color: #666; 
             display: flex; justify-content: space-between; 
         }
 
@@ -127,6 +129,54 @@
         }
         .legend span { display: inline-flex; align-items: center; gap: 4px; }
         .legend .sw { width: 12px; height: 12px; display: inline-block; border: 1px solid var(--primary); }
+
+        /* Impression : espacements resserrés pour que chaque feuille tienne sur une page A4 */
+        @media print {
+            .page { padding: 9mm 11mm; }
+            header { margin-bottom: 7px; }
+            h2 { margin: 7px 0 4px 0; padding: 3px 9px; }
+            h3 { margin: 4px 0 2px 0; }
+            p, li { line-height: 1.33; margin: 2px 0; }
+            ul { margin: 3px 0; }
+            table { margin: 4px 0; }
+            th, td { padding: 3px 6px; }
+            .info-box, .tip-box, .warn-box { padding: 4px 8px; margin: 4px 0; }
+            .calcul-box { padding: 4px 8px; margin: 4px 0; line-height: 1.45; }
+            .topo-svg-wrap { margin: 4px 0; }
+            footer { padding-top: 4px; }
+            td .write-zone { margin: 0; }
+            /* feuilles de cours denses : texte réduit à 88 % à l'impression seulement */
+            .page.resserree > :not(footer) { zoom: 0.88; }
+        }
+
+        /* Impression : une feuille A4 par .page, sans marges ajoutées par le navigateur */
+        @page { size: A4; margin: 0; }
+
+        /* Pied : auteur, licence et code source */
+        footer { flex-wrap: wrap; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; }
+        footer a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (la largeur de 210 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box, .tip-box { overflow-wrap: break-word; }
+            code, .calcul-box, .box-fill { overflow-wrap: anywhere; }
+            pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 360px) {
+            td, th { overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            h1 { font-size: 1.2rem; }
+            .col2 { flex-direction: column; gap: 0; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; hyphens: auto; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+        }
     </style>
 </head>
 <body>
@@ -136,7 +186,7 @@
 <!-- ============================================ -->
 <div class="page">
     <header>
-        <h1>Adressage IPv4 — Structure et masque (1/4)</h1>
+        <h1>Adressage IPv4 — Structure et masque (1/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -205,15 +255,16 @@
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 3 — Cours (1)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
 <!-- ============================================ -->
 <!-- PAGE 2 : COURS — Calculs binaires           -->
 <!-- ============================================ -->
-<div class="page">
+<div class="page resserree">
     <header>
-        <h1>Adressage IPv4 — Calculs : réseau, diffusion, hôtes (2/4)</h1>
+        <h1>Adressage IPv4 — Calculs : réseau, diffusion, hôtes (2/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -294,15 +345,16 @@ Octet&nbsp;4 : <span class="host">11111111</span> = 255<br>
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 3 — Cours (2)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
 <!-- ============================================ -->
 <!-- PAGE 3 : COURS — Plages spéciales           -->
 <!-- ============================================ -->
-<div class="page">
+<div class="page resserree">
     <header>
-        <h1>Adressage IPv4 — Plages spéciales et passerelles (3/4)</h1>
+        <h1>Adressage IPv4 — Plages spéciales et passerelles (3/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -375,6 +427,7 @@ Octet&nbsp;4 : <span class="host">11111111</span> = 255<br>
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 3 — Cours (3)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
@@ -383,7 +436,7 @@ Octet&nbsp;4 : <span class="host">11111111</span> = 255<br>
 <!-- ============================================ -->
 <div class="page">
     <header>
-        <h1>Adressage IPv4 — Exercices (4/4)</h1>
+        <h1>Adressage IPv4 — Exercices (4/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -440,6 +493,22 @@ Octet 4 réseau&nbsp;: ............ (....) → Adresse réseau : ...............
     <div class="write-zone"></div>
     <div class="write-zone"></div>
 
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 3 — Exercices</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE SUIVANTE : EXERCICES (SUITE)           -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Adressage IPv4 — Exercices, suite (5/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
     <h2><span class="exo-num">5</span> Adresses privées et NAT</h2>
     <p><strong>5.1</strong> Pour chaque adresse, indiquer si elle est <strong>privée</strong> ou <strong>publique</strong> :</p>
     <table>
@@ -467,7 +536,8 @@ Octet 4 réseau&nbsp;: ............ (....) → Adresse réseau : ...............
 
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
-        <span>Fiche 3 — Verso exercices</span>
+        <span>Fiche 3 — Exercices (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/03-adressage-ipv4.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 

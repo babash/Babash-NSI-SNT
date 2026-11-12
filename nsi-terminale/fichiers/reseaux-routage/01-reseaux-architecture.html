@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fiches NSI - Réseaux : Architecture et adressage</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
@@ -15,6 +16,7 @@
         }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        code, pre, .calcul-box, .box-fill, .url-decode, .ip-bin { font-variant-ligatures: none; }
 
         body { 
             background: #515151; 
@@ -117,8 +119,54 @@
         footer { 
             margin-top: auto; padding-top: 6px; 
             border-top: 1px solid var(--border); 
-            font-size: 0.68rem; color: #888; 
+            font-size: 0.68rem; color: #666; 
             display: flex; justify-content: space-between; 
+        }
+
+        /* Impression : espacements resserrés pour que chaque feuille tienne sur une page A4 */
+        @media print {
+            .page { padding: 9mm 11mm; }
+            header { margin-bottom: 7px; }
+            h2 { margin: 7px 0 4px 0; padding: 3px 9px; }
+            h3 { margin: 4px 0 2px 0; }
+            p, li { line-height: 1.33; margin: 2px 0; }
+            ul { margin: 3px 0; }
+            table { margin: 4px 0; }
+            th, td { padding: 3px 6px; }
+            .info-box, .tip-box, .warn-box { padding: 4px 8px; margin: 4px 0; }
+            .calcul-box { padding: 4px 8px; margin: 4px 0; line-height: 1.45; }
+            .topo-svg-wrap { margin: 4px 0; }
+            footer { padding-top: 4px; }
+            td .write-zone { margin: 0; }
+        }
+
+        /* Impression : une feuille A4 par .page, sans marges ajoutées par le navigateur */
+        @page { size: A4; margin: 0; }
+
+        /* Pied : auteur, licence et code source */
+        footer { flex-wrap: wrap; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; }
+        footer a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (la largeur de 210 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box, .tip-box { overflow-wrap: break-word; }
+            code, .calcul-box, .box-fill { overflow-wrap: anywhere; }
+            pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 360px) {
+            td, th { overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            h1 { font-size: 1.2rem; }
+            .col2 { flex-direction: column; gap: 0; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; hyphens: auto; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
         }
     </style>
 </head>
@@ -129,7 +177,7 @@
 <!-- ============================================ -->
 <div class="page">
     <header>
-        <h1>Réseaux — Architecture et adressage (1/3)</h1>
+        <h1>Réseaux — Architecture et adressage (1/4)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -182,7 +230,7 @@
         <tr><td><strong>Taille</strong></td><td>32 bits (4 octets)</td><td>128 bits (16 octets)</td></tr>
         <tr><td><strong>Notation</strong></td><td>Décimale pointée : <code>172.16.19.40</code></td><td>Hexadécimale par blocs : <code>2001:0db8::1</code></td></tr>
         <tr><td><strong>Nombre d'adresses</strong></td><td>≈ 4,3 × 10<sup>9</sup> (saturé)</td><td>≈ 3,4 × 10<sup>38</sup></td></tr>
-        <tr><td><strong>Raison d'être d'IPv6</strong></td><td colspan="2"><span class="fill-inline" style="min-width:480px;"></span></td></tr>
+        <tr><td><strong>Raison d'être d'IPv6</strong></td><td colspan="2"><span class="fill-inline" style="min-width:min(480px,100%);"></span></td></tr>
     </table>
 
     <h2>4. Réseau minimal — de deux machines à un LAN</h2>
@@ -196,6 +244,7 @@
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 1 — Recto cours</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
@@ -204,7 +253,7 @@
 <!-- ============================================ -->
 <div class="page">
     <header>
-        <h1>Réseaux — Étendue, topologies, encapsulation (2/3)</h1>
+        <h1>Réseaux — Étendue, topologies, encapsulation (2/4)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -221,7 +270,7 @@
     <p>La <strong>topologie</strong> décrit la façon dont les machines sont reliées entre elles.</p>
 
     <div class="topo-svg-wrap">
-        <svg viewBox="0 0 700 180" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 700 180" width="700" height="180" xmlns="http://www.w3.org/2000/svg">
             <!-- ÉTOILE -->
             <g>
                 <text x="80" y="15" text-anchor="middle" font-size="12" font-weight="700" fill="#1a2a6c">Étoile</text>
@@ -295,7 +344,7 @@
     <p>Quand un message traverse le réseau, chaque couche logicielle ajoute son propre en-tête : c'est l'<strong>encapsulation</strong>.</p>
 
     <div class="topo-svg-wrap">
-        <svg viewBox="0 0 700 100" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 700 100" width="700" height="100" xmlns="http://www.w3.org/2000/svg">
             <rect x="20" y="40" width="660" height="40" fill="none" stroke="#1a2a6c" stroke-width="1.5"/>
             <rect x="20" y="40" width="120" height="40" fill="#e8f0fe" stroke="#1a2a6c"/>
             <text x="80" y="65" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">Trame Ethernet</text>
@@ -316,6 +365,7 @@
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 1 — Cours (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
@@ -324,7 +374,7 @@
 <!-- ============================================ -->
 <div class="page">
     <header>
-        <h1>Réseaux — Exercices (3/3)</h1>
+        <h1>Réseaux — Exercices (3/4)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -334,7 +384,7 @@
     <div class="write-zone"></div>
     <div class="write-zone"></div>
 
-    <p><strong>1.2</strong> L'utilisateur déplace son ordinateur portable du lycée à son domicile. Laquelle des deux adresses est susceptible de changer ? Justifier.</p>
+    <p><strong>1.2</strong> L'utilisateur·rice déplace son ordinateur portable du lycée à son domicile. Laquelle des deux adresses est susceptible de changer ? Justifier.</p>
     <div class="write-zone"></div>
     <div class="write-zone"></div>
 
@@ -355,7 +405,7 @@
     <p><strong>3.1</strong> Sur le schéma ci-dessous, identifier la topologie utilisée et indiquer ce qui se passe si le nœud central tombe en panne.</p>
 
     <div class="topo-svg-wrap">
-        <svg viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 280 140" width="280" height="140" xmlns="http://www.w3.org/2000/svg">
             <circle cx="140" cy="70" r="16" fill="#1a2a6c"/>
             <text x="140" y="74" text-anchor="middle" font-size="9" fill="white">SW</text>
             <line x1="140" y1="54" x2="140" y2="25" stroke="#555" stroke-width="1.5"/>
@@ -375,15 +425,31 @@
     <div class="write-zone"></div>
     <div class="write-zone"></div>
 
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 1 — Exercices</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE SUIVANTE : EXERCICES (SUITE)           -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Réseaux — Exercices, suite (4/4)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
     <h2><span class="exo-num">4</span> Encapsulation</h2>
-    <p>On envoie une requête web depuis un navigateur. Ordonner ces couches du <strong>plus haut niveau</strong> (le plus proche de l'utilisateur) au <strong>plus bas niveau</strong> (le plus proche du câble) :</p>
+    <p>On envoie une requête web depuis un navigateur. Ordonner ces couches du <strong>plus haut niveau</strong> (le plus proche de l'utilisateur·rice) au <strong>plus bas niveau</strong> (le plus proche du câble) :</p>
     <p style="font-style: italic; font-size: 0.82rem;">IP, Trame Ethernet, HTTP, TCP</p>
     <p>Ordre : <span class="fill-inline" style="min-width:80px;"></span> → <span class="fill-inline" style="min-width:80px;"></span> → <span class="fill-inline" style="min-width:80px;"></span> → <span class="fill-inline" style="min-width:140px;"></span></p>
 
     <h2><span class="exo-num">5</span> Lecture de schéma</h2>
     <p>Soit le réseau suivant :</p>
     <div class="topo-svg-wrap">
-        <svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 620 130" width="620" height="130" xmlns="http://www.w3.org/2000/svg">
             <!-- LAN A -->
             <rect x="20" y="20" width="180" height="90" fill="none" stroke="#1a2a6c" stroke-dasharray="3,3"/>
             <text x="110" y="15" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">LAN A — 192.168.1.0/24</text>
@@ -418,7 +484,8 @@
 
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
-        <span>Fiche 1 — Verso exercices</span>
+        <span>Fiche 1 — Exercices (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/01-reseaux-architecture.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 

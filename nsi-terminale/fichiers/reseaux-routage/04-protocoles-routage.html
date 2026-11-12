@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fiches NSI - Protocoles de routage : RIP et OSPF</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
@@ -15,6 +16,7 @@
         }
 
         * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+        code, pre, .calcul-box, .box-fill, .url-decode, .ip-bin { font-variant-ligatures: none; }
 
         body { background: #515151; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; color: var(--text); }
 
@@ -106,7 +108,7 @@
         footer { 
             margin-top: auto; padding-top: 6px; 
             border-top: 1px solid var(--border); 
-            font-size: 0.68rem; color: #888; 
+            font-size: 0.68rem; color: #666; 
             display: flex; justify-content: space-between; 
         }
 
@@ -117,6 +119,54 @@
             text-align: center; font-size: 0.95rem;
             color: var(--primary); font-weight: 700;
         }
+
+        /* Impression : espacements resserrés pour que chaque feuille tienne sur une page A4 */
+        @media print {
+            .page { padding: 9mm 11mm; }
+            header { margin-bottom: 7px; }
+            h2 { margin: 7px 0 4px 0; padding: 3px 9px; }
+            h3 { margin: 4px 0 2px 0; }
+            p, li { line-height: 1.33; margin: 2px 0; }
+            ul { margin: 3px 0; }
+            table { margin: 4px 0; }
+            th, td { padding: 3px 6px; }
+            .info-box, .tip-box, .warn-box { padding: 4px 8px; margin: 4px 0; }
+            .calcul-box { padding: 4px 8px; margin: 4px 0; line-height: 1.45; }
+            .topo-svg-wrap { margin: 4px 0; }
+            footer { padding-top: 4px; }
+            td .write-zone { margin: 0; }
+            /* feuilles de cours denses : texte réduit à 90 % à l'impression seulement */
+            .page.resserree > :not(footer) { zoom: 0.9; }
+        }
+
+        /* Impression : une feuille A4 par .page, sans marges ajoutées par le navigateur */
+        @page { size: A4; margin: 0; }
+
+        /* Pied : auteur, licence et code source */
+        footer { flex-wrap: wrap; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; }
+        footer a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (la largeur de 210 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box, .tip-box { overflow-wrap: break-word; }
+            code, .calcul-box, .box-fill { overflow-wrap: anywhere; }
+            pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 360px) {
+            td, th { overflow-wrap: anywhere; }
+        }
+        @media screen and (max-width: 600px) {
+            header { flex-direction: column; align-items: flex-start; gap: 4px; }
+            h1 { font-size: 1.2rem; }
+            .col2 { flex-direction: column; gap: 0; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; hyphens: auto; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+        }
     </style>
 </head>
 <body>
@@ -126,7 +176,7 @@
 <!-- ============================================ -->
 <div class="page">
     <header>
-        <h1>Protocoles de routage — Principes et tables (1/4)</h1>
+        <h1>Protocoles de routage — Principes et tables (1/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -148,7 +198,7 @@
     <table>
         <tr><th>Destination (réseau)</th><th>Passerelle (prochain saut)</th><th>Interface</th><th>Métrique</th></tr>
         <tr><td><code>192.168.1.0/24</code></td><td>—</td><td>eth0</td><td>0 (directement connecté)</td></tr>
-        <tr><td><code>10.0.0.0/8</code></td><td><code>192.168.1.254</code></td><td>eth1</td><td>2</td></tr>
+        <tr><td><code>10.0.0.0/8</code></td><td><code>192.168.1.254</code></td><td>eth0</td><td>2</td></tr>
         <tr><td><code>0.0.0.0/0</code> (défaut)</td><td><code>192.168.1.1</code></td><td>eth0</td><td>1</td></tr>
     </table>
 
@@ -159,7 +209,7 @@
         <div>
             <h3>Statique</h3>
             <ul>
-                <li>Tables configurées <strong>manuellement</strong> par l'administrateur.</li>
+                <li>Tables configurées <strong>manuellement</strong> par l'administrateur·rice.</li>
                 <li>Simple, prévisible, mais <strong>peu adaptatif</strong>.</li>
                 <li>Inadapté aux grands réseaux : maintenance lourde.</li>
             </ul>
@@ -190,15 +240,16 @@
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 4 — Cours (1)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
 <!-- ============================================ -->
 <!-- PAGE 2 : COURS — RIP                        -->
 <!-- ============================================ -->
-<div class="page">
+<div class="page resserree">
     <header>
-        <h1>Protocole RIP — Routing Information Protocol (2/4)</h1>
+        <h1>Protocole RIP — Routing Information Protocol (2/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -228,7 +279,7 @@
     <p>Considérons le réseau suivant :</p>
 
     <div class="topo-svg-wrap">
-        <svg viewBox="0 0 580 160" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 580 160" width="580" height="160" xmlns="http://www.w3.org/2000/svg">
             <circle cx="60" cy="80" r="22" fill="#1a2a6c"/>
             <text x="60" y="85" text-anchor="middle" font-size="14" fill="white" font-weight="700">R1</text>
             <circle cx="200" cy="40" r="22" fill="#1a2a6c"/>
@@ -244,7 +295,7 @@
             <line x1="222" y1="40" x2="348" y2="80" stroke="#555" stroke-width="1.5"/>
             <line x1="222" y1="125" x2="348" y2="80" stroke="#555" stroke-width="1.5"/>
             <line x1="392" y1="80" x2="488" y2="80" stroke="#555" stroke-width="1.5"/>
-            <text x="540" y="55" font-size="9" fill="#555">Réseau cible L</text>
+            <text x="510" y="50" text-anchor="middle" font-size="9" fill="#555">Réseau cible L</text>
         </svg>
     </div>
 
@@ -254,7 +305,7 @@
         <tr><td><strong>L</strong></td><td>R2</td><td>3</td></tr>
         <tr><td><strong>L</strong></td><td>R3</td><td>3</td></tr>
     </table>
-    <p>Les deux routes sont équivalentes au sens de RIP. Le routeur sélectionne par convention l'<em>interface d'index le plus bas</em> (eth0 plutôt que eth1).</p>
+    <p>Les deux routes sont équivalentes au sens de RIP. À égalité, RIP <em>garde la route qu'il connaît déjà</em> (la première reçue). Si un énoncé donne une règle pour départager, toujours appliquer celle de l'énoncé.</p>
 
     <h2>8. Algorithme de Bellman-Ford (vision synthétique)</h2>
     <div class="info-box" style="font-size: 0.78rem;">
@@ -278,15 +329,16 @@
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 4 — Cours (2)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
 <!-- ============================================ -->
 <!-- PAGE 3 : COURS — OSPF                       -->
 <!-- ============================================ -->
-<div class="page">
+<div class="page resserree">
     <header>
-        <h1>Protocole OSPF — Open Shortest Path First (3/4)</h1>
+        <h1>Protocole OSPF — Open Shortest Path First (3/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -320,7 +372,7 @@
     <p>Soit le réseau ci-dessous, où chaque arête est pondérée par son débit :</p>
 
     <div class="topo-svg-wrap">
-        <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 580 200" width="580" height="200" xmlns="http://www.w3.org/2000/svg">
             <circle cx="80" cy="100" r="24" fill="#1a2a6c"/>
             <text x="80" y="105" text-anchor="middle" font-size="14" fill="white" font-weight="700">A</text>
             <circle cx="290" cy="40" r="24" fill="#1a2a6c"/>
@@ -355,7 +407,7 @@
             <strong>Avec RIP</strong> (nombre de sauts) :<br>
             • A → B → C : 2 sauts<br>
             • A → D → C : 2 sauts<br>
-            ⇒ <strong>égalité</strong>. RIP choisit par convention l'interface au plus petit index.
+            ⇒ <strong>égalité</strong>. RIP garde la route qu'il a reçue en premier.
         </div>
         <div>
             <strong>Avec OSPF</strong> (coût) :<br>
@@ -372,6 +424,7 @@
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
         <span>Fiche 4 — Cours (3)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
@@ -380,7 +433,7 @@
 <!-- ============================================ -->
 <div class="page">
     <header>
-        <h1>Protocoles de routage — Exercices (4/4)</h1>
+        <h1>Protocoles de routage — Exercices (4/5)</h1>
         <span class="badge">NSI — Terminale</span>
     </header>
 
@@ -399,7 +452,7 @@
     <p>Soit le réseau ci-dessous (toutes les liaisons ont le même débit) :</p>
 
     <div class="topo-svg-wrap">
-        <svg viewBox="0 0 600 170" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 600 170" width="420" height="119" xmlns="http://www.w3.org/2000/svg">
             <circle cx="70" cy="85" r="22" fill="#1a2a6c"/>
             <text x="70" y="90" text-anchor="middle" font-size="13" fill="white" font-weight="700">R1</text>
             <circle cx="210" cy="40" r="22" fill="#1a2a6c"/>
@@ -445,9 +498,25 @@
     <p>Chemin <code>R1→R2→R4→R5</code> : ........................................................</p>
     <p>Chemin <code>R1→R3→R4→R5</code> : ........................................................</p>
 
-    <p><strong>3.2</strong> Quel chemin OSPF emprunte-t-il ? Pourquoi diffère-t-il du choix de RIP ?</p>
+    <p><strong>3.2</strong> Quel chemin OSPF emprunte-t-il ? Pourquoi peut-il différer du choix de RIP ?</p>
     <div class="write-zone"></div>
     <div class="write-zone"></div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 4 — Exercices</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE SUIVANTE : EXERCICES (SUITE)           -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Protocoles de routage — Exercices, suite (5/5)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
 
     <h2><span class="exo-num">4</span> Lecture inverse d'un coût</h2>
     <p>Dans la table de routage d'un routeur OSPF, on lit que le coût d'une liaison directe vaut <strong>0,1</strong>.</p>
@@ -467,18 +536,18 @@
     <p>Compléter la fonction <code>choose_interface</code> qui retourne l'interface de sortie pour une IP de destination donnée, ou <code>None</code> si aucune ligne ne correspond.</p>
 
     <div class="box-fill" style="min-height: 170px; font-family: 'Fira Code', monospace; font-size: 0.78rem; line-height: 1.5;">
-        <span style="color: #888;">def</span> choose_interface(t_routage, destination_ip):<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #888;">for</span> reseau, n, interface, _ <span style="color: #888;">in</span> t_routage:<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;masque = .......................................................................................<br>
+        <span style="color: #555;">def</span> choose_interface(t_routage, destination_ip):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">for</span> reseau, n, interface, _ <span style="color: #555;">in</span> t_routage:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;masque = ............................................................<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;correspondance = True<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #888;">for</span> i <span style="color: #888;">in</span> range(4):<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;octet_calcule = .........................................................................<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #888;">if</span> octet_calcule != ...........................................:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">for</span> i <span style="color: #555;">in</span> range(4):<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;octet_calcule = ..................................................<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">if</span> octet_calcule != ...........................................:<br>
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;correspondance = False<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #888;">break</span><br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #888;">if</span> correspondance:<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #888;">return</span> .................................................................<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #888;">return</span> .....................................
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">break</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">if</span> correspondance:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">return</span> .......................................................<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #555;">return</span> .....................................
     </div>
 
     <p><strong>Test :</strong> avec la table <code>[((192,168,1,0), 24, "eth0", 1), ((10,0,0,0), 8, "eth1", 2)]</code>, que renvoie l'appel <code>choose_interface(t, (192,168,5,12))</code> ? Justifier.</p>
@@ -487,7 +556,8 @@
 
     <footer>
         <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
-        <span>Fiche 4 — Verso exercices</span>
+        <span>Fiche 4 — Exercices (suite)</span>
+        <span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/reseaux-routage/04-protocoles-routage.html" target="_blank" rel="noopener">Code source sur GitHub</a></span>
     </footer>
 </div>
 
