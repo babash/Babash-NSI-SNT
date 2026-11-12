@@ -54,7 +54,9 @@ jobs:
                       # un code envoyé en direct pendant le duel
                       pg = el['Moussa']
                       if await pg.evaluate("S.etat") == 'duel':
-                          await pg.evaluate("ED.remplacer('while True:\\n    while not obstacleEst():\\n        est()\\n    nord()\\n    while not obstacleOuest():\\n        ouest()\\n    nord()')"); await pg.wait_for_timeout(500); await pg.click('#go')
+                          await pg.evaluate("r => ED.remplacer('# ronde ' + r + '\\nwhile True:\\n    while not obstacleEst():\\n        est()\\n    nord()\\n    while not obstacleOuest():\\n        ouest()\\n    nord()')", r); await pg.wait_for_timeout(500)
+                          if await pg.is_enabled('#go'): await pg.click('#go')
+                          else: print('envoi en direct impossible (bouton inactif)'); ok = False
                       await prof.wait_for_function("document.getElementById('bilan') && !document.getElementById('bilan').hidden && P.manche && P.manche.finie", timeout=90000)
                       await prof.wait_for_timeout(2500)
                       salle = await prof.evaluate("Object.values(P.matchs).filter(m => m.partie && m.p.b).map(m => [m.p.a.pseudo, m.p.b.pseudo, m.partie.m.count('K'), m.partie.m.count('Z'), m.partie.log.K.length + m.partie.log.Z.length])")
