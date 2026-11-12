@@ -3,12 +3,13 @@
 *Les applications du site qui utilisent une base, et le socle commun de la base. Retour au [README](../README.md).*
 
 Deux ressources passent par **Supabase** : Alien Python y enregistre la progression des élèves ;
-Court-circuit n'y enregistre rien et n'en utilise que le temps réel.
+Court-circuit n'y enregistre rien pour l'instant et n'en utilise que le temps réel (son code
+élève est préparé, mais pas encore en service).
 
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
-| Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | aucune : seulement les canaux temps réel (diffusion et présence) |
+| Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | aucune pour l'instant : seulement les canaux temps réel (diffusion et présence) ; le schéma `court_circuit` du code élève est préparé, pas appliqué |
 
 **Alien Python**
 
@@ -27,19 +28,31 @@ Court-circuit n'y enregistre rien et n'en utilise que le temps réel.
 
 **Court-circuit**
 
-- Rien n'est enregistré en ligne : le duel en direct passe par les canaux temps réel de
-  Supabase (diffusion et présence), sans table ni fonction. Le prénom ou le pseudo et le code de
-  chaque élève ne vont qu'aux élèves de sa salle, pendant la séance. Seules la page de la salle
+- Rien n'est enregistré en ligne pour l'instant : le duel en direct et le mini-championnat
+  passent par les canaux temps réel de Supabase (diffusion et présence), sans table ni fonction.
+  Le prénom ou le pseudo et le code de chaque élève ne vont qu'aux élèves de sa salle, pendant la
+  séance ; le classement vit tant que la page de la salle est ouverte. Seules la page de la salle
   (`prof.html`) et l'entrée d'un·e élève dans une salle se connectent à Supabase ; l'entraînement
   et le défi contre Zéro marchent sans réseau.
+- **Le code élève est préparé, mais pas appliqué** (12 novembre 2026). Pour garder ses
+  programmes en ligne (« Mes codes », règle 21), un·e élève recevra un code de 2 mots et
+  3 chiffres. La migration `snt/fichiers/court-circuit/supabase/0001-codes-eleves.sql` crée le
+  schéma `court_circuit` (le prénom ou le pseudo, le code et les programmes, 30 au plus, effacés
+  12 mois après la dernière visite) et les fonctions `cc_`. Elle attend l'accord de l'enseignant
+  sur le SQL ; d'ici là, `COMPTES: false` dans `config.js` cache le code élève et « Mes codes », et
+  la page n'appelle aucune de ces fonctions. Le registre des tables du socle commun la rangera
+  avec la migration `0005` du site, qui attend elle aussi. Le mode d'emploi (appliquer, vérifier,
+  revenir en arrière) est dans [`snt/fichiers/court-circuit/supabase/LISEZMOI.md`](../snt/fichiers/court-circuit/supabase/LISEZMOI.md).
 - C'est une exception voulue par l'enseignant (10 novembre 2026) aux règles des bases, qui
   n'utilisaient pas le temps réel. La clé de `snt/fichiers/court-circuit/config.js` est
   l'ancienne clé publique « anon » de la même base.
 - Pour ta propre copie : mets l'adresse et la clé « anon public » de ton projet Supabase dans
   `config.js`, ou laisse l'adresse vide : le jeu passe en mode démo, où une salle passe entre
-  les onglets d'un même navigateur (comme avec `?demo` à la fin de l'adresse).
-- Les codes d'élèves des applications de jeu viendront plus tard : pour l'instant, rien n'est
-  gardé en ligne, et les étoiles et le niveau de Zéro restent un jour au plus sur l'appareil.
+  les onglets d'un même navigateur (comme avec `?demo` à la fin de l'adresse), et où le code élève
+  est imité sur l'appareil (oublié un jour après sa création). Pour le vrai code élève : lance
+  `snt/fichiers/court-circuit/supabase/schema.sql` dans *SQL Editor*, après le socle commun du
+  site, puis mets `COMPTES: true` dans `config.js`.
+- Sur l'appareil, les étoiles et le niveau de Zéro restent un jour au plus.
 
 **Le socle commun de la base (dossier `supabase/`)**
 

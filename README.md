@@ -55,7 +55,7 @@ Tu peux copier le site pour tes classes, avec tes rubriques et tes ressources : 
 | [L'organisation du dépôt](docs/ORGANISATION.md) | les dossiers et les fichiers, le décor |
 | [Les données de la bibliothèque](docs/BIBLIOTHEQUE.md) | le format des fiches du dossier `donnees/`, le thésaurus des notions et leur validation |
 | [La vérification automatique](docs/VERIFICATION.md) | les contrôles de l'onglet Actions, et le même contrôle sur ton ordinateur |
-| [Les bases Supabase](docs/SUPABASE.md) | Alien Python, Court-circuit et le socle commun de la base |
+| [Les bases Supabase](docs/SUPABASE.md) | Alien Python, Court-circuit (son code élève est préparé, pas encore appliqué) et le socle commun de la base |
 | [L'équipe d'agents](docs/AGENTS.md) | les rôles, qui possède quels fichiers, les règles de conception des ressources |
 | [Les outils du Gardien](docs/GARDIEN.md) | les contrôles avant et après chaque publication |
 | [Contribuer](CONTRIBUTING.md) | les règles du travail sur GitHub |
