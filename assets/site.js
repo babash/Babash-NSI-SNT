@@ -174,7 +174,7 @@
     reglagesSite = r || {};
     depotSite = lireDepot(reglagesSite.depot);
     var dossiers = liste(reglagesSite.rubriques).slice();
-    var ici = rubriqueDeLaPage();
+    var ici = pageAPart() ? null : rubriqueDeLaPage();
     if (ici && dossiers.indexOf(ici) < 0) dossiers.push(ici); // rubrique non listée : accessible par son adresse
     var restants = dossiers.length;
     if (!restants) return quandPret(afficher);
@@ -353,8 +353,15 @@
     return rub.base + (SUR_DISQUE ? 'index.html' : '') + (ancre ? '#' + ancre : '');
   }
 
-  function urlGithub(action, chemin) {
-    return urlDepot() + '/' + action + '/' + (reglagesSite.branche || 'main') + '/' + chemin;
+  /* Une page qui n'est pas une rubrique (la bibliothèque) : <div id="site" data-page="…"> */
+  function pageAPart() {
+    var s = document.getElementById('site');
+    return s ? s.getAttribute('data-page') : null;
+  }
+
+  /* La bibliothèque, avec une recherche ou des filtres (« ?q=boucle ») */
+  function urlBibliotheque(requete) {
+    return RACINE + 'bibliotheque/' + (SUR_DISQUE ? 'index.html' : '') + (requete || '');
   }
 
   /* L'accueil du dépôt : celui de reglages.js, sinon celui du site */
@@ -652,9 +659,21 @@
           href: urlRubrique(r),
           'aria-current': r === active ? 'page' : null
         }, r.court));
-      }))),
+      }).concat(
+        /* Toute la bibliothèque, avec ses filtres (cahier des charges, § 2) */
+        el('li', { style: '--hl:' + COULEURS.cyan }, el('a', {
+          href: urlBibliotheque(),
+          'aria-current': active === 'bibliotheque' ? 'page' : null
+        }, 'Bibliothèque'))
+      ))),
       choixMode()
     ]));
+  }
+
+  /* Le pied de page commun : auteur, licences, code source sur GitHub, mention de l'IA.
+     « Ajouter une ressource » n'y est plus (N13) : ce mode d'emploi ira dans l'admin (T51). */
+  function piedDePage() {
+    return el('footer', { class: 'pied' }, mentions());
   }
 
   /* ── Sommaire des thèmes (colonne de gauche sur grand écran) ──── */
@@ -821,15 +840,13 @@
       } else {
         vue.appendChild(el('p', { class: 'vide' }, 'Aucune ressource ne correspond à « ' + q + ' ».'));
       }
+      // La bibliothèque cherche plus loin : synonymes, notions, fautes de frappe, texte des documents, filtres
+      vue.appendChild(el('p', { class: 'vers-bibliotheque' }, el('a', { href: urlBibliotheque('?q=' + encodeURIComponent(q)) },
+        'Chercher « ' + q + ' » dans toute la bibliothèque, avec ses filtres')));
     }
     maj(recherche.input.value.trim());
 
-    page.appendChild(el('footer', { class: 'pied' }, [
-      el('h2', null, 'Ajouter une ressource'),
-      el('p', null, 'Chaque rubrique a sa liste dans un petit fichier texte de son dossier. On y ajoute un lien vers une ressource en ligne, ou vers un fichier (PDF, fiche, diaporama) déposé dans le dossier de la rubrique. Le lien « Modifier la liste » se trouve en bas de chaque rubrique.'),
-      depotSite ? el('p', { class: 'actions' }, el('a', { href: urlDepot() + '#readme' }, 'Mode d\'emploi complet')) : null,
-      mentions()
-    ]));
+    page.appendChild(piedDePage());
   }
 
   /* ── Page d'une rubrique ──────────────────────────────────────── */
@@ -908,27 +925,39 @@
     rendre(recherche ? recherche.input.value.trim() : '');
     suivreLecture(zone, details);
 
-    page.appendChild(el('footer', { class: 'pied' }, [
-      el('h2', null, 'Ajouter une ressource'),
-      el('p', null, [
-        'La liste de cette page est dans ', el('code', null, rub.id + '/ressources.js'),
-        '. Pour un PDF ou un autre fichier, le déposer d\'abord dans le dossier ',
-        el('code', null, rub.id + '/fichiers'), ', puis l\'ajouter à la liste avec ',
-        el('code', null, 'lien: "fichiers/nom-du-fichier.pdf"'), '.'
-      ]),
-      depotSite ? el('p', { class: 'actions' }, [
-        el('a', { href: urlGithub('edit', rub.id + '/ressources.js') }, 'Modifier la liste'),
-        el('a', { href: urlGithub('upload', rub.id + '/fichiers') }, 'Déposer un fichier'),
-        el('a', { href: urlDepot() + '#readme' }, 'Mode d\'emploi')
-      ]) : null,
-      mentions()
-    ]));
+    page.appendChild(piedDePage());
   }
+
+  /* Ce que site.js prête aux pages à part (la bibliothèque, bientôt l'admin) */
+  var OUTILS = {
+    el: el, vider: vider, liste: liste, pluriel: pluriel, echapper: echapper, mettreEnForme: mettreEnForme,
+    sansAccents: sansAccents, slug: slug, couleur: couleur, analyser: analyser, lienVers: lienVers,
+    barreHaut: barreHaut, scene: scene, piedDePage: piedDePage, blocAlertes: blocAlertes,
+    urlAccueil: urlAccueil, urlRubrique: urlRubrique, urlBibliotheque: urlBibliotheque, urlDepot: urlDepot,
+    ordreRubriques: ordreRubriques, titreSite: titreSite, reglages: function () { return reglagesSite; },
+    signaler: signaler, racine: RACINE, surDisque: SUR_DISQUE
+  };
 
   function afficher() {
     var racine = document.getElementById('site');
     if (!racine) return;
     vider(racine);
+    var aPart = pageAPart();
+    if (aPart === 'bibliotheque') {
+      if (typeof window.pageBibliotheque === 'function') window.pageBibliotheque(racine, OUTILS);
+      else {
+        racine.appendChild(barreHaut('bibliotheque'));
+        var page = el('div', { class: 'page' });
+        page.appendChild(el('div', { class: 'alerte', role: 'alert' }, [
+          el('p', null, el('strong', null, 'La bibliothèque n\'a pas pu s\'afficher')),
+          el('p', { class: 'petit' }, 'Le programme de la page (assets/bibliotheque.js) ne s\'est pas chargé. Recharger la page ; '
+            + 'si le message reste, le signaler dans les issues du dépôt GitHub.')
+        ]));
+        page.appendChild(piedDePage());
+        racine.appendChild(page);
+      }
+      return;
+    }
     var id = rubriqueDeLaPage();
     if (id && rubriques[id]) pageRubrique(racine, rubriques[id]);
     else pageAccueil(racine);
