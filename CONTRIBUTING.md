@@ -18,6 +18,8 @@ Une question, une idée, un lien cassé : ouvre une [issue](https://github.com/b
   Un simple `git fetch origin` ne met pas `origin/main` à jour dans les copies de travail des agents : d'où la forme complète.
 - **Envoyer sa branche avant de s'arrêter** : une copie de travail peut être effacée.
 
+Les préfixes, selon le rôle :
+
 | Préfixe | Pour |
 |---|---|
 | `biblio/` | les listes de ressources, les fiches de la bibliothèque, les fichiers déposés (Bibliothécaire) |
