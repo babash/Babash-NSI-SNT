@@ -1,0 +1,79 @@
+# Essai ponctuel de Court-circuit (T48), sur cette branche seulement : jamais fusionnée dans main.
+# Les sessions ne joignent pas Supabase ; ce job, lui, a Internet. Il ouvre la salle de l'enseignant·e
+# et trois élèves dans Chrome, avec le vrai temps réel de Supabase (sans ?demo), joue un
+# mini-championnat de 2 rondes et vérifie résultats, classement et fin de séance.
+name: Essai temps réel Court-circuit T48
+on:
+  push:
+    branches: [atelier/t48-essai-temps-reel]
+permissions:
+  contents: read
+jobs:
+  essai:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Playwright
+        run: |
+          python3 -m pip install --quiet --break-system-packages playwright || python3 -m pip install --quiet playwright
+          python3 -m playwright install --with-deps chromium
+      - name: Un mini-championnat en direct
+        run: |
+          cd snt/fichiers/court-circuit && (python3 -m http.server 8765 >/dev/null 2>&1 &) && sleep 1
+          cat > /tmp/essai.py <<'PY'
+          import asyncio, sys
+          from playwright.async_api import async_playwright
+          B = 'http://localhost:8765/'
+          CODES = {'Awa': 'while True:\n    while not obstacleNord():\n        nord()\n    est()\n    while not obstacleSud():\n        sud()\n    est()',
+                   'Moussa': 'for i in range(8):\n    nord()',
+                   'Inaya': 'while True:\n    if cible():\n        eclair()\n    elif couleurNord() == "vide" or couleurNord() == "adversaire":\n        nord()\n    elif couleurEst() != "moi" and not obstacleEst():\n        est()\n    elif not obstacleOuest():\n        ouest()\n    else:\n        sud()'}
+          async def main():
+              async with async_playwright() as p:
+                  b = await p.chromium.launch(); errs = []
+                  def watch(pg, n):
+                      pg.on('pageerror', lambda e: errs.append(n + ': ' + str(e)))
+                      pg.on('console', lambda m: errs.append(n + ': ' + m.text) if m.type == 'error' else None)
+                  prof = await (await b.new_context()).new_page(); watch(prof, 'salle')
+                  await prof.goto(B + 'prof.html'); await prof.wait_for_timeout(4000)
+                  code = await prof.evaluate('P.code'); print('salle', code, '| démo :', await prof.evaluate('P.salle.demo'), '|', await prof.inner_text('#etat'))
+                  el = {}
+                  for nom in CODES:
+                      pg = await (await b.new_context()).new_page(); watch(pg, nom)
+                      await pg.goto(B + 'index.html?classe=' + code); await pg.wait_for_timeout(1500)
+                      await pg.fill('#pseudo', nom); await pg.click('[data-a=rejoindre]'); await pg.evaluate('c => ED.remplacer(c)', CODES[nom]); el[nom] = pg
+                  await prof.wait_for_timeout(6000)
+                  vus = await prof.evaluate('P.joueurs.map(j => j.pseudo)'); print('élèves vus :', vus)
+                  ok = len(vus) == 3
+                  await prof.select_option('#rondes', '3'); await prof.select_option('#ecriture', '30')
+                  for r in (1, 2, 3):
+                      await prof.click('#lancer'); await prof.wait_for_timeout(3000)
+                      for pg in el.values():
+                          if await pg.is_enabled('#go'): await pg.click('#go')
+                      await prof.wait_for_timeout(9000)
+                      # un code envoyé en direct pendant le duel
+                      pg = el['Moussa']
+                      if await pg.evaluate("S.etat") == 'duel':
+                          await pg.evaluate("ED.remplacer('while True:\\n    while not obstacleEst():\\n        est()\\n    nord()\\n    while not obstacleOuest():\\n        ouest()\\n    nord()')"); await pg.wait_for_timeout(500); await pg.click('#go')
+                      await prof.wait_for_function("document.getElementById('bilan') && !document.getElementById('bilan').hidden && P.manche && P.manche.finie", timeout=90000)
+                      await prof.wait_for_timeout(2500)
+                      salle = await prof.evaluate("Object.values(P.matchs).filter(m => m.partie && m.p.b).map(m => [m.p.a.pseudo, m.p.b.pseudo, m.partie.m.count('K'), m.partie.m.count('Z'), m.partie.log.K.length + m.partie.log.Z.length])")
+                      cote = {n: await pg.evaluate("S.partie && S.advId ? [S.moi, S.partie.m.count('K'), S.partie.m.count('Z'), S.partie.log.K.length + S.partie.log.Z.length] : null") for n, pg in el.items()}
+                      cl = {n: await pg.evaluate("S.classement ? S.classement.n : null") for n, pg in el.items()}
+                      print(f'ronde {r} | salle :', salle, '| élèves :', cote, '| classement reçu (ronde) :', cl)
+                      for n, v in cote.items():
+                          if v and salle and not any(v[1:] == s[2:] for s in salle): ok = False; print('ÉCART pour', n)
+                      if any(x != r for x in cl.values()): ok = False; print('classement manquant')
+                      for pg in el.values():
+                          if await pg.locator('#fenetre [data-a=fermer]').count(): await pg.click('#fenetre [data-a=fermer]')
+                  await prof.wait_for_timeout(3000)
+                  fins = {n: (await pg.inner_text('#fenetre'))[:25] for n, pg in el.items()}
+                  print('fin de séance :', fins)
+                  if not all('Fin de la séance' in t for t in fins.values()): ok = False
+                  print(await prof.inner_text('#bilanTexte'))
+                  print('erreurs :', errs)
+                  print('RÉSULTAT :', 'OK' if ok and not errs else 'ÉCHEC')
+                  await b.close(); sys.exit(0 if ok and not errs else 1)
+          asyncio.run(main())
+          PY
+          python3 /tmp/essai.py
