@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://babash.github.io/Babash-NSI-SNT/donnees/schema/notions.schema.json",
   "title": "Thésaurus des notions",
-  "description": "Le référentiel des notions de la bibliothèque (donnees/referentiels/notions.json), construit sur le modèle de SKOS (W3C, 2009) et de la norme ISO 25964-1:2011. Chaque notion a un libellé préféré, des libellés alternatifs et cachés, des notions plus larges (les plus étroites s'en déduisent) et associées, une note d'usage, des correspondances avec le référentiel des programmes et avec des référentiels externes, et parfois les difficultés connues des élèves. Le script scripts/valider_donnees.py vérifie ce qu'un schéma seul ne peut pas vérifier : références existantes, absence de cycle, libellés uniques et disjoints.",
+  "description": "Le référentiel des notions de la bibliothèque (donnees/referentiels/notions.json), construit sur le modèle de SKOS (W3C, 2009) et de la norme ISO 25964-1:2011. Chaque notion a un libellé préféré, des libellés alternatifs et cachés, des notions plus larges (les plus étroites s'en déduisent) et associées, une note d'usage, des correspondances avec le référentiel des programmes et avec des référentiels externes, et parfois les difficultés connues des élèves. L'historique dit ce que chaque version a ajouté ou modifié. Le script scripts/valider_donnees.py vérifie ce qu'un schéma seul ne peut pas vérifier : références existantes, absence de cycle, libellés uniques et disjoints (y compris pour la recherche), historique cohérent ; avec --avant, aucun identifiant publié n'a disparu.",
   "type": "object",
   "additionalProperties": false,
   "required": ["version", "statut", "explication", "domaines", "referentiels_externes", "sources", "notions"],
@@ -29,6 +29,11 @@
       "type": "array", "minItems": 1,
       "items": { "$ref": "#/$defs/source" },
       "description": "Les textes consultés : normes, référentiels, recherches. Chacun avec sa date de lecture."
+    },
+    "historique": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "#/$defs/changement" },
+      "description": "Les versions du thésaurus, de la plus ancienne à la plus récente (skos:changeNote du thésaurus ; dates de création et de modification des notions, ISO 25964-1). Une notion est ajoutée une seule fois ; une notion publiée n'est jamais retirée."
     },
     "notions": {
       "type": "array", "minItems": 1,
@@ -114,6 +119,26 @@
         },
         "code": { "type": "string", "minLength": 2, "maxLength": 120 },
         "libelle": { "type": "string", "minLength": 2, "maxLength": 160 }
+      }
+    },
+    "changement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["date", "resume"],
+      "properties": {
+        "date": { "$ref": "#/$defs/date" },
+        "tache": { "type": "string", "pattern": "^T[0-9]+[a-z]?$", "description": "La tâche du tableau des tâches (T60)." },
+        "resume": { "type": "string", "minLength": 10, "maxLength": 800, "description": "Ce qui a changé, en quelques phrases." },
+        "ajoutees": {
+          "type": "array", "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id_notion" },
+          "description": "Les notions créées par cette version."
+        },
+        "modifiees": {
+          "type": "array", "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id_notion" },
+          "description": "Les notions déjà publiées dont cette version change un libellé, une relation, la note ou les difficultés."
+        }
       }
     },
     "difficulte": {

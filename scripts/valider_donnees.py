@@ -8,8 +8,9 @@ Contrôles :
     programmes (programmes.json), compétences Pix (competences-pix.json), notions (notions.json),
     autres fiches, fichiers déposés sur le site ;
   - le thésaurus des notions (notions.json, modèle SKOS et ISO 25964-1) : notions plus larges et
-    associées existantes, hiérarchie sans cycle, domaines, libellés uniques et disjoints, sources
-    et référentiels externes cités ;
+    associées existantes, hiérarchie sans cycle, domaines, libellés uniques et disjoints (y compris
+    pour la recherche, qui compare les racines des mots), sources et référentiels externes cités,
+    historique des versions ; avec --avant, aucun identifiant publié n'a disparu ;
   - chaque ressource a exactement un document principal ;
   - aucun document ne pointe vers une page GitHub, sauf le rôle « code source » ;
   - visibilité (cahier des charges, § 3.2) : ce que voient l'extérieur et les élèves (depuis le
@@ -27,6 +28,8 @@ Usage :
   python3 scripts/valider_donnees.py --strict     les avertissements comptent comme des erreurs
   python3 scripts/valider_donnees.py --github     dans GitHub Actions : annotations sur les fichiers et
                                                   résumé du run (job « Données de la bibliothèque »)
+  python3 scripts/valider_donnees.py --avant F    compare le thésaurus à une version précédente F (celle de
+                                                  main) : un identifiant publié ne disparaît jamais
 
 Code de retour : 0 si tout est valide, 1 s'il y a au moins une erreur.
 """
@@ -340,6 +343,28 @@ def normaliser(t):
     return " ".join(re.sub(r"[^0-9a-z]+", " ", t).split())
 
 
+def racine(m):
+    """La racine d'un mot déjà normalisé, pour la recherche : pluriels, féminins et « -é » retirés (« boucles » et
+    « boucle » donnent « boucl »). Même règle que racine() dans assets/recherche.js : les garder identiques."""
+    if len(m) <= 3 or m.isdigit():
+        return m
+    if m.endswith("eaux"):
+        m = m[:-1]
+    elif m.endswith("aux") and len(m) > 4:
+        m = m[:-3] + "al"
+    elif re.search(r"[^s]s$", m) or m.endswith("x"):
+        m = m[:-1]
+    while len(m) > 4 and m.endswith("e"):
+        m = m[:-1]
+    return m
+
+
+def cle_recherche(t):
+    """La clé sous laquelle la recherche range un libellé : les racines de ses mots. Deux libellés de même clé
+    trouvent les mêmes ressources (« Tests » et « test »)."""
+    return " ".join(racine(m) for m in normaliser(t).split())
+
+
 def textes(obj, chemin=""):
     """Tous les textes d'un objet JSON, avec leur emplacement."""
     if isinstance(obj, str):
@@ -431,8 +456,9 @@ def chercher_secrets(fichier, obj, rapport):
 # ── Le validateur ───────────────────────────────────────────────────────────
 
 class Validation:
-    def __init__(self, racine):
+    def __init__(self, racine, avant=None):
         self.racine = os.path.abspath(racine)
+        self.avant = avant      # --avant : une version précédente du thésaurus, à comparer
         self.donnees = os.path.join(self.racine, "donnees")
         self.rapport = Rapport()
         self.schemas = {}
@@ -444,6 +470,9 @@ class Validation:
         self.placees = set()
         self.notions = {}       # id → notion du thésaurus (notions.json)
         self.ancetres = {}      # id → ensemble de ses notions plus larges, à tous les niveaux
+        self.champs_notions = {}    # id → emplacement de la notion dans notions.json
+        self.historique = False     # le thésaurus a un historique
+        self.ajouts_historique = {}  # id → numéro de la version de l'historique qui l'ajoute
         self.compteurs = {"fiches": 0, "vitrines": 0, "progressions": 0, "caches": 0, "collecte": 0, "a_verifier": 0,
                           "sans_notions": 0}
 
@@ -736,7 +765,8 @@ class Validation:
                         self.rapport.attention(fichier, joindre(joindre(champs[nid], "plus_larges"), k), f"« {p} » est obsolète")
 
         # Libellés (SKOS) : libellé préféré unique ; dans une même langue, chaque libellé d'une notion ne s'écrit qu'une
-        # fois ; un libellé caché ne répète aucun autre libellé de sa notion ; homographes entre notions signalés.
+        # fois ; un libellé caché ne répète aucun autre libellé de sa notion ; homographes entre notions signalés, y compris
+        # ceux que seule la recherche confond (mêmes racines : « test » et « Tests »).
         # « itération » (français) et « iteration » (anglais) sont deux libellés distincts pour SKOS : permis.
         sortes = (("libelle", "libellé", "fr"), ("alternatifs", "libellé alternatif", "fr"), ("anglais", "libellé anglais", "en"),
                   ("code", "mot du code", "code"), ("caches", "libellé caché", "cache"))
@@ -747,10 +777,14 @@ class Validation:
             for cle, quoi, langue in sortes:
                 valeurs = [n.get(cle)] if cle == "libelle" else liste(n, cle)
                 for k, lib in enumerate(valeurs):
+                    ou = joindre(c, cle) if cle == "libelle" else joindre(joindre(c, cle), k)
+                    if isinstance(lib, str) and lib.strip() and not normaliser(lib):
+                        self.rapport.erreur(fichier, ou, f"« {lib} » n'a ni lettre ni chiffre : la recherche ne peut pas s'en servir "
+                                                         "(un symbole comme // ou % s'écrit dans la note)")
+                        continue
                     if not isinstance(lib, str) or not normaliser(lib):
                         continue
                     forme = normaliser(lib)
-                    ou = joindre(c, cle) if cle == "libelle" else joindre(joindre(c, cle), k)
                     deja = vus.get((langue, forme))
                     if langue == "cache":
                         deja = deja or next((s for (lg, fo), s in vus.items() if fo == forme), None)
@@ -765,14 +799,113 @@ class Validation:
                             self.rapport.erreur(fichier, ou, f"le libellé « {lib} » est déjà celui de « {preferes[forme]} » : "
                                                              "un libellé préféré est unique dans le thésaurus")
                         preferes[forme] = nid
-                    tous.setdefault(forme, []).append((nid, ou, lib))
-        for forme, emplois in tous.items():
+                    tous.setdefault(cle_recherche(lib), []).append((nid, ou, lib))
+        for emplois in tous.values():
             notions = sorted({e[0] for e in emplois})
             if len(notions) > 1:
                 nid, ou, lib = emplois[-1]
+                formes = {normaliser(e[2]) for e in emplois}
+                autre = next(e for e in emplois if e[0] != nid)
+                precision = ("" if len(formes) == 1 else
+                             f" ; la recherche le confond avec « {autre[2]} » ({autre[0]}), de mêmes racines")
                 self.rapport.attention(fichier, ou, f"« {lib} » désigne plusieurs notions ({', '.join(notions)}) : "
-                                                    "préciser l'un des libellés (ISO 25964-1, homographes)")
+                                                    f"préciser l'un des libellés (ISO 25964-1, homographes){precision}")
         self.compteurs["notions"] = len(self.notions)
+        self.champs_notions = champs
+        self.verifier_historique(t, fichier)
+
+    def verifier_historique(self, t, fichier):
+        """L'historique du thésaurus (skos:changeNote ; dates de création et de modification des notions, ISO 25964-1) :
+        dates dans l'ordre, jusqu'à la version ; notions existantes ; une notion ajoutée une seule fois, et modifiée
+        seulement après son ajout."""
+        historique = t.get("historique")
+        self.historique = isinstance(historique, list) and bool(historique)
+        if not self.historique:
+            return
+        version = date_ok(t.get("version"))
+        precedente, ajout = None, {}
+        modifs = []
+        for k, h in enumerate(historique):
+            if not isinstance(h, dict):
+                continue
+            ch = joindre("historique", k)
+            d = date_ok(h.get("date"))
+            if d:
+                if precedente and d < precedente:
+                    self.rapport.erreur(fichier, joindre(ch, "date"), f"le {d} précède la version d'avant ({precedente}) : "
+                                                                      "l'historique va de la plus ancienne à la plus récente")
+                if version and d > version:
+                    self.rapport.erreur(fichier, joindre(ch, "date"), f"le {d} est après la version du thésaurus ({version}) : "
+                                                                      "mettre à jour « version »")
+                precedente = d
+            for cle in ("ajoutees", "modifiees"):
+                for j, nid in enumerate(h.get(cle) if isinstance(h.get(cle), list) else []):
+                    if not isinstance(nid, str):
+                        continue
+                    cj = joindre(joindre(ch, cle), j)
+                    if nid not in self.notions:
+                        self.rapport.erreur(fichier, cj, f"aucune notion « {nid} »{self.proches_notions(nid)} : "
+                                                         "une notion publiée n'est jamais retirée")
+                    elif cle == "ajoutees":
+                        if nid in ajout:
+                            self.rapport.erreur(fichier, cj, f"« {nid} » est déjà ajoutée par historique[{ajout[nid]}] : "
+                                                             "une notion s'ajoute une seule fois")
+                        else:
+                            ajout[nid] = k
+                    else:
+                        modifs.append((k, nid, cj))
+        for k, nid, cj in modifs:
+            if nid in ajout and ajout[nid] >= k:
+                self.rapport.erreur(fichier, cj, f"« {nid} » est ajoutée par historique[{ajout[nid]}] : "
+                                                 "elle ne peut pas être modifiée avant, ni par la version qui l'ajoute")
+        self.ajouts_historique = ajout
+
+    def comparer_avant(self, chemin_avant):
+        """--avant : compare le thésaurus à une version précédente (celle de main, par exemple). Un identifiant publié ne
+        disparaît jamais (décision du 07/11/2026) ; les libellés, la hiérarchie et les notions nouvelles sont signalés pour
+        la relecture ; une notion nouvelle figure dans « historique »."""
+        fichier = self.nom(os.path.join(self.donnees, "referentiels", "notions.json"))
+        try:
+            with open(chemin_avant, encoding="utf-8") as f:
+                avant = json.load(f)
+            anciennes = {n["id"]: n for n in avant["notions"] if isinstance(n, dict) and isinstance(n.get("id"), str)}
+        except (OSError, ValueError, KeyError, TypeError) as x:
+            self.rapport.erreur(fichier, "", f"--avant : la version précédente ne se lit pas ({chemin_avant} : {x})")
+            return
+        if not self.notions:
+            return  # thésaurus absent ou illisible : déjà signalé
+        champs = getattr(self, "champs_notions", {})
+        for nid, a in anciennes.items():
+            n = self.notions.get(nid)
+            c = champs.get(nid, "notions")
+            if n is None:
+                self.rapport.erreur(fichier, "notions", f"« {nid} » (« {a.get('libelle')} ») a disparu depuis la version précédente : "
+                                                        "un identifiant publié est définitif ; la remettre, au besoin avec "
+                                                        "« obsolete » et « remplacee_par »")
+                continue
+            if a.get("libelle") != n.get("libelle"):
+                self.rapport.info(fichier, joindre(c, "libelle"), f"« {nid} » change de libellé : « {a.get('libelle')} » devient "
+                                                                  f"« {n.get('libelle')} » (vérifier que la notion garde son sens)")
+            if a.get("plus_larges") != n.get("plus_larges"):
+                self.rapport.info(fichier, joindre(c, "plus_larges"), f"« {nid} » change de place : plus large "
+                                                                      f"{a.get('plus_larges')} devient {n.get('plus_larges')}")
+            if n.get("obsolete") is True and a.get("obsolete") is not True:
+                self.rapport.info(fichier, joindre(c, "obsolete"), f"« {nid} » devient obsolète")
+        nouvelles = [nid for nid in self.notions if nid not in anciennes]
+        if nouvelles:
+            self.rapport.info(fichier, "notions", f"{pluriel(len(nouvelles), 'notion nouvelle', 'notions nouvelles')} depuis la "
+                                                  f"version précédente : {', '.join(nouvelles)}")
+        if getattr(self, "historique", False):
+            ajout = getattr(self, "ajouts_historique", {})
+            oubliees = [nid for nid in nouvelles if nid not in ajout]
+            if oubliees:
+                self.rapport.attention(fichier, "historique", f"notions nouvelles absentes des « ajoutees » de l'historique : "
+                                                              f"{', '.join(oubliees)}")
+            debut = len(avant.get("historique") or []) if isinstance(avant, dict) else 0
+            for nid, k in sorted(ajout.items(), key=lambda x: x[1]):
+                if k >= debut and nid in anciennes:
+                    self.rapport.attention(fichier, joindre("historique", k), f"« {nid} » existait déjà dans la version "
+                                                                              "précédente : la mettre dans « modifiees »")
 
     def proches_notions(self, nid):
         """Une aide quand un identifiant de notion n'existe pas : les identifiants de même fin."""
@@ -1295,6 +1428,8 @@ class Validation:
         self.charger_schemas()
         if not self.charger_referentiels():
             return
+        if self.avant:
+            self.comparer_avant(self.avant)
         self.charger_fiches()
         for rid, (fichier, fiche) in self.fiches.items():
             self.verifier_fiche(rid, fichier, fiche)
@@ -1324,9 +1459,12 @@ def main():
     parser.add_argument("--strict", action="store_true", help="les avertissements comptent comme des erreurs")
     parser.add_argument("--github", action="store_true",
                         help="dans GitHub Actions : annotations sur les fichiers et résumé du run (GITHUB_STEP_SUMMARY)")
+    parser.add_argument("--avant", metavar="FICHIER",
+                        help="une version précédente du thésaurus (notions.json de main) : aucun identifiant ne doit "
+                             "avoir disparu ; libellés changés et notions nouvelles signalés")
     args = parser.parse_args()
 
-    v = Validation(args.racine)
+    v = Validation(args.racine, avant=args.avant)
     v.lancer()
     v.rapport.afficher()
     c = v.compteurs

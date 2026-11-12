@@ -57,10 +57,37 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Un identifiant de notion publié est définitif (décision du 07/11/2026) : le thésaurus est
+      # comparé à celui de main (--avant), et une notion de main qui a disparu fait échouer le job.
+      # Sur un envoi dans main, la comparaison se fait avec la pointe de main avant l'envoi.
+      # Si main ne peut pas être lu, l'étape échoue : le contrôle n'est jamais sauté sans bruit.
+      # Limite : une branche en retard sur main échoue à ce contrôle si main a reçu des notions depuis
+      # (elles manquent à la branche, donc « disparaissent ») ; la rebaser sur main le règle.
+      - name: Lire le thésaurus publié (main)
+        id: publie
+        env:
+          AVANT_ENVOI: ${{ github.event.before }}
+        run: |
+          ref=main
+          if [ "$GITHUB_EVENT_NAME" = push ] && [ "$GITHUB_REF" = refs/heads/main ] \
+             && [ -n "$AVANT_ENVOI" ] && [ "$AVANT_ENVOI" != 0000000000000000000000000000000000000000 ]; then
+            ref="$AVANT_ENVOI"
+          fi
+          git fetch --no-tags --depth=1 origin "$ref"
+          if git cat-file -e FETCH_HEAD:donnees/referentiels/notions.json 2>/dev/null; then
+            git show FETCH_HEAD:donnees/referentiels/notions.json > "$RUNNER_TEMP/notions-publie.json"
+            echo "chemin=$RUNNER_TEMP/notions-publie.json" >> "$GITHUB_OUTPUT"
+            echo "Thésaurus de référence : $ref ($(git rev-parse --short FETCH_HEAD))"
+          else
+            echo "::warning::$ref n'a pas de thésaurus des notions : pas de comparaison"
+          fi
+
       # Python standard, rien à installer. Pas de --strict tant que restent les deux
       # avertissements voulus (éditeur d'Alien Python, page du TD 1 de POO : tâche T18).
       - name: Valider les fiches, la vitrine et les référentiels
-        run: python3 scripts/valider_donnees.py --github
+        env:
+          AVANT: ${{ steps.publie.outputs.chemin }}
+        run: python3 scripts/valider_donnees.py --github ${AVANT:+--avant "$AVANT"}
 
   liens:
     name: Liens des ressources

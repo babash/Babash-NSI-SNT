@@ -1,7 +1,8 @@
 # Les données de la bibliothèque
 
 **Statut : format validé par l'enseignant le 07/11/2026 (tâche T02) ; visibilité de départ changée par sa
-consigne du 12/11/2026 ; thésaurus des notions et champ `notions` proposés le 12/11/2026 (T50a), à valider.**
+consigne du 12/11/2026 ; thésaurus des notions et champ `notions` publiés par délégation le 12/11/2026 (T50a), complétés
+le même jour (T60) ; l'enseignant peut revenir sur chaque notion.**
 Le site actuel ne lit pas encore ces fichiers : il continue d'utiliser les listes `*/ressources.js`.
 
 ```
@@ -75,11 +76,11 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 synonymes pour la recherche (`"alternatifs"`) : « sans ordinateur » trouve les ressources débranchées, « QCM »
 les évaluations. Ils ne s'affichent pas.
 
-**Les notions** (`notions.json`, proposition du 12/11/2026, à valider) classent les ressources par ce
+**Les notions** (`notions.json`, publié le 12/11/2026 et complété le même jour) classent les ressources par ce
 qu'elles font apprendre, plus finement que le programme : « boucle bornée », « recherche dichotomique »,
 « routage », « complément à deux »… C'est un thésaurus, construit sur les normes du domaine (SKOS du W3C et
 ISO 25964) :
-- 161 notions rangées en 12 domaines (programmation, algorithmique, données, réseaux, Web, interaction
+- 176 notions rangées en 12 domaines (programmation, algorithmique, données, réseaux, Web, interaction
   homme-machine, architecture, sécurité, intelligence artificielle, enjeux, histoire, localisation), de la
   plus large à la plus précise : programmation › structures de contrôle › boucle › boucle bornée ;
 - pour chacune, son libellé, ses synonymes (« répétition », « itération »), ses termes anglais (« for loop »),
@@ -89,10 +90,13 @@ ISO 25964) :
 - ses correspondances avec trois référentiels internationaux : le *K–12 Computer Science Framework* (2016),
   l'*Informatics Reference Framework for School* d'Informatics for All (2022) et les domaines de CS2023
   (ACM, IEEE-CS, AAAI) ;
-- pour 27 notions, 43 **difficultés connues des élèves**, avec leur source : par exemple,
+- pour 34 notions, 53 **difficultés connues des élèves**, avec leur source : par exemple,
   croire qu'une variable garde plusieurs valeurs à la fois (43 % des 145 élèves de 7 à 17 ans interrogé·e·s
-  par Swidan, Hermans et Smit, 2018), ou confondre Internet et le Web. Les sources sont citées dans le
-  fichier, avec leur adresse et leur date de lecture.
+  par Swidan, Hermans et Smit, 2018), confondre Internet et le Web, ou ne pas savoir prévoir ce que fait un
+  court programme en le suivant pas à pas (Lister et al., 2004). Les sources sont citées dans le fichier, avec
+  leur adresse et leur date de lecture ;
+- un **historique** des versions : ce que chacune a ajouté ou modifié (la seconde, T60, a ajouté 15 notions
+  d'après le classement des 90 fiches : trace d'exécution, références et copies, jointures SQL, RIP et OSPF…).
 
 Une fiche cite ses notions selon leur rôle : **enseignées** (ce qu'elle fait apprendre), **évaluées** (ce
 qu'elle permet d'évaluer), **prérequises** (ce qu'il faut savoir avant). Ce sont les trois propriétés que
@@ -134,6 +138,15 @@ schema.org a reprises de LRMI pour les ressources pédagogiques (`teaches`, `ass
   seulement les notions plus larges (`plus_larges`), jamais les plus étroites, qui s'en déduisent ; une notion
   associée s'écrit d'un seul côté. Un libellé préféré est unique ; un libellé caché sert à une graphie que les
   autres libellés n'ont pas (fautes, termes déconseillés comme « crypter »).
+  - Un terme trop précis pour devenir une notion devient un libellé alternatif de la notion plus large (ISO 25964 :
+    « CIDR » pour les adresses IP, « tranche » pour les tableaux). Une démarche ou un format (jeu de rôle, activité
+    débranchée, capture the flag, Grand oral) n'est pas une notion : c'est un type, un usage ou une section de la vitrine.
+  - Un libellé contient au moins une lettre ou un chiffre (les symboles `//` ou `%` vont dans la note). Un mot courant
+    ou ambigu (« reste », « saut ») ne devient pas un libellé : la recherche étendrait chaque requête qui le contient.
+    Deux notions ne partagent pas un libellé, même au pluriel près : la recherche compare les racines des mots
+    (« test » et « Tests » se confondaient).
+  - Chaque version s'inscrit dans `historique` : sa date, sa tâche, un résumé, les notions ajoutées et modifiées.
+    Une notion s'ajoute une seule fois ; une notion publiée n'est jamais retirée : `--avant` le vérifie.
 - **Auteurs et licences** : ressource de l'enseignant → `{ "nom": "Babash - NSI Tani Malandi", "role": "auteur" }`,
   licence « CC BY-SA 4.0 » pour les documents, « MIT » pour le code des applications. Ressource externe → créditée à
   son site d'origine : `credits`, et dans `auteurs` la personne qui l'a faite, avec le site dans son rôle et un `lien`
@@ -203,7 +216,8 @@ python3 scripts/valider_donnees.py                 les données de ce dépôt
 python3 scripts/valider_donnees.py --racine DIR    une autre copie du dépôt
 python3 scripts/valider_donnees.py --strict        les avertissements bloquent aussi
 python3 scripts/valider_donnees.py --github        dans GitHub Actions : annotations et résumé du run
-python3 -I -B scripts/tests/test_notions.py        les tests du validateur pour le thésaurus et les notions (33 cas)
+python3 scripts/valider_donnees.py --avant F      compare le thésaurus à une version précédente F (celle de main)
+python3 -I -B scripts/tests/test_notions.py        les tests du validateur pour le thésaurus et les notions (50 cas)
 ```
 
 Python 3 standard, sans dépendance (le module `jsonschema`, s'il est installé, sert de contrôle supplémentaire).
@@ -226,8 +240,16 @@ Ce qui est vérifié :
   prérequise, donne un avertissement ; le nombre de fiches sans notions est donné pour information ;
 - thésaurus (`notions.json`) : notions plus larges, associées et remplaçantes existantes ; hiérarchie sans cycle ; domaines ;
   libellé préféré unique ; dans une même langue, chaque libellé d'une notion écrit une seule fois ; libellé caché distinct des
-  autres ; homographes entre notions et notion associée sur sa propre branche signalés ; thèmes et contenus du programme,
-  référentiels externes et sources cités existants ; synonymes des valeurs (`alternatifs`) sans répétition ;
+  autres ; libellé sans lettre ni chiffre refusé ; homographes entre notions (y compris ceux que la recherche confond, de mêmes
+  racines) et notion associée sur sa propre branche signalés ; thèmes et contenus du programme, référentiels externes et sources
+  cités existants ; historique : dates dans l'ordre et jusqu'à la version, notions existantes, ajoutées une seule fois et
+  modifiées après leur ajout ; synonymes des valeurs (`alternatifs`) sans répétition ;
+- avec `--avant F` (le thésaurus de `main`, par exemple : `git show origin/main:donnees/referentiels/notions.json > F`) :
+  une notion de F qui a disparu est une erreur (un identifiant publié est définitif) ; les libellés changés, les notions
+  déplacées ou devenues obsolètes et les notions nouvelles sont donnés pour la relecture ; une notion nouvelle absente de
+  l'historique donne un avertissement. Le job « Données de la bibliothèque » le fait à chaque envoi, contre `main` ;
+  limite : une branche en retard sur `main` y échoue si `main` a reçu des notions depuis (elles manquent à la branche) :
+  la rebaser sur `main` le règle ;
 - règle 19 de la philosophie éducative : un TD de l'enseignant sans version PDF ou sans page HTML donne un avertissement,
   de même qu'un critère à `false` dans `td_en_ligne` ;
 - règle 20 : pour une création de l'enseignant, l'usage `editeur-de-code` sans `editeur_code`, ou un critère à `false`,
@@ -266,9 +288,15 @@ Elles sont citées dans `referentiels/notions.json` (champ `sources`), chacune a
   (ACM, IEEE-CS, AAAI, rapport final de janvier 2024, 17 domaines de connaissances et leurs unités) ;
 - les difficultés des élèves : recherches publiées (Qian et Lehman, 2017 ; Sorva, 2013 ; Swidan, Hermans et
   Smit, 2018 ; Grover et Basu, 2017 ; Duran, Sorva et Seppälä, 2021 ; Sanders, Galpin et Götschi, 2006 ;
-  Holland, Griffiths et Woodman, 1997), la thèse de Qian (2018) pour les travaux qu'elle cite, une synthèse de
-  la Raspberry Pi Foundation (2023) et un relevé d'enseignant·e·s de Computing at School (2016-2021), signalé
-  comme tel (`"nature": "releve-enseignants"`) ;
+  Holland, Griffiths et Woodman, 1997 ; et depuis T60 : Lister et al., 2004, et Lopez, Whalley, Robbins et
+  Lister, 2008, pour la trace d'exécution ; Ma, Ferguson, Roper et Wood, 2011, pour les références ; Ragonis et
+  Ben-Ari, 2005, pour la programmation objet au lycée ; Miedema, Aivaloglou et Fletcher, 2021, pour SQL), la thèse
+  de Qian (2018) pour les travaux qu'elle cite, une synthèse de la Raspberry Pi Foundation (2023) et un relevé
+  d'enseignant·e·s de Computing at School (2016-2021), signalé comme tel (`"nature": "releve-enseignants"`).
+  Quand seuls la notice et le résumé ont été lus, le champ `lu` le dit ;
+- les correspondances des notions de T60 avec CS2023 ont été relevées dans le rapport final (unités SDF-Fundamentals,
+  NC-Fundamentals, NC-Reliability, OS-Concurrency) ; une notion sans correspondance propre hérite de celles de ses
+  notions plus larges ;
 - ScoLOMFR (profil français de LOM) : ses vocabulaires (types pédagogiques, niveaux) n'ont pas pu être lus depuis
   la session (Éduscol et data.education.fr inaccessibles) ; l'alignement de `valeurs.json` par `closeMatch` reste
   à faire, sans inventer d'identifiant. Les concepts de ScoLOMFR ont des adresses de la forme
