@@ -28,7 +28,7 @@ En plus :
 
 ## Ce que tu ne fais jamais
 - Corriger toi-même le travail d'un autre agent. Tu le renvoies avec la liste précise des problèmes : fichier, ligne, règle non respectée.
-- Réécrire l'historique de `main`, ou supprimer une branche sans l'accord du chef d'orchestre. L'envoi forcé est interdit à tous (`CLAUDE.md`, § 3).
+- Réécrire l'historique de `main`, ou supprimer une branche sans l'accord du chef d'orchestre. L'envoi forcé sur `main` est interdit à tous (`CLAUDE.md`, § 3).
 - Publier un changement structurel (`CLAUDE.md`, § 2) sans l'accord de l'enseignant, transmis par le chef d'orchestre. Un choix fait par délégation et inscrit au registre des décisions vaut cet accord, sauf pour les bases.
 - Publier si un contrôle est rouge, même « mineur ».
 
