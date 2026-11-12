@@ -1,0 +1,93 @@
+# Publier le site sur GitHub Pages (T50)
+#  À chaque modification de main, et à la demande (onglet Actions, « Run workflow ») :
+#   1. valider les données de la bibliothèque : une seule erreur arrête tout, et le site en ligne
+#      reste tel qu'il était (scripts/valider_donnees.py) ;
+#   2. construire donnees/bibliotheque.json, bibliotheque-complete.json et bibliotheque-textes.json
+#      à partir des fiches (scripts/construire_bibliotheque.py) : ces fichiers ne sont jamais commités ;
+#   3. mettre en ligne le dépôt et ces fichiers (les fichiers et dossiers cachés, comme .github, ne
+#      sont pas publiés, comme avant).
+#  Un enregistrement de l'admin (une fiche modifiée sur main) suffit donc à mettre le site à jour,
+#  sans commit d'un robot ni fichier commun que deux modifications se disputeraient.
+#
+#  Réglage à faire une fois par l'enseignant : Settings → Pages → Build and deployment → Source :
+#  « GitHub Actions » (au lieu de « Deploy from a branch »). Tant qu'il n'est pas fait, ce workflow
+#  s'arrête avant la mise en ligne, avec un avertissement, et GitHub continue de publier main tel
+#  quel, sans la bibliothèque.
+#  Le contrôle en ligne (verifier.yml, job « Site en ligne ») attend ce déploiement comme avant :
+#  c'est un déploiement de l'environnement « github-pages », pour le même commit.
+# Machines : ubuntu-26.04, comme verifier.yml.
+
+name: Publier le site
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Une seule mise en ligne à la fois ; une nouvelle attend la précédente au lieu de l'annuler
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construire:
+    name: Construire le site
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pages: read
+    outputs:
+      source: ${{ steps.reglage.outputs.source }}
+    steps:
+      - uses: actions/checkout@v5
+
+      # -B : pas de dossier __pycache__, qui serait publié
+      - name: Valider les données de la bibliothèque
+        run: python3 -B scripts/valider_donnees.py --github
+
+      - name: Installer pdftotext, pour le texte des PDF
+        run: command -v pdftotext || (sudo apt-get update -q && sudo apt-get install -y -q poppler-utils)
+
+      - name: Construire la bibliothèque
+        run: python3 -B scripts/construire_bibliotheque.py --github
+
+      - name: Vérifier le réglage de GitHub Pages
+        id: reglage
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          source=$(gh api "repos/$GITHUB_REPOSITORY/pages" --jq .build_type 2>/dev/null || echo inconnue)
+          echo "source=$source" >> "$GITHUB_OUTPUT"
+          if [ "$source" = "workflow" ]; then
+            echo "Source de GitHub Pages : GitHub Actions. Mise en ligne par ce workflow."
+          else
+            echo "::warning title=Réglage de GitHub Pages::La source de GitHub Pages est « $source » : choisir « GitHub Actions » (Settings, Pages, Build and deployment). En attendant, ce workflow ne met rien en ligne et la bibliothèque n'est pas publiée."
+            printf '## Réglage de GitHub Pages\n\nLa source est « %s » : choisir « GitHub Actions » dans Settings → Pages → Build and deployment. En attendant, ce workflow ne met rien en ligne.\n' "$source" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Préparer le site à mettre en ligne
+        if: steps.reglage.outputs.source == 'workflow'
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+  mettre-en-ligne:
+    name: Mettre en ligne
+    needs: construire
+    if: needs.construire.outputs.source == 'workflow'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - name: Mettre en ligne sur GitHub Pages
+        id: deploiement
+        uses: actions/deploy-pages@v4

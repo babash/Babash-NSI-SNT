@@ -1,7 +1,8 @@
 # Vérification automatique du site
 #  - à chaque modification, sur toutes les branches, et à la demande : les données de la
 #    bibliothèque (dossier donnees/, scripts/valider_donnees.py). Une erreur fait échouer le job ;
-#    les avertissements sont dans le résumé, sans échec.
+#    les avertissements sont dans le résumé, sans échec. Puis un essai de la construction de
+#    bibliotheque.json (celle de publier.yml) et les tests du thésaurus et de la recherche.
 #  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources.
 #    Un lien en échec est revérifié par un second job, donc sur une autre machine, une à deux
 #    minutes plus tard : il n'est déclaré mort que s'il échoue aux deux passes (les pannes
@@ -88,6 +89,16 @@ jobs:
         env:
           AVANT: ${{ steps.publie.outputs.chemin }}
         run: python3 scripts/valider_donnees.py --github ${AVANT:+--avant "$AVANT"}
+
+      # La même construction que « Publier le site », dans un dossier temporaire : une branche
+      # qui la casserait est repérée avant d'arriver sur main (T50).
+      - name: Essayer la construction de la bibliothèque
+        run: python3 -B scripts/construire_bibliotheque.py --sortie "$RUNNER_TEMP/bibliotheque"
+
+      - name: Tests du thésaurus et de la recherche
+        run: |
+          python3 -B scripts/tests/test_notions.py --travail "$RUNNER_TEMP/tests-notions"
+          node scripts/tests/test_recherche.js
 
   liens:
     name: Liens des ressources

@@ -5,20 +5,27 @@ Pour chaque rubrique de reglages.js :
   - les fichiers locaux cités dans ressources.js (lien: "fichiers/…") existent ;
   - la page, affichée dans Chrome sans écran, ne montre pas d'erreur ;
   - elle affiche autant de ressources que ressources.js en contient.
+La bibliothèque (bibliotheque/, T50) : donnees/bibliotheque.json se lit en ligne et correspond aux
+fiches visibles de l'extérieur de cette copie ; la page en affiche autant, sans erreur ; une recherche
+trouve une ressource par un mot de son titre ; trois fiches complètes s'ouvrent (?r=identifiant).
 Le lien « Code source sur GitHub » (décision de l'enseignant du 10/11/2026, 22:58) :
-  - l'accueil et chaque rubrique : vers le dépôt de reglages.js (depot) ; s'il manque, échec ;
+  - l'accueil, chaque rubrique et la bibliothèque : vers le dépôt de reglages.js (depot) ; s'il manque, échec ;
   - chaque page déposée dans fichiers/ : vers un dépôt GitHub ; s'il manque, avertissement sans
     échec (une suite, pas un blocage) ; exceptions dans CODE_SOURCE_EXCEPTIONS.
 
 Usage :  python3 .github/verifier-site.py https://babash.github.io/Babash-NSI-SNT
          python3 .github/verifier-site.py http://localhost:8000      (test local)
 """
+import glob
 import html
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import urllib.parse
+import urllib.request
 
 RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -78,6 +85,79 @@ def afficher(url):
         capture_output=True, text=True, timeout=120,
     )
     return sortie.stdout
+
+
+def fiches_publiques():
+    """Les fiches de cette copie qui ont au moins un document visible de l'extérieur (cahier des charges, § 3.2),
+    triées par identifiant : ce que la bibliothèque en ligne doit montrer."""
+    out = []
+    for chemin in sorted(glob.glob(os.path.join(RACINE, "donnees", "ressources", "*.json"))):
+        try:
+            with open(chemin, encoding="utf-8") as f:
+                fiche = json.load(f)
+        except (OSError, ValueError):
+            continue  # une fiche illisible est signalée par scripts/valider_donnees.py
+        if any(isinstance(d, dict) and (d.get("visible") or {}).get("exterieur") is True for d in fiche.get("documents", [])):
+            out.append(fiche)
+    return sorted(out, key=lambda f: f.get("id", ""))
+
+
+def bibliotheque(base, problemes, lien_du_site):
+    """La page bibliotheque/ (T50) : les données construites à la publication se lisent en ligne et
+    correspondent aux fiches de cette copie ; la page affiche autant de ressources, sans erreur, avec le lien
+    « Code source sur GitHub » ; une recherche trouve une ressource par un mot de son titre ; la fiche
+    complète de trois ressources s'ouvre (?r=identifiant)."""
+    fiches = fiches_publiques()
+    if not fiches:
+        print(f"{'bibliothèque':15} pas encore de fiches dans donnees/ressources/ : rien à vérifier")
+        return
+    try:
+        with urllib.request.urlopen(f"{base}/donnees/bibliotheque.json", timeout=60) as r:
+            en_ligne = json.loads(r.read().decode("utf-8"))
+        ids = sorted(x.get("id") for x in en_ligne.get("ressources", []))
+    except (OSError, ValueError) as e:
+        problemes.append(f"bibliothèque : donnees/bibliotheque.json illisible en ligne ({e}). Il est construit par le "
+                         "workflow « Publier le site » : la source de GitHub Pages est-elle bien « GitHub Actions » ?")
+        return
+    attendus = [f["id"] for f in fiches]
+    if ids != attendus:
+        manquent = sorted(set(attendus) - set(ids))
+        en_trop = sorted(set(ids) - set(attendus))
+        problemes.append("bibliothèque : bibliotheque.json en ligne ne correspond pas aux fiches"
+                         + (f" ; manquent : {', '.join(manquent[:5])}" if manquent else "")
+                         + (f" ; en trop : {', '.join(en_trop[:5])}" if en_trop else ""))
+
+    page = afficher(f"{base}/bibliotheque/")
+    m = re.search(r'class="compte">(\d+) ressources?<', page)
+    affiche = int(m.group(1)) if m else None
+    if 'class="alerte"' in page:
+        problemes.append("bibliothèque : la page affiche une erreur")
+    if affiche != len(attendus):
+        problemes.append(f"bibliothèque : {affiche if affiche is not None else 'aucune'} ressource(s) affichée(s) "
+                         f"au lieu de {len(attendus)}")
+    lien_du_site("bibliothèque", page)
+    print(f"{'bibliothèque':15} {affiche if affiche is not None else '—':>3} ressources affichées / {len(attendus):3} fiches visibles de l'extérieur")
+
+    # Une recherche : le premier mot assez long du titre d'une ressource la trouve
+    for f in fiches:
+        mots = [x for x in re.findall(r"[^\W\d_]{6,}", f.get("titre", ""))]
+        if mots:
+            page = afficher(f"{base}/bibliotheque/?q={urllib.parse.quote(mots[0])}")
+            m = re.search(r'class="compte">(\d+) ressources?<', page)
+            if not m or int(m.group(1)) < 1 or "r=" + urllib.parse.quote(f["id"]) not in page:
+                problemes.append(f"bibliothèque : la recherche « {mots[0]} » ne trouve pas « {f['titre']} »")
+            else:
+                print(f"{'':15} recherche « {mots[0]} » : {m.group(1)} ressource(s), dont « {f['titre'][:40]} »")
+            break
+
+    # La fiche complète : la première, celle du milieu et la dernière
+    for f in {x["id"]: x for x in (fiches[0], fiches[len(fiches) // 2], fiches[-1])}.values():
+        page = afficher(f"{base}/bibliotheque/?r={urllib.parse.quote(f['id'])}")
+        titre = html.escape(f.get("titre", ""), quote=False)
+        if 'class="fiche-titre"' not in page or titre not in page or 'class="alerte"' in page:
+            problemes.append(f"bibliothèque : la fiche complète de « {f['id']} » ne s'affiche pas")
+        else:
+            print(f"{'':15} fiche « {f['id']} » : ok")
 
 
 def main():
@@ -148,6 +228,8 @@ def main():
         if os.environ.get("GITHUB_ACTIONS"):
             print("::warning title=Lien « Code source sur GitHub »::" + str(len(sans_code)) +
                   " page(s) déposée(s) sans le lien : " + ", ".join(sans_code))
+
+    bibliotheque(base, problemes, lien_du_site)
 
     if problemes:
         print("\nProblèmes :")
