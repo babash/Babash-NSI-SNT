@@ -17,11 +17,16 @@ fichier de licence du dépôt (`LICENSE`) et les outils de `.github/gardien/` au
 la future bibliothèque est à l'Architecte (notamment le format des données et les
 référentiels), sauf les fiches des ressources (`donnees/ressources/`) et la vitrine
 (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer des fiches
-d'exemple pour illustrer le format. Le dossier `qcm/` (les sources XML des quiz Pronote,
+d'exemple pour illustrer le format, et un Atelier ou l'Atelier des quiz y écrit la fiche en
+brouillon de la ressource qu'il crée. Le dossier `qcm/` (les sources XML des quiz Pronote,
 leurs aperçus et leurs outils) est à l'Atelier des quiz.
 Un agent ne modifie que ses fichiers ; pour les autres, il le signale dans son rapport.
+Une session Claude que l'enseignant lance lui-même pour développer une application suit
+toutes ces règles, publication par le Gardien comprise.
 Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile, après avoir vérifié
-qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
+qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre ; en pratique, les sessions
+des agents n'en ont pas le droit sur GitHub : le Gardien prépare la liste, et l'enseignant
+supprime les branches.
 
 Toute ressource produite ou retravaillée suit les règles de conception de la philosophie
 éducative de l'enseignant : une version en ligne utilisable sur téléphone et une version

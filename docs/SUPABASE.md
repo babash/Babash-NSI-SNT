@@ -77,7 +77,7 @@ Court-circuit n'y enregistre rien pour l'instant et n'en utilise que le temps r�
   le fabrique à partir des migrations, et `python3 scripts/supabase_schema.py --verifier` dit
   s'il est à jour.
 
-Les règles communes des bases sont dans `CLAUDE.md`, section « Les bases Supabase » : une seule
+Les règles communes des bases sont dans `CLAUDE.md`, § 6, « Les bases Supabase » : une seule
 base pour toutes les applications, un schéma par application, l'accès par des fonctions, des
 migrations avec leur fichier inverse. Aucune base n'est modifiée sans que l'enseignant ait vu le
 SQL exact, et les agents n'en lisent que les métadonnées, jamais les données des élèves. Ils ne
