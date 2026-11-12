@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Fiches NSI - Internet : modèles et protocoles</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Fira+Code:wght@400;500&display=swap');
+
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --text: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border: #d1d8e0;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body { 
+            background: #515151; 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; padding: 0; 
+            color: var(--text);
+        }
+
+        .page {
+            width: 210mm; min-height: 297mm;
+            padding: 11mm; margin: 10mm auto;
+            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; page-break-after: always; }
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 6px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1 { margin: 0; font-size: 1.45rem; color: var(--primary); letter-spacing: -0.5px; }
+        .badge { font-size: 0.7rem; font-weight: 700; background: var(--secondary); color: white; padding: 2px 7px; border-radius: 3px; }
+
+        h2 { 
+            font-size: 0.95rem; background: var(--light-gray); 
+            padding: 4px 9px; border-left: 5px solid var(--primary);
+            margin: 10px 0 6px 0; text-transform: uppercase;
+        }
+        h3 { font-size: 0.88rem; margin: 6px 0 3px 0; color: var(--secondary); }
+
+        p, li { font-size: 0.83rem; line-height: 1.4; margin: 3px 0; }
+        ul { margin: 4px 0; padding-left: 22px; }
+
+        .write-zone { border-bottom: 1px dotted #999; min-height: 18px; margin: 3px 0; display: block; width: 100%; }
+        .fill-inline { border-bottom: 1px dotted #999; display: inline-block; min-width: 110px; min-height: 14px; vertical-align: bottom; }
+
+        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 0.78rem; }
+        th, td { border: 1px solid var(--border); padding: 5px 7px; text-align: left; vertical-align: top; }
+        th { background: var(--primary); color: white; font-weight: 500; }
+
+        code { font-family: 'Fira Code', monospace; background: #eee; padding: 1px 3px; border-radius: 2px; font-size: 0.77rem; }
+        strong { color: var(--primary); }
+
+        .info-box {
+            border: 1px solid var(--primary);
+            border-radius: 4px; padding: 6px 9px;
+            margin: 5px 0; background: #f0f4ff;
+            font-size: 0.8rem;
+        }
+        .tip-box {
+            border: 1px dashed var(--secondary);
+            border-radius: 4px; padding: 5px 9px;
+            margin: 5px 0; background: #fff8f8;
+            font-size: 0.8rem;
+        }
+
+        .col2 { display: flex; gap: 10px; margin: 5px 0; }
+        .col2 > div { flex: 1; }
+
+        .box-fill { border: 1.5px solid var(--border); border-radius: 4px; padding: 7px; margin: 5px 0; min-height: 50px; background: #fff; }
+
+        .topo-svg-wrap { display: flex; justify-content: center; margin: 6px 0; }
+        .topo-svg-wrap svg { max-width: 100%; height: auto; }
+
+        .exo-num { 
+            display: inline-block; background: var(--primary); color: white; 
+            border-radius: 50%; width: 18px; height: 18px; 
+            text-align: center; line-height: 18px; font-size: 0.75rem; 
+            font-weight: 700; margin-right: 4px; 
+        }
+
+        .url-decode { 
+            display: flex; gap: 1px; margin: 8px 0; 
+            font-family: 'Fira Code', monospace; font-size: 0.85rem; 
+        }
+        .url-decode > div { 
+            padding: 5px 6px; text-align: center; flex: 1; 
+            border: 1px solid var(--primary);
+        }
+        .url-decode .url-proto { background: #ffe0e0; }
+        .url-decode .url-host { background: #e0f0ff; }
+        .url-decode .url-path { background: #fff0d0; }
+        .url-decode .url-query { background: #e8ffe0; }
+        .url-labels { 
+            display: flex; gap: 1px; margin-top: -7px; 
+            font-size: 0.7rem; text-align: center; font-weight: 700;
+        }
+        .url-labels > div { flex: 1; color: var(--secondary); }
+
+        footer { 
+            margin-top: auto; padding-top: 6px; 
+            border-top: 1px solid var(--border); 
+            font-size: 0.68rem; color: #888; 
+            display: flex; justify-content: space-between; 
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- PAGE 1 : COURS — Internet et modèles        -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Internet — Architecture mondiale et modèles (1/3)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>1. Internet ≠ Web</h2>
+    <div class="info-box">
+        <strong>Internet</strong> est le <em>réseau mondial</em> qui interconnecte des milliards de machines via une infrastructure physique (câbles, routeurs, satellites).<br>
+        Le <strong>Web</strong> (World Wide Web) n'est que l'<em>un des services</em> offerts par Internet : un ensemble de pages liées entre elles via le protocole HTTP. D'autres services existent : courriel (SMTP/IMAP), transfert de fichiers (FTP, SSH), messagerie instantanée, streaming, etc.
+    </div>
+
+    <h2>2. Infrastructure physique mondiale</h2>
+    <p>Contrairement à l'impression d'« immatérialité », Internet repose sur une <strong>infrastructure très concrète</strong> :</p>
+    <ul>
+        <li>Près de <strong>99 % du trafic intercontinental</strong> circule par <strong>câbles sous-marins en fibre optique</strong>, et non par satellite.</li>
+        <li>Des centres de données (<em>datacenters</em>) hébergent les serveurs et les contenus.</li>
+        <li>Des opérateurs (<em>Tier 1, Tier 2…</em>) interconnectent leurs réseaux dans des points d'échange (IXP).</li>
+    </ul>
+
+    <div class="tip-box">
+        <strong>Exemple — Mayotte :</strong> l'île est raccordée à l'Internet mondial par plusieurs câbles sous-marins (<em>LION2, LION3, EASSY, SAFE…</em>). La présence de plusieurs câbles permet une <strong>redondance</strong> : si l'un est coupé (chalutier, séisme), les paquets sont réacheminés sur un autre. C'est la <em>résilience</em> du maillage physique.
+    </div>
+
+    <h2>3. Modèle Client-Serveur</h2>
+
+    <div class="col2">
+        <div>
+            <p>Une machine (le <strong>client</strong>) émet une <em>requête</em> vers une machine spécialisée (le <strong>serveur</strong>) qui héberge une ressource et renvoie une <em>réponse</em>.</p>
+            <ul>
+                <li>Rôles <strong>asymétriques</strong> et figés.</li>
+                <li>Le serveur est toujours actif et attend les requêtes.</li>
+                <li>Exemples : <strong>Web (HTTP)</strong>, mail, DNS, jeux en ligne.</li>
+                <li>Limite : si le serveur tombe en panne, le service s'arrête.</li>
+            </ul>
+        </div>
+        <div>
+            <div class="topo-svg-wrap">
+                <svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="10" y="50" width="60" height="40" rx="3" fill="#f0f4ff" stroke="#1a2a6c" stroke-width="1.5"/>
+                    <text x="40" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">Client</text>
+                    <rect x="170" y="50" width="60" height="40" rx="3" fill="#b21f1f" stroke="#1a2a6c" stroke-width="1.5"/>
+                    <text x="200" y="75" text-anchor="middle" font-size="11" font-weight="700" fill="white">Serveur</text>
+                    <line x1="70" y1="62" x2="170" y2="62" stroke="#1a2a6c" stroke-width="1.5" marker-end="url(#a2)"/>
+                    <line x1="170" y1="78" x2="70" y2="78" stroke="#b21f1f" stroke-width="1.5" marker-end="url(#a3)"/>
+                    <text x="120" y="56" text-anchor="middle" font-size="9" fill="#1a2a6c">requête</text>
+                    <text x="120" y="92" text-anchor="middle" font-size="9" fill="#b21f1f">réponse</text>
+                    <defs>
+                        <marker id="a2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1a2a6c"/></marker>
+                        <marker id="a3" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b21f1f"/></marker>
+                    </defs>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <h2>4. Modèle Pair-à-Pair (P2P)</h2>
+
+    <div class="col2">
+        <div>
+            <p>Chaque machine (<em>pair</em>) joue <strong>simultanément</strong> le rôle de client <em>et</em> de serveur. Les données sont distribuées à travers le réseau.</p>
+            <ul>
+                <li>Rôles <strong>symétriques</strong>.</li>
+                <li>Pas de point central : <strong>résilience</strong> élevée.</li>
+                <li>Mieux adapté au partage de <strong>gros fichiers</strong>.</li>
+                <li>Exemples : <strong>BitTorrent</strong>, certains protocoles de blockchain, IPFS.</li>
+            </ul>
+        </div>
+        <div>
+            <div class="topo-svg-wrap">
+                <svg viewBox="0 0 240 130" xmlns="http://www.w3.org/2000/svg">
+                    <rect x="20" y="15" width="50" height="32" rx="3" fill="#f0f4ff" stroke="#1a2a6c" stroke-width="1.5"/>
+                    <text x="45" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">Pair 1</text>
+                    <rect x="170" y="15" width="50" height="32" rx="3" fill="#f0f4ff" stroke="#1a2a6c" stroke-width="1.5"/>
+                    <text x="195" y="35" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">Pair 2</text>
+                    <rect x="20" y="85" width="50" height="32" rx="3" fill="#f0f4ff" stroke="#1a2a6c" stroke-width="1.5"/>
+                    <text x="45" y="105" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">Pair 3</text>
+                    <rect x="170" y="85" width="50" height="32" rx="3" fill="#f0f4ff" stroke="#1a2a6c" stroke-width="1.5"/>
+                    <text x="195" y="105" text-anchor="middle" font-size="10" font-weight="700" fill="#1a2a6c">Pair 4</text>
+                    <line x1="70" y1="31" x2="170" y2="31" stroke="#1a2a6c" stroke-width="1.2"/>
+                    <line x1="70" y1="101" x2="170" y2="101" stroke="#1a2a6c" stroke-width="1.2"/>
+                    <line x1="45" y1="47" x2="45" y2="85" stroke="#1a2a6c" stroke-width="1.2"/>
+                    <line x1="195" y1="47" x2="195" y2="85" stroke="#1a2a6c" stroke-width="1.2"/>
+                    <line x1="70" y1="47" x2="170" y2="85" stroke="#1a2a6c" stroke-width="1.2" stroke-dasharray="2,2"/>
+                    <line x1="170" y1="47" x2="70" y2="85" stroke="#1a2a6c" stroke-width="1.2" stroke-dasharray="2,2"/>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <h2>5. Comparaison synthétique</h2>
+    <table>
+        <tr><th>Critère</th><th>Client-Serveur</th><th>Pair-à-Pair</th></tr>
+        <tr><td>Rôles</td><td>Asymétriques (fixés)</td><td>Symétriques (interchangeables)</td></tr>
+        <tr><td>Robustesse</td><td>Vulnérable à la panne du serveur</td><td>Très résiliente (pas de point central)</td></tr>
+        <tr><td>Contrôle / administration</td><td>Centralisé, facile à sécuriser</td><td>Décentralisé, plus difficile à contrôler</td></tr>
+        <tr><td>Exemple d'usage</td><td>Site web, mail, jeu en ligne</td><td>Partage de fichiers, cryptomonnaies</td></tr>
+    </table>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 2 — Recto cours</span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 2 : COURS — Protocoles TCP/IP, DNS     -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Internet — Protocoles TCP/IP, DNS, URL (2/3)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2>6. Le protocole IP : acheminer les paquets</h2>
+    <p><strong>IP (Internet Protocol)</strong> est responsable de l'<strong>acheminement</strong> des paquets d'un émetteur à un destinataire, à travers un ou plusieurs réseaux interconnectés par des routeurs.</p>
+    <ul>
+        <li>Chaque paquet IP comporte un <strong>en-tête</strong> avec l'IP source et l'IP destination.</li>
+        <li>IP est <strong>non fiable</strong> : pas de garantie de livraison, ni d'ordre, ni d'absence de doublons.</li>
+        <li>IP fonctionne par <em>commutation de paquets</em> : le message est découpé en paquets indépendants pouvant emprunter des routes différentes.</li>
+    </ul>
+
+    <h2>7. Le protocole TCP : assurer la fiabilité</h2>
+    <p>Pour pallier les défauts d'IP, on lui adjoint <strong>TCP (Transmission Control Protocol)</strong>, qui <strong>fiabilise</strong> les échanges.</p>
+
+    <div class="info-box">
+        <strong>Principaux mécanismes de TCP :</strong>
+        <ul style="margin-top:3px;">
+            <li><strong>Connexion préalable</strong> : poignée de main en 3 étapes (SYN → SYN-ACK → ACK) pour ouvrir une session entre client et serveur.</li>
+            <li><strong>Découpage et numérotation</strong> : les données sont découpées en <em>segments</em> numérotés.</li>
+            <li><strong>Accusés de réception (ACK)</strong> : chaque segment reçu est confirmé. Sans ACK dans un délai imparti, le segment est <em>retransmis</em>.</li>
+            <li><strong>Réordonnancement</strong> : à la réception, TCP remet les segments dans l'ordre, même s'ils sont arrivés mélangés.</li>
+            <li><strong>Détection d'erreurs</strong> par somme de contrôle (<em>checksum</em>).</li>
+        </ul>
+    </div>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 600 130" xmlns="http://www.w3.org/2000/svg">
+            <rect x="20" y="55" width="60" height="30" fill="#f0f4ff" stroke="#1a2a6c"/>
+            <text x="50" y="74" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">Client</text>
+            <rect x="520" y="55" width="60" height="30" fill="#b21f1f" stroke="#1a2a6c"/>
+            <text x="550" y="74" text-anchor="middle" font-size="11" font-weight="700" fill="white">Serveur</text>
+            <line x1="80" y1="65" x2="520" y2="65" stroke="#1a2a6c" stroke-width="1.5" marker-end="url(#ma)"/>
+            <text x="300" y="58" text-anchor="middle" font-size="10" fill="#1a2a6c">1. SYN</text>
+            <line x1="520" y1="75" x2="80" y2="75" stroke="#b21f1f" stroke-width="1.5" marker-end="url(#mb)"/>
+            <text x="300" y="88" text-anchor="middle" font-size="10" fill="#b21f1f">2. SYN-ACK</text>
+            <line x1="80" y1="105" x2="520" y2="105" stroke="#1a2a6c" stroke-width="1.5" marker-end="url(#ma)"/>
+            <text x="300" y="118" text-anchor="middle" font-size="10" fill="#1a2a6c">3. ACK → connexion établie</text>
+            <text x="300" y="25" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">Poignée de main TCP en 3 temps</text>
+            <defs>
+                <marker id="ma" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1a2a6c"/></marker>
+                <marker id="mb" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b21f1f"/></marker>
+            </defs>
+        </svg>
+    </div>
+
+    <div class="tip-box">
+        <strong>TCP vs UDP :</strong> à côté de TCP existe <strong>UDP</strong>, plus rapide mais non fiable (pas d'accusé de réception). UDP est utilisé pour les usages temps réel où une perte ponctuelle est acceptable : streaming vidéo, jeux en ligne, voix sur IP.
+    </div>
+
+    <h2>8. Le DNS : annuaire d'Internet</h2>
+    <p>Le <strong>DNS (Domain Name System)</strong> est un service distribué qui <strong>traduit</strong> un nom de domaine intelligible (<code>wikipedia.org</code>) en une adresse IP utilisable par les machines (<code>208.80.154.224</code>).</p>
+
+    <div class="topo-svg-wrap">
+        <svg viewBox="0 0 620 110" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="35" width="80" height="40" fill="#f0f4ff" stroke="#1a2a6c"/>
+            <text x="50" y="60" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">Navigateur</text>
+            <rect x="270" y="35" width="100" height="40" fill="#fff0d0" stroke="#1a2a6c"/>
+            <text x="320" y="55" text-anchor="middle" font-size="11" font-weight="700" fill="#1a2a6c">Serveur DNS</text>
+            <text x="320" y="68" text-anchor="middle" font-size="9" fill="#555">(annuaire)</text>
+            <rect x="530" y="35" width="80" height="40" fill="#b21f1f" stroke="#1a2a6c"/>
+            <text x="570" y="60" text-anchor="middle" font-size="11" font-weight="700" fill="white">Serveur web</text>
+            <line x1="90" y1="48" x2="270" y2="48" stroke="#1a2a6c" stroke-width="1.5" marker-end="url(#a4)"/>
+            <text x="180" y="42" text-anchor="middle" font-size="9" fill="#1a2a6c">"wikipedia.org" ?</text>
+            <line x1="270" y1="63" x2="90" y2="63" stroke="#b21f1f" stroke-width="1.5" marker-end="url(#a5)"/>
+            <text x="180" y="76" text-anchor="middle" font-size="9" fill="#b21f1f">→ 208.80.154.224</text>
+            <line x1="370" y1="55" x2="530" y2="55" stroke="#1a2a6c" stroke-width="1.5" stroke-dasharray="3,3"/>
+            <text x="450" y="49" text-anchor="middle" font-size="9" fill="#555">requête HTTP vers l'IP</text>
+            <defs>
+                <marker id="a4" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#1a2a6c"/></marker>
+                <marker id="a5" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#b21f1f"/></marker>
+            </defs>
+        </svg>
+    </div>
+
+    <h2>9. Anatomie d'une URL</h2>
+    <p>Une <strong>URL (Uniform Resource Locator)</strong> identifie de façon unique une ressource sur le Web. Exemple :</p>
+
+    <div class="url-decode">
+        <div class="url-proto" style="flex: 1.1;">https://</div>
+        <div class="url-host" style="flex: 1.8;">www.wikipedia.org</div>
+        <div class="url-path" style="flex: 2.4;">/wiki/Reseau_informatique</div>
+        <div class="url-query" style="flex: 1.4;">?lang=fr</div>
+    </div>
+    <div class="url-labels">
+        <div style="flex: 1.1;">Protocole</div>
+        <div style="flex: 1.8;">Nom de domaine</div>
+        <div style="flex: 2.4;">Chemin (path)</div>
+        <div style="flex: 1.4;">Paramètres</div>
+    </div>
+
+    <ul style="margin-top: 8px;">
+        <li><strong>Protocole :</strong> <code>http</code>, <code>https</code> (sécurisé), <code>ftp</code>, <code>ssh</code>…</li>
+        <li><strong>Nom de domaine :</strong> résolu en IP par le DNS.</li>
+        <li><strong>Chemin :</strong> emplacement de la ressource sur le serveur.</li>
+        <li><strong>Paramètres :</strong> données transmises au serveur (recherche, filtre…).</li>
+    </ul>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 2 — Cours (suite)</span>
+    </footer>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGE 3 : EXERCICES                          -->
+<!-- ============================================ -->
+<div class="page">
+    <header>
+        <h1>Internet — Exercices (3/3)</h1>
+        <span class="badge">NSI — Terminale</span>
+    </header>
+
+    <h2><span class="exo-num">1</span> Internet ou Web ?</h2>
+    <p>Pour chaque situation, indiquer si l'on utilise Internet <em>via le Web</em> ou Internet <em>sans passer par le Web</em> :</p>
+    <table>
+        <tr><th style="width:65%">Situation</th><th>Réponse</th></tr>
+        <tr><td>Envoi d'un courriel depuis une application bureau (Thunderbird, Mail).</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Consultation d'un article sur <code>fr.wikipedia.org</code> dans un navigateur.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Mise à jour automatique d'une application sur smartphone.</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Partage de fichiers via BitTorrent.</td><td><div class="write-zone"></div></td></tr>
+    </table>
+
+    <h2><span class="exo-num">2</span> Client-Serveur ou Pair-à-Pair ?</h2>
+    <p><strong>2.1</strong> Pour chacun des cas suivants, justifier le modèle employé :</p>
+
+    <p>a) Un site marchand vend des billets de train à des milliers d'utilisateurs.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p>b) Un logiciel libre est distribué via un protocole où chaque téléchargeur partage à son tour le fichier avec d'autres.</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>2.2</strong> Citer un <strong>avantage</strong> et un <strong>inconvénient</strong> du modèle Pair-à-Pair par rapport au modèle Client-Serveur :</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">3</span> Rôle de TCP</h2>
+    <p>On envoie un fichier de 10 segments TCP numérotés de 1 à 10. À l'arrivée, on reçoit dans l'ordre : <code>1, 2, 4, 5, 3, 7, 8, 10</code>.</p>
+
+    <p><strong>3.1</strong> Quels segments manquent ? Que fait TCP pour les récupérer ?</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <p><strong>3.2</strong> Dans quel ordre l'application reçoit-elle finalement les données ? Justifier.</p>
+    <div class="write-zone"></div>
+
+    <p><strong>3.3</strong> Compléter : « TCP fonctionne en <em>mode connecté</em> car ........................................................................................................................................................................................................................... »</p>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">4</span> Résolution DNS</h2>
+    <p>Un élève tape dans son navigateur <code>https://nsi.lycee.fr/cours</code>. Décrire dans l'ordre les <strong>4 étapes principales</strong> qui aboutissent à l'affichage de la page :</p>
+
+    <div class="box-fill" style="min-height: 70px;">
+        <p style="margin:2px 0;">1. ......................................................................................................................................................................................</p>
+        <p style="margin:2px 0;">2. ......................................................................................................................................................................................</p>
+        <p style="margin:2px 0;">3. ......................................................................................................................................................................................</p>
+        <p style="margin:2px 0;">4. ......................................................................................................................................................................................</p>
+    </div>
+
+    <h2><span class="exo-num">5</span> Analyse d'URL</h2>
+    <p>Soit l'URL : <code>https://www.openclassrooms.com/fr/courses/1814841-nsi?page=3</code></p>
+    <table>
+        <tr><th style="width:30%">Composant</th><th>Valeur</th></tr>
+        <tr><td>Protocole</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Nom de domaine</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Chemin (path)</td><td><div class="write-zone"></div></td></tr>
+        <tr><td>Paramètres</td><td><div class="write-zone"></div></td></tr>
+    </table>
+    <p>Quel est l'avantage d'<code>https</code> par rapport à <code>http</code> ?</p>
+    <div class="write-zone"></div>
+
+    <h2><span class="exo-num">6</span> Infrastructure mondiale</h2>
+    <p>On consulte un site hébergé aux États-Unis depuis un poste situé à Mayotte. <strong>6.1</strong> Citer 2 supports physiques que les paquets sont susceptibles de traverser.</p>
+    <div class="write-zone"></div>
+
+    <p><strong>6.2</strong> Pourquoi parle-t-on de <strong>résilience</strong> de l'infrastructure ?</p>
+    <div class="write-zone"></div>
+    <div class="write-zone"></div>
+
+    <footer>
+        <span>NSI — Terminale &nbsp;|&nbsp; Architectures matérielles, systèmes, réseaux</span>
+        <span>Fiche 2 — Verso exercices</span>
+    </footer>
+</div>
+
+</body>
+</html>
