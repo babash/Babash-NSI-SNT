@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests du thésaurus des notions et du champ « notions » des fiches (T50a), et de la visibilité par défaut.
+"""Tests du thésaurus des notions et du champ « notions » des fiches (T50a, T60), et de la visibilité par défaut.
 
 Usage (depuis la racine du dépôt) :
   python3 -I -B scripts/tests/test_notions.py [--racine DOSSIER_DU_DEPOT] [--travail DOSSIER] [--garder]
@@ -8,7 +8,9 @@ Chaque cas prépare une copie de travail : le dossier donnees/ est copié, le re
 liens symboliques (les fichiers déposés cités par les fiches restent ainsi trouvables, sans tout copier). Le cas
 modifie la copie, lance scripts/valider_donnees.py du dépôt sur elle, et vérifie le code de retour et les lignes
 attendues (ERREUR, ATTENTION ou INFO, sur le bon fichier). Les cas s'appuient sur la fiche d'exemple td1-poo et
-sur des notions du thésaurus (prog.boucle, prog.boucle.bornee, prog.variable…) : les adapter si elles changent.
+sur des notions du thésaurus (prog.boucle, prog.boucle.bornee, prog.variable, geo.itineraire…) : les adapter si
+elles changent. Les cas de l'option --avant comparent la copie à une version précédente du thésaurus, écrite dans
+la copie (avant.json).
 
 Code de retour : 0 si tous les cas passent, 1 sinon. Python 3 standard, sans dépendance.
 """
@@ -60,20 +62,22 @@ class Essai:
         shutil.copytree(os.path.join(self.racine, "donnees"), os.path.join(d, "donnees"))
         return d
 
-    def valider(self, d):
-        r = subprocess.run([sys.executable, "-I", "-B", os.path.join(self.racine, "scripts", "valider_donnees.py"), "--racine", d],
+    def valider(self, d, options=()):
+        r = subprocess.run([sys.executable, "-I", "-B", os.path.join(self.racine, "scripts", "valider_donnees.py"), "--racine", d]
+                           + [o.replace("{copie}", d) for o in options],
                            capture_output=True, text=True, timeout=120)
         return r.returncode, r.stdout + r.stderr
 
-    def cas(self, titre, modifier, code, presents=(), absents=()):
-        """presents, absents : (niveau, fichier, motif) ; niveau ERREUR, ATTENTION ou INFO."""
+    def cas(self, titre, modifier, code, presents=(), absents=(), options=()):
+        """presents, absents : (niveau, fichier, motif) ; niveau ERREUR, ATTENTION ou INFO.
+        options : arguments de plus pour le validateur ; « {copie} » y désigne le dossier de la copie."""
         d = self.copie()
         pb = []
         try:
             modifier(d)
         except Exception as x:  # la préparation elle-même constate un problème
             pb.append(f"préparation : {x}")
-        obtenu, sortie = self.valider(d)
+        obtenu, sortie = self.valider(d, options)
         lignes = sortie.splitlines()
         if obtenu != code:
             pb.append(f"code {obtenu} au lieu de {code}")
@@ -128,6 +132,32 @@ def thesaurus(f):
 
 def notions(**roles):
     return fiche(lambda x: x.__setitem__("notions", roles))
+
+
+def avant(f=None):
+    """Écrire dans la copie la version précédente du thésaurus (avant.json, telle quelle), puis modifier le thésaurus
+    de la copie avec f, comme thesaurus()."""
+    def modifier(d):
+        shutil.copy(os.path.join(d, THESAURUS), os.path.join(d, "avant.json"))
+        if f:
+            thesaurus(f)(d)
+    return modifier
+
+
+def retirer_notion(nid):
+    """Retirer une notion feuille, citée par aucune autre notion."""
+    def f(t, n):
+        t["notions"].remove(n[nid])
+        for h in t.get("historique", []):
+            for cle in ("ajoutees", "modifiees"):
+                if nid in h.get(cle, []):
+                    h[cle].remove(nid)
+    return f
+
+
+def nouvelle_notion(t, n):
+    t["notions"].append({"id": "geo.essai", "libelle": "Notion d'essai", "plus_larges": ["geo"],
+                         "note": "Une notion ajoutée pour le test."})
 
 
 def main():
@@ -217,6 +247,57 @@ def main():
           presents=[("ERREUR", T, r"« remplacee_par » ne sert qu'à une notion « obsolete »")])
     e.cas("source sans adresse ni lecture", thesaurus(lambda t, n: [s.pop("url", None) for s in t["sources"] if s["id"] == "sorva-2013"]), 1,
           presents=[("ERREUR", T, r"il manque un des champs « url » ou « lu »")])
+    e.cas("libellé sans lettre ni chiffre", thesaurus(lambda t, n: n["prog.boucle"].setdefault("code", []).append("//")), 1,
+          presents=[("ERREUR", T, r"« // » n'a ni lettre ni chiffre")])
+    e.cas("homographe que seule la recherche confond (mêmes racines)",
+          thesaurus(lambda t, n: n["prog.compteur"]["alternatifs"].append("boucles bornées")), 0,
+          presents=[("ATTENTION", T, r"désigne plusieurs notions \(prog\.boucle\.bornee, prog\.compteur\).*la recherche le confond")])
+
+    print("L'historique du thésaurus (T60)")
+    e.cas("l'historique est cohérent", lambda d: None, 0,
+          absents=[("ERREUR", T, r"historique"), ("ATTENTION", T, r"historique")])
+    e.cas("historique : notion inconnue",
+          thesaurus(lambda t, n: t["historique"][-1].setdefault("ajoutees", []).append("prog.boucles")), 1,
+          presents=[("ERREUR", T, r"historique\[\d+\]\.ajoutees\[\d+\] : aucune notion « prog\.boucles »")])
+    e.cas("historique : notion ajoutée deux fois",
+          thesaurus(lambda t, n: t["historique"][0].setdefault("ajoutees", []).append(t["historique"][-1]["ajoutees"][0])), 1,
+          presents=[("ERREUR", T, r"est déjà ajoutée par historique\[0\] : une notion s'ajoute une seule fois")])
+    e.cas("historique : notion modifiée avant d'être ajoutée",
+          thesaurus(lambda t, n: t["historique"][0].setdefault("modifiees", []).append(t["historique"][-1]["ajoutees"][0])), 1,
+          presents=[("ERREUR", T, r"elle ne peut pas être modifiée avant")])
+    e.cas("historique : date après la version", thesaurus(lambda t, n: t["historique"][-1].__setitem__("date", "2099-01-01")), 1,
+          presents=[("ERREUR", T, r"est après la version du thésaurus")])
+    e.cas("historique : dates dans le désordre", thesaurus(lambda t, n: t["historique"][0].__setitem__("date", "2030-01-01")
+                                                           or t.__setitem__("version", "2030-01-01")), 1,
+          presents=[("ERREUR", T, r"précède la version d'avant")])
+    e.cas("historique : tâche mal écrite", thesaurus(lambda t, n: t["historique"][-1].__setitem__("tache", "t60")), 1,
+          presents=[("ERREUR", T, r"historique\[\d+\]\.tache")])
+
+    print("La comparaison à une version précédente (--avant)")
+    A = ["--avant", "{copie}/avant.json"]
+    e.cas("même version : rien à signaler", avant(), 0, options=A,
+          absents=[("ERREUR", T, "."), ("INFO", T, r"nouvelles? depuis"), ("INFO", T, "change de")])
+    e.cas("identifiant publié qui disparaît", avant(retirer_notion("geo.itineraire")), 1, options=A,
+          presents=[("ERREUR", T, r"« geo\.itineraire » .* a disparu depuis la version précédente : un identifiant publié est définitif")])
+    e.cas("notion devenue obsolète : permis", avant(lambda t, n: n["geo.itineraire"].update(obsolete=True, remplacee_par="geo.carte")),
+          0, options=A, presents=[("INFO", T, r"« geo\.itineraire » devient obsolète")], absents=[("ERREUR", T, ".")])
+    e.cas("libellé changé et notion déplacée : signalés",
+          avant(lambda t, n: n["geo.itineraire"].update(libelle="Itinéraires", plus_larges=["geo.carte"])), 0, options=A,
+          presents=[("INFO", T, r"« geo\.itineraire » change de libellé : « Calcul d'itinéraire » devient « Itinéraires »"),
+                    ("INFO", T, r"« geo\.itineraire » change de place")])
+    e.cas("notion nouvelle absente de l'historique", avant(nouvelle_notion), 0, options=A,
+          presents=[("INFO", T, r"1 notion nouvelle depuis la version précédente : geo\.essai"),
+                    ("ATTENTION", T, r"absentes des « ajoutees » de l'historique : geo\.essai")])
+    e.cas("notion nouvelle inscrite à l'historique",
+          avant(lambda t, n: nouvelle_notion(t, n) or t["historique"].append({"date": t["version"], "tache": "T99",
+                                                                              "resume": "Une notion d'essai.", "ajoutees": ["geo.essai"]})),
+          0, options=A, absents=[("ATTENTION", T, r"historique")])
+    e.cas("notion déjà publiée inscrite comme ajoutée",
+          avant(lambda t, n: t["historique"].append({"date": t["version"], "resume": "Une erreur d'inscription.",
+                                                     "ajoutees": ["geo.carte"]})), 0, options=A,
+          presents=[("ATTENTION", T, r"« geo\.carte » existait déjà dans la version précédente")])
+    e.cas("version précédente illisible", lambda d: open(os.path.join(d, "avant.json"), "w").write("{"), 1, options=A,
+          presents=[("ERREUR", T, r"--avant : la version précédente ne se lit pas")])
 
     print("Valeurs et visibilité (consigne du 12/11/2026)")
 
