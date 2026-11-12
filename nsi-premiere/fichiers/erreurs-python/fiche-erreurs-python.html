@@ -57,17 +57,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
   body  { background: #fff; }
   .page { margin: 0 auto; padding: 5mm 7mm 4mm; }
   /* espacements resserrés : chaque face tient sur une page A4 */
-  :root { --pad: .85mm 2.5mm; --cols: 34% 33% 33%; }
-  .page-header, .verso-header { padding-bottom: 1.5mm; margin-bottom: 2mm; }
-  .intro-block, .error-section { margin-bottom: 1.3mm; }
-  .intro-panel { padding: 1.4mm 2.5mm; }
-  .intro-block__title span { padding: 1.2mm 3.5mm; }
-  .traceback { line-height: 1.55; padding: 1.4mm 2.5mm; }
-  .step { padding: .35mm 0; }
-  .error-section__header { padding: .9mm 3mm; }
-  .error-section__cols span { padding: .6mm 2.5mm; }
-  .msg-block { line-height: 1.4; }
-  .pied { margin-top: 1.2mm; }
+  :root { --pad: .85mm 2.5mm; }
   .page-break { page-break-after: always; }
   @page { size: A4 portrait; margin: 0; }
 }
@@ -235,6 +225,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
   font-family: var(--f-mono); font-size: 6.5pt; line-height: 1.48;
 }
 .msg-block__error { color: var(--term-err); font-weight: 700; display: block; }
+.msg-block__error--suite { margin-top: .8mm; }
 .msg-block__note  { color: var(--term-dim); font-size: 5.9pt; font-style: italic; display: block; margin-top: 1px; }
 
 /* cellule 2 : explication */
@@ -249,6 +240,25 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
 }
 .fix-step:last-child { border-bottom: none; }
 .fix-step__num { font-weight: 800; flex-shrink: 0; width: 9px; color: var(--c); }
+
+/* ═══════════════════════════════════════════════
+   IMPRESSION : espacements resserrés (après les règles de base,
+   pour qu'elles s'appliquent) : chaque face tient sur une page A4
+   ═══════════════════════════════════════════════ */
+@media print {
+  .page-header, .verso-header { padding-bottom: 1mm; margin-bottom: 1.5mm; }
+  .intro-block, .error-section { margin-bottom: 1.3mm; }
+  .intro-panel { padding: 1.4mm 2.5mm; }
+  .intro-block__title span { padding: 1.2mm 3.5mm; }
+  .traceback { line-height: 1.45; padding: 1.4mm 2.5mm; }
+  .annotations { margin-top: 1mm; }
+  .intro-panel__label { margin-bottom: .8mm; }
+  .step { padding: .35mm 0; }
+  .error-section__header { padding: .9mm 3mm; }
+  .error-section__cols span { padding: .6mm 2.5mm; }
+  .msg-block { line-height: 1.4; }
+  .pied { margin-top: 1.2mm; }
+}
 
 /* ═══════════════════════════════════════════════
    PIED : auteur, licence, code source
@@ -305,10 +315,11 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
       <div class="traceback"><span style="color:var(--term-dim)">Traceback (most recent call last):</span>
 <span style="color:var(--term-dim)">  File "prog.py", <span class="hl hl-line">line 5</span>, in &lt;module&gt;</span>
 <span style="color:var(--term-dim)">    <span class="hl hl-code">age = int(saisie) + 1</span></span>
+<span style="color:var(--term-dim)">          ~~~^^^^^^^^</span>
 <span class="hl hl-type">ValueError</span><span style="color:var(--ink)">: <span class="hl hl-desc">invalid literal for int() with base 10: 'abc'</span></span></div>
       <div class="annotations">
         <div class="annotation"><span class="annotation__chip" style="background:#1d4ed8">ligne&nbsp;5</span><span><b>Numéro de ligne</b> — va directement à cette ligne dans ton code.</span></div>
-        <div class="annotation"><span class="annotation__chip" style="background:#b45309">code</span><span><b>Ligne fautive</b> — c'est ici que Python a bloqué.</span></div>
+        <div class="annotation"><span class="annotation__chip" style="background:#b45309">code</span><span><b>Ligne fautive</b> — c'est ici que Python a bloqué. Depuis Python 3.11, des <code>^</code> soulignent l'endroit exact.</span></div>
         <div class="annotation"><span class="annotation__chip" style="background:#15803d">type</span><span><b>Type d'erreur</b> — cherche ce nom dans les sections ci-dessous.</span></div>
         <div class="annotation"><span class="annotation__chip" style="background:#b91c1c">desc</span><span><b>Description</b> — cherche cette phrase dans la colonne de gauche de la section correspondante.</span></div>
       </div>
@@ -459,7 +470,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
     <div class="error-section__header"><h2>SyntaxError</h2><span class="hint">La grammaire du code est incorrecte — Python ne peut même pas lire le programme</span></div>
     <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
     <div class="error-section__row">
-      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">SyntaxError: invalid syntax</span><span class="msg-block__note">⚠ Le curseur pointe souvent sur la ligne après l'erreur réelle</span></div></div>
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">SyntaxError: invalid syntax</span><span class="msg-block__note">⚠ Le curseur pointe souvent sur la ligne après l'erreur réelle</span><span class="msg-block__error msg-block__error--suite">SyntaxError: expected ':'</span><span class="msg-block__note">(deux-points oubliés ; ou invalid syntax dans les versions plus anciennes)</span></div></div>
       <div class="row-cause">Python ne comprend pas la ligne indiquée. <b>L'erreur réelle est souvent une ligne au-dessus</b> — regarde la ligne précédente en priorité.</div>
       <div class="row-fix"><div class="fix-list">
         <div class="fix-step"><span class="fix-step__num">1.</span><span>Vérifie les <b>deux-points</b> manquants après <code>if</code>, <code>for</code>, <code>def</code>, <code>while</code>.</span></div>
