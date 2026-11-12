@@ -33,14 +33,16 @@ Une fiche range aussi la ressource selon ce qu'elle fait apprendre, plus finemen
 programme : ses **notions** (`notions`), tirées du thésaurus `referentiels/notions.json`, avec
 leur rôle : enseignées (`enseignees`), évaluées (`evaluees`) ou prérequises (`prerequises`),
 les trois propriétés que schema.org a reprises de LRMI pour les ressources pédagogiques. Le
-thésaurus suit le modèle de SKOS (W3C) et de la norme ISO 25964 : 161 notions en 12 domaines,
+thésaurus suit le modèle de SKOS (W3C) et de la norme ISO 25964 : 176 notions en 12 domaines,
 de la plus large à la plus précise (programmation › structures de contrôle › boucle › boucle
 bornée), avec leurs synonymes, leurs termes anglais, les mots du code, les thèmes du programme
 où elles sont enseignées, leurs correspondances avec le *K–12 Computer Science Framework*,
-l'*Informatics Reference Framework for School* et CS2023, et, pour 27 d'entre elles, 43
-difficultés connues des élèves, avec leurs sources. Il servira à la recherche de l'onglet
-Bibliothèque, à venir. Proposé par l'Architecte, il est publié depuis le 12 novembre 2026 ;
-l'enseignant le relit, et ses remarques viendront dans une mise à jour. Les mots-clés libres
+l'*Informatics Reference Framework for School* et CS2023, et, pour 34 d'entre elles, 53
+difficultés connues des élèves, avec leurs sources. Un historique dit ce que chaque version a
+ajouté ou modifié. Il servira à la recherche de l'onglet Bibliothèque, à venir. Proposé par
+l'Architecte, il est publié depuis le 12 novembre 2026 et complété le même jour ; l'enseignant
+le relit, et ses remarques viendront dans une mise à jour. Un identifiant de notion publié ne
+disparaît jamais : une notion abandonnée reste, marquée obsolète. Les mots-clés libres
 (`mots_cles`) restent.
 
 Quand c'est utile, la fiche note aussi :
@@ -77,7 +79,10 @@ message donne le fichier et le champ. Le script signale comme erreur, entre autr
 principal vers GitHub, un identifiant en double, une référence inexistante (une notion absente
 du thésaurus comprise), un document sans réglage de visibilité, et tout ce qui ressemble à un
 mot de passe, un identifiant ou une clé secrète. Il vérifie aussi le thésaurus lui-même :
-notions plus larges et associées existantes, hiérarchie sans cycle, libellés préférés uniques.
-Ses tests : `python3 -I -B scripts/tests/test_notions.py`.
+notions plus larges et associées existantes, hiérarchie sans cycle, libellés préférés uniques
+(la recherche compare les racines des mots : « test » et « Tests » se confondraient), historique
+cohérent. Avec `--avant F`, il compare le thésaurus à une version précédente `F` (celle de
+`main`, par exemple : `git show origin/main:donnees/referentiels/notions.json > F`) : une notion
+de `F` qui a disparu est une erreur. Ses tests : `python3 -I -B scripts/tests/test_notions.py`.
 
 Le format en détail, pour l'enseignant et pour les agents : [`donnees/README.md`](../donnees/README.md).

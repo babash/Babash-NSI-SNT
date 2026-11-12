@@ -11,7 +11,11 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   échouer le contrôle (croix rouge). Les avertissements et les informations sont dans le
   résumé du run, sans échec, et les erreurs et avertissements apparaissent aussi en
   annotations sur les fichiers concernés. Les deux avertissements voulus des fiches d'exemple
-  (Alien Python, TD 1 de POO) y figurent donc à chaque run.
+  (Alien Python, TD 1 de POO) y figurent donc à chaque run. Le thésaurus des notions est aussi
+  comparé à celui de `main` (pour un envoi sur `main`, à celui d'avant l'envoi) : une notion
+  publiée qui a disparu fait échouer le contrôle, car un identifiant publié est définitif. Une
+  branche en retard sur `main` y échoue aussi quand `main` a reçu des notions depuis (elles
+  manquent à la branche) : la rebaser sur `main` le règle.
 - **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
   fichiers `ressources.js` sont testés. Un lien en échec est revérifié par un second job,
   « Liens en échec, seconde passe », donc sur une autre machine de GitHub, une à deux minutes
