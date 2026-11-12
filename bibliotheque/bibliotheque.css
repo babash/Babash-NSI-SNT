@@ -1,0 +1,314 @@
+/* ─────────────────────────────────────────────
+   Bibliothèque : les styles propres à la page (filtres, puces, cartes,
+   fiche complète, surlignage). Provisoire, écrit par l'Architecte (T50)
+   avec les seules variables de assets/style.css, pour suivre le clair
+   et l'obscur : le Designer le reprendra avec la charte.
+   Le reste (bandeau, recherche, liste, cartes, pied) vient de style.css.
+   ───────────────────────────────────────────── */
+
+/* ── Les filtres ──────────────────────────── */
+
+.filtres {
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+.filtres > summary {
+  cursor: pointer;
+  padding: .75rem 1rem;
+  font-family: var(--display);
+  font-weight: 600;
+}
+.filtres-liste {
+  border-top: 1px solid var(--line);
+  padding: .25rem .75rem .75rem;
+}
+@media (min-width: 1080px) {
+  .filtres { border: 0; background: none; }
+  .filtres > summary { display: none; }
+  .filtres-liste { border-top: 0; padding: 0; }
+}
+
+.facette { border-bottom: 1px solid var(--line); }
+.facette > summary {
+  cursor: pointer;
+  padding: .6rem .1rem;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: .98rem;
+}
+.facette > :last-child { margin-bottom: .6rem; }
+
+.filtre-valeurs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.filtre-sous { padding-left: 1.35rem; }
+
+.filtre-case {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  padding: .22rem .1rem;
+  font-size: .93rem;
+  line-height: 1.3;
+  cursor: pointer;
+  min-width: 0;
+  flex: 1;
+}
+.filtre-case input {
+  flex: none;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin: .1rem 0 0;
+  accent-color: var(--accent);
+}
+.filtre-nom { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.filtre-case .nb { flex: none; }
+.filtre-case.est-vide { color: var(--ink-soft); }
+.filtre-case:hover .filtre-nom { text-decoration: underline; text-underline-offset: .15em; }
+
+.filtre-ligne { display: flex; align-items: flex-start; gap: .25rem; }
+.deplier,
+.deplier-vide {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+.deplier {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--ink);
+  font: 600 .95rem/1 var(--mono);
+  cursor: pointer;
+}
+.deplier:hover { border-color: var(--accent); }
+
+.filtre-aide {
+  margin: 0 0 .6rem;
+  font-size: .88rem;
+  color: var(--ink-soft);
+}
+
+.lien-bouton {
+  appearance: none;
+  border: 0;
+  margin: .2rem 0;
+  padding: .15rem 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-size: .9rem;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-underline-offset: .2em;
+  cursor: pointer;
+}
+
+/* ── La barre des résultats ───────────────── */
+
+.outils-resultats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .6rem 1.25rem;
+  margin: 0 0 1rem;
+}
+.outils-resultats .compte {
+  margin: 0;
+  margin-right: auto;
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.tri { display: flex; align-items: center; gap: .4rem; font-size: .9rem; min-width: 0; max-width: 100%; }
+.tri label { white-space: nowrap; }
+.tri select {
+  font: inherit;
+  font-size: .9rem;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: .3rem .4rem;
+  min-width: 0;
+  max-width: 100%;
+  flex: 1 1 auto;
+}
+.outils-resultats .mode { grid-area: auto; }
+.outils-resultats .mode-btn { font-size: .78rem; padding: .42rem .7rem; }
+
+.puces {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem;
+  margin: 0 0 1rem;
+}
+.puce {
+  appearance: none;
+  margin: 0;
+  max-width: 100%;
+  padding: .2rem .55rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--line));
+  background: color-mix(in srgb, var(--accent) 10%, var(--panel));
+  color: var(--ink);
+  font: inherit;
+  font-size: .85rem;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.puce:hover { border-color: var(--accent); }
+.puce-quoi { color: var(--ink-soft); }
+
+.note {
+  margin: 0 0 1rem;
+  padding: .5rem .75rem;
+  border-left: 3px solid var(--accent);
+  background: var(--panel);
+  font-size: .93rem;
+}
+
+.bibliotheque .resultats { margin-top: 0; }
+.raison {
+  font-size: .88rem;
+  color: var(--ink-soft);
+}
+.raison .extrait q { color: var(--ink); }
+.actions-fiche {
+  font-size: .9rem;
+}
+.lien-fiche {
+  font-weight: 700;
+  text-decoration-color: var(--hl);
+  text-underline-offset: .2em;
+}
+
+/* Les cartes : la grille des rubriques de l'accueil */
+.cartes {
+  list-style: none;
+  padding: 0;
+  margin-top: 0;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+}
+.carte { display: flex; flex-direction: column; overflow-wrap: break-word; }
+.carte h3 { margin: 0 0 .5rem; line-height: 1.2; }
+.carte .titre { font-size: 1.12rem; }
+.carte .noeud-texte { margin-bottom: .6rem; }
+.carte .actions-fiche { margin: auto 0 0; padding-top: .3rem; }
+
+.plus,
+.bouton-ouvrir {
+  display: inline-block;
+  margin-top: 1.25rem;
+  padding: .5rem .9rem;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  font: 600 .98rem var(--display);
+  text-decoration: none;
+  cursor: pointer;
+}
+.plus:hover,
+.bouton-ouvrir:hover { border-color: var(--accent); }
+.bouton-ouvrir { margin-top: .25rem; border-color: var(--hl); }
+
+.vide-bloc p { margin: 0 0 .75rem; }
+
+/* ── La fiche complète ────────────────────── */
+
+.retour {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: .95rem;
+  text-underline-offset: .2em;
+}
+.fiche-complete { overflow-wrap: break-word; }
+.fiche-titre {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  line-height: 1.15;
+  margin: 0 0 .5rem;
+  padding-left: .75rem;
+  border-left: 4px solid var(--hl);
+}
+.fiche-complete .chapo {
+  font-size: 1.1rem;
+  color: var(--ink-soft);
+  max-width: 44em;
+  margin: 0 0 1rem;
+}
+.fiche-complete h3 {
+  font-family: var(--display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin: 1.75rem 0 .5rem;
+}
+.fiche-complete p,
+.fiche-complete ul,
+.fiche-complete ol { max-width: 46em; }
+
+.synthese { margin: 0; }
+.synthese-ligne {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: .1rem 1rem;
+  padding: .45rem 0;
+  border-bottom: 1px solid var(--line);
+}
+@media (min-width: 640px) {
+  .synthese-ligne { grid-template-columns: 12rem minmax(0, 1fr); }
+}
+.synthese dt {
+  font-family: var(--mono);
+  font-size: .78rem;
+  color: var(--ink-soft);
+  padding-top: .15rem;
+}
+.synthese dd { margin: 0; }
+
+.documents { padding-left: 1.2rem; }
+.documents li + li { margin-top: .35rem; }
+.documents .type {
+  font-family: var(--mono);
+  font-size: .72rem;
+  color: var(--ink-soft);
+}
+
+.criteres { list-style: none; padding: 0; }
+.criteres li { display: flex; gap: .5rem; align-items: baseline; }
+.marque-critere {
+  flex: none;
+  width: 1.2rem;
+  font-weight: 700;
+  text-align: center;
+}
+.criteres .non { color: var(--ink-soft); }
+
+.difficultes { padding-left: 1.2rem; }
+.difficultes li + li { margin-top: .5rem; }
+.difficultes .source {
+  display: block;
+  font-size: .85rem;
+  color: var(--ink-soft);
+}
+
+/* ── Le surlignage des mots trouvés ───────── */
+
+.bibliotheque mark {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 24%, transparent);
+  box-shadow: inset 0 -2px 0 var(--accent);
+  padding: 0 .08em;
+}
+
+/* Accueil : le lien vers la bibliothèque, sous les résultats de la recherche */
+.vers-bibliotheque { margin: 1.5rem 0 0; }
+
+@media print {
+  .filtres, .outils-resultats, .puces, .plus, .retour { display: none !important; }
+}
