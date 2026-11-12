@@ -2,15 +2,17 @@
 
 Ce dossier contient les migrations qui ne relèvent d'aucune application : les préalables de la base unique (n° 2 de l'ordre d'ensemble, `architecture/base-unique.md`, § 3) et le schéma `commun`. Les migrations d'une application restent dans son propre dépôt (règle M1).
 
-- **Le projet cible :** `cukahpyqkljiddmimpyi`, nom affiché « SNT-1er Jour », à renommer « Babash - applications ». Il porte SNT 1er jour, Expédition Gombessa et Alien Python.
+- **Le projet cible :** `cukahpyqkljiddmimpyi`, nom affiché « SNT-1er Jour », à renommer « Babash - applications ». Il porte SNT 1er jour, Expédition Gombessa, Alien Python et le temps réel de Court-circuit (bientôt aussi son schéma `court_circuit`).
 - **Une exception :** `0004` vise l'ancien projet de Lagon Arena, `gkyvaugipddjqjvvpopw`. Il n'y touche à aucun objet `guilde_*`.
 - **Les règles suivies :** `architecture/regles-supabase.md` (P2, P4, P8 corrigée, M1 à M8) et la spécification des codes, `architecture/codes-acces.md` (§ 1.10).
 
-## Où en est la base (11/11/2026)
+## Où en est la base (12/11/2026)
 
-**Les quatre migrations sont appliquées**, après l'accord de l'enseignant (« Ok base 2 », 11/11 à 16:29, heure de Mayotte).
+**`0005` n'est pas appliqué** (écrit le 12/11) : il attend l'accord de l'enseignant, qui voit le SQL exact avant (règle M4). Il ne change que la vue `commun.registre` et deux commentaires (voir « 0005 » plus bas).
+
+**Les quatre premières migrations sont appliquées**, après l'accord de l'enseignant (« Ok base 2 », 11/11 à 16:29, heure de Mayotte).
 - Le chef d'orchestre les a appliquées par `apply_migration`, sans leurs lignes `begin;` et `commit;`.
-- Chaque texte enregistré a la même empreinte que le fichier du commit `cff652e` (le même texte qu'en `88c4cd7` et `d113879`, ses identifiants avant les rebases ; md5 sans commentaires, espaces ni `;`) : **les fichiers SQL de ce dossier sont exactement ceux qui ont été appliqués**, et ne se modifient plus.
+- Chaque texte enregistré a la même empreinte que le fichier du commit `cff652e` (le même texte qu'en `88c4cd7` et `d113879`, ses identifiants avant les rebases ; md5 sans commentaires, espaces ni `;`) : **les fichiers `0001` à `0004` de ce dossier sont exactement ceux qui ont été appliqués**, et ne se modifient plus.
 - **L'ordre recommandé a été suivi :** l'étape 0 de Gombessa (`gombessa_0001_espaces`, version 20261110161938) était déjà appliquée. Il n'y a donc pas de `0002` à relancer.
 
 | Fichier | Projet | Migration | Version | Heure (Mayotte) |
@@ -49,8 +51,9 @@ On ne fait jamais d'essai sur une table de données d'élèves de la base en lig
 | `0002-retrait-authenticated-et-sequences.sql` | cible | `base_unique_0002_retrait_authenticated_et_sequences` | Retire `authenticated` (et `public`) des fonctions de `public`, et ferme les deux séquences. Les droits d'`anon` ne changent pas. |
 | `0003-schema-commun.sql` | cible | `base_unique_0003_schema_commun` | Crée le schéma `commun` : le compteur d'essais, le sel secret, six fonctions internes et le registre des tables. |
 | `0004-ancien-projet-sequence-pantheon.sql` | **ancien projet de Lagon Arena** | `base_unique_0004_ancien_projet_sequence_pantheon` | Retire à `anon` ses droits sur `pantheon_id_seq`. |
+| `0005-registre-court-circuit.sql` | cible | `base_unique_0005_registre_court_circuit` | Range le schéma `court_circuit` et le préfixe `cc_` dans le registre des tables. |
 | `NNNN-…-inverse.sql` | le même | `…_inverse` | Le SQL inverse de chaque migration. |
-| `schema.sql` | un projet neuf | — | Le script complet du socle (0001 et 0003), pour la copie d'un·e collègue. |
+| `schema.sql` | un projet neuf | — | Le script complet du socle (0001, 0003 et 0005), pour la copie d'un·e collègue. |
 
 Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne. Il se colle d'un bloc dans l'éditeur SQL. Par `apply_migration`, on retire seulement ces deux lignes : le reste est appliqué tel quel.
 
@@ -61,6 +64,7 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
    - Il suffit alors de relancer `0002` juste après l'étape 0, sous le nom `base_unique_0002_retrait_authenticated_et_sequences_bis`. Le fichier se relance sans risque.
 2. **Puis `0001`, `0002` et `0003`, dans cet ordre.** Chacun passe aussi seul.
 3. **`0004`, quand on veut**, sur l'autre projet.
+4. **`0005`, quand on veut, avant ou après la migration de Court-circuit** (`court_circuit_0001_codes_eleves`, dossier `snt/fichiers/court-circuit/supabase/`). Tant que le schéma `court_circuit` n'existe pas, le registre donne les mêmes lignes qu'avant.
 
 **Aucune page n'est touchée, et il n'y a aucune interruption.** Aucune ligne n'est modifiée : l'export des tables (règle M8) n'est pas nécessaire.
 
@@ -119,6 +123,17 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
 - **Rien d'autre ne change** : aucun objet `guilde_*`, aucune table, aucune fonction, aucun droit par défaut.
 - **Ce qui reste :** les droits d'`authenticated` sur cette séquence, parce que la consigne de T42 se limite à `anon` pour ce projet.
 
+### 0005 : Court-circuit dans le registre (12/11)
+
+- **Pourquoi :** Court-circuit prend le schéma `court_circuit` et le préfixe `cc_` (inscrits au registre des applications, `architecture/regles-supabase.md`, § 2). La vue `commun.registre` de `0003` ne lit que les schémas qu'elle nomme : sans `0005`, les tables de Court-circuit n'y apparaîtraient pas.
+- **Il modifie** seulement :
+  - la vue `commun.registre` (`create or replace view`) : `court_circuit` dans la liste des schémas, et `cc_` → `court_circuit` pour une table encore dans `public`. Les colonnes, leur ordre, `security_invoker`, le propriétaire, les droits et le commentaire de la vue ne changent pas ;
+  - deux commentaires de colonne, qui nomment maintenant Court-circuit : `commun.registre.application` et `commun.essais.application`.
+- **Il ne change** aucune table, aucune ligne, aucune fonction, aucun droit, aucune page.
+- **Un contrôle à la fin** arrête tout si la vue s'ouvre à `anon` ou à `authenticated`, si elle perd `security_invoker`, ou si une table de `court_circuit` n'y est pas rangée.
+- **L'inverse** rend la vue et les deux commentaires exactement comme `0003` les a créés. Il n'efface rien : les tables de Court-circuit restent, simplement absentes du registre.
+- **Pour la prochaine application :** la même petite migration, avec son schéma et son préfixe (voir « Pour une application » plus bas).
+
 ## Avant
 
 *Cette section et la suivante décrivent la marche suivie le 11/11 ; elles restent comme modèle pour une relance ou pour une copie.*
@@ -160,6 +175,14 @@ select count(*) from pg_proc p where p.pronamespace = 'commun'::regnamespace
        or exists (select 1 from aclexplode(p.proacl) a where a.grantee = 0));
 ```
 
+**Pour 0005** (attendu : `true`, `true`, puis 4 lignes `court_circuit` une fois la migration de Court-circuit appliquée, 0 avant) :
+
+```sql
+select pg_get_viewdef('commun.registre') like '%court_circuit%' as schema_lu,
+       not has_table_privilege('anon', 'commun.registre', 'select') as ferme;
+select application, schema_nom, table_nom, donnees_eleves from commun.registre where application = 'court_circuit';
+```
+
 **Pour 0004, sur l'autre projet** (attendu : `false`) :
 
 ```sql
@@ -191,7 +214,8 @@ from unnest(array['snt_nuage', 'alien_join_class', 'gb_connexion' /* … la list
 
 ## Revenir en arrière
 
-- **Dans l'ordre inverse :** `0003-schema-commun-inverse.sql`, puis `0002-…-inverse.sql`, puis `0001-…-inverse.sql`. Chacun passe aussi seul. Pour l'autre projet : `0004-…-inverse.sql`.
+- **Dans l'ordre inverse :** `0005-…-inverse.sql`, `0003-schema-commun-inverse.sql`, puis `0002-…-inverse.sql`, puis `0001-…-inverse.sql`. Chacun passe aussi seul : `0003-…-inverse.sql` supprime la vue, il n'a pas besoin de `0005-…-inverse.sql` avant lui. Pour l'autre projet : `0004-…-inverse.sql`.
+- **`0005-registre-court-circuit-inverse.sql` n'efface rien** : il rend la vue de `0003`.
 - **`0003-schema-commun-inverse.sql` efface le sel et les compteurs d'essais.** Ce ne sont pas des données d'élèves : les compteurs repartent de zéro.
   - Il s'arrête, sans rien modifier, si le schéma contient un objet d'une autre migration, ou si une fonction d'application se sert déjà de `commun`. Il faut alors d'abord défaire la migration de cette application.
 - **Les inverses rendent exactement l'état d'avant :** métadonnées, droits d'`anon` et d'`authenticated`, droits par défaut (voir l'essai local).
@@ -199,7 +223,7 @@ from unnest(array['snt_nuage', 'alien_join_class', 'gb_connexion' /* … la list
 ## Le script complet `schema.sql` (règle M2)
 
 - **Pour qui :** un·e collègue qui installe sa copie. On le lance dans un projet neuf, avant le script complet d'une application.
-- **Ce qu'il contient :** le texte de `0001` et de `0003`, sans le contrôle du projet de l'enseignant. `0002` n'y est pas : il corrige des objets qui existaient déjà.
+- **Ce qu'il contient :** le texte de `0001`, de `0003` et de `0005` (parties A, B et C), sans le contrôle du projet de l'enseignant ; pour `0005`, sans son garde-fou, puisque celui de `0003`, en tête, vérifie déjà le rôle et l'origine du registre. La vue est donc créée par B, puis remplacée par C, dans la même transaction. `0002` n'y est pas : il corrige des objets qui existaient déjà.
 - **Il ne se modifie pas à la main :**
   - on le fabrique avec `python3 scripts/supabase_schema.py` ;
   - `python3 scripts/supabase_schema.py --verifier` dit s'il est à jour ;
@@ -227,6 +251,7 @@ end if;
 - **Débloquer le réseau :** la fonction `<app>_prof_debloquer_reseau(code)` vérifie le code de l'enseignant·e, puis appelle `commun.debloquer_reseau('<app>')`.
 - **L'alarme :** l'espace enseignant·e affiche un bandeau si `commun.echecs_heure('<app>')` dépasse 200.
 - **Ne jamais** faire `grant usage on schema commun`, ni donner un droit sur un objet de `commun`.
+- **Le registre :** une nouvelle application, inscrite au registre des applications (préfixe, schéma, liste de mots), demande une petite migration du socle, sur le modèle de `0005`, pour que `commun.registre` lise son schéma et son préfixe.
 
 ## Ce que fait l'enseignant
 
@@ -250,3 +275,14 @@ end if;
   - garde-fous : mauvais projet, mauvais rôle, schéma `commun` venu d'ailleurs, retour refusé quand une application se sert de `commun` ;
   - `schema.sql` dans un projet neuf : le même socle que les migrations.
 - **Le résultat :** 343 contrôles, 0 échec.
+
+## L'essai local de 0005 (12/11/2026)
+
+- **Sur un PostgreSQL 16 local**, avec les rôles de Supabase (`anon`, `authenticated`, `service_role`), `pgcrypto` dans `extensions`, `0001` et `0003` appliqués, et des données inventées. Pour Postgres 16, qui ne connaît pas le droit MAINTAIN, le mot est retiré de la copie d'essai seulement.
+- **Les essais :**
+  - `0005` avant, puis après la migration de Court-circuit : les 4 tables de `court_circuit` sont rangées (avec « données d'élèves » oui ou non), une table `cc_…` de `public` aussi, et les autres lignes ne changent pas ;
+  - la vue reste fermée à `anon` et à `authenticated`, `security_invoker`, avec le même propriétaire, les mêmes droits et le même commentaire ;
+  - relance sans effet ; l'inverse rend exactement la vue et les commentaires de `0003`, et se relance ; `0003-schema-commun-inverse.sql` marche encore après `0005` ;
+  - garde-fous : mauvais rôle, mauvais projet, registre venu d'ailleurs, `0003` absent ;
+  - `schema.sql` dans un projet neuf : le même registre et les mêmes droits que `0001`, `0003` et `0005` ; puis le script complet de Court-circuit et son scénario en `anon`.
+- **Le résultat :** 34 contrôles, 0 échec, et 78 pour le scénario de Court-circuit.
