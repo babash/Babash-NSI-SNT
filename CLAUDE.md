@@ -65,7 +65,7 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
 | Fichiers | Rôle |
 |---|---|
 | `CLAUDE.md`, `.claude/agents/` | Chef d'orchestre |
-| `README.md`, `LICENSE`, `.github/gardien/`, la fusion dans `main` | Gardien |
+| `README.md`, `CONTRIBUTING.md`, `docs/` (la documentation du README), `LICENSE`, `.github/gardien/`, la fusion dans `main` | Gardien |
 | `assets/*.js` (sauf `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`, `assets/td-en-ligne.js`), `index.html`, `*/index.html`, `reglages.js`, `.nojekyll`, `.gitignore`, `admin/`, `bibliotheque/`, `eleve/`, `donnees/` (sauf `donnees/ressources/` et `donnees/vitrine.json`), `scripts/`, `.github/workflows/` et `.github/verifier-site.py` (avec l'accord du Gardien) | Architecte |
 | `*/ressources.js` (anciennes listes, jusqu'à leur conversion), `donnees/ressources/`, `donnees/vitrine.json`, `<rubrique>/fichiers/` | Bibliothécaire |
 | `assets/charte.css`, `assets/style.css`, `assets/fiche.css`, `assets/fiche.js`, `assets/decor.js`, `assets/equipage.js`, `assets/equipage/`, `assets/td-en-ligne.css`, `assets/td-en-ligne.js`, `assets/fonts/`, `assets/favicon.svg`, `charte/`, `design/`, la mise en forme des documents internes | Designer |
