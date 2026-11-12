@@ -64,13 +64,18 @@ jobs:
           echo "source=$source" >> "$GITHUB_OUTPUT"
           if [ "$source" = "workflow" ]; then
             echo "Source de GitHub Pages : GitHub Actions. Mise en ligne par ce workflow."
+          elif [ "$source" = "legacy" ]; then
+            # L'ancien réglage : GitHub publie encore main tel quel. Ne rien mettre en ligne d'ici.
+            echo "::warning title=Réglage de GitHub Pages::La source de GitHub Pages est « Deploy from a branch » : choisir « GitHub Actions » (Settings, Pages, Build and deployment). En attendant, ce workflow ne met rien en ligne et la bibliothèque n'est pas publiée."
+            printf '## Réglage de GitHub Pages\n\nLa source est « Deploy from a branch » : choisir « GitHub Actions » dans Settings → Pages → Build and deployment. En attendant, ce workflow ne met rien en ligne.\n' >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "::warning title=Réglage de GitHub Pages::La source de GitHub Pages est « $source » : choisir « GitHub Actions » (Settings, Pages, Build and deployment). En attendant, ce workflow ne met rien en ligne et la bibliothèque n'est pas publiée."
-            printf '## Réglage de GitHub Pages\n\nLa source est « %s » : choisir « GitHub Actions » dans Settings → Pages → Build and deployment. En attendant, ce workflow ne met rien en ligne.\n' "$source" >> "$GITHUB_STEP_SUMMARY"
+            # Réglage illisible : on tente la mise en ligne, qui réussit ou échoue en clair (croix rouge),
+            # plutôt que de sauter la publication sans bruit.
+            echo "::warning title=Réglage de GitHub Pages::Réglage de GitHub Pages illisible (« $source ») : mise en ligne tentée quand même."
           fi
 
       - name: Préparer le site à mettre en ligne
-        if: steps.reglage.outputs.source == 'workflow'
+        if: steps.reglage.outputs.source != 'legacy'
         uses: actions/upload-pages-artifact@v4
         with:
           path: .
@@ -78,7 +83,7 @@ jobs:
   mettre-en-ligne:
     name: Mettre en ligne
     needs: construire
-    if: needs.construire.outputs.source == 'workflow'
+    if: needs.construire.outputs.source != 'legacy'
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:

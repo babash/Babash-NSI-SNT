@@ -117,7 +117,8 @@ def bibliotheque(base, problemes, lien_du_site):
         ids = sorted(x.get("id") for x in en_ligne.get("ressources", []))
     except (OSError, ValueError) as e:
         problemes.append(f"bibliothèque : donnees/bibliotheque.json illisible en ligne ({e}). Il est construit par le "
-                         "workflow « Publier le site » : la source de GitHub Pages est-elle bien « GitHub Actions » ?")
+                         "workflow « Publier le site » : la source de GitHub Pages est-elle bien « GitHub Actions » ? "
+                         "Sur une copie locale, le construire d'abord : python3 scripts/construire_bibliotheque.py")
         return
     attendus = [f["id"] for f in fiches]
     if ids != attendus:
