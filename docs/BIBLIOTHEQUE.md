@@ -9,8 +9,11 @@ continuent d'utiliser les listes `ressources.js` ([LISTES.md](LISTES.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource (7 pour l'instant : 6 d'exemple et Court-circuit)
-  vitrine.exemple.json          un exemple de mise en avant pour la partie extérieure
+  ressources/<id>.json          une fiche par ressource : 82 fiches, pour les 90 entrées des listes
+                                (une ressource placée dans deux rubriques n'a qu'une fiche)
+  vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
+                                aujourd'hui, plus la section « Intelligence artificielle » de SNT
+  vitrine.exemple.json          l'exemple de mise en avant qui a servi à valider le format
   referentiels/                 l'arbre des programmes, le thésaurus des notions, les listes de valeurs,
                                 les compétences Pix
   schema/                       la description exacte du format (JSON Schema)
@@ -66,12 +69,16 @@ Quand c'est utile, la fiche note aussi :
 
 Pour une création de l'enseignant, un critère à `false`, ou un éditeur de code dont les
 critères ne sont pas notés, donne un avertissement du script de validation ; pour une
-ressource externe, qui ne se modifie pas, c'est une simple information. Deux fiches d'exemple
-ont un avertissement voulu, car ce sont des écarts réels : l'éditeur d'Alien Python, une zone
-de texte simple, ne remplit aucun des cinq critères, et la page du TD 1 de POO n'est ni
-responsive ni auto-corrective. Ces écarts seront repris lors de la revue des ressources
-publiées ; d'ici là, la validation avec `--strict` (ci-dessous) échoue sur ces deux
-avertissements.
+ressource externe, qui ne se modifie pas, c'est une simple information. Six fiches ont un
+avertissement voulu, car ce sont des écarts réels : l'éditeur d'Alien Python, une zone de texte
+simple, ne remplit aucun des cinq critères ; les pages des TD 1 et 2 de POO ne sont ni
+responsives ni auto-correctives ; la licence de la fiche Python de SNT, faite d'après la fiche
+Compute-it, n'est pas connue ; deux sites de collègues ne sont qu'en `http://`. Ces écarts
+seront repris lors de la revue des ressources publiées ; d'ici là, la validation avec
+`--strict` (ci-dessous) échoue sur ces six avertissements.
+
+Les fiches converties le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira.
+Comme la vitrine, elles ne s'affichent pas encore : l'onglet « Bibliothèque » les lira.
 
 Pour valider les données, depuis le dossier du site : `python3 scripts/valider_donnees.py`
 (Python 3 seul, rien à installer ; avec `--strict`, les avertissements bloquent aussi). Chaque
