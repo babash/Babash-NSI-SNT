@@ -26,6 +26,7 @@ Les préfixes, selon le rôle :
 | `archi/` | le fonctionnement du site, ses pages, ses scripts et sa vérification automatique (Architecte) |
 | `design/` | la charte graphique et les styles (Designer) |
 | `atelier/` | une ressource en cours de création, dans ce dépôt ou dans celui d'une application (Atelier) |
+| `qcm/` | les quiz Pronote : leurs sources XML, leurs aperçus et leurs outils, dans le dossier `qcm/` (Atelier des quiz) |
 | `gardien/` | le README, la documentation, la licence et les outils de contrôle (Gardien) |
 | `orga/` | les règles de l'équipe (chef d'orchestre) |
 
@@ -60,7 +61,7 @@ Le Gardien rend l'un de ces verdicts : **publié** ; **publié avec suites** (la
 
 Avant de publier une branche, le Gardien vérifie :
 
-1. **La conformité** : au cahier des charges, aux décisions de l'enseignant (la plus récente l'emporte) et aux règles de conception des ressources, en particulier celles des TD et des éditeurs de code ([docs/AGENTS.md](docs/AGENTS.md)).
+1. **La conformité** : au cahier des charges, aux décisions de l'enseignant (la plus récente l'emporte) et aux règles de conception des ressources, en particulier celles des TD, des éditeurs de code et des quiz ([docs/AGENTS.md](docs/AGENTS.md)).
 2. **Les données** : un format valide, des identifiants uniques, des références qui existent, aucun lien principal vers une page GitHub (§ 12) ; tant que les listes `ressources.js` servent, aucune erreur affichée.
 3. **La visibilité** : un document caché n'apparaît ni au public ni aux élèves (sans objet tant que les listes `ressources.js` servent). Pour l'instant, on ne cache rien : l'enseignant réglera lui-même la visibilité, à la main (consigne du 12 novembre 2026).
 4. **Les données sensibles** (§ 7), cherchées dans tout ce que la branche ajoute.

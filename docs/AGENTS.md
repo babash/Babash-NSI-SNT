@@ -3,7 +3,7 @@
 *Qui entretient le site, qui possède quels fichiers, et les règles de conception que suit chaque ressource. Retour au [README](../README.md).*
 
 Le site est entretenu par une équipe d'agents Claude (Gardien, Architecte, Bibliothécaire,
-Designer, Atelier et Vigie), coordonnés par un chef d'orchestre. Leurs règles communes sont
+Designer, Atelier, Atelier des quiz et Vigie), coordonnés par un chef d'orchestre. Leurs règles communes sont
 dans `CLAUDE.md`, à la racine du dépôt, et la fiche de chaque rôle dans `.claude/agents/`.
 Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`, après ses contrôles,
 et dès que c'est sûr : un point d'écriture mineur ne bloque pas, il part dans une branche de suite.
@@ -17,7 +17,8 @@ fichier de licence du dépôt (`LICENSE`) et les outils de `.github/gardien/` au
 la future bibliothèque est à l'Architecte (notamment le format des données et les
 référentiels), sauf les fiches des ressources (`donnees/ressources/`) et la vitrine
 (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer des fiches
-d'exemple pour illustrer le format.
+d'exemple pour illustrer le format. Le dossier `qcm/` (les sources XML des quiz Pronote,
+leurs aperçus et leurs outils) est à l'Atelier des quiz.
 Un agent ne modifie que ses fichiers ; pour les autres, il le signale dans son rapport.
 Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile, après avoir vérifié
 qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
@@ -25,7 +26,7 @@ qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
 Toute ressource produite ou retravaillée suit les règles de conception de la philosophie
 éducative de l'enseignant : une version en ligne utilisable sur téléphone et une version
 papier A4 en noir et blanc, peu de texte, des erreurs expliquées, la correction automatique
-chaque fois que c'est possible… Trois règles s'appliquent toujours aux créations de
+chaque fois que c'est possible… Quatre règles s'appliquent toujours aux créations de
 l'enseignant :
 
 - un **TD** existe en deux versions : un PDF imprimable (A4, noir et blanc) et une page HTML
@@ -45,7 +46,14 @@ l'enseignant :
   élève un code unique en mots et chiffres (comme `CORAIL-MANTA-482`), qui suffit pour revenir
   depuis n'importe où ; l'enseignant·e a aussi un code et voit ceux de ses élèves, et un lien
   de classe, avec son QR code, permet de rejoindre la classe. Les pages en ligne des TD, elles,
-  restent sans compte ni envoi de données.
+  restent sans compte ni envoi de données ;
+- un **quiz** (un QCM pour Pronote) part d'une note de cadrage que l'enseignant valide avant
+  toute génération. Ses questions sont des QCU à 4 options : une juste et trois distracteurs
+  tirés des erreurs typiques des élèves, avec pour chaque option un feedback bienveillant qui
+  explique, et l'objectif affiché au début de chaque question ; on y analyse du code et on y
+  cherche des erreurs. Le fichier suit le format XML Moodle que lit Pronote, avec toutes ses
+  balises obligatoires et le code coloré ; la bonne réponse n'est jamais mise en avant ni placée
+  selon un motif. La révision d'un quiz existant ne touche que la forme, jamais le fond.
 
 Une ressource externe ne se modifie pas : sa fiche peut signaler ce qui lui manque. Le Gardien
 vérifie ces règles avant de publier une ressource. Les ressources déjà en ligne n'ont pas
