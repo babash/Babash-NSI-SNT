@@ -2,7 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Déboguer en Python — 1ère NSI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Déboguer en Python — 1re NSI</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@800&family=DM+Sans:wght@400;500;600&display=swap');
 
@@ -21,12 +22,12 @@
   --col-zero : #881337;
 
   --ink      : #111827;
-  --ink-soft : #6b7280;
+  --ink-soft : #4b5563;
   --border   : #e5e7eb;
   --row-alt  : #f9fafb;
   --term-bg  : #f1f3f8;
   --term-err : #b91c1c;
-  --term-dim : #6b7280;
+  --term-dim : #4b5563;
 
   --f-sans : 'DM Sans', sans-serif;
   --f-mono : 'DM Mono', monospace;
@@ -39,7 +40,7 @@
 /* ═══════════════════════════════════════════════
    RESET
    ═══════════════════════════════════════════════ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { font-family: var(--f-sans); font-size: 7pt; color: var(--ink); background: #c0c0c8; }
 b    { font-weight: 700; }
 code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; padding: 0 2px; border-radius: 2px; }
@@ -54,7 +55,19 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
 }
 @media print {
   body  { background: #fff; }
-  .page { margin: 0 auto; padding: 6mm 7.5mm; }
+  .page { margin: 0 auto; padding: 5mm 7mm 4mm; }
+  /* espacements resserrés : chaque face tient sur une page A4 */
+  :root { --pad: .85mm 2.5mm; --cols: 34% 33% 33%; }
+  .page-header, .verso-header { padding-bottom: 1.5mm; margin-bottom: 2mm; }
+  .intro-block, .error-section { margin-bottom: 1.3mm; }
+  .intro-panel { padding: 1.4mm 2.5mm; }
+  .intro-block__title span { padding: 1.2mm 3.5mm; }
+  .traceback { line-height: 1.55; padding: 1.4mm 2.5mm; }
+  .step { padding: .35mm 0; }
+  .error-section__header { padding: .9mm 3mm; }
+  .error-section__cols span { padding: .6mm 2.5mm; }
+  .msg-block { line-height: 1.4; }
+  .pied { margin-top: 1.2mm; }
   .page-break { page-break-after: always; }
   @page { size: A4 portrait; margin: 0; }
 }
@@ -119,6 +132,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
   font-family: var(--f-mono); font-size: 6.2pt; line-height: 1.7;
   background: var(--term-bg); border-left: 3px solid #cbd5e1;
   padding: 1.8mm 2.5mm; border-radius: 3px;
+  white-space: pre-wrap;
 }
 .hl      { font-weight: 800; padding: 0 2px; border-radius: 2px; }
 .hl-line { color: #1d4ed8; background: #dbeafe; }
@@ -149,7 +163,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
   display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; margin-top: .5mm;
 }
-.step__num--ok { background: #16a34a; font-size: 7pt; }
+.step__num--ok { background: #15803d; font-size: 7pt; }
 
 /* ═══════════════════════════════════════════════
    SECTION D'ERREUR
@@ -235,6 +249,38 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
 }
 .fix-step:last-child { border-bottom: none; }
 .fix-step__num { font-weight: 800; flex-shrink: 0; width: 9px; color: var(--c); }
+
+/* ═══════════════════════════════════════════════
+   PIED : auteur, licence, code source
+   ═══════════════════════════════════════════════ */
+.pied { margin-top: 1.6mm; font-size: 5.8pt; color: var(--ink-soft); text-align: right; }
+.pied a { color: inherit; }
+
+/* ═══════════════════════════════════════════════
+   ÉCRAN ÉTROIT : la feuille suit la largeur de l'écran
+   (la largeur de 210 mm ne vaut que pour l'impression)
+   ═══════════════════════════════════════════════ */
+@media screen and (max-width: 230mm) {
+  .page { width: auto; max-width: 210mm; margin: 8px; padding: 12px 10px; }
+  .msg-block, .row-cause, .row-fix, .annotation, .step, .traceback { overflow-wrap: anywhere; }
+}
+@media screen and (max-width: 600px) {
+  .page { zoom: 1.25; }
+  .intro-block { grid-template-columns: 1fr; }
+  .intro-block__title { display: contents; }
+  .intro-block__title > span:first-child { order: 1; background: var(--ink); }
+  .intro-block > .intro-panel:nth-child(2) { order: 2; }
+  .intro-block__title > span:last-child { order: 3; background: var(--ink); }
+  .intro-block > .intro-panel:nth-child(4) { order: 4; }
+  .intro-block__title .sep, .intro-block__divider { display: none; }
+  .error-section__header { flex-wrap: wrap; gap: 1mm 4mm; }
+  .error-section__header h2 { white-space: normal; }
+  .error-section__header .hint { text-align: left; }
+  .error-section__cols { display: none; }
+  .error-section__row { grid-template-columns: 1fr; }
+  .row-msg, .row-cause { border-right: none; border-bottom: 1px dotted var(--border); }
+  .pied { text-align: left; }
+}
 </style>
 </head>
 <body>
@@ -244,7 +290,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
 
   <div class="page-header">
     <h1>Déboguer en Python</h1>
-    <p>Protocole de résolution d'erreurs — 1ère NSI &nbsp;·&nbsp; Recto : NameError · TypeError · ValueError</p>
+    <p>Protocole de résolution d'erreurs — 1re NSI &nbsp;·&nbsp; Recto : NameError · TypeError · ValueError</p>
   </div>
 
   <div class="intro-block">
@@ -256,12 +302,10 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
 
     <div class="intro-panel">
       <p class="intro-panel__label">Ce que Python affiche dans la console</p>
-      <div class="traceback">
-<span style="color:var(--term-dim)">Traceback (most recent call last):</span>
+      <div class="traceback"><span style="color:var(--term-dim)">Traceback (most recent call last):</span>
 <span style="color:var(--term-dim)">  File "prog.py", <span class="hl hl-line">line 5</span>, in &lt;module&gt;</span>
 <span style="color:var(--term-dim)">    <span class="hl hl-code">age = int(saisie) + 1</span></span>
-<span class="hl hl-type">ValueError</span><span style="color:var(--ink)">: <span class="hl hl-desc">invalid literal for int() with base 10: 'abc'</span></span>
-      </div>
+<span class="hl hl-type">ValueError</span><span style="color:var(--ink)">: <span class="hl hl-desc">invalid literal for int() with base 10: 'abc'</span></span></div>
       <div class="annotations">
         <div class="annotation"><span class="annotation__chip" style="background:#1d4ed8">ligne&nbsp;5</span><span><b>Numéro de ligne</b> — va directement à cette ligne dans ton code.</span></div>
         <div class="annotation"><span class="annotation__chip" style="background:#b45309">code</span><span><b>Ligne fautive</b> — c'est ici que Python a bloqué.</span></div>
@@ -287,7 +331,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
 
   <!-- NameError -->
   <div class="error-section error-section--name">
-    <div class="error-section__header"><h2>NameError</h2><span class="hint">Python ne reconnaît pas le nom utilisé (variable, fonction, mot-clé)</span></div>
+    <div class="error-section__header"><h2>NameError &amp; UnboundLocalError</h2><span class="hint">Python ne reconnaît pas le nom utilisé (variable, fonction, mot-clé)</span></div>
     <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
     <div class="error-section__row">
       <div class="row-msg"><div class="msg-block"><span class="msg-block__error">NameError: name 'score' is not defined</span><span class="msg-block__note">(ou 'prnit', 'calucl', tout nom inconnu…)</span></div></div>
@@ -299,7 +343,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
       </div></div>
     </div>
     <div class="error-section__row">
-      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">NameError: name 'true' is not defined</span><span class="msg-block__note">(ou 'false', 'none', 'AND', 'OR'…)</span></div></div>
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">NameError: name 'true' is not defined</span><span class="msg-block__note">(ou 'false', 'none'…)</span></div></div>
       <div class="row-cause">Un <b>mot-clé Python</b> est mal capitalisé — ex. <code>true</code> au lieu de <code>True</code>.</div>
       <div class="row-fix"><div class="fix-list">
         <div class="fix-step"><span class="fix-step__num">1.</span><span><code>True</code>, <code>False</code>, <code>None</code> → <b>majuscule initiale obligatoire.</b></span></div>
@@ -307,10 +351,17 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
     </div>
     <div class="error-section__row">
       <div class="row-msg"><div class="msg-block"><span class="msg-block__error">NameError: name 'x' is not defined</span><span class="msg-block__note">(à l'intérieur d'une fonction)</span></div></div>
-      <div class="row-cause"><code>x</code> existe dans le programme principal mais <b>pas à l'intérieur de la fonction</b> — une fonction ne voit que ses propres variables.</div>
+      <div class="row-cause">Au moment de l'appel, <code>x</code> <b>n'existe pas encore</b>, ou n'existe que dans une autre fonction. (Une fonction peut <b>lire</b> une variable du programme principal créée avant l'appel.)</div>
       <div class="row-fix"><div class="fix-list">
         <div class="fix-step"><span class="fix-step__num">1.</span><span>Passe <code>x</code> en paramètre : <code>def f(x):</code></span></div>
         <div class="fix-step"><span class="fix-step__num">2.</span><span>Ou définis <code>x</code> à l'intérieur de la fonction.</span></div>
+      </div></div>
+    </div>
+    <div class="error-section__row">
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">UnboundLocalError: cannot access local variable 'x' where it is not associated with a value</span><span class="msg-block__note">(avant Python 3.11 : local variable 'x' referenced before assignment)</span></div></div>
+      <div class="row-cause">La fonction <b>modifie</b> <code>x</code> (ex. <code>x = x + 1</code>) : pour Python, <code>x</code> devient une variable <b>locale</b>, qui n'a pas encore de valeur.</div>
+      <div class="row-fix"><div class="fix-list">
+        <div class="fix-step"><span class="fix-step__num">1.</span><span>Passe <code>x</code> en paramètre et renvoie le résultat : <code>return x</code>.</span></div>
       </div></div>
     </div>
   </div>
@@ -321,7 +372,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
     <div class="error-section__cols"><span>Message d'erreur (console)</span><span>Ce que ça veut dire</span><span>Protocole</span></div>
     <div class="error-section__row">
       <div class="row-msg"><div class="msg-block"><span class="msg-block__error">TypeError: can only concatenate str (not "int") to str</span><span class="msg-block__note">(ou : unsupported operand type(s) for +: 'int' and 'str')</span></div></div>
-      <div class="row-cause">Tu additionnes un <b>texte et un nombre</b> avec <code>+</code>. Attention : <code>input()</code> renvoie <b>toujours du texte</b>, même si l'utilisateur tape un chiffre.</div>
+      <div class="row-cause">Tu additionnes un <b>texte et un nombre</b> avec <code>+</code>. Attention : <code>input()</code> renvoie <b>toujours du texte</b>, même si l'utilisateur·rice tape un chiffre.</div>
       <div class="row-fix"><div class="fix-list">
         <div class="fix-step"><span class="fix-step__num">1.</span><span>Pour afficher : utilise <code>f"valeur : {n}"</code></span></div>
         <div class="fix-step"><span class="fix-step__num">2.</span><span>Pour calculer : convertis d'abord — <code>int(val)</code> ou <code>float(val)</code></span></div>
@@ -370,7 +421,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
       <div class="row-cause">Tu convertis avec <code>int()</code> quelque chose qui <b>n'est pas un nombre</b> — texte non numérique ou saisie vide.</div>
       <div class="row-fix"><div class="fix-list">
         <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche la variable <b>avant</b> la conversion.</span></div>
-        <div class="fix-step"><span class="fix-step__num">2.</span><span>Si la saisie est vide <code>''</code> : l'utilisateur a appuyé sur Entrée sans rien taper.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Si la saisie est vide <code>''</code> : l'utilisateur·rice a appuyé sur Entrée sans rien taper.</span></div>
       </div></div>
     </div>
     <div class="error-section__row">
@@ -381,7 +432,7 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
       </div></div>
     </div>
     <div class="error-section__row">
-      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">ValueError: invalid literal for float() with base 10: 'abc'</span><span class="msg-block__note">(ou avec float() au lieu de int())</span></div></div>
+      <div class="row-msg"><div class="msg-block"><span class="msg-block__error">ValueError: could not convert string to float: 'abc'</span><span class="msg-block__note">(ou : could not convert string to float: '3,14')</span></div></div>
       <div class="row-cause">Tu convertis un texte en nombre décimal avec <code>float()</code> — même cause qu'avec <code>int()</code>. Attention : Python utilise le <b>point</b> et non la virgule (<code>3.14</code>).</div>
       <div class="row-fix"><div class="fix-list">
         <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche la variable avant la conversion.</span></div>
@@ -389,6 +440,8 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
       </div></div>
     </div>
   </div>
+
+  <p class="pied">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/erreurs-python/fiche-erreurs-python.html" target="_blank" rel="noopener">Code source sur GitHub</a></p>
 
 </div><!-- fin recto -->
 
@@ -534,10 +587,12 @@ code { font-family: var(--f-mono); font-size: 6.3pt; background: #f3f4f6; paddin
       <div class="row-cause">La valeur en bas de ta division vaut <b>zéro</b> — diviser par zéro est <b>interdit</b>.</div>
       <div class="row-fix"><div class="fix-list">
         <div class="fix-step"><span class="fix-step__num">1.</span><span>Affiche le diviseur avant l'opération.</span></div>
-        <div class="fix-step"><span class="fix-step__num">2.</span><span>Vérifie que l'utilisateur n'a pas saisi <code>0</code>.</span></div>
+        <div class="fix-step"><span class="fix-step__num">2.</span><span>Vérifie que l'utilisateur·rice n'a pas saisi <code>0</code>.</span></div>
       </div></div>
     </div>
   </div>
+
+  <p class="pied">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/erreurs-python/fiche-erreurs-python.html" target="_blank" rel="noopener">Code source sur GitHub</a></p>
 
 </div><!-- fin verso -->
 </body>
