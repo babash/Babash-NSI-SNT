@@ -66,7 +66,7 @@ if(o.click)for(var x=1;x<=15;x++)for(var y=1;y<=15;y++)s+='<rect class="c" data-
 return s+'</svg>'}
 /* ---------- API Supabase (REST/RPC) ---------- */
 function rpc(fn,a){if(!CFG.url||!CFG.key)return Promise.reject(new Error("Le site n’est pas encore relié à Supabase (voir config.js)."));
-return fetch(CFG.url.replace(/\/$/,"")+"/rest/v1/rpc/"+fn,{method:"POST",headers:{apikey:CFG.key,Authorization:"Bearer "+CFG.key,"Content-Type":"application/json"},body:JSON.stringify(a)})
+return fetch(CFG.url.replace(/\/$/,"")+"/rest/v1/rpc/"+fn,{method:"POST",headers:Object.assign({apikey:CFG.key,"Content-Type":"application/json"},CFG.key.indexOf("eyJ")===0?{Authorization:"Bearer "+CFG.key}:{}),body:JSON.stringify(a)})
 .then(function(r){return r.json().catch(function(){return null}).then(function(j){if(!r.ok)throw new Error((j&&j.message)||"Erreur réseau");return j})})}
 function save(id,c){var o=P[id]||(P[id]={solved:false,attempts:0,hints:0,peeked:false});
 if(c.solved)o.solved=true;if(c.attempt)o.attempts++;if((c.hints||0)>o.hints)o.hints=c.hints;if(c.peeked)o.peeked=true;
