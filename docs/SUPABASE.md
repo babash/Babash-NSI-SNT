@@ -12,14 +12,16 @@ Court-circuit n'y enregistre rien et n'en utilise que le temps réel.
 
 **Alien Python**
 
-- L'adresse du projet et sa clé publique (« anon ») sont dans `config.js`. Cette clé est publique
-  par conception : les tables sont verrouillées et le site ne passe que par les fonctions
-  `alien_*`, qui vérifient les codes (code enseignant haché).
+- L'adresse du projet et sa clé publique (une clé « publishable », depuis le 12 novembre 2026)
+  sont dans `config.js`. Cette clé est publique par conception : les tables sont verrouillées et
+  le site ne passe que par les fonctions `alien_*`, qui vérifient les codes (code enseignant
+  haché).
 - N'importe qui connaissant l'adresse peut créer une classe : les classes des collègues
   arrivent dans la même base. Surveille la table `alien_classes` dans Supabase si besoin.
 - Ne fais saisir que des prénoms. Pour supprimer un·e élève : Supabase, *Table Editor*.
 - Pour ta propre base : colle `supabase.sql` dans *SQL Editor* de ton projet Supabase,
-  puis mets son adresse et sa clé « anon public » dans `config.js`.
+  puis mets son adresse et sa clé « publishable » dans `config.js` (l'ancienne clé
+  « anon public » marche aussi).
 - Les exercices d'Alien Python sont d'Alien-Python (© 2021 Mathieu Degrange, licence MIT) :
   la notice est dans `snt/fichiers/alien-python/LICENCE.txt`, à garder en cas de copie.
 
@@ -31,8 +33,8 @@ Court-circuit n'y enregistre rien et n'en utilise que le temps réel.
   (`prof.html`) et l'entrée d'un·e élève dans une salle se connectent à Supabase ; l'entraînement
   et le défi contre Zéro marchent sans réseau.
 - C'est une exception voulue par l'enseignant (10 novembre 2026) aux règles des bases, qui
-  n'utilisaient pas le temps réel. La clé de `snt/fichiers/court-circuit/config.js` est la même
-  clé publique « anon ».
+  n'utilisaient pas le temps réel. La clé de `snt/fichiers/court-circuit/config.js` est
+  l'ancienne clé publique « anon » de la même base.
 - Pour ta propre copie : mets l'adresse et la clé « anon public » de ton projet Supabase dans
   `config.js`, ou laisse l'adresse vide : le jeu passe en mode démo, où une salle passe entre
   les onglets d'un même navigateur (comme avec `?demo` à la fin de l'adresse).
