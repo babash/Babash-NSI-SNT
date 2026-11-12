@@ -247,7 +247,9 @@ Ce qui est vérifié :
 - avec `--avant F` (le thésaurus de `main`, par exemple : `git show origin/main:donnees/referentiels/notions.json > F`) :
   une notion de F qui a disparu est une erreur (un identifiant publié est définitif) ; les libellés changés, les notions
   déplacées ou devenues obsolètes et les notions nouvelles sont donnés pour la relecture ; une notion nouvelle absente de
-  l'historique donne un avertissement ;
+  l'historique donne un avertissement. Le job « Données de la bibliothèque » le fait à chaque envoi, contre `main` ;
+  limite : une branche en retard sur `main` y échoue si `main` a reçu des notions depuis (elles manquent à la branche) :
+  la rebaser sur `main` le règle ;
 - règle 19 de la philosophie éducative : un TD de l'enseignant sans version PDF ou sans page HTML donne un avertissement,
   de même qu'un critère à `false` dans `td_en_ligne` ;
 - règle 20 : pour une création de l'enseignant, l'usage `editeur-de-code` sans `editeur_code`, ou un critère à `false`,
