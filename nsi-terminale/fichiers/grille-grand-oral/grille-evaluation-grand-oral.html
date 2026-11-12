@@ -268,7 +268,7 @@
         }
 
         .remarks-container {
-            height: calc(297mm - 20mm);
+            height: calc(297mm - 20mm - 7mm);
             display: flex;
             flex-direction: column;
         }
@@ -333,6 +333,36 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
+
+            /* Les observations en trois colonnes : la page 1 tient sur une feuille A4 */
+            .observations-container { grid-template-columns: 1fr 1fr 1fr; }
+            .observation-item { padding: 4px 5px; }
+            .observation-options { gap: 1px; }
+            .option { padding: 1px 4px; }
+        }
+
+        /* Pied : auteur, licence et code source */
+        .pied { margin-top: 6px; font-size: 7pt; color: #475569; text-align: right; }
+        .pied a { color: inherit; }
+
+        /* Écran plus étroit qu'une feuille : la feuille suit la largeur de l'écran
+           (210 × 297 mm ne vaut que pour l'impression) */
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; height: auto; padding: 12px; }
+            .remarks-container { height: auto; }
+            .remarks-content textarea { min-height: 260px; }
+        }
+        @media screen and (max-width: 600px) {
+            .info-row { flex-wrap: wrap; }
+            .field { flex: 1 1 140px; min-width: 0; }
+            .field input, .duration-item input { min-width: 0; width: 100%; }
+            .subject-row { flex-wrap: wrap; }
+            .duration { grid-template-columns: 1fr; }
+            .observations-container { grid-template-columns: 1fr; }
+            .evaluation-grid th { padding: 3px 1px; font-size: 6.5pt; hyphens: auto; overflow-wrap: anywhere; }
+            .criterion { overflow-wrap: anywhere; }
+            .rating-cell { width: auto; }
+            .pied { text-align: left; }
         }
     </style>
 </head>
@@ -360,11 +390,11 @@
             </div>
             <div class="info-row">
                 <div class="field">
-                    <label>Examinateur 1 :</label>
+                    <label>Examinateur·rice 1 :</label>
                     <input type="text">
                 </div>
                 <div class="field">
-                    <label>Examinateur 2 :</label>
+                    <label>Examinateur·rice 2 :</label>
                     <input type="text">
                 </div>
             </div>
@@ -456,7 +486,7 @@
 
         <div class="observations-container">
             <div class="observation-item">
-                <div class="observation-label">L'élève consulte-t-il ses notes ?</div>
+                <div class="observation-label">Consultation des notes</div>
                 <div class="observation-options">
                     <div class="option"><input type="radio" name="q1" value="1" id="q1-1"><label for="q1-1">En permanence, tête baissée</label></div>
                     <div class="option"><input type="radio" name="q1" value="2" id="q1-2"><label for="q1-2">Fréquemment, contact visuel limité</label></div>
@@ -468,7 +498,7 @@
             <div class="observation-item">
                 <div class="observation-label">Débit de parole</div>
                 <div class="observation-options">
-                    <div class="option"><input type="radio" name="q2" value="1" id="q2-1"><label for="q2-1">Beaucoup trop lent, trainant</label></div>
+                    <div class="option"><input type="radio" name="q2" value="1" id="q2-1"><label for="q2-1">Beaucoup trop lent, traînant</label></div>
                     <div class="option"><input type="radio" name="q2" value="2" id="q2-2"><label for="q2-2">Un peu trop lent</label></div>
                     <div class="option"><input type="radio" name="q2" value="3" id="q2-3"><label for="q2-3">Adapté et fluide</label></div>
                     <div class="option"><input type="radio" name="q2" value="4" id="q2-4"><label for="q2-4">Un peu trop rapide</label></div>
@@ -605,9 +635,10 @@
                 <h2>Remarques et observations</h2>
             </div>
             <div class="remarks-content">
-                <textarea placeholder="Commentaires détaillés sur la prestation du candidat..."></textarea>
+                <textarea placeholder="Commentaires détaillés sur la prestation de l'élève…"></textarea>
             </div>
         </div>
+        <p class="pied">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/grille-grand-oral/grille-evaluation-grand-oral.html" target="_blank" rel="noopener">Code source sur GitHub</a></p>
     </div>
 
     <script>
