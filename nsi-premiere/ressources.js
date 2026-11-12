@@ -224,7 +224,7 @@ ressource({
 ressource({
   titre: "Court-circuit : les boucles et les conditions en duel de robots",
   lien: "https://babash.github.io/Babash-NSI-SNT/snt/fichiers/court-circuit/",
-  texte: "Les élèves écrivent en Python le code d'un robot qui colorie le sol, avec les mots des TD (`nord()`, `obstacleNord()`, `couleurEst()`…, `for`, `while`, `if`, `and`, `not`, comparaisons, et ses propres fonctions avec `def`). Entraînement seul·e (15 minutes), défi contre Zéro, ou mini-championnat de la classe classé à l'Elo, dans une salle projetée : carte tirée au hasard, 1 minute pour écrire, 30 secondes de duel, le code de l'adversaire s'affiche ; à la fin, chacun·e copie le code de ses adversaires. Sans compte, rien à installer, rien d'enregistré en ligne.",
+  texte: "Les élèves écrivent en Python le code d'un robot qui colorie le sol, avec les mots des TD (`nord()`, `obstacleNord()`, `couleurEst()`…, `for`, `while`, `if`, `and`, `not`, comparaisons, et leurs propres fonctions avec `def`). Entraînement seul·e (15 minutes), défi contre Zéro, ou mini-championnat de la classe classé à l'Elo, dans une salle projetée : carte tirée au hasard, 1 minute pour écrire, 30 secondes de duel, le code de l'adversaire s'affiche ; à la fin, chacun·e copie le code de ses adversaires. Sans compte, rien à installer, rien d'enregistré en ligne.",
   tags: ["En ligne", "Python", "Jeu", "À imprimer"],
   annexes: {
     "Salle de classe (enseignant·e)": "https://babash.github.io/Babash-NSI-SNT/snt/fichiers/court-circuit/prof.html",
