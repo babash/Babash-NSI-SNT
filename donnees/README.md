@@ -1,7 +1,8 @@
 # Les données de la bibliothèque
 
-**Statut : format validé par l'enseignant le 07/11/2026 (tâche T02).** Le site actuel ne lit pas encore
-ces fichiers : il continue d'utiliser les listes `*/ressources.js`.
+**Statut : format validé par l'enseignant le 07/11/2026 (tâche T02) ; visibilité de départ changée par sa
+consigne du 12/11/2026 ; thésaurus des notions et champ `notions` proposés le 12/11/2026 (T50a), à valider.**
+Le site actuel ne lit pas encore ces fichiers : il continue d'utiliser les listes `*/ressources.js`.
 
 ```
 donnees/
@@ -10,11 +11,13 @@ donnees/
   progressions/               plus tard : les progressions annuelles de la partie élève
   referentiels/
     programmes.json           l'arbre des textes officiels : SNT 2019, NSI 1re et Tle 2019, missions du PP
+    notions.json              le thésaurus des notions : boucle, dichotomie, routage… (modèle SKOS)
     valeurs.json              les listes de valeurs : types, usages, origines, rôles, langages…
     competences-pix.json      les 16 compétences numériques évaluées par Pix (champ facultatif en SNT)
   schema/                     la description exacte du format (JSON Schema)
   correspondance-etiquettes.md  comment les listes actuelles passeront dans ce format
 scripts/valider_donnees.py    la vérification automatique
+scripts/tests/test_notions.py ses tests pour le thésaurus, les notions des fiches et la visibilité
 ```
 
 ---
@@ -41,13 +44,15 @@ professeur, le code source… Un seul est le **document principal** : celui qu'o
 - si le document principal est caché pour un public, le premier document visible le remplace ;
 - pour cacher une ressource, on cache tous ses documents.
 
-> Exemple (fiche `operation-mirage`) : la fiche élève et le terminal sont visibles de tous ; la fiche
-> professeur et le code source sont visibles de l'extérieur, pour les collègues, et cachés aux élèves
-> (badge « caché : élèves »).
+**Au départ, rien n'est caché** (ta consigne du 12/11/2026, 08:36 : « Pour le moment ne mets rien en caché,
+je ferai tout à la main ») : chaque document, corrigé, guide du professeur, espace professeur et code source
+compris, est visible de l'extérieur et des élèves. Elle remplace la règle du 07/11, qui cachait aux élèves
+l'espace professeur, le guide, le corrigé et le code source. Tu règles toi-même la visibilité de chaque
+document dans l'admin ; un document que tu caches y porte un badge (« caché : extérieur », « caché : élèves »
+ou « caché : tous »).
 
-**Au départ**, tout ce qui est affiché aujourd'hui reste visible de l'extérieur ; l'espace professeur, le
-guide du professeur, le corrigé et le code source sont cachés aux élèves. Les corrigés restent donc
-visibles de l'extérieur pour les collègues, même si des élèves peuvent les y trouver.
+> Exemple : pour réserver aux collègues la fiche professeur d'Opération MIRAGE, tu la laisses visible de
+> l'extérieur et tu la caches aux élèves ; elle porte alors le badge « caché : élèves ».
 
 **À savoir** : le dépôt est public. Un document caché n'est pas affiché, mais il reste lisible par qui
 consulte le dépôt ou connaît son adresse. C'est pourquoi les fiches et les notes ne contiennent jamais de
@@ -66,7 +71,33 @@ thèmes actuels (Conseils de classe, Suivi des élèves, Orientation, Familles, 
 officiels) ; la circulaire de 2018 y est citée comme référence.
 
 **Les listes de valeurs** reprennent celles du cahier des charges. Les ajouts validés le 07/11 (quatre
-rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.json`.
+rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.json`. Certaines valeurs ont des
+synonymes pour la recherche (`"alternatifs"`) : « sans ordinateur » trouve les ressources débranchées, « QCM »
+les évaluations. Ils ne s'affichent pas.
+
+**Les notions** (`notions.json`, proposition du 12/11/2026, à valider) classent les ressources par ce
+qu'elles font apprendre, plus finement que le programme : « boucle bornée », « recherche dichotomique »,
+« routage », « complément à deux »… C'est un thésaurus, construit sur les normes du domaine (SKOS du W3C et
+ISO 25964) :
+- 161 notions rangées en 12 domaines (programmation, algorithmique, données, réseaux, Web, interaction
+  homme-machine, architecture, sécurité, intelligence artificielle, enjeux, histoire, localisation), de la
+  plus large à la plus précise : programmation › structures de contrôle › boucle › boucle bornée ;
+- pour chacune, son libellé, ses synonymes (« répétition », « itération »), ses termes anglais (« for loop »),
+  les mots du code (`for`, `range`), des fautes fréquentes pour la recherche (« algorythme »), les notions
+  associées (boucle et parcours de tableau), une note d'une phrase, et les thèmes ou contenus du programme
+  où elle est enseignée ;
+- ses correspondances avec trois référentiels internationaux : le *K–12 Computer Science Framework* (2016),
+  l'*Informatics Reference Framework for School* d'Informatics for All (2022) et les domaines de CS2023
+  (ACM, IEEE-CS, AAAI) ;
+- pour 27 notions, 43 **difficultés connues des élèves**, avec leur source : par exemple,
+  croire qu'une variable garde plusieurs valeurs à la fois (43 % des 145 élèves de 7 à 17 ans interrogé·e·s
+  par Swidan, Hermans et Smit, 2018), ou confondre Internet et le Web. Les sources sont citées dans le
+  fichier, avec leur adresse et leur date de lecture.
+
+Une fiche cite ses notions selon leur rôle : **enseignées** (ce qu'elle fait apprendre), **évaluées** (ce
+qu'elle permet d'évaluer), **prérequises** (ce qu'il faut savoir avant). Ce sont les trois propriétés que
+schema.org a reprises de LRMI pour les ressources pédagogiques (`teaches`, `assesses`,
+`competencyRequired`) : un export vers d'autres plateformes restera possible. Les `mots_cles` libres restent.
 
 ---
 
@@ -93,6 +124,16 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
   (`true` ou `false`) et une `remarque`. Le PDF et la page HTML se déduisent des documents.
 - **Critères de réussite** (facultatif, au cas par cas) : `criteres_reussite`, du niveau 1 au plus exigeant.
 - **Programme** : on cite un thème ou un contenu de `programmes.json`, le plus précis possible.
+- **Notions** (facultatif, à remplir pour chaque fiche) : `"notions": { "enseignees": […], "evaluees": […],
+  "prerequises": […] }`, avec des identifiants de `referentiels/notions.json` (`prog.boucle.bornee`). Citer la
+  notion la plus précise : les notions plus larges s'en déduisent (« boucle bornée » range aussi la fiche
+  sous « boucle » et « structures de contrôle »). Un rôle sans notion ne s'écrit pas. Une notion qui manque se
+  demande dans le rapport : le thésaurus ne change qu'après validation de l'enseignant.
+- **Thésaurus** (`notions.json`) : un identifiant de notion ne change jamais (`prog.boucle.bornee`), même si la
+  notion change de place ; une notion abandonnée reste, avec `"obsolete": true` et `"remplacee_par"`. On écrit
+  seulement les notions plus larges (`plus_larges`), jamais les plus étroites, qui s'en déduisent ; une notion
+  associée s'écrit d'un seul côté. Un libellé préféré est unique ; un libellé caché sert à une graphie que les
+  autres libellés n'ont pas (fautes, termes déconseillés comme « crypter »).
 - **Auteurs et licences** : ressource de l'enseignant → `{ "nom": "Babash - NSI Tani Malandi", "role": "auteur" }`,
   licence « CC BY-SA 4.0 » pour les documents, « MIT » pour le code des applications. Ressource externe → créditée à
   son site d'origine : `credits`, et dans `auteurs` la personne qui l'a faite, avec le site dans son rôle et un `lien`
@@ -106,7 +147,9 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
   rôle `code-source`. Le `format` est déduit de l'adresse (règles dans `valeurs.json`) : ne l'écrire que pour
   corriger une déduction fausse.
 - **`visible`** est obligatoire sur chaque document, avec ses deux réglages : rien n'est caché ou montré par oubli.
-  La valeur de départ d'un nouveau document est celle du rôle (`visible_par_defaut` dans `valeurs.json`).
+  La valeur de départ d'un nouveau document est celle du rôle (`visible_par_defaut` dans `valeurs.json`) :
+  depuis la consigne de l'enseignant du 12/11/2026, `{ "exterieur": true, "eleve": true }` pour tous les rôles.
+  Un agent ne cache rien : l'enseignant règle la visibilité dans l'admin.
 - **`donnees_eleves`** est obligatoire : `{ "collecte": false }`, ou `{ "collecte": true, "detail": "…" }`.
   Ajouter `"facultative": true` quand l'élève peut s'en servir sans rien transmettre (CyberCase).
 - **Vitrine** : une rubrique suit un programme (`"programme": "snt-2019"`) ou cite seulement un texte de
@@ -145,12 +188,13 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 |---|---|
 | `cybercase` | ressource externe reprise, créditée en chaîne (auteur, idée originale, moteur, reprise), « à la une », placée en SNT et en NSI Tle, collecte facultative, aucun identifiant de démonstration |
 | `td1-poo` | ressource interne : page HTML du site et sa version PDF ; `td_en_ligne` (règle 19), avec ce qui manque |
-| `timeline-histoire-informatique` | placée en NSI 1re et en NSI Tle ; code source sur GitHub, caché aux élèves |
+| `timeline-histoire-informatique` | placée en NSI 1re et en NSI Tle ; code source sur GitHub, en document secondaire |
 | `alien-python` | collecte de données d'élèves (`donnees_eleves`, à titre d'information), crédits d'un tiers, espace professeur ; usage `editeur-de-code` et `editeur_code` (règle 20), avec ce qui manque |
 | `fiche-variables-python` | fiche FichesNSI et sa version PDF, deux enseignements (SNT et NSI 1re) |
-| `operation-mirage` | plusieurs types (TP et jeu) ; fiche professeur et code source visibles de l'extérieur, cachés aux élèves |
+| `operation-mirage` | plusieurs types (TP et jeu) ; fiche professeur, outil associé et code source |
 
-Ces fiches illustrent le format : leur contenu sera repris par le Bibliothécaire.
+Ces fiches illustrent le format : leur contenu est repris par le Bibliothécaire. Depuis le 12/11/2026, leurs documents
+sont tous visibles de tous ; l'enseignant cache lui-même ce qu'il veut dans l'admin.
 
 ### Vérifier
 
@@ -159,6 +203,7 @@ python3 scripts/valider_donnees.py                 les données de ce dépôt
 python3 scripts/valider_donnees.py --racine DIR    une autre copie du dépôt
 python3 scripts/valider_donnees.py --strict        les avertissements bloquent aussi
 python3 scripts/valider_donnees.py --github        dans GitHub Actions : annotations et résumé du run
+python3 -I -B scripts/tests/test_notions.py        les tests du validateur pour le thésaurus et les notions (33 cas)
 ```
 
 Python 3 standard, sans dépendance (le module `jsonschema`, s'il est installé, sert de contrôle supplémentaire).
@@ -175,7 +220,14 @@ Ce qui est vérifié :
 - références existantes : valeurs des référentiels, thèmes et contenus, fiches liées, fichiers du dépôt ;
 - cohérence : l'enseignement d'un contenu cité figure dans `enseignements` (son niveau dans `niveaux`, sinon avertissement) ;
 - exactement un document principal ; aucune page GitHub hors du rôle `code-source` ;
-- visibilité : ce que voit chaque public, remplacement du document principal caché, corrigé ou guide visible des élèves ;
+- visibilité : ce que voit chaque public, remplacement du document principal caché (un document caché est une simple
+  information ; un corrigé ou un guide visible des élèves n'est plus signalé, depuis la consigne du 12/11/2026) ;
+- notions : chaque identifiant cité dans `notions` existe dans le thésaurus ; une notion obsolète, ou à la fois enseignée et
+  prérequise, donne un avertissement ; le nombre de fiches sans notions est donné pour information ;
+- thésaurus (`notions.json`) : notions plus larges, associées et remplaçantes existantes ; hiérarchie sans cycle ; domaines ;
+  libellé préféré unique ; dans une même langue, chaque libellé d'une notion écrit une seule fois ; libellé caché distinct des
+  autres ; homographes entre notions et notion associée sur sa propre branche signalés ; thèmes et contenus du programme,
+  référentiels externes et sources cités existants ; synonymes des valeurs (`alternatifs`) sans répétition ;
 - règle 19 de la philosophie éducative : un TD de l'enseignant sans version PDF ou sans page HTML donne un avertissement,
   de même qu'un critère à `false` dans `td_en_ligne` ;
 - règle 20 : pour une création de l'enseignant, l'usage `editeur-de-code` sans `editeur_code`, ou un critère à `false`,
@@ -202,3 +254,22 @@ Elles sont citées dans `referentiels/programmes.json` (champ `sources`). En ré
   `competences-pix.json`.
 - PP : circulaire n° 2018-108 du 10 octobre 2018 (BO n° 37 du 11 octobre 2018), partie « I. Leurs missions » ;
   un intitulé est marqué `a_verifier`. Elle sert de référence et ne structure pas la rubrique.
+
+### Sources du thésaurus des notions
+Elles sont citées dans `referentiels/notions.json` (champ `sources`), chacune avec son adresse et sa date de lecture
+(12/11/2026). En résumé :
+- le modèle : SKOS (recommandation du W3C du 18 août 2009) et ISO 25964-1:2011 (thésaurus, confirmée en 2022) ;
+  pour les rôles des notions dans une fiche, les propriétés `teaches`, `assesses` et `competencyRequired` de
+  schema.org, issues de LRMI (valeurs `teaches`, `assesses`, `requires` de LRMI 1.1) ;
+- les correspondances : *K–12 Computer Science Framework* (2016, cinq concepts et leurs sous-concepts),
+  *Informatics Reference Framework for School* (Informatics for All, février 2022, onze domaines), CS2023
+  (ACM, IEEE-CS, AAAI, rapport final de janvier 2024, 17 domaines de connaissances et leurs unités) ;
+- les difficultés des élèves : recherches publiées (Qian et Lehman, 2017 ; Sorva, 2013 ; Swidan, Hermans et
+  Smit, 2018 ; Grover et Basu, 2017 ; Duran, Sorva et Seppälä, 2021 ; Sanders, Galpin et Götschi, 2006 ;
+  Holland, Griffiths et Woodman, 1997), la thèse de Qian (2018) pour les travaux qu'elle cite, une synthèse de
+  la Raspberry Pi Foundation (2023) et un relevé d'enseignant·e·s de Computing at School (2016-2021), signalé
+  comme tel (`"nature": "releve-enseignants"`) ;
+- ScoLOMFR (profil français de LOM) : ses vocabulaires (types pédagogiques, niveaux) n'ont pas pu être lus depuis
+  la session (Éduscol et data.education.fr inaccessibles) ; l'alignement de `valeurs.json` par `closeMatch` reste
+  à faire, sans inventer d'identifiant. Les concepts de ScoLOMFR ont des adresses de la forme
+  `http://data.education.fr/voc/scolomfr/concept/scolomfr-voc-…`.

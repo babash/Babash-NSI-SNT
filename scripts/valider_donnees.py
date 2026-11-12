@@ -5,11 +5,15 @@ Contrôles :
   - chaque fichier est un JSON valide et conforme à son schéma (donnees/schema/) ;
   - les identifiants sont uniques, et chaque fiche s'appelle <id>.json ;
   - toutes les références existent : référentiels (donnees/referentiels/valeurs.json),
-    programmes (programmes.json), compétences Pix (competences-pix.json), autres fiches,
-    fichiers déposés sur le site ;
+    programmes (programmes.json), compétences Pix (competences-pix.json), notions (notions.json),
+    autres fiches, fichiers déposés sur le site ;
+  - le thésaurus des notions (notions.json, modèle SKOS et ISO 25964-1) : notions plus larges et
+    associées existantes, hiérarchie sans cycle, domaines, libellés uniques et disjoints, sources
+    et référentiels externes cités ;
   - chaque ressource a exactement un document principal ;
   - aucun document ne pointe vers une page GitHub, sauf le rôle « code source » ;
-  - visibilité (cahier des charges, § 3.2) : ce que voient l'extérieur et les élèves ;
+  - visibilité (cahier des charges, § 3.2) : ce que voient l'extérieur et les élèves (depuis le
+    12/11/2026, tout est visible par défaut : un document caché n'est qu'une information) ;
   - règles 19 et 20 (TD en PDF et en page HTML, critères de la page HTML et de l'éditeur de code),
     licences et auteurs : avertissements pour une création de l'enseignant, information sinon ;
   - aucune donnée sensible : mot de passe, identifiant, clé secrète, jeton.
@@ -34,6 +38,7 @@ import json
 import os
 import re
 import sys
+import unicodedata
 from urllib.parse import urlsplit
 
 RACINE_DEFAUT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -152,6 +157,9 @@ AIDES_MOTIFS = {
         "un chemin part de la racine du dépôt, sans « / » au début, sans espaces ni accents "
         "(exemple : nsi-terminale/fichiers/td1-poo-premiers-pas.pdf)",
     "^[0-9]{4}-[0-9]{4}$": "une année scolaire s'écrit 2026-2027",
+    "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)*$":
+        "un identifiant de notion s'écrit en minuscules, sans accents, avec des tirets entre les mots et des points "
+        "entre les niveaux (exemple : prog.boucle.bornee)",
     "^[a-z]+$": "un nom en minuscules, sans accents (exemple : bleu)",
 }
 
@@ -324,6 +332,14 @@ def lire_json(racine, chemin, rapport):
     return None
 
 
+def normaliser(t):
+    """Un libellé ramené à sa forme de recherche : minuscules, sans accents ni ligatures, ponctuation remplacée par
+    des espaces. Deux libellés de même forme se confondent pour la recherche (même règle dans assets/recherche.js)."""
+    t = unicodedata.normalize("NFKD", str(t).lower()).replace("œ", "oe").replace("æ", "ae")
+    t = "".join(c for c in t if not unicodedata.combining(c))
+    return " ".join(re.sub(r"[^0-9a-z]+", " ", t).split())
+
+
 def textes(obj, chemin=""):
     """Tous les textes d'un objet JSON, avec leur emplacement."""
     if isinstance(obj, str):
@@ -426,14 +442,17 @@ class Validation:
         self.fiches = {}        # id → (fichier, fiche)
         self.visibles = {}      # id → {"exterieur": bool, "eleve": bool}
         self.placees = set()
-        self.compteurs = {"fiches": 0, "vitrines": 0, "progressions": 0, "caches": 0, "collecte": 0, "a_verifier": 0}
+        self.notions = {}       # id → notion du thésaurus (notions.json)
+        self.ancetres = {}      # id → ensemble de ses notions plus larges, à tous les niveaux
+        self.compteurs = {"fiches": 0, "vitrines": 0, "progressions": 0, "caches": 0, "collecte": 0, "a_verifier": 0,
+                          "sans_notions": 0}
 
     def nom(self, chemin):
         return relatif(self.racine, chemin)
 
     # Schémas -------------------------------------------------------------
     def charger_schemas(self):
-        for nom in ("ressource", "vitrine", "progression"):
+        for nom in ("ressource", "vitrine", "progression", "notions"):
             chemin = os.path.join(self.donnees, "schema", f"{nom}.schema.json")
             if not os.path.exists(chemin):
                 self.rapport.erreur(self.nom(chemin), "", "schéma introuvable")
@@ -498,6 +517,17 @@ class Validation:
                 if e["id"] in self.valeurs[liste]:
                     self.rapport.erreur(fichier, champ, f"l'identifiant « {e['id']} » figure deux fois dans « {liste} »")
                 self.valeurs[liste][e["id"]] = e
+                if "alternatifs" in e:
+                    alt = e["alternatifs"]
+                    if not isinstance(alt, list) or not all(isinstance(a, str) and normaliser(a) for a in alt):
+                        self.rapport.erreur(fichier, joindre(champ, "alternatifs"), "une liste de textes non vides (synonymes pour la recherche)")
+                    else:
+                        formes = [normaliser(e.get("libelle", ""))]
+                        for k, a in enumerate(alt):
+                            if normaliser(a) in formes:
+                                self.rapport.erreur(fichier, joindre(joindre(champ, "alternatifs"), k),
+                                                    f"« {a} » répète le libellé ou un autre synonyme de « {e['id']} »")
+                            formes.append(normaliser(a))
                 if liste == "usages" and e.get("famille") not in ("modalite", "prerequis"):
                     self.rapport.erreur(fichier, champ, "« famille » vaut « modalite » ou « prerequis »")
                 if liste == "roles":
@@ -571,7 +601,218 @@ class Validation:
                     continue
                 for k, co in enumerate(th.get("contenus", [])):
                     noeud(co, joindre(joindre(cth, "contenus"), k), "contenu", tid, pid)
+        self.charger_notions()
         return True
+
+    def charger_notions(self):
+        """Le thésaurus des notions (notions.json, modèle SKOS et ISO 25964-1) : forme, références, hiérarchie sans
+        cycle, libellés uniques et disjoints. Une faute de forme est signalée par le schéma ; les contrôles qui suivent
+        ignorent les entrées mal formées au lieu de s'arrêter."""
+        chemin = os.path.join(self.donnees, "referentiels", "notions.json")
+        fichier = self.nom(chemin)
+        if not os.path.exists(chemin):
+            self.rapport.erreur(fichier, "", "référentiel introuvable")
+            return
+        t = lire_json(self.racine, chemin, self.rapport)
+        if not isinstance(t, dict):
+            if t is not None:
+                self.rapport.erreur(fichier, "", "le thésaurus est un objet { … }")
+            return
+        chercher_secrets(fichier, t, self.rapport)
+        self.conforme("notions", t, fichier)
+
+        def liste(obj, cle):
+            v = obj.get(cle) if isinstance(obj, dict) else None
+            return v if isinstance(v, list) else []
+
+        sources = {s["id"] for s in liste(t, "sources") if isinstance(s, dict) and isinstance(s.get("id"), str)}
+        externes = {}
+        for i, r in enumerate(liste(t, "referentiels_externes")):
+            if not isinstance(r, dict) or not isinstance(r.get("id"), str):
+                continue
+            externes[r["id"]] = r
+            if isinstance(r.get("source"), str) and r["source"] not in sources:
+                self.rapport.erreur(fichier, joindre(joindre("referentiels_externes", i), "source"),
+                                    f"la source « {r['source']} » n'est pas dans « sources »")
+
+        # Identifiants
+        champs = {}
+        for i, n in enumerate(liste(t, "notions")):
+            if not isinstance(n, dict) or not isinstance(n.get("id"), str):
+                continue
+            c = joindre("notions", i)
+            if n["id"] in self.notions:
+                self.rapport.erreur(fichier, joindre(c, "id"), f"l'identifiant « {n['id']} » figure deux fois")
+                continue
+            self.notions[n["id"]] = n
+            champs[n["id"]] = c
+
+        # Relations : notions plus larges, associées, remplaçantes ; correspondances et sources
+        utilisees = set(r.get("source") for r in externes.values())
+        for nid, n in self.notions.items():
+            c = champs[nid]
+            for cle in ("plus_larges", "associees"):
+                for k, autre in enumerate(liste(n, cle)):
+                    if autre == nid:
+                        self.rapport.erreur(fichier, joindre(joindre(c, cle), k), f"« {nid} » ne peut pas être liée à elle-même")
+                    elif isinstance(autre, str) and autre not in self.notions:
+                        self.rapport.erreur(fichier, joindre(joindre(c, cle), k), f"aucune notion « {autre} »{self.proches_notions(autre)}")
+            rempl = n.get("remplacee_par")
+            if isinstance(rempl, str):
+                if rempl not in self.notions or rempl == nid:
+                    self.rapport.erreur(fichier, joindre(c, "remplacee_par"), f"« {rempl} » n'est pas une autre notion du thésaurus")
+                elif self.notions[rempl].get("obsolete") is True:
+                    self.rapport.erreur(fichier, joindre(c, "remplacee_par"), f"« {rempl} » est elle-même obsolète")
+                if n.get("obsolete") is not True:
+                    self.rapport.erreur(fichier, joindre(c, "remplacee_par"), "« remplacee_par » ne sert qu'à une notion « obsolete »: true")
+            for k, nid_bo in enumerate(liste(n, "programme")):
+                if not isinstance(nid_bo, str):
+                    continue
+                cb = joindre(joindre(c, "programme"), k)
+                bo = self.verifier_noeud(fichier, cb, nid_bo)
+                if bo and bo["niveau"] == "programme":
+                    self.rapport.erreur(fichier, cb, f"« {nid_bo} » est un programme entier : citer un thème ou un contenu")
+            for k, m in enumerate(liste(n, "correspondances")):
+                if isinstance(m, dict) and isinstance(m.get("referentiel"), str) and m["referentiel"] not in externes:
+                    self.rapport.erreur(fichier, joindre(joindre(joindre(c, "correspondances"), k), "referentiel"),
+                                        f"« {m['referentiel']} » n'est pas dans « referentiels_externes » "
+                                        f"(possibles : {', '.join(externes) or 'aucun'})")
+            for k, d in enumerate(liste(n, "difficultes")):
+                for j, s in enumerate(liste(d, "sources")):
+                    utilisees.add(s)
+                    if isinstance(s, str) and s not in sources:
+                        self.rapport.erreur(fichier, joindre(joindre(joindre(joindre(c, "difficultes"), k), "sources"), j),
+                                            f"la source « {s} » n'est pas dans « sources »")
+        for s in sorted(sources - utilisees):
+            self.rapport.info(fichier, "sources", f"la source « {s} » n'est citée par aucune notion ni aucun référentiel "
+                                                  "(normal pour une norme du modèle)")
+
+        # Hiérarchie : pas de cycle ; les domaines, et eux seuls, n'ont pas de notion plus large
+        def larges(nid):
+            return [x for x in liste(self.notions.get(nid), "plus_larges") if x in self.notions and x != nid]
+
+        etat = {}
+
+        def visiter(nid, pile):
+            etat[nid] = "en cours"
+            for p in larges(nid):
+                if etat.get(p) == "en cours":
+                    cycle = pile[pile.index(p):] + [p] if p in pile else [nid, p]
+                    self.rapport.erreur(fichier, champs[nid], "la hiérarchie tourne en rond : " + " → ".join(cycle))
+                elif p not in etat:
+                    visiter(p, pile + [p])
+            etat[nid] = "fini"
+
+        for nid in self.notions:
+            if nid not in etat:
+                visiter(nid, [nid])
+        for nid in self.notions:
+            vus, a_voir = set(), list(larges(nid))
+            while a_voir:
+                p = a_voir.pop()
+                if p not in vus:
+                    vus.add(p)
+                    a_voir += larges(p)
+            vus.discard(nid)
+            self.ancetres[nid] = vus
+        domaines = [d for d in liste(t, "domaines") if isinstance(d, str)]
+        for k, d in enumerate(domaines):
+            if d not in self.notions:
+                self.rapport.erreur(fichier, joindre("domaines", k), f"aucune notion « {d} »")
+            elif liste(self.notions[d], "plus_larges"):
+                self.rapport.erreur(fichier, joindre("domaines", k), f"« {d} » a une notion plus large : ce n'est pas un domaine")
+        for nid, n in self.notions.items():
+            if not liste(n, "plus_larges") and nid not in domaines and n.get("obsolete") is not True:
+                self.rapport.erreur(fichier, champs[nid], f"« {nid} » n'a pas de notion plus large : l'ajouter à « domaines », "
+                                                          "ou lui donner une notion plus large")
+            for k, a in enumerate(liste(n, "associees")):
+                if a in self.ancetres.get(nid, ()) or nid in self.ancetres.get(a, ()):
+                    self.rapport.attention(fichier, joindre(joindre(champs[nid], "associees"), k),
+                                           f"« {a} » est déjà sur la même branche que « {nid} » (plus large ou plus étroite) : "
+                                           "une notion associée relie deux branches différentes (ISO 25964-1)")
+            if n.get("obsolete") is not True:
+                for k, p in enumerate(liste(n, "plus_larges")):
+                    if p in self.notions and self.notions[p].get("obsolete") is True:
+                        self.rapport.attention(fichier, joindre(joindre(champs[nid], "plus_larges"), k), f"« {p} » est obsolète")
+
+        # Libellés (SKOS) : libellé préféré unique ; dans une même langue, chaque libellé d'une notion ne s'écrit qu'une
+        # fois ; un libellé caché ne répète aucun autre libellé de sa notion ; homographes entre notions signalés.
+        # « itération » (français) et « iteration » (anglais) sont deux libellés distincts pour SKOS : permis.
+        sortes = (("libelle", "libellé", "fr"), ("alternatifs", "libellé alternatif", "fr"), ("anglais", "libellé anglais", "en"),
+                  ("code", "mot du code", "code"), ("caches", "libellé caché", "cache"))
+        preferes, tous = {}, {}
+        for nid, n in self.notions.items():
+            c = champs[nid]
+            vus = {}  # (langue, forme) → sorte
+            for cle, quoi, langue in sortes:
+                valeurs = [n.get(cle)] if cle == "libelle" else liste(n, cle)
+                for k, lib in enumerate(valeurs):
+                    if not isinstance(lib, str) or not normaliser(lib):
+                        continue
+                    forme = normaliser(lib)
+                    ou = joindre(c, cle) if cle == "libelle" else joindre(joindre(c, cle), k)
+                    deja = vus.get((langue, forme))
+                    if langue == "cache":
+                        deja = deja or next((s for (lg, fo), s in vus.items() if fo == forme), None)
+                    if deja:
+                        self.rapport.erreur(fichier, ou, f"« {lib} » se confond avec le {deja} de la même notion : "
+                                                         + ("un libellé caché sert à une graphie que les autres libellés n'ont pas"
+                                                            if langue == "cache" else "chaque libellé ne s'écrit qu'une fois (SKOS)"))
+                        continue
+                    vus[(langue, forme)] = quoi
+                    if cle == "libelle":
+                        if forme in preferes:
+                            self.rapport.erreur(fichier, ou, f"le libellé « {lib} » est déjà celui de « {preferes[forme]} » : "
+                                                             "un libellé préféré est unique dans le thésaurus")
+                        preferes[forme] = nid
+                    tous.setdefault(forme, []).append((nid, ou, lib))
+        for forme, emplois in tous.items():
+            notions = sorted({e[0] for e in emplois})
+            if len(notions) > 1:
+                nid, ou, lib = emplois[-1]
+                self.rapport.attention(fichier, ou, f"« {lib} » désigne plusieurs notions ({', '.join(notions)}) : "
+                                                    "préciser l'un des libellés (ISO 25964-1, homographes)")
+        self.compteurs["notions"] = len(self.notions)
+
+    def proches_notions(self, nid):
+        """Une aide quand un identifiant de notion n'existe pas : les identifiants de même fin."""
+        fin = nid.split(".")[-1]
+        proches = [k for k in self.notions if k.split(".")[-1] == fin or k.endswith("." + fin)][:3]
+        return f" (vouliez-vous dire : {', '.join(proches)} ?)" if proches else ""
+
+    def verifier_notions_fiche(self, fichier, f):
+        """Le champ « notions » d'une fiche : enseignées, évaluées, prérequises (schema:teaches, schema:assesses,
+        schema:competencyRequired, propriétés issues de LRMI)."""
+        notions = f.get("notions")
+        if not isinstance(notions, dict) or not any(isinstance(v, list) and v for v in notions.values()):
+            self.compteurs["sans_notions"] += 1
+            return
+        if not self.notions:
+            return  # thésaurus absent ou illisible : déjà signalé
+        roles = {}
+        for role in ("enseignees", "evaluees", "prerequises"):
+            ids = notions.get(role) if isinstance(notions.get(role), list) else []
+            roles[role] = [x for x in ids if isinstance(x, str)]
+            for i, nid in enumerate(ids):
+                c = joindre(joindre("notions", role), i)
+                if not isinstance(nid, str):
+                    continue
+                n = self.notions.get(nid)
+                if n is None:
+                    self.rapport.erreur(fichier, c, f"« {nid} » n'est pas dans le thésaurus (donnees/referentiels/notions.json)"
+                                                    f"{self.proches_notions(nid)}")
+                elif n.get("obsolete") is True:
+                    rempl = n.get("remplacee_par")
+                    self.rapport.attention(fichier, c, f"« {nid} » est obsolète" + (f" : citer « {rempl} »" if rempl else ""))
+            for i, nid in enumerate(roles[role]):
+                plus_etroites = [x for x in roles[role] if nid in self.ancetres.get(x, ())]
+                if plus_etroites:
+                    self.rapport.info(fichier, joindre(joindre("notions", role), i),
+                                      f"« {nid} » est plus large que « {plus_etroites[0]} », déjà citée : la plus précise suffit")
+        for i, nid in enumerate(roles["prerequises"]):
+            if nid in roles["enseignees"]:
+                self.rapport.attention(fichier, joindre(joindre("notions", "prerequises"), i),
+                                       f"« {nid} » est à la fois enseignée et prérequise : garder un seul des deux rôles")
 
     def charger_criteres(self, fichier):
         """Les critères des règles 19 et 20 : libellés dans valeurs.json, champs dans le schéma. Ils doivent concorder."""
@@ -742,6 +983,7 @@ class Validation:
                 self.rapport.erreur(fichier, joindre(joindre("liees", i), "ressource"),
                                     f"aucune fiche « {cible} » dans donnees/ressources/")
 
+        self.verifier_notions_fiche(fichier, f)
         self.verifier_credits(fichier, f)
         self.verifier_regles(fichier, f)
 
@@ -812,9 +1054,8 @@ class Validation:
                 elif not os.path.isfile(complet):
                     self.rapport.erreur(fichier, ou(i, d, "fichier"), f"fichier introuvable dans le dépôt : « {chemin} »")
             vis = d.get("visible") if isinstance(d.get("visible"), dict) else {}
-            if r.get("sensible") and vis.get("eleve") is True:
-                self.rapport.attention(fichier, ou(i, d, "visible.eleve"),
-                                       f"un document « {r.get('libelle', role)} » est visible des élèves : est-ce voulu ?")
+            # Consigne de l'enseignant du 12/11/2026 (08:36) : rien n'est caché par défaut, il règle la visibilité
+            # lui-même dans l'admin. Un document « sensible » (corrigé, guide…) visible des élèves n'est donc plus signalé.
             if vis.get("exterieur") is False or vis.get("eleve") is False:
                 self.compteurs["caches"] += 1
                 badge = ("tous" if vis.get("exterieur") is False and vis.get("eleve") is False
@@ -1066,6 +1307,11 @@ class Validation:
         if self.compteurs["vitrines"]:
             for rid in sorted(set(self.fiches) - self.placees):
                 self.rapport.info(self.fiches[rid][0], "", "la ressource n'est placée nulle part dans la vitrine (elle reste dans la bibliothèque)")
+        if self.compteurs["sans_notions"] and self.notions:
+            n, total = self.compteurs["sans_notions"], len(self.fiches)
+            self.rapport.info("donnees/ressources", "notions",
+                              f"{n} fiche{'s' if n > 1 else ''} sur {total} sans notions : les classer avec le thésaurus "
+                              "(donnees/referentiels/notions.json), dans « notions » : enseignees, evaluees, prerequises")
         if self.compteurs["caches"]:
             self.rapport.info("donnees/ressources", "", f"{pluriel(self.compteurs['caches'], 'document caché', 'documents cachés')} "
                                                        "pour au moins un public. Rappel : le dépôt est public, un document caché "
