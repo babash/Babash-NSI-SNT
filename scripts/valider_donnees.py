@@ -30,6 +30,9 @@ Usage :
                                                   résumé du run (job « Données de la bibliothèque »)
   python3 scripts/valider_donnees.py --avant F    compare le thésaurus à une version précédente F (celle de
                                                   main) : un identifiant publié ne disparaît jamais
+  python3 scripts/valider_donnees.py --anciens-roles refuser
+                                                  refuse les anciens rôles des notions (« enseignees »,
+                                                  « evaluees ») : pour vérifier une conversion (T64)
 
 Code de retour : 0 si tout est valide, 1 s'il y a au moins une erreur.
 """
@@ -56,6 +59,13 @@ ORIGINES_A_CREDITER = {"externe", "institutionnelle", "communaute"}
 # Règles 19 et 20 (décision du 07/11/2026) : champ de la fiche, liste et valeur du référentiel, champ des libellés
 CRITERES = [("editeur_code", "usages", "editeur-de-code", "criteres"),
             ("td_en_ligne", "types", "td", "criteres_en_ligne")]
+# Rôles des notions dans une fiche (décision du 13/11/2026, T64) : « travaillees » et « prerequises ». Les anciens rôles
+# « enseignees » et « evaluees » sont signalés pendant la conversion des fiches (scripts/convertir_notions_t64.py), puis
+# refusés : passer ANCIENS_ROLES à "refuser" une fois les fiches converties.
+ROLES_NOTIONS = ("travaillees", "prerequises")
+ANCIENS_ROLES_NOTIONS = ("enseignees", "evaluees")
+ANCIENS_ROLES = "signaler"
+CONVERTIR = "python3 scripts/convertir_notions_t64.py"
 
 
 # ── Le rapport ──────────────────────────────────────────────────────────────
@@ -456,8 +466,10 @@ def chercher_secrets(fichier, obj, rapport):
 # ── Le validateur ───────────────────────────────────────────────────────────
 
 class Validation:
-    def __init__(self, racine, avant=None):
+    def __init__(self, racine, avant=None, anciens_roles=ANCIENS_ROLES):
         self.racine = os.path.abspath(racine)
+        self.anciens_roles = anciens_roles  # « signaler » pendant la conversion (T64), puis « refuser »
+        self.fiches_anciens_roles = []
         self.avant = avant      # --avant : une version précédente du thésaurus, à comparer
         self.donnees = os.path.join(self.racine, "donnees")
         self.rapport = Rapport()
@@ -914,16 +926,29 @@ class Validation:
         return f" (vouliez-vous dire : {', '.join(proches)} ?)" if proches else ""
 
     def verifier_notions_fiche(self, fichier, f):
-        """Le champ « notions » d'une fiche : enseignées, évaluées, prérequises (schema:teaches, schema:assesses,
-        schema:competencyRequired, propriétés issues de LRMI)."""
+        """Le champ « notions » d'une fiche : travaillées (schema:teaches et schema:assesses réunies) et prérequises
+        (schema:competencyRequired), d'après LRMI (décision du 13/11/2026). Les anciens rôles « enseignees » et
+        « evaluees » sont signalés pendant la conversion, puis refusés (ANCIENS_ROLES, option --anciens-roles)."""
         notions = f.get("notions")
         if not isinstance(notions, dict) or not any(isinstance(v, list) and v for v in notions.values()):
             self.compteurs["sans_notions"] += 1
             return
+        anciens = [r for r in ANCIENS_ROLES_NOTIONS if r in notions]
+        if anciens:
+            texte = (f"{' et '.join('« ' + r + ' »' for r in anciens)} : "
+                     f"{'ancien rôle remplacé' if len(anciens) == 1 else 'anciens rôles remplacés'} par « travaillees » "
+                     f"depuis le 13/11/2026 ; convertir la fiche avec {CONVERTIR}")
+            if "travaillees" in notions:
+                self.rapport.erreur(fichier, "notions", texte + " (la fiche mélange les deux formes)")
+            elif self.anciens_roles == "refuser":
+                self.rapport.erreur(fichier, "notions", texte)
+            else:
+                self.fiches_anciens_roles.append(fichier)
+                self.rapport.info(fichier, "notions", texte)
         if not self.notions:
             return  # thésaurus absent ou illisible : déjà signalé
         roles = {}
-        for role in ("enseignees", "evaluees", "prerequises"):
+        for role in ROLES_NOTIONS + ANCIENS_ROLES_NOTIONS:
             ids = notions.get(role) if isinstance(notions.get(role), list) else []
             roles[role] = [x for x in ids if isinstance(x, str)]
             for i, nid in enumerate(ids):
@@ -942,10 +967,11 @@ class Validation:
                 if plus_etroites:
                     self.rapport.info(fichier, joindre(joindre("notions", role), i),
                                       f"« {nid} » est plus large que « {plus_etroites[0]} », déjà citée : la plus précise suffit")
+        travaillees = roles["travaillees"] + roles["enseignees"] + roles["evaluees"]
         for i, nid in enumerate(roles["prerequises"]):
-            if nid in roles["enseignees"]:
+            if nid in travaillees:
                 self.rapport.attention(fichier, joindre(joindre("notions", "prerequises"), i),
-                                       f"« {nid} » est à la fois enseignée et prérequise : garder un seul des deux rôles")
+                                       f"« {nid} » est à la fois travaillée et prérequise : la garder dans « travaillees » seulement")
 
     def charger_criteres(self, fichier):
         """Les critères des règles 19 et 20 : libellés dans valeurs.json, champs dans le schéma. Ils doivent concorder."""
@@ -1446,7 +1472,13 @@ class Validation:
             n, total = self.compteurs["sans_notions"], len(self.fiches)
             self.rapport.info("donnees/ressources", "notions",
                               f"{n} fiche{'s' if n > 1 else ''} sur {total} sans notions : les classer avec le thésaurus "
-                              "(donnees/referentiels/notions.json), dans « notions » : enseignees, evaluees, prerequises")
+                              "(donnees/referentiels/notions.json), dans « notions » : travaillees, prerequises")
+        if self.fiches_anciens_roles:
+            n = len(self.fiches_anciens_roles)
+            self.rapport.attention("donnees/ressources", "notions",
+                                   f"{n} fiche{'s' if n > 1 else ''} avec les anciens rôles « enseignees » et « evaluees », "
+                                   f"remplacés par « travaillees » le 13/11/2026 : les convertir avec {CONVERTIR} "
+                                   "(ils seront refusés une fois la conversion faite)")
         if self.compteurs["caches"]:
             self.rapport.info("donnees/ressources", "", f"{pluriel(self.compteurs['caches'], 'document caché', 'documents cachés')} "
                                                        "pour au moins un public. Rappel : le dépôt est public, un document caché "
@@ -1459,12 +1491,15 @@ def main():
     parser.add_argument("--strict", action="store_true", help="les avertissements comptent comme des erreurs")
     parser.add_argument("--github", action="store_true",
                         help="dans GitHub Actions : annotations sur les fichiers et résumé du run (GITHUB_STEP_SUMMARY)")
+    parser.add_argument("--anciens-roles", choices=("signaler", "refuser"), default=ANCIENS_ROLES,
+                        help="les anciens rôles des notions (« enseignees », « evaluees ») : signalés pendant la conversion "
+                             f"des fiches, ou refusés (par défaut : {ANCIENS_ROLES})")
     parser.add_argument("--avant", metavar="FICHIER",
                         help="une version précédente du thésaurus (notions.json de main) : aucun identifiant ne doit "
                              "avoir disparu ; libellés changés et notions nouvelles signalés")
     args = parser.parse_args()
 
-    v = Validation(args.racine, avant=args.avant)
+    v = Validation(args.racine, avant=args.avant, anciens_roles=args.anciens_roles)
     v.lancer()
     v.rapport.afficher()
     c = v.compteurs
