@@ -36,19 +36,25 @@ Bogoev, puis la reprise par Babash - NSI Tani Malandi.
 
 Une fiche range aussi la ressource selon ce qu'elle fait apprendre, plus finement que le
 programme : ses **notions** (`notions`), tirées du thésaurus `referentiels/notions.json`, avec
-leur rôle : enseignées (`enseignees`), évaluées (`evaluees`) ou prérequises (`prerequises`),
-les trois propriétés que schema.org a reprises de LRMI pour les ressources pédagogiques. Le
-thésaurus suit le modèle de SKOS (W3C) et de la norme ISO 25964 : 176 notions en 12 domaines,
-de la plus large à la plus précise (programmation › structures de contrôle › boucle › boucle
-bornée), avec leurs synonymes, leurs termes anglais, les mots du code, les thèmes du programme
-où elles sont enseignées, leurs correspondances avec le *K–12 Computer Science Framework*,
-l'*Informatics Reference Framework for School* et CS2023, et, pour 34 d'entre elles, 53
-difficultés connues des élèves, avec leurs sources. Un historique dit ce que chaque version a
-ajouté ou modifié. Il servira à la recherche de l'onglet Bibliothèque, à venir. Proposé par
-l'Architecte, il est publié depuis le 12 novembre 2026 et complété le même jour ; l'enseignant
-le relit, et ses remarques viendront dans une mise à jour. Un identifiant de notion publié ne
-disparaît jamais : une notion abandonnée reste, marquée obsolète. Les mots-clés libres
-(`mots_cles`) restent.
+leur rôle : travaillées (`travaillees`) ou prérequises (`prerequises`). Les notions travaillées
+réunissent ce que la ressource fait apprendre et ce qu'elle évalue (les propriétés `teaches` et
+`assesses` que schema.org a reprises de LRMI pour les ressources pédagogiques) ; les prérequises
+correspondent à `competencyRequired`. Qu'une ressource évalue se lit à son type pédagogique
+(évaluation, quiz) et à ses usages (auto-correctif) : séparer les notions enseignées et les
+notions évaluées était, pour l'enseignant, une mauvaise nomenclature (décision du 13 novembre
+2026). Le thésaurus suit le modèle de SKOS (W3C) et de la norme ISO 25964 : 177 notions en
+12 domaines, de la plus large à la plus précise (programmation › structures de contrôle ›
+boucle › boucle bornée), avec leurs synonymes, leurs termes anglais, les mots du code, les
+thèmes du programme où elles sont enseignées, leurs correspondances avec le *K–12 Computer
+Science Framework*, l'*Informatics Reference Framework for School* et CS2023, et, pour 36
+d'entre elles, 57 difficultés connues des élèves, avec leurs sources : des études, et des
+relevés d'enseignant·e·s, dont le constat de l'enseignant dans ses classes (la trace
+d'exécution, la modélisation d'un problème et la compréhension globale d'un programme). Un
+historique dit ce que chaque version a ajouté ou modifié. Il servira à la recherche de l'onglet
+Bibliothèque, à venir. Proposé par l'Architecte, publié le 12 novembre 2026 et complété le
+même jour, il a été validé le 13 novembre 2026 par l'enseignant, qui peut toujours revenir sur
+une notion. Un identifiant de notion publié ne disparaît jamais : une notion abandonnée
+reste, marquée obsolète. Les mots-clés libres (`mots_cles`) restent.
 
 Quand c'est utile, la fiche note aussi :
 
@@ -96,7 +102,9 @@ du thésaurus comprise), un document sans réglage de visibilité, et tout ce qu
 mot de passe, un identifiant ou une clé secrète. Il vérifie aussi le thésaurus lui-même :
 notions plus larges et associées existantes, hiérarchie sans cycle, libellés préférés uniques
 (la recherche compare les racines des mots : « test » et « Tests » se confondraient), historique
-cohérent. Avec `--avant F`, il compare le thésaurus à une version précédente `F` (celle de
+cohérent. Les anciens rôles des notions (`enseignees`, `evaluees`) sont refusés depuis la
+conversion des fiches du 13 novembre 2026 (`scripts/convertir_notions_t64.py`) ; l'option
+`--anciens-roles signaler` les tolère encore, pour vérifier une copie pas encore convertie. Avec `--avant F`, il compare le thésaurus à une version précédente `F` (celle de
 `main`, par exemple : `git show origin/main:donnees/referentiels/notions.json > F`) : une notion
 de `F` qui a disparu est une erreur. Ses tests : `python3 -I -B scripts/tests/test_notions.py`.
 
