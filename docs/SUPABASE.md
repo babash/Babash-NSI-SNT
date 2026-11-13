@@ -56,9 +56,9 @@ passe par son temps réel pour les duels, qui ne sont pas enregistrés.
     `snt/fichiers/court-circuit/supabase/0001-codes-eleves.sql` (le schéma et les fonctions) et
     `supabase/0005-registre-court-circuit.sql` du site (le registre des tables). Le mode d'emploi
     (vérifier, revenir en arrière) est dans [`snt/fichiers/court-circuit/supabase/LISEZMOI.md`](../snt/fichiers/court-circuit/supabase/LISEZMOI.md).
-- C'est une exception voulue par l'enseignant (10 novembre 2026) aux règles des bases, qui
-  n'utilisaient pas le temps réel. La clé de `snt/fichiers/court-circuit/config.js` est
-  l'ancienne clé publique « anon » de la même base.
+- Le temps réel des duels est une exception voulue par l'enseignant (10 novembre 2026) aux
+  règles des bases, qui ne s'en servaient pas. La clé de `snt/fichiers/court-circuit/config.js`
+  est l'ancienne clé publique « anon » de la même base.
 - Pour ta propre copie : mets l'adresse et la clé publique de ton projet Supabase dans
   `config.js` (la clé « publishable », ou l'ancienne clé « anon public »), avec `COMPTES: false`
   tant que ta base n'a pas le code élève. Ou laisse l'adresse vide : le jeu passe en mode démo, où
@@ -66,8 +66,8 @@ passe par son temps réel pour les duels, qui ne sont pas enregistrés.
   l'adresse), et où le code élève est imité sur l'appareil (oublié un jour après sa création).
   Pour le vrai code élève : lance `snt/fichiers/court-circuit/supabase/schema.sql` dans
   *SQL Editor*, après le socle commun du site, puis mets `COMPTES: true` dans `config.js`.
-- Sur l'appareil, le pseudo, le jeton de session du code élève, les étoiles et le niveau de Zéro
-  restent un jour au plus.
+- Sur l'appareil, le pseudo, le programme en cours, les étoiles, le niveau de Zéro et le jeton de
+  session du code élève restent un jour au plus.
 
 **Le socle commun de la base (dossier `supabase/`)**
 
