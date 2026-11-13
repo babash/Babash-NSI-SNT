@@ -45,7 +45,7 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
 - Les sources XML vont dans `qcm/<niveau>/<id>.xml`, où `<niveau>` vaut `snt`, `nsi-premiere`, `nsi-terminale` ou `transversal`. L'identifiant est lisible et définitif.
 - Tu ajoutes un **aperçu HTML** de chaque quiz pour la relecture : questions, réponses, feedbacks, rendu du code.
 - Tu prépares la **fiche en brouillon** (`donnees/ressources/<id>.json`, `"statut": "brouillon"`), avec :
-  - le type « évaluation » et les notions évaluées ;
+  - le type « évaluation » et les notions travaillées (`notions.travaillees`, identifiants du référentiel des notions) ;
   - le document principal : le fichier XML à importer dans Pronote ;
   - l'usage « Pronote ».
 
