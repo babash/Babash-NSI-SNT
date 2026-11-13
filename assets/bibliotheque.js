@@ -142,7 +142,7 @@
       { id: 'niv', titre: 'Niveau', ouvert: true, valeurs: function (f) { return f.niveaux || []; },
         libelle: function (v) { return libelle('niveaux', v); }, ordre: ordreReferentiel('niveaux') },
       { id: 'prog', titre: 'Programme officiel', arbre: 'programme', valeurs: function (f) { return derive[f.id].programme; } },
-      { id: 'notion', titre: 'Notions', arbre: 'notions', valeurs: function (f) { return derive[f.id].notions; },
+      { id: 'notion', titre: 'Notions travaillées', arbre: 'notions', valeurs: function (f) { return derive[f.id].notions; },
         aide: 'Les fiches ne sont pas encore classées par notion.' },
       { id: 'type', titre: 'Type', ouvert: true, valeurs: function (f) { return f.types || []; },
         libelle: function (v) { return libelle('types', v); }, ordre: ordreReferentiel('types') },
@@ -188,11 +188,13 @@
       var n = refs.noeuds[id];
       while (n) { prog.push(n.id); n = n.parent ? refs.noeuds[n.parent] : null; }
     });
+    /* Le filtre « Notions travaillées » porte sur la liste des notions travaillées et leurs notions plus larges ;
+       une notion prérequise est seulement citée (elle compte un peu dans la recherche, et dans « classée sous ») */
     var notions = [], cites = {};
-    ['enseignees', 'evaluees', 'prerequises'].forEach(function (role) {
+    ['travaillees', 'prerequises'].forEach(function (role) {
       ((f.notions || {})[role] || []).forEach(function (nid) {
         cites[nid] = cites[nid] || role;
-        index.thesaurus.ascendance(nid).forEach(function (a) { notions.push(a); });
+        if (role === 'travaillees') index.thesaurus.ascendance(nid).forEach(function (a) { notions.push(a); });
       });
     });
     derive[f.id] = { programme: unique(prog), notions: unique(notions), durees: dureesDe(f), cites: cites };
@@ -893,7 +895,7 @@
       return lienFiltre('prog', id, (p ? (p.court || p.intitule) + ' › ' : '') + (th ? (th.court || th.intitule) + ' › ' : '') + n.intitule);
     }));
     var notions = f.notions || {};
-    [['enseignees', 'Notions enseignées'], ['evaluees', 'Notions évaluées'], ['prerequises', 'Notions prérequises']].forEach(function (x) {
+    [['travaillees', 'Notions travaillées'], ['prerequises', 'Notions prérequises']].forEach(function (x) {
       ligne(dl, x[1], (notions[x[0]] || []).map(function (nid) { return lienFiltre('notion', nid, refs.notions[nid] ? refs.notions[nid].libelle : nid); }));
     });
     ligne(dl, 'Type', (f.types || []).map(function (x) { return lienFiltre('type', x, libelle('types', x)); }));
@@ -949,9 +951,9 @@
       if (f.td_en_ligne.remarque) art.appendChild(el('p', { class: 'petit' }, f.td_en_ligne.remarque));
     }
 
-    // Difficultés connues des élèves, pour les notions enseignées (thésaurus)
+    // Difficultés connues des élèves, pour les notions travaillées (thésaurus)
     var diff = [];
-    (notions.enseignees || []).forEach(function (nid) {
+    (notions.travaillees || []).forEach(function (nid) {
       var n = refs.notions[nid];
       (n && n.difficultes || []).forEach(function (x) { diff.push({ notion: n.libelle, d: x }); });
     });

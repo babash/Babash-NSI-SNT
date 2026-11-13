@@ -24,9 +24,9 @@ const FICHES = [
   ['boucles-for', { titre: 'Les boucles for en Python', resume: 'Répéter un nombre de fois connu avec range.' }],
   ['tant-que', { titre: 'Tant que : la boucle while', resume: 'Répéter tant qu\'une condition est vraie.' }],
   ['robot', { titre: 'Un robot qui avance', resume: 'Avancer jusqu\'au mur.' },
-    { enseignees: ['prog.boucle.non-bornee'] }],
+    { travaillees: ['prog.boucle.non-bornee'] }],
   ['sql', { titre: 'Bases de données et SQL', resume: 'Interroger une base avec SELECT et WHERE.' }],
-  ['objets', { titre: 'Premiers pas', resume: 'Une voiture, sa couleur, sa vitesse.' }, { enseignees: ['prog.poo.classe'] }],
+  ['objets', { titre: 'Premiers pas', resume: 'Une voiture, sa couleur, sa vitesse.' }, { travaillees: ['prog.poo.classe'] }],
   ['dicho', { titre: 'Recherche dichotomique dans un tableau trié', presentation: 'On coupe en deux à chaque étape.' }],
   ['debranche', { titre: 'Le crêpier psychorigide', mots: ['Activité débranchée', 'Débranché'] }],
   ['reseau', { titre: 'Réseaux : TCP/IP et routage', bo: ['Protocole TCP/IP : paquets, routage des paquets'] }],
@@ -77,6 +77,17 @@ cas('mot vide seul : aucune clause', ix.chercher('de la').clauses.length === 0);
 cas('mot inconnu : rien, et des suggestions proches', ix.chercher('xqzwv').resultats.length === 0 && Array.isArray(ix.suggestions('rezo')));
 cas('« rezau » propose « réseau »', ix.suggestions('rezau').some(s => R.normaliser(s).startsWith('reseau')), 'suggestions : ' + ix.suggestions('rezau'));
 cas('pluriels en -aux : « journal » trouve « journaux »', ids('journal').includes('journaux'));
+
+console.log('Rôles des notions (décision du 13/11/2026)');
+const ix3 = new R.Index({ notions });
+ix3.ajouter('tri-travaille', { titre: 'Ranger des cartes' }, { travaillees: ['algo.tri.insertion'] });
+ix3.ajouter('tri-prerequis', { titre: 'Une course de robots' }, { prerequises: ['algo.tri'] });
+ix3.ajouter('tri-ancien', { titre: 'Un vieux classement' }, { enseignees: ['algo.tri'], evaluees: ['algo.tri'] });
+ix3.preparer();
+const ids3 = q => ix3.chercher(q).resultats.map(r => r.id);
+cas('« tri » : la notion travaillée passe avant la notion prérequise', ids3('tri')[0] === 'tri-travaille' && ids3('tri').includes('tri-prerequis'),
+    'trouvées : ' + ids3('tri'));
+cas('les anciens rôles « enseignees » et « evaluees » ne sont plus lus', !ids3('tri').includes('tri-ancien'), 'trouvées : ' + ids3('tri'));
 
 console.log('Texte des documents');
 const ix2 = index();
