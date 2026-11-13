@@ -170,6 +170,25 @@ def main():
                     page.locator(".facette:has(summary:has-text('Programme officiel')) .filtre-sous").count() >= 1)
             page.goto(base, wait_until="networkidle")
 
+        # Notions (décision du 13/11/2026) : une seule liste des notions travaillées, plus les prérequises
+        thes = {x["id"]: x for x in bib["referentiels"]["notions"]["notions"]}
+        larges = {q for x in thes.values() for q in x.get("plus_larges", [])}
+        classees = [f for f in fiches if (f.get("notions") or {}).get("travaillees")]
+        feuilles = sorted({nid for f in classees for nid in f["notions"]["travaillees"] if nid not in larges})
+        if feuilles:
+            nid = feuilles[0]
+            attendues = [f for f in fiches if nid in (f.get("notions") or {}).get("travaillees", [])]
+            ouvrir(page, "?notion=" + nid)
+            cas(f"filtre « Notions travaillées » sur « {thes[nid]['libelle']} » : {len(attendues)} ressource(s)",
+                compte(page) == len(attendues), compte(page))
+            ouvrir(page, "?r=" + attendues[0]["id"])
+            synthese = page.inner_text(".synthese")
+            cas("la fiche montre ses « Notions travaillées », sans les anciens rôles",
+                "Notions travaillées" in synthese and thes[nid]["libelle"] in synthese
+                and "Notions enseignées" not in synthese and "Notions évaluées" not in synthese, synthese[:300])
+        else:
+            print("  sans objet : aucune fiche n'a encore de notions travaillées (fiches à convertir, T64)")
+
         print("Tri, vues, fiche")
         ouvrir(page, "?tri=titre")
         titres = page.evaluate("[...document.querySelectorAll('.res .titre')].map(a => a.textContent)")
