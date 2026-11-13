@@ -43,8 +43,9 @@
   var K1 = 1.2;
   /* Ce que vaut chaque façon de trouver un mot, par rapport au mot exact */
   var VALEUR = { exact: 1, synonyme: 0.85, plusEtroite: 0.7, debut: 0.7, proche: 0.55 };
-  /* Une fiche classée sous la notion cherchée : poids selon le rôle de la notion */
-  var ROLES = { enseignees: 1, evaluees: 0.8, prerequises: 0.35 };
+  /* Une fiche classée sous la notion cherchée : poids selon le rôle de la notion (décision du 13/11/2026 : une
+     seule liste des notions travaillées, plus les prérequises ; les anciens rôles ne sont plus lus) */
+  var ROLES = { travaillees: 1, prerequises: 0.35 };
   var POIDS_NOTION = 6;
 
   /* ── Mots ───────────────────────────────────────────────────── */
@@ -208,7 +209,7 @@
     });
   };
 
-  /* Une ressource : ses champs (texte ou liste de textes) et ses notions ({ enseignees: [...], ... }) */
+  /* Une ressource : ses champs (texte ou liste de textes) et ses notions ({ travaillees: [...], prerequises: [...] }) */
   Index.prototype.ajouter = function (id, champs, notions) {
     var doc = { id: id, champs: dico(), longueurs: dico(), notions: dico() };
     var self = this;
@@ -498,9 +499,11 @@
         self.docs.forEach(function (doc, rang) {
           var p = doc.notions[nid];
           if (!p) return;
-          // Comme un mot trouvé dans un champ de poids POIDS_NOTION (BM25), selon le rôle de la notion
-          var tf = POIDS_NOTION * p;
-          var s = a.valeurs[nid] * idf * tf * (K1 + 1) / (tf + K1);
+          // Comme un mot trouvé dans un champ de poids POIDS_NOTION (BM25), puis pondéré par le rôle de la notion :
+          // le poids du rôle s'applique après la saturation de BM25, sinon une notion prérequise vaudrait presque
+          // une notion travaillée
+          var tf = POIDS_NOTION;
+          var s = a.valeurs[nid] * p * idf * tf * (K1 + 1) / (tf + K1);
           var e = scores[rang] || (scores[rang] = { score: 0, trouves: dico(), champs: dico(), notions: [] });
           e.score = Math.max(e.score, s) + 0.1 * Math.min(e.score, s);
           if (e.notions.indexOf(nid) < 0) e.notions.push(nid);
@@ -636,7 +639,7 @@
       return v ? v.libelle : '';
     }
     var notions = f.notions || {};
-    var citees = [].concat(notions.enseignees || [], notions.evaluees || [], notions.prerequises || []);
+    var citees = [].concat(notions.travaillees || [], notions.prerequises || []);
     var mots = (f.mots_cles || []).slice();
     citees.forEach(function (nid) {
       var n = refs.notions[nid];
