@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests du thésaurus des notions et du champ « notions » des fiches (T50a, T60), et de la visibilité par défaut.
+"""Tests du thésaurus des notions et du champ « notions » des fiches (T50a, T60, T64), et de la visibilité par défaut.
 
 Usage (depuis la racine du dépôt) :
   python3 -I -B scripts/tests/test_notions.py [--racine DOSSIER_DU_DEPOT] [--travail DOSSIER] [--garder]
@@ -10,7 +10,7 @@ modifie la copie, lance scripts/valider_donnees.py du dépôt sur elle, et véri
 attendues (ERREUR, ATTENTION ou INFO, sur le bon fichier). Les cas s'appuient sur la fiche d'exemple td1-poo et
 sur des notions du thésaurus (prog.boucle, prog.boucle.bornee, prog.variable, geo.itineraire…) : les adapter si
 elles changent. Les cas de l'option --avant comparent la copie à une version précédente du thésaurus, écrite dans
-la copie (avant.json).
+la copie (avant.json). Les cas de la conversion (T64) lancent scripts/convertir_notions_t64.py sur la copie.
 
 Code de retour : 0 si tous les cas passent, 1 sinon. Python 3 standard, sans dépendance.
 """
@@ -155,6 +155,15 @@ def retirer_notion(nid):
     return f
 
 
+def convertir(d, attendu=0):
+    """Lancer le script de conversion des notions (T64) sur la copie."""
+    r = subprocess.run([sys.executable, "-I", "-B", os.path.join(d, "scripts", "convertir_notions_t64.py"), "--racine", d],
+                       capture_output=True, text=True, timeout=120)
+    if r.returncode != attendu:
+        raise AssertionError(f"conversion : code {r.returncode} au lieu de {attendu} : {(r.stdout + r.stderr)[-500:]}")
+    return r.stdout
+
+
 def nouvelle_notion(t, n):
     t["notions"].append({"id": "geo.essai", "libelle": "Notion d'essai", "plus_larges": ["geo"],
                          "note": "Une notion ajoutée pour le test."})
@@ -172,33 +181,77 @@ def main():
     print("Thésaurus et fiches tels quels")
     e.cas("le dépôt est valide, sans erreur sur le thésaurus", lambda d: None, 0,
           absents=[("ERREUR", T, ".")])
-    e.cas("une fiche classée avec des notions valides", notions(enseignees=["prog.poo.classe", "prog.poo.methode"],
-                                                                 evaluees=["prog.poo"], prerequises=["prog.fonction"]), 0,
-          absents=[("ERREUR", F, "."), ("ATTENTION", F, "notion")])
+    e.cas("une fiche classée avec des notions valides", notions(travaillees=["prog.poo.classe", "prog.poo.methode"],
+                                                                 prerequises=["prog.fonction"]), 0,
+          absents=[("ERREUR", F, "."), ("ATTENTION", F, "notion"), ("INFO", F, "ancien")])
     e.cas("les fiches sans notions sont comptées", lambda d: None, 0,
           presents=[("INFO", "donnees/ressources", r"fiches? sur \d+ sans notions")])
 
     print("Le champ « notions » d'une fiche")
-    e.cas("notion absente du thésaurus", notions(enseignees=["prog.boucles"]), 1,
+    e.cas("notion absente du thésaurus", notions(travaillees=["prog.boucles"]), 1,
           presents=[("ERREUR", F, r"« prog\.boucles » n'est pas dans le thésaurus")])
-    e.cas("notion absente : l'aide propose l'identifiant complet", notions(enseignees=["bornee"]), 1,
+    e.cas("notion absente : l'aide propose l'identifiant complet", notions(travaillees=["bornee"]), 1,
           presents=[("ERREUR", F, r"vouliez-vous dire : prog\.boucle\.bornee")])
-    e.cas("identifiant mal écrit (accent)", notions(enseignees=["prog.boucle.bornée"]), 1,
+    e.cas("identifiant mal écrit (accent)", notions(travaillees=["prog.boucle.bornée"]), 1,
           presents=[("ERREUR", F, r"identifiant de notion s'écrit en minuscules")])
     e.cas("rôle inconnu", notions(acquises=["prog.boucle"]), 1,
           presents=[("ERREUR", F, r"champ inconnu « acquises »")])
-    e.cas("liste vide", notions(enseignees=[]), 1,
+    e.cas("liste vide", notions(travaillees=[]), 1,
           presents=[("ERREUR", F, r"au moins 1 élément")])
-    e.cas("même notion enseignée et prérequise", notions(enseignees=["prog.variable"], prerequises=["prog.variable"]), 0,
-          presents=[("ATTENTION", F, r"à la fois enseignée et prérequise")])
-    e.cas("notion plus large et plus étroite citées ensemble", notions(enseignees=["prog.boucle", "prog.boucle.bornee"]), 0,
+    e.cas("même notion travaillée et prérequise", notions(travaillees=["prog.variable"], prerequises=["prog.variable"]), 0,
+          presents=[("ATTENTION", F, r"à la fois travaillée et prérequise : la garder dans « travaillees » seulement")])
+    e.cas("notion plus large et plus étroite citées ensemble", notions(travaillees=["prog.boucle", "prog.boucle.bornee"]), 0,
           presents=[("INFO", F, r"« prog\.boucle » est plus large que « prog\.boucle\.bornee »")])
 
     def rendre_obsolete(t, n):
         n["prog.boucle.bornee"]["obsolete"] = True
         n["prog.boucle.bornee"]["remplacee_par"] = "prog.boucle"
-    e.cas("notion obsolète citée par une fiche", lambda d: (thesaurus(rendre_obsolete)(d), notions(enseignees=["prog.boucle.bornee"])(d)), 0,
+    e.cas("notion obsolète citée par une fiche", lambda d: (thesaurus(rendre_obsolete)(d), notions(travaillees=["prog.boucle.bornee"])(d)), 0,
           presents=[("ATTENTION", F, r"« prog\.boucle\.bornee » est obsolète : citer « prog\.boucle »")])
+
+    print("Les anciens rôles et la conversion (T64)")
+    e.cas("ancien rôle signalé pendant la conversion", notions(enseignees=["prog.boucle"], evaluees=["prog.boucle"]), 0,
+          presents=[("INFO", F, r"« enseignees » et « evaluees » : anciens rôles remplacés par « travaillees ».*convertir_notions_t64"),
+                    ("ATTENTION", "donnees/ressources", r"fiches? avec les anciens rôles")])
+    e.cas("ancien rôle refusé une fois la conversion faite", notions(evaluees=["prog.boucle"]), 1,
+          options=["--anciens-roles", "refuser"],
+          presents=[("ERREUR", F, r"« evaluees » : ancien rôle remplacé par « travaillees »")])
+    e.cas("une fiche qui mélange les deux formes", notions(travaillees=["prog.boucle"], enseignees=["prog.variable"]), 1,
+          presents=[("ERREUR", F, r"la fiche mélange les deux formes")])
+    e.cas("évaluée et prérequise (ancien rôle) : signalé aussi", notions(evaluees=["prog.variable"], prerequises=["prog.variable"]), 0,
+          presents=[("ATTENTION", F, r"« prog\.variable » est à la fois travaillée et prérequise")])
+
+    def avant_conversion(d):
+        notions(enseignees=["prog.poo.classe", "prog.poo.methode"], evaluees=["prog.poo.methode", "prog.poo.attribut"],
+                prerequises=["prog.fonction", "prog.poo.attribut"])(d)
+        sortie = convertir(d)
+        x = lire(os.path.join(d, FICHE))["notions"]
+        attendu = {"travaillees": ["prog.poo.classe", "prog.poo.methode", "prog.poo.attribut"], "prerequises": ["prog.fonction"]}
+        if x != attendu or list(x) != list(attendu):
+            raise AssertionError(f"notions converties : {x}")
+        if "« prog.poo.attribut » est aussi travaillée" not in sortie:
+            raise AssertionError("la notion retirée des prérequises n'est pas signalée")
+        if "0 en échec" not in convertir(d) or "0 converties" not in convertir(d):
+            raise AssertionError("une seconde conversion change encore quelque chose")
+    e.cas("conversion : union sans doublon, dans l'ordre ; le doublon quitte les prérequises ; relançable",
+          avant_conversion, 0, options=["--anciens-roles", "refuser"],
+          absents=[("ERREUR", F, "."), ("ATTENTION", F, "notion")])
+
+    def tout_convertir(d):
+        convertir(d)
+    e.cas("conversion de toutes les fiches du dépôt : aucun ancien rôle ne reste", tout_convertir, 0,
+          options=["--anciens-roles", "refuser"], absents=[("ERREUR", "donnees/ressources", "."), ("INFO", "donnees/ressources", "ancien")])
+
+    def fiche_illisible(d):
+        notions(enseignees=["prog.boucle"])(d)
+        x = lire(os.path.join(d, FICHE))
+        x["notions"]["evaluees"] = "prog.boucle"
+        ecrire(os.path.join(d, FICHE), x)
+        sortie = convertir(d, attendu=1)
+        if "n'est pas une liste d'identifiants" not in sortie:
+            raise AssertionError("l'échec n'est pas expliqué : " + sortie[-300:])
+    e.cas("conversion : un rôle mal formé arrête la fiche, signalé", fiche_illisible, 1,
+          presents=[("ERREUR", F, r"notions\.evaluees")])
 
     print("Le thésaurus")
     e.cas("thésaurus absent", lambda d: os.remove(os.path.join(d, T)), 1,

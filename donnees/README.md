@@ -1,8 +1,8 @@
 # Les données de la bibliothèque
 
 **Statut : format validé par l'enseignant le 07/11/2026 (tâche T02) ; visibilité de départ changée par sa
-consigne du 12/11/2026 ; thésaurus des notions et champ `notions` publiés par délégation le 12/11/2026 (T50a), complétés
-le même jour (T60) ; l'enseignant peut revenir sur chaque notion.**
+consigne du 12/11/2026 ; thésaurus des notions publié le 12/11/2026 (T50a, T60) et validé par l'enseignant le 13/11/2026 ;
+champ `notions` des fiches simplifié le 13/11/2026 (T64) : une seule liste des notions travaillées, plus les prérequis.**
 Le site actuel ne lit pas encore ces fichiers : il continue d'utiliser les listes `*/ressources.js`.
 
 ```
@@ -76,11 +76,11 @@ rôles de documents, deux usages) sont marqués `"ajout": true` dans `valeurs.js
 synonymes pour la recherche (`"alternatifs"`) : « sans ordinateur » trouve les ressources débranchées, « QCM »
 les évaluations. Ils ne s'affichent pas.
 
-**Les notions** (`notions.json`, publié le 12/11/2026 et complété le même jour) classent les ressources par ce
+**Les notions** (`notions.json`, validé par l'enseignant le 13/11/2026) classent les ressources par ce
 qu'elles font apprendre, plus finement que le programme : « boucle bornée », « recherche dichotomique »,
 « routage », « complément à deux »… C'est un thésaurus, construit sur les normes du domaine (SKOS du W3C et
 ISO 25964) :
-- 176 notions rangées en 12 domaines (programmation, algorithmique, données, réseaux, Web, interaction
+- 177 notions rangées en 12 domaines (programmation, algorithmique, données, réseaux, Web, interaction
   homme-machine, architecture, sécurité, intelligence artificielle, enjeux, histoire, localisation), de la
   plus large à la plus précise : programmation › structures de contrôle › boucle › boucle bornée ;
 - pour chacune, son libellé, ses synonymes (« répétition », « itération »), ses termes anglais (« for loop »),
@@ -90,18 +90,23 @@ ISO 25964) :
 - ses correspondances avec trois référentiels internationaux : le *K–12 Computer Science Framework* (2016),
   l'*Informatics Reference Framework for School* d'Informatics for All (2022) et les domaines de CS2023
   (ACM, IEEE-CS, AAAI) ;
-- pour 34 notions, 53 **difficultés connues des élèves**, avec leur source : par exemple,
+- pour 36 notions, 57 **difficultés connues des élèves**, avec leur source : par exemple,
   croire qu'une variable garde plusieurs valeurs à la fois (43 % des 145 élèves de 7 à 17 ans interrogé·e·s
   par Swidan, Hermans et Smit, 2018), confondre Internet et le Web, ou ne pas savoir prévoir ce que fait un
   court programme en le suivant pas à pas (Lister et al., 2004). Les sources sont citées dans le fichier, avec
-  leur adresse et leur date de lecture ;
-- un **historique** des versions : ce que chacune a ajouté ou modifié (la seconde, T60, a ajouté 15 notions
-  d'après le classement des 90 fiches : trace d'exécution, références et copies, jointures SQL, RIP et OSPF…).
+  leur adresse et leur date de lecture. Le constat de l'enseignant dans ses classes (la trace d'exécution, la
+  modélisation d'un problème, la compréhension globale d'un programme) y figure comme un relevé, distinct des
+  études ;
+- un **historique** des versions : ce que chacune a ajouté ou modifié (la deuxième, T60, a ajouté 15 notions
+  d'après le classement des 90 fiches : trace d'exécution, références et copies, jointures SQL, RIP et OSPF… ;
+  la troisième, T64, inscrit la validation de l'enseignant et la compréhension globale d'un programme).
 
-Une fiche cite ses notions selon leur rôle : **enseignées** (ce qu'elle fait apprendre), **évaluées** (ce
-qu'elle permet d'évaluer), **prérequises** (ce qu'il faut savoir avant). Ce sont les trois propriétés que
-schema.org a reprises de LRMI pour les ressources pédagogiques (`teaches`, `assesses`,
-`competencyRequired`) : un export vers d'autres plateformes restera possible. Les `mots_cles` libres restent.
+Une fiche cite ses notions en deux listes (décision du 13/11/2026) : les notions **travaillées** (ce qu'elle
+fait apprendre, travailler ou évaluer) et les notions **prérequises** (ce qu'il faut savoir avant). Qu'une
+ressource évalue se lit à son type pédagogique (évaluation, exerciseur) et à ses usages (auto-correctif), pas
+à ses notions. Les deux listes correspondent aux propriétés que schema.org a reprises de LRMI pour les
+ressources pédagogiques : `teaches` et `assesses` réunies, puis `competencyRequired` ; un export vers d'autres
+plateformes restera possible. Les `mots_cles` libres restent.
 
 ---
 
@@ -128,11 +133,16 @@ schema.org a reprises de LRMI pour les ressources pédagogiques (`teaches`, `ass
   (`true` ou `false`) et une `remarque`. Le PDF et la page HTML se déduisent des documents.
 - **Critères de réussite** (facultatif, au cas par cas) : `criteres_reussite`, du niveau 1 au plus exigeant.
 - **Programme** : on cite un thème ou un contenu de `programmes.json`, le plus précis possible.
-- **Notions** (facultatif, à remplir pour chaque fiche) : `"notions": { "enseignees": […], "evaluees": […],
-  "prerequises": […] }`, avec des identifiants de `referentiels/notions.json` (`prog.boucle.bornee`). Citer la
-  notion la plus précise : les notions plus larges s'en déduisent (« boucle bornée » range aussi la fiche
-  sous « boucle » et « structures de contrôle »). Un rôle sans notion ne s'écrit pas. Une notion qui manque se
-  demande dans le rapport : le thésaurus ne change qu'après validation de l'enseignant.
+- **Notions** (facultatif, à remplir pour chaque fiche) : `"notions": { "travaillees": […], "prerequises": […] }`,
+  avec des identifiants de `referentiels/notions.json` (`prog.boucle.bornee`). Citer la notion la plus précise :
+  les notions plus larges s'en déduisent (« boucle bornée » range aussi la fiche sous « boucle » et « structures
+  de contrôle »). Une notion travaillée n'est pas aussi prérequise. Un rôle sans notion ne s'écrit pas. Une
+  notion qui manque se demande dans le rapport : le thésaurus ne change qu'après validation de l'enseignant.
+  - Les anciens rôles `enseignees` et `evaluees` (avant le 13/11/2026) se convertissent avec
+    `python3 scripts/convertir_notions_t64.py` (`--verifier` pour voir sans écrire) : `travaillees` réunit les deux,
+    sans doublon et dans l'ordre ; une notion aussi prérequise reste dans `travaillees` et quitte `prerequises` ;
+    seul le bloc `notions` des fiches est réécrit. Pendant la conversion, le validateur signale les anciens rôles ;
+    ensuite il les refuse (`--anciens-roles refuser` le fait dès maintenant, pour vérifier une conversion).
 - **Thésaurus** (`notions.json`) : un identifiant de notion ne change jamais (`prog.boucle.bornee`), même si la
   notion change de place ; une notion abandonnée reste, avec `"obsolete": true` et `"remplacee_par"`. On écrit
   seulement les notions plus larges (`plus_larges`), jamais les plus étroites, qui s'en déduisent ; une notion
@@ -217,7 +227,9 @@ python3 scripts/valider_donnees.py --racine DIR    une autre copie du dépôt
 python3 scripts/valider_donnees.py --strict        les avertissements bloquent aussi
 python3 scripts/valider_donnees.py --github        dans GitHub Actions : annotations et résumé du run
 python3 scripts/valider_donnees.py --avant F      compare le thésaurus à une version précédente F (celle de main)
-python3 -I -B scripts/tests/test_notions.py        les tests du validateur pour le thésaurus et les notions (50 cas)
+python3 scripts/valider_donnees.py --anciens-roles refuser   refuse les anciens rôles des notions (après la conversion)
+python3 scripts/convertir_notions_t64.py           convertit les notions des fiches vers « travaillees » (T64)
+python3 -I -B scripts/tests/test_notions.py        les tests du validateur pour le thésaurus et les notions (57 cas)
 ```
 
 Python 3 standard, sans dépendance (le module `jsonschema`, s'il est installé, sert de contrôle supplémentaire).
@@ -236,8 +248,10 @@ Ce qui est vérifié :
 - exactement un document principal ; aucune page GitHub hors du rôle `code-source` ;
 - visibilité : ce que voit chaque public, remplacement du document principal caché (un document caché est une simple
   information ; un corrigé ou un guide visible des élèves n'est plus signalé, depuis la consigne du 12/11/2026) ;
-- notions : chaque identifiant cité dans `notions` existe dans le thésaurus ; une notion obsolète, ou à la fois enseignée et
-  prérequise, donne un avertissement ; le nombre de fiches sans notions est donné pour information ;
+- notions : chaque identifiant cité dans `notions` existe dans le thésaurus ; une notion obsolète, ou à la fois travaillée et
+  prérequise, donne un avertissement ; les anciens rôles `enseignees` et `evaluees` sont signalés pendant la conversion,
+  refusés ensuite, et toujours refusés dans une fiche qui a déjà `travaillees` ; le nombre de fiches sans notions est donné
+  pour information ;
 - thésaurus (`notions.json`) : notions plus larges, associées et remplaçantes existantes ; hiérarchie sans cycle ; domaines ;
   libellé préféré unique ; dans une même langue, chaque libellé d'une notion écrit une seule fois ; libellé caché distinct des
   autres ; libellé sans lettre ni chiffre refusé ; homographes entre notions (y compris ceux que la recherche confond, de mêmes
@@ -282,7 +296,8 @@ Elles sont citées dans `referentiels/notions.json` (champ `sources`), chacune a
 (12/11/2026). En résumé :
 - le modèle : SKOS (recommandation du W3C du 18 août 2009) et ISO 25964-1:2011 (thésaurus, confirmée en 2022) ;
   pour les rôles des notions dans une fiche, les propriétés `teaches`, `assesses` et `competencyRequired` de
-  schema.org, issues de LRMI (valeurs `teaches`, `assesses`, `requires` de LRMI 1.1) ;
+  schema.org, issues de LRMI (valeurs `teaches`, `assesses`, `requires` de LRMI 1.1) : `travaillees` réunit les deux
+  premières, `prerequises` correspond à la troisième ;
 - les correspondances : *K–12 Computer Science Framework* (2016, cinq concepts et leurs sous-concepts),
   *Informatics Reference Framework for School* (Informatics for All, février 2022, onze domaines), CS2023
   (ACM, IEEE-CS, AAAI, rapport final de janvier 2024, 17 domaines de connaissances et leurs unités) ;
@@ -290,9 +305,11 @@ Elles sont citées dans `referentiels/notions.json` (champ `sources`), chacune a
   Smit, 2018 ; Grover et Basu, 2017 ; Duran, Sorva et Seppälä, 2021 ; Sanders, Galpin et Götschi, 2006 ;
   Holland, Griffiths et Woodman, 1997 ; et depuis T60 : Lister et al., 2004, et Lopez, Whalley, Robbins et
   Lister, 2008, pour la trace d'exécution ; Ma, Ferguson, Roper et Wood, 2011, pour les références ; Ragonis et
-  Ben-Ari, 2005, pour la programmation objet au lycée ; Miedema, Aivaloglou et Fletcher, 2021, pour SQL), la thèse
-  de Qian (2018) pour les travaux qu'elle cite, une synthèse de la Raspberry Pi Foundation (2023) et un relevé
-  d'enseignant·e·s de Computing at School (2016-2021), signalé comme tel (`"nature": "releve-enseignants"`).
+  Ben-Ari, 2005, pour la programmation objet au lycée ; Miedema, Aivaloglou et Fletcher, 2021, pour SQL ; et depuis
+  T64 : Lister, Simon, Thompson, Whalley et Prasad, 2006, pour la compréhension globale d'un programme), la thèse
+  de Qian (2018) pour les travaux qu'elle cite, une synthèse de la Raspberry Pi Foundation (2023), un relevé
+  d'enseignant·e·s de Computing at School (2016-2021) et le constat de l'enseignant du 13/11/2026, signalés comme
+  tels (`"nature": "releve-enseignants"`).
   Quand seuls la notice et le résumé ont été lus, le champ `lu` le dit ;
 - les correspondances des notions de T60 avec CS2023 ont été relevées dans le rapport final (unités SDF-Fundamentals,
   NC-Fundamentals, NC-Reliability, OS-Concurrency) ; une notion sans correspondance propre hérite de celles de ses
