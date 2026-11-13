@@ -210,15 +210,16 @@ def main():
           presents=[("ATTENTION", F, r"« prog\.boucle\.bornee » est obsolète : citer « prog\.boucle »")])
 
     print("Les anciens rôles et la conversion (T64)")
-    e.cas("ancien rôle signalé pendant la conversion", notions(enseignees=["prog.boucle"], evaluees=["prog.boucle"]), 0,
+    e.cas("ancien rôle seulement signalé avec --anciens-roles signaler", notions(enseignees=["prog.boucle"], evaluees=["prog.boucle"]), 0,
+          options=["--anciens-roles", "signaler"],
           presents=[("INFO", F, r"« enseignees » et « evaluees » : anciens rôles remplacés par « travaillees ».*convertir_notions_t64"),
                     ("ATTENTION", "donnees/ressources", r"fiches? avec les anciens rôles")])
-    e.cas("ancien rôle refusé une fois la conversion faite", notions(evaluees=["prog.boucle"]), 1,
-          options=["--anciens-roles", "refuser"],
+    e.cas("ancien rôle refusé (par défaut, depuis la conversion)", notions(evaluees=["prog.boucle"]), 1,
           presents=[("ERREUR", F, r"« evaluees » : ancien rôle remplacé par « travaillees »")])
     e.cas("une fiche qui mélange les deux formes", notions(travaillees=["prog.boucle"], enseignees=["prog.variable"]), 1,
           presents=[("ERREUR", F, r"la fiche mélange les deux formes")])
     e.cas("évaluée et prérequise (ancien rôle) : signalé aussi", notions(evaluees=["prog.variable"], prerequises=["prog.variable"]), 0,
+          options=["--anciens-roles", "signaler"],
           presents=[("ATTENTION", F, r"« prog\.variable » est à la fois travaillée et prérequise")])
 
     def avant_conversion(d):

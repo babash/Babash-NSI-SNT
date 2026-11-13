@@ -30,9 +30,9 @@ Usage :
                                                   résumé du run (job « Données de la bibliothèque »)
   python3 scripts/valider_donnees.py --avant F    compare le thésaurus à une version précédente F (celle de
                                                   main) : un identifiant publié ne disparaît jamais
-  python3 scripts/valider_donnees.py --anciens-roles refuser
-                                                  refuse les anciens rôles des notions (« enseignees »,
-                                                  « evaluees ») : pour vérifier une conversion (T64)
+  python3 scripts/valider_donnees.py --anciens-roles signaler
+                                                  tolère les anciens rôles des notions (« enseignees »,
+                                                  « evaluees »), refusés par défaut depuis la conversion (T64)
 
 Code de retour : 0 si tout est valide, 1 s'il y a au moins une erreur.
 """
@@ -59,12 +59,12 @@ ORIGINES_A_CREDITER = {"externe", "institutionnelle", "communaute"}
 # Règles 19 et 20 (décision du 07/11/2026) : champ de la fiche, liste et valeur du référentiel, champ des libellés
 CRITERES = [("editeur_code", "usages", "editeur-de-code", "criteres"),
             ("td_en_ligne", "types", "td", "criteres_en_ligne")]
-# Rôles des notions dans une fiche (décision du 13/11/2026, T64) : « travaillees » et « prerequises ». Les anciens rôles
-# « enseignees » et « evaluees » sont signalés pendant la conversion des fiches (scripts/convertir_notions_t64.py), puis
-# refusés : passer ANCIENS_ROLES à "refuser" une fois les fiches converties.
+# Rôles des notions dans une fiche (décision du 13/11/2026, T64) : « travaillees » et « prerequises ». Les fiches sont
+# converties (scripts/convertir_notions_t64.py) : les anciens rôles « enseignees » et « evaluees » sont refusés.
+# « --anciens-roles signaler » les tolère encore, pour vérifier une copie pas encore convertie.
 ROLES_NOTIONS = ("travaillees", "prerequises")
 ANCIENS_ROLES_NOTIONS = ("enseignees", "evaluees")
-ANCIENS_ROLES = "signaler"
+ANCIENS_ROLES = "refuser"
 CONVERTIR = "python3 scripts/convertir_notions_t64.py"
 
 
@@ -1492,8 +1492,8 @@ def main():
     parser.add_argument("--github", action="store_true",
                         help="dans GitHub Actions : annotations sur les fichiers et résumé du run (GITHUB_STEP_SUMMARY)")
     parser.add_argument("--anciens-roles", choices=("signaler", "refuser"), default=ANCIENS_ROLES,
-                        help="les anciens rôles des notions (« enseignees », « evaluees ») : signalés pendant la conversion "
-                             f"des fiches, ou refusés (par défaut : {ANCIENS_ROLES})")
+                        help="les anciens rôles des notions (« enseignees », « evaluees ») : refusés depuis la conversion "
+                             f"des fiches, ou seulement signalés sur une copie pas encore convertie (par défaut : {ANCIENS_ROLES})")
     parser.add_argument("--avant", metavar="FICHIER",
                         help="une version précédente du thésaurus (notions.json de main) : aucun identifiant ne doit "
                              "avoir disparu ; libellés changés et notions nouvelles signalés")

@@ -141,8 +141,8 @@ plateformes restera possible. Les `mots_cles` libres restent.
   - Les anciens rôles `enseignees` et `evaluees` (avant le 13/11/2026) se convertissent avec
     `python3 scripts/convertir_notions_t64.py` (`--verifier` pour voir sans écrire) : `travaillees` réunit les deux,
     sans doublon et dans l'ordre ; une notion aussi prérequise reste dans `travaillees` et quitte `prerequises` ;
-    seul le bloc `notions` des fiches est réécrit. Pendant la conversion, le validateur signale les anciens rôles ;
-    ensuite il les refuse (`--anciens-roles refuser` le fait dès maintenant, pour vérifier une conversion).
+    seul le bloc `notions` des fiches est réécrit. Les fiches du dépôt sont converties depuis le 13/11/2026 : le
+    validateur refuse les anciens rôles (`--anciens-roles signaler` les tolère sur une copie pas encore convertie).
 - **Thésaurus** (`notions.json`) : un identifiant de notion ne change jamais (`prog.boucle.bornee`), même si la
   notion change de place ; une notion abandonnée reste, avec `"obsolete": true` et `"remplacee_par"`. On écrit
   seulement les notions plus larges (`plus_larges`), jamais les plus étroites, qui s'en déduisent ; une notion
@@ -227,7 +227,7 @@ python3 scripts/valider_donnees.py --racine DIR    une autre copie du dépôt
 python3 scripts/valider_donnees.py --strict        les avertissements bloquent aussi
 python3 scripts/valider_donnees.py --github        dans GitHub Actions : annotations et résumé du run
 python3 scripts/valider_donnees.py --avant F      compare le thésaurus à une version précédente F (celle de main)
-python3 scripts/valider_donnees.py --anciens-roles refuser   refuse les anciens rôles des notions (après la conversion)
+python3 scripts/valider_donnees.py --anciens-roles signaler  tolère les anciens rôles (copie pas encore convertie)
 python3 scripts/convertir_notions_t64.py           convertit les notions des fiches vers « travaillees » (T64)
 python3 -I -B scripts/tests/test_notions.py        les tests du validateur pour le thésaurus et les notions (57 cas)
 ```
@@ -249,8 +249,8 @@ Ce qui est vérifié :
 - visibilité : ce que voit chaque public, remplacement du document principal caché (un document caché est une simple
   information ; un corrigé ou un guide visible des élèves n'est plus signalé, depuis la consigne du 12/11/2026) ;
 - notions : chaque identifiant cité dans `notions` existe dans le thésaurus ; une notion obsolète, ou à la fois travaillée et
-  prérequise, donne un avertissement ; les anciens rôles `enseignees` et `evaluees` sont signalés pendant la conversion,
-  refusés ensuite, et toujours refusés dans une fiche qui a déjà `travaillees` ; le nombre de fiches sans notions est donné
+  prérequise, donne un avertissement ; les anciens rôles `enseignees` et `evaluees` sont refusés (seulement signalés avec
+  `--anciens-roles signaler`, sauf dans une fiche qui a déjà `travaillees`) ; le nombre de fiches sans notions est donné
   pour information ;
 - thésaurus (`notions.json`) : notions plus larges, associées et remplaçantes existantes ; hiérarchie sans cycle ; domaines ;
   libellé préféré unique ; dans une même langue, chaque libellé d'une notion écrit une seule fois ; libellé caché distinct des
