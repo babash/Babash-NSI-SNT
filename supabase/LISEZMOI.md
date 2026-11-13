@@ -2,13 +2,13 @@
 
 Ce dossier contient les migrations qui ne relèvent d'aucune application : les préalables de la base unique (n° 2 de l'ordre d'ensemble, `architecture/base-unique.md`, § 3) et le schéma `commun`. Les migrations d'une application restent dans son propre dépôt (règle M1).
 
-- **Le projet cible :** `cukahpyqkljiddmimpyi`, nom affiché « SNT-1er Jour », à renommer « Babash - applications ». Il porte SNT 1er jour, Expédition Gombessa, Alien Python et le temps réel de Court-circuit (bientôt aussi son schéma `court_circuit`).
+- **Le projet cible :** `cukahpyqkljiddmimpyi`, nom affiché « SNT-1er Jour », à renommer « Babash - applications ». Il porte SNT 1er jour, Expédition Gombessa, Alien Python et le temps réel de Court-circuit et son schéma `court_circuit` (depuis le 13/11/2026).
 - **Une exception :** `0004` vise l'ancien projet de Lagon Arena, `gkyvaugipddjqjvvpopw`. Il n'y touche à aucun objet `guilde_*`.
 - **Les règles suivies :** `architecture/regles-supabase.md` (P2, P4, P8 corrigée, M1 à M8) et la spécification des codes, `architecture/codes-acces.md` (§ 1.10).
 
-## Où en est la base (12/11/2026)
+## Où en est la base (13/11/2026)
 
-**`0005` n'est pas appliqué** (écrit le 12/11) : il attend l'accord de l'enseignant, qui voit le SQL exact avant (règle M4). Il ne change que la vue `commun.registre` et deux commentaires (voir « 0005 » plus bas).
+**`0005` est appliqué**, après l'accord de l'enseignant sur le SQL exact (« Ok base Court-circuit », 13/11 à 06:45, heure de Mayotte ; règle M4) : `base_unique_0005_registre_court_circuit`, le 13/11 à 06:49 (version 20261113034900), par le chef d'orchestre, sans les lignes `begin;` et `commit;`, juste après la migration de Court-circuit (`court_circuit_0001_codes_eleves`, 06:48). Le texte enregistré a la même empreinte que le fichier (md5 sans commentaires, espaces ni `;` : `22e6c1b4…`). Vérifié par les métadonnées seulement : la vue lit `court_circuit`, elle reste fermée à `anon` et à `authenticated`, et elle range les 4 tables de Court-circuit (`eleves` et `programmes` : données d'élèves ; `mots` et `menage` : non), sur 15 lignes en tout. Il ne change que la vue `commun.registre` et deux commentaires (voir « 0005 » plus bas).
 
 **Les quatre premières migrations sont appliquées**, après l'accord de l'enseignant (« Ok base 2 », 11/11 à 16:29, heure de Mayotte).
 - Le chef d'orchestre les a appliquées par `apply_migration`, sans leurs lignes `begin;` et `commit;`.
