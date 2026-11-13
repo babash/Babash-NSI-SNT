@@ -71,15 +71,17 @@ Quand c'est utile, la fiche note aussi :
 
 Pour une création de l'enseignant, un critère à `false`, ou un éditeur de code dont les
 critères ne sont pas notés, donne un avertissement du script de validation ; pour une
-ressource externe, qui ne se modifie pas, c'est une simple information. Six fiches ont un
-avertissement voulu, car ce sont des écarts réels : l'éditeur d'Alien Python, une zone de texte
+ressource externe, qui ne se modifie pas, c'est une simple information. Huit fiches ont un
+avertissement, car ce sont des écarts réels : l'éditeur d'Alien Python, une zone de texte
 simple, ne remplit aucun des cinq critères ; les pages des TD 1 et 2 de POO ne sont ni
 responsives ni auto-correctives ; la licence de la fiche Python de SNT, faite d'après la fiche
-Compute-it, n'est pas connue ; deux sites de collègues ne sont qu'en `http://`. Ces écarts
-seront repris lors de la revue des ressources publiées ; d'ici là, la validation avec
-`--strict` (ci-dessous) échoue sur ces six avertissements.
+Compute-it, n'est pas connue ; deux sites de collègues ne sont qu'en `http://` ; les critères de
+l'éditeur des deux notebooks Capytale de l'enseignant restent à noter. Ces écarts seront repris
+lors de la revue des ressources publiées ; d'ici là, la validation avec `--strict` (ci-dessous)
+échoue sur ces huit avertissements.
 
-Les fiches écrites le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira.
+Les fiches écrites le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira. Le
+Système d'exploitation humain, jamais essayé en classe et pas fini, a le statut « brouillon ».
 Comme la vitrine, elles ne s'affichent pas encore : l'onglet « Bibliothèque » les lira. Les huit
 ressources récupérées des conversations (quatre fiches de réseaux de terminale, les commandes
 Linux de première et leur corrigé, la fiche des erreurs Python, le diaporama sur l'IA en SNT, la

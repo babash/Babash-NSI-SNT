@@ -10,9 +10,10 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   référentiels du dossier `donnees/` (voir [les données de la bibliothèque](BIBLIOTHEQUE.md)). Une erreur fait
   échouer le contrôle (croix rouge). Les avertissements et les informations sont dans le
   résumé du run, sans échec, et les erreurs et avertissements apparaissent aussi en
-  annotations sur les fichiers concernés. Les six avertissements voulus (l'éditeur d'Alien
-  Python, les TD 1 et 2 de POO, la licence de la fiche Python de SNT, deux sites en `http://` :
-  voir [les données de la bibliothèque](BIBLIOTHEQUE.md)) y figurent donc à chaque run. Le thésaurus des notions est aussi
+  annotations sur les fichiers concernés. Les huit avertissements connus (l'éditeur d'Alien
+  Python, les TD 1 et 2 de POO, la licence de la fiche Python de SNT, deux sites en `http://`,
+  les critères de l'éditeur des deux notebooks Capytale : voir
+  [les données de la bibliothèque](BIBLIOTHEQUE.md)) y figurent donc à chaque run. Le thésaurus des notions est aussi
   comparé à celui de `main` (pour un envoi sur `main`, à celui d'avant l'envoi) : une notion
   publiée qui a disparu fait échouer le contrôle, car un identifiant publié est définitif. Une
   branche en retard sur `main` y échoue aussi quand `main` a reçu des notions depuis (elles
