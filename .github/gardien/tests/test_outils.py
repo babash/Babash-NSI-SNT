@@ -13,7 +13,9 @@ dossier de travail :
     adresses file://, valeurs entre guillemets, chemin qui contient des espaces, commande ;
   - zones.py : des captures synthétiques (pied de page seul, bande modifiée, bruit de 1/255,
     capture d'un seul côté), avec et sans --tolerance ;
-  - contraste_zone.py : une page témoin aux contrastes connus, servie en local (Chrome).
+  - contraste_zone.py : une page témoin aux contrastes connus, servie en local (Chrome) ;
+  - sensibles.py : des textes ordinaires avec « (sur) », « [point] », « (dot) », « [at] », puis deux
+    adresses électroniques masquées pour les robots (T65), dans un petit dépôt git.
 """
 import json
 import os
@@ -207,5 +209,27 @@ with cadre.servir(temoin) as url:
     code, sortie = outil("contraste_zone.py", url, "--racine", temoin, "--largeurs", "800", "--modes", "light",
                          "--zone", "p.inexistante")
     attendre("contraste_zone.py : zone absente, code 1", code, sortie, 1, presents=[r"zone « p\.inexistante » absente"])
+
+# ── sensibles.py : adresse électronique masquée (T65) ───────────────────────
+# L'adresse et les textes ordinaires sont assemblés à l'exécution : le dépôt est public, et aucune
+# adresse, même inventée, ne doit y figurer (voir cadre.py). Ils n'existent que dans le dossier de travail.
+POINT, SUR, AT, DOT = "[po" + "int]", "[s" + "ur]", "(a" + "t)", "(d" + "ot)"
+depot_sens = os.path.join(travail, "depot-sensibles")
+ecrire(os.path.join(depot_sens, "propre.html"), "<p>Cliquer (sur) le bouton ; voir la liste[point] ci-dessous ; "
+       "f(x) (dot) produit ; t[at] = 0</p>\n")
+subprocess.run(["git", "-C", depot_sens, "init", "-q"], check=True)
+subprocess.run(["git", "-C", depot_sens, "add", "-A"], check=True)
+code, sortie = outil("sensibles.py", depot_sens)
+attendre("sensibles.py : textes ordinaires avec (sur), [point], (dot), [at] : rien à examiner", code, sortie, 0,
+         presents=[r"0 occurrence\(s\) à examiner"], absents=[r"masquée"])
+ecrire(os.path.join(depot_sens, "corrige.html"), "<p><em>prenom" + POINT + "nom" + SUR + "domaine-ac.fr</em></p>\n"
+       "<p>contact : prenom.nom " + AT + " exemple " + DOT + " org</p>\n")
+subprocess.run(["git", "-C", depot_sens, "add", "-A"], check=True)
+code, sortie = outil("sensibles.py", depot_sens)
+attendre("sensibles.py : deux adresses masquées ([point] et [sur], (at) et (dot)), code 1", code, sortie, 1, presents=[
+    r"^\[à examiner\] adresse électronique masquée \| corrige\.html:1 \|",
+    r"^\[à examiner\] adresse électronique masquée \| corrige\.html:2 \|",
+    r"2 occurrence\(s\) à examiner",
+])
 
 bilan.terminer()

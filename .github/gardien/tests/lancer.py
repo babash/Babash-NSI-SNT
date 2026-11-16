@@ -15,7 +15,8 @@ propre processus :
   t12      24 cas   scripts du contrôle en ligne : attendre_deploiement.py, liens_seconde_passe.py (T12)
   t19      10 cas   pied de page de l'accueil et de SNT selon reglages.js, dans Chrome (T19)
   t45      33 cas   lien « Code source sur GitHub », encadré d'erreur, verifier-site.py (T45)
-  outils   11 cas   outils du Gardien : caracteres, chemins_readme (et N16), zones, contraste_zone (T32)
+  outils   13 cas   outils du Gardien : caracteres, chemins_readme (et N16), zones, contraste_zone (T32),
+                    sensibles (adresses masquées, T65)
   harnais  19 cas   harnais du Gardien : empreintes_migration, annexes_code_source, depots.sh,
                     pdf_comparer, texte_rendu, diapo_dessous, pages_depot (T47)
 Les tests lancent les scripts de la copie (scripts/valider_donnees.py, .github/verifier-site.py…) :
