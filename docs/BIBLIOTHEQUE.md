@@ -9,10 +9,11 @@ continuent d'utiliser les listes `ressources.js` ([LISTES.md](LISTES.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 109 fiches, dont 82 pour les 90 entrées des
+  ressources/<id>.json          une fiche par ressource : 110 fiches, dont 82 pour les 90 entrées des
                                 listes (une ressource placée dans deux rubriques n'a qu'une fiche),
-                                8 pour des fichiers récupérés des conversations de l'enseignant
-                                et 19 pour des activités Capytale
+                                8 pour des fichiers récupérés des conversations de l'enseignant,
+                                19 pour des activités Capytale et 1 pour un site externe demandé
+                                par l'enseignant (l'entraînement à l'épreuve pratique d'exomorphisme.fr)
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
                                 et la grille d'évaluation du Grand oral
