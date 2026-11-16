@@ -73,15 +73,15 @@ MISSION=$(cat "$PROGRESS_FILE" | cut -d: -f1)
 printf "\n${B}--- [ ANALYSE DE MISSION : PHASE $MISSION ] ---${NC}\n"
 case $MISSION in
     1) printf "Ghost, infiltrez le dossier SQL pour préparer l'injection. Tapez check pour valider\n" ;;
-    2) printf "Facile ! Le QG détecte un dossier fantôme à la racine de 'avalon_server'. Trouvez-le dossier caché et entrez dedans.\n" ;;
+    2) printf "Facile ! Le QG détecte un dossier fantôme à la racine de 'avalon_server'. Trouvez le dossier caché et entrez dedans.\n" ;;
     3) printf "C'est le moment de voler les identifiants ! Un fichier 'pass.txt' se trouve ici. Il contient le code d'accès au serveur de fichiers.\n${Y}ACTION :${NC} Lisez son contenu et tapez 'check' pour saisir le code.\n" ;;
     4) printf "Bien joué ! Retournez dans 'données'. Il vous faut un dossier 'backdoor' et un fichier 'logs.txt' à l'intérieur pour travailler.\n" ;;
-    5) printf "Extrayons les données critiques : dupliquez (faite une copie de) 'system_id' vers 'backdoor/id_backup.txt'.\n" ;;
+    5) printf "Extrayons les données critiques : dupliquez (faites une copie de) 'system_id' vers 'backdoor/id_backup.txt'.\n" ;;
     6) printf "Vite ! On est sous surveillance. Renommez l'original 'system_id' en 'evidence.txt' et cachez-le dans votre 'backdoor' pour que personne ne le trouve.\n" ;;
     7) printf "Sécurisez vos logs : modifiez les permissions de 'logs.txt' pour que vous soyez le SEUL à pouvoir le lire (Lecture/Écriture).\n" ;;
     8) printf "Le travail est presque fini. Supprimez le dossier vide 'archives' pour masquer votre passage.\n" ;;
-    9) printf "\n${Y}BIEN JOUÉ GHOST. LE VOL EST TERMINÉ VOUS ETES UN AS... MAIS UNE NOTE ATTIRE VOTRE ATTENTION.${NC}\nAvalon semble détourner des fonds humanitaires. Votre conscience vous pousse à agir.\n${B}BONUS :${NC} Utilisez 'find' pour localiser le fichier 'rapport_fraude.txt' caché profondément dans le serveur, rendez-vous dans le dossier parent.\n" ;;
-    10) printf "${B}BONUS LANCEUR D'ALERTE :${NC} Le fichier est complexe. Utilisez 'grep' pour extraire la ligne contenant le mot 'DETOURNEMENT' et enregistrez-la dans 'lanceur_alerte.txt', deplacer ensuite 'lanceur_alerte.txt' dans le dossier "/tmp/avalon_server".\n" ;;
+    9) printf "\n${Y}BIEN JOUÉ GHOST. LE VOL EST TERMINÉ VOUS ÊTES UN AS... MAIS UNE NOTE ATTIRE VOTRE ATTENTION.${NC}\nAvalon semble détourner des fonds humanitaires. Votre conscience vous pousse à agir.\n${B}BONUS :${NC} Utilisez 'find' pour localiser le fichier 'rapport_fraude.txt' caché profondément dans le serveur, rendez-vous dans le dossier parent.\n" ;;
+    10) printf "${B}BONUS LANCEUR D'ALERTE :${NC} Le fichier est complexe. Utilisez 'grep' pour extraire la ligne contenant le mot 'DETOURNEMENT' et enregistrez-la dans 'lanceur_alerte.txt', déplacez ensuite 'lanceur_alerte.txt' dans le dossier "/tmp/avalon_server".\n" ;;
     11) printf "${G}INCROYABLE. Vous avez exfiltré les preuves. Le monde saura la vérité sur Avalon.${NC}\n" ; rm "$PROGRESS_FILE" ;;
 esac
 printf "${B}------------------------------------------------${NC}\n"
