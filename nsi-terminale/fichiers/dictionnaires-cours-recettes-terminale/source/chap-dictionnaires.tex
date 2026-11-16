@@ -1,0 +1,245 @@
+\setcounter{chapter}{3}
+\chapter{Les dictionnaires}
+Dans ce chapitre nous présentons une nouvelle façon d'organiser et de traiter les données: \textbf{les dictionnaires}. Nous distinguerons la structure de données de son implémentation en illustrant les concepts au travers la réalisation de recettes de cuisine.\\[-0.5cm]
+
+ La structure de donnée d'un dictionnaire est dite non linéaire.
+\begin{tcolorbox}[enhanced,
+    colback=green!25!black!10!white,colframe=green!75!black,title=Structures non linéaires,
+    drop fuzzy shadow,watermark color=white]
+Les données ne sont pas organisées dans un ordre, les éléments ne sont pas séquentiels, mais ils peuvent être reliés par une relation particulière.
+  \end{tcolorbox}
+Dans les cas des dictionnaires, les éléments sont reliés selon un couple appelé \textbf{clé, valeur}. Cette structure permet \textbf{d'accéder à un élément par sa clé} et non par un nombre (indice) comme les listes. Ci-dessous un exemple de dictionnaire où les clés sont les noms de fruits en Shimaoré et les valeurs leur nom français :
+\begin{center}
+    \noindent\begin{tabular}{l c l }
+    "fenesi" &:& "jaque",\\
+    "frampe" &:& "fruit a pain",\\
+    "buyu" &:& "fruit du baobab"\\
+    \end{tabular}
+\end{center}
+\vspace{0.5cm}
+%
+Quel est la valeur liée à la clé "frampe" ?
+\vspace{0.5cm}
+
+\noindent Comment faire une fonctionnalité équivalente avec deux listes ?
+\vspace{2.3cm}
+
+
+\subsection*{Comment les manipuler ? \textit{Interface}}
+
+\noindent\begin{tabular}{l | l }
+    \textbf{Ajouter} & ajoute un couple clé/valeur dans le dictionnaire.\\
+    \textbf{Accéder à un élément} & accède à une valeur à partir de la clé.\\
+    \textbf{Modifier un élément}  & modifie la valeur d'un élément\\
+    \textbf{Supprimer un élément} & supprime un couple clé-valeur \\
+    \textbf{Nombre d'éléments} & renvoie le nombre de couples contenus dans le dictionnaire. \\[0.5cm]
+\end{tabular}
+
+\subsection*{Comment les manipuler avec python ? \textit{Implémentation}}
+En python, les dictionnaires sont contenus dans des accolades $\{ ... \}$.
+Chaque clé est reliée à une valeur par deux points ($:$) et les couples clés/valeurs sont séparés par des virgules. Un exemple de dictionnaire où les clés sont les noms de fruits en Shimaoré et les valeurs leur équivalent en français:\\
+\begin{center}
+\noindent\begin{tabular}{l c l }
+\{ & & \\
+"fenesi" &:& "jaque",\\
+"frampe" &:& "fruit a pain",\\
+"buyu" &:& "fruit du baobab"\\
+\} & & \\
+\end{tabular}
+\end{center}
+
+
+\begin{lstlisting}[language=Python]
+# Creer un dictionnaire vide 
+d = {}
+
+# Creer un dictionnaire non vide
+d = {"fenesi" : "jaque", "frampe" : "fruit a pain", "buyu" : "fruit du baobab"}
+
+# Taille du dictionnaire
+print(len(d)) # affiche la taille du dictionnaire
+
+# Acceder a un element par sa cle
+print(d["buyu"]) # affiche "fruit du baobab"
+
+# Ajouter un element
+d["konokono"] = "corossol"
+print(d) # affiche {"fenesi" : "jaque", "frampe" : "fruit a pain","buyu" : "fruit du baobab", "konokono" : "corossol" }
+
+# Supprimer un element
+del(d["frampe"])
+print(d) # affiche {"fenesi" : "jaque", "buyu" : "fruit du baobab", "konokono" : "corossol" }
+\end{lstlisting}
+
+\vspace{0.3cm}
+%
+Voyons maintenant comment parcourir un dictionnaire. On imagine qu'on associe une quantité à chacun des fruits :
+\begin{lstlisting}
+MesIngredients = {"jaque" : 2, "fruit a pain" : 1, "fruit du baobab" : 2}
+for cle, valeur in MesIngredients.items():
+    print("j'ai ",valeur, " ", cle, " dans mon panier")
+\end{lstlisting}
+Que va afficher la console ? Expliquer la méthode items()
+\vspace{1.7cm}
+
+\noindent On peut également parcourir uniquement les clés du dictionnaires ou uniquement ses valeurs :
+\begin{lstlisting}
+MesIngredients = {"jaque" : 2, "fruit a pain" : 1, "fruit du baobab" : 2}
+for cle in MesIngredients.keys():
+    print(cle)
+for valeur in MesIngredients.values():
+    print(valeur)
+\end{lstlisting}
+Que va afficher la console ? Expliquer les méthodes keys() et values().
+\vspace{1.7cm}
+
+On ajoute à mon panier 2 fruits a pain et 1 jaque supplémentaire. Vous pouvez modifier votre liste de deux manières différentes :
+\begin{lstlisting}
+# On modifie la valeur en y accedant par la cle
+MesIngredients["fruit a pain"] = 3 
+# On incremente la valeur en y accedant par la cle
+MesIngredients["jaque"] = MesIngredients["jaque"] + 1 
+for cle, valeur in MesIngredients.items():
+    print("j'ai ",valeur, " ", cle, " dans mon panier")
+\end{lstlisting}
+Que va afficher la console ?
+\vspace{3cm}
+
+On peut vérifier si une clé ou une valeur est dans un dictionnaire.
+\begin{lstlisting}
+# On verifie si une cle est dans MesIngredients
+if "jaque" in MesIngredients :
+    print(True)
+else :
+    print(False)
+# On verifie si une valeur est dans MesIngredients
+if 2 in MesIngredients.values() :
+    print(True)
+else :
+    print(False)
+if 3 in MesIngredients.values() :
+    print(True)
+else :
+    print(False)
+\end{lstlisting}
+Que va afficher la console ?
+\vspace{2cm}
+
+
+\subsection*{Exercices}
+
+\subsubsection*{Exercice 1}
+
+Imaginons qu'on veut cuisiner un matsidza. On a déjà du riz et du curry et on va cueillir des noix de coco.
+\begin{lstlisting}
+MesIngredients = {
+    "riz" : 1000,
+    "curry" : True
+} 
+\end{lstlisting}
+
+\begin{enumerate}[label=\alph*.]
+    \item Ajoutez 3 noix de coco à vos ingrédients.
+    \item Vous utilisez 200g de riz, 1 noix de coco et tout le curry. Modifiez vos ingrédients disponibles, un exemple est donné ci-dessous.
+    \begin{lstlisting}
+MesIngredients["riz"] = MesIngredients["riz"] - 200 \end{lstlisting}
+    \item Affichez votre dictionnaire d'ingrédients dans la console.
+\end{enumerate}
+
+\subsubsection*{Exercice 2}
+Nous créons deux dictionnaires qui contiennent les ingrédients nécessaires pour les deux recettes suivantes,  :
+\begin{lstlisting}
+pilao = {
+    "riz" : 500,
+    "poulets" : 500,
+    "tomates" : 5,
+    "boites de concentre de tomate" : 1,
+    "oignons" : 5,
+    "clous de girofle" : True,
+    "sel" : True,
+    "poivre" : True
+}
+matsidza = {"riz" : 200, "coco" : 1, "curry" : True}
+\end{lstlisting}
+\begin{enumerate}[label=\alph*.]
+    \item Combien y a t-il de dictionnaires ?
+    \item Comment s'appellent-ils ?
+    \item Donner la taille de chacun des dictionnaires. Quelle fonction python utiliseriez-vous ?
+    \item Quel est le type de la valeur reliée à la clé "sel" ?
+\end{enumerate}
+
+
+\subsubsection*{Exercice 3}
+Nous créons trois autres dictionnaires :
+\begin{lstlisting}
+mataba = {
+    "maniocs" : 5,
+    "noix de coco" : 5,
+    "oignons" : 2,
+    "ail" : 2,
+    "piment" : 1,
+    "sel" : True
+    }
+
+mtsolola = {
+    "bananes" : 5,
+    "maniocs" : 1,
+    "poissons" : 500,
+    "oignons" : 2,
+    "citrons" : 1, 
+    "boite de tomate concentree" : 1,
+    "cumin" : True,
+    "poivre" : True,
+    "sel" : True
+    }
+
+bata_bata = {
+    "bananes" : 10,
+    "maniocs" : 4,
+    "sel" : True
+    }
+\end{lstlisting}
+\begin{enumerate}
+    \item Écrire un script qui parcourt les quatre recettes dictionnaires et qui affiche celles qui contiennent du riz
+    \item Écrire un script qui parcourt les quatre recettes dictionnaires et qui affiche celles qui ont besoin de 5 bananes ou moins.
+\end{enumerate}
+
+
+\subsubsection*{Exercice 4 - à faire en binome}
+On crée maintenant un dictionnaire pour répertorier les ingrédients disponible que nous avons.
+\begin{lstlisting}
+MesIngredients = {
+    "poissons": 1000,
+    "lait" : 1,
+    "poulets": 1000,
+    "oignons" : 10,
+    "citrons" : 2,
+    "boeuf" : 500,
+    "boite de tomate concentree": 2,
+    "bananes": 12,
+    "ananas" : 3,
+    "maniocs": 9,
+    "songe" : 2,
+    "tomates": 5,
+    "riz": 10000,
+    "noix de coco": 5,
+    "ail": 2,
+    "piment" : 2,
+    "epices": ["safran","cumin","ail","poivre","sel","safran","cannelle","clou de girofle"]
+}
+\end{lstlisting}
+
+Pour cette exercice vous pouvez le faire sur papier ou sur spyder au choix.
+
+\begin{enumerate}
+    \item Quelle est la particularité de la valeur liée à la clé "epices" ?
+    \item Quelles recettes puis-je faire ?
+    \item Ecrire un script qui vérifie votre réponse.
+    \item Imaginons que vous avez executer la recette. Ecrire un script qui déduit de "MesIngredients" ceux que vous avez utilisés pour la/les recettes. \textit{Remarque : on a fini le sel mais pas les autres épices.}
+    \item Comparez avec le reste de la classe. Avez vous fait la ou les mêmes recettes ?
+\end{enumerate}
+
+
+
+
+
