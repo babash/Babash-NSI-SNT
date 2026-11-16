@@ -1,0 +1,112 @@
+Ce TP a pour objectif de vous faire manipuler les différentes manières de représenter un \textbf{graphe} en Python. Nous allons explorer trois approches : les tuples pour les arêtes, les listes/dictionnaires d'adjacence, et enfin l'approche par Programmation Orientée Objet (POO).
+\vspace{-1cm}
+
+\begin{Objectif}
+    Représenter le graphe suivant en utilisant différentes implémentations en python:
+\begin{itemize}
+    \item \textit{Sommets :} A, B, C, D
+    \item \textit{Arêtes :} (A-B), (A-C), (B-C), (C-D)
+\end{itemize}
+\end{Objectif}
+
+
+
+\section*{ Exercice 1 : Liste d'Arêtes (Tuples)}
+
+C’est la méthode la plus simple. On stocke le graphe comme une liste de couples (tuples).
+\begin{Avous}
+    \textit{Mission :} Complétez le code pour ajouter l'arête manquante (C-D).
+\end{Avous}
+
+\vspace{-0.5cm}
+\begin{lstlisting}
+# Représentation par liste d'arêtes
+graph_edges = [
+    ('A', 'B'),
+    ('A', 'C'),
+    ('B', 'C'),
+    # Ajoutez l'arête C-D ici
+]
+
+def afficher_aretes(graphe):
+    for u, v in graphe:
+        print(f"Lien entre {u} et {v}")
+
+afficher_aretes(graph_edges)
+
+\end{lstlisting}
+
+
+
+\section*{ Exercice 2 : Dictionnaire d'Adjacence (Listes)}
+
+Cette méthode est plus efficace pour savoir rapidement quels sont les voisins d'un sommet. On utilise un dictionnaire où chaque clé est un sommet et chaque valeur est la liste de ses voisins.
+\begin{Avous}
+\textit{Mission :} Écrire une fonction qui retourne le nombre de voisins d'un sommet donné.
+\end{Avous}
+\vspace{-0.5cm}
+\begin{lstlisting}
+graph_adj = {
+    'A': ['B', 'C'],
+    'B': ['A', 'C'],
+    'C': ['A', 'B', 'D'],
+    'D': ['C']
+}
+
+def compte_voisins(graphe, sommet):
+    # Votre code ici
+    pass
+
+# Test
+print(f"Voisins de C : {len(graph_adj['C'])}") 
+
+\end{lstlisting}
+
+
+
+\section*{ Exercice 3 : L'Approche POO (Classes)}
+
+En POO, on crée une classe Graphe pour encapsuler les données et les comportements (ajouter un sommet, ajouter une arête).
+\begin{Avous}
+\textit{Mission :} Complétez la méthode ajouter\_arete. N'oubliez pas que pour un graphe \textbf{non-orienté}, si A est relié à B, alors B est aussi relié à A.
+\end{Avous}
+
+\begin{lstlisting}
+class Graphe:
+    def __init__(self):
+        self.adjacence = {}
+
+    def ajouter_sommet(self, sommet):
+        if sommet not in self.adjacence:
+            self.adjacence[sommet] = []
+
+    def ajouter_arete(self, u, v):
+        # 1. S'assurer que les sommets existent
+        self.ajouter_sommet(u)
+        self.ajouter_sommet(v)
+        # 2. Ajouter le lien dans les deux sens
+        # Votre code ici
+        pass
+
+    def afficher(self):
+        for sommet, voisins in self.adjacence.items():
+            print(f"{sommet} -> {', '.join(voisins)}")
+
+# --- Test du TP ---
+mon_graphe = Graphe()
+mon_graphe.ajouter_arete('A', 'B')
+mon_graphe.ajouter_arete('A', 'C')
+mon_graphe.ajouter_arete('B', 'C')
+mon_graphe.ajouter_arete('C', 'D')
+
+mon_graphe.afficher()
+
+\end{lstlisting}
+
+
+
+\section*{ Pour aller plus loin}
+\begin{itemize}
+    \item \textit{Complexité :} Pourquoi l'exercice 2 est-il plus rapide que l'exercice 1 pour vérifier si "D" est voisin de "A" ?
+    \item \textit{Pondération :} Comment modifieriez-vous les tuples de l'exercice 1 pour ajouter un "poids" (une distance) à chaque route ?
+\end{itemize}
