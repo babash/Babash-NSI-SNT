@@ -1,0 +1,413 @@
+\documentclass[noanswers, addpoints, 12pt]{exam}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta,shadows}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\newcommand{\squote}{\textquotesingle}
+
+\title{CC1 Term NSI - Pile, File et rappels de 1er}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Septembre 2025, Durée: 1h30}
+
+
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{Nom : \\  Prénom :\\ Classe :}{}{}
+
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+Le devoir est à rédiger sur une feuille libre.\\
+La clarté de la rédaction et les explications font partie intégrante de la notation. Une réponse non rédigée sans explication sera considérée fausse.\\
+Prenez le temps d'encadrer les réponses.
+\end{center}
+
+
+}}
+\end{center}
+
+\vsword{Note}
+\hsword{Note}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+
+\vspace{0.5cm}
+
+\section{Exercice Type Bac : dictionnaires et listes}
+\textit{Thème abordé : structures de données : dictionnaire et liste}\\
+
+
+On dispose de la liste \textit{jours} suivante et du dictionnaire \textit{mois} suivant :
+\begin{lstlisting}[language=Python]
+jours = ["dimanche", "lundi", "mardi", "mercredi",
+         "jeudi", "vendredi", "samedi"]
+mois = {1 :("janvier",31), 2 :("février",28), 3 :("mars",31) ,
+        4 :("avril",30), 5 :("mai",31), 6 :("juin",30) ,
+        7 :("juillet",31), 8 :("aout",31), 9 :("septembre",30) ,
+        10 :("octobre",31), 11 :("novembre",30), 12 :("décembre",31)}
+\end{lstlisting}
+
+\vspace{0.5cm}
+
+\begin{questions} 
+\question[2] Manipulation de liste
+\begin{parts}
+\part À partir de la liste jours, comment obtenir l'élément \textit{"lundi"} ?
+\part Que renvoie l'instruction \textit{jours[-1]} ?
+\end{parts}
+
+\vspace{0.5cm}
+
+On rappelle que \textit{jours.index(element)} renvoie l'indice de \textit{element} dans la liste \textit{jours}.\\
+Par exemple, \textit{jours.index("mercredi")} renvoie \textit{3}.
+
+\vspace{0.5cm}
+
+\question[2]  Écrire la fonction \textit{jour\_suivant(jours, j)} permettant d'obtenir le nom du jour suivant à partir de la liste des jours et du paramètre j (qui contient le nom du jour actuel, ex: j= "mardi").
+Par exemple :
+\begin{itemize}
+\item \textit{jour\_suivant(jours, "mardi")} renvoie "mercredi" ;
+\item \textit{jour\_suivant(jours, "dimanche")} renvoie "lundi".
+\end{itemize}
+\textsc{Indice :} il vous faudra utiliser la méthode index décrite au-dessus.
+
+\vspace{0.5cm}
+
+\question[2] Manipulation de dictionnaire
+\begin{parts}
+\part À partir du dictionnaire \textit{mois}, comment obtenir le nombre de jours du mois de mars ?\\
+\part Écrire une fonction \textit{dans\_x\_mois(mois, numero\_mois, x)} permettant d'obtenir le nom du mois qu'il sera \textit{x} mois plus tard à partir du dictionnaire \textit{mois} et du numéro mois actuel \textit{numero\_mois}.\\
+Par exemple :
+\begin{itemize}
+\item \textit{dans\_x\_mois(mois, 4, 5)} renvoi \textit{"septembre"} ;
+\item \textit{dans\_x\_mois(mois, 10, 3)} renvoi \textit{"janvier"}.
+\end{itemize}
+\end{parts}
+
+\vspace{0.5cm}
+
+\question[3] On définit une date comme un tuple : \textit{(nom\_jour, numero\_jour, numero\_mois, annee)}.
+\begin{parts}
+\part Sachant que \textit{date = ("samedi", 21, 10, 1995)}, que renvoie \textit{mois[date[2]][1]} ?
+
+\part Que se passe-t-il si on exécute l'instruction Python \textit{date[0] = "dimanche"} ? Expliquez pourquoi ?
+
+\part  Recopier et compléter le code à trou suivant pour une fonction \textit{changement\_mois(numero\_mois, annee)} qui prend le numéro du mois actuel \textit{numero\_mois} et l'année \textit{annee} et renvoie un tuple correspondant au mois suivant.
+Par exemple:
+\begin{itemize}
+    \item \textit{changement\_mois(1, 2025)} renvoie (2, 2025) ;
+    \item \textit{changement\_mois(12, 1900)} renvoie (1, 1901)
+\end{itemize}
+\begin{lstlisting}[language=Python]
+def changement_mois(numero_mois, annee):
+    if numero_mois == 12:
+        return (..., annee + ...)
+    else:
+        return (numero_mois + ..., ...)
+\end{lstlisting}
+\end{parts}
+
+\newpage
+
+\question[1] Écrire une fonction \textit{date\_suivante} qui prend en paramètre une date \textit{date} sous forme de tuple \textit{(nom\_jour, numero\_jour, numero\_mois, annee)} et qui renvoie un tuple désignant la date du lendemain.\\
+Par exemple :
+\begin{itemize}
+    \item \textit{date\_suivante(("samedi", 21, 10, 1995))} renvoie \textit{("dimanche", 22, 10, 1995)} ;
+    \item \textit{date\_suivante(("mardi", 31, 10, 1995))} renvoie \textit{("mercredi", 1, 11, 1995)}.
+\end{itemize}
+On ne tient pas compte des années bissextiles et on considère que le mois de février comporte toujours $28$ jours.\\
+
+\textsc{Indice :} on peut utiliser les fonctions \textit{jour\_suivant} et \textit{changement\_mois}.
+
+\vspace{0.5cm}
+
+\section{Exercice Type Bac pile/file}
+
+\begin{center}
+    \textit{Points de programmes abordés : Pile}\\
+\end{center}
+
+La poussette est un jeu de cartes en solitaire. Cet exercice propose une version simplifiée de ce jeu basée sur des nombres.\\\\
+On considère une pile constituée de nombres entiers tirés aléatoirement. Le jeu consiste à réduire la pile suivant la règle suivante : quand la pile contient du haut vers le bas un triplet dont les termes du haut et du bas sont de même parité (c'est-à-dire que les deux nombres sont tous les deux pairs ou que les deux nombres sont tous les deux impairs), on supprime l'élément central.\\\\
+Par exemple :
+\begin{itemize}
+\item Si la pile contient du haut vers le bas, le triplet $1$ $0$ $3$, on supprime le $0$.
+\item Si la pile contient du haut vers le bas, le triplet $1$ $0$ $8$, la pile reste inchangée.\\
+\end{itemize}
+
+On parcourt la pile ainsi de haut en bas et on procède aux réductions. Arrivé en bas de la pile, on recommence la réduction en repartant du sommet de la pile jusqu'à ce que la pile ne soit plus réductible. \textbf{Une partie est \og gagnante\fg\ lorsque la pile finale est réduite à deux éléments exactement.}\\\\
+
+Voici un exemple détaillé de déroulement d'une partie.
+\begin{center}
+\begin{tikzpicture}
+\draw (0,5.25) -- (0,0) -- (1,0) -- (1,5.25);
+\draw (0.5,0.375) node{$6$};
+\draw (0.5,1.125) node{$9$};
+\draw (0.5,1.875) node{$8$};
+\draw (0.5,2.625) node{$3$};
+\draw (0.5,3.375) node{$4$};
+\draw (0.5,4.125) node{$5$};
+\draw (0.5,4.875) node{$7$};
+\draw[line width=1pt] (0.25,5.25) -- (0.25,3) -- (0.75,3) -- (0.75,5.25) -- cycle;
+\draw (1.25,5.25) -- (1.25,0) -- (2.25,0) -- (2.25,5.25);
+\draw (1.75,0.375) node{$6$};
+\draw (1.75,1.125) node{$9$};
+\draw (1.75,1.875) node{$8$};
+\draw (1.75,2.625) node{$3$};
+\draw (1.75,3.375) node{$4$};
+\draw (1.75,4.125) node{$5$};
+\draw (1.75,4.875) node{$7$};
+\draw[line width=1pt] (1.5,4.5) -- (1.5,2.25) -- (2,2.25) -- (2,4.5) -- cycle;
+\draw[line width=1pt] (1.3,3.75) -- (2.2,3); \draw[line width=1pt] (1.3,3) -- (2.2,3.75);
+\draw (2.5,5.25) -- (2.5,0) -- (3.5,0) -- (3.5,5.25);
+\draw (3,0.375) node{$6$};
+\draw (3,1.125) node{$9$};
+\draw (3,1.875) node{$8$};
+\draw (3,2.625) node{$3$};
+\draw (3,3.375) node{$5$};
+\draw (3,4.125) node{$7$};
+\draw[line width=1pt] (2.75,3) -- (2.75,0.75) -- (3.25,0.75) -- (3.25,3) -- cycle;
+\draw[line width=1pt] (2.55,2.25) -- (3.45,1.5); \draw[line width=1pt] (2.55,1.5) -- (3.45,2.25);
+\draw[line width=1pt] (1.3,3.75) -- (2.2,3); \draw[line width=1pt] (1.3,3) -- (2.2,3.75);
+\draw (3.75,5.25) -- (3.75,0) -- (4.75,0) -- (4.75,5.25);
+\draw (4.25,0.375) node{$6$};
+\draw (4.25,1.125) node{$9$};
+\draw (4.25,1.875) node{$3$};
+\draw (4.25,2.625) node{$5$};
+\draw (4.25,3.375) node{$7$};
+\draw (2.375,5.75) node{Premier parcours de la pile};
+\end{tikzpicture}
+\hspace{1.5cm}
+\begin{tikzpicture}
+\draw (0,5.25) -- (0,0) -- (1,0) -- (1,5.25);
+\draw (0.5,0.375) node{$6$};
+\draw (0.5,1.125) node{$9$};
+\draw (0.5,1.875) node{$3$};
+\draw (0.5,2.625) node{$5$};
+\draw (0.5,3.375) node{$7$};
+\draw[line width=1pt] (0.25,3.75) -- (0.25,1.5) -- (0.75,1.5) -- (0.75,3.75) -- cycle;
+\draw[line width=1pt] (0.05,3) -- (0.95,2.25); \draw[line width=1pt] (0.05,2.25) -- (0.95,3);
+\draw (1.25,5.25) -- (1.25,0) -- (2.25,0) -- (2.25,5.25);
+\draw (1.75,0.375) node{$6$};
+\draw (1.75,1.125) node{$9$};
+\draw (1.75,1.875) node{$3$};
+\draw (1.75,2.625) node{$7$};
+\draw[line width=1pt] (1.5,2.25) -- (1.5,0) -- (2,0) -- (2,2.25) -- cycle;
+\draw (2.5,5.25) -- (2.5,0) -- (3.5,0) -- (3.5,5.25);
+\draw (3,0.375) node{$6$};
+\draw (3,1.125) node{$9$};
+\draw (3,1.875) node{$3$};
+\draw (3,2.625) node{$7$};
+\draw (1.75,5.75) node{Parcours suivant};
+\end{tikzpicture}
+\hspace{1.5cm}
+\begin{tikzpicture}
+\draw (0,5.25) -- (0,0) -- (1,0) -- (1,5.25);
+\draw (0.5,0.375) node{$6$};
+\draw (0.5,1.125) node{$9$};
+\draw (0.5,1.875) node{$3$};
+\draw (0.5,2.625) node{$7$};
+\draw[line width=1pt] (0.25,3) -- (0.25,0.75) -- (0.75,0.75) -- (0.75,3) -- cycle;
+\draw[line width=1pt] (0.05,2.25) -- (0.95,1.5); \draw[line width=1pt] (0.05,1.5) -- (0.95,2.25);
+\draw (1.25,5.25) -- (1.25,0) -- (2.25,0) -- (2.25,5.25);
+\draw (1.75,0.375) node{$6$};
+\draw (1.75,1.125) node{$9$};
+\draw (1.75,1.875) node{$7$};
+\draw (1.125,5.75) node{Dernier parcours};
+\end{tikzpicture}
+\end{center}
+
+\question[2] Question de cours
+\begin{parts}
+    \part Que veut dire l'acronyme LIFO ? Caractérise-t-il une pile ou une file ?
+    \part Donner un exemple de file et de pile dans la vie courante ?
+\end{parts}
+
+\vspace{0.5cm}
+
+\question[2] Manipulation des piles d'un point de vue théorique
+\begin{parts}
+\part Donner les différentes étapes de réduction de la pile suivante :
+
+\begin{center}
+\begin{tikzpicture}
+\draw (0,4.5) -- (0,0) -- (1,0) -- (1,4.5);
+\draw (0.5,0.375) node{$2$};
+\draw (0.5,1.125) node{$4$};
+\draw (0.5,1.875) node{$7$};
+\draw (0.5,2.625) node{$8$};
+\draw (0.5,3.375) node{$9$};
+\draw (0.5,4.125) node{$4$};
+\end{tikzpicture}
+\end{center}
+
+\part Parmi les piles proposées ci-dessous, donner celle qui est gagnante.
+
+\begin{center}
+\begin{tikzpicture}
+\draw (0,4.5) -- (0,0) --node[below=0.5cm]{Pile A} (1,0) -- (1,4.5);
+\draw (0.5,0.375) node{$1$};
+\draw (0.5,1.125) node{$2$};
+\draw (0.5,1.875) node{$4$};
+\draw (0.5,2.625) node{$5$};
+\draw (0.5,3.375) node{$4$};
+\draw (0.5,4.125) node{$5$};
+\end{tikzpicture}
+\hspace{3cm}\begin{tikzpicture}
+\draw (0,4.5) -- (0,0) --node[below=0.5cm]{Pile B} (1,0) -- (1,4.5);
+\draw (0.5,0.375) node{$0$};
+\draw (0.5,1.125) node{$2$};
+\draw (0.5,1.875) node{$9$};
+\draw (0.5,2.625) node{$4$};
+\draw (0.5,3.375) node{$5$};
+\draw (0.5,4.125) node{$4$};
+\end{tikzpicture}
+\hspace{3cm}\begin{tikzpicture}
+\draw (0,4.5) -- (0,0) --node[below=0.5cm]{Pile C} (1,0) -- (1,4.5);
+\draw (0.5,0.375) node{$1$};
+\draw (0.5,1.125) node{$6$};
+\draw (0.5,1.875) node{$7$};
+\draw (0.5,2.625) node{$8$};
+\draw (0.5,3.375) node{$4$};
+\draw (0.5,4.125) node{$3$};
+\end{tikzpicture}
+\end{center}
+
+\end{parts}
+
+
+L'interface d'une pile est proposée ci-dessous. On utilisera uniquement les fonctions figurant dans le tableau suivant :
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{|p{14cm}|}
+\hline
+Structure de données abstraite : Pile
+\tabularnewline\hline
+\begin{itemize}
+    \item\textit{creer\_pile\_vide()} renvoie une pile vide
+    \item\textit{est\_vide(p)} renvoie \textit{True} si \textit{p} est vide, \textit{False} sinon
+    \item\textit{empiler(p, element)} ajoute \textit{element} au sommet de \textit{p}
+    \item\textit{depiler(p)} retire l'élément au sommet de \textit{p} et le renvoie
+    \item\textit{sommet(p)} renvoie l'élément au sommet de \textit{p} sans le retirer de \textit{p}
+    \item\textit{taille(p)} renvoie le nombre d'éléments de \textit{p}
+\end{itemize}
+
+\tabularnewline\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+
+La fonction \textit{reduire\_triplet\_au\_sommet} permet de supprimer l'élément central des trois premiers éléments en partant du haut de la pile, si l'élément du bas et du haut sont de même parité. Les éléments dépilés et non supprimés sont replacés dans le bon ordre dans la pile.\\
+
+\question[1]  Recopier et compléter sur la copie le code de la fonction \textit{reduire\_triplet\_au\_sommet} prenant une pile \textit{p} en paramètre et qui la modifie en place. Cette fonction ne renvoie donc rien.
+
+\begin{lstlisting}[language=Python]
+def reduire_triplet_au_sommet(p):
+    a = depiler(p)
+    b = depiler(p)
+    c = sommet(p)
+    if a % 2 != c % 2:
+        empiler(p, ...)
+    empiler(p, ...)
+\end{lstlisting}
+
+\vspace{0.5cm}
+
+On se propose maintenant d'écrire une fonction \textit{parcourir\_pile\_en\_reduisant} qui parcourt la pile du haut vers le bas en procédant aux réductions pour chaque triplet rencontré quand cela est possible.
+
+\question[3] Reduction de la pile
+\begin{parts}
+    \part Donner la taille minimale que doit avoir une pile pour être réductible.
+    \part Recopier et compléter le code suivant sur la copie :
+\begin{lstlisting}[language=Python]
+def parcourir_pile_en_reduisant(p):
+    q = creer_pile_vide()
+    while taille(p) >= ....:
+        reduire_triplet_au_sommet(p)
+        e = depiler(p)
+        empiler(..., e)
+    while not est_vide(q):
+        .............
+        .............
+    return p
+\end{lstlisting}
+\end{parts}
+
+\vspace{0.5cm}
+
+\question[1] Écrire une fonction \textit{est\_gagnant(pile\_finale)} qui prend en paramètre la pile finale (obtenue après la réduction complète) et renvoie True si la partie est gagnante et False sinon.
+
+On considère l'algorithme suivant (qui réalise la réduction complète de la pile) :
+\begin{lstlisting}[language=Python]
+def copier_pile(p):
+    # Fonction auxiliaire pour copier une pile dans une nouvelle pile (q)
+    temp = creer_pile_vide()
+    q = creer_pile_vide()
+    while not est_vide(p):
+        e = depiler(p)
+        empiler(temp, e)
+    while not est_vide(temp):
+        e = depiler(temp)
+        empiler(p, e)
+        empiler(q, e)
+    return q
+
+def jouer(p):
+    q = copier_pile(p) # q est la copie de p avant le parcours
+    p = parcourir_pile_en_reduisant(p)
+    while taille(p) != taille(q):
+        q = copier_pile(p)
+        p = parcourir_pile_en_reduisant(p)
+    return p
+\end{lstlisting}
+
+\question[1] Si la pile initiale est p (du haut vers le bas : 4, 5, 4, 9, 2, 0), que renvoie \textit{taille(jouer(p))} ?
+
+\end{questions}
+
+\end{document}
+

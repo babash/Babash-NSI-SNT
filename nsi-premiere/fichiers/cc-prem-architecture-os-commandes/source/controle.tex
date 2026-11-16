@@ -1,0 +1,216 @@
+\documentclass[noanswers, addpoints, 12pt]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+
+% --- Configuration de la syntaxe Python ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\title{Évaluation NSI - Architecture, OS et Système Linux}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Avril 2026, Durée: 1h30}
+
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+La clarté de la rédaction et les explications font partie intégrante de la notation. 
+Pour les questions demandant du code, respectez la syntaxe Python. 
+\end{center}
+}}
+\end{center}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{questions}
+
+% --- SECTION 1 : ARCHITECTURE (2 points) ---
+\section{Architecture Matérielle (2 points)}
+
+\question[2] Complétez le tableau suivant en donnant la signification de l'acronyme et son rôle principal au sein de l'ordinateur :
+
+\begin{center}
+\renewcommand{\arraystretch}{2}
+\begin{tabular}{|c|p{5cm}|p{7cm}|}
+\hline
+\textbf{Acronyme} & \textbf{Nom complet (Français ou Anglais)} & \textbf{Rôle principal} \\ \hline
+CPU & & \\ \hline
+GPU & & \\ \hline
+RAM & & \\ \hline
+ROM & & \\ \hline
+\end{tabular}
+\end{center}
+
+
+% --- SECTION 2 : UNITÉS ET STOCKAGE (3 points) ---
+\section{Unités et Stockage (3 points)}
+
+\question[1] Pour le même prix et des performances équivalentes par ailleurs dans le commerce vaut-il mieux acheter une clé USB de 250Mbits ou une clé de 5Go. Vous justifierez par le calcul.
+
+\question[2] On dispose d'un disque dur externe d'une capacité de \textbf{2 téra-octets (To)}.
+\begin{parts}
+    \part Combien de films pesant chacun \textbf{1 Go} peut-on stocker sur ce disque ? (Détaillez le calcul).
+    \part On souhaite copier l'intégralité de ces films sur un autre serveur. Sachant que la vitesse d'écriture réelle du disque est de \textbf{20 Mo/s}, combien de temps faudra-t-il pour transférer \textbf{1 Go} de données ?
+\end{parts}
+
+
+% --- SECTION 3 : SYSTÈME D'EXPLOITATION (5 points) ---
+\section{Système d'Exploitation (5 points)}
+
+\question[2] Citez et expliquez brièvement les 4 rôles majeurs d'un Système d'Exploitation (OS) vus en cours.
+
+\question[3] \textbf{Logiciel Libre vs Propriétaire :} 
+\begin{parts}
+    \part Quelle est la différence fondamentale concernant l'accès au "code source" entre un logiciel libre et un logiciel propriétaire ?
+    \part Citez un exemple de système d'exploitation \textbf{libre} et un exemple de système \textbf{propriétaire}.
+\end{parts}
+
+
+% --- SECTION 4 : LINUX ET COMMANDES (10 points) ---
+\section{Manipulation du Système Avalon (10 points)}
+
+\begin{tcolorbox}[colback=white, colframe=black!75, title=Arborescence du serveur Avalon]
+\centering
+\begin{tikzpicture}[
+    every node/.style={draw, rounded corners, fill=blue!5, font=\footnotesize, minimum width=2.2cm},
+    edge from parent/.style={draw, -stealth, thick},
+    level 1/.style={sibling distance=5cm, level distance=1.5cm},
+    level 2/.style={sibling distance=2.5cm, level distance=1.5cm},
+    level 3/.style={sibling distance=2.5cm, level distance=1.5cm}
+]
+\node {/ (racine)} 
+    child {node {bin/ (D)}
+        child {node {ls (F)}}
+        child {node {cp (F)}}
+    }
+    child {node {home/ (D)}
+        child {node {ghost/ (D)}
+            child {node {note.txt (F)}}
+            child {node {scripts/ (D)}
+                child {node {test.sh (F)}}
+            }
+        }
+        child {node {admin/ (D)}}
+    }
+    child {node {var/ (D)}
+        child {node {log/ (D)}
+            child {node {sys.log (F)}}
+        }
+    };
+\end{tikzpicture}
+\par\medskip
+\small{\textbf{(D)} : Dossier \quad \textbf{(F)} : Fichier}
+\end{tcolorbox}
+
+\question[2] \textbf{Navigation :}
+\begin{parts}
+    \part Quelle commande permet d'afficher le chemin absolu du répertoire où l'on se trouve ? 
+    \part Écrire la commande (chemin relatif) pour aller du dossier \texttt{bin} vers le dossier \texttt{admin}. \\
+\end{parts}
+
+\question[4] \textbf{Gestion de fichiers :} 
+Écrire les commandes permettant de réaliser les actions suivantes depuis \texttt{/home/admin} :
+\begin{parts}
+    \part Créer un dossier nommé \texttt{credentials}.
+    \part Déplacer le fichier \texttt{note.txt} dans le dossier \texttt{credentials}.
+    \part Afficher le contenu du fichier \texttt{sys.log} (sans quitter votre répertoire).
+    \part Supprimer le fichier \texttt{cp}.
+\end{parts}
+
+\question[4] \textbf{Droits d'accès (chmod) :} 
+On observe le fichier \texttt{test.sh} avec la commande \texttt{ls -l} : \\
+\texttt{-rw-r--r-- 1 ghost users 1024 test.sh}
+
+\begin{parts}
+    \part Un utilisateur appartenant au groupe \texttt{users} peut-il exécuter ce script ? Justifiez.
+    \part Donnez la valeur \textbf{octale} correspondant aux droits \texttt{rw-r--r--}.
+    \part Donnez la commande permettant d'ajouter le droit d'écriture au groupe et aux "autres" (others)en mode symbolique.
+\end{parts}
+
+% --- SECTION BONUS : PYTHON (2 points) ---
+\section{Bonus : Interprétation d'erreurs Python (2 points)}
+
+\question[2] Pour chaque code ci-dessous, un message d'erreur est généré. Expliquez pourquoi cette erreur survient et proposez une correction du code.
+
+\begin{lstlisting}[language=Python]
+notes = [12, 15, 18]
+for i in range(4):
+    print(notes[i])
+\end{lstlisting}
+\begin{tcolorbox}[colback=red!5,colframe=red!75,title=Terminal Python, fonttitle=\bfseries]
+\texttt{\color{red}IndexError: list index out of range}
+\end{tcolorbox}
+
+\begin{lstlisting}[language=Python]
+age = input("Quel est votre âge ? ")
+if age >= 18:
+    print("Majeur")
+else:
+    print("Mineur")
+\end{lstlisting}
+\begin{tcolorbox}[colback=red!5,colframe=red!75,title=Terminal Python, fonttitle=\bfseries]
+\texttt{\color{red}TypeError: '>=' not supported between instances of 'str' and 'int'}
+\end{tcolorbox}
+
+\begin{lstlisting}[language=Python]
+def calcul(a, b):
+    return a / b
+
+print(calcul(10, 0))
+\end{lstlisting}
+\begin{tcolorbox}[colback=red!5,colframe=red!75,title=Terminal Python, fonttitle=\bfseries]
+\texttt{\color{red}ZeroDivisionError: division by zero}
+\end{tcolorbox}
+
+\begin{lstlisting}[language=Python]
+inventaire = {"pommes": 5, "bananes": 2}
+print(inventaire["poires"])
+\end{lstlisting}
+\begin{tcolorbox}[colback=red!5,colframe=red!75,title=Terminal Python, fonttitle=\bfseries]
+\texttt{\color{red}KeyError: 'poires'}
+\end{tcolorbox}
+
+
+\end{questions}
+
+\end{document}

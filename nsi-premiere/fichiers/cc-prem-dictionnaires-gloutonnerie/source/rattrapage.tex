@@ -1,0 +1,189 @@
+\documentclass[noanswers, addpoints, 12pt]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{eurosym}
+
+% Configuration de la coloration syntaxique
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\title{\vspace{-2cm}Examen Première NSI (Rattrapage) - Types construits et gloutonnerie}
+
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{Nom : \\  Prénom :\\ Classe :}{}{}
+\vspace{-3cm}
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+La clarté de la rédaction et les explications font partie intégrante de la notation. 
+Pour les questions demandant du code, respectez la syntaxe Python. 
+\end{center}
+}}
+\end{center}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{questions}
+
+% --- EXERCICE 1 : STRUCTURES ET DICTIONNAIRES (9,5 points) ---
+\question \textbf{Maîtrise des types construits}
+
+\begin{parts}
+    \part[2] Pour chaque besoin, indiquez la structure (\textbf{Liste} ou \textbf{Dictionnaire}) la plus adaptée. Justifiez (0,5 pt par réponse). 
+    \begin{itemize}
+        \item Gérer le carnet d'adresses d'un téléphone (nom de contact $\rightarrow$ numéro) : \dotfill\\
+        Justification : \dotfill 
+        \item Enregistrer le classement des 10 meilleurs scores d'un jeu (du 1er au 10ème) : \dotfill\\
+        Justification : \dotfill
+        \item Associer des codes d'erreurs (404, 500) à leur message de description : \dotfill\\
+        Justification : \dotfill
+        \item Historique des pages web visitées dans l'ordre chronologique : \dotfill\\
+        Justification : \dotfill
+    \end{itemize}
+
+    \part[1] \textbf{Création :} Écrivez une instruction Python pour créer un dictionnaire nommé \texttt{vaisseau} possédant deux clés : \texttt{"modele"} (valeur "X-Wing") et \texttt{"energie"} (valeur 80). \\
+    .\dotfill
+
+    \part[1] \textbf{Accès :} Soit \texttt{prix = \{"Pomme": 1.5, "Banane": 2.1\}}. 
+    Écrivez l'instruction pour récupérer le prix de la "Banane" dans une variable \texttt{p}. \\
+    .\dotfill
+
+    \part[1] \textbf{Modification :} Écrivez l'instruction pour modifier le prix de la "Pomme" à 1.8 dans le dictionnaire précédent.\\
+    .\dotfill
+
+    \part[1] \textbf{Recherche :} Écrivez une instruction permettant de tester si la clé \texttt{"Cerise"} est présente dans \texttt{prix} (doit renvoyer un booléen).\\
+    .\dotfill
+
+    \part[\half] \textbf{Analyse de boucle :} Soit le code suivant : 
+        \begin{lstlisting}[language=Python]
+for v in prix.values():
+    print(v)\end{lstlisting}
+        Quelle catégorie d'informations (les noms des fruits, les prix ou les deux) sera affichée ?\dotfill
+    
+    \part[1] \textbf{Analyse de boucle :} On souhaite afficher chaque fruit suivi de son prix. 
+    Complétez la ligne manquante :
+    \begin{lstlisting}[language=Python]
+for fruit, valeur in ................................... :
+    print(fruit, "coûte", valeur)\end{lstlisting}
+
+    \part[\half] \textbf{Analyse de boucle :} Si on utilise la boucle \texttt{for k in prix.keys():}, que contiendra la variable \texttt{k} au premier tour de boucle ? \\
+    .\dotfill
+
+   \part[2] \textbf{Parcours :} Écrivez un script (boucle \texttt{for}) qui parcourt le dictionnaire \texttt{prix} et affiche uniquement le nom des fruits dont le prix est $> 2.0$.\\
+    .\dotfill\\
+    .\dotfill\\
+    .\dotfill
+\end{parts}
+
+\vspace{0.4cm}
+
+% --- EXERCICE 2 : STRUCTURES COMPOSITES (3 points) ---
+\question \textbf{Gestion d'une flotte de véhicules} 
+\begin{lstlisting}
+garage = [
+    {"marque": "Renault", "km": 45000, "etat": "neuf"},
+    {"marque": "Peugeot", "km": 120000, "etat": "occasion"},
+    {"marque": "Tesla", "km": 5000, "etat": "neuf"}
+]
+\end{lstlisting}
+
+\begin{parts}
+    \part[1] Quelle instruction permet d'accéder au \textbf{kilométrage} de la Tesla ? (3ème élément)\\
+    .\dotfill
+    
+    \part[1] \textbf{Utilisation de len() :}\\ Que renvoie l'instruction : \texttt{len(garage)} ?\dotfill\\
+    Justification : \dotfill 
+    
+    \part[2] Complétez la fonction ci-dessous pour qu'elle renvoie le kilométrage moyen des véhicules d'un certain \textit{etat}. 
+\begin{lstlisting}
+def moyenne_km(liste_voitures, etat_voulu):
+    total_km = 0
+    compteur = 0
+    for voiture in ......................... :
+        if voiture["etat"] == etat_voulu:
+            total_km = total_km + .........................
+            compteur = compteur + 1
+    return total_km / compteur
+\end{lstlisting}
+\end{parts}
+
+% --- EXERCICE 3 : ALGORITHMES GLOUTONS (7,5 points) ---
+\question \textbf{Le problème du cambrioleur (Sac à dos)}
+
+Un cambrioleur possède un sac pouvant transporter au maximum \textbf{10 kg}. 
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+Objet & Console & Tablette & Statuette & Caméra \\ \hline
+Poids (kg) & 5 & 2 & 7 & 3 \\ \hline
+Valeur (\euro) & 300 & 400 & 700 & 450 \\ \hline
+\end{tabular}
+\end{center}
+
+\begin{parts}
+    \part[1] \textbf{Analyse d'erreur :} Un élève tape \texttt{print(objet[0])} pour voir le nom "Console". Pourquoi est-ce correct si \texttt{objet} est une liste, mais poserait problème si c'était un dictionnaire ? \\
+    .\dotfill
+
+    \part[1] \textbf{Stratégie 1 :} En choisissant la "plus grande valeur d'abord" (\textit{Capacité : 10 kg}), quels objets sont pris et quelle est la valeur totale ?\\
+    .\dotfill
+
+    \part[1] \textbf{Stratégie 2 :} Calculez les ratios (Valeur/Poids) de la Tablette et de la Caméra. Laquelle est prioritaire selon cette stratégie ? \\
+    .\dotfill
+
+    \part[1] Trouvez une combinaison d'objets (respectant les \textbf{10 kg}) qui rapporte plus que la Stratégie 1. Justifiez.\\
+    .\dotfill
+
+    \part[2] \textbf{Synthèse :} Complétez avec : \textit{rapide, local, optimal, globale}.  \\
+    L'algorithme glouton est une méthode ......................... car il ne revient jamais sur ses pas. À chaque étape, il fait le meilleur choix ......................... . Cependant, ce choix ne garantit pas d'obtenir une solution ......................... ......................... .
+\end{parts}
+
+\end{questions}
+
+\begin{center}
+    \rule{0.5\textwidth}{0.4pt}\\
+    \footnotesize Fin de l'énoncé de rattrapage.
+\end{center}
+
+\end{document}

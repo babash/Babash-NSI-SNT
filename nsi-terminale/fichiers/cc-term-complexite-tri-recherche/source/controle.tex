@@ -1,0 +1,212 @@
+\documentclass[noanswers, addpoints, 12pt]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% Configuration de la coloration syntaxique (style du document joint)
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\title{\vspace{-2cm}Examen Term NSI - Tri, recherche et complexité}
+
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{Nom : \\  Prénom :\\ Classe :}{}{}
+\vspace{-3cm}
+
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+La clarté de la rédaction et les explications font partie intégrante de la notation. Pour les questions demandant du code, respectez la syntaxe Python et soyez attentifs aux détails.
+\end{center}
+
+
+}}
+\end{center}
+
+\vsword{Note}
+\hsword{Note}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{questions}
+
+% --- COMPLEXITÉ THÉORIQUE ---
+\question \textbf{Complexité et acceptabilité}
+\begin{parts}
+    \part[2] Classez par ordre croissant d'efficacité : $O(n^2)$, $O(1)$, $O(n \log n)$, $O(n)$, $O(2^n)$, $O(\log n)$.
+    \fillwithdottedlines{1cm}
+    \part[1] Un algorithme de tri fusion ($O(n \log n)$) met 1ms pour trier 1000 éléments. Si on passe à $10^6$ éléments, le temps devient-il "infini" (plusieurs jours) ou reste-t-il de l'ordre de quelques secondes ? Justifiez intuitivement.
+    \fillwithdottedlines{1.5cm}
+\end{parts}
+
+% --- QUESTION RELIER (CONSERVÉE) ---
+\question[2\half] \textbf{Principes de fonctionnement} 
+Reliez chaque algorithme à la description qui correspond à son principe fondamental :
+\begin{center}
+\begin{tabular}{r c l}
+Recherche linéaire $\bullet$ & & $\bullet$ Diviser pour régner : trier deux moitiés puis les réunir. \\
+Recherche dichotomique $\bullet$ & & $\bullet$ Insérer la valeur actuelle à sa place dans la partie triée. \\
+Tri par insertion $\bullet$ & & $\bullet$ Parcourir un par un tous les éléments. \\
+Tri par sélection $\bullet$ & & $\bullet$ Diviser l'espace de recherche par deux à chaque étape. \\
+Tri fusion $\bullet$ & & $\bullet$ Chercher le plus petit élément pour le placer au début. \\
+\end{tabular}
+\end{center}
+
+\question[2\half] Donner la classe de complexité de chacun des algorithmes suivants \\
+\begin{itemize}
+    \item Recherche linéaire: $O$(\dotfill) Recherche dichotomique: $O$(\dotfill)
+    \item Tri par insertion: $O$(\dotfill) Tri par sélection: $O$(\dotfill) Tri fusion: $O$(\dotfill)
+\end{itemize}
+
+\newpage
+
+% --- QUESTION CODES (CONSERVÉE & OPTIMISÉE) ---
+\question[2\half] \textbf{Identification de code} \\
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily, title={Code A}]
+while g <= d:
+    m = (g + d) // 2
+    if t[m] == v:
+        return m
+    elif t[m] < v:
+        g = m + 1
+    else:
+        d = m - 1
+\end{lstlisting}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily, title={Code B}]
+for i in range(1, len(t)):
+    k = t[i]
+    j = i - 1
+    while j >= 0 and t[j] > k:
+        t[j+1] = t[j]
+        j -= 1
+    t[j+1] = k
+\end{lstlisting}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily, title={Code C}]
+for i in range(len(t)):
+    if t[i] == v:
+        return i
+\end{lstlisting}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily, title={Code D}]
+for i in range(len(t)-1):
+    m = i
+    for j in range(i+1, len(t)):
+        if t[j] < t[m]: m = j
+    t[i], t[m] = t[m], t[i]
+\end{lstlisting}
+\begin{lstlisting}[basicstyle=\scriptsize\ttfamily, title={Code E}]
+if len(t) <= 1:
+    return t
+m = len(t) // 2
+g = tri(t[:m])
+d = tri(t[m:])
+return fusion(g, d)
+\end{lstlisting}
+\end{minipage}
+
+Attribuez à chaque bloc de code Python l'algorithme correspondant :
+\textit{Recherche linéaire, Recherche dichotomique, Tri par insertion, Tri par sélection et Tri fusion}
+\begin{itemize}
+    \item A:\dotfill B:\dotfill
+    \item C:\dotfill D:\dotfill
+    \item E:\dotfill
+\end{itemize}
+
+% --- ANALYSE DE CODE & COMPLEXITÉ (MUTUALISATION) ---
+\question \textbf{Analyse de la recherche}
+\begin{parts}
+    \part[1] Quelle condition obligatoire le tableau \texttt{t} doit-il respecter pour que la \textbf{Recherche dichotomique} fonctionne ? \fillwithdottedlines{0.8cm}
+    \part[1] On exécute un \textbf{algorithme de recherche dichotomique} avec \texttt{t = [2, 5, 8, 12, 18]} et \texttt{v = 12}. Donnez les valeurs successives de la variable \texttt{m}. \\
+    \fillwithdottedlines{0.8cm}
+    \part[2] Si le tableau contient $n = 1\ 000\ 000$ éléments, quel est le nombre maximum de comparaisons pour : \\
+    \textit{Aide :} $log_2(250\ 000)\approx18$\\
+    - La \textbf{Recherche linéaire} (Pire cas) : \dotfill \\
+    - La \textbf{Recherche dichotomique} (Pire cas, environ) : \dotfill
+\end{parts}
+
+\newpage
+
+% --- PARTIE 6 : FOCUS TRI PAR INSERTION (6.5 points) ---
+
+\question \textbf{Étude approfondie du Tri par Insertion} \\
+On s'appuie sur le \textbf{Code B} vu précédemment pour répondre aux questions suivantes.
+
+\begin{parts}
+    \part[1\half] \textbf{Déroulé de l'algorithme} : Soit le tableau \texttt{t = [7, 2, 5, 3]}. 
+    Donnez l'état du tableau après chaque itération de la boucle externe \texttt{for i} :
+    \begin{itemize}
+        \item État initial : \texttt{[7, 2, 5, 3]}
+        \item Fin itération $i=1$ : \dotfill
+        \item Fin itération $i=2$ : \dotfill
+        \item Fin itération $i=3$ : \dotfill
+    \end{itemize}
+
+    \part[1] \textbf{Invariant de boucle} : Parmi les propositions suivantes, laquelle est l'invariant de la boucle \texttt{for} ? (Cochez la bonne réponse)
+    \begin{checkboxes}
+        \choice À l'étape $i$, les $i$ derniers éléments sont les plus grands du tableau.
+        \choice À l'étape $i$, la tranche \texttt{t[0...i]} contient les mêmes éléments qu'au départ, mais triés.
+        \choice À l'étape $i$, l'élément \texttt{t[i]} est à sa place définitive dans le tableau.
+    \end{checkboxes}
+
+    \part\textbf{Analyse des performances} : 
+    \begin{subparts}
+        \subpart[1] Quel est le \textbf{meilleur des cas} pour ce tri (quel type de liste) ? Quelle est alors sa complexité ?
+        \fillwithdottedlines{1cm}
+        
+        \subpart[1] Quel est le \textbf{pire des cas} pour ce tri ? Quelle est alors sa complexité ?
+        \fillwithdottedlines{1cm}
+        
+        \subpart[1] Pourquoi dit-on que cet algorithme est "efficace" sur une liste presque triée par rapport au tri par sélection ? 
+        \fillwithdottedlines{1.2cm}
+    \end{subparts}
+\end{parts}
+\end{questions}
+
+\end{document}

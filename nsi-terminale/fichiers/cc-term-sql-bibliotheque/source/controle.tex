@@ -1,0 +1,232 @@
+\documentclass[noanswers, addpoints, 12pt]{exam}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{minted}
+\usepackage{eurosym}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.multipart, arrows.meta, shadows}
+
+\newcommand{\sql}[1] {\textsc{#1}}
+
+% Configuration TikZ pour le schéma relationnel
+\tikzset{
+    table/.style={
+        draw, rectangle split, rectangle split parts=2,
+        rounded corners, fill=gray!5, drop shadow,
+        align=left, font=\small\sffamily, minimum width=3.5cm
+    }
+}
+
+\title{CC Term NSI - SQL : Gestion d'une Bibliothèque}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Février 2026, Durée: 1h}
+
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{Nom : \\  Prénom :\\ Classe :}{}{}
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+Le devoir est à rédiger directement sur le sujet.\\
+Toute tentative ou suspicion de triche sera sanctionnée d'un zéro.\\
+La calculatrice ou tout autre appareil électronique n'est pas autorisée.\\
+Le langage SQL n'est pas sensible à la casse, mais on utilisera les majuscules pour les mots-clés.\\
+Chaque instruction doit être terminée par un point-virgule.
+\end{center}
+}}
+\end{center}
+
+\section*{Modèle relationnel :}
+
+\noindent Le système repose sur trois relations (tables) :
+
+\begin{itemize}
+    \item \textbf{Auteur} (\underline{id\_auteur}, nom, prenom, nationalite)
+    \item \textbf{Livre} (\underline{id\_livre}, titre, genre, prix, \textit{\#id\_auteur})
+    \item \textbf{Emprunt} (\underline{id\_emprunt}, date\_emprunt, nom\_emprunteur, \textit{\#id\_livre})
+\end{itemize}
+\vfill
+\begin{center}
+\begin{tikzpicture}[node distance=1.5cm and 2cm, >=Stealth, scale=0.9, every node/.style={transform shape}]
+    % Table AUTEUR
+    \node[table] (auteur) { 
+        \textbf{AUTEUR} 
+        \nodepart{second} 
+        \underline{id\_auteur} : INT\\ 
+        nom : TEXT \\ 
+        prenom : TEXT \\ 
+        nationalite : TEXT 
+    };
+
+    % Table LIVRE
+    \node[table, right=of auteur] (livre) { 
+        \textbf{LIVRE} 
+        \nodepart{second} 
+        \underline{id\_livre} : INT\\ 
+        titre : TEXT \\ 
+        genre : TEXT \\ 
+        prix : FLOAT \\ 
+        \#id\_auteur : INT 
+    };
+
+    % Table EMPRUNT
+    \node[table, right=of livre] (emprunt) { 
+        \textbf{EMPRUNT} 
+        \nodepart{second} 
+        \underline{id\_emprunt} : INT\\ 
+        date\_emprunt : TEXT \\ 
+        nom\_emprunteur : TEXT \\ 
+        \#id\_livre : INT 
+    };
+
+    % Flèches précises des attributs FK vers PK
+    % De Livre.#id_auteur (dernière ligne) vers Auteur.id_auteur (première ligne)
+    \draw[->, thick, black] ([yshift=-2.9cm]livre.north west) -- ++(-0.6,0) |- ([yshift=-0.8cm]auteur.north east);
+    
+    % De Emprunt.#id_livre (dernière ligne) vers Livre.id_livre (première ligne)
+    \draw[->, thick, black] ([yshift=-2.4cm]emprunt.north west) -- ++(-0.6,0) |- ([yshift=-0.8cm]livre.north east);
+
+\end{tikzpicture}
+\end{center}
+\vfill
+\newpage
+
+\section{Partie 1 : QCM (7 points)}
+\textit{Choisir la bonne réponse pour chaque situation.}
+
+\begin{questions}
+
+\question[1] Quelle requête permet d'ajouter l'auteur "Victor Hugo" ?
+\begin{choices}
+    \choice \begin{minted}{sql}
+INSERT INTO Auteur VALUES (1, 'Hugo', 'Victor', 'France');
+\end{minted}
+    \choice \begin{minted}{sql}
+UPDATE Auteur SET nom='Hugo' WHERE prenom='Victor';
+\end{minted}
+    \choice \begin{minted}{sql}
+CREATE Auteur (1, 'Hugo', 'Victor', 'France');
+\end{minted}
+\end{choices}
+
+\question[1] On souhaite supprimer l'emprunt dont l'id est 102.
+\begin{choices}
+    \choice \begin{minted}{sql}
+DROP FROM Emprunt WHERE id_emprunt = 102;
+\end{minted}
+    \choice \begin{minted}{sql}
+DELETE FROM Emprunt WHERE id_emprunt = 102;
+\end{minted}
+    \choice \begin{minted}{sql}
+UPDATE Emprunt DELETE WHERE id_emprunt = 102;
+\end{minted}
+\end{choices}
+
+\question[1] Comment supprimer totalement la structure de la table \texttt{Emprunt} ?
+\begin{choices}
+    \choice \begin{minted}{sql}
+DELETE TABLE Emprunt;
+\end{minted}
+    \choice \begin{minted}{sql}
+REMOVE TABLE Emprunt;
+\end{minted}
+    \choice \begin{minted}{sql}
+DROP TABLE Emprunt;
+\end{minted}
+\end{choices}
+
+\question[1] Quelle requête modifie le prix du livre n°50 pour le passer à 12.50 ?
+\begin{choices}
+    \choice \begin{minted}{sql}
+UPDATE Livre SET prix = 12.50 WHERE id_livre = 50;
+\end{minted}
+    \choice \begin{minted}{sql}
+INSERT INTO Livre (prix) VALUES (12.50) WHERE id_livre = 50;
+\end{minted}
+    \choice \begin{minted}{sql}
+SET prix = 12.50 FROM Livre WHERE id_livre = 50;
+\end{minted}
+\end{choices}
+
+\question[1] Pour sélectionner les livres dont le genre est 'BD' ou 'Manga' :
+\begin{choices}
+    \choice \begin{minted}{sql}
+WHERE genre IN ('BD', 'Manga');
+\end{minted}
+    \choice \begin{minted}{sql}
+WHERE genre = 'BD' AND genre = 'Manga';
+\end{minted}
+    \choice \begin{minted}{sql}
+WHERE genre LIKE 'BD' 'Manga';
+\end{minted}
+\end{choices}
+
+\question[1] Quelle fonction permet de calculer la moyenne des prix des livres ?
+\begin{choices}
+    \choice \begin{minted}{sql}
+SUM(prix)
+\end{minted}
+    \choice \begin{minted}{sql}
+AVG(prix)
+\end{minted}
+    \choice \begin{minted}{sql}
+COUNT(prix)
+\end{minted}
+\end{choices}
+
+\question[1] Comment obtenir seulement les 3 livres les moins chers ?
+\begin{choices}
+    \choice \begin{minted}{sql}
+ORDER BY prix ASC LIMIT 3;
+\end{minted}
+    \choice \begin{minted}{sql}
+ORDER BY prix DESC LIMIT 3;
+\end{minted}
+    \choice \begin{minted}{sql}
+SELECT 3 FROM Livre ORDER BY prix;
+\end{minted}
+\end{choices}
+
+\newpage
+
+\section{Partie 2 : Rédaction de requêtes (14 points)}
+\textit{Dans cette partie, rédigez les requêtes correspondant aux demandes formulées. Des points peuvent être attribués pour des requêtes non-fonctionnelles mais partiellement juste.}
+
+\question[2] Écrire la requête permettant de créer la table \textbf{Emprunt} en respectant le modèle fourni (types et clés primaire et étrangère).
+\vspace{4cm}
+
+\question[2] Donner la requête permettant de lister uniquement les titres de tous les livres.
+\vfill
+
+\question[2] Donner la requête permettant d'afficher les titres des livres dont le genre est 'Roman' et dont le prix est strictement supérieur à 20 €. 
+\vfill
+
+\question[2] Écrire la requête permettant de connaître le nombre total d'enregistrements dans la table \textbf{Emprunt}. 
+\vfill
+
+\question[2] Écrire la requête permettant d'afficher le titre du livre et le nom de l'auteur de chaque ouvrage ayant un prix supérieur à 50 €. 
+\vspace{3cm}
+
+
+\question[2] Donner la requête permettant de sélectionner les titres des livres qui contiennent le mot "Secret" dans leur titre.
+\vfill
+
+\question[2] Écrire la requête affichant toutes les informations des livres, triés par ordre alphabétique des titres. 
+\vfill
+
+\end{questions}
+\end{document}

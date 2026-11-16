@@ -1,0 +1,263 @@
+\documentclass[noanswers, addpoints, 12pt]{exam}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta,shadows}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+\usepackage{minted}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\title{CC Term NSI - Graphes, Architecture matérielle et OS}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Mai 2025, Durée: 2h}
+
+
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{Nom : \\  Prénom :\\ Classe :}{}{}
+
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+Le devoir est à rédiger sur une feuille libre, à l'exception des zones à compléter.\\
+La clarté de la rédaction et les explications font partie intégrante de la notation. Une réponse non rédigée sans explication sera considérée fausse.\\
+Prenez le temps d'encadrer les réponses.
+\end{center}
+
+
+}}
+\end{center}
+
+\vsword{Note}
+\hsword{Note}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+
+\section{Graphes}
+\textit{Cet exercice porte sur les graphes}
+\vfill
+Dans cet exercice, on modélise un groupe de personnes à l'aide d'un graphe.
+
+Le groupe est constitué de huit personnes (Anas, Emma, Gabriel, Jade, Lou, Milo,
+Nina et Yanis) qui possèdent entre elles les relations suivantes :
+\begin{itemize}
+    \item Gabriel est ami avec Jade, Yanis, Nina et Milo ;
+    \item Jade est amie avec Gabriel, Yanis, Emma et Lou ;
+    \item Yanis est ami avec Gabriel, Jade, Emma, Nina, Milo et Anas ;
+    \item Emma est amie avec Jade, Yanis et Nina ;
+    \item Nina est amie avec Gabriel, Yanis et Emma ;
+    \item Milo est ami avec Gabriel, Yanis et Anas ;
+    \item Anas est ami avec Yanis et Milo ;
+    \item Lou est amie avec Jade.
+\end{itemize}
+
+On choisit de représenter cette situation par un graphe dont les sommets sont les personnes et les arêtes représentent les liens d'amitié.
+
+\begin{questions} 
+
+\question[1] Dessiner sur votre copie ce graphe en représentant chaque personne par la première lettre de son prénom entourée d'un cercle et où un lien d'amitié est représenté par un trait entre deux personnes.
+
+\subsection{Matrice d'adjacence}
+
+\question[5] Dans cette partie le graphe est représenté par une Matrice d'adjacence.
+\begin{parts}
+
+\part (1 point) Compléter l'implémentation de la déclaration de la matrice d'adjacence du graphe.
+\begin{lstlisting}[language=Python]
+# sommets : G, J, Y, E, N, M, A, L
+matrice_adj = [[0, 1, 1, 0, 1, 1, 0, 0], # G
+               [..................................], # J
+               [..................................], # Y
+               [..................................], # E
+               [..................................], # N
+               [..................................], # M
+               [..................................], # A
+               [..................................]] # L
+\end{lstlisting}
+
+On dispose de la liste suivante qui identifie les sommets du graphe :
+$$sommets = ['G', 'J', 'Y', 'E', 'N', 'M', 'A', 'L']$$
+On dispose d'une fonction $position(l, s)$ qui prend en paramètres une liste de sommets $l$ et un nom de sommet $s$ et qui renvoie la position du sommet $s$ dans la liste $l$ s'il est présent et $None$ sinon.
+
+\part (1 point) Indiquer quels seront les retours de l'exécution des instructions suivantes :\\
+\begin{lstlisting}[language=Python]
+>>> position(sommets, 'G')
+>>> position(sommets, 'Z')
+\end{lstlisting}
+
+\part (2 points) Compléter le code de la fonction $nb\_amis(L, m, s)$ qui prend en paramètres une liste de noms de sommets $L$, une matrice d'adjacence $m$ d'un graphe et un nom de sommet $s$ et qui renvoie le nombre d'amis du sommet $s$ s'il est présent dans $L$ et $None$ sinon.
+\begin{lstlisting}[language=Python]
+def nb_amis(L, m, s):
+    pos_s = ...
+    if pos_s == None:
+        return ...
+    amis = 0
+    for i in range(len(m)):
+        amis += ...
+    return ...
+\end{lstlisting}
+
+\part (1 point) Indiquer quel est le retour de l'exécution de la commande suivante :\\
+\begin{lstlisting}[language=Python]
+>>> nb_amis(sommets, matrice_adj, 'G')
+\end{lstlisting}
+\end{parts}
+
+\subsection{Dictionnaire de listes d'adjacence}
+
+\question[6] Dans cette partie, le graphe est représenté par un Dictionnaire de listes d'adjacence.\\
+\begin{parts}
+On appelle graphe le dictionnaire de listes d'adjacence associé au graphe des amis.
+On rappelle que Gabriel est ami avec Jade, Yanis, Nina et Milo.
+\begin{lstlisting}[language=Python]
+graphe = {'G' : ['J', 'Y', 'N', 'M'],
+          'J' : [...................],
+          ...}
+\end{lstlisting}
+
+\part (1 point) Recopier et compléter le dictionnaire de listes d'adjacence graphe sur votre copie pour qu'il modélise complètement le groupe d'amis.
+
+\part (2 points) Écrire le code de la fonction $nb\_amis(d, s)$ qui prend en paramètres un dictionnaire d'adjacence $d$ et un nom de sommet $s$ et qui renvoie le nombre d'amis du nom de sommet $s$. On suppose que $s$ est bien dans $d$.
+Par exemple :
+\begin{lstlisting}[language=Python]
+>>> nb_amis(graphe, 'L')
+\end{lstlisting}
+
+\part (1 point) Milo s'est fâché avec Gabriel et Yanis tandis qu'Anas s'est fâché avec Yanis.
+Le dictionnaire d'adjacence du graphe qui modélise cette nouvelle situation est donné
+ci-dessous :
+\begin{lstlisting}[language=Python]
+graphe = {'G' : ['J', 'N'],
+          'J' : ['G', 'Y', 'E', 'L'],
+          'Y' : ['J', 'E', 'N'],
+          'E' : ['J', 'Y', 'N'],
+          'N' : ['G', 'Y', 'E'],
+          'M' : ['A'],
+          'A' : ['M'],
+          'L' : ['J']}
+\end{lstlisting}
+
+Pour établir la liste du cercle d'amis d'un sommet, on 
+utilise un parcours en profondeur du graphe à partir de ce sommet. On appelle cercle d'amis de Nom toute personne atteignable dans le graphe à partir de Nom.
+
+\part (1 point) Donner la liste du cercle d'amis de Lou.
+
+Un algorithme possible de parcours en profondeur de graphe est donné ci-dessous :\\
+
+\begin{verbatim}
+visités = liste vide des sommets déjà visités
+
+fonction parcours_en_profondeur(d, s)
+    ajouter s à la liste visités
+    pour tous les sommets voisins v de s :
+        si v n'est pas dans la liste visités :
+            parcours_en_profondeur(d, v)
+    retourner la liste visités
+\end{verbatim}
+
+
+\part (1 point) Recopier et compléter le code de la fonction $parcours\_en\_profondeur(d, s)$
+qui prend en paramètres un dictionnaire d'adjacence $d$ et un sommet $s$ et qui renvoie la liste des sommets issue du parcours en profondeur du graphe modélisé par $d$ à partir du sommet $s$.
+\begin{lstlisting}[language=Python]
+def parcours_en_profondeur(d, s, visites = []):
+    ...
+    for v in d[s]:
+        ...
+        parcours_en_profondeur(d, v)
+    ...
+\end{lstlisting}
+\end{parts}
+
+\section{Architecture matérielle : }
+
+\question[2] Répondez à chacune des questions ci-dessous en justifiant.
+\begin{parts}
+    \part Quelle est la différence principale entre la ROM et la RAM.
+    \part Quelle unité est utilisée pour évaluer la vitesse de calcul d'un processeur ?
+    \part Expliquer le principe de la loi de Moore.
+    \part De quand date le premier ordinateur personnel (à environ 10 ans près) ?
+\end{parts}
+
+\question[2] Donner le nom du composant d'un ordinateur de bureau qui correspond à chaque description :\\[1ex]
+\begin{center}
+\renewcommand{\arraystretch}{2.1}
+\begin{tabular}{|p{10.5cm}|p{4.5cm}|}
+\hline
+\textit{Description} & \textit{Composant} \\ \hline
+Il brasse l'air pour refroidir l'intérieur du boîtier. & \\ \hline
+Elle transforme le courant du secteur en tensions adaptées aux composants. & \\ \hline
+Il conserve les données même éteint (plateaux magnétiques ou puces). & \\ \hline
+Il lit et grave les disques optiques (CD, DVD). & \\ \hline
+Elle relie tous les composants entre eux. & \\ \hline
+Il exécute les instructions des programmes. & \\ \hline
+Elle garde les données des programmes en cours d'exécution et s'efface à l'extinction. & \\ \hline
+Il abrite et protège l'ensemble des composants. & \\ \hline
+\end{tabular}
+\end{center}
+
+\section{Système d'exploitation}
+
+\question[2] Répondez à chacune des questions ci-dessous en justifiant.
+\begin{parts}
+    \part Citez un système d'exploitation libre.
+    \part Citez 4 systèmes d’exploitation, qu’ils soient pour PC ou mobiles.
+    \part Citez 2 des 4 rôles principaux d'un système d'exploitation.
+    \part Qu'est-ce qu'un DualBoot ?
+\end{parts}
+\vspace{1cm}
+
+\input{figures/fig-filesystem}
+
+\question[3] Que se passe-t-il suite à l'exécution des commandes suivantes, donnez l'explication et le résultat de chaque commande (au départ, nous sommes dans C:):
+\begin{parts}
+    \part pwd
+    \part ls www
+    \part cd Users/Tata
+    \part rm sonImage.png
+    \part cd ..
+    \part mv Tata Toto/ 
+\end{parts}
+    
+
+\end{questions}
+\end{document}

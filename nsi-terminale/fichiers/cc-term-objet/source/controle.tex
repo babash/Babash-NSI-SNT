@@ -1,0 +1,264 @@
+\documentclass[noanswers, addpoints, 12pt]{exam}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta,shadows}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\title{CC Term NSI - Objet}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Octobre 2024, Durée: 1h30}
+
+
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{Nom : \\  Prénom :\\ Classe :}{}{}
+
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+Le devoir est à rédiger sur une feuille libre.\\
+La clarté de la rédaction et les explications font partie intégrante de la notation. Une réponse non rédigée sans explication sera considérée fausse.
+\end{center}
+
+
+}}
+\end{center}
+
+\vsword{Note}
+\hsword{Note}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+\begin{questions}
+
+
+\section{Cours : }
+\question[4] Questions de cours :
+\begin{parts}
+    \part Quels sont les attributs de la classe ci-dessous ? Vous spécifierez pour chacun des attributs son type.
+    \part Quelles sont les méthodes de la classe ci-dessous ?
+    \part Expliquez ce que fait la ligne 6 du code ci-dessous ?
+    \part Que signifie le terme POO ? 
+\end{parts}
+\begin{lstlisting}[language=Python]
+class Eleve:
+    def __init__(self, nom, prenom, notes):
+        self.name = nom
+        self.first_name = prenom
+        for n in notes.values():
+            assert 0 <= n <= 20
+        self.grades = notes
+
+    def moyenne_sans_coeff(self):
+        somme = 0
+        for n in self.grades.values():
+            somme += n
+        return somme/len(self.grades)
+
+    def moyenne_coeff(self, coeff):
+        somme = 0
+        somme_coeff = 0
+        for m, n in self.grades.items():
+            somme += coeff[m] * n
+            somme_coeff += coeff[m]
+        return somme/somme_coeff
+\end{lstlisting}
+
+\section{Travail sur les classes :}
+\question[4] Questions de cours :
+\begin{parts}
+\part Alex Martin a obtenu la note de 18 en NSI, de 15 en Anglais et de 12 en Arabe. Donner l'instruction permettant de créer l'objet correspondant à Alex et de le stocker dans la variable alex.
+
+\part Donner l'instruction permettant de calculer la moyenne sans coefficient d'Alex.
+
+\part Donner l'instruction permettant de calculer la moyenne avec coefficient d'Alex, les coefficients sont de 6 pour la NSI, 3 pour l'anglais et 3 pour l'arabe.
+
+\part Donner l'instruction permettant de modifier la note de NSI d'Alex pour lui ajouter un point.
+\end{parts}
+\question[2] On souhaite créer une méthode meilleure\_note qui retourne la meilleure note d'un élève ainsi que la matière dans laquelle il l'a obtenu. Écrivez le code de cette méthode.
+
+\section{Exercice Type Bac - POO}
+\textit{Cet exercice porte sur la programmation Python, la programmation orientée objet et
+l'algorithmique.}
+
+Une entreprise doit placer des antennes relais le long d'une rue rectiligne. Une antenne relais de portée (ou rayon $p$) couvre toutes les maisons qui sont à une distance inférieure ou égale à $p$ de l'antenne.
+
+Connaissant les positions des maisons dans la rue, l'objectif est de placer les antennes le long de la rue, pour que toutes les maisons soient couvertes, tout en minimisant le nombre d'antennes utilisées.
+
+La rue est représentée par un axe, et les maisons sont représentées par des points sur cet axe :
+
+\begin{figure}[h]
+    \centering
+    \input{figures/fig-rue1}
+    \caption{Deux maisons sur une rue, repérée par leur abscisse : 1 et 3,5}
+    \label{fig:exemple}
+\end{figure}
+
+Les entités manipulées sont modélisées en utilisant la programmation orientée objet.
+\begin{lstlisting}[language=Python]
+class Maison:
+    def __init__(self, position):
+        self._position = position
+    
+    def get_pos_maison(self):
+        return self._position
+
+class Antenne:
+    def __init__(self, position, rayon):
+        self._position = position
+        self._rayon = rayon
+
+    def get_pos_antenne(self):
+        return self._position
+
+    def get_rayon(self):
+        return self._rayon
+\end{lstlisting}
+
+\question[2] Donner le code qui crée et initialise deux variables m1 et m2 avec des instances de la classe Maison situées aux abscisses 1 et 3,5 (Comme sur l'illustration précédente).\\
+
+\hspace{-1cm}On ajoute à présent une antenne ayant un rayon d'action de 1 à la position 2,5 :
+
+\begin{figure}[h]
+    \centering
+    \input{figures/fig-rue2}
+    \caption{L'antenne placée en 2,5 et de rayon d'action 1 couvre la maison en 3,5 mais pas celle en 1}
+    \label{fig:exemple2}
+\end{figure}
+
+\question[1] Donner le code qui crée la variable $a$ correspondant à l'antenne à la position 2,5
+avec le rayon d'action 1.\\
+
+\pagebreak
+On souhaite modéliser une rue par une liste d'objets de type Maison. Cette liste sera construite à partir d'une autre liste contenant des nombres correspondant aux positions des maisons. La fonction creation\_rue réalise ce travail. Elle prend en paramètre une liste de positions et renvoie une liste d'objets de type Maison.\\
+
+\question[1] Recopier le schéma Figure~\ref{fig:Q4} et le compléter pour donner une représentation graphique de la situation créée par :
+\begin{lstlisting}[language=Python]
+creation_rue([0, 2, 3, 4, 5, 7, 9, 10.5, 11.5])
+\end{lstlisting}
+\vfill
+\begin{figure}[h]
+    \centering
+    \input{figures/fig-axe}
+    \caption{Axe pour représenter le problème avec 9 maisons}
+    \label{fig:Q4}
+\end{figure}
+
+\vfill
+\question[2] Compléter le code donné ci-dessous de la fonction creation\_rue.
+\begin{lstlisting}[language=Python]
+def creation_rue(pos):
+    maisons = []
+    for p in pos:
+        m = Maison(p)
+        maisons.append(...)
+    return ...
+\end{lstlisting}
+
+\vfill
+La méthode couvre de la classe Antenne prend en paramètre un objet de type Maison et indique par un booléen si l'antenne couvre la maison en question ou non.\\
+
+La méthode peut être utilisée ainsi a.couvre(m1) (en supposant que les objets précédents m1, m2 et a existent).\\
+D'après le schéma de la Figure~\ref{fig:exemple2} :
+\begin{itemize}
+    \item a.couvre(m1) retourne False
+    \item a.couvre(m2) retourne True.
+\end{itemize}
+
+\question[2] Compléter la fonction couvre ci-dessous.\\
+Pour rappel : la fonction valeur absolue se nomme abs() en Python.
+
+\begin{lstlisting}[language=Python]
+# Méthode à ajouter dans la classe Antenne
+def couvre(self, maison):
+    # Code à compléter (éventuellement plusieurs lignes)
+    ...
+\end{lstlisting}
+
+\pagebreak
+La fonction strategie\_1 est donnée ci-dessous. L'objectif est de placer des antennes dans une rue. Elle est fournie à la société qui place les antennes.
+
+La fonction prend en paramètre une liste d'objets de type Maison (qu'on supposera triée par abscisse croissante) et le rayon d'action des antennes (float). Cette fonction renvoie une liste d'objets de type Antenne ayant ce rayon d'action et couvrant toutes les maisons de la rue.
+
+\begin{lstlisting}[language=Python]
+def strategie_1(maisons, rayon):
+    ''' Prend en paramètre une liste de maisons et le rayon d'action des antennes et renvoie une liste d'antennes '''
+    antennes = [Antenne(maisons[0].get_pos_maison(), rayon)]
+    for m in maisons[1:]:
+        if not antennes[-1].couvre(m):
+            antennes.append(Antenne(m.get_pos_maison(), rayon))
+    return antennes
+\end{lstlisting}
+Pour rappel :
+\begin{itemize}
+    \item tab[1:] correspond aux éléments de tab à partir de l'indice 1 jusqu'à la fin
+de la liste ;
+    \item tab[-1] correspond au dernier élément de la liste tab.
+\end{itemize}
+\question[2] Indiquer ce que renvoie cette suite d'instructions après exécution.
+\begin{lstlisting}[language=Python]
+    maisons = creation_rue([0, 2, 3, 4, 5, 7, 9, 10.5, 11.5])
+    antennes = strategie_1(maisons, 2)
+    print([a.get_pos_antenne() for a in antennes])
+\end{lstlisting}
+
+
+Une amélioration est possible et la société qui pose les antennes souhaite implémenter l'algorithme suivant :
+\begin{itemize}
+    \item considérer les maisons dans l'ordre des abscisses croissantes ;
+    \item dès qu'une maison n'est pas couverte, placer une antenne à la plus grande abscisse telle qu'elle couvre cette maison. Par exemple, si la maison d'abscisse 5 est la première maison non couverte, alors, on placera l'antenne en 5 + $r$ si $r$ est le rayon d'action de l'antenne.
+\end{itemize}
+\question[1] On considère la rue composée des maisons situées aux abscisses [0, 2, 3, 4, 5, 7, 9, 10.5, 11.5]. Recopier et compléter le schéma Figure~\ref{fig:Q8} en indiquant l'emplacement des antennes selon cette nouvelle stratégie. On suppose que le rayon d'action est toujours 2.
+\begin{figure}[h]
+    \centering
+    \input{figures/fig-axe}
+    \caption{Axe pour représenter le résultat de la nouvelle stratégie}
+    \label{fig:Q8}
+\end{figure}
+
+\question[2] Cet algorithme étant a priori plus économe en antennes, proposer une fonction strategie\_2, sur le modèle de strategie\_1 qui implémente cette nouvelle stratégie.
+\end{questions}
+
+\end{document}
+
