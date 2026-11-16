@@ -1,0 +1,165 @@
+\chapter*{Exercices de conversion}
+
+
+\section*{Rappel : Les unités de mesure du débit}
+En réseau, on utilise le système décimal pour les débits. Le facteur de conversion est de $1 000$.
+\begin{itemize}
+    \item 1 kbits/s (kilobit par seconde) = $10^3$ bits/s
+    \item 1 Mbits/s (mégabit par seconde) = $10^6$ bits/s ($1\ 000$ kbits/s)
+    \item 1 Gbits/s (gigabit par seconde) = $10^9$ bits/s ($1\ 000$ Mbits/s)
+\end{itemize}
+
+\subsection*{Le calcul du coût OSPF}
+Contrairement au RIP qui compte simplement le nombre de sauts, l'OSPF calcule un coût basé sur la bande passante. La formule est la suivante :
+
+$$Coût = \frac{Debit\ de\ reference}{Debit\ reel}$$
+
+\begin{Comprendre}
+    Règle d'or : Pour que la division soit valide, le \textbf{débit de référence} et le \textbf{débit réel} doivent être exprimés dans la \textbf{même unité}.
+\end{Comprendre}
+
+
+\section*{Exercice 1 : conversion}
+Convertissez les valeurs suivantes pour préparer vos calculs de coût :
+\begin{enumerate}
+    \item Liaison Ethernet standard : $10\ 000\ 000$ bits/s = ............ Mbits/s
+    \item Liaison Fast Ethernet : $100$ Mbits/s = ............ Gbits/s
+    \item Liaison Fibre : 10 Gbits/s = ............ Mbits/s
+    \item Liaison ADSL : $20$ Mbits/s = ............ bits/s
+\end{enumerate}
+
+
+
+\section*{Exercice 1 : La pyramide des débits}
+Complétez les égalités suivantes en utilisant les puissances de 10 (sous la forme $10^n$).
+\begin{itemize}
+    \item 1 kbits/s = $10^3$ bits/s
+    \item  1 Mbits/s = $10^{...}$ bits/s
+    \item 1 Gbits/s = $10^{...}$ bits/s
+    \item 1 Gbits/s = $10^{...}$ Mbits/s
+    \item 100 Mbits/s = $10^{...}$ bits/s
+    \item 2 Gbits/s = $2 \times 10^{...}$ bits/s
+\end{itemize}
+ En résumé, calculez le coût pour les interfaces suivantes :
+
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+    \hline
+        Type de liaison & Débit réel & Calcul (avec unités converties) & Coût (arrondi à l'entier sup) \\ \hline
+        \textbf{Ethernet} & 10 Mbits/s & $\frac{100\ Mbits/s}{10\ Mbits/s}$ & $10$\\ \hline
+        \textbf{Fast Ethernet} & 100 Mbits/s & ............................................................ & ............ \\ \hline
+        \textbf{Giga Ethernet} & 1 Gbits/s & ............................................................ & ............ \\ \hline
+        \textbf{Fibre} & 10 Gbits/s & ............................................................ & ............ \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\section*{Exercice 2 : Simplification de fractions (Le réflexe OSPF)}
+Pour calculer le coût OSPF, on divise souvent deux puissances de 10. Rappel mathématique : $\frac{10^a}{10^b} = 10^{a-b}$.
+
+Calculez le résultat des divisions suivantes (sans calculatrice) :
+\begin{enumerate}
+    \item $\frac{10^8}{10^7} = 10^{8-7} = 10^1 =10$
+    \item  $\frac{10^8}{10^8} = ............ =............$
+    \item  $\frac{10^8}{10^6} = ............ = ............$
+    \item  $\frac{10^8}{10^9} = ............ = ............$ 
+\end{enumerate}
+ 
+
+
+
+\section*{Exercice 3 : Mise en situation "Unités dépareillées"}
+Pour chaque situation, convertissez le débit du lien dans la même unité que le débit de référence ($10^8$ bits/s), puis calculez le coût.
+\subsection*{Liaison Satellite :}
+\begin{itemize}
+    \item Débit de référence : $10^8$ bits/s
+    \item Débit réel : $50$ Mbits/s
+    \item Conversion du réel en bits/s :..............................
+    \item Calcul du coût :..................................................
+\end{itemize}
+
+
+\subsection*{Liaison Backbone :}
+\begin{itemize}
+    \item Débit de référence : $10^8$ bits/s
+    \item Débit réel : $10$ Gbits/s
+    \item Conversion du réel en bits/s : ..............................
+    \item Calcul du coût : ..................................................
+
+\end{itemize}
+
+
+
+\section*{Exercice 4 : Défi inverse}
+Le coût OSPF d'une liaison est de $100$. Le débit de référence est configuré à $10^8$ bits/s.
+\begin{enumerate}
+    \item Trouvez le débit réel de la liaison en $bits/s$.
+    \item Convertissez ce résultat en $Mbits/s$.
+\end{enumerate}
+ 
+\section*{Exercice 5 : Analyse et réflexion}
+\begin{enumerate}
+\item \textit{Problème de cohérence :} Si un élève divise un débit de référence de $100$ Mbits/s par un débit réel de $1$ Gbits/s sans convertir, il obtient un coût de $100$. Est-ce logique ? Pourquoi ?
+\item \textit{Comparaison RIP :} Si un paquet doit traverser 3 routeurs reliés en Giga Ethernet (1 Gbits/s) ou 2 routeurs reliés en Ethernet (10 Mbits/s) :
+    \begin{enumerate}
+        \item Quel chemin choisira RIP ?
+        \item Quel chemin choisira OSPF ?
+    \end{enumerate}
+    
+\end{enumerate}
+
+
+
+\begin{Comprendre}
+\textbf{Pourquoi insister sur les puissances de 10 ?}\\
+Dans un réseau, le coût est une valeur \textit{sans unité}. 
+Si vous divisez $100$ Mbits/s par $1$ \textit{Gbits/s}, vous obtenez $100$. C'est faux car vous avez divisé des "pommes" par des "poires". \\
+En utilisant les puissances de 10, on s'assure de l'homogénéité : 
+$$\frac{10^8 \text{ bits/s}}{10^9 \text{ bits/s}} = 10^{-1} = 0,1$$
+\end{Comprendre}
+
+
+\section*{Exercice 6 : Retrouver le débit à partir du coût}
+
+Dans cet exercice, on considère que le \textit{débit de référence} du réseau est configuré à $10^8$ bits/s (soit 100 Mbits/s).
+
+La formule du coût est : $Coût = \frac{Débit\ de\ référence}{Débit\ réel}$\\
+
+Pour chaque cas ci-dessous, retrouvez le débit réel de la liaison. Donnez le résultat en \textit{puissances de 10}, puis convertissez-le dans l'unité la plus adaptée (Mbits/s ou Gbits/s).
+
+\subsection*{Cas n°1 : La liaison lente}
+Le routeur affiche un coût de $100$ pour une interface.
+\begin{enumerate}
+    \item Écrivez l'équation : $100 = \frac{10^8}{Débit\ réel}$
+    \item Isolez le débit réel : $Débit\ réel = \frac{10^8}{10^2} = ............$ bits/s
+    \item Convertissez en Mbits/s : ...........................
+\end{enumerate}
+
+
+\subsection*{Cas n°2 : La liaison standard}
+Le coût calculé par OSPF est de $10$.
+\begin{enumerate}
+    \item Trouvez le débit réel en bits/s en utilisant les puissances de 10 : ............................
+    \item Convertissez le résultat en Mbits/s : ............................
+\end{enumerate}
+
+\subsection*{Cas n°3 : La liaison "référence"}
+Le coût affiché est de $1$.
+\begin{enumerate}
+    \item Quelle est la valeur du débit réel en bits/s ? ............................
+    \item À quelle unité de base cela correspond-il (en Mbits/s) ? ............................
+\end{enumerate}
+
+\subsection*{Cas n°4 : Le piège du débit de référence (Défi)}
+L'administrateur change le débit de référence pour l'ajuster aux nouvelles fibres optiques. Le nouveau débit de référence est $10^9$ bits/s (1 Gbits/s).
+Une interface affiche un coût de $50$.
+\begin{enumerate}
+    \item  Calculez le débit réel en bits/s : ............................
+    \item Convertissez ce débit en Mbits/s : ............................
+\end{enumerate}
+
+\begin{Comprendre}
+    Pour trouver le débit, on utilise la transformation de la formule :
+$$Debit\ réel = \frac{Debit\ de\ reference}{Cout}$$
+\end{Comprendre}
