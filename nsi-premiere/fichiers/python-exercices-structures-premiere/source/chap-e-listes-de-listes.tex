@@ -1,0 +1,230 @@
+\setcounter{Exercise}{0}
+
+\chapter*{Feuille d'exercices : CSV et liste de listes}
+
+Voici un fichier csv (coma separated list) trouver sur le site de l'INSEE (\url{https://www.insee.fr/fr/statistiques/4223807}).
+
+Les fichiers csv sont de grands tableaux dans lesquels les valeurs sont séparées par des virgules. Ici le fichier est relativement petit, on peut le voir dans sa version brute ci-dessous. Mais souvent ils font plusieurs centaines de milliers de lignes, il faut alors les traiter par ordinateur.
+
+
+\begin{Verbatim}[fontsize=\tiny]
+Nom de la commune,Kani-Kéli,Chirongui,Bouéni,Bandrele,Tsingoni,Sada,Ouangani,M'Tsangamouji,Chiconi,Pamandzi,Dzaoudzi,Mtsamboro,Koungou,Bandraboua,Acoua,Mamoudzou,Dembeni
+SIREN,200008803,200008779,200008746,200008738,200008886,200008878,200008852,200008829,200008753,200008860,200008795,200008845,200008811,200008720,200008712,200008837,200008787
+Insee,97609,97606,97604,97603,97617,97616,97614,97613,97605,97615,97608,97612,97610,97602,97601,97611,97607
+Population totale en vigueur en 2024 (millésimée 2021),5716,9197,6503,10529,14235,11619,10393,6586,8616,11802,18237,8025,32752,14211,5384,72974,16116
+Population municipale en vigueur en 2024 (millésimée 2021),5507,8920,6189,10282,13934,11156,10203,6432,8295,11442,17831,7705,32156,13989,5192,71437,15848
+"Densité démographique en 2024 (population totale/superficie géographique, en hab/km²)",268.5,304.3,440.2,282,400.9,999.6,535.6,294.5,1000.6,2667.1,2677.3,562,1131.9,432.2,411.4,1703.3,408.5
+Variation annuelle de la population entre 2019 et 2024 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Taux d’activité des 15 à 64 ans en 2019 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Taux de chômage des 15 à 64 ans en 2019 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Classement de la commune en zone de revitalisation rurale (ZRR),Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non
+Commune possédant au moins un Quartier prioritaire de la politique de la ville (QPV),Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui
+Commune classée en zone de montagne,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non
+Commune classée comme touristique,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non
+Dotation globale de fonctionnement totale (en €),1765649,2924190,1965043,3320186,4376239,3454846,3282251,2077125,2611057,3221688,5269111,2592605,9922633,4749688,1678762,24692713,5289887
+Dont dotation forfaitaire (en €),1025454,1567667,1112503,1764013,2212309,1851459,1541615,1125694,1345407,1726336,2724954,1458690,4535250,2270550,944176,10975501,2470741
+- dotation de solidarité urbaine et de cohésion sociale (DSU) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+- dotation de solidarité rurale (DSR) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+- dotation de péréquation totale (DNP) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+DGF par habitant (en €),282,288.4,276,287.5,281.5,270,288.6,288.4,276.9,250.1,264.4,293.9,277.4,305,285.7,309.7,300.8
+Population « DGF »,6262,10141,7120,11548,15548,12795,11373,7203,9429,12883,19926,8820,35776,15571,5876,79721,17588
+Dotation élu local (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Solde net FPIC (en €),,,,,,,,,,,,,,,,,
+Dont reversement au profit de la commune (en €),,,,,,,,,,,,,,,,,
+Dont prélèvement de la commune (en €),,,,,,,,,,,,,,,,,
+FPIC par habitant (en €),,,,,,,,,,,,,,,,,
+Revenu disponible médian des ménages par unité de consommation 2020 (en €),,,,,,,,,,,,,,,,,
+\end{Verbatim}
+
+\begin{Exercise}[title={Comprendre un csv}]
+\Question Quelles sont les communes représentées dans ce fichier ?\\
+\emptybox{1.5cm}
+\Question Quels sont les critères de comparaisons ?\\
+\emptybox{1.5cm}
+\Question Donner le numéro INSEE et la population totale de Pamandzi.\\
+\emptybox{1.5cm}
+\Question À quoi reconnait-on les informations manquantes ?\\
+\emptybox{3cm}
+\end{Exercise}
+
+\begin{Exercise}[title={Manipuler les csv en Python}]
+
+En Python, on peut lire un csv et le convertir en liste de liste grâce à la bibliothèque csv. Voici comment faire :
+\begin{lstlisting}[style=Pythonstyle, language=Python]
+import csv
+
+csv_filename = 'comparaisons-communes-mayotte.csv'
+with open(csv_filename) as f:
+    reader = csv.reader(f)
+    tab = list(reader)
+\end{lstlisting}
+
+La variable \textit{tab} contient alors une liste de listes, voici à quoi, elle ressemble :
+\begin{Verbatim}[fontsize=\tiny]
+[['Nom de la commune', 'Kani-Kéli', 'Chirongui', 'Bouéni', 'Bandrele', 'Tsingoni', 'Sada', 'Ouangani', "M'Tsangamouji", 'Chiconi', 'Pamandzi', 'Dzaoudzi', 'Mtsamboro', 'Koungou', 'Bandraboua', 
+'Acoua', 'Mamoudzou', 'Dembeni']
+['SIREN', '200008803', '200008779', '200008746', '200008738', '200008886', '200008878', '200008852', '200008829', '200008753', '200008860', '200008795', '200008845', '200008811', '200008720', '200008712',
+'200008837', '200008787']
+['Insee', '97609', '97606', '97604', '97603', '97617', '97616', '97614', '97613', '97605', '97615', '97608', '97612', '97610', '97602', '97601', '97611', '97607']
+['Population totale en vigueur en 2024 (millésimée 2021)', '5716', '9197', '6503', '10529', '14235', '11619', '10393', '6586', '8616', '11802', '18237', '8025', '32752', '14211', '5384', '72974', '16116']
+['Population municipale en vigueur en 2024 (millésimée 2021)', '5507', '8920', '6189', '10282', '13934', '11156', '10203', '6432', '8295', '11442', '17831', '7705', '32156', '13989', '5192', '71437', '15848']
+['Densité démographique en 2024 (population totale/superficie géographique, en hab/km²)', '268.5', '304.3', '440.2', '282', '400.9', '999.6', '535.6', '294.5', '1000.6', '2667.1', '2677.3', '562', 
+'1131.9', '432.2', '411.4', '1703.3', '408.5']
+['Variation annuelle de la population entre 2019 et 2024 (en %)', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+['Taux d’activité des 15 à 64 ans en 2019 (en %)', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+['Taux de chômage des 15 à 64 ans en 2019 (en %)', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+['Classement de la commune en zone de revitalisation rurale (ZRR)', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non']
+['Commune possédant au moins un Quartier prioritaire de la politique de la ville (QPV)', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui', 'Oui']
+['Commune classée en zone de montagne', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non']
+['Commune classée comme touristique', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non', 'Non']
+['Dotation globale de fonctionnement totale (en €)', '1765649', '2924190', '1965043', '3320186', '4376239', '3454846', '3282251', '2077125', '2611057', '3221688', '5269111', '2592605', '9922633',
+'4749688', '1678762', '24692713', '5289887']
+['Dont dotation forfaitaire (en €)', '1025454', '1567667', '1112503', '1764013', '2212309', '1851459', '1541615', '1125694', '1345407', '1726336', '2724954', '1458690', '4535250', '2270550', '944176',
+'10975501', '2470741']
+['- dotation de solidarité urbaine et de cohésion sociale (DSU) (en €)', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+['- dotation de solidarité rurale (DSR) (en €)', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+['- dotation de péréquation totale (DNP) (en €)', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+['DGF par habitant (en €)', '282', '288.4', '276', '287.5', '281.5', '270', '288.6', '288.4', '276.9', '250.1', '264.4', '293.9', '277.4', '305', '285.7', '309.7', '300.8']
+['Population « DGF »', '6262', '10141', '7120', '11548', '15548', '12795', '11373', '7203', '9429', '12883', '19926', '8820', '35776', '15571', '5876', '79721', '17588']
+['Dotation élu local (en €)', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+['Solde net FPIC (en €)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['Dont reversement au profit de la commune (en €)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['Dont prélèvement de la commune (en €)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['FPIC par habitant (en €)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+['Revenu disponible médian des ménages par unité de consommation 2020 (en €)', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '']
+[None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]]
+\end{Verbatim}
+
+
+\begin{center}
+{\Large}\textbf{Pour la suite, on considérera que le jeu de données est chargé dans la variable tab.}{\Large}
+\end{center}
+
+
+\Question Quels est le type de la variable~\textit{tab} ? Quelle ligne peut-on écrire en Python pour le vérifier ?\\
+\emptybox{1.5cm}
+\Question Quels sont les types de tab[0] et tab[6][5]  ?\\
+\emptybox{1.5cm}
+\Question Donner la ligne de code Python permettant d'accéder à la population municipale en vigueur en 2024 (millésimée 2021) de Bandrele.\\
+\emptybox{1.5cm}
+\Question Donner la ligne de code Python permettant d'obtenir le nombre de communes dans le jeu de données.\\
+\emptybox{1.5cm}
+\vfill
+
+\Question Compléter le code ci-dessous permettant d'afficher pour chaque commune son nom, son SIREN, et sa population totale en vigueur en 2024 (millésimée 2021).\\
+\begin{lstlisting}[style=Pythonstyle, language=Python]
+def stats_communes(data):
+    for i in range(1, len(......)):
+        commune = data[......][i]
+        pop = data[3][......]
+        siren = ........................
+        print("Dans la commune de", commune, "(SIREN", siren, ") il y a", pop, "habitants.")
+
+........................................ # appel de la fonction
+\end{lstlisting}
+
+\Question Écrire une fonction permettant de calculer la population totale ('Population totale en vigueur en 2024) à Mayotte.
+\textit{Indice : il faut faire la somme de la population des communes (pensez à convertir en float).}\\
+\emptybox{7cm}
+\end{Exercise}
+
+\begin{Exercise}[title={Filtrer les données manquantes}]
+
+\Question Compléter le tableau d’avancement pour le programme suivant :
+\begin{lstlisting}[style=Pythonstyle, language=Python]
+def filter_null(data):
+    new_data = []
+    for l in data :
+        count_null = 0
+        for v in l:
+            if v == '0' or v == "":
+                count_null += 1
+        if count_null < len(l) - 1:
+            new_data.append(l)
+    return new_data
+
+tab = filter_null(tab)
+\end{lstlisting}
+
+\begin{center}
+\begin{tabular}{c|c|c|c}
+\textbf{Tours} & \textbf{l} & \textbf{v} & \textbf{count\_null} \\
+\hline
+& &  & \\
+0, 0  &  ['Nom de la commune', 'Kani-Kéli', ..., 'Dembeni'] & 'Nom de la commune'  &   0          \\
+      &   &   &             \\
+      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      &   &   &             \\      
+\end{tabular}
+\end{center}
+
+\Question Quelles lignes ont été supprimées de \textit{tab} suite à l'appel de la fonction filter\_null ?\\
+\emptybox{2cm}
+\end{Exercise}
+
+
+\begin{Exercise}[title={Pour aller plus loin (les tranches)}]
+
+En Python, il est possible d'extraire des sous-listes - on parle de tranche slice en anglais -, le fonctionnement est similaire à celui de la fonction range, voyons quelques exemples :
+\begin{lstlisting}[style=Pythonstyle, language=Python]
+l = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
+print(l[0:5])
+# extrait les valeurs des indices 0 à 5 (exclus) : [1, 2, 4, 8, 16]
+print(l[6:])
+# extrait les valeurs des indices à partir de 6 (inclus): [64, 128, 256, 512]
+print(l[:2])
+# extrait les valeurs des indices jusqu' à 2(exclus) : [1, 2]
+print(l[-2:], l[:-5], l[-5:-2])
+# biensur cela marche aussi avec des indices négatifs :
+# [256, 512], [1, 2, 4, 8, 16], [32, 64, 128]
+print(l[0:-1:4])
+# A la maniere d'un range on peut specifier un pas : [1, 16, 256]
+\end{lstlisting}
+\Question En conservant la liste \textit{l} ci-dessus, qu'affichent les lignes suivantes ?
+\begin{description}
+    \item[\textbf{print(l[-1]})] :
+    \item[\textbf{print(l[:-2])}] :
+    \item[\textbf{print(l[:5])}] :
+    \item[\textbf{print(l[2:7])}] :
+    \item[\textbf{print(l[-7:-2:-2])}] :
+    \item[\textbf{print(l[len(l)//2:])}] :
+    \item[\textbf{print(l[:len(l)//2])}] :
+\end{description}
+
+\Question Grâce à cette méthode, comment peut-on récupérer la liste des communes en une liste sans 'Nom de la commune' ?\\
+\emptybox{2cm}
+\end{Exercise}
+
+\begin{Exercise}[title={Pour aller plus loin (les listes par compréhension)}]
+En Python, il est de créer des listes à partir de boucle et de condition, le tout en une seule ligne, voyons quelques exemples :
+\begin{lstlisting}[style=Pythonstyle, language=Python]
+l = [i for i in range(4)] # l = [0, 1, 2, 3]
+l = [i for i in range(1, 11) if i%2==0] # l = [2, 4, 6, 8, 10]
+l = [[0] for i in range(2)] # l = [[0], [0]]
+l = [[i for i in range(j)] for j in range(4)]
+# l = [[], [0], [0, 1], [0, 1, 2]]
+
+l = [1, 3, 5, 7, 9]
+[v+2 for v in l] # [3, 5, 7, 9, 11]
+[v*i for i, v in enumerate(l)] # [0, 3, 10, 21, 36]
+\end{lstlisting}
+\Question Qu'affichent les lignes suivantes ?
+\begin{description}
+    \item[\textbf{print([i**2 for i in range(10)])}] :
+    \item[\textbf{print([i for i in range(10) if i\%3==0])}] :
+    \item[\textbf{print([[] for i in range(3)])}] 
+    \item[\textbf{print([['O' for i in range(2)] for j in range(3)])}] :
+    \item[\textbf{print([[i+j for i in range(2) if i*j\%2==0] for j in range(3)])}] :
+\end{description}
+
+\Question En utilisant une liste par compréhension, comment récupérer la longueur (en nombre de caractères) de chacune des noms des villes de notre jeu de donnée et les stocker dans une liste ?\\
+\emptybox{1.5cm}
+
+\Question En utilisant une liste par compréhension, comment récupérer les noms des différents critères (Nom de commune, SIREN...) et les stocker dans une liste ?\\
+\emptybox{1.5cm}
+
+\Question En utilisant une liste par compréhension, comment filtrer les noms des communes ayant plus de 10 000 habitants et les stocker dans une liste ?\\
+\emptybox{1.5cm}
+
+\Question En utilisant une liste par compréhension, comment filtrer les noms des communes et la population des communes ayant plus de 10 000 habitants ?\\
+\emptybox{1.5cm}
+\end{Exercise}
