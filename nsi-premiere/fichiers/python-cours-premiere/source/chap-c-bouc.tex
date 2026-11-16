@@ -1,0 +1,188 @@
+\setcounter{chapter}{1}
+\chapter{Les structures de contrôles}
+\section{Les boucles}
+Les boucles sont une autre forme de structure de contrôle qui vont nous permettre de répéter des mêmes instructions.
+On pourra répéter les instructions un nombre de fois fixe ou jusqu'à qu'une condition soit respectée.
+
+\subsection{for}
+La boucle for ("pour" en anglais) permet d'énumérer les éléments d'un ensemble (on parle d'\motcle{itérable}) et d'appliquer la même suite d'instruction à tous les éléments de cet ensemble.
+C'est très utile, car ça permet de ne pas avoir à recopier le code pour chaque élément !
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+for elem in iterable :
+    cette ligne sera répéter pour chaque élément dans l itérable
+    celle-ci aussi
+celle-là ne sera executée qu une fois
+\end{lstlisting}
+\begin{center}\textbf{Comme pour les conditions, l'indentation nous permet de savoir ce qui est dans la boucle et ce qui ne l'est pas.}\end{center}
+
+Notre première structure itérable sera l'intervalle des entiers relatif (positif et négatif), pour cela en Python, nous utiliserons la fonction~\motcle{range}. Voyons comment elle fonctionne, il y a trois manières d'utiliser la fonction range :
+    \begin{center}
+        Attention en informatique, on démarre toujours de 0.
+    \end{center}
+\begin{description}
+    \item[range(fin)]: crée une liste de $fin$ nombres allant de $0$ à $fin-1$. Par exemple, range(4) permet de créer la suite 0, 1, 2, 3.
+    \item[range(debut, fin)]: crée une liste de $fin - debut$ nombres allant de $debut$ à $fin-1$. Par exemple, range(4, 9) permet de créer la suite 4, 5, 6, 7, 8.
+    \item[range(debut, fin, pas)]: crée une liste de $fin - debut$ nombres allant de $debut$ à au maximum $fin-1$ en comptant avec un$pas$. Par exemple, range(4, 9, 2) permet de créer la suite 4, 6, 8.\\
+    D'ailleurs, il est possible de mettre un pas négatif, dans ce cas-là, on compte à l'envers. Par exemple, range(3, 0, -1) est la suite 3, 2, 1.
+\end{description}
+
+\begin{Quizz}
+    Quelle suite donne l'appel de la fonction range suivante : range(1) ?
+    \begin{itemize}
+        \renewcommand{\labelitemi}{$\square$}
+        \item 0
+        \item 0, 1
+        \item Rien
+    \end{itemize}
+\end{Quizz}
+\begin{Quizz}
+    Quelle suite donne l'appel de la fonction range suivante : range(-12, -8) ?
+    \begin{itemize}
+        \renewcommand{\labelitemi}{$\square$}
+        \item -12, -11, -10, -9, -8
+        \item -12, -11, -10, -9
+        \item -11, -10, -9
+    \end{itemize}
+    Quelle suite donne l'appel de la fonction range suivante : range(20, 12, -4) ?
+    \begin{itemize}
+        \renewcommand{\labelitemi}{$\square$}
+        \item 20, 16, 12
+        \item 12, 16
+        \item 20, 16
+    \end{itemize}
+\end{Quizz}
+
+
+Maintenant que nous savons créer des itérables avec range, voyons comment combiner cela avec la boucle for.
+
+\begin{center}{\textbf{\large Un cas simple pour s'échauffer :}}\end{center}
+\begin{lstlisting}[style=pythonstyle, language=python]
+for i in range(3) :
+   print("Bonjour !")
+\end{lstlisting}
+Dans le code ci-dessus, la fonction range crée la suite 0, 1, 2. Il y a trois éléments dans la suite, on va donc exécuter le code de la boucle 3 fois. Le programme affiche alors 3 fois "Bonjour !". 
+\begin{lstlisting}[style=pythonstyle, language=python]
+Bonjour !
+Bonjour !
+Bonjour !
+\end{lstlisting}
+
+\begin{center}{\textbf{\large On monte le rythme :}}\end{center}
+\begin{lstlisting}[style=pythonstyle, language=python]
+for i in range(3, 5) :
+   print(i)
+\end{lstlisting}
+Dans le code ci-dessus, la fonction range crée la suite 3, 4. Il y a deux éléments dans la suite, on va donc exécuter le code de la boucle 2 fois. Au premier tour de boucle, la variable i aura la première valeur de la suite donc 3 on affichera alors 3. Au deuxième tour de boucle, la variable i aura la deuxième valeur de la suite, donc 4 on affichera alors 4. Ce programme affiche donc :
+\begin{lstlisting}[style=pythonstyle, language=python]
+3
+4
+\end{lstlisting}
+
+\begin{center}{\textbf{\large Un dernier un peu plus chaud :}}\end{center}
+\begin{lstlisting}[style=pythonstyle, language=python]
+somme=0
+for i in range(4) :
+   somme = somme + i
+print(somme)
+\end{lstlisting}
+Dans le code ci-dessus, la fonction range crée la suite 0, 1, 2, 3. Il y a quatre éléments dans la suite, on va donc exécuter le code de la boucle 4 fois.
+Ça commence à devenir compliqué, faisons un tableau d'exécution :
+\begin{center}
+\begin{tabular}{c|c c   | l}
+     {\color{blue}Ligne} & $somme$ & $i$ & {\color{gray} Commentaires}\\ \hline
+     {\color{blue}1} & 0  & $\times$ & {\color{gray}La variable somme est initialisé à 0, i n'existe pas.} \\
+     {\color{blue}2} & | & 0 & {\color{gray} On parcourt le premier élément de la suite 0,1,2,3 donc i =0} \\
+     {\color{blue}3} & 0+0=0 & | & {\color{gray}$somme = somme + i = 0 + 0 = 0$} \\
+     {\color{blue}2} & | & 1 & {\color{gray}On parcourt le deuxième élément de la suite 0,1,2,3 donc i =1}\\
+     {\color{blue}3} & 0 + 1 = 1 & | & {\color{gray}$somme = somme + i = 0 + 1 = 1$} \\
+     {\color{blue}2} & | & 2 & {\color{gray}On parcourt le troisième élément de la suite 0,1,2,3 donc i =2}\\
+     {\color{blue}3} & 1 + 2 = 3 & | & {\color{gray}$somme = somme + i = 1 + 2 = 3$}\\
+     {\color{blue}2} & | & 3 & {\color{gray}On parcourt le quatrième élément de la suite 0,1,2,3 donc i =3}\\
+     {\color{blue}3} & 3 + 3 = 6 & | & {\color{gray}$somme = somme + i = 3 + 3 = 6$}\\
+     {\color{blue}2} & | & | & {\color{gray}On a parcouru tous les éléments, on sort de la boucle}\\
+     {\color{blue}4} & \multicolumn{2}{r}{Le programme affiche 6} &\\
+\end{tabular}
+\end{center}
+Ouf ! On y voit un peu plus clair ! À chaque tour de boucle, on a ajouté la valeur de $i$ à la valeur de $somme$, on a utilisé la variable $somme$ comme un~\motcle{accumulateur}.
+
+
+\begin{Quizz}
+    \begin{lstlisting}[style=pythonstyle, language=python]
+somme_pair = 0
+for i in range(0, 8, 2):
+    somme_pair = somme_pair + i
+print(somme_pair)
+\end{lstlisting}
+Compléter le tableau d'exécution du code ci-dessus :
+\begin{center}
+\begin{tabular}{c|c c   | l}
+     {\color{blue}Ligne} & $somme\_pair$ & $i$ \\ \hline
+     {\color{blue}1} & 0  & $\times$  \\
+     {\color{blue}2} & | & 0   \\
+     {\color{blue}3} & 0+0=0 & |  \\
+     {\color{blue}2} & | &  & \\
+     {\color{blue}3} & 0 + 2 = 2 & |  \\
+     {\color{blue}2} & | & 4 \\
+     {\color{blue}3} &  & | \\
+     {\color{blue}2} &  & 6 \\
+     {\color{blue}3} & 6 + 6 = 12 & | \\
+     {\color{blue}2} &  &  \\
+     {\color{blue}4} & \multicolumn{2}{r}{Le programme affiche } &\\
+\end{tabular}
+\end{center}
+\end{Quizz}
+
+\subsection{while}
+La boucle while ("tant que" en anglais) permet de répéter un bloc de code  tant qu'une condition est vérifiée. L'avantage de la boucle while est donc qu'il ne faut pas connaitre à l'avance le nombre de fois où on devra répéter notre boucle.
+\begin{lstlisting}[style=pythonstyle, language=python]
+while condition :
+    cette ligne sera répétée tant que la condition est vrai
+    celle-ci aussi
+celle-là ne sera executée qu une fois
+\end{lstlisting}
+
+Voyons un exemple :
+\begin{lstlisting}[style=pythonstyle, language=python]
+note_nsi = 0
+while note_nsi != 20 :
+    print("Je travaille et je m'amuse en codant !")
+    note_nsi = note_nsi + 1
+print("Je suis un As de la programmation !")
+\end{lstlisting}
+Dans le programme ci-dessus, on démarre avec $note\_nsi=0$ et on va travailler jusqu'à que la note soit égale à 20, à ce moment-là, on sort de la boucle while en étant un as de la programmation !
+On fera donc 20 tours de boucle et on affichera 20 fois "Je travaille et je m'amuse en codant !".
+
+\begin{Comprendre}
+La boucle while ne s'arrête que quand la condition est fausse, ainsi, il est possible de faire des boucles infinies (des programmes qui ne s'arrêtent jamais).
+On peut le faire exprès :
+\begin{lstlisting}[style=pythonstyle, language=python]
+temps = 0
+while True :
+    temps = temps + 1
+\end{lstlisting}
+Ou non !
+\begin{lstlisting}[style=pythonstyle, language=python]
+a = 15
+while a != 20 :
+    a = a + 2
+\end{lstlisting}
+\end{Comprendre}
+
+\begin{Quizz}
+\begin{lstlisting}[style=pythonstyle, language=python]
+a = 14
+while a % 6 != 0 :
+    a = a - 1
+\end{lstlisting}
+
+Combien va-t-on faire de tour de boucle ?
+\begin{itemize}
+    \renewcommand{\labelitemi}{$\square$}
+    \item 1
+    \item 2
+    \item 3
+\end{itemize}
+\end{Quizz}
+
+% \newpage

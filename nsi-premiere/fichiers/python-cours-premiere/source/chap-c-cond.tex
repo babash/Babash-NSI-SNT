@@ -1,0 +1,181 @@
+\setcounter{chapter}{0}
+\chapter{Les structures de contrôles}
+\section{Les conditions}
+Jusqu'ici, nous n'avions vu que des programmes dans lesquels toutes les lignes étaient exécutées une à une de manière séquentielle.
+Grâce aux structures conditionnelles, nous allons pouvoir exécuter certaines lignes uniquement si une condition est respectée.
+Nous allons voir trois structures conditionnelles ici, le \motcle{if}, le \motcle{else}, le \motcle{elif}.
+
+
+\subsubsection*{if}
+
+L'instruction if ("si" en anglais), permet de créer un bloc de code qui ne sera exécuté que si la condition est vraie.
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+if condition :
+    cette ligne sera exécutée que si la condition est vraie (True)
+    cette ligne aussi ne sera exécutée que si la condition est vraie (True)
+    ....
+cette ligne sera exécutée dans tous les cas
+cette ligne aussi sera exécutée dans tous les cas
+...
+\end{lstlisting}
+
+
+Voyons sur un exemple :
+\begin{lstlisting}[style=pythonstyle, language=python]
+animal_secret = input("Saisissez un animal secret")
+if animal_secret == " chat" :
+    print("Vous avez choisi un chat ! Miauouhh !!!")
+print("Votre animal est cool")
+\end{lstlisting}
+Ici la ligne 3 ne sera exécutée que si la condition est vraie, c'est-à-dire que si l'utilisateur a saisi "chat".
+
+Par contre, la ligne 4 n'est pas dans le bloc - elle n'est pas indentée (décalée) - et elle sera donc exécutée dans tous les cas.\\[-0.9cm]
+\begin{Quizz}
+    
+    \begin{lstlisting}[style=pythonstyle, language=python]
+temperature = 30
+if temperature > 30 :
+    print("Il fait chaud aujourd'hui")
+    \end{lstlisting}
+    
+    Qu'affiche ce code ?
+    \begin{itemize}
+        \renewcommand{\labelitemi}{$\square$}
+        \item Il fait chaud aujourd'hui
+        \item Rien
+    \end{itemize}
+
+\end{Quizz}
+Les conditions permettent de comparer des variables et/ou des valeurs entre elles grâce aux opérateurs de comparaison. En voici une liste non exhaustive :
+    \begin{description}
+        \item[==] : Compare si deux éléments sont égaux.
+        \item[!=] : Compare si deux éléments sont différents.
+        \item[>] : Compare si l'élément de gauche est supérieur (strictement plus grand) à l'élément de droite.
+        \item[<] : Compare si l'élément de gauche est inférieur (strictement plus petit) à l'élément de droite.
+        \item[>=] : Compare si l'élément de gauche est supérieur (plus grand) ou égal à l'élément de droite
+        \item[<=] : Compare si l'élément de gauche est inférieur (plus petit) ou égal à l'élément de droite
+        \item[in]: Compare si l'élément de gauche fait partie de l'élément de droite
+    \end{description}
+
+\subsubsection*{Opérateurs Logiques: \motcle{and}, \motcle{or}, \motcle{not}}
+
+Pour combiner plusieurs conditions ou pour en inverser une, on utilise les opérateurs logiques (\textit{Boolean Operators}) :
+\begin{itemize}
+    \item \motcle{and} (ET logique) : L'expression est vraie si \textbf{toutes} les conditions sont vraies. Elle retourne \motcle{False} dès qu'une seule condition est fausse.
+    \item \motcle{or} (OU logique) : L'expression est vraie si \textbf{au moins une} des conditions est vraie. Elle retourne \motcle{False} uniquement si toutes les conditions sont fausses (OU inclusif).
+    \item \motcle{not} (NON logique) : Cet opérateur unaire inverse la valeur de vérité de la condition. \motcle{not True} donne \motcle{False}, et \motcle{not False} donne \motcle{True}.
+\end{itemize}
+
+\paragraph*{Table de vérité}
+Voici un résumé du comportement de \motcle{and} et \motcle{or} :
+
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Condition A} & \textbf{Condition B} & \textbf{A \motcle{and} B} & \textbf{A \motcle{or} B} \\
+\hline
+\motcle{True} & \motcle{True} & \motcle{True} & \motcle{True} \\
+\hline
+\motcle{True} & \motcle{False} & \motcle{False} & \motcle{True} \\
+\hline
+\motcle{False} & \motcle{True} & \motcle{False} & \motcle{True} \\
+\hline
+\motcle{False} & \motcle{False} & \motcle{False} & \motcle{False} \\
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph*{Exemples d'utilisation}
+\begin{lstlisting}[style=pythonstyle, language=python]
+temperature = 25
+humidite = 80
+vent = False
+
+# Exemple de 'and'
+if temperature > 20 and humidite < 90:
+    print("Conditions idéales.") # Vrai ET Vrai -> Vrai
+
+# Exemple de 'or'
+if temperature > 30 or vent:
+    print("Attention, conditions extrêmes.") # Faux OU Faux -> Faux
+
+# Exemple de 'not'
+if not vent:
+    print("Le temps est calme.") # NON Faux -> Vrai
+\end{lstlisting}
+
+\paragraph*{Précédence}
+L'ordre de priorité des opérateurs est le suivant : \motcle{not} (le plus prioritaire) $>$ \motcle{and} $>$ \motcle{or} (le moins prioritaire). Pour éviter toute ambiguïté, il est recommandé d'utiliser des parenthèses \texttt{()} pour clarifier l'ordre d'évaluation de vos conditions.
+
+\subsubsection*{else}
+
+L'instruction \textit{else} qui veut dire \textit{sinon} en anglais, est toujours précédée d'un \textit{if}. Il permet de créer un bloc de code qui ne sera exécuté que si la condition du if n'est pas vraie.
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+if condition :
+    cette ligne sera exécutée que si la condition est vraie (True)
+    cette ligne aussi ne sera exécutée que si la condition est vraie (True)
+    ....
+else :
+    cette ligne sera exécutée que si la condition est fausse (False)
+    cette ligne aussi ne sera exécutée que si la condition est fausse (False)
+    ....
+cette ligne sera exécutée dans tous les cas
+cette ligne aussi sera exécutée dans tous les cas
+...
+\end{lstlisting}
+
+\begin{Quizz}
+\begin{lstlisting}[style=pythonstyle, language=python]
+temperature = 30
+if temperature > 30 :
+    print("Il fait chaud aujourd'hui")
+else :
+    print("Il ne fait pas chaud aujourd'hui")\end{lstlisting}
+
+    Qu'affiche ce code ?
+    \begin{itemize}
+        \renewcommand{\labelitemi}{$\square$}
+        \item Il fait chaud aujourd'hui
+        \item Il ne fait pas chaud aujourd'hui
+        \item Rien
+    \end{itemize}
+\end{Quizz}
+
+\subsubsection*{elif}
+L'instruction elif, diminutif de \textit{else if} qui veut dire \textit{sinon si} en anglais, est toujours précédée d'un if et suivie d'une autre condition. Il permet de créer un bloc de code qui ne sera exécuté que si la condition du if n'est pas vraie et si la condition du else if est vraie.
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+if condition_1 :
+    cette ligne sera executée que si la condition est vraie.
+    pareil que la ligne du dessus.
+    ...
+elif condition_2 :
+    cette ligne sera executée que si la condition_1 est fausse et si la condition_2 est vraie.
+    pareil que la ligne du dessus.
+    ...
+cette ligne sera executée dans tous les cas.
+pareil que la ligne du dessus.
+...
+\end{lstlisting}
+
+\begin{Quizz}
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+temperature = 30
+humidite = 90
+if temperature > 30 :
+    print("Il fait chaud aujourd'hui")
+elif humidite > 70:
+    print("Il ne fait pas chaud aujourd'hui mais il fait humide")
+\end{lstlisting}
+    
+    Qu'affiche ce code ?
+    \begin{itemize}
+        \renewcommand{\labelitemi}{$\square$}
+        \item Il fait chaud aujourd'hui
+        \item Il ne fait pas chaud aujourd'hui, mais il fait humide
+        \item Rien
+    \end{itemize}
+\end{Quizz}
