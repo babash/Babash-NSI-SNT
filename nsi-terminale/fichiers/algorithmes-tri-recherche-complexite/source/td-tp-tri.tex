@@ -1,0 +1,234 @@
+\documentclass[12pt]{report}
+\usepackage[top=1cm, left=1cm, right=1cm]{geometry}
+\input{environnements/div_packages}
+\input{environnements/env_boites}
+\input{environnements/env_codes}
+\input{environnements/env_couleurs}
+\input{environnements/env_exercices}
+\input{environnements/env_touches}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\title{Les algorithmes de tri}
+
+\date{}
+
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}\renewcommand{\headrulewidth}{0pt}}
+\pagestyle{plain}
+\AtBeginDocument{\hypersetup{pdfauthor={Babash - NSI Tani Malandi et Johanne Bakalara},pdftitle={Complexité, tris et recherche : cours et TD-TP},pdfcreator={LuaLaTeX}}}
+\begin{document}
+\section*{Mission 3 : Le Bal des Tris (Ranger les dossiers) }
+
+\begin{Comprendre}
+\begin{lstlisting}[language=Python]
+def tri_selection(tab):
+    n = len(tab)
+    for i in range(n - 1): # On parcourt le tableau de gauche a droite
+        i_min = i # On suppose que le minimum est a l'index actuel
+        for j in range(i + 1, n): # On cherche un plus petit dans le reste
+            if tab[j] < tab[i_min]:
+                i_min = j # On a trouve un nouveau minimum
+        tab[i], tab[i_min] = tab[i_min], tab[i] # Permutation
+    return tab      
+\end{lstlisting}
+\begin{center}
+    \input{figures/fig-selection}
+\end{center}
+\end{Comprendre}
+
+\begin{Exercise}[title={Analyse du Tri par Sélection }]
+    \Question \textbf{Le Déroulé :} Soit \texttt{tab = [15, 4, 8, 2]}. Complétez le suivi des variables pour comprendre comment le minimum "remonte" à chaque étape.
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+    Étape (\texttt{i}) & \texttt{i\_min} trouvé & \texttt{tab[i\_min]} & Échange effectué & État du tableau \\ \hline
+    0 & 3 & 2 & \texttt{15} $\leftrightarrow$ \texttt{2} & \texttt{[2, 4, 8, 15]} \\ \hline
+    1 & \dots & \dots & \dots & \dots \\ \hline
+    2 & \dots & \dots & \dots & \dots \\ \hline
+    \end{tabular}
+    \end{center}
+
+    \Question \textbf{L'invariant de boucle :} À chaque fin d'étape \texttt{i}, quelle affirmation est toujours vraie concernant la partie gauche du tableau (de l'indice 0 à \texttt{i}) ? \dotfill
+
+    \Question \textbf{Réflexion sur le coût :} 
+    \begin{itemize}
+        \item Si le tableau est déjà trié au départ, l'algorithme va-t-il plus vite ? Observez la boucle \texttt{j} pour répondre. \dotfill
+        \item Quel est le \textbf{pire des cas} pour cet algorithme ? \dotfill
+    \end{itemize}
+    \Question \textbf{Complexité :} Puisque l'on compare chaque élément à tous les autres (deux boucles imbriquées), on dit que la complexité est \textbf{quadratique}. Notez-la : \dotfill
+\end{Exercise}
+
+\begin{Comprendre}
+\begin{lstlisting}[language=Python]
+def tri_insertion(tab):
+    for i in range(1, len(tab)): # On commence au deuxieme element
+        cle = tab[i] # L'element a inserer
+        j = i - 1
+        # On fait "reculer" la cle tant qu'elle est plus petite
+        # que ses voisins de gauche
+        while j >= 0 and tab[j] > cle:
+            tab[j + 1] = tab[j] # On decale les elements vers la droite
+            j = j - 1
+        tab[j + 1] = cle # On insere la cle a sa place
+    return tab
+\end{lstlisting}
+\begin{center}
+    \input{figures/fig-insertion}
+\end{center}
+\end{Comprendre}
+
+\begin{Exercise}[title={Analyse du Tri par Insertion }]
+    \Question \textbf{Le Déroulé :} On trie \texttt{tab = [12, 11, 13, 5]}. Détaillez l'action de la boucle \texttt{while} :
+    \begin{itemize}
+        \item Étape \texttt{i=1} (\texttt{cle=11}) : On décale 12. Résultat : \texttt{[11, 12, 13, 5]}
+        \item Étape \texttt{i=2} (\texttt{cle=13}) : Combien de décalages sont effectués ? \dotfill
+        \item Étape \texttt{i=3} (\texttt{cle=5}) : Décrivez le mouvement de la valeur 5. \dotfill
+    \end{itemize}
+    
+    \Question \textbf{Déroulé Global :} On trie \texttt{[5, 2, 8, 1]}. À chaque étape, on "insère" l'élément souligné à sa place.
+    \begin{center}
+    \begin{tabular}{|c|l|l|}
+    \hline
+    Étape & État du tableau & Action effectuée \\ \hline
+    0 & \texttt{[5, \underline{2}, 8, 1]} & On insère 2 avant 5 \\ \hline
+    1 & \texttt{[\dots, \dots, \dots, \dots]} &  \\ \hline
+    2 & \texttt{[\dots, \dots, \dots, \dots]} & \dots \\ \hline
+    3 & \texttt{[\dots, \dots, \dots, \dots]} &  \\ \hline
+    \end{tabular}
+    \end{center}
+    
+    \Question \textbf{Meilleur vs Pire des cas :} 
+    \begin{itemize}
+        \item Dans quel cas la boucle \texttt{while} ne s'exécute-t-elle \textbf{jamais} ? \dotfill
+        \item \textbf{Réflexion :} Imaginez que le tableau soit \textbf{déjà trié}. Est-ce que la boucle \texttt{while} va s'exécuter souvent ? Quel impact cela a-t-il sur le temps de calcul ?
+    \dotfill
+        \item Quel est le coût (complexité) dans ce meilleur des cas ? \dotfill
+        \item Pourquoi est-ce le tri préféré pour les listes "presque triées" ? \dotfill
+    \end{itemize}
+
+    \Question \textbf{Complexité au pire :} Si le tableau est trié à l'envers, la complexité est : \dotfill
+\end{Exercise}
+
+\newpage
+\begin{Comprendre}
+\begin{lstlisting}[language=Python]
+def fusion(gauche, droite):
+    # Melange deux listes triees pour en faire une seule triee
+    resultat = []
+    i, j = 0, 0
+    while i < len(gauche) or j < len(droite):
+        if j == len(droite) or (i < len(gauche) and gauche[i] <= droite[j]):
+            resultat.append(gauche[i])
+            i = i + 1
+        else:
+            resultat.append(droite[j])
+            j = j + 1
+    return resultat
+
+def tri_fusion(tab):
+    if len(tab) <= 1: return tab # Cas de base
+    milieu = len(tab) // 2
+    # Diviser pour regner : appels recursifs
+    gauche = tri_fusion(tab[:milieu]) 
+    droite = tri_fusion(tab[milieu:])
+    return fusion(gauche, droite) # On recolle
+
+print(tri_fusion([7, 5, 3, 0, 1, 6, 4, 2]))  
+\end{lstlisting}
+\begin{center}
+    \input{figures/fig-fusion}
+\end{center}
+\end{Comprendre}
+
+\begin{Exercise}[title={Analyse du Tri Fusion }]
+    \Question \textbf{La Stratégie :} Expliquez avec vos mots le concept de "Diviser pour Régner" appliqué ici.\\
+    .\dotfill \\
+    .\dotfill \\
+    .\dotfill
+    \Question \textbf{Déroulé Global :} Dessinez l'arbre de division pour \texttt{[4, 1, 7, 3]}.
+    \begin{center}
+        \texttt{[4, 1, 7, 3]} \\
+        $\swarrow$ \quad $\searrow$ \\
+        \dots \quad \dots \\
+        $\swarrow$ \ $\searrow$ \quad $\swarrow$ \ $\searrow$ \\
+        \dots \ \dots \quad \dots \ \dots
+    \end{center}
+
+    \Question \textbf{La Fusion :} Une fois les éléments isolés, on les remonte. Si on fusionne \texttt{[1, 4]} et \texttt{[3, 7]}, quel est le premier élément que l'on place dans le tableau final ? Pourquoi ? \dotfill
+
+    
+    \Question On fusionne \texttt{G = [2, 8]} et \texttt{D = [1, 5]}.
+    \begin{itemize}
+        \item Étape 1 : On compare 2 et 1. On prend \dots. Liste temporaire : \texttt{[\dots]}
+        \item Étape 2 : On compare 2 et 5. On prend \dots. Liste temporaire : \texttt{[\dots, \dots]}
+        \item Résultat final de la fusion : \dotfill
+    \end{itemize}
+    
+    \Question \textbf{Performance :} Pourquoi ce tri est-il plus complexe à écrire mais beaucoup plus rapide pour de très grandes listes ? \dotfill
+    
+    \Question \textbf{Complexité :} Le tri fusion ne compare pas tout le monde avec tout le monde. Sa complexité est dite \textbf{quasi-linéaire}. Notez-la : \dotfill
+
+    \Question \textbf{Comparaison :} Pourquoi cet algorithme est-il le "sauveur" de nos serveurs face à 100 000 données ?\\ 
+    .\dotfill
+\end{Exercise}
+
+\begin{Exercise}[title={Étude des Philosophies de Tri}]
+    \Question  Associez chaque algorithme à sa philosophie détaillée :
+    
+    \begin{itemize}
+        \item \textbf{Philosophie A :} On divise le tableau récursivement en deux jusqu'à obtenir des listes d'un seul élément. On les fusionne ensuite deux par deux en les classant, pour reconstruire le tableau final. C'est la stratégie "Diviser pour Régner".
+        \item \textbf{Tri} \dotfill 
+        \item \textbf{Philosophie B :} On parcourt le tableau pour trouver la plus petite valeur. Une fois détectée, on l'échange avec la première position. On recommence ensuite l'opération pour la deuxième position, et ainsi de suite.
+        \item \textbf{Tri} \dotfill 
+        \item \textbf{Philosophie C :} On considère que le premier élément est déjà trié. On prend le suivant et on le fait "reculer" à sa juste place dans la partie gauche en décalant les autres, exactement comme on range des cartes dans sa main.
+        \item \textbf{Tri} \dotfill 
+    \end{itemize}
+\end{Exercise}
+
+\begin{Exercise}[title={Crash Test des Serveurs}]
+    \Question Remplissez le rapport. \textit{Si le tri dépasse 5min, notez \textbf{"ÉCHEC"}.}
+    \begin{center}
+    \begin{tabular}{|l|c|c|c|c|c|c|}
+    \hline
+    Taille ($n$) & \multicolumn{2}{c|}{Tri Sélection } & \multicolumn{2}{c|}{Tri Insertion } & \multicolumn{2}{c|}{Tri Fusion } \\ \hline
+    & Temps & Opérations & Temps & Opérations & Temps & Opérations \\ \hline
+    1 000 & & & & & & \\ \hline
+    10 000 & & & & & & \\ \hline
+    100 000 & & & & & & \\ \hline
+    \end{tabular}
+    \end{center}
+\end{Exercise}
+
+\begin{Exercise}[title={Conclusion sur la Complexité}]
+
+    En tant qu'expert NSI, vous devez conseiller l'agence sur l'algorithme à utiliser selon l'état des données. Reliez chaque situation à l'algorithme le plus adapté et justifiez votre choix.
+
+    \begin{enumerate}
+        \item Vous recevez une liste de 10 dossiers chaque seconde. La liste est très petite, mais cela arrive très souvent. \textbf{Choix :} \dotfill\\
+        \textit{Justification :} \dotfill
+        \item Vous travaillez sur une base de données de 1 000 000 d'utilisateurs. La mémoire vive du serveur est limitée. \textbf{Choix :} \dotfill\\
+        \textit{Justification :} \dotfill
+        \item Un agent vous envoie un fichier de 50 000 lignes qui est déjà \textit{presque} entièrement trié (seules les deux dernières lignes sont mal placées). \textbf{Choix :} \dotfill\\
+        \textit{Justification :} \dotfill
+    \end{enumerate}
+
+    \textit{Complétez avec les termes : quadratique ($O(n^2)$), logarithmique ($O(\log n)$), linéaire ($O(n)$), quasi-linéaire ($O(n \log n)$), trié.}
+    \\
+    
+    1. Pour la recherche, la méthode \textbf{dichotomique} est la plus efficace (complexité \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_). Elle impose cependant un tableau \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_.
+    
+    2. Pour les tris, l'insertion et la sélection ont une complexité \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_. On observe que si $n$ est multiplié par 10, le nombre d'opérations est multiplié par environ \_\_\_\_\_\_\_\_\_\_.
+    
+    3. Le \textbf{Tri Fusion} avec sa complexité \_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_ est le seul capable de traiter nos flux massifs.
+\end{Exercise}
+
+\begin{Comprendre}
+    \begin{itemize}
+        \item Le \textbf{Tri par Insertion} est l'un des plus performants au monde pour les petites listes ou les listes déjà presque triées. 
+        \item Le \textbf{Tri Fusion} est stable et garantit un temps de réponse rapide même dans le pire des cas, mais il consomme plus de mémoire car il doit créer des copies des listes.
+        \item Le \textbf{Tri par Sélection} est rarement utilisé en pratique sur de gros volumes car il est "aveugle" : il fait le même effort que la liste soit triée ou non.
+    \end{itemize}
+\end{Comprendre}
+\end{document}
