@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta content="width=device-width, initial-scale=1" name="viewport"><meta charset="utf-8">
+<title>Fiche OS : système d'exploitation, à compléter</title>
+<style>
+
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --text: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border: #d1d8e0;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body { 
+            background: #515151; 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; padding: 0; 
+            color: var(--text);
+        }
+
+        /* Format A4 */
+        .page {
+            width: 210mm; height: 297mm;
+            padding: 12mm; margin: 10mm auto;
+            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; }
+            .no-print { display: none; }
+        }
+
+        /* Header Styling */
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 8px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; color: var(--primary); letter-spacing: -1px; }
+        .fiche-num { font-weight: 700; color: var(--secondary); font-size: 1.2rem; }
+
+        /* Typography & Layout */
+        h2 { 
+            font-size: 1rem; background: var(--light-gray); 
+            padding: 5px 10px; border-left: 5px solid var(--primary);
+            margin: 5px 0 5px 0; text-transform: uppercase;
+        }
+
+        h3 { font-size: 0.95rem; margin: 10px 0 5px 0; color: var(--secondary); }
+
+        p, li { font-size: 0.9rem; line-height: 1.4; margin: 5px 0; }
+        
+        /* Interactive Areas */
+        .write-zone {
+            border-bottom: 1px dotted #999;
+            min-height: 25px; margin: 5px 0;
+            width: 100%;
+        }
+
+        .box-fill {
+            border: 1.5px solid var(--border);
+            border-radius: 4px; padding: 10px;
+            margin: 10px 0; min-height: 60px;
+            background: #fff;
+        }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        th { background: var(--primary); color: white; font-weight: 500; }
+
+        /* Custom Diagrams */
+        .von-neumann {
+            display: grid; grid-template-columns: 1fr 2fr 1fr;
+            gap: 10px; height: 180px; margin: 20px 0;
+        }
+        .vn-box { border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; text-align: center; padding: 5px; font-weight: bold; font-size: 0.8rem; background: var(--light-gray); }
+        
+        .code { font-family: 'Fira Code', monospace; background: #eee; padding: 2px 4px; border-radius: 3px; font-size: 0.85rem; }
+
+        /* Ordonnancement */
+        .gantt-table { border: 2px solid var(--primary); }
+        .gantt-table td { height: 30px; width: 30px; text-align: center; }
+
+        .perm-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+            text-align: center; margin: 10px 0;
+        }
+        .perm-cell { border: 1px solid var(--border); padding: 5px; background: #fafafa; }
+    
+        /* T67 : polices du système (aucune requête vers un autre site), pied, écran étroit, impression */
+        body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; }
+        code, pre, .code { font-family: 'Fira Code', Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; font-variant-ligatures: none; }
+        @page { size: A4; margin: 0; }
+        @media screen { .page { height: auto; min-height: 297mm; } .layer-box { transition: none; } }
+        @media print { .page { break-after: page; page-break-after: always; } .page:last-child { break-after: auto; page-break-after: auto; } }
+        footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #d1d8e0; font-size: 0.68rem; color: #565c68;
+                 display: flex; flex-wrap: wrap; justify-content: space-between; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; overflow-wrap: anywhere; }
+        footer a { color: inherit; }
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; height: auto; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box { overflow-wrap: break-word; }
+            code, .code, pre { overflow-wrap: anywhere; white-space: pre-wrap; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+            header { flex-wrap: wrap; gap: 4px; }
+        }
+        @media screen and (max-width: 600px) {
+            h1 { font-size: 1.2rem; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; overflow-wrap: anywhere; }
+            .rights-container { flex-direction: column; }
+            .small-zone, .write-zone, .fill-inline { max-width: 100%; min-width: 0; }
+            .state-diagram, .graph-container { flex-wrap: wrap; gap: 6px; }
+            .state-box { width: auto; }
+            .von-neumann { height: auto; grid-template-columns: 1fr; }
+            .vn-box { min-height: 45px; }
+        }
+        @media print { .page.z97 > :not(footer) { zoom: 0.97; } }
+        @media print { .page.z94 > :not(footer) { zoom: 0.94; } }
+        @media print { .page.z91 > :not(footer) { zoom: 0.91; } }
+        @media print { .page.z88 > :not(footer) { zoom: 0.88; } }
+        @media print { .page.z85 > :not(footer) { zoom: 0.85; } }
+        @media print { .page.z82 > :not(footer) { zoom: 0.82; } }
+    </style>
+</head>
+<body>
+<div class="page z97">
+<header>
+<h1>Système d'Exploitation (OS)</h1>
+</header>
+<h2>1. Définition et Concept</h2>
+<p><strong>Qu'est-ce qu'un Système d'Exploitation ?</strong> (Définition complète à rechercher) :</p>
+<div class="box-fill" style="min-height: 60px;">
+</div>
+<p><strong>Le Kernel (Noyau) :</strong> Quel est son rôle précis vis-à-vis du matériel ?</p>
+<div class="write-zone"></div>
+<p><strong>Dual Boot :</strong> Expliquez la possibilité de faire cohabiter deux systèmes sur une machine :</p>
+<div class="write-zone"></div>
+<h2>2. Les 4 Rôles Majeurs de l'OS</h2>
+<table>
+<tbody><tr><th width="30%">Fonction</th><th>Description détaillée des mécanismes</th></tr>
+<tr style="height:45px;"><td>................................................</td><td></td></tr>
+<tr style="height:45px;"><td>................................................</td><td></td></tr>
+<tr style="height:45px;"><td>................................................</td><td></td></tr>
+<tr style="height:45px;"><td>................................................</td><td></td></tr>
+</tbody></table>
+<h2>3. Marché et Noyaux</h2>
+<table>
+<tbody><tr><th>OS</th><th>% Part de marché (PC/Mobile)</th><th>Type de Noyau / Base</th><th>Système libre ?</th></tr>
+<tr><td><strong>Windows</strong></td><td>........ % (PC)</td><td>Hybride (NT)</td><td>Oui / Non</td></tr>
+<tr><td><strong>macOS</strong></td><td>........ % (PC)</td><td>XNU (Darwin/BSD)</td><td>Oui / Non</td></tr>
+<tr><td><strong>GNU/Linux</strong></td><td>........ % (PC)</td><td>Linux</td><td>Oui / Non</td></tr>
+<tr><td><strong>Android</strong></td><td>........ % (Mobile)</td><td>Basé sur : ...........................</td><td>Oui / Non</td></tr>
+<tr><td><strong>iOS</strong></td><td>........ % (Mobile)</td><td>Darwin</td><td>Oui / Non</td></tr>
+</tbody></table>
+<h2>4. Interfaces de contrôle</h2>
+<ul>
+<li><strong>GUI (Graphical User Interface) :</strong> ............................................................................................</li>
+<li><strong>CLI (Command Line Interface) :</strong> ............................................................................................</li>
+<li><strong>API (Application Programming Interface) :</strong> ...................................................................................</li>
+</ul>
+<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Fiche 1/2</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/os-fiche.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
+<div class="page">
+<header><h1>OS : Exercices et Analyse</h1></header>
+<h2>Exercice 1 : Hiérarchie du système</h2>
+<p>Placez les termes suivants dans les blocs ci-dessous pour représenter la structure en "couches" : <em>Utilisateur, Applications, Noyau (Kernel), Matériel (Hardware), Pilotes (Drivers).</em></p>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px; margin: 20px 0;">
+<div style="width: 80%; border: 2px solid var(--primary); text-align: center; padding: 5px;">1. ............................................................</div>
+<div style="width: 70%; border: 2px solid var(--primary); text-align: center; padding: 5px;">2. ............................................................</div>
+<div style="width: 60%; border: 2px solid var(--primary); text-align: center; padding: 5px;">3. ............................................................</div>
+<div style="width: 50%; border: 2px solid var(--primary); text-align: center; padding: 5px;">4. ............................................................</div>
+<div style="width: 40%; border: 2px solid var(--primary); text-align: center; padding: 5px;">5. ............................................................</div>
+</div>
+<h2>Exercice 2 : Logiciel libre vs propriétaire</h2>
+<p>L'OS Linux est dit "Libre". Expliquez les 4 libertés fondamentales que cela implique par rapport à Windows :</p>
+<div class="box-fill">
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul>
+</div>
+<h2>Exercice 3 : Analyse de scénario (Gestion des ressources)</h2>
+<p>Vous lancez un jeu vidéo gourmand tout en écoutant de la musique en ligne.</p>
+<p>1. Comment l'OS empêche-t-il le jeu de couper le son de la musique ?</p>
+<div class="write-zone"></div>
+<div class="write-zone"></div>
+<div class="write-zone"></div>
+<p>2. Que se passe-t-il au niveau de la RAM si vous ouvrez 100 onglets de navigateur ? Quel est le rôle de l'OS ici ?</p>
+<div class="write-zone"></div>
+<div class="write-zone"></div>
+<div class="write-zone"></div>
+<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Fiche 2/2</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/os-fiche.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
+
+</body></html>

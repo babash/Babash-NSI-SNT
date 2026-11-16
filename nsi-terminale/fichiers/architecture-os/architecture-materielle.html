@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta content="width=device-width, initial-scale=1" name="viewport"><meta charset="utf-8">
+<title>Fiche : architecture matérielle, à compléter</title>
+<style>
+
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --text: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border: #d1d8e0;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body { 
+            background: #515151; 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; padding: 0; 
+            color: var(--text);
+        }
+
+        /* Format A4 */
+        .page {
+            width: 210mm; min-height: 297mm;
+            padding: 12mm; margin: 10mm auto;
+            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; }
+            .no-print { display: none; }
+        }
+
+        /* Header Styling */
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 8px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1 { margin: 0; font-size: 1.8rem; color: var(--primary); letter-spacing: -1px; }
+        .fiche-num { font-weight: 700; color: var(--secondary); font-size: 1.2rem; }
+
+        /* Typography & Layout */
+        h2 { 
+            font-size: 1.1rem; background: var(--light-gray); 
+            padding: 5px 10px; border-left: 5px solid var(--primary);
+            margin: 15px 0 10px 0; text-transform: uppercase;
+        }
+
+        h3 { font-size: 0.95rem; margin: 10px 0 5px 0; color: var(--secondary); }
+
+        p, li { font-size: 0.9rem; line-height: 1.4; margin: 5px 0; }
+        
+        /* Interactive Areas */
+        .write-zone {
+            border-bottom: 1px dotted #999;
+            min-height: 25px; margin: 5px 0;
+            width: 100%;
+        }
+
+        .box-fill {
+            border: 1.5px solid var(--border);
+            border-radius: 4px; padding: 10px;
+            margin: 10px 0; min-height: 60px;
+            background: #fff;
+        }
+
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.85rem; }
+        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        th { background: var(--primary); color: white; font-weight: 500; }
+
+        /* Custom Diagrams */
+        .von-neumann {
+            display: grid; grid-template-columns: 1fr 2fr 1fr;
+            gap: 10px; height: 180px; margin: 20px 0;
+        }
+        .vn-box { border: 2px solid var(--primary); display: flex; align-items: center; justify-content: center; text-align: center; padding: 5px; font-weight: bold; font-size: 0.8rem; background: var(--light-gray); }
+        
+        .code { font-family: 'Fira Code', monospace; background: #eee; padding: 2px 4px; border-radius: 3px; font-size: 0.85rem; }
+
+        /* Ordonnancement */
+        .gantt-table { border: 2px solid var(--primary); }
+        .gantt-table td { height: 30px; width: 30px; text-align: center; }
+
+        .perm-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+            text-align: center; margin: 10px 0;
+        }
+        .perm-cell { border: 1px solid var(--border); padding: 5px; background: #fafafa; }
+    
+        /* T67 : polices du système (aucune requête vers un autre site), pied, écran étroit, impression */
+        body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; }
+        code, pre, .code { font-family: 'Fira Code', Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; font-variant-ligatures: none; }
+        @page { size: A4; margin: 0; }
+        @media screen { .page { height: auto; min-height: 297mm; } .layer-box { transition: none; } }
+        @media print { .page { break-after: page; page-break-after: always; } .page:last-child { break-after: auto; page-break-after: auto; } }
+        footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #d1d8e0; font-size: 0.68rem; color: #565c68;
+                 display: flex; flex-wrap: wrap; justify-content: space-between; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; overflow-wrap: anywhere; }
+        footer a { color: inherit; }
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; height: auto; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box { overflow-wrap: break-word; }
+            code, .code, pre { overflow-wrap: anywhere; white-space: pre-wrap; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+            header { flex-wrap: wrap; gap: 4px; }
+        }
+        @media screen and (max-width: 600px) {
+            h1 { font-size: 1.2rem; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; overflow-wrap: anywhere; }
+            .rights-container { flex-direction: column; }
+            .small-zone, .write-zone, .fill-inline { max-width: 100%; min-width: 0; }
+            .state-diagram, .graph-container { flex-wrap: wrap; gap: 6px; }
+            .state-box { width: auto; }
+            .von-neumann { height: auto; grid-template-columns: 1fr; }
+            .vn-box { min-height: 45px; }
+        }
+        @media print { .page.z97 > :not(footer) { zoom: 0.97; } }
+        @media print { .page.z94 > :not(footer) { zoom: 0.94; } }
+        @media print { .page.z91 > :not(footer) { zoom: 0.91; } }
+        @media print { .page.z88 > :not(footer) { zoom: 0.88; } }
+        @media print { .page.z85 > :not(footer) { zoom: 0.85; } }
+        @media print { .page.z82 > :not(footer) { zoom: 0.82; } }
+    </style>
+</head>
+<body>
+<div class="page">
+<header><h1>Architecture Matérielle</h1></header>
+<h2>1. Modèle de Von Neumann</h2>
+<p>Complétez le schéma en traçant les flux (Bus) et en nommant les 4 blocs fondamentaux :</p>
+<div class="von-neumann">
+<div class="vn-box">Entrées / Sorties<br>(Clavier, Ecran...)</div>
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<div class="vn-box" style="height: 45%;">................................................<br>(UAL + Unité de commande)</div>
+<div class="vn-box" style="height: 45%;">................................................<br>(RAM)</div>
+</div>
+<div class="vn-box">Stockage Permanent<br>(Disque Dur / SSD)</div>
+</div>
+<h2>2. Composants Hardware</h2>
+<p>Identifiez les rôles et caractéristiques :</p>
+<ul>
+<li><strong>CPU :</strong> Cœur du calcul. Que signifie <strong>Multi-cœur</strong> ? <br> .........................................................................................................................................................</li>
+<li><strong>GPU :</strong> Pourquoi est-il indispensable aujourd'hui (IA, Rendu) ? <br> .........................................................................................................................................................</li>
+<li><strong>RAM :</strong> Mémoire vive. Définissez sa <strong>volatilité</strong> : <br> .........................................................................................................................................................</li>
+<li><strong>ROM :</strong> Utilité au démarrage (BIOS/UEFI) : <br> .........................................................................................................................................................</li>
+</ul>
+<h2>3. Rappel des Unités et Puissance</h2>
+<p>Conversion : 1 To = ............ Go | 1 Go = ............ Mo. <br> <strong>Vitesse :</strong> 3.5 GHz signifie ............................................................................................................</p>
+<p><strong>Loi de Moore :</strong> Expliquez la tendance historique du nombre de transistors :</p>
+<div class="write-zone"></div>
+<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Fiche 1/2</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/architecture-materielle.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
+<div class="page">
+<header><h1>Architecture : Exercices</h1></header>
+<h2>Exercice 1 : Analyse de configuration</h2>
+<p>Voici l'annonce d'un PC : "Processeur 8 cœurs @ 4.0GHz, 16Go DDR4 RAM, 512Go SSD NVMe, SoC M2".</p>
+<p>1. Qu'est-ce qu'un <strong>SoC (System on a Chip)</strong> par rapport à une tour classique ?</p>
+<div class="box-fill"></div>
+<p>2. Si ce PC effectue 1 opération par cycle par cœur, combien d'opérations peut-il traiter par seconde ?</p>
+<div class="write-zone"></div>
+<h2>Exercice 2 : Hiérarchie de mémoire</h2>
+<p>Classez par <strong>vitesse croissante</strong> (du plus lent au plus rapide) : <em>RAM, SSD, Cache L1, Registres, Disque Dur (HDD).</em></p>
+<p>................... &lt; ................... &lt; ................... &lt; ................... &lt; ...................</p>
+<h2>Exercice 3 : Conversion de données</h2>
+<p>Un serveur possède 4 To de stockage. Il a déjà utilisé 3500 Go.</p>
+<p>1. Combien de Go reste-t-il ? ..................................................................................................</p>
+<p>2. Peut-on stocker un dossier de 600 000 Mo supplémentaire ? Justifiez :</p>
+<div class="write-zone"></div>
+<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Fiche 2/2</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/architecture-materielle.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
+
+</body></html>

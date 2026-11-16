@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr"><head>
+<meta content="width=device-width, initial-scale=1" name="viewport"><meta charset="utf-8">
+<title>Fiche OS : système d'exploitation, corrigé</title>
+<style>
+
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #b21f1f;
+            --text: #2c3e50;
+            --light-gray: #f8f9fa;
+            --border: #d1d8e0;
+            --highlight: #e8f0fe;
+        }
+
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
+
+        body { 
+            background: #515151; 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; padding: 0; 
+            color: var(--text);
+        }
+
+        .page {
+            width: 210mm; height: 297mm;
+            padding: 12mm; margin: 10mm auto;
+            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; border: none; page-break-after: always; }
+            .no-print { display: none; }
+        }
+
+        header {
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 8px; margin-bottom: 15px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        h1 { margin: 0; font-size: 1.5rem; color: var(--primary); letter-spacing: -1px; }
+        .fiche-num { font-weight: 700; color: var(--secondary); font-size: 1.2rem; }
+
+        h2 { 
+            font-size: 1rem; background: var(--light-gray); 
+            padding: 5px 5px; border-left: 5px solid var(--primary);
+            margin: 5px 0 0px 0; text-transform: uppercase;
+        }
+
+        h3 { font-size: 0.95rem; margin: 10px 0 5px 0; color: var(--secondary); }
+        p, li { font-size: 0.88rem; line-height: 1.4; margin: 5px 0; }
+        ul { margin: 0px;}
+        .box-fill {
+            border: 1.5px solid var(--border);
+            border-radius: 4px; padding: 12px;
+            margin: 10px 0; background: var(--highlight);
+            font-style: italic; font-size: 0.85rem;
+        }
+
+        .ans { color: #1a2a6c; font-weight: 500; font-style: normal; }
+
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 0.82rem; }
+        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+        th { background: var(--primary); color: white; font-weight: 500; }
+        tr:nth-child(even) { background-color: #fcfcfc; }
+
+        .layer-box {
+            border: 2px solid var(--primary);
+            text-align: center;
+            padding: 6px;
+            font-weight: bold;
+            background: var(--light-gray);
+            transition: all 0.3s;
+        }
+
+        .liberty-list { list-style: none; padding-left: 0; }
+        .liberty-list li::before { content: "✓ "; color: var(--secondary); font-weight: bold; }
+    
+        /* T67 : polices du système (aucune requête vers un autre site), pied, écran étroit, impression */
+        body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; }
+        code, pre, .code { font-family: 'Fira Code', Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; font-variant-ligatures: none; }
+        @page { size: A4; margin: 0; }
+        @media screen { .page { height: auto; min-height: 297mm; } .layer-box { transition: none; } }
+        @media print { .page { break-after: page; page-break-after: always; } .page:last-child { break-after: auto; page-break-after: auto; } }
+        footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #d1d8e0; font-size: 0.68rem; color: #565c68;
+                 display: flex; flex-wrap: wrap; justify-content: space-between; row-gap: 1px; }
+        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; overflow-wrap: anywhere; }
+        footer a { color: inherit; }
+        @media screen and (max-width: 230mm) {
+            .page { width: auto; max-width: 210mm; height: auto; min-height: 0; margin: 8px; padding: 14px; }
+            p, li, td, th, .info-box { overflow-wrap: break-word; }
+            code, .code, pre { overflow-wrap: anywhere; white-space: pre-wrap; }
+            footer { flex-direction: column; gap: 2px; }
+            footer .credit { text-align: left; }
+            header { flex-wrap: wrap; gap: 4px; }
+        }
+        @media screen and (max-width: 600px) {
+            h1 { font-size: 1.2rem; }
+            table { font-size: 0.7rem; }
+            th, td { padding: 3px 4px; overflow-wrap: anywhere; }
+            .rights-container { flex-direction: column; }
+            .small-zone, .write-zone, .fill-inline { max-width: 100%; min-width: 0; }
+            .state-diagram, .graph-container { flex-wrap: wrap; gap: 6px; }
+            .state-box { width: auto; }
+            .von-neumann { height: auto; grid-template-columns: 1fr; }
+            .vn-box { min-height: 45px; }
+        }
+        @media print { .page.z97 > :not(footer) { zoom: 0.97; } }
+        @media print { .page.z94 > :not(footer) { zoom: 0.94; } }
+        @media print { .page.z91 > :not(footer) { zoom: 0.91; } }
+        @media print { .page.z88 > :not(footer) { zoom: 0.88; } }
+        @media print { .page.z85 > :not(footer) { zoom: 0.85; } }
+        @media print { .page.z82 > :not(footer) { zoom: 0.82; } }
+    </style>
+</head>
+<body>
+<div class="page z91">
+<header>
+<h1>Système d'Exploitation (OS) - Corrigé</h1>
+<span class="fiche-num">NSI Terminale</span>
+</header>
+<h2>1. Définition et Concept</h2>
+<p><strong>Qu'est-ce qu'un Système d'Exploitation ?</strong></p>
+<div class="box-fill">
+            L'OS est un ensemble de programmes qui fait l'interface entre l'utilisateur, les applications et le matériel. Il gère les ressources (CPU, RAM, périphériques) et fournit un environnement stable pour l'exécution des logiciels.
+        </div>
+<p><strong>Le Kernel (Noyau) :</strong> Quel est son rôle précis vis-à-vis du matériel ?</p>
+<p class="ans">C'est le cœur de l'OS. Il gère la communication directe entre le logiciel et le matériel (gestion de la mémoire, accès processeur et pilotes) en mode "superviseur" pour garantir la sécurité.</p>
+<p><strong>Dual Boot :</strong> Expliquez la possibilité de faire cohabiter deux systèmes sur une machine :</p>
+<p class="ans">Il s'agit d'installer deux OS sur des partitions différentes d'un même disque. Au démarrage, un programme appelé "Bootloader" (ex: GRUB) permet de choisir quel système lancer.</p>
+<h2>2. Les 4 Rôles Majeurs de l'OS</h2>
+<table>
+<tbody><tr><th width="30%">Fonction</th><th>Description détaillée des mécanismes</th></tr>
+<tr><td><strong>Gestion des Processus</strong></td><td>L'ordonnanceur (scheduler) répartit le temps processeur entre les différents programmes en cours d'exécution.</td></tr>
+<tr><td><strong>Gestion de la Mémoire</strong></td><td>Il alloue des zones de RAM à chaque application et assure le cloisonnement pour éviter qu'un programme n'écrase les données d'un autre.</td></tr>
+<tr><td><strong>Gestion des Fichiers</strong></td><td>Il organise le stockage sur le disque via une structure hiérarchique (système de fichiers comme NTFS, ext4) et gère les droits d'accès.</td></tr>
+<tr><td><strong>Gestion des Entrées/Sorties</strong></td><td>Il sert d'intermédiaire pour les périphériques (clavier, écran, réseau) en utilisant des pilotes (drivers) spécifiques.</td></tr>
+</tbody></table>
+<h2>3. Marché et Noyaux (ordres de grandeur)</h2>
+<table>
+<tbody><tr><th>OS</th><th>% Part de marché</th><th>Type de Noyau / Base</th><th>Système libre ?</th></tr>
+<tr><td><strong>Windows</strong></td><td>≈ 57 % (PC ; StatCounter, juin 2026, le reste est « inconnu »)</td><td>Hybride (NT)</td><td>Non (Propriétaire)</td></tr>
+<tr><td><strong>macOS</strong></td><td>≈ 16 % (PC, « OS X » et « macOS » réunis)</td><td>XNU (Darwin/BSD)</td><td>Non (Base libre)</td></tr>
+<tr><td><strong>GNU/Linux</strong></td><td>≈ 4 % (PC)</td><td>Linux (Monolithique modulaire)</td><td><strong>Oui (Libre)</strong></td></tr>
+<tr><td><strong>Android</strong></td><td>≈ 70 % (Mobile, à vérifier)</td><td>Noyau Linux</td><td>Oui (AOSP) / Non</td></tr>
+<tr><td><strong>iOS</strong></td><td>≈ 28 % (Mobile, à vérifier)</td><td>Darwin</td><td>Non (Propriétaire)</td></tr>
+</tbody></table>
+<h2>4. Interfaces de contrôle</h2>
+<ul>
+<li><strong>GUI (Graphical User Interface) :</strong> Interface visuelle avec fenêtres, icônes et menus(ex: Bureau Windows).</li>
+<li><strong>CLI (Command Line Interface) :</strong> Interface textuelle (Terminal) où l'on saisit des commandes (ex: Bash).</li>
+<li><strong>API (Application Programming Interface) :</strong> Ensemble de fonctions prêtes à l'emploi que l'OS offre aux développeurs pour interagir avec le système.</li>
+</ul>
+<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Corrigé 1/2</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/os-fiche-corrige.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
+<div class="page">
+<header><h1>OS : Exercices et Analyse - Corrigé</h1></header>
+<h2>Exercice 1 : Hiérarchie du système</h2>
+<p>Structure en "couches" (de l'extérieur vers l'intérieur) :</p>
+<div style="display: flex; flex-direction: column; align-items: center; gap: 5px; margin: 20px 0;">
+<div class="layer-box" style="width: 85%;">1. Utilisateur</div>
+<div class="layer-box" style="width: 75%; background: #dfe6e9;">2. Applications</div>
+<div class="layer-box" style="width: 65%; background: #b2bec3;">3. Noyau (Kernel)</div>
+<div class="layer-box" style="width: 55%; background: #636e72; color: white;">4. Pilotes (Drivers)</div>
+<div class="layer-box" style="width: 45%; background: #2d3436; color: white;">5. Matériel (Hardware)</div>
+</div>
+<h2>Exercice 2 : Logiciel libre vs propriétaire</h2>
+<p>Les 4 libertés fondamentales définies par la FSF :</p>
+<div class="box-fill">
+<ul class="liberty-list">
+<li><strong>Liberté 0 :</strong> Liberté d'utiliser le programme pour tous les usages.</li>
+<li><strong>Liberté 1 :</strong> Liberté d'étudier le fonctionnement du programme (accès au code source).</li>
+<li><strong>Liberté 2 :</strong> Liberté de redistribuer des copies du programme pour aider autrui.</li>
+<li><strong>Liberté 3 :</strong> Liberté d'améliorer le programme et de publier ses améliorations.</li>
+</ul>
+</div>
+<h2>Exercice 3 : Analyse de scénario</h2>
+<p><strong>1. Comment l'OS empêche-t-il le jeu de couper le son de la musique ?</strong></p>
+<p class="ans">Grâce à l'ordonnancement (Time Sharing). L'OS alterne l'exécution des processus si rapidement qu'ils semblent s'exécuter en même temps. De plus, le noyau gère un mixeur audio logiciel qui centralise les flux sonores de toutes les applications avant de les envoyer à la carte son.</p>
+<p><strong>2. Que se passe-t-il au niveau de la RAM si vous ouvrez 100 onglets ? Quel est le rôle de l'OS ?</strong></p>
+<p class="ans">La RAM sature. L'OS utilise alors la "Mémoire Virtuelle" : il déplace les données des onglets inactifs de la RAM vers une zone du disque dur (Swap). Si cela continue, l'OS peut décider de fermer les processus les plus gourmands (OOM Killer sur Linux) pour éviter le plantage total.</p>
+<div style="margin-top: auto; border-top: 1px solid var(--border); padding-top: 10px; font-size: 0.7rem; text-align: center;">
+            Fiche de révision NSI
+        </div>
+<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Corrigé 2/2</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/os-fiche-corrige.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
+
+</body></html>
