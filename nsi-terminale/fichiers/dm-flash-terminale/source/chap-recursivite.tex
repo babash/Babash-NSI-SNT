@@ -1,0 +1,115 @@
+\section*{Devoir maison : La Récursivité en Famille}
+
+On utilise une structure de données pour modéliser une famille, où le nombre total d'oreilles de toutes les personnes (et de leurs descendants) doit être calculé en Python.\\
+
+\hrule
+
+\subsection*{Partie 1 : Structure des Données}
+
+Chaque personne est représentée par un dictionnaire. Ce dictionnaire contient notamment une liste d'\texttt{enfants}, où chaque enfant est lui-même un dictionnaire de personne.
+
+\begin{lstlisting}[language=Python]
+famille = {
+    'nom': 'Grand-Père',
+    'oreilles': 2,
+    'enfants': [
+        {
+            'nom': 'Père',
+            'oreilles': 2,
+            'enfants': [
+                {'nom': 'Moi', 'oreilles': 2, 'enfants': []},
+                {'nom': 'Ma Soeur', 'oreilles': 2, 'enfants': []}
+            ]
+        },
+        {
+            'nom': 'Tante',
+            'oreilles': 2,
+            'enfants': [
+                {'nom': 'Cousin', 'oreilles': 2, 'enfants': []}
+            ]
+        }
+    ]
+}
+\end{lstlisting}
+
+\begin{Exercise}[title={Variables et Accès}]
+
+\Question Quel est le \textbf{type} de la variable \texttt{famille} ?\\
+
+\emptybox{1cm}
+
+\Question Quel est le \textbf{type} de \texttt{famille['enfants']} ?\\
+
+\emptybox{1cm}
+
+\Question Donner l'instruction Python permettant de récupérer le \textbf{nom} du premier enfant du 'Grand-Père'.\\
+
+\emptybox{1cm}
+
+\Question Donner l'instruction Python permettant de récupérer le nombre d'\textbf{oreilles} du 'Cousin' (en partant de la variable \texttt{famille}).\\
+
+\emptybox{1cm}
+
+\end{Exercise}
+
+\newpage
+
+\hrule
+
+\subsection*{�� Partie 2 : Analyse et Implémentation Récursive}
+
+\begin{Exercise}[title={Fonction Récursive}]
+
+\subsubsection*{Question 5 : Compléter la fonction}
+
+L'objectif est de calculer le total des oreilles de toutes les personnes (y compris les descendants). Compléter la fonction Python ci-dessous :
+
+\begin{lstlisting}[language=Python]
+def calculer_oreilles_famille(personne):
+    # Cas 1 : La personne n'a pas d'enfant.
+    if personne['enfants'] == []: # Cas de base
+        return ...
+    
+    # Cas 2 : La personne a des enfants.
+    # 1. On compte les oreilles de la personne actuelle.
+    total = personne['oreilles']
+    # 2. On ajoute les oreilles de tous les descendants.
+    for enfant in personne['enfants']:
+        total += calculer_oreilles_famille(enfant)
+        
+    return ...
+\end{lstlisting}
+
+\subsubsection*{Question 6 : Rôles}
+
+\Question Quel est le rôle principal du \textbf{Cas 1} (Cas de base) dans la fonction \texttt{calculer\_oreilles\_famille} ?\\
+
+\emptybox{1cm}
+
+\Question Quel est le rôle principal du \textbf{Cas 2} (Cas récursif) ? (Comment ramène-t-il le problème à une instance plus simple ?)\\
+
+\emptybox{1cm}
+
+\subsubsection*{Question 7 : Déroulé}
+
+Considérons cette sous-famille simplifiée :
+
+\begin{lstlisting}[language=Python]
+petit_arbre = {'nom': 'A', 'oreilles': 2, 
+    'enfants': [
+        {'nom': 'B', 'oreilles': 2, 'enfants': []},
+        {'nom': 'C', 'oreilles': 2, 'enfants': []}
+    ]
+}
+\end{lstlisting}
+
+\Question Combien de fois au total la fonction \texttt{calculer\_oreilles\_famille} est-elle appelée lors de l'exécution de \texttt{calculer\_oreilles\_famille(petit\_arbre)} ? (Les personnes concernées sont A, B, C.)\\
+
+\emptybox{1cm}
+
+\Question Quel est le résultat final retourné par l'appel \texttt{calculer\_oreilles\_famille(petit\_arbre)} ?\\
+
+\emptybox{1cm}
+
+
+\end{Exercise}

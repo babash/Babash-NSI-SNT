@@ -1,0 +1,78 @@
+\section*{Devoir maison : Diviser pour Régner (Le Tri Fusion)}
+
+Le shérif doit trier une grande file de bandits. Pour aller plus vite, il utilise une méthode redoutable : le \textbf{tri fusion}. Il sépare la file en deux, demande à ses adjoints de trier chaque moitié, puis il \textbf{fusionne} les deux moitiés triées pour n'en former qu'une seule, parfaite.
+
+\begin{lstlisting}[language=Python]
+def fusion(gauche, droite):
+    resultat = []
+    i = j = 0
+    # On compare les premiers de chaque file et on prend le plus petit
+    while i < len(gauche) and j < len(droite):
+        if gauche[i] < droite[j]:
+            resultat.append(gauche[i])
+            i += 1
+        else:
+            resultat.append(droite[j])
+            j += 1
+    # On ajoute les restes des files
+    resultat.extend(gauche[i:])
+    resultat.extend(droite[j:])
+    return resultat
+
+def tri_fusion(tab):
+    if len(tab) <= 1:
+        return tab
+    milieu = len(tab) // 2
+    gauche = tri_fusion(tab[:milieu])
+    droite = tri_fusion(tab[milieu:])
+    return fusion(gauche, droite)
+\end{lstlisting}
+
+\begin{Exercise}[title={La stratégie du shérif}]
+
+\Question \textbf{L'étape de Fusion.} 
+On suppose que le shérif a déjà deux groupes triés : \texttt{gauche = [0.9, 1.5]} et \texttt{droite = [1.2, 2.1]}.
+Complétez les étapes de la fonction \texttt{fusion} :
+\begin{itemize}
+    \item On compare 0.9 et 1.2. Le plus petit est ........ On l'ajoute au résultat.
+    \item On compare 1.5 et 1.2. Le plus petit est ........ On l'ajoute au résultat.
+    \item On compare 1.5 et 2.1. Le plus petit est ........ On l'ajoute au résultat.
+    \item Il ne reste que 2.1, on l'ajoute à la fin.
+    \item Résultat final : \texttt{[ \quad , \quad , \quad , \quad ]}
+\end{itemize}
+
+\Question \textbf{Simulation visuelle.}
+Dessinez l'arbre de division pour le tableau \texttt{tab = [1.5, 0.9, 2.1, 1.2]} en suivant l'exemple :
+
+
+
+\begin{center}
+\begin{tabular}{cc}
+      & [1.5, 0.9, 2.1, 1.2] \\
+     / & \textbackslash \\
+    {[1.5, 0.9]} & {[2.1, 1.2]} \\
+   / \quad \textbackslash & / \quad \textbackslash \\
+  {[1.5]} \quad [0.9] & {[2.1]} \quad [1.2] \\
+   \hline
+   \multicolumn{2}{c}{\textit{(Maintenant, on remonte en fusionnant...)}} \\
+   \textbackslash \quad / & \textbackslash \quad / \\
+   {[0.9, 1.5]} & {[..........]} \\
+    \textbackslash & / \\
+    \multicolumn{2}{c}{[0.9, 1.2, 1.5, 2.1]} \\
+\end{tabular}
+\end{center}
+
+\Question \textbf{Analyse de la complexité.}
+Contrairement au tri par insertion, le tri fusion coupe toujours le tableau en deux, peu importe si les bandits sont déjà rangés ou non.
+\begin{itemize}
+    \item Est-ce que le temps de calcul change beaucoup si le tableau est déjà trié ? ....................
+    \item Si on a 1000 bandits, le tri fusion est beaucoup plus rapide que le tri par insertion. On dit que sa complexité est en $n \log(n)$. À votre avis, pourquoi "couper en deux" aide-t-il l'ordinateur ? \\
+    ..................................................................................................................
+\end{itemize}
+
+\Question \textbf{Le cas de base.}
+Dans la fonction \texttt{tri\_fusion}, à quoi sert la ligne \texttt{if len(tab) <= 1: return tab} ? \\
+\textit{(Indice : peut-on couper en deux un bandit tout seul ?)} \\
+..................................................................................................................
+
+\end{Exercise}
