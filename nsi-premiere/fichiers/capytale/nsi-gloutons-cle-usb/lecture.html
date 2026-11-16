@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algorithmes gloutons : plus beaucoup de place sur ta clé USB ?</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI première</div>
+<main>
+<h1>Algorithmes gloutons : plus beaucoup de place sur ta clé USB ?</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="nsi-gloutons-cle-usb.ipynb" download>Télécharger le notebook (nsi-gloutons-cle-usb.ipynb)</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 style="font-size: 30px; text-align: center;">Plus beaucoup de place sur ta clé USB ?</h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><em>[image non reprise dans cette copie]</em></p>
+<h1 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">¶</a></h1><h2 id="Pr%C3%A9sentation-du-probl%C3%A8me">Présentation du problème<a class="anchor-link" href="#Pr%C3%A9sentation-du-probl%C3%A8me">¶</a></h2><p>Nous disposons d’une clé USB qui est déjà bien remplie et sur laquelle il ne reste que 5 Go de libre. Nous souhaitons copier sur cette clé des fichiers vidéos pour l'emporter en voyage. Chaque fichier a un poids et chaque vidéo a une durée.  La durée n'est pas proportionnelle à la taille car les fichiers sont de formats différents, certaines vidéos sont de grande qualité, d'autres sont très compressées.</p>
+<p>Le tableau qui suit présente les 7 fichiers disponibles avec les durées données en minutes.</p>
+<table>
+<thead>
+<tr>
+<th>Nom</th>
+<th>Durée en min</th>
+<th>Poids</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vidéo A</td>
+<td>114</td>
+<td>4.57 Go</td>
+</tr>
+<tr>
+<td>Vidéo B</td>
+<td>32</td>
+<td>630 Mo</td>
+</tr>
+<tr>
+<td>Vidéo C</td>
+<td>20</td>
+<td>1.65 Go</td>
+</tr>
+<tr>
+<td>Vidéo D</td>
+<td>4</td>
+<td>85 Mo</td>
+</tr>
+<tr>
+<td>Vidéo E</td>
+<td>18</td>
+<td>2,15 Go</td>
+</tr>
+<tr>
+<td>Vidéo F</td>
+<td>80</td>
+<td>2,71 Go</td>
+</tr>
+<tr>
+<td>Vidéo G</td>
+<td>5</td>
+<td>320 Mo</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Problème</strong> : Quelles vidéos copier sur la clé USB pour que la durée des vidéos soient la plus grande possible tout en ne dépassant pas 5 Go ?</p>
+</blockquote>
+<p>✍️ <strong>Question 1</strong> : Quelle est la valeur que l'on cherche à maximiser/minimiser ? Quelle est la contrainte ?</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 2</strong> : Quel problème vu en classe et/ou en exercices reconnaissez-vous ?</p>
+</div>
+</div>
+</div>Votre réponse :
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Dans la suite, vous allez implémenter (= programmer) une solution gloutonne pour résoudre ce problème, puis vous implémenterez l'algorithme de <em>force brute</em> qui donnera la solution optimale au problème. La <strong>stratégie gloutonne retenue sera de toujours prendre la vidéo de plus grande durée</strong> n'excédant pas la capacité restante de poids.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 3</strong> : Appliquez (à la main) cette stratégie gloutonne sur la table de vidéos pour une capacité maximale de 5 Go. <em>Expliquez rapidement les étapes</em>.</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Repr%C3%A9sentation-des-donn%C3%A9es">Représentation des données<a class="anchor-link" href="#Repr%C3%A9sentation-des-donn%C3%A9es">¶</a></h2><p>Dans la suite, on utilisera des dictionnaires de la forme suivante pour représenter chaque vidéo, la durée étant donnée en minute et le poids étant donné en Go.</p>
+<div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">4.57</span><span class="p">}</span>
+</pre></div>
+<p>On peut alors mémoriser les 7 vidéos dans le tableau <code>table_videos</code> suivant.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">table_videos</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.63</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">1.65</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video D'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.085</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video E'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">2.15</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video F'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">2.71</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video G'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.32</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>💻 <strong>Question 4</strong> : Écrivez les instructions permettant d'accéder :</p>
+<ul>
+<li>au nom de la première vidéo</li>
+<li>à la durée de la vidéo D</li>
+<li>au poids de la vidéo G</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%C3%89criture-des-fonctions-utiles">Écriture des fonctions utiles<a class="anchor-link" href="#%C3%89criture-des-fonctions-utiles">¶</a></h2><p>Pour résoudre le problème on aura besoin d'accéder au poids et à la durée des vidéos. Les deux fonctions suivantes permettent de renvoyer respectivement le poids et la durée d'une vidéo représentée par un dictionnaire comme indiqué précédemment.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">duree</span><span class="p">(</span><span class="n">video</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">video</span><span class="p">[</span><span class="s1">'duree'</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">poids</span><span class="p">(</span><span class="n">video</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">video</span><span class="p">[</span><span class="s1">'poids'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>On peut vérifier :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">duree</span><span class="p">({</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video D'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.085</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">poids</span><span class="p">({</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video G'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.32</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>💻 <strong>Question 5</strong> : Écrivez une fonction <code>poids_total(table_videos)</code> qui renvoie le poids total des vidéos présentes dans <code>table_videos</code>. Quelques assertions devant être vérifiées par votre fonction sont données ci-dessous.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">poids_total</span><span class="p">(</span><span class="n">table_videos</span><span class="p">):</span>
+    <span class="c1"># à compléter</span>
+    
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">table1</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">1.65</span><span class="p">}]</span>
+<span class="n">table2</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+           <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.63</span><span class="p">}]</span>
+<span class="n">table3</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+          <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.63</span><span class="p">},</span>
+          <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">1.65</span><span class="p">}]</span>
+
+<span class="k">assert</span> <span class="n">poids_total</span><span class="p">(</span><span class="n">table1</span><span class="p">)</span> <span class="o">==</span> <span class="mf">1.65</span>   <span class="c1"># on compare des nombres réels mais on a pris soin de bien choisir les exemples !!</span>
+<span class="k">assert</span> <span class="n">poids_total</span><span class="p">(</span><span class="n">table2</span><span class="p">)</span> <span class="o">==</span> <span class="mf">5.2</span>
+<span class="k">assert</span> <span class="n">poids_total</span><span class="p">(</span><span class="n">table3</span><span class="p">)</span> <span class="o">==</span> <span class="mf">6.85</span>
+<span class="k">assert</span> <span class="n">poids_total</span><span class="p">([])</span> <span class="o">==</span> <span class="mi">0</span>   <span class="c1"># table vide testée</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>💻 <strong>Question 6</strong> : Écrivez une fonction <code>duree_totale(table_videos)</code> qui renvoie la durée totale des vidéos présentes dans <code>table_videos</code>. Quelques assertions devant être vérifiées par votre fonction sont données ci-dessous.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">duree_totale</span><span class="p">(</span><span class="n">table_videos</span><span class="p">):</span>
+    <span class="c1"># à compléter</span>
+    
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">table1</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">1.65</span><span class="p">}]</span>
+<span class="n">table2</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+           <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.63</span><span class="p">}]</span>
+<span class="n">table3</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+          <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.63</span><span class="p">},</span>
+          <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">1.65</span><span class="p">}]</span>
+
+<span class="k">assert</span> <span class="n">duree_totale</span><span class="p">(</span><span class="n">table1</span><span class="p">)</span> <span class="o">==</span> <span class="mi">20</span>
+<span class="k">assert</span> <span class="n">duree_totale</span><span class="p">(</span><span class="n">table2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">146</span>
+<span class="k">assert</span> <span class="n">duree_totale</span><span class="p">(</span><span class="n">table3</span><span class="p">)</span> <span class="o">==</span> <span class="mi">166</span>
+<span class="k">assert</span> <span class="n">duree_totale</span><span class="p">([])</span> <span class="o">==</span> <span class="mi">0</span>   <span class="c1"># table vide testée</span>
+<span class="k">assert</span> <span class="n">duree_totale</span><span class="p">(</span><span class="n">table_videos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">273</span>  <span class="c1"># table avec toutes les vidéos</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Impl%C3%A9mentation-de-l'algorithme-glouton">Implémentation de l'algorithme glouton<a class="anchor-link" href="#Impl%C3%A9mentation-de-l'algorithme-glouton">¶</a></h1><p>On rappelle que la stratégie gloutonne retenue est de <strong>toujours prendre la vidéo de plus grande durée</strong> n'excédant pas la capacité restante de poids.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Tri-pr%C3%A9alable">Tri préalable<a class="anchor-link" href="#Tri-pr%C3%A9alable">¶</a></h2><p>Comme la stratégie gloutonne retenue prévoit de choisir les vidéos de plus grande durée n'excédant pas la capacité restante, il est judicieux de commencer par trier les vidéos de <code>table_videos</code> par durée décroissante.</p>
+<p>💻 <strong>Question 7</strong> : Utilisez la fonction <code>sorted</code> de Python pour obtenir un <em>nouveau</em> tableau (appelé <code>table_triee</code> contenant les vidéos de <code>table_videos</code> triées par durée décroissante. <em>Indication</em> : l'instruction <code>help(sorted)</code> permet d'afficher l'aide de la fonction <code>sorted</code> (vous pouvez aussi revoir le cours sur les tris de table si nécessaire).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">help</span><span class="p">(</span><span class="nb">sorted</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à compléter</span>
+<span class="n">table_triee</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">table_triee</span>  <span class="c1"># pour vérifier</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Algorithme-glouton">Algorithme glouton<a class="anchor-link" href="#Algorithme-glouton">¶</a></h2><p>💻 <strong>Question 8</strong> : En vous inspirant de l'implémentation de l'algorithme glouton du rendu de monnaie (voir cours ou exercices), écrivez une fonction <code>glouton(table_videos, poids_max)</code> qui prend en paramètre une table de vidéos <code>table_videos</code> et un poids maximal <code>poids_max</code> et renvoie une liste <code>solution_gloutonne</code> contenant les vidéos de la solution gloutonne au problème. La solution gloutonne à trouver est donnée dans l'assertion qui suit.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">glouton</span><span class="p">(</span><span class="n">table_videos</span><span class="p">,</span> <span class="n">poids_max</span><span class="p">):</span>
+    <span class="c1"># TRI DE LA TABLE</span>
+    <span class="c1"># à compléter par l'instruction de votre réponse précédente</span>
+    <span class="n">table_triee</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="c1"># ALGORITHME GLOUTON</span>
+    <span class="n">poids_total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">solution_gloutonne</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># à compléter</span>
+    <span class="c1"># on se positionne sur la première vidéo (de la table triée)</span>
+    <span class="c1"># tant qu'il reste des vidéos à traiter et que le poids max n'est pas atteint </span>
+        <span class="c1"># on prend la premiere video restante</span>
+        <span class="c1"># si elle n'est pas trop lourde (capacité restante suffisante)</span>
+            <span class="c1"># on l'ajoute à solution_gloutonne et on met à jour le poids total de la solution gloutonne</span>
+        <span class="c1"># on passe à la vidéo suivante</span>
+    
+    <span class="k">return</span> <span class="n">solution_gloutonne</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">glouton</span><span class="p">(</span><span class="n">table_videos</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">==</span> <span class="p">[{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video G'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">0.32</span><span class="p">},</span>
+                                    <span class="p">{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video D'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">0.085</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>💻 <strong>Question 9</strong> : Utilisez la fonction <code>duree_totale</code> pour déterminer la durée totale de la solution gloutonne. Quelle est sa durée totale ?</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Impl%C3%A9mentation-de-l'algorithme-de-force-brute">Implémentation de l'algorithme de <em>force brute</em><a class="anchor-link" href="#Impl%C3%A9mentation-de-l'algorithme-de-force-brute">¶</a></h1><p>On a vu que la stratégie gloutonne ne fournit pas nécessairement la solution optimale à un problème. Il existe un moyen de trouver la solution optimale : il s'agit de la stratégie de <strong>force brute</strong> (ou <em>énumérative</em>) qui consiste à passer en revue <strong>toutes</strong> les options possibles et retenir la meilleure.</p>
+<blockquote>
+<p>On peut utiliser la <em>force brute</em> pour notre exemple car il n'y a pas énormément de combinaisons à tester. Mais cette stratégie ne peut pas s'appliquer dès que le nombre de combinaisons est trop important. C'est l'objet de la dernière question.</p>
+</blockquote>
+<p>Le principe de la force brute est donc simple : il faut étudier tous les cas possibles. Ainsi, pour appliquer cette stratégie, il faut :</p>
+<ol>
+<li>d'abord <em>énumérer</em> toutes les combinaisons possibles de vidéos</li>
+<li>puis chercher parmi ces combinaisons la meilleure solution parmi celles respectant la contrainte (la combinaison de vidéos ne dépasse pas 5 Go max) : cela renviendra à faire une recherche de maximum</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">table_videos</span> <span class="o">=</span> <span class="p">[{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.63</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">1.65</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video D'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.085</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video E'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">2.15</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video F'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">2.71</span><span class="p">},</span>
+                <span class="p">{</span><span class="s1">'nom'</span> <span class="p">:</span> <span class="s1">'video G'</span><span class="p">,</span> <span class="s1">'duree'</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'poids'</span> <span class="p">:</span> <span class="mf">0.32</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%C3%89tape-1-:-%C3%A9num%C3%A9ration-de-toutes-les-combinaisons">Étape 1 : énumération de toutes les combinaisons<a class="anchor-link" href="#%C3%89tape-1-:-%C3%A9num%C3%A9ration-de-toutes-les-combinaisons">¶</a></h2><p>Il s'agit de la difficulté majeure. Dans une combinaison de vidéos, chaque vidéo de départ est prise ou non, il s'agit d'une donnée binaire. Ainsi, une approche consiste à créer des mots binaires représentant chaque combinaison. Par exemple, le mot <code>'1101001'</code> signifie qu'on prend les vidéos A, B, D et G tandis que le mot <code>'1111111'</code> signifie que l'on prend toutes les vidéos.</p>
+<p>Dans notre exemple, nous avons 7 vidéos donc il y a <span class="math">2<sup>7</sup> = 128</span> combinaisons possibles.</p>
+<p>On va construire un tableau <code>combinaisons</code> contenant toutes les combinaisons binaires. Pour cela, l'idée est de commencer par construire un tableau <code>tab_entiers</code> contenant tous les entiers compris entre <span class="math">0</span> et <span class="math">2<sup>7</sup>-1 = 127</span>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">table_videos</span><span class="p">)</span>  <span class="c1"># nombre de vidéos</span>
+<span class="n">tab_entiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">n</span><span class="p">)]</span>  <span class="c1"># création d'un tableau avec tous les entiers entre 0 et 2**n-1</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tab_entiers</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ensuite, on construit un autre tableau <code>tab_binaire</code> avec les conversions binaires de chaque entier.</p>
+<blockquote>
+<p><strong>Astuce</strong> : la fonction <code>bin</code> prend un entier en paramètre et renvoie sa valeur binaire sous forme d'une chaîne de caractères. Par exemple, <code>bin(12)</code> renvoie la chaîne <code>'0b1101'</code>. Il suffira de supprimer les caractères <code>'0b'</code> en tête pour obtenir l'écriture binaire. On veillera également à compléter avec des zéros devant pour obtenir un mot de la longueur désirée.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">tab_binaire</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bin</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tab_entiers</span><span class="p">]</span>  <span class="c1"># conversion binaire des entiers du tableau précédent, le [2:] permet de supprimer les caractères de tête '0b' renvoyés par la fonction bin</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tab_binaire</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Enfin, pour obtenir le tableau <code>combinaisons_binaires</code>, on prendra le soin de compléter avec autant de zéros que nécessaires les valeurs binaires précédentes pour obtenir des mots de longueur 7, représentant les combinaisons possibles de vidéos. Le tableau <code>combinaisons_binaires</code> contient bien tous les 128 mots binaires de longueur 7.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">combinaisons_binaires</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'0'</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="o">+</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tab_binaire</span><span class="p">]</span>  <span class="c1"># ajout des zéros pour obtenir des mots binaires de longueur n</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">combinaisons_binaires</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>On peut écrire une fonction <code>liste_combinaisons_binaires</code> qui reprend ces différentes étapes pour construire et renvoyer le tableau <code>combinaisons_binaires</code> précédent (cette fonction sera utilisée par la suite).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">liste_combinaisons_binaires</span><span class="p">(</span><span class="n">table_videos</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">table_videos</span><span class="p">)</span>  <span class="c1"># nombre de vidéos</span>
+    <span class="n">tab_entiers</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="n">n</span><span class="p">)]</span>  <span class="c1"># création d'un tableau avec tous les entiers entre 0 et 2**n-1</span>
+    <span class="n">tab_binaire</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bin</span><span class="p">(</span><span class="n">i</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tab_entiers</span><span class="p">]</span>  <span class="c1"># conversion binaire des entiers du tableau précédent, le [2:] permet de supprimer les caractères de tête '0b' renvoyés par la fonction bin</span>
+    <span class="n">combinaisons_binaires</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'0'</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">k</span><span class="p">))</span> <span class="o">+</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">tab_binaire</span><span class="p">]</span>  <span class="c1"># ajout des zéros pour obtenir des mots binaires de longueur n</span>
+    <span class="k">return</span> <span class="n">combinaisons_binaires</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">liste_combinaisons_binaires</span><span class="p">(</span><span class="n">table_videos</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%C3%89tape-2-:-recherche-de-la-meilleure-solution">Étape 2 : recherche de la meilleure solution<a class="anchor-link" href="#%C3%89tape-2-:-recherche-de-la-meilleure-solution">¶</a></h2><p>Pour chercher la meilleure solution il faut être capable de convertir un mot binaire en le tableau de vidéos correspondant. On pourra ainsi calculer la durée totale et le poids total de chaque combinaison.</p>
+<p>💻 <strong>Question 10</strong> : Écrivez une fonction <code>mot_binaire_en_liste_de_videos(mot_binaire, table_videos)</code> qui renvoie un tableau contenant les vidéos de <code>table_videos</code> correspondant au mot binaire <code>mot_binaire</code>.</p>
+<p>Exemples :</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">mot_binaire_en_liste_de_videos</span><span class="p">(</span><span class="s1">'0010000'</span><span class="p">,</span> <span class="n">table_videos</span><span class="p">)</span>
+<span class="p">[{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">1.65</span><span class="p">}]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mot_binaire_en_liste_de_videos</span><span class="p">(</span><span class="s1">'1100001'</span><span class="p">,</span> <span class="n">table_videos</span><span class="p">)</span>
+<span class="p">[{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video A'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">114</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">4.57</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">0.63</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video G'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">0.32</span><span class="p">}]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mot_binaire_en_liste_de_videos</span><span class="p">(</span><span class="s1">'0000000'</span><span class="p">,</span> <span class="n">table_videos</span><span class="p">)</span>
+<span class="p">[]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Maintenant que l'on sait convertir chaque combinaison possible (mot binaire) en une liste de vidéos, on va pouvoir chercher la meilleure combinaison de vidéos.</p>
+<p>💻 <strong>Question 11</strong> : Écrivez une fonction <code>force_brute(table_videos, poids_max)</code> qui renvoie la solution optimale à notre problème.</p>
+<p><strong>Aide</strong> : l'idée est de parcourir chaque combinaison (mot binaire), de la convertir en la liste de vidéos correspondante pour déterminer celle dont la durée est maximale mais dont le poids ne dépasse pas <code>poids_max</code>. C'est donc une recherche de maximum avec une contrainte de poids. Vous devez trouver :</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">force_brute</span><span class="p">(</span><span class="n">table_videos</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="p">[{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video B'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">0.63</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video C'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">1.65</span><span class="p">},</span>
+ <span class="p">{</span><span class="s1">'nom'</span><span class="p">:</span> <span class="s1">'video F'</span><span class="p">,</span> <span class="s1">'duree'</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">'poids'</span><span class="p">:</span> <span class="mf">2.71</span><span class="p">}]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 12</strong> : L'algorithme glouton a-t-il donné la solution optimale ? Expliquez.</p>
+</div>
+</div>
+</div>Votre réponse :
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 13</strong> : Si on avait disposé au départ de 40 vidéos, la stratégie gloutonne aurait pu être appliquée mais pas celle de force brute. Expliquez pourquoi à votre avis, en étant le plus précis possible.</p>
+</div>
+</div>
+</div>Votre réponse :
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="color: blue; font-weight:bold;">Points :</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>Germain BECKER &amp; Sébastien POINT, Lycée Mounier, ANGERS <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr">Licence CC BY-NC-SA 4.0</a></p>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Germain Becker et Sébastien Point (lycée Mounier, Angers) · CC BY-NC-SA 4.0 · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/capytale/nsi-gloutons-cle-usb/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

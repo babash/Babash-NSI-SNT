@@ -1,0 +1,1037 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrôle blanc auto-corrigé : les types construits</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI première</div>
+<main>
+<h1>Contrôle blanc auto-corrigé : les types construits</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="nsi-types-construits-controle.ipynb" download>Télécharger le notebook (nsi-types-construits-controle.ipynb)</a></li><li><a href="auto_eval.py">auto_eval.py</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<center>
+<h1 id="Contr%C3%B4le-blanc---Types-construits">Contrôle blanc - Types construits<a class="anchor-link" href="#Contr%C3%B4le-blanc---Types-construits">¶</a></h1><h3 id="Correction-automatique">Correction automatique<a class="anchor-link" href="#Correction-automatique">¶</a></h3></center>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-info"><p class="adm-t">Consignes</p>
+<p>Ceci est un contrôle blanc sur les <strong>types construits</strong>.</p>
+<p>Pour afficher votre note, vous pouvez à tout moment écrire :</p>
+<div class="highlight"><pre><span></span><span class="n">print_note</span><span class="p">()</span>
+</pre></div>
+<p>Le controle est composé de 15 questions + 1 bonus.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">auto_eval</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="n">go</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-info"><p class="adm-t">Contexte</p>
+<p>Vous êtes <strong>développeur senior</strong> dans une entreprise spécialisée en analyse sportive.</p>
+<p><strong>Vous travaillez avec un stagiaire qui découvre Python</strong> et vous l'accompagnez dans le <strong>développement d'une application d’analyse des performances des clubs de Ligue 1</strong>.</p>
+<p>Votre objectif est de lui faire découvrir les structures de données fondamentales de Python en l’aidant à faire les bons choix de modélisation et de traitement d’informations.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 1 (1pt/20)</p>
+<p>🎯 <strong>Votre stagiaire vous demande conseil sur la meilleure manière de représenter le classement actuel des clubs de Ligue 1.</strong></p>
+<p>Il souhaite pouvoir modifier ce classement après chaque journée (victoire, nul, défaite).</p>
+<p>En tant que développeur senior, vous devez lui recommander une structure de données adaptée.</p>
+<p>👇 Pour répondre au stagiaire exécutez la cellule contenant <code>Q1()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Astuce</summary>
+<p>On remarque que:</p>
+<ul>
+<li>le classement sera fréquemment modifié en fonction des matchs</li>
+<li>l'ordre des équipes est très important</li>
+</ul>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q1</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p>La structure de données la plus adaptée pour représenter un classement est une <strong>liste</strong> car les listes permettent d'enregistrer des valeurs de manière <strong>ordonnée</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 2 (1.5pts/20)</p>
+<p>⚽ Votre stagiaire souhaite modéliser le classement actuel des 4 premiers clubs de Ligue 1.</p>
+<p>Il vous demande comment représenter ce classement en Python à l’aide d’une variable.</p>
+<p>Voici le classement actuel de ligue 1 :</p>
+<ol>
+<li>PSG</li>
+<li>OM</li>
+<li>Monaco</li>
+<li>Nice</li>
+</ol>
+<p>📌 Aidez-le à écrire une variable classement contenant ces 4 clubs, dans le bon ordre dans la cellule de code ci-dessous.</p>
+<p>👇 Pour répondre au stagiaire exécutez la cellule contenant <code>Q2()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est a vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Astuce</summary>
+<p>On écrit <code>classement = [ ]</code> pour représenter une liste vide. Votre classement est-il vide ?</p>
+<p>👂 A bon entendeur, les chaînes de caractères sont entourées de guillemets (<code>""</code>)</p>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q2</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<div class="highlight"><pre><span></span><span class="n">classement</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PSG"</span><span class="p">,</span> <span class="s2">"OM"</span><span class="p">,</span> <span class="s2">"Monaco"</span><span class="p">,</span> <span class="s2">"Nice"</span><span class="p">]</span>
+</pre></div>
+<p>Les crochets permettent de créer une liste.</p>
+<p>Attention à ne pas oublier les guillements(<code>""</code>) car le nom des clubs sont des chaînes de caractères.</p>
+<p>👇 Exécuter la cellule ci-dessous pour continuer l'activité 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Correction à exécuter</span>
+<span class="n">classement</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PSG"</span><span class="p">,</span> <span class="s2">"OM"</span><span class="p">,</span> <span class="s2">"Monaco"</span><span class="p">,</span> <span class="s2">"Nice"</span><span class="p">]</span>
+<span class="n">correction_lue</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 3 (1pt/20)</p>
+<p>🧠 Votre stagiaire veut savoir combien d'équipes sont actuellement dans la liste classement.</p>
+<p>Il vous demande quelle fonction Python permet d'obtenir cette information.</p>
+<p>❓Quelle est cette fonction ?</p>
+<p>👇 Pour répondre exécutez la cellule contenant <code>Q3()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q3</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<div class="highlight"><pre><span></span><span class="n">l_classement</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classement</span><span class="p">)</span>
+</pre></div>
+<p>On utilise la fonction len() qui renvoie la taille d'une liste.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 4 (1pt/20)</p>
+<p>⚙️ Votre stagiaire a besoin de récupérer la première équipe du classement pour générer une alerte spéciale dans l’application.</p>
+<p>❓ Quelle commande Python lui recommandez-vous pour accéder à ce premier élément ?</p>
+<p>👇 Pour répondre exécutez la cellule contenant <code>Q4()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q4</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center;"></th>
+<th style="text-align:center;"></th>
+<th style="text-align:center;"></th>
+<th style="text-align:center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valeurs</td>
+<td style="text-align:center;">PSG</td>
+<td style="text-align:center;">OM</td>
+<td style="text-align:center;">Monaco</td>
+<td style="text-align:center;">Nice</td>
+</tr>
+<tr>
+<td>Indexes</td>
+<td style="text-align:center;">0</td>
+<td style="text-align:center;">1</td>
+<td style="text-align:center;">2</td>
+<td style="text-align:center;">3</td>
+</tr>
+</tbody>
+</table>
+<p>On utilise des crochets (<code>[ ]</code>) pour écrire l'indice/l'emplacement voulu.</p>
+<p>Ainsi pour accéder au premier élèment on écrit <code>classement[0]</code> et pour l'affecter dans la variable premier, on écrit :</p>
+<div class="highlight"><pre><span></span><span class="n">premier</span> <span class="o">=</span> <span class="n">classement</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 5 (1pt/20)</p>
+<p>⚙️ Votre stagiaire a besoin de récupérer la dernière équipe du classement pour générer une alerte spéciale dans l’application.</p>
+<p>❓ Quelle commande Python lui recommandez-vous pour accéder à ce dernier élément ? (utilisant les indices négatifs)</p>
+<p>👇 Pour répondre exécutez la cellule contenant <code>Q5()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q5</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p>On peut utiliser les indexes négatifs.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th style="text-align:center;"></th>
+<th style="text-align:center;"></th>
+<th style="text-align:center;"></th>
+<th style="text-align:center;"></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Valeurs</td>
+<td style="text-align:center;">PSG</td>
+<td style="text-align:center;">OM</td>
+<td style="text-align:center;">Monaco</td>
+<td style="text-align:center;">Nice</td>
+</tr>
+<tr>
+<td>Indexes Négatifs</td>
+<td style="text-align:center;">-4</td>
+<td style="text-align:center;">-3</td>
+<td style="text-align:center;">-2</td>
+<td style="text-align:center;">-1</td>
+</tr>
+</tbody>
+</table>
+<p>On utilise des crochets (<code>[ ]</code>) pour écrire l'indice/l'emplacement voulu.</p>
+<p>Ainsi pour accéder au dernier élèment on écrit <code>classement[-1]</code> et pour l'affecter dans la variable dernier, on écrit :</p>
+<div class="highlight"><pre><span></span><span class="n">dernier</span> <span class="o">=</span> <span class="n">classement</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 6 (1.5pts/20)</p>
+<p>➕ Deux nouveaux clubs : OL et Lille entre dans le classement.
+Votre stagiaire souhaite ajouter ces clubs à la fin de la liste (respectivement 5ème et 6ème position).</p>
+<p>❓ Ecrire dans la cellule ci-dessous la ou les commandes permettant d'arriver à ce resultat.</p>
+<p>👇 N'oubliez d'exécuter la cellule contenant <code>Q6()</code> pour valider votre code 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q6</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p>Pour <strong>ajouter</strong> un élèment dans une liste, on utilise la fonction <code>.append()</code>.</p>
+<p><code>classement.append("OL")</code></p>
+<p><code>classement.append("Lille")</code></p>
+<p>On peut également l'écrire en une seule ligne, en utilisant la fonction <code>.extend()</code> qui permet d'étendre une liste avec une autre liste.</p>
+<p><code>classement.extend(["OL", "Lille"])</code></p>
+<p>👇 Exécuter la cellule ci-dessous pour continuer l'activité 👇
+!!!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Correction à exécuter</span>
+<span class="n">classement</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"PSG"</span><span class="p">,</span> <span class="s2">"OM"</span><span class="p">,</span> <span class="s2">"Monaco"</span><span class="p">,</span> <span class="s2">"Nice"</span><span class="p">]</span>
+<span class="n">classement</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s2">"OL"</span><span class="p">,</span> <span class="s2">"Lille"</span><span class="p">])</span>
+<span class="n">correction_lue</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 7 (1.5pts/20)</p>
+<p>❌ Le client se rend compte qu'il s'est trompé. Lille est en fait 5ème et l'OL 6ème.</p>
+<p>❓ Aider le stagiaire à modifier la variable <strong>classement</strong> pour inverser les places de Lille et l'OL.</p>
+<p>👇 N'oubliez d'exécuter la cellule contenant <code>Q7()</code> pour valider votre code 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Astuce</summary>
+<p>Pour échanger deux élèments, on peut écrire :</p>
+<div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q7</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p>Pour <strong>échanger</strong> deux élèments, on peut écrire :</p>
+<div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span><span class="n">a</span>
+</pre></div>
+<p>Dans notre cas, on veut échanger l'élèment à l'indice 4 avec l'élèment à l'indice 5. Ainsi on peut écrire:</p>
+<div class="highlight"><pre><span></span><span class="n">classement</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">classement</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">classement</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">classement</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+</pre></div>
+<p>👇 Exécuter la cellule ci-dessous pour continuer l'activité 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Correction à exécuter</span>
+<span class="n">classement</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span><span class="n">classement</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">classement</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span><span class="n">classement</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+<span class="n">correction_lue</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-abstract"><p class="adm-t">Nouvelle demande du client</p>
+<p>Le client nous demande maintenant de représenter les statistiques des équipes.
+Pour chaque équipe on aura (dans cette ordre):</p>
+<ul>
+<li>un classement</li>
+<li>un nombre de points</li>
+<li>un nombre de buts encaissés</li>
+<li>un nombre de buts marqués</li>
+</ul>
+<p>Votre stagiaire choisit la structuration ci-dessous.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">stats</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"PSG"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">84</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="mi">92</span><span class="p">),</span>
+         <span class="s2">"OM"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">74</span><span class="p">),</span>
+         <span class="s2">"Monaco"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">61</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">63</span><span class="p">),</span>
+         <span class="s2">"Nice"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">66</span><span class="p">),</span>
+         <span class="s2">"Lille"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">52</span><span class="p">),</span>
+         <span class="s2">"OL"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">46</span><span class="p">,</span> <span class="mi">65</span><span class="p">),</span>
+         <span class="s2">"Strasbourg"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">57</span><span class="p">,</span> <span class="mi">44</span><span class="p">,</span> <span class="mi">56</span><span class="p">),</span>
+         <span class="s2">"Lens"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">39</span><span class="p">,</span> <span class="mi">42</span><span class="p">),</span>
+         <span class="s2">"Brest"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">52</span><span class="p">),</span>
+         <span class="s2">"Auxerre"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">51</span><span class="p">,</span> <span class="mi">48</span><span class="p">),</span>
+         <span class="s2">"Rennes"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">41</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">51</span><span class="p">),</span>
+         <span class="s2">"Nantes"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">13</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">52</span><span class="p">,</span> <span class="mi">39</span><span class="p">),</span>
+         <span class="s2">"Angers"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">36</span><span class="p">,</span> <span class="mi">53</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span>
+         <span class="s2">"Le Havre"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">71</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span>
+         <span class="s2">"Reims"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">47</span><span class="p">,</span> <span class="mi">33</span><span class="p">),</span>
+         <span class="s2">"Saint-Etienne"</span><span class="p">:</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">77</span><span class="p">,</span> <span class="mi">39</span><span class="p">),</span>
+         <span class="s2">"Montpellier"</span> <span class="p">:</span> <span class="p">(</span><span class="mi">18</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">79</span><span class="p">,</span> <span class="mi">23</span><span class="p">)}</span>
+<span class="n">go</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 8 (1pt/20)</p>
+<p>🤨 Votre stagiaire est un peu perdu, il se demande quel est le type de la variable <code>stats</code> ?</p>
+<p>👇 Pour lui répondre exécutez la cellule contenant <code>Q8()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q8</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p><code>stats</code> est de type dictionnaire, on reconnait ce type grace aux accolades {} lors de l'instanciation.
+!!!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 9 (1.5pt/20)</p>
+<p>🤨 Votre stagiaire est un peu perdu, il se demande quel est le type de <code>stats["Reims"]</code> ?</p>
+<p>👇 Pour lui répondre exécutez la cellule contenant <code>Q9()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q9</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p><code>stats["Reims"]</code> est de type tuple, on reconnait ce type grace aux parenthèses ().
+!!!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 10 (1pt/20)</p>
+<p>😈 Vous décidez de poser une question piège à votre stagiaire, est-il possible de modifier le classement d'une équipe avec cette structure de données ?</p>
+<p>👇 Répondez en exécutant la cellule contenant <code>Q10()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q10</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p>Il n'est pas possible de changer le classement d'une équipe, car l'information est stockée dans un tuple et que les tuples sont non-mutables (ils n'acceptent d'être modifiés).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 11 (1.5pt/20)</p>
+<p>❓ Votre stagiaire ce demande ce qu'il faut-il écrire pour obtenir le nombre de points de Lens ?</p>
+<p>👇 Pour lui répondre exécutez la cellule contenant <code>Q11()</code> 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Astuce</summary>
+<p>Pour rappel, le tuple associé à Lens contient 4 valeurs : le classement, le nombre de points, le nombre de buts encaissés puis le nombre de buts marqués. Le nombre de points est donc à l'indice 1.</p>
+<p>On peut accéder aux buts marqués de la manière suivante :</p>
+<div class="highlight"><pre><span></span><span class="n">stats</span><span class="p">[</span><span class="s2">"Lens"</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q11</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p><code>stats["Lens"][1]</code>
+!!!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 12 (1pt/20)</p>
+<p>🧪 Votre stagiaire teste différentes façons d'accéder aux données dans le dictionnaire stats, et tape la commande suivante :</p>
+<p><code>stats[1]</code></p>
+<p>Il vous demande ce qui se passera lorsqu’il l’exécutera.</p>
+<p>👇 Pour lui répondre exécutez la cellule contenant <code>Q12()</code> 👇
+!!!</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q12</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-success"><p class="adm-t">Correction</p>
+<p>On obtient une <code>KeyError</code> car  Python ne trouve pas de clé 1 dans le dictionnaire <code>stats</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 13 (1.5pts/20)</p>
+<p>🧐 Le client remarque que les données fournies sont incomplètes : l’équipe de Toulouse, 10ᵉ de Ligue 1, est absente.
+Elle a obtenu 42 points, a encaissé 43 buts et en a marqué 44.</p>
+<p>🎯 Votre stagiaire doit donc mettre à jour le dictionnaire <code>stats</code> pour intégrer Toulouse avec ses statistiques.</p>
+<p>🔧 Modifiez la variable <code>stats</code> pour ajouter Toulouse.</p>
+<p>👇 N'oubliez d'exécuter la cellule contenant <code>Q13()</code> pour valider votre code 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Astuce</summary>
+<p>On va <strong>associer</strong> un tuple à la <strong>clé</strong> "Toulouse".</p>
+<div class="highlight"><pre><span></span><span class="n">stats</span><span class="p">[</span><span class="s2">"Toulouse"</span><span class="p">]</span> <span class="o">=</span> 
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q13</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Correction à exécuter</span>
+<span class="n">stats</span><span class="p">[</span><span class="s2">"Toulouse"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">42</span><span class="p">,</span> <span class="mi">43</span><span class="p">,</span> <span class="mi">44</span><span class="p">)</span>
+<span class="n">correction_lue</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 14 (2pts/20)</p>
+<p>⚽ Votre stagiaire a écrit une fonction meilleure_attaque(stats) qui prend en paramètre un dictionnaire contenant les statistiques des équipes de Ligue 1, sous la forme suivante :</p>
+<p>Il vous demande de l’aider à compléter cette fonction pour qu’elle retourne le nom de l’équipe ayant marqué le plus de buts.</p>
+<p>Compléter la fonction <code>meilleure_attaque(stats)</code> ci-dessous, qui prend en paramètre les statistiques et retourne le nom de l'équipe qui a marqué le plus de buts.</p>
+<p>👇 N'oubliez d'exécuter la cellule contenant <code>Q14()</code> pour valider votre code 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">meilleure_attaque</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="n">but_marques_max</span> <span class="o">=</span> <span class="o">...</span> <span class="c1">#initialiation du max</span>
+    <span class="n">meilleure_equipe</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">...</span><span class="p">():</span> <span class="c1">#parcourir le dictionnaire stats</span>
+        <span class="n">but_marques</span> <span class="o">=</span> <span class="o">...</span> <span class="c1">#accés aux buts marqués dans v (dernière valeur du tuple)</span>
+        <span class="k">if</span> <span class="o">..................</span><span class="p">:</span> <span class="c1"># test si c'est plus grand que le max enregistré précédemment</span>
+            <span class="n">but_marques_max</span> <span class="o">=</span> <span class="n">but_marques</span> <span class="c1"># si oui, on enregistre cette valeur comme nouveau max</span>
+            <span class="n">meilleure_equipe</span> <span class="o">=</span> <span class="n">e</span> <span class="c1"># on enregistre l'équipe associée</span>
+    <span class="k">return</span> <span class="n">meilleure_equipe</span>
+            
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q14</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">meilleure_attaque</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="n">but_marques_max</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">meilleure_equipe</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">but_marques</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">but_marques</span> <span class="o">&gt;</span> <span class="n">but_marques_max</span><span class="p">:</span>
+            <span class="n">but_marques_max</span> <span class="o">=</span> <span class="n">but_marques</span>
+            <span class="n">meilleure_equipe</span> <span class="o">=</span> <span class="n">e</span>
+    <span class="k">return</span> <span class="n">meilleure_equipe</span>
+            
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 15 (2pts/20)</p>
+<p>📊 Votre stagiaire souhaite évaluer la performance globale des équipes de Ligue 1.
+Il a stocké les statistiques des clubs dans un dictionnaire stats de la forme suivante :</p>
+<p>Il vous demande de l’aider à écrire une fonction <code>nb_pts_moyen(stats)</code> qui retourne le nombre de points moyen des équipes de ligue 1.</p>
+<p>👇 N'oubliez d'exécuter la cellule contenant <code>Q15()</code> pour valider votre code 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Astuce</summary>
+<p>On initialise une variable qui contiendra le nombre de points, puis on parcoure le disctionnaire en ajoutant chaque fois à cette variable le nombre de points de chaque équipe</p>
+<p>Le nombre de points est à <strong>l'indice 1</strong> du tuples de statistiques.</p>
+<p>Attention à ne pas oublier le return !</p>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nb_pts_moyen</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="k">pass</span> <span class="c1"># ligne à supprimer avant de compléter la fonction</span>
+
+<span class="n">nb_pts_moyen</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q15</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">nb_pts_moyen</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="n">sum_pts</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+        <span class="n">sum_pts</span> <span class="o">+=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">sum_pts</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">[BONUS] Question 16 (2pts/20)</p>
+<p>📈 Votre stagiaire souhaite enrichir les statistiques des équipes de Ligue 1 avec un indicateur essentiel : la différence de buts.</p>
+<p>Il vous demande de l’aider à écrire une fonction <code>difference_buts(stats)</code>, qui prend en paramètre les statistiques et retourne un nouveau dictionnaire associant le nom de l'équipe à sa différence de buts.</p>
+<p>La difference de buts se calcule comme suit :
+$$ \text{différence de buts} = \text{buts marqués} - \text{buts encaissés}$$</p>
+<p>👇 N'oubliez d'exécuter la cellule contenant <code>Q16()</code> pour valider votre code 👇</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Astuce</summary>
+<p>Si vous êtes arrivé là, c'est que vous n'avez pas besoin d'astuce pour cette fois !👏</p>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">difference_buts</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="k">pass</span> <span class="c1"># ligne à supprimer avant de compléter la fonction</span>
+
+<span class="n">difference_buts</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">Q16</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">difference_buts</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="n">diff</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">diff</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">diff</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/capytale/nsi-types-construits-controle/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

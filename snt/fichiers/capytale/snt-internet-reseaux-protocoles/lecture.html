@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Internet : des réseaux et des protocoles</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › SNT</div>
+<main>
+<h1>Internet : des réseaux et des protocoles</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="snt-internet-reseaux-protocoles.ipynb" download>Télécharger le notebook (snt-internet-reseaux-protocoles.ipynb)</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="margin-left: auto; margin-right: auto; background-color: rgb(0,118,111); color: white; padding: 10px;">
+<h1 style="font-size:3em;padding-bottom:30px; text-align:center;">Internet : des réseaux et des protocoles</h1></div>
+<p><img loading="lazy" alt="Schéma internet" src="Internet.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">Comment relier des machines entre-elles ?<br>Internet : un réseau de réseaux</h2>
+<p>Que se passe-t-il lorsque vous tapez dans la barre d'adresse de votre navigateur <a rel="noopener noreferrer" href="http://www.wikipedia.fr">http://www.wikipedia.fr</a> ?</p>
+<p>Votre ordinateur va chercher à entrer en communication avec un autre ordinateur se trouvant probablement à des milliers de kilomètres de chez vous. Pour pouvoir établir cette communication, il faut bien sûr que les deux ordinateurs soient « reliés ». On dira que nos deux ordinateurs sont en réseau.</p>
+<p>Il existe énormément de réseaux (la plupart des ordinateurs du lycée sont en « réseau »), certains réseaux sont reliés à d'autres réseaux qui sont eux-mêmes reliés à d'autres réseaux... ce qui forme « un réseaux de réseaux ». Savez-vous comment on appelle cet assemblage multiple de réseaux ? <strong>Internet !</strong></p>
+<p><img loading="lazy" alt="Internet" src="Internet.jpg"></p>
+<p><strong>Internet est constitué de machines connectées par des câbles, ou parfois par ondes électromagnétiques (ex : WIFI) : c'est un réseau de réseaux</strong>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">Comment les données traversent les océans ?<br>Un réseau de câbles sous-marins</h2>
+<p><a rel="noopener noreferrer" href="https://www.submarinecablemap.com/"><em>[image non reprise dans cette copie]</em></a></p>
+<p><strong>L’immense majorité des données transférées dans le monde passe par des câbles sous-marins : environ 97 %</strong></p>
+<p>Visiter <a rel="noopener noreferrer" href="https://www.submarinecablemap.com/">le site web submarinecablemap.com</a> pour répondre aux questions suivantes :</p>
+<p>Admettons que vous êtes en vacances en <strong>Irlande</strong> (sait-on jamais !). Vous discutez de vos vacances, via l'<strong>application Signal</strong>, avec vos cousins qui sont eux en vacances en <strong>Islande</strong> (Soyons fous !).</p>
+<p><strong>1. A votre avis, par quel câble sous-marin passent les données ? Justifier votre réponse avec le nom du câble.</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<div class="adm adm-info"><p class="adm-t">ça se passe comment sur terre ?</p>
+<p>Ce site ne permet de visualiser QUE les câbles sous-marins, mais il faut bien entendu comprendre qu'<strong>il existe tout autant de câbles terrestres, non visualisés sur ce site</strong>.</p>
+</div>
+<p><strong>2. Un chalutier coupe accidentellement le câble que vous avez désigné à la question précédente. Par où pourra maintenant passer l’information ? Justifier en donnant des noms de pays ou de câble.</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>3. Comment Internet garantit-il que l’information puisse toujours être transmise, même en cas de coupure d'une laison câblée ?</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">Comment identifier une machine sur un réseau ?<br>L'adresse IP</h2>
+<p><strong>L’adresse IP est une adresse unique attribuée à chaque machine sur un réseau</strong>. Tout comme une adresse postale, il faut connaître au préalable l'adresse IP de l'ordinateur avec lequel on veut communiquer.</p>
+<p><strong>L'adresse IP, en version IPv4, se présente sous forme de 4 octets</strong> séparés par des points. Par exemple : 204.35.129.3</p>
+<p>On rappelle qu'un octet est composé de 8 bits (d'où son nom). Ci-dessous, un rappel de conversion d'un nombre binaire codé sur un octet (<code>10010110</code>) vers sa valeur décimale (<code>150</code>) :</p>
+<p><img loading="lazy" alt="Octet" src="Octet_decimal.png"></p>
+<p>Répondre aux questions suivantes :</p>
+<p><strong>1. Sachant qu’un bit ne peut prendre que deux valeurs (0 et 1), combien de valeurs différentes peut prendre un octet ?</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>2. A combien de machines différentes peut-on donner un numéro différent sur Internet sachant qu'une adresse IPv4 utilise 4 octets ?</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>3. Sachant qu’il y a environ 8 milliards de personnes et plus de 150 milliards d’objets connectés dans le monde, peut-on considérer qu’il y a suffisamment d’adresses IPv4 pour nommer autant de machines ?</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">Comment numéroter toutes les machines du monde en IPv4 ?<br>Les adresses IP privées et publiques</h2>
+<div class="adm adm-info"><p class="adm-t">Définitions</p>
+<ul>
+<li><strong>Adresse IP publique :</strong> adresse numérique désignant une machine sur internet.</li>
+<li><strong>Adresse IP privée :</strong> adresse numérique désignant une machine sur un réseau local. Chez nous, elles commencent souvent par 192.168.1.X</li>
+<li><strong>Routeur :</strong> machine qui permet de transmettre des informations d’un réseau à un autre réseau.</li>
+</ul>
+</div>
+<p>Sachant que, <strong>sans routeur, un ordinateur ne peut communiquer qu'avec les machines de son propre réseau</strong>, on peut économiser énormément d'adresses IP publiques à l'aide des adresses privées :</p>
+<ul>
+<li>Dans chacun de nos réseaux locaux (à la maison, au lycée,...), on doit avoir des adresses IP privées différentes pour chaque machine du réseau mais... rien n'empêche d'avoir les mêmes adresses d'un réseau local à l'autre !</li>
+<li>On peut donc <strong>utiliser les mêmes adresses dans tous les réseaux locaux du monde</strong>.</li>
+<li>Par contre, il faut absolument <strong>conserver des adresses IP publiques toutes différentes sur Internet</strong>.</li>
+</ul>
+<div class="adm adm-info"><p class="adm-t">Le protocole IPv6</p>
+<p>A terme, le vieillissant protocole IPv4 sera remplacé par l'<strong>IPv6</strong>, capable de nommer plus de <strong><span class="math">10<sup>38</sup></span> machines différentes</strong> !</p>
+<p>Il ne sera plus nécessaire de différencier les adresses publiques et privées lorsque tous les réseaux d'Internet seront compatibles avec ce nouveau protocle.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">Comment savoir sur quel réseau une machine est connectée ?<br>Les masques de sous-réseau</h2>
+<p><strong>Le masque de sous-réseau permet de savoir si plusieurs machines appartiennent au même réseau.</strong>
+Dans l’exemple ci-dessous, le <strong>masque de sous-réseau 255.255.255.0</strong> indique que seul le dernier octet de l’adresse IP permet d’identifier une machine sur le <strong>réseau 192.168.1.0</strong>.</p>
+<p><img loading="lazy" alt="Masque de sous-réseau" src="masque.png"></p>
+<p><strong>Les machines du réseau local seront donc de la forme 192.168.1.X</strong>. Et donc, <strong>on pourra ainsi former 254 adresses locales différentes</strong>, donc connecter 254 appareils distincts dans le réseau. Dans l'exemple ci-dessus, 192.168.1.1 est une adresse IP de réseau local.</p>
+<p><img loading="lazy" alt="Réseau" src="Reseau.png"></p>
+<div class="adm adm-info"><p class="adm-t">Une adresse IP pour le routeur</p>
+<p>Dans le réseau schématisé ci-dessus, on peut voir <strong>un routeur, permettant de communiquer d'un réseau (local) à un autre (Internet)</strong>.</p>
+<blockquote>
+<p><strong>Remarques :</strong></p>
+<ul>
+<li>Chez nous, <strong>on appelle le routeur une box</strong>, c'est le boitier fourni par notre FAI (Orange, Free, SFR ou Bouygues).</li>
+<li>Le dernier octet de l'adresse IP du routeur est souvent 254, par tradition et pour mieux le trouver.</li>
+</ul>
+</blockquote>
+</div>
+<p>Ci dessous, un <strong>tableau regroupant différentes machines sur un même réseau</strong> :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">Machine</th>
+<th style="text-align:center;">IP d'une machine</th>
+<th style="text-align:center;">Masque de sous-réseau</th>
+<th style="text-align:center;">Nom du réseau</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">Ordinateur fixe</td>
+<td style="text-align:center;">192.168.1.1</td>
+<td style="text-align:center;">255.255.255.0</td>
+<td style="text-align:center;">192.168.1.0</td>
+</tr>
+<tr>
+<td style="text-align:left;">Ordinateur portable</td>
+<td style="text-align:center;">192.168.1.2</td>
+<td style="text-align:center;">255.255.255.0</td>
+<td style="text-align:center;">192.168.1.0</td>
+</tr>
+<tr>
+<td style="text-align:left;">Téléphone 1</td>
+<td style="text-align:center;">192.168.1.45</td>
+<td style="text-align:center;">255.255.255.0</td>
+<td style="text-align:center;">192.168.1.0</td>
+</tr>
+<tr>
+<td style="text-align:left;">Téléphone 2</td>
+<td style="text-align:center;">192.168.1.167</td>
+<td style="text-align:center;">255.255.255.0</td>
+<td style="text-align:center;">192.168.1.0</td>
+</tr>
+<tr>
+<td style="text-align:left;">Console de jeu</td>
+<td style="text-align:center;">192.168.1.224</td>
+<td style="text-align:center;">255.255.255.0</td>
+<td style="text-align:center;">192.168.1.0</td>
+</tr>
+<tr>
+<td style="text-align:left;">Routeur (Box)</td>
+<td style="text-align:center;">192.168.1.254</td>
+<td style="text-align:center;">255.255.255.0</td>
+<td style="text-align:center;">192.168.1.0</td>
+</tr>
+</tbody>
+</table>
+<div class="adm adm-tip"><p class="adm-t">255 ou 0 ?</p>
+<ul>
+<li>Lorsqu'un octet du masque est égal à 255, cela siginifie que cet octet désigne le nom du réseau.</li>
+<li>Lorsqu'un octet du masque est égal à 0, cela siginifie que cet octet désigne le nom d'une machine sur le réseau.</li>
+</ul>
+</div>
+<p>Répondre aux questions suivantes :</p>
+<p><strong>1. Donner un nom (une adresse IP) pour une nouvelle machine du réseau ci-dessus (Réseau 192.168.1.0, avec un masque de 255.255.255.0).</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>2. Donner un nom (une adresse IP) pour deux machines d'un autre réseau, ayant pour nom 192.168.50.0 et pour masque 255.255.255.0</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>3. Sur un réseau ayant pour masque de sous-réseau 255.255.255.0, les machines ayant pour adresses 192.168.7.54 et 192.168.7.24 peuvent-elle communiquer ensemble ?</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>4. Sur un réseau ayant pour masque de sous-réseau 255.255.0.0, les machines ayant pour adresses 192.168.3.54 et 192.168.1.24 peuvent-elle communiquer ensemble ?</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">Comment savoir si des machines peuvent communiquer entre-elles ?<br>Ping, tracert et autres commandes...</h2>
+<p>Pour tester la connexion vers une machine, on peut utiliser...</p>
+<h2 id="...un-terminal-de-ligne-de-commande">...un terminal de ligne de commande<a class="anchor-link" href="#...un-terminal-de-ligne-de-commande">¶</a></h2><p>Au lycée, on peut utiliser <strong>Git Bash</strong> par exemple (à rechercher dans le menu démarrer).</p>
+<p><img loading="lazy" alt="Git Bash" src="Bash.png"></p>
+<p><strong>Pour tester la connexion vers un site web, on utilise la commange <code>ping</code></strong>. Par exemple, pour tester la connexion vers e-lyco, on doit saisir dans Git Bash : <code>ping e-lyco.fr</code> :</p>
+<p><em>[image non reprise dans cette copie]</em></p>
+<h2 id="...des-outils-en-ligne">...des outils en ligne<a class="anchor-link" href="#...des-outils-en-ligne">¶</a></h2><p>Sur le <a rel="noopener noreferrer" href="https://ping.eu/">site web ping.eu</a>, on peut tester plusieurs commandes en ligne, en saisissant l'URL du site à tester après avoir sélectionnée la commande voulue.</p>
+<p><strong>Tester les commandes <code>ping</code>, <code>tracert</code> et <code>whois</code> sur le <a rel="noopener noreferrer" href="https://ping.eu/">site web ping.eu</a></strong>.</p>
+<p>Répondre aux questions suivantes :</p>
+<p><strong>1. Que permet de savoir la commande <code>ping</code> ?.</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>2. Que permet de savoir la commande <code>tracert</code> ?.</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+<p><strong>3. Que permet de savoir la commande <code>whois</code> (note : ajouter l'option "Full info") ?.</strong></p>
+<p>Ecrire votre réponse à la place de cette phrase !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p><a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr">Licence CC BY-NC-SA 4.0</a></p>
+<p style="text-align: center;">Auteur : David Landry, Lycée Clemenceau - Nantes</p>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>David Landry (lycée Clemenceau, Nantes) · CC BY-NC-SA 4.0 · <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-NC-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/snt/fichiers/capytale/snt-internet-reseaux-protocoles/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

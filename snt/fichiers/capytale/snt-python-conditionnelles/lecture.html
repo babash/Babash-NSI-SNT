@@ -1,0 +1,1373 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SNT, Python, séance 3 : les instructions conditionnelles</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › SNT</div>
+<main>
+<h1>SNT, Python, séance 3 : les instructions conditionnelles</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="snt-python-conditionnelles.ipynb" download>Télécharger le notebook (snt-python-conditionnelles.ipynb)</a></li><li><a href="alien_python.py">alien_python.py</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="margin-left: auto; margin-right: auto; background-color: rgb(0,118,111); color: white; padding: 10px;">
+<span><strong>SNT / Programmation Python / Séance 3</strong></span>
+<h1 style="font-size:3em;padding-bottom:30px; text-align:center;">Les instructions conditionnelles</h1>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-1.-Introduction">🟥 1. Introduction<a class="anchor-link" href="#%F0%9F%9F%A5-1.-Introduction">¶</a></h1><hr>
+<div class="alert" style="color:black; background-color:rgb(255, 214, 220); border-left: 8px solid rgb(255, 50, 80);">
+<p>Une <strong>instruction conditionnelle</strong>, ou instruction de test, permet de <em>faire des choix</em> en fonction de la valeur d’une <em>condition</em>. On parle souvent d’une instruction <em>si-alors</em>, ou <em>if-else</em> en anglais.</p>
+<p>Une <strong>condition</strong> est une instruction qui est soit vraie, soit fausse. On dit qu’il s’agit d’un <em>booléen</em>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Exemple</strong> : Par exemple, si une variable <code>a</code> vaut 5 et qu'une variable <code>b</code> vaut 10 alors la condition <code>a &lt; b</code> est une condition qui est vraie, tandis que les conditions <code>a &gt; b</code> et <code>a == b</code> sont fausses.</p>
+<p>On peut tester cela en exécutant les cellules suivantes :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">==</span> <span class="n">b</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">⚠️</span> <strong>Source d'erreur classique</strong> : Le test d'égalité entre deux variables se fait avec un double égal <code>==</code> (car le simple <code>=</code> a un rôle différent : celui d'affecter une valeur à une variable).</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Pour tester des inégalité larges (comme <span class="math">a ≤ b</span> et <span class="math">a ≥</span> b) ou l'absence d'égalité (comme <span class="math">a≠ b</span>) on utilise les syntaxes suivantes :</p>
+<ul>
+<li>le signe <code>&lt;=</code> pour <em>inférieur ou égal</em></li>
+<li>le signe <code>&gt;=</code> pour <em>supérieur ou égal</em></li>
+<li>le signe <code>!=</code> pour <em>n'est pas égal à</em></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">&lt;=</span> <span class="n">b</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">&gt;=</span> <span class="n">b</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">a</span> <span class="o">!=</span> <span class="n">b</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>On peut résumer les tests possibles dans le tableau ci-dessous :</p>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Syntaxe Python</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">a=b</span></td>
+<td><code>a == b</code></td>
+</tr>
+<tr>
+<td><span class="math">a≠ b</span></td>
+<td><code>a != b</code></td>
+</tr>
+<tr>
+<td><span class="math">a&lt;b</span></td>
+<td><code>a &lt; b</code></td>
+</tr>
+<tr>
+<td><span class="math">a≤ b</span></td>
+<td><code>a &lt;= b</code></td>
+</tr>
+<tr>
+<td><span class="math">a&gt;b</span></td>
+<td><code>a &gt; b</code></td>
+</tr>
+<tr>
+<td><span class="math">a≥ b</span></td>
+<td><code>a &gt;= b</code></td>
+</tr>
+<tr>
+<td><span class="math">a&lt;b&lt;c</span></td>
+<td><code>a &lt; b &lt; c</code></td>
+</tr>
+<tr>
+<td><span class="math">a≤ b ≤ c</span></td>
+<td><code>a &lt;= b &lt;= c</code></td>
+</tr>
+<tr>
+<td><span class="math">a&lt;b≤ c</span></td>
+<td><code>a &lt; b &lt;= c</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exemple-concret">Exemple concret<a class="anchor-link" href="#Exemple-concret">¶</a></h2><img loading="lazy" alt="illustration" src="football.svg" width="200">
+<p>On souhaite connaître le vainqueur d’un match de football connaissant le score des deux équipes A et B . À la fin de l'<em>algorithme</em> suivant , la variable <code>vainqueur</code> contient la réponse à la question :</p>
+<pre><code>si scoreA &gt; scoreB alors
+    vainqueur ← "équipe A"     (la flèche ← signifie "prend la valeur")
+sinon 
+    vainqueur ← "équipe B"
+</code></pre>
+<p>Cet algorithme s'écrirait en Python de la façon suivante :</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">scoreA</span> <span class="o">&gt;</span> <span class="n">scoreB</span><span class="p">:</span>
+    <span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"équipe A"</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"équipe B"</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">🧐</span> Dans ce programme, il y a une condition <code>scoreA &gt; scoreB</code>. Si elle est vraie, alors le vainqueur sera l'équipe A, sinon ce sera l'équipe B. On voit bien qu’un choix est effectué (pour la variable <code>vainqueur</code>) selon la valeur de la condition.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Notre algorithme n'est pas optimal car il y a un troisième cas possible, celui du match nul. On peut l'adapter de la façon suivante pour en tenir compte :</p>
+<pre><code>si scoreA &gt; scoreB alors
+    vainqueur ← "équipe A"     (la flèche ← signifie "prend la valeur")
+sinon si scoreA &lt; scoreB alors
+    vainqueur ← "équipe B"
+sinon
+    vainqueur ← "Match nul"
+</code></pre>
+<p>Cet algorithme s'écrirait en Python de la façon suivante :</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">scoreA</span> <span class="o">&gt;</span> <span class="n">scoreB</span><span class="p">:</span>         <span class="c1"># si scoreA &gt; scoreB</span>
+    <span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"équipe A"</span>
+<span class="k">elif</span> <span class="n">scoreA</span> <span class="o">&lt;</span> <span class="n">scoreB</span><span class="p">:</span>       <span class="c1"># sinon si scoreA &lt; scoreB</span>
+    <span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"équipe B"</span>
+<span class="k">else</span><span class="p">:</span>                       <span class="c1"># sinon</span>
+    <span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"Match nul"</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">🧐</span> Dans ce nouveau programme, il y a deux conditions : <code>scoreA &gt; scoreB</code> et <code>scoreA &lt; scoreB</code>. Si la première est vraie, alors le vainqueur est l'équipe A, sinon on teste si la seconde est vraie et dans l'affirmative le vainqueur est l'équipe B, sinon c'est qu'il y a match nul.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Synthétisons comment écrire des instructions conditionnelles en Python tout de suite !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-2.-La-syntaxe-en-Python">🟥 2. La syntaxe en Python<a class="anchor-link" href="#%F0%9F%9F%A5-2.-La-syntaxe-en-Python">¶</a></h1><hr>
+<div class="alert" style="color:black; background-color:rgb(255, 214, 220); border-left: 8px solid rgb(255, 50, 80);">
+<p>Pour écrire des instructions conditionnelles en Python, il faut utiliser la syntaxe suivante :</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">condition1</span><span class="p">:</span>
+	<span class="n">bloc_instructions_1</span>
+<span class="k">elif</span> <span class="n">condition2</span><span class="p">:</span>
+	<span class="n">bloc_instructions_2</span>
+<span class="k">else</span><span class="p">:</span>
+	<span class="n">bloc_instructions_3</span>
+</pre></div>
+<p>Les mots-clés <code>if</code>, <code>elif</code> (contraction de <em>else if</em>) et <code>else</code> sont les traductions respectives de "si", "sinon si" et "sinon".</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Remarques importantes</strong> :</p>
+<ul>
+<li>⚠️ Il ne faut pas oublier les deux points (<code>:</code>) à la fin des lignes avec <code>if</code>, <code>elif</code> et <code>else</code></li>
+<li>Il est nécessaire de spécifier une condition après les mots clés <code>if</code> et <code>elif</code>, mais il ne faut pas en donner après le mot clé <code>else</code></li>
+<li>Les blocs d'instructions à effectuer selon le cas sont <strong>indentés</strong> (“décalage vers la droite”). Ces indentations sont obligatoires dans la syntaxe Python et se font automatiquement si le <code>:</code> n’a pas été oublié.</li>
+<li>Les mots clés <code>elif</code> et <code>else</code> sont optionnels, c'est-à-dire que l’on peut avoir seulement un <code>if</code> ou un <code>if</code> suivi d'un <code>else</code> comme ceci :</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">condition</span><span class="p">:</span>
+    <span class="n">bloc_instructions</span>
+</pre></div>
+<p>ou</p>
+<div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">condition</span><span class="p">:</span>
+    <span class="n">bloc_instructions_1</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">bloc_instructions_2</span>
+</pre></div>
+<ul>
+<li>On peut ajouter autant d'instructions <code>elif</code> que l'on souhaite (dépend du nombre de cas à considérer)</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-3.-%C3%80-vous-de-jouer-!">🟥 3. À vous de jouer !<a class="anchor-link" href="#%F0%9F%9F%A5-3.-%C3%80-vous-de-jouer-!">¶</a></h1><hr>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 1 : Retour sur le vainqueur d'un match</h2>
+<p>On peut écrire la fonction suivante pour traduire l'algorithme précédent sur le vainqueur d'un match entre deux équipes.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">gagnant</span><span class="p">(</span><span class="n">scoreA</span><span class="p">,</span> <span class="n">scoreB</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">scoreA</span> <span class="o">&gt;</span> <span class="n">scoreB</span><span class="p">:</span>
+    	<span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"équipe A"</span>
+    <span class="k">elif</span> <span class="n">scoreA</span> <span class="o">&lt;</span> <span class="n">scoreB</span><span class="p">:</span>
+    	<span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"équipe B"</span>
+    <span class="k">else</span><span class="p">:</span>
+    	<span class="n">vainqueur</span> <span class="o">=</span> <span class="s2">"Match nul"</span>
+    <span class="k">return</span> <span class="n">vainqueur</span>
+</pre></div>
+<p>✍️ <strong>Question 1</strong> : Inspectez le code de cette fonction pour repérer :</p>
+<ul>
+<li>son nom</li>
+<li>son nombre de parametres et leurs noms</li>
+<li>le nombre de valeurs renvoyées et leurs noms</li>
+</ul>
+</div>
+</div>
+</div>Votre réponse (à compléter):
+
+- nom : 
+- nombre de parametres et leurs noms : 
+- nombre de valeurs renvoyées et leurs noms : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong> : Écrivez le code de cette fonction dans la cellule ci-dessous (sans faire de copier-coller !).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">⚠️</span> N'oubliez pas d'exécuter la cellule ci-dessus pour mémoriser cette fonction et pouvoir l'utiliser par la suite !</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong> : Faites l'appel <code>gagnant(4, 1)</code> et vérifiez que la valeur renvoyée est cohérente.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong> : L'équipe A a marqué 2 buts et l'équipe B en a marqué 3. Quel appel à la fonction <code>gagnant</code> faut-il faire pour connaitre le vainqueur de ce match ? Faites-le et vérifiez !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 5</strong> : Proposez un appel à la fonction <code>gagnant</code> qui renvoie la chaîne de caractères "Match nul". Testez-le !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 2 : Vérifier sa compréhension</h2>
+<p>Dans cet exercice on propose plusieurs questions pour vérifier votre compréhension des instructions conditionnelles et de la syntaxe du langage Python pour les écrire.</p>
+<p>Il suffit d'exécuter chacune des cellules suivantes pour faire apparaître la question.</p>
+<p>🐍 <strong>Question 1</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">IFrame</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="s1">'https://www.codepuzzle.io/DQF76'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">950</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">IFrame</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="s1">'https://www.codepuzzle.io/IDA4GZ'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">900</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">IFrame</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="s1">'https://www.codepuzzle.io/DGLXR'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">900</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">IFrame</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="s1">'https://www.codepuzzle.io/IDNZE5'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">700</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 3 : Inscription sur un réseau social</h2>
+<p><em>[image non reprise dans cette copie]</em></p>
+<p>Pour s’inscrire sur certains réseaux sociaux, il faut avoir au moins 13 ans. On veut écrire une fonction qui indique si un utilisateur peut s’y inscrire en fonction de son âge.</p>
+<p>La fonction <code>age_requis</code> a pour paramètre l'<code>age</code> d’un utilisateur et renvoie <code>True</code> (= Vrai) s’il peut s’inscrire sur le réseau social en question, et <code>False</code> (= Faux) si ce n’est pas le cas.</p>
+<p>🐍 <strong>Question 1</strong> : Exécutez la cellule suivante et complétez le code de la fonction <code>age_requis</code> et vérifiez votre proposition.</p>
+<p><a rel="noopener noreferrer" href="https://www.codepuzzle.io/IDYDRB">https://www.codepuzzle.io/IDYDRB</a></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">IFrame</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="s1">'https://www.codepuzzle.io/IDYDRB'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">900</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong> : Copiez le code correct de la fonction <code>age_requis</code> dans la cellule ci-dessous et exécutez-là pour mémoriser cette fonction.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># code à recopier ici </span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong> : Testez la fonction avec un appel renvoyant la valeur <code>True</code> et un appel renvoyant la valeur <code>False</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 4 : Application de fitness</h2>
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><strong>Crédits</strong> :  Cet exercice est grandement inspiré du travail proposé par Franck Chevrier sur son site python-lycee.com. Activité d'origine : <a rel="noopener noreferrer" href="https://www.python-lycee.com/parcours-apprentissage-pl3">https://www.python-lycee.com/parcours-apprentissage-pl3</a></p>
+</blockquote>
+<img loading="lazy" alt="illustration" src="fitness.svg" width="200">
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Les applications de fitness permettent de calculer l’Indice de Masse Corporelle (IMC) de l’utilisateur. Celui-ci se calcule avec la formule :</p>
+<p><span class="math">IMC=masse / taille<sup>2</sup></span></p>
+<p>où la masse est exprimée en kg et la taille en mètre.</p>
+<p>La fonction <code>imc</code> suivante permet de calculer et renvoyer l'IMC d'une personne :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">imc</span><span class="p">(</span><span class="n">masse</span><span class="p">,</span> <span class="n">taille</span><span class="p">):</span>
+    <span class="n">indice</span> <span class="o">=</span> <span class="n">masse</span> <span class="o">/</span> <span class="p">(</span><span class="n">taille</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">indice</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 1</strong> : Testez la fonction <code>imc</code> pour les 3 personnes présentées (il faut faire les bons appels).</p>
+<p><img loading="lazy" alt="3 individus" src="imc_individus.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong> : On considère que l'IMC d'un individu est dans la norme s'il est compris entre 18.5 et 25. On veut écrire une fonction <code>diagnostic</code> qui permet de renvoyer un message indiquant si un individu possède un IMC dans la norme ou non.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">IFrame</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="s1">'https://www.codepuzzle.io/IPBCNW'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong> : Une fois le code bien ordonné, copiez le code de la fonction <code>diagnostic</code> dans la cellule ci-dessous. Testez ensuite cette fonction pour les 3 personnages.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># recopier le code de la fonction ici</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># test pour Alice</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># test pour Barnabé</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># test pour Corentin</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong> : Adaptez la fonction Python <code>diagnostic</code> pour obtenir une analyse plus précise, en tenant compte de la grille de lecture ci-dessous.</p>
+<p><img loading="lazy" alt="diagnostic imc" src="imc_diagnostic.png"></p>
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">🆘</span> Inspirez-vous de la fonction <code>gagnant</code> et regardez dans le tableau donné au départ pour voir la bonne syntaxe pour écrire des inégalités.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 5</strong> : Testez la nouvelle fonction <code>diagnostic</code> pour les 3 personnages précédents.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># test pour Alice</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># test pour Barnabé</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># test pour Corentin</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 5 : Alien Python - Dessiner un parcours</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>⚠️ N'oubliez pas d'exécuter la cellule ci-dessous avant de poursuivre ! ⚠️</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alien_python</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote>
+<p><span style="font-size:1.5em;">📣</span> Pour les questions de cet exercice, exécutez le programme donné puis dessinez le parcours de l'alien en cliquant sur les différentes positions parcourues. Vous pouvez annuler la dernière position en cliquant dessus.</p>
+</blockquote>
+<p>🐍 <strong>Question 1</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># l'alien est au départ en case H8</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">gauche</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+    <span class="n">droite</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+
+<span class="n">dessiner_parcours</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">7</span>
+
+<span class="n">haut</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="p">:</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+    <span class="n">bas</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="p">:</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">gauche</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">dessiner_parcours</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+    <span class="n">droite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">bas</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">gauche</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+
+<span class="n">dessiner_parcours</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">droite</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">gauche</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">b</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+
+<span class="n">dessiner_parcours</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 5</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">c</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">gauche</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span><span class="p">:</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">gauche</span><span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="p">)</span>
+<span class="k">elif</span> <span class="n">c</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="p">:</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="n">bas</span><span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">b</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="n">dessiner_parcours</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 6 : Alien Python - Compléter un programme</h2>
+<blockquote>
+<p><span style="font-size:1.5em;">📣</span> Pour les questions de cet exercice, complétez chaque programme en remplaçant les pointillés par les bonnes valeurs afin d'obtenir le déplacement donné. Puis exécutez le programme pour vérifier s'il est correct.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>⚠️ N'oubliez pas d'exécuter la cellule ci-dessous avant de poursuivre ! ⚠️</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alien_python</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 1</strong></p>
+<p>Voici le déplacement à obtenir (les numéros correspondent aux différentes étapes) :</p>
+<p><img loading="lazy" alt="deplacement" src="instructions_conditionnelles.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">c</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">d</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">gauche</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span> <span class="p">:</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="mi">2</span>
+<span class="k">else</span> <span class="p">:</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">c</span> <span class="o">-</span> <span class="mi">3</span>
+<span class="n">haut</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">3</span>
+<span class="k">else</span> <span class="p">:</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">6</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H3'</span><span class="p">,</span> <span class="s1">'F3'</span><span class="p">,</span> <span class="s1">'F11'</span><span class="p">,</span> <span class="s1">'N11'</span><span class="p">,</span> <span class="s1">'N13'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong></p>
+<p>Voici le déplacement à obtenir (les numéros correspondent aux différentes étapes) :</p>
+<p><img loading="lazy" alt="deplacement" src="instructions_conditionnelles_2.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">b</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">gauche</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+<span class="o">...</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">b</span><span class="p">:</span>
+    <span class="n">bas</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="o">...</span><span class="p">:</span>
+    <span class="n">haut</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H6'</span><span class="p">,</span> <span class="s1">'M6'</span><span class="p">,</span> <span class="s1">'M8'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong></p>
+<p>Voici le déplacement à obtenir (les numéros correspondent aux différentes étapes) :</p>
+<p><img loading="lazy" alt="deplacement" src="instructions_conditionnelles_3.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">gauche</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+    <span class="n">bas</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="mi">2</span> <span class="p">:</span>
+        <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H4'</span><span class="p">,</span> <span class="s1">'M4'</span><span class="p">,</span> <span class="s1">'M6'</span><span class="p">,</span> <span class="s1">'K6'</span><span class="p">,</span> <span class="s1">'K8'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 7 (Bonus) : Mention au bac</h2>
+<img loading="lazy" alt="illustration" src="diplome.svg" width="200">
+<p>On veut écrire une fonction Python <code>mention_bac</code> qui prend en paramètre la moyenne <code>moy</code> d’un élève au baccalauréat et qui renvoie selon les cas une chaîne de caractères : "Sans mention", "Assez bien", ... selon le tableau suivant :</p>
+<table>
+<thead>
+<tr>
+<th>Moyenne</th>
+<th>Mention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">[0;8[</span></td>
+<td>Recalé</td>
+</tr>
+<tr>
+<td><span class="math">[8;10[</span></td>
+<td>Rattrapage</td>
+</tr>
+<tr>
+<td><span class="math">[10,12[</span></td>
+<td>Sans mention</td>
+</tr>
+<tr>
+<td><span class="math">[12;14[</span></td>
+<td>Assez bien</td>
+</tr>
+<tr>
+<td><span class="math">[14;16[</span></td>
+<td>Bien</td>
+</tr>
+<tr>
+<td><span class="math">[16;18[</span></td>
+<td>Très bien</td>
+</tr>
+<tr>
+<td><span class="math">[18;20]</span></td>
+<td>Félicitations</td>
+</tr>
+</tbody>
+</table>
+<p>Exemples :</p>
+<div class="highlight"><pre><span></span><span class="o">&gt;&gt;&gt;</span> <span class="n">mention_bac</span><span class="p">(</span><span class="mf">13.4</span><span class="p">)</span>
+<span class="s1">'Assez bien'</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mention_bac</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+<span class="s1">'Rattrapage'</span>
+</pre></div>
+<p>🐍 <strong>Question</strong> : Écrivez cette fonction <code>mention_bac</code> et testez-là dans tous les cas de figure.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Exercice 8 (Bonus) : Combiner des conditions</h2>
+<p>Parfois il est nécessaire de combiner plusieurs conditions dans un test.</p>
+<p><strong>Exemple</strong> : à la faculté, pour valider son semestre il est parfois nécessaire d’obtenir au moins la moyenne (soit 10/20) dans <strong>toutes</strong> les matières. De manière simplifiée, on suppose ici qu’il n’y a que trois matières (A, B et C). Ainsi, à la fin de l’algorithme suivant, la variable <code>resultat</code> vaut <code>True</code> si le semestre est validé et <code>False</code> sinon.</p>
+<pre><code>si noteA &gt;= 10 et noteB &gt;= 10 et noteC &gt;= 10 alors
+    valide = True
+sinon
+    valide = False
+</code></pre>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Il est nécessaire que les trois conditions <code>noteA &gt;= 10</code>, <code>noteB &gt;= 10</code> et <code>noteC &gt;= 10</code> soient vraies pour que le trimestre soit validé.</p>
+<p>En Python, on utilise le mot clé <code>and</code> pour traduire le "et" et le mot clé <code>or</code> pour traduire le "ou".</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Syntaxe Python</th>
+<th>Interprétation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>condition1 et condition2</td>
+<td><code>condition1 and condition2</code></td>
+<td>est vraie si les deux conditions sont vraies</td>
+</tr>
+<tr>
+<td>condition1 ou condition2</td>
+<td><code>condition1 or condition2</code></td>
+<td>est vraie si au moins l'une des deux conditions est vraie</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">🧐</span> On peut combiner autant de conditions que l'on souhaite dans un test.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 1</strong> : On veut écrire une fonction <code>semestre_valide</code> qui possède les trois notes en paramètres et qui renvoie <code>True</code> si le semestre est validé et <code>False</code> sinon.<br>
+Mettez dans la zone jaune et dans le bon ordre les lignes de code de la fonction. Il faut bien respecter les indentations. Attention, certaines instructions sont fausses et donc inutiles, elles sont à laisser dans la partie sur fond gris. Cliquez ensuite sur le bouton pour vérifier.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">IFrame</span>
+<span class="n">IFrame</span><span class="p">(</span><span class="s1">'https://www.codepuzzle.io/IPMSWZ'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'100%'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">800</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong> : Une fois le code bien ordonné, copiez le code de la fonction <code>semestre_valide</code> ci-dessous et testez ensuite cette fonction en veillant à tester les différents cas de figure.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p><strong>Références</strong> :</p>
+<ul>
+<li>L'exercice 4 est grandement inspiré du travail proposé par Franck Chevrier sur son site python-lycee.com. Activité d'origine : <a rel="noopener noreferrer" href="https://www.python-lycee.com/parcours-apprentissage-pl3">https://www.python-lycee.com/parcours-apprentissage-pl3</a></li>
+</ul>
+<hr>
+<p>Les enseignants de SNT du lycée Emmanuel Mounier, ANGERS</p>
+<p><a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Licence CC BY-SA 4.0</a></p>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Les enseignants de SNT du lycée Emmanuel Mounier (Angers) · CC BY-SA 4.0 · module alien_python : G. Becker, CC BY-NC-SA · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/snt/fichiers/capytale/snt-python-conditionnelles/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

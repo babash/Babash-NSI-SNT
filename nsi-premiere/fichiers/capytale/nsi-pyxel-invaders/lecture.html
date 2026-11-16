@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Invaders avec Pyxel : un jeu 2D pas à pas</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI première</div>
+<main>
+<h1>Invaders avec Pyxel : un jeu 2D pas à pas</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> lire cette page ; <strong>l'activité se fait dans Thonny</strong> avec le module <code>pyxel</code> (elle ne fonctionne pas dans Capytale). Le notebook sert de document de cours : le code se tape dans Thonny.
+<ul><li><a href="nsi-pyxel-invaders.ipynb" download>Télécharger le notebook (nsi-pyxel-invaders.ipynb)</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Invaders">Invaders<a class="anchor-link" href="#Invaders">¶</a></h1><h2 id="Pyxel">Pyxel<a class="anchor-link" href="#Pyxel">¶</a></h2><p>Nous allons utiliser un <em>module</em>, c'est à dire une bibliothèque de fonctions, dédié à la création de jeu en 2D : pyxel.</p>
+<ol>
+<li><p>Ouvrez Thonny ;</p>
+</li>
+<li><p>Enregistrer un nouveau fichier sous le nom <em>invaders.py</em> dans un répertoire nommé <code>projet invaders</code>.</p>
+</li>
+<li><p>Si le module <code>pyxel</code> n'est pas encore installé, il faut :</p>
+<ul>
+<li>suivre le menu de Thonny òutils/gérer les paquets` ;</li>
+<li>taper <code>pyxel</code>dans la barre de texte et lancer la recherche ;</li>
+<li>installer le module <code>pyxel</code>.</li>
+</ul>
+</li>
+</ol>
+<p><em>Remarque : on peut également taper la commander <code>pip install -U pyxel</code> dans la console du système que vous ouvrirez en suivant le menu <code>outils/console du système</code> sous Thonny.</em></p>
+<p>Avec pyxel, la structure du code est toujours la même. Collez le code ci-dessous dans la partie programme (en haut) de Thonny.</p>
+<div class="highlight"><pre><span></span><span class="c1"># importation des modules nécessaires</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pyxel</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span> 
+
+<span class="c1">#########VARIABLES GLOBALE</span>
+<span class="c1">#ici on définit toutes les variables globales</span>
+
+
+<span class="c1">################### On placera les fonctions annexes ci-dessous</span>
+
+
+<span class="c1">###################Calculs indispensable au jeu</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculer</span><span class="p">()</span> <span class="p">:</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    ici on effectue tous les calculs nécessaires au jeu</span>
+<span class="sd">    '''</span>
+    
+
+<span class="c1">###################Affichage des objets du jeu</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">afficher</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    ici on dessine tous les objets du jeu</span>
+<span class="sd">    '''</span>
+    <span class="n">pyxel</span><span class="o">.</span><span class="n">cls</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1">#peint l'écran en noir pour le vider</span>
+
+
+<span class="c1">##############lancement du programme</span>
+<span class="n">pyxel</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">'Invaders'</span><span class="p">,</span> <span class="n">fps</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+<span class="n">pyxel</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">calculer</span><span class="p">,</span> <span class="n">afficher</span><span class="p">)</span>
+<span class="n">pyxel</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>  
+</pre></div>
+<p>Le seul code qui se lance à l'exécution et celui qui se trouve en bas :</p>
+<ul>
+<li><p><code>pyxel.init(256, 256, 'Invaders', fps = 30)</code> affiche la fenêtre graphique de 256 pixels sur 256 pixels nommées <em>Invaders</em> à 30 frames par seconde</p>
+</li>
+<li><p><code>pyxel.run(calculer, afficher)</code> lance en réalité une boucle qui appelle 30 fois par seconde la fonction <code>calculer</code> (spoiler, elle va servir à réaliser les calculs) et la fonction <code>afficher</code> (besoin d'un spoiler ou ça ira ?)</p>
+</li>
+</ul>
+<p>Exécutez le code et regardez la fenêtre graphique qui s'affiche :</p>
+<ul>
+<li><p>Son origine est en haut à gauche.</p>
+</li>
+<li><p>l'axe des abscisses est orienté vers la droite.</p>
+</li>
+<li><p>l'axe des ordonnées est orienté vers le bas : plus en descend plus l'ordonnée est grande.</p>
+</li>
+</ul>
+<p><img loading="lazy" alt="" src="fenetre.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Les-Envahisseurs">Les Envahisseurs<a class="anchor-link" href="#Les-Envahisseurs">¶</a></h2><h3 id="Ajouter-des-envahisseurs-...-carr%C3%A9s">Ajouter des envahisseurs ... carrés<a class="anchor-link" href="#Ajouter-des-envahisseurs-...-carr%C3%A9s">¶</a></h3><p>Dans la partie tout en haut dédiées aux variables globales, déclarez <code>tab_invaders</code>, un tableau vide (pour l'instant ...).</p>
+<p>Un envahisseur sera simplement défini par ses coordonnées. A l'initialisation d'un envahisseur, il se trouvera tout en haut, à l'ordonnée 0 et à une position aléatoire en abscisse en 16 et 240. Ainsi, un envahisseur <em>e</em> de coordonnées (23, 0) sera représenté par le tableau <em>e = [23, 0]</em> :</p>
+<ul>
+<li>e[0] est l'abscisse de l'envahisseur;</li>
+<li>e[1] est son ordonnée ;</li>
+</ul>
+<p>Pour gérer le temps, on va utiliser la variable <code>pyxel.frame_count</code> :</p>
+<ul>
+<li>Cette dernière a pour valeur le nombre de fois que la fenêtre a été raffraichie.</li>
+<li>Toutes les 10 frames, c'est à dire chaque fois que <code>pyxel.frame_count</code> est divisible par 10, on ajoutera un envahisseur au tableau d'envahisseurs.</li>
+</ul>
+<p>Pour afficher un envahisseur, nous allons pour l'instant nous contenter d'un rectangle de 16 pixels sur 16 pixels en utilisant l'instruction <code>pyxel.rect(x, y, longueur, hauteur, couleur)</code>.</p>
+<ul>
+<li><p>x est l'abscisse du coin en haut à gauche ;</p>
+</li>
+<li><p>y est l'ordonnée du coin en haut à gauche ;</p>
+</li>
+<li><p>longueur et hauteur sont les dimensions du rectangle.</p>
+</li>
+<li><p>La couleur est un entier entre 0 et 16 au choix :</p>
+</li>
+</ul>
+<p><img loading="lazy" alt="" src="couleurs.jpg"></p>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<ul>
+<li>Codez, dans la partie <em>fonctions annexes</em>, une fonction <code>ajouter_envahisseur</code> de paramètre <code>tab_invaders</code> un tableau d'envahisseurs,  qui ajoute au tableau <em>tab_invaders</em> un envahisseurs.</li>
+<li>Dans la fonction <code>calculer</code>, si <code>pyxel.frame_count % 10 == 0</code> alors, appelez la fonction <code>ajouter_envahisseurs</code> .</li>
+<li>Dans la fonction <code>afficher</code>, pour chaque envahisseur du tableau d'envahisseurs, afficher un rectangle tel qu'il est indiqué plus haut.</li>
+</ul>
+</div>
+<h3 id="D%C3%A9placer-les-envahisseurs">Déplacer les envahisseurs<a class="anchor-link" href="#D%C3%A9placer-les-envahisseurs">¶</a></h3><p>Pour déplacer les envahisseurs, il suffit d'augmenter leur ordonnée (vous vous rappelez bien que l'axe des ordonnées pointe vers le bas ...). Mais il faudra retirer l'envahisseur du tableau si cette ordonnée dépasse 256 car il sortira alors de la fenêtre graphique.</p>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<ul>
+<li>Dans la fonction <code>calculer</code> , pour chaque envahisseur du tableau d'envahisseurs :<ul>
+<li>déplacez le de 2 pixels vers le bas ;</li>
+<li>s'il sort de la fenêtre enlevez le du tableau.</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Le-vaisseau">Le vaisseau<a class="anchor-link" href="#Le-vaisseau">¶</a></h2><h3 id="Initialisation-et-affichage">Initialisation et affichage<a class="anchor-link" href="#Initialisation-et-affichage">¶</a></h3><p>Le vaisseau va être lui aussi défini par des coordoonées et son score. la variable globale <code>vaisseau = [116, 224, 0]</code> du type <em>list</em>, le représentera :</p>
+<ul>
+<li><code>vaisseau[0]</code> est l'abscisse du vaisseau;</li>
+<li><code>vaisseau[1]</code> est son ordonnée;</li>
+<li><code>vaisseau[2]</code> est le score du vaisseau.</li>
+</ul>
+<p>Pour afficher le vaisseau, on va à nouveau dessiner un rectangle, mais il sera un peu plus grand et fera 24 pixels sur 24 pixels.</p>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<p>Dans la fonction <code>dessiner</code> :</p>
+<ul>
+<li>affichez le rectangle qui représente le vaisseau;</li>
+<li>affichez le score en haut à gauche en utilisant l'instruction <code>pyxel.text(x, y, chaine_de_caractère, couleur)</code>.</li>
+</ul>
+<p>Dans la fonction <code>calculer</code> :</p>
+<ul>
+<li>si un envahisseur sort de la fenêtre, le score du vaisseau diminue de 50.</li>
+</ul>
+</div>
+<h3 id="D%C3%A9placements">Déplacements<a class="anchor-link" href="#D%C3%A9placements">¶</a></h3><p>Pour gérer les événements clavier, c'est à dire les interactions entre le joueur et le clavier, pyxel utilise l'instruction <code>pyxel.btn(touche)</code> qui renvoie <code>True</code> si la touche a été pressée et <code>False</code> sinon.</p>
+<p>Comme c'est la première fois, voici un peu d'aide avec la fonction <code>deplacer</code> partiellement écrite :</p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">deplacer</span><span class="p">(</span><span class="n">vaisseau</span><span class="p">):</span>  
+<span class="w">    </span><span class="sd">'''  </span>
+<span class="sd">    modifie les coordonnées du tableau du vaisseau</span>
+<span class="sd">    : param vaisseau (list) </span>
+<span class="sd">    : pas de return, effet de bord sur vaiseau  </span>
+<span class="sd">    '''</span>  
+    <span class="k">if</span> <span class="n">pyxel</span><span class="o">.</span><span class="n">btn</span><span class="p">(</span><span class="n">pyxel</span><span class="o">.</span><span class="n">KEY_Q</span><span class="p">):</span>  
+        <span class="n">pyxel</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>  
+    <span class="k">if</span> <span class="n">pyxel</span><span class="o">.</span><span class="n">btn</span><span class="p">(</span><span class="n">pyxel</span><span class="o">.</span><span class="n">KEY_RIGHT</span><span class="p">)</span> <span class="ow">and</span> <span class="n">vaisseau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">256</span> <span class="o">-</span> <span class="mi">24</span> <span class="p">:</span> <span class="c1"># réfléchissez dur ce à quoi sert le vaisseau[0] &lt; 256 - 24...  </span>
+        <span class="n">vaisseau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">4</span>  
+    <span class="k">if</span> <span class="n">pyxel</span><span class="o">.</span><span class="n">btn</span><span class="p">(</span><span class="n">pyxel</span><span class="o">.</span><span class="n">KEY_LEFT</span><span class="p">)</span> <span class="ow">and</span> <span class="n">vaisseau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">:</span>  <span class="c1"># réflechissez sur ce à quoi sert vaisseau[0] &gt; 0 </span>
+        <span class="n">vaisseau</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">4</span>
+</pre></div>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<ul>
+<li>copiez-collez la fonction <code>deplacer</code> ci-dessus ;</li>
+<li>complétez cette fonction afin que le vaisseau puisse également se déplacer vers le haut et vers le bas sans toutefois sortir de la zone de jeu.</li>
+<li>Dans la fonction <code>calculer</code>, appelez la fonction <code>deplacer</code> .</li>
+</ul>
+<p>Evidemment, on teste au fur et à mesure !</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Les-tirs">Les tirs<a class="anchor-link" href="#Les-tirs">¶</a></h2><p>Voilà donc comment le vaisseau tire :</p>
+<ul>
+<li><p>Nous aurons besoin d'une variable globale <code>tab_tirs</code> initialialement vide.</p>
+</li>
+<li><p>Chaque fois que le joueur presse la touche <code>ESPACE</code>, on ajoute un tir au tableau de tirs, à condition qu'il n'y en ait pas déjà trop.</p>
+</li>
+<li><p>Un tir sera modélisé par un tableau contenant ses coordonnées.</p>
+</li>
+<li><p>Au départ, un tir est initialisé juste au dessus du vaisseau et en son milieu.</p>
+</li>
+<li><p>A chaque appel de la fonction <code>calculer</code>, l'ordonnée de chaque tir diminuera de 8, ce qui le fera monter vite.</p>
+</li>
+<li><p>On représentera,dans la fonction <code>afficher</code>, chaque tir par un rectangle de 8 pixels de haut et de 1 de large.</p>
+</li>
+</ul>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<ul>
+<li>Codez la fonction <code>ajouter_tir</code>, de paramètre <code>tab_tirs</code>, un tableau de tirs, qui ajoute un nouveau tir au tableau <code>tab_tirs</code> avec les coordonnées adéquates ;</li>
+<li>Modifiez la fonction <code>deplacer</code> pour appeler la fonction <code>ajouter_tir</code> lorsque la touche <code>KEY_SPACE</code> est pressée par le joueur  ;</li>
+<li>Dans la fonction <code>dessiner</code>, pour chaque tir du tableau de tirs, dessinez le ;</li>
+<li>Dans la fonction <code>calculer</code>, pour chaque tir du tableau de tirs, faites le monter. Si l'ordonnée du tir devient négative, retirez le du tableau de tir.</li>
+</ul>
+<p>Evidemment, on teste au fur et à mesure !</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Destructions-...">Destructions ...<a class="anchor-link" href="#Destructions-...">¶</a></h2><h3 id="...-des-envahisseurs">... des envahisseurs<a class="anchor-link" href="#...-des-envahisseurs">¶</a></h3><p>Si un des tirs touche un envahisseur, ce dernier est détruit.</p>
+<p><img loading="lazy" alt="" src="detruire_invader.png"></p>
+<div class="adm adm-question"><p class="adm-t">Réfléchissez puis codez</p>
+<ul>
+<li>A quelles conditions sur tir[0], tir[1], invader[0] et invader[1] l'envahisseur sera touché par le tir ?</li>
+<li>Codez la fonction annexe <code>est_touche(invader, tir)</code> qui renvoie <code>True</code> si l'invader est touché par le <code>tir</code> et <code>False</code> Sinon.</li>
+<li>Dans la fonction <code>calculer</code> pour chaque envahisseur, pour chaque tir, si un envahisseur est touché par un tir alors :<ul>
+<li>l'ordonnée du tir passe à -100 ;</li>
+<li>celle de l'envahisseur à 300 ;</li>
+<li>le score du vaisseau augmente de 100.</li>
+</ul>
+</li>
+</ul>
+</div>
+<h3 id="...-du-vaisseau">... du vaisseau<a class="anchor-link" href="#...-du-vaisseau">¶</a></h3><p>Le vaisseau est détruit lorsqu'un envahisseur le percute.</p>
+<p><img loading="lazy" alt="" src="detruire_vaisseau.png"></p>
+<div class="adm adm-question"><p class="adm-t">Réfléchissez puis codez</p>
+<ul>
+<li><p>A quelles conditions sur invader[0], invader[1], vaisseau[0] et vaisseau[1] l'envahisseur touchera le vaisseau ?</p>
+</li>
+<li><p>Codez la fonction annexe ci-dessous <code>est_perdu(vaisseau, invader)</code> qui renvoie <code>True</code> si l'<code>invader</code> touche le <code>vaisseau</code> et <code>False</code> Sinon.</p>
+</li>
+<li><p>Dans la fonction <code>calculer</code> , pour chaque envahisseur si un envahisseur touche le vaisseau alors :</p>
+<ul>
+<li>l'ordonné de l'envahisseur passe à 300 afin de sortir l'envahisseur de la fenêtre de jeu ;</li>
+<li>les coordonnées de vaisseau passent à [300, 300] afin de sortir le vaisseau de la fenêtre et de l'empêcher d'être déplacé ;</li>
+<li>Dans la fonction <code>afficher</code> , si les coordonnées du vaisseau sont [300, 300], alors on affiche le message <code>Game Over</code> grâce à l'instruction <code>pyxel.text(x, y, chaine_de_caractère, couleur)</code>.</li>
+</ul>
+</li>
+</ul>
+<p>Evidemment, testez au fur et à mesure</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="piou-piou">piou piou<a class="anchor-link" href="#piou-piou">¶</a></h3><p>Ici, on va ajouter un peu de son.</p>
+<p>AJouter les deux lignes de code ci-dessous après avoir initialiser la fenêtre graphique (tout en bas) :</p>
+<div class="highlight"><pre><span></span><span class="c1">##############lancement du programme</span>
+<span class="n">pyxel</span><span class="o">.</span><span class="n">init</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="s1">'Invaders'</span><span class="p">)</span>
+<span class="n">pyxel</span><span class="o">.</span><span class="n">sound</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"a3a2c1a1"</span><span class="p">,</span> <span class="s2">"p"</span><span class="p">,</span> <span class="s2">"7"</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="c1"># défini le son d'indice 0</span>
+<span class="n">pyxel</span><span class="o">.</span><span class="n">sound</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="s2">"a3a2c2c2"</span><span class="p">,</span> <span class="s2">"n"</span><span class="p">,</span> <span class="s2">"7742"</span><span class="p">,</span> <span class="s2">"s"</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="c1"># défini le son d'indice 1</span>
+<span class="n">pyxel</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">calculer</span><span class="p">,</span> <span class="n">afficher</span><span class="p">)</span>
+</pre></div>
+<p>Pour jouer un son, on utilise la commande <code>pyxel.play(1, n, loop = False)</code> pour jouer le son d'indice n.</p>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<p>Jouez le son d'indice 0 lorsque le vaisseau tir et le son d'indice 1 lorsque quelque chose explose.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Un-peu-de-graphisme">Un peu de graphisme<a class="anchor-link" href="#Un-peu-de-graphisme">¶</a></h2><h3 id="Editeur-graphique">Editeur graphique<a class="anchor-link" href="#Editeur-graphique">¶</a></h3><p>Pyxel dispose d'un éditeur pour les graphisme (et le son aussi d'ailleurs)</p>
+<p>Pour l'ouvrir, dans le menu de Thonny, suivez <code>outils/console système</code>.</p>
+<p>Tapez maintenant la commande <code>pyxel edit invaders</code> pour ouvrir l'éditeur et créer un fichier nommé <em>invaders.pyxres</em>.</p>
+<p>Vous pouvez maintenant éditer un envahisseur de 16 pixels sur 16 pyxels comme ci-dessous :</p>
+<p><img loading="lazy" alt="" src="editeur1.png"></p>
+<p><em>Remarques :</em></p>
+<ul>
+<li><p><strong>N'oubliez pas de sauvegarder en utilisant CTRL + S et vérifiez que le fichier invaders.pyxelres est bien présent dans votre dossier, à côté du programme invaders.py !!</strong></p>
+</li>
+<li><p>Notez en bas à gauche que vous dessiner l'image no 0. On appelle cela la planche no 0. Vous pouvez utiliser 3 planches numérotez de 0 à 2.</p>
+</li>
+</ul>
+<p>Vous pouvez ainsi dessiner plusieurs envahisseurs ce qui permettra de faire une petite animation.</p>
+<p><img loading="lazy" alt="" src="editeur2.png"></p>
+<h3 id="Revenons-au-code">Revenons au code<a class="anchor-link" href="#Revenons-au-code">¶</a></h3><p>Pour charger votre fichier <code>invaders.pyxres</code> dans votre programme Python, juste après avoir initialisé la fenêtre graphique, on insère l'instruction : <code>pyxel.load("invaders.pyxres")</code>.</p>
+<p>Ensuite, pour dessiner l'envahisseur à la place du rectangle qui le représentait, on utilise l'instruction</p>
+<p><code>pyxel.blt(x, y, no_planche, position_image_x, position_image_y , longueur, hauteur, couleur transparente)</code> qui :</p>
+<ul>
+<li><p>se place dans la planche <em>no_planche</em> ;</p>
+</li>
+<li><p>copie la zone graphique de longueur et hauteur précisée à partir des coordonnées (position_image_x, position_image_y) aux coordonnées (x, y) de la zone de jeu.</p>
+</li>
+</ul>
+<p>Ainsi <code>pyxel.blt(invader[0], invader[1],0, 0, 0, 16, 16, 0)</code> affichera l'invader de 16px sur 16px dessiné à partir de (0, 0) dans la planche 0, aux coordonnées lui correspondant avec le noir (0) comme couleur transparente.</p>
+<p>De même, <code>pyxel.blt(invader[0], invader[1], 0, 16, 0, 16, 16, 0)</code> affichera l'invader de 16px sur 16px dessiné à partir de (16, 0) dans la planche 0 aux coordonnées lui correspondant avec le noir (0) comme couleur transparente.</p>
+<p>Pour réaliser l'animation il suffit d'afficher le premier invaders si <code>pyxel.frame_count % 10 &lt; 5</code> et l'autre sinon. On peut bien entendu utiliser plus de trois dessins pour peaufiner l'animation...</p>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<ul>
+<li><p>Codez la fonction<code>afficher_invader(invader)</code> qui affiche une des images représentant un envahisseur en selon la valeur de <code>pyxel.frame_count % 10</code>  ;</p>
+</li>
+<li><p>Modifiez la fonction <code>affichage</code> pour appeler <code>afficher_invader</code> au lieu d'afficher un carré.</p>
+</li>
+<li><p>Faites la même chose pour le vaisseau : dessinez un vaisseau (ou plusieurs) de 24px sur 24px dans votre fichier <em>invader.pyxres</em> et remplacez le carré qui le représentait.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Des-boss">Des boss<a class="anchor-link" href="#Des-boss">¶</a></h2><p>Toutes les 500 frames (on utilisera <code>frame_count % 500</code>) , on va ajouter un boss à un tableau de boss.</p>
+<p>Un boss :</p>
+<ul>
+<li><p>est initialisé en haut à gauche de l'écran.</p>
+</li>
+<li><p>mesure 16px sur 16px et a un look différent des autres envahisseurs.</p>
+</li>
+<li><p>explose si un tir le touche 5 fois en faisant marquer 1000 points au joueur.</p>
+</li>
+<li><p>se déplace vers la droite et, lorsqu'il atteint l'extrémité droite de l'écran, réapparait à l'extrémité gauche de l'écran, un peu plus bas.</p>
+</li>
+<li><p>s'il percute le vaisseau ou arrive en bas de l'écran , la partie est perdue.</p>
+</li>
+</ul>
+<p>Pour modéliser un boss, on utilise :</p>
+<ul>
+<li>un tableau de boss nommé  <code>tab_boss</code> défini globalement et initialement vide. Ce tableau contiendra les boss en cours.</li>
+<li>un boss est modélisé par un tableau du type <code>[abscisse, ordonnée, nbre_de_tirs_avant_sa_mort]</code>. Par exemple le boss <code>[100, 120, 3]</code> se trouve aux coordonnées (100, 120) et doit êtrer touché 3 fois pour être éliminé.</li>
+</ul>
+<div class="adm adm-question"><p class="adm-t">Codez</p>
+<ul>
+<li>déclarez la variable globale <code>tab_boss = []</code> ;</li>
+<li>codez la fonction <code>ajouter_boss()</code> qui génère et nouveau boss et l'ajoute au tableau <code>tab_boss</code> ;</li>
+<li>codez la fonction <code>deplacer_boss</code> de paramètre <code>boss</code>, un boss, et qui le déplace comme prévu ;</li>
+<li>codez la fonction <code>affiche_boss</code> de paramètre <code>boss</code>, un boss, et qui affiche ce boss ;</li>
+<li>codez la fonction <code>est_touche</code>  de paramètre <code>boss</code>, un boss, et qui renvoie <code>True</code> si le boss est touché par un tir et <code>False</code>sinon ;</li>
+<li>codez la fonction <code>a_atteri</code>  de paramètre <code>boss</code>, un boss, et qui renvoie <code>True</code> si le boss a atteri en bas de l'écrans et <code>False</code>sinon ;</li>
+<li>modifier les fonctions <code>calculer</code> et <code>afficher</code> afin de faire tourner tout cela correctement.</li>
+</ul>
+</div>
+<p>Tout fonction à merveille ? vou avez tout compris ? Merveilleux. Voilà un dernier petit défi :</p>
+<div class="adm adm-question"><p class="adm-t">Question</p>
+<ul>
+<li>le boss tire vers le bas toutes les 120 frames ;</li>
+<li>si un tir touche le vaisseau, la partie est terminée</li>
+</ul>
+</div>
+<p>Par Mieszczak Christophe</p>
+<p>Licence CC BY SA</p>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Christophe Mieszczak · CC BY-SA · <a href="https://creativecommons.org/licenses/by-sa/" rel="license noopener noreferrer">CC BY-SA</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/capytale/nsi-pyxel-invaders/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>
