@@ -52,7 +52,19 @@ footer a { color:#8fd3ff; }
   .city-list { max-height:38vh; }
   #carte { min-height:70vh; }
 }
-@media print { body { background:#fff; color:#000; } #sidebar, footer { background:#fff; color:#000; } .city-item { border-color:#000; background:#fff; } }
+@media print {
+  :root { color-scheme: light; }
+  footer { break-inside:avoid; }
+  body, #sidebar, footer, .header, .stats, .stat-box, #carte { background:#fff !important; color:#000 !important; }
+  .app { flex-direction:column; display:block; } #sidebar { border:0; width:100%; }
+  .header { border-bottom:2px solid #000; } .header p, .consigne, .city-info small, .legende, footer { color:#222 !important; }
+  .stat-val { color:#000; } .city-list { max-height:none; overflow:visible; }
+  .city-item, .city-item.is-hub { background:#fff; border:1px solid #000; break-inside:avoid; } .city-item.is-hub { border-left:6px solid #000; }
+  .mini, .controls, .handle { display:none; }
+  #carte { min-height:0; height:100mm; break-inside:avoid; } .legende { background:#fff; border-color:#000; }
+  .terre { fill:#e4e8ee; stroke:#333; } .leg { stroke:#0b5f78; } .pt { fill:#777; stroke:#000; } .pt.active { fill:#0b5f78; } .pt.hub { fill:#a00080; }
+  .lab, .lab.hub { fill:#000; stroke:#fff; } footer a { color:#0b3d91; }
+}
 </style>
 </head>
 <body>
@@ -90,10 +102,10 @@ footer a { color:#8fd3ff; }
 </footer>
 <script>
 // [nom, latitude, longitude, type, position vérifiée ?]
-// Sources : GeoNames (CC BY 4.0), Wikipédia ; « false » = position reprise de la version d'origine, à vérifier.
+// Sources : GeoNames (CC BY 4.0), Wikipédia ; « false » = position non vérifiée. Sohoa : position approximative de la plage.
 var LIEUX = [
   ["Acoua",-12.724,45.058,"commune",true],["Bandraboua",-12.704,45.122,"commune",true],["Bandrélé",-12.913,45.193,"commune",true],
-  ["Bouéni",-12.910,45.076,"commune",false],["Chiconi",-12.833,45.114,"commune",true],["Chirongui",-12.932,45.148,"commune",true],
+  ["Bouéni",-12.9025,45.0761,"commune",true],["Chiconi",-12.833,45.114,"commune",true],["Chirongui",-12.932,45.148,"commune",true],
   ["Dembéni",-12.844,45.184,"commune",true],["Dzaoudzi",-12.783,45.257,"commune",true],["Kani-Kéli",-12.954,45.103,"commune",true],
   ["Koungou",-12.734,45.204,"commune",true],["Mamoudzou",-12.782,45.229,"commune",true],["Mtsamboro",-12.700,45.069,"commune",true],
   ["M'Tsangamouji",-12.759,45.084,"commune",true],["Ouangani",-12.846,45.136,"commune",true],["Pamandzi",-12.797,45.279,"commune",true],
@@ -101,7 +113,7 @@ var LIEUX = [
   ["Barakani",-12.838,45.131,"village",true],["Choungui",-12.962,45.127,"village",true],["Dapani",-12.971,45.161,"village",true],
   ["Dzoumogné",-12.721,45.118,"village",true],["Kawéni",-12.771,45.224,"village",true],["Mbouini",-12.990,45.137,"village",true],
   ["Mliha",-12.751,45.055,"village",true],["M'Tsapéré",-12.786,45.217,"village",true],["Mzouazia",-12.927,45.103,"village",true],
-  ["Nyambadao",-12.893,45.202,"village",true],["Poroani",-12.892,45.141,"village",true],["Sohoa",-12.833,45.133,"village",true],
+  ["Nyambadao",-12.893,45.202,"village",true],["Poroani",-12.892,45.141,"village",true],["Sohoa",-12.816,45.106,"village",true],
   ["Tsimkoura",-12.939,45.137,"village",true],["Vahibé",-12.790,45.177,"village",true]
 ];
 var LAT0=-12.635, LON0=45.025, K=2000, C=Math.cos(-12.815*Math.PI/180);
