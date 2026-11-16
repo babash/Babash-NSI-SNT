@@ -1,0 +1,146 @@
+\section*{TD NSI :  Opération "Golden Sac"}
+
+\textbf{Objectif de la mission :} \textit{Infiltration réussie. Vous êtes dans la salle des coffres. Votre sac à dos de transport est limité à \textbf{10 kg}. Vous devez choisir les objets les plus chers pour maximiser votre butin avant que la police n'encercle le bâtiment. Bonne chance, agent.}
+
+\begin{Exercise}[title={Infiltration du système de sécurité }]
+La base de données des objets est stockée dans un dictionnaire nommé \texttt{musee}. 
+\begin{lstlisting}[style=pythonstyle, language=Python]
+# "Nom de l'objet": [poids_en_kg, prix_en_keuros]
+musee = {
+    "Statue d'or": [15, 200],
+    "Tableau de maitre": [5, 150],
+    "Vase Ming": [2, 50],
+    "Armure de samourai": [25, 100],
+    "Diademe": [1, 40]
+}
+\end{lstlisting}
+
+\begin{enumerate}
+    \item \textbf{Vrai ou Faux ?} L'instruction \texttt{musee[0]} permet de récupérer la Statue d'or. \dotfill
+    \item \textbf{QCM :} Quelle commande renvoie exactement le prix du \texttt{"Diademe"} (\texttt{40}) ?
+    \begin{itemize}
+        \item[$\square$] \texttt{musee["Diademe"]} \quad $\square$ \texttt{musee["Diademe"][1]} \quad $\square$ \texttt{musee[1]["Diademe"]}
+    \end{itemize}
+    \item  Ajoutez une \texttt{"Piece rare"} de \texttt{1}kg valant \texttt{10}k\texteuro{} au dictionnaire : \dotfill
+    \item  Un complice tape \texttt{print(musee["vase ming"])}. Pourquoi Python affiche-t-il une erreur \texttt{KeyError} ? \dotfill
+    \item Quelle instruction permet de modifier le prix du \texttt{"Vase Ming"} pour le passer à \texttt{60}k\texteuro{} ? \dotfill
+\end{enumerate}
+
+\begin{Comprendre}
+ \textbf{Indice du Hacker :} 
+Dans un dictionnaire de listes, \texttt{dico[cle]} renvoie la liste entière. Pour avoir un élément précis de cette liste, on ajoute un deuxième crochet : \texttt{dico[cle][0]} pour le poids, \texttt{dico[cle][1]} pour le prix.
+\end{Comprendre}
+\end{Exercise}
+
+\begin{Exercise}[title={Analyse des contraintes }]
+Votre sac est limité à \textbf{10 kg}.
+\begin{enumerate}
+    \item  Quel est le poids total de tous les objets du musée ? Est-ce transportable ? \dotfill
+    \item  Si vous prenez le \texttt{Tableau} et le \texttt{Vase}, quel est le poids total utilisé ? \dotfill
+    \item Quelle est la valeur (en k\texteuro) de la combinaison : \texttt{Tableau + Vase + Diademe} ? \dotfill
+    \item \textbf{Logique :} Pourquoi est-il impossible de prendre la \texttt{Statue d'or} ? \dotfill
+    \item  Si vous deviez choisir \textbf{un seul} objet pour avoir le plus d'argent, lequel serait-ce ? \dotfill
+\end{enumerate}
+\end{Exercise}
+
+\newpage
+
+\begin{Exercise}[title={Simulation des Stratégies Gloutonnes }]
+Complétez les deux tableaux pour comparer les résultats des stratégies.
+
+ \textbf{Stratégie A : "Priorité à la Valeur" (Le plus cher d'abord)} 
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Étape} & \textbf{Objet choisi} & \textbf{Prix (k\texteuro)} & \textbf{Poids utilisé} & \textbf{Place restante} \\ \hline
+1 & Statue d'or & NON (Trop lourd) & 0 kg & 10 kg \\ \hline
+2 & Tableau de maitre & 150 & 5 kg & 5 kg \\ \hline
+3 &  &  &  &  \\ \hline
+4 &  &  &  &  \\ \hline
+5 &  &  &  &  \\ \hline
+\end{tabular}
+\end{center}
+
+ \textbf{Stratégie B : "Priorité à la Légèreté" (Le plus léger d'abord)}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+\textbf{Étape} & \textbf{Objet choisi} & \textbf{Prix (k\texteuro)} & \textbf{Poids utilisé} & \textbf{Place restante} \\ \hline
+1 & Diademe & 40 & 1 kg & 9 kg \\ \hline
+2 &  &  &  &  \\ \hline
+3 &  &  &  &  \\ \hline
+4 &  &  &  &  \\ \hline
+5 &  &  &  &  \\ \hline
+\end{tabular}
+\end{center}
+
+\begin{enumerate}
+    \item Quelle solution est la meilleure ? \dotfill
+\end{enumerate}
+
+\begin{Comprendre}
+ \textbf{Rappel :} Un algorithme glouton ne revient jamais en arrière. Si un objet est trop lourd, on passe définitivement au suivant dans la liste des priorités.
+\end{Comprendre}
+\end{Exercise}
+
+
+\begin{Exercise}[title={Inspection du code de sélection }]
+\begin{lstlisting}[style=pythonstyle, language=Python]
+def choisir_meilleur(inventaire, deja_pris, place_restante):
+    elu = None
+    max_prix = -1
+    for nom, infos in inventaire.items():
+        poids_obj = infos[0]
+        prix_obj = infos[1]
+        if nom not in deja_pris and poids_obj <= place_restante:
+            if prix_obj > max_prix:
+                max_prix = prix_obj
+                elu = nom
+    return elu
+\end{lstlisting}
+\begin{enumerate}
+    \item Pourquoi initialise-t-on \texttt{max\_prix} à \texttt{-1} plutôt qu'à \texttt{0} ? \dotfill
+    \item  À quoi sert la liste \texttt{deja\_pris} dans la condition \texttt{if} ? \dotfill
+    \item Que contient la variable \texttt{infos} à chaque tour de la boucle \texttt{for} ? \dotfill
+    \item Que renvoie cette fonction si aucun objet ne rentre dans le sac ? \dotfill
+    \item Si on voulait la Stratégie B (le plus léger), quelle ligne du code faudrait-il changer ? \dotfill
+\end{enumerate}
+\end{Exercise}
+
+\begin{Exercise}[title={Le Script de Fuite (Final) }]
+\textit{Complétez l'algorithme pour automatiser le remplissage du sac.}
+
+\begin{lstlisting}[style=pythonstyle, language=Python]
+def braquage_glouton(dico_musee, limite_sac):
+    butin = []            # Objets voles
+    poids_actuel = 0      
+    fini = False          
+    
+    while not fini:
+        # 1. Calculer l'espace encore disponible
+        place_libre = .......... - poids_actuel
+        
+        # 2. Chercher l'objet optimal (Appel de la fonction de l'exercice 4)
+        cible = choisir_meilleur(dico_musee, butin, ..........)
+        
+        if cible == .......... : 
+            # 3. Si aucun objet n'est trouve, on arrete la boucle
+            fini = ..........
+        else:
+            # 4. On ajoute l'objet au butin
+            butin.append(..........)
+            # 5. On met a jour le poids total du sac
+            poids_actuel = poids_actuel + dico_musee[..........][0]
+            
+    return butin, poids_actuel
+
+# Lancement de l'operation
+objets_voles, total_kg = braquage_glouton(musee, 10)
+print(f"Extraction terminee ! Objets : {objets_voles} | Poids : {total_kg}kg")
+\end{lstlisting}
+\end{Exercise}
+
+
+\begin{Comprendre}
+ \textbf{Attention :} \texttt{dico\_musee[cible]} accède à la liste \texttt{[poids, prix]}. N'oubliez pas que pour le poids, l'indice est \texttt{0}.
+\end{Comprendre}
