@@ -7,10 +7,12 @@ Usage (depuis la copie du dépôt) :
   python3 -I .github/gardien/sensibles.py DEPOT --diff BASE..TETE  seulement les lignes ajoutées par une branche
   python3 -I .github/gardien/sensibles.py --help                   cette aide
 
-Motifs : mots de passe, identifiants, adresses électroniques, clés et jetons (service_role,
-secret, sb_secret_, ghp_, github_pat_, sk_live_, AKIA…, clés privées), jetons JWT (le rôle
-est décodé : « anon » est public par conception, « service_role » jamais), et le contexte
-de CyberCase (identifiants de démonstration). Les valeurs trouvées sont masquées.
+Motifs : mots de passe, identifiants, adresses électroniques, y compris écrites sous une forme
+masquée pour les robots, le point et l'arobase en toutes lettres entre crochets ou parenthèses
+(« [point] », « (dot) », « [at] », « [sur] »…, T65), clés et jetons (service_role, secret,
+sb_secret_, ghp_, github_pat_, sk_live_, AKIA…, clés privées), jetons JWT (le rôle est décodé :
+« anon » est public par conception, « service_role » jamais), et le contexte de CyberCase
+(identifiants de démonstration). Les valeurs trouvées sont masquées.
 Les noms d'élèves ne se détectent pas par motif : relecture des listes et des applications.
 Code de sortie 1 si un motif « à examiner » est trouvé.
 """
@@ -20,10 +22,17 @@ import re
 import subprocess
 import sys
 
+# Adresse masquée : le point et l'arobase écrits en toutes lettres, entre crochets, parenthèses,
+# accolades ou chevrons (« [point] », « (dot) », « [at] », « [sur] », « {arobase} »…), au moins
+# un point (écrit ou masqué) dans le domaine. Une simple parenthèse dans un texte ne suffit pas.
+POINT_MASQUE = r"(?:\.|\s*[\[\(\{<]\s*(?:point|dot)\s*[\]\)\}>]\s*)"
+AROBASE_MASQUEE = r"\s*[\[\(\{<]\s*(?:at|arobase|chez|sur|@)\s*[\]\)\}>]\s*"
 MOTIFS = [
     ("mot de passe", r"mots? de passe|password|passwd|\bpwd\s*[:=]|\bmdp\b"),
     ("identifiant", r"identifiants?\s*[:=]|\blogin\s*[:=]|\buser(?:name)?\s*[:=]|\butilisateur\s*[:=]"),
     ("adresse électronique", r"[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[a-z]{2,}"),
+    ("adresse électronique masquée", r"[\w+-]+(?:" + POINT_MASQUE + r"[\w+-]+)*" + AROBASE_MASQUEE
+                                     + r"[\w-]+(?:" + POINT_MASQUE + r"[\w-]+)+"),
     ("clé ou jeton", r"service_role|sb_secret_|\bsecret\b|\bsk_(?:live|test)_|\bghp_[A-Za-z0-9]{20,}|\bgho_|github_pat_|"
                      r"\bAKIA[0-9A-Z]{16}\b|-----BEGIN [A-Z ]*PRIVATE KEY-----|\bxox[baprs]-|\bAIza[0-9A-Za-z_-]{35}\b|"
                      r"\b(?:api[_-]?key|apikey|access[_-]?token|bearer)\b|\bjetons?\b|\btoken\b"),
