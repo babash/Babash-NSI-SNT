@@ -9,10 +9,11 @@ continuent d'utiliser les listes `ressources.js` ([LISTES.md](LISTES.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 110 fiches, dont 82 pour les 90 entrées des
+  ressources/<id>.json          une fiche par ressource : 114 fiches, dont 82 pour les 90 entrées des
                                 listes (une ressource placée dans deux rubriques n'a qu'une fiche),
                                 8 pour des fichiers récupérés des conversations de l'enseignant,
-                                19 pour des activités Capytale et 1 pour un site externe demandé
+                                19 pour des activités Capytale, 4 pour des ressources tirées d'une
+                                archive de projets de l'enseignant et 1 pour un site externe demandé
                                 par l'enseignant (l'entraînement à l'épreuve pratique d'exomorphisme.fr)
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
@@ -107,6 +108,15 @@ leurs crédits, seulement quand leur licence permet de les diffuser, et gardent 
 fiche le dit (`licence`, `credits`), et trois d'entre elles sont sous licence non commerciale
 (voir [Licence](../README.md#licence)). Quand un original public existe, la fiche le donne aussi en
 « Code source ». Les activités sans auteur nommé ou sans licence connue sont restées de côté.
+
+De même pour quatre ressources tirées, le 16 novembre 2026, d'une archive de projets de
+l'enseignant, au statut « à revoir » : la découverte des listes (sujet et corrigé, notebooks,
+`nsi-terminale/fichiers/decouverte-listes/`), l'Opération GHOST, la version de première de MIRAGE
+(`nsi-premiere/fichiers/operation-ghost/`), le TP de SNT « le reboucheur de donuts », une page web
+en 20 défis (`snt/fichiers/web-interview-donuts/`), et le voyageur de commerce à Mayotte, une page
+sans connexion (`nsi-terminale/fichiers/voyageur-de-commerce-mayotte/`). Les bibliothèques que le
+TP des donuts emploie (Bootstrap, reveal.js) sont copiées dans son dossier, avec leur licence : la
+page ne charge rien d'un autre site.
 
 Pour valider les données, depuis le dossier du site : `python3 scripts/valider_donnees.py`
 (Python 3 seul, rien à installer ; avec `--strict`, les avertissements bloquent aussi). Chaque
