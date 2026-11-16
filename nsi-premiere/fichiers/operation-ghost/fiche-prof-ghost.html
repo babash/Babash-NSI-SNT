@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiche enseignant·e — Opération GHOST</title>
+<style>
+:root{
+  --bg:#0a0e17;--surface:#111827;--acc:#4d9fd6;--red:#ff3e3e;--text:#c8d6ef;--brd:#1e3050;--code:#060b13;
+}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',Arial,sans-serif;padding:30px;line-height:1.6;}
+@media(max-width:600px){body{padding:14px;}}
+td,th{overflow-wrap:break-word;}.sol{overflow-wrap:anywhere;}pre{white-space:pre-wrap;}
+header{border-bottom:2px solid var(--acc);padding-bottom:20px;margin-bottom:30px;}
+h1{font-size:2rem;color:#fff;}
+h1 span{color:var(--acc);}
+.st{font-family:'Share Tech Mono','Courier New',monospace;font-size:.7rem;color:var(--acc);letter-spacing:3px;text-transform:uppercase;margin:20px 0 10px;}
+.card{background:var(--surface);border:1px solid var(--brd);border-radius:8px;padding:15px;margin-bottom:15px;}
+pre{background:var(--code);color:var(--fg);padding:10px;border-radius:5px;font-family:'Share Tech Mono','Courier New',monospace;font-size:0.8rem;overflow-x:auto;}
+table{width:100%;border-collapse:collapse;margin:10px 0;}
+th{text-align:left;color:var(--acc);font-size:0.8rem;padding:8px;border-bottom:1px solid var(--brd);}
+td{padding:8px;font-size:0.85rem;border-bottom:1px solid var(--brd);}
+.sol{color:#00e676;font-family:'Share Tech Mono','Courier New',monospace;}
+@media print{:root{--bg:#fff;--surface:#fff;--text:#111;--acc:#1f5f8f;--brd:#999;--code:#f2f2f2;}h1,h2,h3{color:#000;}pre{color:#145a32;}.sol{color:#145a32;}footer a{color:#1f5f8f!important;}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Opération <span>GHOST</span> — Fiche enseignant·e</h1>
+  <p>TP de manipulation de fichiers et navigation système (Bash / Alpine Linux)</p>
+</header>
+
+<section>
+  <div class="st">01 — Objectifs Pédagogiques</div>
+  <div class="card">
+    <ul>
+      <li>Maîtriser la navigation (<code>cd, pwd, ls -a</code>).</li>
+      <li>Manipuler les fichiers (<code>cp, mv, touch, mkdir, rmdir</code>).</li>
+      <li>Gérer les permissions (<code>chmod octal</code>).</li>
+      <li>Introduction à l'analyse de données (<code>cat, grep, find</code>).</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <div class="st">02 — Corrigé des Missions</div>
+  <div class="card">
+    <table>
+      <tr><th>Phase</th><th>Objectif</th><th>Commande attendue (Exemple)</th></tr>
+      <tr><td>1</td><td>Navigation SQL</td><td class="sol">cd donnees/SQL</td></tr>
+      <tr><td>2</td><td>Dossier caché</td><td class="sol">cd ../../.secret</td></tr>
+      <tr><td>3</td><td>Lecture Code</td><td class="sol">cat pass.txt (Réponse: AVALON_2026)</td></tr>
+      <tr><td>4</td><td>Structure</td><td class="sol">mkdir ../donnees/backdoor && touch ...</td></tr>
+      <tr><td>5</td><td>Duplication</td><td class="sol">cp system_id backdoor/id_backup.txt</td></tr>
+      <tr><td>6</td><td>Renommage</td><td class="sol">mv system_id backdoor/evidence.txt</td></tr>
+      <tr><td>7</td><td>Permissions</td><td class="sol">chmod 600 backdoor/logs.txt</td></tr>
+      <tr><td>8</td><td>Nettoyage</td><td class="sol">rmdir archives</td></tr>
+      <tr><td>9</td><td>Recherche</td><td class="sol">find /tmp -name rapport_fraude.txt, puis cd /tmp/avalon_server/donnees/SQL/archives/2024/temp</td></tr>
+      <tr><td>10</td><td>Filtre</td><td class="sol">grep "DETOURNEMENT" rapport_fraude.txt > lanceur_alerte.txt, puis mv lanceur_alerte.txt /tmp/avalon_server/</td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="st">03 — Structure du Serveur (Générée)</div>
+  <div class="card">
+    <pre>
+/tmp/avalon_server/
+├── .secret/
+│   └── pass.txt             # Code : AVALON_2026
+└── donnees/
+    ├── system_id            # Fichier à voler/déplacer
+    ├── archives/            # Dossier à supprimer
+    └── SQL/
+        └── archives/2024/.../rapport_fraude.txt # Cible du bonus
+    </pre>
+  </div>
+</section>
+
+<section>
+  <div class="st">04 — Dépannage</div>
+  <div class="card">
+    <p><strong>Réinitialisation :</strong> Retaper <code>. ./init_hacker.sh</code> ne répare pas une arborescence cassée : le script ne crée les dossiers et ne remet la progression à zéro que si <code>/tmp/avalon_server</code> n'existe pas. Pour repartir de zéro : <code>rm -rf /tmp/avalon_server /tmp/.progress</code>, puis <code>. ./init_hacker.sh</code> (ou recharger la page de JSLinux et réimporter le script).</p>
+    <p><strong>Alias :</strong> L'alias <code>check</code> pointe vers <code>/tmp/check_logic.sh</code>. Si <code>check</code> ne répond plus, vérifiez que le script a été chargé avec « . ./init_hacker.sh ».</p>
+  </div>
+</section>
+<footer style="margin-top:30px;border-top:1px solid #1e3050;padding-top:10px;font-size:.8rem;">Babash - NSI Tani Malandi · <a style="color:#7fb4e6" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · <a style="color:#7fb4e6" href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-premiere/fichiers/operation-ghost" target="_blank" rel="noopener">Code source sur GitHub</a></footer>
+</body>
+</html>
