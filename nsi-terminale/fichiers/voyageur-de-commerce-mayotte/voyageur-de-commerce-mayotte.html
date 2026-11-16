@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voyageur de commerce à Mayotte</title>
+<style>
+:root { --panel-bg:#1a1a1a; --text:#eeeeee; --muted:#b4b4b4; --drone:#00d2ff; --hub:#ff4df0; --line:#444; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { font-family: "Segoe UI", Arial, sans-serif; margin:0; background:#000; color:var(--text); min-height:100vh; display:flex; flex-direction:column; }
+.app { display:flex; flex:1; min-height:0; }
+#sidebar { width:400px; max-width:100%; display:flex; flex-direction:column; background:var(--panel-bg); border-right:3px solid #333; }
+.header { padding:15px; background:#000; border-bottom:3px solid var(--hub); }
+.header h1 { margin:0; font-size:1.3rem; }
+.header p { margin:4px 0 0; color:var(--muted); font-size:.85rem; }
+.consigne { padding:10px 15px; font-size:.85rem; color:var(--muted); border-bottom:1px solid #333; margin:0; }
+.stats { display:grid; grid-template-columns:1fr 1fr; background:#222; }
+.stat-box { padding:10px; text-align:center; border:1px solid #333; font-size:.9rem; }
+.stat-val { font-size:1.5rem; font-weight:900; display:block; color:var(--drone); }
+.city-list { flex:1; overflow-y:auto; padding:10px; list-style:none; margin:0; min-height:140px; max-height:60vh; }
+.city-item { background:#262626; margin-bottom:8px; padding:8px 10px; border-radius:4px; border:1px solid var(--line); display:flex; align-items:center; gap:8px; }
+.city-item:hover { border-color:var(--drone); }
+.city-item.dragging { opacity:.4; border:2px dashed var(--drone); }
+.city-item.is-hub { border-left:6px solid var(--hub); background:#301030; }
+.handle { color:#9a9a9a; font-size:1.2rem; cursor:grab; }
+.city-info { flex:1; min-width:0; }
+.city-info strong { display:block; font-size:1rem; }
+.city-info small { color:var(--muted); font-size:.78rem; }
+.mini { background:#333; color:#fff; border:1px solid #555; border-radius:4px; min-width:34px; min-height:34px; cursor:pointer; font-size:1rem; }
+.mini:hover, .mini:focus-visible { border-color:var(--drone); }
+.controls { padding:10px; display:flex; gap:6px; background:#000; }
+.btn { flex:1; padding:11px; border:none; border-radius:4px; font-weight:bold; cursor:pointer; color:#fff; font-size:.95rem; }
+.btn-gris { background:#444; } .btn-rouge { background:#a00000; }
+.btn:focus-visible, .mini:focus-visible { outline:2px solid var(--drone); outline-offset:2px; }
+#carte { flex:1; background:#111; min-height:420px; position:relative; }
+#carte svg { width:100%; height:100%; display:block; }
+.terre { fill:#243040; stroke:#5c6f86; stroke-width:2; }
+.leg { fill:none; stroke:var(--drone); stroke-width:3; stroke-dasharray:8 8; }
+.pt { fill:#6b6b6b; stroke:#fff; stroke-width:2; cursor:pointer; }
+.pt.commune { fill:#8c8c8c; }
+.pt.active { fill:var(--drone); }
+.pt.hub { fill:var(--hub); }
+.pt:focus-visible { outline:none; stroke:#ffeb3b; stroke-width:4; }
+.lab { font-size:15px; fill:#fff; paint-order:stroke; stroke:#000; stroke-width:4px; pointer-events:none; }
+.lab.hub { fill:#ffd1fa; font-weight:bold; }
+.legende { position:absolute; left:10px; bottom:10px; background:rgba(0,0,0,.75); border:1px solid #555; border-radius:4px; padding:6px 10px; font-size:.8rem; color:var(--muted); }
+footer { background:#000; border-top:1px solid #333; padding:8px 15px; font-size:.78rem; color:var(--muted); text-align:center; }
+footer a { color:#8fd3ff; }
+@media (max-width:800px) {
+  .app { flex-direction:column; }
+  #sidebar { width:100%; border-right:0; border-bottom:3px solid #333; }
+  .city-list { max-height:38vh; }
+  #carte { min-height:70vh; }
+}
+@media print { body { background:#fff; color:#000; } #sidebar, footer { background:#fff; color:#000; } .city-item { border-color:#000; background:#fff; } }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="sidebar">
+    <div class="header">
+      <h1>Mayotte logistique</h1>
+      <p>Voyageur de commerce : analyse de graphes (NSI)</p>
+    </div>
+    <p class="consigne">Cliquer sur des villages de la carte pour construire un circuit, puis le réordonner (glisser, ou boutons ▲ ▼). Le premier village est le dépôt : le circuit se ferme en y revenant. Chercher l'ordre qui rend le circuit le plus court.</p>
+    <div class="stats">
+      <div class="stat-box">Circuit fermé<span id="d-total" class="stat-val">0</span>km à vol d'oiseau</div>
+      <div class="stat-box">Villages<span id="d-n" class="stat-val">0</span>dans le circuit</div>
+    </div>
+    <ul class="city-list" id="itineraire" aria-label="Ordre de passage"></ul>
+    <div class="controls">
+      <button class="btn btn-gris" id="b-hasard" type="button">Au hasard (6)</button>
+      <button class="btn btn-rouge" id="b-reset" type="button">Effacer</button>
+    </div>
+  </div>
+  <div id="carte">
+    <svg id="svg" viewBox="0 0 560 740" preserveAspectRatio="xMidYMid meet" role="group" aria-label="Carte simplifiée de Mayotte : Grande-Terre et Petite-Terre">
+      <path class="terre" d="M341.8,175.7 L376.9,199.4 L390.9,223.0 L390.9,250.0 L383.9,283.8 L334.8,354.7 L320.7,364.9 L320.7,388.5 L334.8,412.1 L369.9,432.4 L362.8,459.4 L348.8,486.4 L341.8,496.6 L327.7,540.5 L292.6,577.6 L278.6,618.2 L313.7,668.8 L306.7,682.3 L299.6,692.4 L285.6,699.2 L271.6,709.3 L264.5,685.7 L250.5,689.1 L229.4,702.6 L208.4,709.3 L187.3,702.6 L173.3,692.4 L159.2,685.7 L138.2,695.8 L145.2,665.4 L138.2,645.2 L117.1,638.4 L89.0,638.4 L89.0,628.3 L124.1,611.4 L124.1,577.6 L110.1,547.2 L75.0,527.0 L82.0,516.8 L96.0,506.7 L117.1,503.3 L124.1,513.5 L159.2,554.0 L194.3,574.2 L215.4,564.1 L215.4,537.1 L208.4,503.3 L194.3,479.7 L173.3,456.0 L117.1,408.8 L145.2,395.3 L152.2,395.3 L152.2,381.8 L145.2,364.9 L138.2,334.5 L131.2,277.1 L124.1,250.0 L103.1,236.5 L82.0,229.8 L60.9,216.3 L46.9,199.4 L39.9,179.1 L32.9,158.9 L32.9,128.5 L131.2,23.8 L138.2,37.3 L138.2,44.0 L138.2,50.8 L131.2,54.2 L124.1,57.5 L117.1,64.3 L131.2,64.3 L131.2,67.7 L138.2,74.4 L138.2,77.8 L166.3,101.4 L201.4,145.4 L222.4,158.9 L250.5,165.6 L306.7,165.6 L341.8,175.7Z M461.1,256.8 L489.2,226.4 L503.3,216.3 L517.3,250.0 L517.3,277.1 L510.3,307.5 L503.3,341.2 L489.2,341.2 L461.1,256.8Z"/>
+      <polyline id="circuit" class="leg" points=""/>
+      <g id="points"></g>
+      <g id="etiquettes"></g>
+    </svg>
+    <div class="legende">Points gris : villages ; plus grands : les 17 communes. Contour simplifié.</div>
+  </div>
+</div>
+<footer>
+  Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> (texte), MIT (code) ·
+  <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/voyageur-de-commerce-mayotte" target="_blank" rel="noopener">Code source sur GitHub</a><br>
+  Contour : Natural Earth (domaine public). Positions des villages : GeoNames (CC BY 4.0) et Wikipédia. Distances à vol d'oiseau (formule de haversine) ; aucune donnée n'est envoyée.
+</footer>
+<script>
+// [nom, latitude, longitude, type, position vérifiée ?]
+// Sources : GeoNames (CC BY 4.0), Wikipédia ; « false » = position reprise de la version d'origine, à vérifier.
+var LIEUX = [
+  ["Acoua",-12.724,45.058,"commune",true],["Bandraboua",-12.704,45.122,"commune",true],["Bandrélé",-12.913,45.193,"commune",true],
+  ["Bouéni",-12.910,45.076,"commune",false],["Chiconi",-12.833,45.114,"commune",true],["Chirongui",-12.932,45.148,"commune",true],
+  ["Dembéni",-12.844,45.184,"commune",true],["Dzaoudzi",-12.783,45.257,"commune",true],["Kani-Kéli",-12.954,45.103,"commune",true],
+  ["Koungou",-12.734,45.204,"commune",true],["Mamoudzou",-12.782,45.229,"commune",true],["Mtsamboro",-12.700,45.069,"commune",true],
+  ["M'Tsangamouji",-12.759,45.084,"commune",true],["Ouangani",-12.846,45.136,"commune",true],["Pamandzi",-12.797,45.279,"commune",true],
+  ["Sada",-12.851,45.102,"commune",true],["Tsingoni",-12.787,45.103,"commune",true],
+  ["Barakani",-12.838,45.131,"village",true],["Choungui",-12.962,45.127,"village",true],["Dapani",-12.971,45.161,"village",true],
+  ["Dzoumogné",-12.721,45.118,"village",true],["Kawéni",-12.771,45.224,"village",true],["Mbouini",-12.990,45.137,"village",true],
+  ["Mliha",-12.751,45.055,"village",true],["M'Tsapéré",-12.786,45.217,"village",true],["Mzouazia",-12.927,45.103,"village",true],
+  ["Nyambadao",-12.893,45.202,"village",true],["Poroani",-12.892,45.141,"village",true],["Sohoa",-12.833,45.133,"village",true],
+  ["Tsimkoura",-12.939,45.137,"village",true],["Vahibé",-12.790,45.177,"village",true]
+];
+var LAT0=-12.635, LON0=45.025, K=2000, C=Math.cos(-12.815*Math.PI/180);
+function xy(l){ return [(l[2]-LON0)*C*K, (LAT0-l[1])*K]; }
+function km(a,b){ var R=6371, r=Math.PI/180, dLa=(b[1]-a[1])*r, dLo=(b[2]-a[2])*r;
+  var h=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a[1]*r)*Math.cos(b[1]*r)*Math.sin(dLo/2)*Math.sin(dLo/2);
+  return 2*R*Math.asin(Math.sqrt(h)); }
+function fr(x){ return x.toFixed(1).replace(".",","); }
+var NS="http://www.w3.org/2000/svg", tour=[];
+function lieu(n){ for(var i=0;i<LIEUX.length;i++) if(LIEUX[i][0]===n) return LIEUX[i]; }
+function basculer(n){ var i=tour.indexOf(n); if(i<0) tour.push(n); else tour.splice(i,1); maj(); }
+function deplacer(i,d){ var j=i+d; if(j<0||j>=tour.length) return; var t=tour[i]; tour[i]=tour[j]; tour[j]=t; maj(); }
+function maj(){
+  var gp=document.getElementById("points"), ge=document.getElementById("etiquettes");
+  gp.innerHTML=""; ge.innerHTML="";
+  LIEUX.forEach(function(l){
+    var p=xy(l), actif=tour.indexOf(l[0])>=0, hub=tour[0]===l[0];
+    var c=document.createElementNS(NS,"circle");
+    c.setAttribute("cx",p[0]); c.setAttribute("cy",p[1]);
+    c.setAttribute("r", hub?12:(actif?9:(l[3]==="commune"?8:5)));
+    c.setAttribute("class","pt "+l[3]+(actif?" active":"")+(hub?" hub":""));
+    c.setAttribute("tabindex","0"); c.setAttribute("role","button");
+    c.setAttribute("aria-pressed",actif?"true":"false");
+    c.setAttribute("aria-label",l[0]+(l[3]==="commune"?" (commune)":" (village)")+(actif?", dans le circuit":""));
+    var t=document.createElementNS(NS,"title"); t.textContent=l[0]; c.appendChild(t);
+    c.addEventListener("click",function(){ basculer(l[0]); });
+    c.addEventListener("keydown",function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); basculer(l[0]); } });
+    gp.appendChild(c);
+    if(actif){ var tx=document.createElementNS(NS,"text"); tx.setAttribute("x",p[0]+14); tx.setAttribute("y",p[1]+5);
+      tx.setAttribute("class","lab"+(hub?" hub":"")); tx.textContent=l[0]; ge.appendChild(tx); }
+  });
+  var pts=tour.map(function(n){ return xy(lieu(n)).join(","); });
+  if(tour.length>1) pts.push(xy(lieu(tour[0])).join(","));
+  document.getElementById("circuit").setAttribute("points", tour.length>1?pts.join(" "):"");
+  var ul=document.getElementById("itineraire"); ul.innerHTML="";
+  var total=0;
+  tour.forEach(function(n,i){
+    var l=lieu(n), suiv=lieu(tour[(i+1)%tour.length]), d=tour.length>1?km(l,suiv):0; total+=d;
+    var li=document.createElement("li"); li.className="city-item"+(i===0?" is-hub":""); li.draggable=true; li.dataset.nom=n;
+    li.innerHTML='<span class="handle" aria-hidden="true">☰</span><div class="city-info"><strong></strong><small></small></div>'+
+      '<button class="mini" type="button" aria-label="Monter">▲</button><button class="mini" type="button" aria-label="Descendre">▼</button><button class="mini" type="button" aria-label="Retirer du circuit">✕</button>';
+    li.querySelector("strong").textContent=(i+1)+". "+n+(i===0?" (dépôt)":"");
+    li.querySelector("small").textContent=(tour.length>1?"→ "+suiv[0]+" : "+fr(d)+" km":"")+(l[4]?"":" · position à vérifier");
+    var b=li.querySelectorAll("button");
+    b[0].onclick=function(){ deplacer(i,-1); }; b[1].onclick=function(){ deplacer(i,1); }; b[2].onclick=function(){ basculer(n); };
+    li.addEventListener("dragstart",function(){ li.classList.add("dragging"); });
+    li.addEventListener("dragend",function(){ li.classList.remove("dragging"); tour=[].map.call(ul.children,function(e){ return e.dataset.nom; }); maj(); });
+    ul.appendChild(li);
+  });
+  document.getElementById("d-total").textContent=fr(total);
+  document.getElementById("d-n").textContent=tour.length;
+}
+document.getElementById("itineraire").addEventListener("dragover",function(e){
+  e.preventDefault(); var ul=this, drag=ul.querySelector(".dragging"); if(!drag) return;
+  var apres=[].filter.call(ul.children,function(c){ return c!==drag; }).reduce(function(best,ch){
+    var r=ch.getBoundingClientRect(), off=e.clientY-r.top-r.height/2;
+    return (off<0 && off>best.off)?{off:off,el:ch}:best; },{off:-Infinity}).el;
+  if(apres) ul.insertBefore(drag,apres); else ul.appendChild(drag);
+});
+document.getElementById("b-reset").onclick=function(){ tour=[]; maj(); };
+document.getElementById("b-hasard").onclick=function(){ tour=LIEUX.map(function(l){ return l[0]; }).sort(function(){ return Math.random()-.5; }).slice(0,6); maj(); };
+maj();
+</script>
+</body>
+</html>
