@@ -1,0 +1,807 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Graphes : qui sera le champion de Ligue 1 ?</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI terminale</div>
+<main>
+<h1>Graphes : qui sera le champion de Ligue 1 ?</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="nsi-graph-foot.ipynb" download>Télécharger le notebook (nsi-graph-foot.ipynb)</a></li><li><a href="autoeval_graphes.py">autoeval_graphes.py</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%E2%9A%BD%EF%B8%8F-TP-:-Qui-sera-le-Champion-de-Ligue-1-?">⚽️ TP : Qui sera le Champion de Ligue 1 ?<a class="anchor-link" href="#%E2%9A%BD%EF%B8%8F-TP-:-Qui-sera-le-Champion-de-Ligue-1-?">¶</a></h1><h2 id="%F0%9F%8F%86-Mission">🏆 Mission<a class="anchor-link" href="#%F0%9F%8F%86-Mission">¶</a></h2><p>Vous êtes Data Scientist pour la Ligue 1. Votre objectif est de coder un algorithme capable de prédire la meilleure équipe en analysant les résultats des matchs.</p>
+<p>Nous allons utiliser des <strong>Graphes</strong> (des réseaux de points reliés entre eux) :</p>
+<ul>
+<li>Les <strong>Équipes</strong> sont les points.</li>
+<li>Les <strong>Matchs gagnés</strong> sont les flèches.</li>
+<li>La <strong>Différence de buts</strong> est le poids de la flèche.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1">## ⚙️ Initialisation des données (Ne pas modifier)</span>
+
+<span class="n">EQUIPES</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"OM"</span><span class="p">,</span> <span class="s2">"PSG"</span><span class="p">,</span> <span class="s2">"Lens"</span><span class="p">,</span> <span class="s2">"OL"</span><span class="p">,</span> <span class="s2">"Lille"</span><span class="p">,</span> <span class="s2">"Strasbourg"</span><span class="p">,</span> <span class="s2">"Rennes"</span><span class="p">]</span>
+
+<span class="c1"># MATRICE_POIDS[i][j] = Différence de Buts si l'équipe i a battu l'équipe j.</span>
+<span class="n">MATRICE_POIDS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c1"># 0    1    2    3    4    5    6  </span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="c1"># 0 : OM</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="c1"># 1 : PSG</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="c1"># 2 : Lens</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="c1"># 3 : OL</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="c1"># 4 : Lille</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="c1"># 5 : Strasbourg</span>
+    <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>  <span class="c1"># 6 : Rennes</span>
+<span class="p">]</span>
+
+<span class="c1"># Chargement de l'arbitre automatique</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autoeval_graphes</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span> 
+<span class="n">go</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Partie-1-:-Comprendre-les-donn%C3%A9es">Partie 1 : Comprendre les données<a class="anchor-link" href="#Partie-1-:-Comprendre-les-donn%C3%A9es">¶</a></h2><p>Avant de coder, vérifions que vous savez lire la matrice <code>MATRICE_POIDS</code>.</p>
+<ul>
+<li>Ligne = L'équipe qui gagne.</li>
+<li>Colonne = L'équipe qui perd.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 1 : Lecture de poids</p>
+<p>Regardez la <strong>ligne de l'OL (indice 3)</strong> et la <strong>colonne de Strasbourg (indice 5)</strong>.</p>
+<p>Quel est le chiffre (la différence de buts) ?</p>
+</div>
+<details>
+<summary>💡 Indice</summary>
+Comptez les lignes en partant de 0 jusqu'à 3. Puis avancez dans la liste jusqu'à la 6ème position (indice 5).
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># R1 : Écrivez le chiffre trouvé ci-dessous</span>
+<span class="n">R1</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION Q1 ---</span>
+<span class="n">check_q1</span><span class="p">(</span><span class="n">R1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION Q1 (Exécutez cette cellule si vous étiez bloqué) ---</span>
+<span class="n">R1</span> <span class="o">=</span> <span class="mi">2</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 2 : Qui a perdu ?</p>
+<p>Regardez la <strong>ligne de Rennes (indice 6)</strong>.</p>
+<p>Contre qui (nom de l'équipe entre guillemets) Rennes a-t-elle gagné ?</p>
+</div>
+<details>
+<summary>💡 Indice</summary>
+La ligne de Rennes est la dernière `[1, 0, 0, ...]`. Le 1 est à la position 0. Quelle est l'équipe numéro 0 ?
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># R2 : Écrivez le nom de l'équipe (ex: "Lens")</span>
+<span class="n">R2</span> <span class="o">=</span> <span class="s2">"..."</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION Q2 ---</span>
+<span class="n">check_q2</span><span class="p">(</span><span class="n">R2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION Q2 ---</span>
+<span class="n">R2</span> <span class="o">=</span> <span class="s2">"OM"</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 3 : Le record</p>
+<p>Quel est le <strong>plus grand chiffre</strong> visible dans toute la matrice ?</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># R3 : La valeur maximale</span>
+<span class="n">R3</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION Q3 ---</span>
+<span class="n">check_q3</span><span class="p">(</span><span class="n">R3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION Q3 ---</span>
+<span class="n">R3</span> <span class="o">=</span> <span class="mi">3</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Partie-2-:-Compter-les-Victoires">Partie 2 : Compter les Victoires<a class="anchor-link" href="#Partie-2-:-Compter-les-Victoires">¶</a></h2><p>Pour savoir qui est fort, on compte simplement le nombre de victoires. Dans notre matrice, une victoire est représentée par un chiffre <strong>supérieur à 0</strong>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 4 : Observation</p>
+<p>Combien de victoires a l'équipe de <strong>Lille (indice 4)</strong> ?
+Regardez la ligne d'indice 4 dans la matrice.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># R4 : Nombre de victoires de Lille</span>
+<span class="n">R4</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION Q4 ---</span>
+<span class="n">check_q4</span><span class="p">(</span><span class="n">R4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION Q4 ---</span>
+<span class="n">R4</span> <span class="o">=</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 5 : Fonction Automatique</p>
+<p>Complétez la fonction <code>compter_victoires</code>.
+Elle doit parcourir la ligne d'une équipe et compter combien de fois le score est <code>&gt; 0</code>.</p>
+</div>
+<details>
+<summary>💡 Indice Code</summary>
+<pre>for score in ligne_equipe:
+    if score &gt; 0:
+        victoires = victoires + 1
+</pre>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">compter_victoires</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">index_equipe</span><span class="p">):</span>
+    <span class="n">ligne_equipe</span> <span class="o">=</span> <span class="n">matrice</span><span class="p">[</span><span class="n">index_equipe</span><span class="p">]</span> <span class="c1"># On récupère la ligne de l'équipe</span>
+    <span class="n">victoires</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="c1"># À COMPLÉTER : Parcourir chaque score dans la ligne</span>
+    <span class="k">for</span> <span class="o">...</span> <span class="ow">in</span> <span class="o">...</span><span class="p">:</span>
+        <span class="c1"># Si le score est strictement positif</span>
+        <span class="k">if</span> <span class="o">...</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">victoires</span> <span class="o">=</span> <span class="n">victoires</span> <span class="o">+</span> <span class="mi">1</span>
+            
+    <span class="k">return</span> <span class="n">victoires</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION FONCTION ---</span>
+<span class="n">check_compter_victoires</span><span class="p">(</span><span class="n">compter_victoires</span><span class="p">,</span> <span class="n">MATRICE_POIDS</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION FONCTION ---</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compter_victoires</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">index_equipe</span><span class="p">):</span>
+    <span class="n">ligne_equipe</span> <span class="o">=</span> <span class="n">matrice</span><span class="p">[</span><span class="n">index_equipe</span><span class="p">]</span>
+    <span class="n">victoires</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">score</span> <span class="ow">in</span> <span class="n">ligne_equipe</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">victoires</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">victoires</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 6 : Le Leader</p>
+<p>Utilisez la fonction <code>compter_victoires</code> pour trouver quelle équipe a le plus de victoires.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">trouver_meilleur_gagneur</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">equipes</span><span class="p">):</span>
+    <span class="n">max_victoires</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">meilleur_equipe</span> <span class="o">=</span> <span class="s2">""</span>
+    
+    <span class="c1"># On parcourt toutes les équipes (i va de 0 à 6)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">equipes</span><span class="p">)):</span>
+        
+        <span class="c1"># 1. Utiliser la fonction pour compter les victoires de l'équipe i</span>
+        <span class="n">nb_victoires</span> <span class="o">=</span> <span class="o">...</span>
+        
+        <span class="c1"># 2. Si c'est mieux que le max actuel, on met à jour</span>
+        <span class="k">if</span> <span class="n">nb_victoires</span> <span class="o">&gt;</span> <span class="n">max_victoires</span><span class="p">:</span>
+            <span class="n">max_victoires</span> <span class="o">=</span> <span class="n">nb_victoires</span>
+            <span class="n">meilleur_equipe</span> <span class="o">=</span> <span class="n">equipes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            
+    <span class="k">return</span> <span class="n">meilleur_equipe</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION LEADER ---</span>
+<span class="n">check_trouver_meilleur_gagneur</span><span class="p">(</span><span class="n">trouver_meilleur_gagneur</span><span class="p">,</span> <span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="n">EQUIPES</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION LEADER ---</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trouver_meilleur_gagneur</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">equipes</span><span class="p">):</span>
+    <span class="n">max_victoires</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">meilleur_equipe</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">equipes</span><span class="p">)):</span>
+        <span class="n">nb_victoires</span> <span class="o">=</span> <span class="n">compter_victoires</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nb_victoires</span> <span class="o">&gt;</span> <span class="n">max_victoires</span><span class="p">:</span>
+            <span class="n">max_victoires</span> <span class="o">=</span> <span class="n">nb_victoires</span>
+            <span class="n">meilleur_equipe</span> <span class="o">=</span> <span class="n">equipes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">meilleur_equipe</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Partie-3-:-Le-Ratio-(Attaque-/-D%C3%A9fense)">Partie 3 : Le Ratio (Attaque / Défense)<a class="anchor-link" href="#Partie-3-:-Le-Ratio-(Attaque-/-D%C3%A9fense)">¶</a></h2><p>On veut favoriser les équipes qui marquent beaucoup et encaissent peu.</p>
+<p>$$ Score = \frac{\text{Buts Marqués}}{\text{Buts Encaissés}} $$</p>
+<p>⚠️ <strong>Attention</strong> : Si <code>Buts Encaissés</code> vaut 0, on ne peut pas diviser ! Le score doit être très grand (ex: 1000).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 7 : La formule mathématique</p>
+<p>Complétez la fonction. N'oubliez pas le <code>if</code> pour le cas spécial (0 but encaissé).</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">score_predictif_simple</span><span class="p">(</span><span class="n">db_marquee</span><span class="p">,</span> <span class="n">db_concedee</span><span class="p">):</span>
+    <span class="c1"># 1. CAS SPÉCIAL (Division par zéro)</span>
+    <span class="k">if</span> <span class="n">db_concedee</span> <span class="o">==</span> <span class="o">...</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">db_marquee</span> <span class="o">*</span> <span class="mf">1000.0</span>
+    
+    <span class="c1"># 2. CAS NORMAL</span>
+    <span class="n">ratio</span> <span class="o">=</span> <span class="o">...</span> <span class="o">/</span> <span class="o">...</span>
+    <span class="k">return</span> <span class="n">ratio</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION FORMULE ---</span>
+<span class="n">check_score_predictif_simple_func</span><span class="p">(</span><span class="n">score_predictif_simple</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION FORMULE ---</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_predictif_simple</span><span class="p">(</span><span class="n">db_marquee</span><span class="p">,</span> <span class="n">db_concedee</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">db_concedee</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">db_marquee</span> <span class="o">*</span> <span class="mf">1000.0</span>
+    <span class="k">return</span> <span class="n">db_marquee</span> <span class="o">/</span> <span class="n">db_concedee</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 8 : Le Meilleur Ratio</p>
+<p>Utilisez votre fonction <code>score_predictif_simple</code> pour trouver :</p>
+<ol>
+<li>Le score du PSG.</li>
+<li>La meilleure équipe de Ligue 1.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Fonction utilitaire (déjà faite, calcule les sommes pour vous)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculer_sommes</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">index_equipe</span><span class="p">):</span>
+    <span class="n">db_marquee</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">matrice</span><span class="p">[</span><span class="n">index_equipe</span><span class="p">])</span> 
+    <span class="n">db_concedee</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">index_equipe</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">matrice</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">db_marquee</span><span class="p">,</span> <span class="n">db_concedee</span>
+
+<span class="c1"># --- À VOUS DE JOUER ---</span>
+
+<span class="c1"># 1. Calculer le score du PSG (Indice 1)</span>
+<span class="n">db_p</span><span class="p">,</span> <span class="n">dc_p</span> <span class="o">=</span> <span class="n">calculer_sommes</span><span class="p">(</span><span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">R5</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># Utilisez score_predictif_simple(db_p, dc_p)</span>
+
+<span class="c1"># 2. Trouver la meilleure équipe</span>
+<span class="n">meilleur_score</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">meilleure_equipe_ratio</span> <span class="o">=</span> <span class="s2">""</span>
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EQUIPES</span><span class="p">)):</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">dc</span> <span class="o">=</span> <span class="n">calculer_sommes</span><span class="p">(</span><span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    
+    <span class="c1"># score = ... (Appelez votre fonction ici)</span>
+    
+    <span class="c1"># if score &gt; ... (Mettre à jour le max)</span>
+    <span class="k">pass</span> 
+
+<span class="n">R6</span> <span class="o">=</span> <span class="n">meilleure_equipe_ratio</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Score du PSG : </span><span class="si">{</span><span class="n">R5</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Meilleure équipe (Ratio) : </span><span class="si">{</span><span class="n">R6</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION RESULTATS ---</span>
+<span class="n">check_resultats_sps</span><span class="p">(</span><span class="n">R5</span><span class="p">,</span> <span class="n">R6</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION RESULTATS ---</span>
+<span class="c1"># Score PSG</span>
+<span class="n">db_p</span><span class="p">,</span> <span class="n">dc_p</span> <span class="o">=</span> <span class="n">calculer_sommes</span><span class="p">(</span><span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">R5</span> <span class="o">=</span> <span class="n">score_predictif_simple</span><span class="p">(</span><span class="n">db_p</span><span class="p">,</span> <span class="n">dc_p</span><span class="p">)</span>
+
+<span class="c1"># Boucle</span>
+<span class="n">meilleur_score</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">meilleure_equipe_ratio</span> <span class="o">=</span> <span class="s2">""</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EQUIPES</span><span class="p">)):</span>
+    <span class="n">db</span><span class="p">,</span> <span class="n">dc</span> <span class="o">=</span> <span class="n">calculer_sommes</span><span class="p">(</span><span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="n">score</span> <span class="o">=</span> <span class="n">score_predictif_simple</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">dc</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">meilleur_score</span><span class="p">:</span>
+        <span class="n">meilleur_score</span> <span class="o">=</span> <span class="n">score</span>
+        <span class="n">meilleure_equipe_ratio</span> <span class="o">=</span> <span class="n">EQUIPES</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">R6</span> <span class="o">=</span> <span class="n">meilleure_equipe_ratio</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h2 id="Partie-4-:-Score-d'Influence">Partie 4 : Score d'Influence<a class="anchor-link" href="#Partie-4-:-Score-d'Influence">¶</a></h2><p>Une victoire rapporte des points <strong>SEULEMENT SI</strong> on bat une "Grosse Équipe".</p>
+<ul>
+<li><strong>Grosse Équipe</strong> = Une équipe qui a <strong>3 victoires ou plus</strong>.</li>
+<li><strong>Points gagnés</strong> = La différence de buts du match.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 9 : L'Intelligence Artificielle</p>
+<p>Complétez la fonction.</p>
+<p>Vous devez vérifier si l'adversaire est fort (<code>victoires &gt;= 3</code>) avant d'ajouter les points.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">score_influence_des_adversaires</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">index_gagneur</span><span class="p">):</span>
+    <span class="n">score_influence</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrice</span><span class="p">)</span>
+    
+    <span class="c1"># On regarde chaque adversaire (index_perdant)</span>
+    <span class="k">for</span> <span class="n">index_perdant</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">poids_victoire</span> <span class="o">=</span> <span class="n">matrice</span><span class="p">[</span><span class="n">index_gagneur</span><span class="p">][</span><span class="n">index_perdant</span><span class="p">]</span>
+        
+        <span class="c1"># 1. Est-ce que j'ai gagné ?</span>
+        <span class="k">if</span> <span class="n">poids_victoire</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            
+            <span class="c1"># 2. Combien de victoire a mon adversaire ? (Utilisez compter_victoires)</span>
+            <span class="n">victoires_adversaire</span> <span class="o">=</span> <span class="n">compter_victoires</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+            
+            <span class="c1"># 3. Si l'adversaire est fort (&gt;= 3 victoires), j'ajoute les points</span>
+            <span class="k">if</span> <span class="n">victoires_adversaire</span> <span class="o">&gt;=</span> <span class="o">...</span><span class="p">:</span>
+                <span class="n">score_influence</span> <span class="o">=</span> <span class="n">score_influence</span> <span class="o">+</span> <span class="n">poids_victoire</span>
+                
+    <span class="k">return</span> <span class="n">score_influence</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION FONCTION IA ---</span>
+<span class="n">check_score_influence_func</span><span class="p">(</span><span class="n">score_influence_des_adversaires</span><span class="p">,</span> <span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="n">compter_victoires</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION FONCTION IA ---</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_influence_des_adversaires</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">index_gagneur</span><span class="p">):</span>
+    <span class="n">score_influence</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">matrice</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">index_perdant</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+        <span class="n">poids_victoire</span> <span class="o">=</span> <span class="n">matrice</span><span class="p">[</span><span class="n">index_gagneur</span><span class="p">][</span><span class="n">index_perdant</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">poids_victoire</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">victoires_adversaire</span> <span class="o">=</span> <span class="n">compter_victoires</span><span class="p">(</span><span class="n">matrice</span><span class="p">,</span> <span class="n">index_perdant</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">victoires_adversaire</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">score_influence</span> <span class="o">+=</span> <span class="n">poids_victoire</span>
+    <span class="k">return</span> <span class="n">score_influence</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Question 10 : Le Vrai Champion</p>
+<p>Utilisez la fonction précédente pour trouver le champion de l'influence.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># R8: Score d'influence du PSG (Indice 1)</span>
+<span class="n">R8</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c1"># R9: Meilleure équipe selon l'influence</span>
+<span class="n">max_influence</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">meilleure_equipe_influence</span> <span class="o">=</span> <span class="s2">""</span>
+
+<span class="c1"># Boucle pour trouver le max</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EQUIPES</span><span class="p">)):</span>
+    <span class="k">pass</span> <span class="c1"># À COMPLÉTER</span>
+
+<span class="n">R9</span> <span class="o">=</span> <span class="n">meilleure_equipe_influence</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Score Influence PSG : </span><span class="si">{</span><span class="n">R8</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Champion Influence : </span><span class="si">{</span><span class="n">R9</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION FINALE ---</span>
+<span class="n">check_resultats_influence</span><span class="p">(</span><span class="n">R8</span><span class="p">,</span> <span class="n">R9</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- CORRECTION FINALE ---</span>
+<span class="n">R8</span> <span class="o">=</span> <span class="n">score_influence_des_adversaires</span><span class="p">(</span><span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">max_influence</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="n">meilleure_equipe_influence</span> <span class="o">=</span> <span class="s2">""</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">EQUIPES</span><span class="p">)):</span>
+    <span class="n">inf</span> <span class="o">=</span> <span class="n">score_influence_des_adversaires</span><span class="p">(</span><span class="n">MATRICE_POIDS</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">inf</span> <span class="o">&gt;</span> <span class="n">max_influence</span><span class="p">:</span>
+        <span class="n">max_influence</span> <span class="o">=</span> <span class="n">inf</span>
+        <span class="n">meilleure_equipe_influence</span> <span class="o">=</span> <span class="n">EQUIPES</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">R9</span> <span class="o">=</span> <span class="n">meilleure_equipe_influence</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/capytale/nsi-graph-foot/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SNT, Python, séance 1 : variables et affectations</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › SNT</div>
+<main>
+<h1>SNT, Python, séance 1 : variables et affectations</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="snt-python-variables-affectations.ipynb" download>Télécharger le notebook (snt-python-variables-affectations.ipynb)</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="margin-left: auto; margin-right: auto; background-color: rgb(0,118,111); color: white; padding: 10px;">
+<span><strong>SNT / Programmation Python / Séance 1</strong></span>
+<h1 style="font-size:3em;padding-bottom:30px; text-align:center;">Variables et affectations</h1>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">❔</span> Pourquoi code-t-on ? (exécutez la cellule ci-dessous pour voir une petite vidéo)</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="n">HTML</span><span class="p">(</span><span class="s2">"""&lt;iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/7b3QupZc08Y" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;"""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-1.-Introduction">🟥 1. Introduction<a class="anchor-link" href="#%F0%9F%9F%A5-1.-Introduction">¶</a></h1><hr>
+<p>Au collège, vous avez déjà programmé mais en utilisant un langage de programmation <em>par blocs</em>. Ce type de langage est très utile pour <em>apprendre les bases</em> de l’algorithmique et de la programmation mais ne constitue pas un langage utilisé pour programmer réellement. Pour cela, on utilise des langages dits <em>textuels</em> qui nécessitent d’écrire tout le code avec son clavier.</p>
+<p>Au lycée, vous allez apprendre l’un de ces langages : le langage <strong>Python</strong>. Vous l’utiliserez dans différentes disciplines : Mathématiques, SNT, Physique-Chimie, spécialité NSI notamment.</p>
+<p><strong>Différences collège/lycée</strong></p>
+<p>Voici ci-dessous à gauche, un programme écrit dans un langage par blocs et à droite le même programme écrit dans le langage Python.</p>
+<p><img loading="lazy" alt="comparaison programmation par blocs et textuelle" src="comparaisonScratchPython.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-2.-Variables">🟥 2. Variables<a class="anchor-link" href="#%F0%9F%9F%A5-2.-Variables">¶</a></h1><hr>
+<p>En informatique, il est indispensable de conserver des informations de natures diverses. Par exemple, votre smartphone enregistre dans sa mémoire votre numéro de téléphone, les numéros de téléphones de vos contacts, vos messages (SMS), vos photos, vos applications, etc. Chacune de ces informations est stockée à un endroit précis dans la mémoire dans ce qu’on appelle une <strong>variable</strong>.</p>
+<p>Ainsi, de manière simplifiée, retenez la définition suivante.</p>
+<div class="alert" style="color:black; background-color:rgb(255, 214, 220); border-left: 8px solid rgb(255, 50, 80);">
+<p>Une <strong>variable</strong> est un espace de stockage de la mémoire (une case mémoire). Chaque variable est caractérisée par son <strong>nom</strong>, son <strong>type</strong> et sa <strong>valeur</strong>.</p>
+</div>
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">❔</span> Au fait, pourquoi dit-on <em>variable</em> ?</p>
+</blockquote>
+<p>Tout simplement car les données qu’elle contient peuvent <em>varier</em> (au cours du temps) : si un ami change de numéro de téléphone, vous êtes content de pouvoir le modifier.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Types-de-variables">Types de variables<a class="anchor-link" href="#Types-de-variables">¶</a></h2><p>Le <strong>type</strong> d’une variable est la nature de l’information qu’elle contient. Vous conviendrez que l’heure de votre réveil et votre dernier SMS reçu n’ont pas la même nature : le premier correspond à des nombres et le second à du texte.</p>
+<div class="alert" style="color:black; background-color:rgb(255, 214, 220); border-left: 8px solid rgb(255, 50, 80);">
+<p>Dans un premier temps, voici les trois types de base qui nous intéressent :</p>
+<ul>
+<li>le type <strong>entier</strong> : il désigne les entiers relatifs (positifs ou négatifs).<br>
+En Python on parle du type <code>int</code> (pour <em>integer</em> qui signifie « entier » en anglais) ;</li>
+<li>le type <strong>flottant</strong> : il désigne les nombres décimaux (à virgule).<br>
+En Python on parle du type <code>float</code> (pour <em>floating</em> qui signifie « flottant » en anglais)</li>
+<li>le type <strong>chaîne de caractères</strong> : il désigne toute suite ordonnée de caractères.<br>
+En Python on parle du type <code>str</code> (pour <em>string</em> qui signifie « chaîne » en anglais).</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 1</h2>
+<p>✍️ <strong>Question</strong> :  Indiquez le type des variables (entier, flottant ou chaîne de caractères) permettant de stocker sur votre smartphone les informations suivantes :</p>
+<ul>
+<li>le nom d’un contact</li>
+<li>le numéro de téléphone d’un contact</li>
+<li>un SMS</li>
+<li>l’heure du réveil</li>
+<li>le code de votre partage de connexion Wi-Fi</li>
+<li>le pourcentage <em>affiché</em> de batterie restante</li>
+<li>les notes aux deux derniers devoirs de Mathématiques que vous tapez dans l’application <em>Calculatrice</em> pour calculer votre moyenne</li>
+</ul>
+</div>
+</div>
+</div>
+Votre réponse (à compléter):
+
+- le nom d’un contact : 
+- le numéro de téléphone d’un contact : 
+- un SMS :
+- l’heure du réveil : 
+- le code de votre partage de connexion Wi-Fi : 
+- le pourcentage affiché de batterie restante :
+- les notes aux deux derniers devoirs de Mathématiques que vous tapez dans l’application Calculatrice pour calculer votre moyenne : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Noms-de-variables-(en-Python)">Noms de variables (en Python)<a class="anchor-link" href="#Noms-de-variables-(en-Python)">¶</a></h2><p>Chaque variable possède un <strong>nom</strong> qui permet d’identifier l’emplacement mémoire correspondant.</p>
+<p>Dans le langage Python, il y a des règles à respecter pour nommmer les variables. Voici celles qui vous concernent :</p>
+<div class="alert" style="color:black; background-color:rgb(255, 214, 220); border-left: 8px solid rgb(255, 50, 80);">
+<ul>
+<li><strong>Règle 1</strong> : un nom ne peut contenir que des lettres (a-z, A-Z), des chiffres (0 - 9) et le caractère <code>_</code> (<em>underscore</em>).</li>
+<li><strong>Règle 2</strong> : un nom ne peut pas commencer par un chiffre.</li>
+<li><strong>Règle 3</strong> : les noms sont sensibles à la casse, cela signifie qu’il y a une distinction entre les minuscules et les majuscules : la variable nommée <code>snt</code> est différente de la variable <code>Snt</code>.</li>
+<li><strong>(Règle 4)</strong> : il est préférable de toujours choisir un nom de variable représentatif : par exemple, si vous voulez stocker le nom d’une personne dans une variable, il est préférable de l’appeler <code>nom</code> plutôt que <code>x</code>.</li>
+<li><strong>(Règle 5)</strong> : il est préférable de ne pas utiliser de caractères accentués dans le nom d’une variable (nous n’entrerons pas dans le pourquoi du comment).</li>
+</ul>
+</div>
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:20px 10%;">
+<p><span style="font-size:1.5em;">📣</span> En Python, le symbole <em>underscore</em> (c’est-à-dire <code>_</code>) est très souvent utilisé pour marquer une séparation entre plusieurs mots dans un nom : si on veut utiliser une variable qui contiendra un nombre d’élèves de Seconde G, on peut la nommer <code>nombre_eleves_2G</code> ou encore <code>nb_eleves_2G</code> car c’est plus facile à lire que <code>nombreeleves2G</code>.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 2</h2>
+<p>✍️ <strong>Question 1</strong> :  Quels sont les noms de variables incorrects parmi ceux proposés ? Vous indiquerez pourquoi.</p>
+<p><code>prix achat</code>, <code>prix_achat</code>, <code>note</code>, <code>2ndeG</code>, <code>SecondeG</code>, <code>Seconde:G</code>, <code>dix-huit</code></p>
+</div>
+</div>
+</div>Votre réponse :
+
+- prix achat :
+- prix_achat :
+- note :
+- 2ndeG :
+- SecondeG :
+- Seconde:G : 
+- dix-huit :
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 2</strong> :  Proposez un nom de variable permettant de stocker :</p>
+<ul>
+<li>le nombre de filles de Seconde G</li>
+<li>le tarif d’un repas au self</li>
+<li>l’aire d’un triangle (il n’y a qu’une seule figure)</li>
+<li>la note à un devoir d’anglais</li>
+</ul>
+</div>
+</div>
+</div>Votre réponse :
+
+- le nombre de filles de Seconde G :
+- le tarif d’un repas au self :
+- l’aire d’un triangle (il n’y a qu’une seule figure) :
+- la note à un devoir d’anglais : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Valeurs-des-variables">Valeurs des variables<a class="anchor-link" href="#Valeurs-des-variables">¶</a></h2><p>Chaque variable possède une <strong>valeur</strong> qui est l’information qu’elle porte. Par exemple,</p>
+<ul>
+<li>la valeur de la variable <code>nombre_eleves_2G</code> pourrait être <code>34</code>,</li>
+<li>celle de la variable <code>note</code> pourrait être <code>14.5</code>,</li>
+<li>celle de la variable <code>prenom</code> pourrait être <code>"Louane"</code>.</li>
+</ul>
+<h3 id="Affecter-une-valeur-%C3%A0-une-variable">Affecter une valeur à une variable<a class="anchor-link" href="#Affecter-une-valeur-%C3%A0-une-variable">¶</a></h3><p>En Python, pour définir ou modifier la valeur d’une variable c’est très simple, il suffit d’utiliser le symbole égal : <code>=</code>.</p>
+<p><strong>Exemple</strong></p>
+<p>Le programme Python</p>
+<div class="highlight"><pre><span></span><span class="n">note</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">note</span> <span class="o">=</span> <span class="mf">15.5</span>
+<span class="n">prenom</span> <span class="o">=</span> <span class="s2">"Louane"</span>
+</pre></div>
+<p>permet de :</p>
+<ul>
+<li>créer une variable <code>note</code> dont la valeur vaut 15, c'est donc une variable de type <strong>entier</strong> (<code>int</code> en Python)</li>
+<li>puis de modifier la valeur de la variable <code>note</code> qui vaut 15.5 à l'issue de la deuxième ligne.<br>
+👉🏻 <strong>Important</strong> : on utilise le point (<code>.</code>) et non pas la virgule pour écrire des nombres décimaux.<br>
+👉🏻 Dans ce cas, le type de la variable a changé : c'est devenu un <strong>flottant</strong> (<code>float</code> en Python).</li>
+<li>et enfin de créer une variable <code>prenom</code> dont la valeur est la <strong>chaine de caractères</strong> "Louane".<br>
+👉🏻 <strong>Important</strong> : On utilise les guillemets (<code>""</code>) pour désigner les chaînes de caractères.</li>
+</ul>
+<p><strong>Exécutez la cellule suivante</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># CELLULE À EXÉCUTER !!!!!!!!!!!!!</span>
+
+<span class="n">note</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">note</span> <span class="o">=</span> <span class="mf">15.5</span>
+<span class="n">prenom</span> <span class="o">=</span> <span class="s2">"Louane"</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>À l'issue du programme précédent on peut évaluer la valeur de chaque variable en exécutant les cellules ci-dessous : (<em>si une erreur s'affiche, c'est sans doute que vous avez oublié d'exécuter la cellule précédente</em>)</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">note</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">prenom</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>On peut aussi voir le type d'une variable en utilisant la fonction <code>type</code> comme ci-dessous :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="nb">type</span><span class="p">(</span><span class="n">prenom</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Afficher-la-valeur-d'une-variable">Afficher la valeur d'une variable<a class="anchor-link" href="#Afficher-la-valeur-d'une-variable">¶</a></h3><p>Pour afficher la valeur d’une variable on utilise la fonction <code>print</code>. Par exemple, pour afficher la valeur de la variable <code>note</code> on écrit simplement : <code>print(note)</code>.</p>
+<p>On peut ainsi ajouter des affichages dans le programme précédent :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">note</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+<span class="n">note</span> <span class="o">=</span> <span class="mf">15.5</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">note</span><span class="p">)</span>
+<span class="n">prenom</span> <span class="o">=</span> <span class="s2">"Louane"</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">prenom</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-3.-Op%C3%A9rations-sur-les-variables-de-type-nombre-(int-et-float)">🟥 3. Opérations sur les variables de type nombre (<code>int</code> et <code>float</code>)<a class="anchor-link" href="#%F0%9F%9F%A5-3.-Op%C3%A9rations-sur-les-variables-de-type-nombre-(int-et-float)">¶</a></h1><hr>
+<p>Nous nous contenterons ici de montrer quelques opérations possibles sur les entiers et les flottants (on parle rapidement des chaînes de caractères en fin de document).</p>
+<p>Il n’y a pas de surprise : il est possible d’additionner, soustraire, multiplier, diviser des variables de type nombre (entier ou flottant). On utilise pour cela les symboles habituels résumés dans le tableau ci-dessous dans lequel on indique aussi comment élever un nombre à une certaine puissance.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">Opération</th>
+<th style="text-align:center;">Écriture en Python</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">Addition</td>
+<td style="text-align:center;"><code>a + b</code></td>
+</tr>
+<tr>
+<td style="text-align:right;">Soustraction</td>
+<td style="text-align:center;"><code>a - b</code></td>
+</tr>
+<tr>
+<td style="text-align:right;">Multiplication</td>
+<td style="text-align:center;"><code>a * b</code></td>
+</tr>
+<tr>
+<td style="text-align:right;">Division</td>
+<td style="text-align:center;"><code>a / b</code></td>
+</tr>
+<tr>
+<td style="text-align:right;">Élever <code>a</code> à la puissance <code>n</code></td>
+<td style="text-align:center;"><code>a ** n</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 3</h2>
+<p>On considère le programme Python suivant :</p>
+<div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="mi">2</span>
+</pre></div>
+<p>✍️ <strong>Question 1</strong> : Déterminez mentalement la valeur de la variable <code>d</code> à l'issue de ce programme ?</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 2</strong> : Donnez le type de chacune des variables de ce programme.</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong> : Recopiez ce programme dans la cellule ci-dessous (<em>sans faire un copier-coller</em>, c'est justement pour apprendre).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong> : Utilisez la fonction <code>print</code> pour afficher la valeur de la variable <code>d</code> afin de vérifier votre réponse à la première question.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 5</strong> : Exécutez la cellule ci-dessous puis exécutez le programme ligne par ligne avec les boutons Forward &gt; et &lt; Back pour bien comprendre son fonctionnement.</p>
+<blockquote>
+<p>On utilise ici les fonctionnalités de la bibliothèque <code>tutor</code> qui permet d'exécuter un programme ligne par ligne.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">tutor</span><span class="w"> </span><span class="kn">import</span> <span class="n">tutor</span>  <span class="c1"># on importe la fonction tutor de la bibliothèque tutor</span>
+
+<span class="n">a</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="n">d</span> <span class="o">=</span> <span class="n">c</span> <span class="o">/</span> <span class="mi">2</span>
+
+<span class="n">tutor</span><span class="p">()</span>  <span class="c1"># on utilise cette fonction pour visualiser le programme ligne par ligne</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 6</strong> : On considère maintenant que <code>a</code> et <code>b</code> correspondent à des notes. Réécrivez le programme en utilisant des noms de variables plus représentatifs (pour les 4 variables).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-4.-%C3%80-vous-de-jouer-!">🟥 4. À vous de jouer !<a class="anchor-link" href="#%F0%9F%9F%A5-4.-%C3%80-vous-de-jouer-!">¶</a></h1><hr>
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:20px 10%;">
+<p><span style="font-size:1.5em;">📣</span> Les activités qui suivent n’ont pas de contexte particulier. C’est pourquoi on utilise des noms de variables peu représentatifs. Leur seul but est de faire ancrer les notions abordées dans ce document.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 4</h2>
+<p>On considère le programme Python suivant :</p>
+<div class="highlight"><pre><span></span><span class="n">a</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="mi">4</span>
+<span class="n">b</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">b</span>
+<span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+</pre></div>
+<p>✍️ <strong>Question 1</strong> : Combien de variables sont utilisées ? Donnez leurs noms.</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 2</strong> : Déterminez mentalement la valeur finale de la variable <code>a</code> ?</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong> : Vérifiez votre réponse en recopiant le programme dans la cellule ci-dessous (<em>sans faire un copier-coller</em>) puis en exécutant ce programme.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong> : Il est possible d’afficher plusieurs valeurs avec la fonction <code>print</code>. Par exemple, si on veut afficher les valeurs des variables <code>a</code> et <code>b</code> on écrit simplement <code>print(a, b)</code>. Modifiez la dernière ligne du programme précédent pour afficher les valeurs finales de variables <code>a</code> et <code>b</code> !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 5</h2>
+<p>L'utilisation d'un notebook facilite l'apprentissage, mais sachez que la plupart du temps on utilise un <em>éditeur de code</em> pour écrire et exécuter des programmes Python.</p>
+<p>C’est un logiciel qui se décompose généralement en deux fenêtres :</p>
+<ul>
+<li>la <strong>fenêtre d’édition</strong> (à gauche dans la capture d'écran ci-dessous) dans laquelle on écrit le programme dans le langage Python</li>
+<li>et la <strong>console</strong> (à droite dans la capture d'écran) dans laquelle peuvent notamment s’afficher les valeurs des variables souhaitées (si on utilise la fonction <code>print()</code>).</li>
+</ul>
+<img loading="lazy" alt="capture d'écran d'une console Basthon" src="basthon.png" width="800">
+<p>Il existe énormément d'éditeur et nous utiliserons pour cette séance un éditeur en ligne appelé <strong>BASTHON</strong> (qui signifie <strong>B</strong>ac <strong>À</strong> <strong>S</strong>able Py<strong>thon</strong>) qui ne nécessite pas d’installation (vous pourrez donc l’utiliser chez vous rien qu’avec une connexion Internet) et qui est aussi accessible via la plateforme Capytale.</p>
+<p>Voici un lien permettant d'accéder à Basthon : <a rel="noopener noreferrer" href="https://console.basthon.fr/">https://console.basthon.fr/</a>.</p>
+<p>🐍 <strong>Consigne</strong> : Cliquez sur le lien ci-dessus pour ouvrir l'éditeur de code puis recopiez dans la fenêtre d'édition (celle de gauche) le programme de l'activité précédente. Vous exécuterez ensuite le programme en cliquant sur le bouton "Exécuter" et observerez bien que c'est dans la console (fenêtre de droite) que s'affiche la valeur de la variable <code>a</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 6</h2>
+<p>On considère le programme de calcul suivant.</p>
+<ul>
+<li>A prend la valeur 5</li>
+<li>Multiplier A par 3</li>
+<li>Soustraire 4 au résultat</li>
+<li>Elever le résultat au carré</li>
+<li>Afficher le résultat</li>
+</ul>
+<p>🐍 <strong>Question</strong> : Écrivez un programme Python permettant de coder ce programme de calcul. Vérifiez ensuite en l'exécutant.<br>
+<em>Vous pouvez utiliser la cellule ci-dessous ou l'éditeur Basthon</em>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 7</h2>
+<img loading="lazy" alt="vente en ligne" src="farine.png" width="300">
+<p>Sur un site de vente en ligne, on peut acheter différents articles. Un paquet de farine d'un kg coûte 1,15 € et une boîte de six oeufs coûte 1,50 €.</p>
+<p>🐍 <strong>Question</strong> : Écrivez un programme Python qui :</p>
+<ul>
+<li>utilise deux variables pour stocker le nombre de paquets de farine et de boîtes d'oeufs souhaités</li>
+<li>puis, qui calcule et affiche le prix total à payer pour la commande.</li>
+</ul>
+<p><em>Vous pouvez utiliser la cellule ci-dessous ou l'éditeur Basthon</em>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-5.-Op%C3%A9rations-sur-les-cha%C3%AEnes-de-caract%C3%A8res">🟥 5. Opérations sur les chaînes de caractères<a class="anchor-link" href="#%F0%9F%9F%A5-5.-Op%C3%A9rations-sur-les-cha%C3%AEnes-de-caract%C3%A8res">¶</a></h1><hr>
+<p>Pour les chaînes de caractères c’est plus court car il n’y a que deux opérations possibles :</p>
+<ul>
+<li>la <strong>concaténation</strong> qui consiste à mettre bout à bout deux chaînes pour former une unique chaîne : on utilise pour cela le symbole d’addition <code>+</code>.</li>
+<li>la <strong>répétition</strong> qui consiste à ajouter une chaîne un certain nombre de fois à elle-même : on utilise pour cela le symbole de multiplication <code>*</code>.</li>
+</ul>
+<p><strong>Exemple</strong> : Exécutez le programme suivant pour comprendre ce deux opérations</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">chaine1</span> <span class="o">=</span> <span class="s2">"Lou"</span>
+<span class="n">chaine2</span> <span class="o">=</span> <span class="s2">"ane"</span>
+
+<span class="n">chaine3</span> <span class="o">=</span> <span class="n">chaine1</span> <span class="o">+</span> <span class="n">chaine2</span>  <span class="c1"># concaténation</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chaine3</span><span class="p">)</span>
+
+<span class="n">chaine4</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">chaine1</span>  <span class="c1"># répétition</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">chaine4</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p>Les enseignants de SNT du lycée Emmanuel Mounier, ANGERS</p>
+<p><a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Licence CC BY-SA 4.0</a></p>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Les enseignants de SNT du lycée Emmanuel Mounier (Angers) · CC BY-SA 4.0 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/snt/fichiers/capytale/snt-python-variables-affectations/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

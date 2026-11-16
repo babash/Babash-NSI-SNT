@@ -1,0 +1,1419 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TP de programmation objet : le Pokédex (version Capytale)</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI terminale</div>
+<main>
+<h1>TP de programmation objet : le Pokédex (version Capytale)</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale, puis joindre <code>_validation.py</code> et <code>pokemon_data_light.json</code> (<a href="https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/pokemon_data_light.json">données</a>, déjà sur la fiche de la ressource). Le notebook n'importe pas <code>pokemon_api_tool.py</code> : cet outil a servi à construire les données.
+<ul><li><a href="tp-poo-pokedex.ipynb" download>Télécharger le notebook (tp-poo-pokedex.ipynb)</a></li><li><a href="_validation.py">_validation.py</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<center>
+<h1 id="TP-de-Programmation-Orient%C3%A9e-Objet">TP de Programmation Orientée Objet<a class="anchor-link" href="#TP-de-Programmation-Orient%C3%A9e-Objet">¶</a></h1><p><em>[image non reprise dans cette copie]</em></p>
+</center>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>👇 Exécuter la cellule ci-dessous pour commencer. 👇</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">_validation</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="n">go</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-note"><p class="adm-t">Création d'une classe Pokemon</p>
+<p>L'objectif de ce TP est de créer un programme en objet dans lequel nous allons créer des Pokémons et les fair interagir entre eux.
+Pour commencer, nous créons la classe pokémon ci-dessous.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>👇 Exécuter la cellule ci-dessous pour continuer. 👇</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Pokemon</span><span class="p">:</span>
+    
+    <span class="c1"># constructeur</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">pid</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">types</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">sprite</span><span class="p">,</span> <span class="n">cry</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pid</span> <span class="o">=</span> <span class="n">pid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">types</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">types</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span> <span class="o">=</span> <span class="n">stats</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sprite</span> <span class="o">=</span> <span class="n">sprite</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cry</span> <span class="o">=</span> <span class="n">cry</span>
+        
+    <span class="c1"># les méthodes</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">show</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Fetch the image data from the URL using requests</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sprite</span><span class="p">)</span>
+        <span class="c1">#response.raise_for_status()  # Raise an exception if the request fails</span>
+
+        <span class="c1"># Open the image data with Pillow</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">BytesIO</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">))</span>
+
+        <span class="c1"># Convert the Pillow image to a NumPy array for matplotlib</span>
+        <span class="n">image_np</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">pil_to_array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">image_np</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'off'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cry</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cry</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+                <span class="n">audio</span> <span class="o">=</span> <span class="n">Audio</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">autoplay</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">display</span><span class="p">(</span><span class="n">audio</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">"Error retrieving cry audio."</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"No cry available for this Pokémon."</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"level"</span><span class="p">):</span>
+            <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"[lvl </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="si">}</span><span class="s2">]"</span>
+        <span class="k">return</span> <span class="n">txt</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="nf">__rpr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="n">go</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 1 :</p>
+<h3 id="Classe,-attributs-et-constructeur">Classe, attributs et constructeur<a class="anchor-link" href="#Classe,-attributs-et-constructeur">¶</a></h3><ol>
+<li>Quelle est le nom de la classe ?</li>
+<li>Combien a-t-elle d'attributs ?</li>
+<li>De quelle ligne à quelle ligne se trouve le constructeur ?</li>
+</ol>
+</div>
+</div>
+</div>
+</div>Mes réponses :
+    Quelle est le nom de la classe ?
+    Combien a-t-elle d'attributs ?
+    De quelle ligne à quelle ligne se trouve le constructeur ?
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_class_comprehension</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-note"><p class="adm-t">Création d'un objet de type Pokemon</p>
+<p>Puis nous créons un pokémon spécifique, en affectant correctement les attributs définis dans le constructeur de la classe pokémon.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>👇 Exécuter la cellule ci-dessous pour continuer. 👇</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">pikachu</span> <span class="o">=</span> <span class="n">Pokemon</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s1">'pikachu'</span><span class="p">,</span> 
+                  <span class="n">pid</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span> 
+                  <span class="n">height</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> 
+                  <span class="n">weight</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+                  <span class="n">types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'electric'</span><span class="p">,),</span>
+                  <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'hp'</span><span class="p">:</span> <span class="mi">35</span><span class="p">,</span>
+                           <span class="s1">'attack'</span><span class="p">:</span> <span class="mi">55</span><span class="p">,</span> 
+                           <span class="s1">'defense'</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> 
+                           <span class="s1">'special-attack'</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> 
+                           <span class="s1">'special-defense'</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> 
+                           <span class="s1">'speed'</span><span class="p">:</span> <span class="mi">90</span><span class="p">},</span>
+                  <span class="n">sprite</span> <span class="o">=</span> <span class="s1">'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png'</span><span class="p">,</span>
+                  <span class="n">cry</span> <span class="o">=</span> <span class="s1">'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/25.ogg'</span><span class="p">)</span>
+<span class="n">pikachu</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">go</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<h3 id="Instancier-des-objets">Instancier des objets<a class="anchor-link" href="#Instancier-des-objets">¶</a></h3><ol>
+<li>Que vaut <code>pikachu.weight</code> ?</li>
+<li>Que vaut <code>pikachu.stats['hp']</code> ?</li>
+<li>Quelle est le type de l'attribut <code>pikachu.types</code> ?</li>
+<li>La commande <code>pikachu.hp</code> est-elle correcte ?</li>
+<li>La commande <code>pikachu.sprite</code> est-elle correcte ?</li>
+<li>Quelle méthode est appelée pour afficher le pokémon ?</li>
+<li>Que vaut l'attribut self de la méthode show lors de l'appel <code>pikachu.show()</code>?</li>
+<li>Quelle méthode est appelée à la ligne 1 du code ci-dessus ?</li>
+</ol>
+</div>
+</div>
+</div>
+</div>Mes réponses :
+    Que vaut pikachu.weight ?
+    Que vaut pikachu.stats['hp'] ?
+    Quelle est le type de l'attribut pikachu.types ?
+    La commande pikachu.hp est-elle correcte ?
+    La commande pikachu.sprite est-elle correcte ?
+    Quelle méthode est appelée pour afficher le pokémon ?
+    Que vaut l'attribut self de la méthode show lors de l'appel pikachu.show()?
+    Quelle méthode est appelée à la ligne 1 du code ci-dessus ?
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_objet_comprehension</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<ol start="9">
+<li>Créez le pokémon Ivysaur (Herbizarre). Ses attributs sont donnés par le dictionnaire suivant :</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'ivysaur'</span><span class="p">,</span>
+ <span class="s1">'pid'</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+ <span class="s1">'height'</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+ <span class="s1">'weight'</span><span class="p">:</span> <span class="mi">130</span><span class="p">,</span>
+ <span class="s1">'types'</span><span class="p">:</span> <span class="p">(</span><span class="s2">"grass"</span><span class="p">,</span> <span class="s2">"poison"</span><span class="p">),</span>
+ <span class="s1">'stats'</span><span class="p">:</span> <span class="p">{</span><span class="s1">'hp'</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+           <span class="s1">'attack'</span><span class="p">:</span> <span class="mi">92</span><span class="p">,</span>
+           <span class="s1">'defense'</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span>
+           <span class="s1">'special-attack'</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+           <span class="s1">'special-defense'</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+           <span class="s1">'speed'</span><span class="p">:</span> <span class="mi">60</span><span class="p">},</span>
+ <span class="s1">'sprite'</span><span class="p">:</span> <span class="s1">'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png'</span><span class="p">,</span>
+ <span class="s1">'cry'</span><span class="p">:</span> <span class="s1">'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/2.ogg'</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="n">ivysaur</span> <span class="o">=</span> <span class="n">Pokemon</span><span class="p">(</span><span class="n">name</span><span class="o">=...</span><span class="p">,</span>
+                  <span class="n">pid</span><span class="o">=...</span><span class="p">,</span>
+                  <span class="n">height</span><span class="o">=...</span><span class="p">,</span>
+                  <span class="n">weight</span><span class="o">=...</span><span class="p">,</span>
+                  <span class="n">name</span><span class="o">=...</span><span class="p">,</span>
+                  <span class="n">stats</span><span class="o">=</span><span class="p">{},</span>
+                  <span class="n">sprite</span><span class="o">=</span><span class="p">,</span>
+                  <span class="n">cry</span><span class="o">=...</span><span class="p">)</span>
+                  
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_ivysaur</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-success"><summary>correction</summary>
+<div class="highlight"><pre><span></span><span class="n">ivysaur</span> <span class="o">=</span> <span class="n">Pokemon</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'ivysaur'</span><span class="p">,</span>
+                  <span class="n">pid</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                  <span class="n">height</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                  <span class="n">weight</span><span class="o">=</span><span class="mi">130</span><span class="p">,</span>
+                  <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s2">"grass"</span><span class="p">,</span> <span class="s2">"poison"</span><span class="p">),</span>
+                  <span class="n">stats</span><span class="o">=</span><span class="p">{</span><span class="s1">'hp'</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+                         <span class="s1">'attack'</span><span class="p">:</span> <span class="mi">92</span><span class="p">,</span>
+                         <span class="s1">'defense'</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span>
+                         <span class="s1">'special-attack'</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+                         <span class="s1">'special-defense'</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span>
+                         <span class="s1">'speed'</span><span class="p">:</span> <span class="mi">60</span><span class="p">},</span>
+                  <span class="n">sprite</span><span class="o">=</span><span class="s1">'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/2.png'</span><span class="p">,</span>
+                  <span class="n">cry</span><span class="o">=</span><span class="s1">'https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/2.ogg'</span><span class="p">)</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">correction_lue</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<ol start="3">
+<li>Créez un deuxième Ivysaur avec 70 de hp dans une variable ivysaur2.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="n">ivysaur2</span> <span class="o">=</span> <span class="n">Pokemon</span><span class="p">(</span><span class="o">...</span><span class="p">,</span>
+                   <span class="o">...</span><span class="p">,</span>
+                   <span class="o">...</span><span class="p">,</span>
+                   <span class="o">...</span><span class="p">,</span>
+                   <span class="o">...</span><span class="p">,</span>
+                   <span class="n">stats</span><span class="o">=</span><span class="p">{</span><span class="s1">'hp'</span><span class="p">:</span> <span class="mi">70</span><span class="p">,</span> <span class="o">...</span><span class="p">},</span>
+                   <span class="o">...</span><span class="p">,</span>
+                   <span class="o">...</span><span class="p">)</span>                 
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_ivysaur2</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<ol start="4">
+<li>Affichez les statistiques de ivysaur et ivisaur2.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ivysaur</span><span class="o">.</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ivysaur2</span><span class="o">.</span><span class="p">)</span>                  
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<ol start="5">
+<li>Changez l'attaque (attack) de ivysaur2 pour que celle-ci soit de 62.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="n">ivysaur</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="mi">62</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_ivysaur2_modif</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<ol start="6">
+<li>Ré-affichez les statistiques de ivysaur et ivisaur2.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">ivysaur</span><span class="o">....</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ivysaur2</span><span class="o">....</span><span class="p">)</span>
+                  
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<ol start="7">
+<li>Que constatez-vous ? Expliquez ce comportement</li>
+</ol>
+</div>
+</div>
+</div>
+</div>Répondez ici
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 2 :</p>
+<ol start="8">
+<li>Rajoutez un attribut level à la classe pokemon. Pour cela vous devez l'ajouter dans le constructeur et l'initialiser à 0.</li>
+</ol>
+<center><span> ⚠️ </span> Pensez à ré-exécutez la cellule contenant la classe et celle permettant de créer l'objet pikachu. <span> ⚠️ </span></center>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre argument ici avant de tenter de valider</span>
+<span class="n">pikachu</span><span class="o">.</span><span class="n">level</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_level</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 3 :</p>
+<ol>
+<li>Créez une méthode <code>level_up()</code> qui augmente le niveau de 1 et augmente les statistiques de 10% (multiplication par 1.1). Pour cela, revenez à votre classe et créez une méthode dans votre classe. Cette méthode modifie les attributs du pokémon lui-même avec le mot clé <code>self</code>.</li>
+</ol>
+<center><span> ⚠️ </span> Pensez à ré-exécutez la cellule contenant la classe et celle permettant de créer l'objet pikachu.  <span> ⚠️ </span></center>
+<ol start="2">
+<li>Appelez la méthode <code>level_up</code> sur votre deuxième ivysaur. Puis affichez ces statistiques.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">level_up</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">...</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="o">...</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="o">*</span> <span class="mf">1.1</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre méthode ici avant de tenter de valider</span>
+<span class="n">pikachu</span><span class="o">.</span><span class="n">level_up</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_level_up</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 3 :</p>
+<h3 id="Cr%C3%A9ez-des-m%C3%A9thodes-et-les-appeler-sur-des-instances">Créez des méthodes et les appeler sur des instances<a class="anchor-link" href="#Cr%C3%A9ez-des-m%C3%A9thodes-et-les-appeler-sur-des-instances">¶</a></h3><ol start="3">
+<li>Créez une méthode plus_rapide() qui prend une vitesse en paramètre et qui renvoie un <code>True</code> si le pokémon est plus rapide ou <code>False</code> sinon.</li>
+</ol>
+<center><span> ⚠️ </span> Pensez à ré-exécutez la cellule contenant la classe et celle permettant de créer l'objet pikachu. <span> ⚠️ </span></center>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">plus_rapide</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">vitesse</span><span class="p">):</span>
+    <span class="k">if</span> <span class="o">....</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre méthode ici avant de tenter de valider</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="o">.</span><span class="n">plus_rapide</span><span class="p">(</span><span class="mi">500</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="o">.</span><span class="n">plus_rapide</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_plus_rapide</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 3 :</p>
+<ol start="4">
+<li>Tester la méthode :<ul>
+<li>appelez cette méthode sur votre deuxième instance d'Ivysaur avec 71 comme vitesse</li>
+<li>affichez le résultat</li>
+<li>faites-lui monter un niveau</li>
+<li>rappeler la méthode <code>plus_rapide</code></li>
+<li>affichez le résultat</li>
+</ul>
+</li>
+<li>Que c'est-il passé ?</li>
+</ol>
+</div>
+</div>
+</div>
+</div>Répondez ici
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 3 :</p>
+<ol start="6">
+<li>Créez une méthode <code>same_type()</code> qui prend en paramètre une liste de pokémon non vide et qui renvoie ceux ayant exactement le(s) même(s) type(s) que le pokémon appelant.</li>
+</ol>
+<center><span> ⚠️ </span> Pensez à ré-exécutez la cellule contenant la classe et celle permettant de créer l'objet pikachu. <span> ⚠️ </span></center>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span> <span class="k">def</span><span class="w"> </span><span class="nf">same_type</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">pokemons</span><span class="p">):</span>
+    <span class="n">meme_type</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">pokemons</span> <span class="p">:</span>
+        <span class="o">.................</span><span class="p">:</span>
+            <span class="o">....</span><span class="n">append</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">...</span>      
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre méthode ici avant de tenter de valider</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ivysaur</span><span class="o">.</span><span class="n">same_type</span><span class="p">([</span><span class="n">ivysaur</span><span class="p">]))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">pikachu</span><span class="o">.</span><span class="n">same_type</span><span class="p">([</span><span class="n">ivysaur</span><span class="p">]))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_same_type</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 3 :</p>
+<ol start="7">
+<li>Appelez cette méthode sur votre deuxième instance d'Ivysaur en prenant en paramètre la liste <code>best_team_ever</code> stocker le résultat dans une variable <code>remplacant</code>.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'pokemon_data_light.json'</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">json_file</span><span class="p">:</span>
+    <span class="n">pokemon_data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">json_file</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pk</span> <span class="ow">in</span> <span class="n">pokemon_data</span><span class="p">:</span>
+    <span class="n">pokemon_data</span><span class="p">[</span><span class="n">pk</span><span class="p">][</span><span class="s2">"pid"</span><span class="p">]</span>  <span class="o">=</span> <span class="n">pokemon_data</span><span class="p">[</span><span class="n">pk</span><span class="p">][</span><span class="s2">"id"</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">pokemon_data</span><span class="p">[</span><span class="n">pk</span><span class="p">][</span><span class="s2">"id"</span><span class="p">]</span>
+    
+<span class="k">def</span><span class="w"> </span><span class="nf">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">Pokemon</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span>
+                   <span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'pid'</span><span class="p">],</span>
+                   <span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'height'</span><span class="p">],</span>
+                   <span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'weight'</span><span class="p">],</span>
+                   <span class="nb">tuple</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'types'</span><span class="p">]),</span>
+                   <span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'stats'</span><span class="p">],</span>
+                   <span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'sprite'</span><span class="p">],</span>
+                   <span class="n">pokemon_data</span><span class="p">[</span><span class="s1">'cry'</span><span class="p">])</span>
+<span class="c1"># liste de pokemons</span>
+<span class="n">best_team_ever</span> <span class="o">=</span> <span class="p">[</span><span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"charizard"</span><span class="p">]),</span>
+                  <span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"dragonite"</span><span class="p">]),</span>
+                  <span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"jolteon"</span><span class="p">]),</span>
+                  <span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"greninja"</span><span class="p">]),</span>
+                  <span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"meowscarada"</span><span class="p">]),</span>
+                  <span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"amoonguss"</span><span class="p">])]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">same_type</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">pokemons</span><span class="p">):</span>
+    <span class="n">meme_type</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="o">...</span><span class="p">:</span>
+        <span class="k">if</span> <span class="o">...</span> <span class="ow">and</span> <span class="o">...</span> <span class="p">:</span>
+            <span class="o">....</span><span class="n">append</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="o">...</span> <span class="ow">and</span> <span class="o">...</span> <span class="ow">and</span> <span class="o">...</span> <span class="p">:</span>
+            <span class="o">....</span><span class="n">append</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">...</span>
+
+<span class="o">....</span><span class="n">same_type</span><span class="p">(</span><span class="n">best_team_ever</span><span class="p">)</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre méthode ici avant de tenter de valider</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_remplacant</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 3 :</p>
+<ol start="8">
+<li>Créer une méthode <code>pokemon2txt()</code> qui retourne une chaine de charactère contenant le nom du pokémon, et ses statistiques en suivant lesexemple ci-dessous :
+Avec pikachu :</li>
+</ol>
+<pre><code>Le pokémon pikachu a 35pts de vie (hp). Son attack est de 55 et sa defense de 40. Il est de type electric. 
+</code></pre>
+<p>Avec ivysaur :</p>
+<pre><code>Le pokémon pikachu a 60pts de vie (hp). Son attack est de 92 et sa defense de 63. Il est de type grass et poison. 
+</code></pre>
+<center><span> ⚠️ </span> Pensez à ré-exécutez la cellule contenant la classe et celle permettant de créer l'objet pikachu.  <span> ⚠️ </span></center>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">pokemon2txt</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="n">txt</span>  <span class="o">=</span> <span class="sa">f</span><span class="s2">"Le pokémon </span><span class="si">{</span><span class="o">...</span><span class="si">}</span><span class="s2"> à </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">'hp'</span><span class="p">]</span><span class="si">}</span><span class="s2">pts de vie (hp)."</span>
+    <span class="n">txt</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">"Son attack est de </span><span class="si">{</span><span class="o">...</span><span class="si">}</span><span class="s2"> et sa defense de </span><span class="si">{</span><span class="o">...</span><span class="si">}</span><span class="s2">."</span>
+    <span class="n">txt</span> <span class="o">+=</span> <span class="o">...</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="p">:</span>
+        <span class="o">...</span>
+    <span class="n">txt</span> <span class="o">+=</span><span class="s2">"."</span>
+    <span class="k">return</span> <span class="n">txt</span>        
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 3 :</p>
+<ol start="9">
+<li>Appelez cette méthode sur votre deuxième instance d'Ivysaur.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># C'est à vous</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_pokemon2txt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 4 :</p>
+<h3 id="Pour-aller-plus-loin">Pour aller plus loin<a class="anchor-link" href="#Pour-aller-plus-loin">¶</a></h3><ol>
+<li>Expliquer ce que fait la fonction <code>pokemon_from_data</code>, qui a permis de créer la liste <code>best_team_ever</code>.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>Répondez ici
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 4 :</p>
+<ol start="2">
+<li>Créer une méthodes <code>attaque</code> et faites s'affronter des Pokémons selon les règles de combat ! La méthode retournera <code>True</code> si le pokémon est K.O <code>False</code> sinon. Dans tout les cas, elle modifiera les hps du pokémon.</li>
+</ol>
+<p><span class="math">Dégat = (\frac{(2× Niveau / 5+2)× 100 × Attaque / Defense}{50})+2)× Random</span>
+Avec :</p>
+<p><strong>Niveau</strong> : Le niveau de l'attaquant</p>
+<p><strong>Attaque</strong> : L'attaque du pokémon attaquant.</p>
+<p><strong>Random</strong> : Un nombre aleatoire entre 0.85 et 1, on pourra utiliser <code>random.uniform(0.85, 1)</code>.</p>
+<center><span> ⚠️ </span> Pensez à ré-exécutez la cellule contenant la classe et celle permettant de créer l'objet pikachu. <span> ⚠️ </span></center>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">attaque</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">cible</span><span class="p">):</span>
+    <span class="n">degat</span> <span class="o">=</span> <span class="p">(((((</span><span class="o">...*...</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">*</span> <span class="o">.../...</span><span class="p">)</span><span class="o">/</span><span class="mi">50</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> 
+    <span class="k">if</span> <span class="o">...</span> <span class="o">+</span> <span class="n">degat</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="s2">"est K.O."</span><span class="p">)</span>
+        <span class="o">...</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="o">...</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="o">...</span> <span class="o">-=</span> <span class="n">degat</span>
+        <span class="k">return</span> <span class="o">...</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre méthode ici avant de tenter de valider</span>
+<span class="n">ivysaur</span><span class="o">.</span><span class="n">attaque</span><span class="p">(</span><span class="n">pikachu</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_attaque</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 4 :</p>
+<ol start="3">
+<li>Tester votre méthode avec plein de pokémons différents :</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">drakofeu</span> <span class="o">=</span> <span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"charizard"</span><span class="p">])</span>
+<span class="n">drakofeu</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">drakofeu</span><span class="o">.</span><span class="n">stats</span>
+
+<span class="n">ivysaur</span> <span class="o">=</span> <span class="n">pokemon_from_data</span><span class="p">(</span><span class="n">pokemon_data</span><span class="p">[</span><span class="s2">"ivysaur"</span><span class="p">])</span>
+<span class="n">ivysaur</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-info"><p class="adm-t">Une petit info sur les f-strings en python</p>
+<p>Vidéo sur les f-strings : <a rel="noopener noreferrer" href="https://youtu.be/RgzX4qrLmPM">https://youtu.be/RgzX4qrLmPM</a></p>
+<p><a rel="noopener noreferrer" href="https://youtu.be/dQw4w9WgXcQ">vignette de la vidéo</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre méthode ici avant de tenter de valider</span>
+<span class="n">ivysaur</span><span class="o">.</span><span class="n">pokemon2txt</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 5 :</p>
+<h3 id="Pour-aller-encore-plus-loin">Pour aller encore plus loin<a class="anchor-link" href="#Pour-aller-encore-plus-loin">¶</a></h3><ol>
+<li>Dans pokémon les attaques ont un type, une puissance et une catégorie (et plein d'autres trucs mais commençons avec ça...). Créer un classe Attaque et son constructeur.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="err">...:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">atype</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">...</span> <span class="o">=</span> <span class="n">atype</span>
+        <span class="bp">self</span><span class="o">...</span> <span class="o">=</span> <span class="o">...</span>
+        <span class="bp">self</span><span class="o">...</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># A vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_Attaque</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 5 :</p>
+<ol start="2">
+<li>Instancier des variables pour les attaques suivante :</li>
+</ol>
+<ul>
+<li><strong>close_combat</strong> : {type: fighting, puissance: 120, categorie: physical}</li>
+<li><strong>hydrocannon</strong> : {type: water, puissance: 120, categorie: special}</li>
+<li><strong>fatal_foudre</strong> : {type: electric, puissance: 120, categorie: special}</li>
+<li><strong>triple_attaque</strong> : {type: normal, puissance: 90, categorie: special}</li>
+<li><strong>detricanon</strong> : {type: poison, puissance: 120, categorie: physical}</li>
+<li><strong>lance_flamme</strong> : {type: fire, puissance: 90, categorie: special}</li>
+<li><strong>charge</strong> : {type: normal, puissance: 10, categorie: physical}</li>
+<li><strong>calinerie</strong> : {type: fairy, puissance: 95, categorie: physical}</li>
+<li><strong>seisme</strong> : {type: earth, puissance: 100, categorie: physical}</li>
+<li><strong>balle_ombre</strong> : {type: ghost, puissance: 80, categorie: special}</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="n">close_combat</span> <span class="o">=</span> <span class="o">...</span><span class="p">(</span><span class="s2">"fighting"</span><span class="p">,</span> <span class="mi">120</span><span class="p">,</span> <span class="s2">"physical"</span><span class="p">)</span>
+<span class="n">hydrocannon</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">fatal_foudre</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">triple_attaque</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">detricanon</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">lance_flamme</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">charge</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">calinerie</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">seisme</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">balle_ombre</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># A vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_attaques</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 5 :</p>
+<p>Dans Pokemon l'éfficacité d'une attaque dépend du type de l'attaque et des types du pokémon défenseur.</p>
+<ul>
+<li>Une attaque super efficace aura ses dégats multiplié par 2.</li>
+<li>Une attaque normalement efficace aura ses dégats multiplié par 1.</li>
+<li>Une attaque pas très efficace aura ses dégats multiplié par 0.5.</li>
+<li>Une attaque inefficace ne fera aura aucun dégats (multiplié par 0).</li>
+</ul>
+<p>Le schéma ci-dessous résume touts les interactions possible.</p>
+<p>Par exemple on peut voir que :</p>
+<p>Une attaque combat (fighting) est très efficace sur une type normal (normal) ou acier (steel), est pas très efficace sur un type fée (fairy) et est inefficace sur un type fantome (ghost).</p>
+<p><em>[image non reprise dans cette copie]</em></p>
+<ol start="3">
+<li>En python, on choisit de représenter cela avec un dictionnaire compléter le dictionnaire ci-dessous pour correspondre au schéma.</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">gen9_type_chart</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="s2">"normal"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"fire"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"water"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"electric"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"grass"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"ice"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"fighting"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mf">0.5</span>
+    <span class="p">},</span>
+    <span class="s2">"poison"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">},</span>
+    <span class="s2">"ground"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"flying"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"psychic"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"bug"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mf">0.5</span>
+    <span class="p">},</span>
+    <span class="s2">"rock"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"ghost"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">},</span>
+    <span class="s2">"dragon"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">0</span>
+    <span class="p">},</span>
+    <span class="s2">"dark"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mf">0.5</span>
+    <span class="p">},</span>
+    <span class="s2">"steel"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">2</span>
+    <span class="p">},</span>
+    <span class="s2">"fairy"</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">"normal"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fire"</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span> <span class="s2">"water"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"electric"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"grass"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ice"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"fighting"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+        <span class="s2">"poison"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"ground"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"flying"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"psychic"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"bug"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"rock"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"ghost"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="s2">"dragon"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"dark"</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"steel"</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s2">"fairy"</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_gen9_type_chart</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 5 :</p>
+<p>Améliorons la fonction attaque tenir compte de l'efficacité des attaques, de leur type, de leur catégorie et de leur puissance.</p>
+<p><span class="math">Dégat = ((\frac{(2× Niveau / 5+2)× Puissance × Attaque / Defense}{50})+2)× Random × Type1 × Type2 × Stab</span>
+Avec :</p>
+<p><strong>Niveau</strong> : Le niveau de l'attaquant</p>
+<p><strong>Puissance</strong> : La puissance de l'attaque par exemple 120 pour Close Combat et 40 pour Eclair.</p>
+<p><strong>Attaque</strong> : L'attaque du pokémon attaquant si la capacite est physique, l'attaque speciale du pokemon attaquant si la capacite est speciale</p>
+<p><strong>Random</strong> : Un nombre aléatoire entre 0.85 et 1, on pourra utiliser <code>python random.uniform(0.85, 1)</code>.</p>
+<p><strong>Type1</strong> : L'éfficacite du type de l'attaque sur le premier type du pokemon défenseur. Cela peut être 0,5 (pas très efficace), 1 (normalement efficace) ou 2 (super efficace) ou 0 (si imunité). Voir la table des types ci-dessous.</p>
+<p><strong>Type2</strong> : L'éfficacite du type de l'attaque sur le deuxième type du pokemon defenseur. Cela peut être 0,5 (pas très efficace), 1 (normalement efficace) ou 2 (super efficace) ou 0 (si imunité. Voir la table des types ci-dessous.</p>
+<p><strong>Stab</strong>: Stab est de 1.5 si le pokémon attaquant à le type de l'attaque 0 sinon.</p>
+<ol start="4">
+<li>Modifier la fonction attaque pour correspondre à la nouvelle formule.</li>
+</ol>
+<center><span> ⚠️ </span> Pensez à ré-exécutez la cellule contenant la classe. <span> ⚠️ </span></center>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<details class="adm adm-tip"><summary>Aide</summary>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">attaque</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="n">cible</span><span class="p">,</span> <span class="n">attaque</span><span class="p">):</span>
+    <span class="k">global</span> <span class="n">gen9_type_chart</span>
+    <span class="k">if</span> <span class="o">...</span> <span class="o">==</span> <span class="o">...</span> <span class="ow">or</span> <span class="o">...</span> <span class="o">==</span> <span class="o">...</span> <span class="p">:</span>
+        <span class="n">stab</span> <span class="o">=</span> <span class="mf">1.5</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">stab</span> <span class="o">=</span> <span class="mi">1</span>
+    
+    <span class="k">if</span> <span class="n">attaque</span><span class="o">.</span><span class="n">categorie</span> <span class="o">==</span> <span class="o">...</span><span class="p">:</span>
+        <span class="n">patt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"attack"</span><span class="p">]</span>
+        <span class="n">cdef</span> <span class="o">=</span> <span class="n">cible</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s2">"defense"</span><span class="p">]</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="n">patt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="o">...</span><span class="p">]</span>
+        <span class="n">cdef</span> <span class="o">=</span> <span class="o">....</span><span class="n">stats</span><span class="p">[</span><span class="s2">"sepcial-defense"</span><span class="p">]</span>
+            
+    <span class="n">type1</span> <span class="o">=</span> <span class="n">gen9_type_chart</span><span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="o">....</span><span class="n">types</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">type2</span> <span class="o">=</span> <span class="n">gen9_type_chart</span><span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">type2</span> <span class="o">=</span> <span class="mi">1</span>
+     
+    <span class="n">degat</span> <span class="o">=</span> <span class="p">(((((</span><span class="o">...*...</span><span class="p">)</span><span class="o">/</span><span class="mi">5</span> <span class="o">+</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">attaque</span><span class="o">.</span> <span class="o">*</span> <span class="n">patt</span><span class="o">/</span><span class="n">cdef</span><span class="p">)</span><span class="o">/</span><span class="mi">50</span><span class="p">)</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.85</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">stab</span> <span class="o">*</span> <span class="n">type1</span> <span class="o">*</span> <span class="n">type2</span>
+    <span class="k">if</span> <span class="o">...</span> <span class="o">+</span> <span class="n">degat</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="s2">"est K.O."</span><span class="p">)</span>
+        <span class="o">...</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="o">...</span>
+    <span class="k">else</span> <span class="p">:</span>
+        <span class="o">...</span> <span class="o">-=</span> <span class="n">degat</span>
+        <span class="k">return</span> <span class="o">...</span>
+</pre></div>
+</details>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Tester votre méthode ici avant de tenter de valider</span>
+<span class="n">ivysaur</span><span class="o">.</span><span class="n">attaque</span><span class="p">(</span><span class="n">pikachu</span><span class="p">,</span> <span class="n">hydrocannon</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">test_attaque2</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-question"><p class="adm-t">Exercice 5 :</p>
+<ol start="4">
+<li>Tester votre méthode avec plein de pokémons différents :</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · code : MIT · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/capytale/tp-poo-pokedex/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

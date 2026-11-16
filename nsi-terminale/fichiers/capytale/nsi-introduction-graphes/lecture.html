@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Introduction aux graphes : un réseau d&#x27;amis</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI terminale</div>
+<main>
+<h1>Introduction aux graphes : un réseau d&#x27;amis</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="nsi-introduction-graphes.ipynb" download>Télécharger le notebook (nsi-introduction-graphes.ipynb)</a></li><li><a href="graphtools.py">graphtools.py</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%93%98-Activit%C3%A9-NSI-:-Introduction-aux-Graphes">📘 Activité NSI : Introduction aux Graphes<a class="anchor-link" href="#%F0%9F%93%98-Activit%C3%A9-NSI-:-Introduction-aux-Graphes">¶</a></h1><p><strong>Objectif :</strong> Découvrir comment modéliser un réseau social et manipuler ses données avec Python.</p>
+<p>Dans ce notebook, nous allons travailler sur un réseau d'amis fictif. En informatique, cette structure s'appelle un <strong>Graphe</strong>.</p>
+<ul>
+<li>Les personnes sont des <strong>Sommets</strong>.</li>
+<li>Les amitiés sont des <strong>Arêtes</strong>.</li>
+</ul>
+<hr>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="1%EF%B8%8F%E2%83%A3-La-structure-de-donn%C3%A9es">1️⃣ La structure de données<a class="anchor-link" href="#1%EF%B8%8F%E2%83%A3-La-structure-de-donn%C3%A9es">¶</a></h3><p>Pour représenter ce réseau en Python, nous utilisons un <strong>dictionnaire</strong>.</p>
+<ul>
+<li>Les <strong>clés</strong> sont les prénoms des personnes.</li>
+<li>Les <strong>valeurs</strong> sont des listes contenant les prénoms de leurs amis (leurs voisins).</li>
+</ul>
+<p><strong>Exécutez la cellule ci-dessous pour charger les données.</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">graphtools</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="c1"># Données du réseau social "NSI-Book"</span>
+<span class="c1"># Ce dictionnaire représente les relations d'amitié (Graphe non orienté)</span>
+<span class="n">reseau</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"Alice"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Bob"</span><span class="p">,</span> <span class="s2">"Charlie"</span><span class="p">],</span>
+    <span class="s2">"Bob"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Alice"</span><span class="p">,</span> <span class="s2">"Denis"</span><span class="p">,</span> <span class="s2">"Eve"</span><span class="p">],</span>
+    <span class="s2">"Charlie"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Alice"</span><span class="p">,</span> <span class="s2">"Denis"</span><span class="p">],</span>
+    <span class="s2">"Denis"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Bob"</span><span class="p">,</span> <span class="s2">"Charlie"</span><span class="p">,</span> <span class="s2">"Fred"</span><span class="p">],</span>
+    <span class="s2">"Eve"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Bob"</span><span class="p">],</span>
+    <span class="s2">"Fred"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"Denis"</span><span class="p">]</span>
+<span class="p">}</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"✅ Le réseau a été chargé en mémoire."</span><span class="p">)</span>
+<span class="n">visualiser_graphe</span><span class="p">(</span><span class="n">reseau</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="2%EF%B8%8F%E2%83%A3-Analyse-pr%C3%A9liminaire-(Lecture-du-graphe)">2️⃣ Analyse préliminaire (Lecture du graphe)<a class="anchor-link" href="#2%EF%B8%8F%E2%83%A3-Analyse-pr%C3%A9liminaire-(Lecture-du-graphe)">¶</a></h3><p>Avant de créer des fonctions, apprenons à interroger manuellement cette structure.</p>
+<p><strong>Votre mission :</strong></p>
+<ol>
+<li>Observez la variable <code>reseau</code> ci-dessus.</li>
+<li>Complétez les variables ci-dessous :<ul>
+<li><code>amis_de_charlie</code> : La liste des amis de Charlie.</li>
+<li><code>nb_amis_eve</code> : Le nombre d'amis d'Eve (un entier).</li>
+<li><code>est_ami_fred_denis</code> : Un booléen (<code>True</code> ou <code>False</code>) indiquant si Fred est dans la liste de Denis.</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- À VOUS DE JOUER ---</span>
+
+<span class="c1"># Remplacez les ... par les bonnes valeurs ou instructions</span>
+<span class="n">amis_de_charlie</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">nb_amis_eve</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">est_ami_fred_denis</span> <span class="o">=</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION (Ne pas modifier) ---</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">amis_de_charlie</span> <span class="o">==</span> <span class="p">[</span><span class="s2">"Alice"</span><span class="p">,</span> <span class="s2">"Denis"</span><span class="p">],</span> <span class="s2">"❌ Erreur : La liste des amis de Charlie est incorrecte."</span>
+    <span class="k">assert</span> <span class="n">nb_amis_eve</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"❌ Erreur : Le nombre d'amis d'Eve est incorrect."</span>
+    <span class="k">assert</span> <span class="n">est_ami_fred_denis</span> <span class="o">==</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"❌ Erreur : La vérification Fred-Denis est incorrecte."</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"✅ Bravo ! Vous avez compris la structure des données."</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"❌ Erreur de syntaxe ou variable non définie : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="3%EF%B8%8F%E2%83%A3-Automatisation-:-Compter-les-amis-(Degr%C3%A9)">3️⃣ Automatisation : Compter les amis (Degré)<a class="anchor-link" href="#3%EF%B8%8F%E2%83%A3-Automatisation-:-Compter-les-amis-(Degr%C3%A9)">¶</a></h3><p>Sur un grand réseau, il est impossible de compter à l'œil nu.</p>
+<p><strong>Votre mission :</strong>
+Écrire une fonction <code>nb_amis(graphe, personne)</code> qui retourne le nombre d'amis de la <code>personne</code>.
+<em>Indice : La fonction <code>len(liste)</code> permet de connaître la taille d'une liste.</em></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- À VOUS DE JOUER ---</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">nb_amis</span><span class="p">(</span><span class="n">graphe</span><span class="p">,</span> <span class="n">personne</span><span class="p">):</span>
+    <span class="c1"># Récupérer la liste des amis de la personne dans le graphe</span>
+    <span class="n">liste_amis</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="c1"># Retourner la longueur de cette liste</span>
+    <span class="k">return</span> <span class="o">...</span> <span class="c1"># À compléter</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION ---</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">nb_amis</span><span class="p">(</span><span class="n">reseau</span><span class="p">,</span> <span class="s2">"Bob"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">"❌ Erreur : Bob devrait avoir 3 amis."</span>
+    <span class="k">assert</span> <span class="n">nb_amis</span><span class="p">(</span><span class="n">reseau</span><span class="p">,</span> <span class="s2">"Alice"</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">"❌ Erreur : Alice devrait avoir 2 amis."</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"✅ Fonction nb_amis correcte !"</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"❌ Erreur : Vérifiez que vous utilisez bien la variable 'personne' comme clé du dictionnaire."</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"❌ Erreur : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="4%EF%B8%8F%E2%83%A3-V%C3%A9rifier-une-connexion-(Adjacence)">4️⃣ Vérifier une connexion (Adjacence)<a class="anchor-link" href="#4%EF%B8%8F%E2%83%A3-V%C3%A9rifier-une-connexion-(Adjacence)">¶</a></h3><p>Nous voulons savoir rapidement si deux personnes sont directement connectées.</p>
+<p><strong>Votre mission :</strong>
+Écrire une fonction <code>sont_amis(graphe, personne1, personne2)</code> qui renvoie <code>True</code> si les deux sont amis, et <code>False</code> sinon.
+<em>Indice : Utilisez le mot-clé <code>in</code> pour vérifier la présence d'un élément dans une liste.</em></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- À VOUS DE JOUER ---</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">sont_amis</span><span class="p">(</span><span class="n">graphe</span><span class="p">,</span> <span class="n">personne1</span><span class="p">,</span> <span class="n">personne2</span><span class="p">):</span>
+    <span class="c1"># Vérifier si personne2 est dans la liste des amis de personne1</span>
+    <span class="k">if</span> <span class="o">...</span> <span class="p">:</span> <span class="c1"># À compléter</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">False</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION ---</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="n">sont_amis</span><span class="p">(</span><span class="n">reseau</span><span class="p">,</span> <span class="s2">"Alice"</span><span class="p">,</span> <span class="s2">"Bob"</span><span class="p">)</span> <span class="o">==</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"❌ Erreur : Alice et Bob sont pourtant amis."</span>
+    <span class="k">assert</span> <span class="n">sont_amis</span><span class="p">(</span><span class="n">reseau</span><span class="p">,</span> <span class="s2">"Alice"</span><span class="p">,</span> <span class="s2">"Fred"</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">,</span> <span class="s2">"❌ Erreur : Alice et Fred ne se connaissent pas directement."</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"✅ Fonction sont_amis correcte !"</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"❌ Erreur : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="5%EF%B8%8F%E2%83%A3-Le-d%C3%A9fi-:-Qui-est-le-plus-populaire-?">5️⃣ Le défi : Qui est le plus populaire ?<a class="anchor-link" href="#5%EF%B8%8F%E2%83%A3-Le-d%C3%A9fi-:-Qui-est-le-plus-populaire-?">¶</a></h3><p>En théorie des graphes, on cherche le sommet avec le <strong>degré maximal</strong>.</p>
+<p><strong>Votre mission :</strong>
+Complétez la fonction <code>plus_populaire(graphe)</code> qui doit retourner le <strong>nom</strong> de la personne qui a le plus d'amis.
+Vous devez parcourir tout le dictionnaire.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- À VOUS DE JOUER ---</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">plus_populaire</span><span class="p">(</span><span class="n">graphe</span><span class="p">):</span>
+    <span class="n">nom_gagnant</span> <span class="o">=</span> <span class="s2">""</span>
+    <span class="n">max_amis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="c1"># On parcourt toutes les personnes du graphe (les clés du dictionnaire)</span>
+    <span class="k">for</span> <span class="n">personne</span> <span class="ow">in</span> <span class="n">graphe</span><span class="p">:</span>
+        <span class="c1"># On calcule son nombre d'amis (réutilisez votre fonction nb_amis !)</span>
+        <span class="n">nombre</span> <span class="o">=</span> <span class="o">...</span>
+
+        <span class="c1"># Algorithme de recherche de maximum classique</span>
+        <span class="k">if</span> <span class="o">...</span><span class="p">:</span>
+            <span class="n">max_amis</span> <span class="o">=</span> <span class="o">...</span>
+            <span class="n">nom_gagnant</span> <span class="o">=</span> <span class="o">...</span>
+
+    <span class="k">return</span> <span class="n">nom_gagnant</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION ---</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">gagnant</span> <span class="o">=</span> <span class="n">plus_populaire</span><span class="p">(</span><span class="n">reseau</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">gagnant</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">"Bob"</span><span class="p">,</span> <span class="s2">"Denis"</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✅ Bravo ! </span><span class="si">{</span><span class="n">gagnant</span><span class="si">}</span><span class="s2"> est bien l'une des personnes les plus populaires (3 amis)."</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"❌ Incorrect. Votre fonction a retourné </span><span class="si">{</span><span class="n">gagnant</span><span class="si">}</span><span class="s2">, mais ce n'est pas le maximum."</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"❌ Une erreur s'est produite : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="6%EF%B8%8F%E2%83%A3-BONUS-:-Suggestion-d'amis-(Distance-2)-%F0%9F%8E%81">6️⃣ BONUS : Suggestion d'amis (Distance 2) 🎁<a class="anchor-link" href="#6%EF%B8%8F%E2%83%A3-BONUS-:-Suggestion-d'amis-(Distance-2)-%F0%9F%8E%81">¶</a></h2><p>Dans un réseau social, on définit la <strong>distance 2</strong> comme les personnes qui sont amies avec vos amis directs (sans être vos amis directs). Ces personnes sont les candidates idéales pour une suggestion d'amitié.</p>
+<h3 id="%E2%9D%93-Question-d'Impl%C3%A9mentation">❓ Question d'Implémentation<a class="anchor-link" href="#%E2%9D%93-Question-d'Impl%C3%A9mentation">¶</a></h3><p>Votre objectif est d'écrire le corps de la fonction <code>suggerer_amis(graphe, personne)</code> afin qu'elle renvoie une liste des amis à distance 2.</p>
+<p><strong>Tâche :</strong></p>
+<p>La fonction doit parcourir le réseau et créer une liste <code>suggestions</code> qui respecte les trois critères suivants :</p>
+<ol>
+<li>La personne suggérée (<code>candidat</code>) ne doit <strong>pas</strong> être la personne de départ.</li>
+<li>Le candidat ne doit <strong>pas</strong> être un ami direct (distance 1).</li>
+<li>La liste <code>suggestions</code> ne doit contenir <strong>aucun doublon</strong>.</li>
+</ol>
+<blockquote>
+<p><em>Conseil : Utilisez une liste pour stocker tous les noms à exclure (<code>personne</code> + amis directs + suggestions déjà faites) pour garantir l'unicité.</em></p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- À VOUS DE JOUER : Complétez cette fonction ---</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">suggerer_amis</span><span class="p">(</span><span class="n">graphe</span><span class="p">,</span> <span class="n">personne</span><span class="p">):</span>
+    <span class="n">suggestions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">amis_directs</span> <span class="o">=</span> <span class="n">graphe</span><span class="p">[</span><span class="n">personne</span><span class="p">]</span>
+
+    <span class="c1"># Liste de tous les noms à exclure initialement</span>
+    <span class="n">noms_exclus</span> <span class="o">=</span> <span class="p">[</span><span class="n">personne</span><span class="p">]</span> <span class="o">+</span> <span class="n">amis_directs</span>
+
+    <span class="c1"># Parcourez les amis de la personne, puis les amis de ces amis...</span>
+    <span class="k">for</span> <span class="n">ami</span> <span class="ow">in</span> <span class="n">amis_directs</span><span class="p">:</span>
+        <span class="c1"># À COMPLÉTER CI-DESSOUS</span>
+        <span class="o">...</span>
+
+            <span class="c1"># Si le candidat n'est pas dans noms_exclus :</span>
+            <span class="c1"># suggestions.append(candidat)</span>
+            <span class="c1"># noms_exclus.append(candidat)</span>
+
+    <span class="k">return</span> <span class="n">suggestions</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%A7%AA-Validation">🧪 Validation<a class="anchor-link" href="#%F0%9F%A7%AA-Validation">¶</a></h3><p><em>Exécutez cette cellule pour vérifier votre fonction.</em></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># --- VALIDATION ---</span>
+<span class="n">cible</span> <span class="o">=</span> <span class="s2">"Eve"</span>
+<span class="n">resultat</span> <span class="o">=</span> <span class="n">suggerer_amis</span><span class="p">(</span><span class="n">reseau</span><span class="p">,</span> <span class="n">cible</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">attendu</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'Alice'</span><span class="p">,</span> <span class="s1">'Denis'</span><span class="p">]</span>
+    <span class="c1"># Vérification : On compare les éléments triés pour s'assurer que le contenu est correct, quel que soit l'ordre</span>
+    <span class="k">assert</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">resultat</span><span class="p">)</span> <span class="o">==</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">attendu</span><span class="p">),</span> <span class="sa">f</span><span class="s2">"❌ Erreur. Suggestions attendues : </span><span class="si">{</span><span class="n">attendu</span><span class="si">}</span><span class="s2">. Reçu : </span><span class="si">{</span><span class="n">resultat</span><span class="si">}</span><span class="s2">"</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"✅ Bravo ! Le système a suggéré </span><span class="si">{</span><span class="n">resultat</span><span class="si">}</span><span class="s2"> à </span><span class="si">{</span><span class="n">cible</span><span class="si">}</span><span class="s2"> (Distance 2 trouvée)."</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"❌ Erreur : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/capytale/nsi-introduction-graphes/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

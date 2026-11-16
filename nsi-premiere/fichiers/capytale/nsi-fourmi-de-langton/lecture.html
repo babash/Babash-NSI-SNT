@@ -1,0 +1,1077 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>La fourmi de Langton : simulation avec tableaux et dictionnaires</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI première</div>
+<main>
+<h1>La fourmi de Langton : simulation avec tableaux et dictionnaires</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="nsi-fourmi-de-langton.ipynb" download>Télécharger le notebook (nsi-fourmi-de-langton.ipynb)</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="La-fourmi-de-Langton">La fourmi de Langton<a class="anchor-link" href="#La-fourmi-de-Langton">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-info">
+L'objectif de ce parcours est de découvrir la fourmi de Langton,  un automate cellulaire à deux dimensions, comportant un jeu de règles très simples. Elle porte le nom de Christopher Langton, son inventeur.
+
+<p>On peut consulter une <a rel="noopener noreferrer" href="https://www.youtube.com/watch?v=qZRYGxF6D3w">présentation de la fourmi de Langton</a>, réalisée par David Louapre sur sa chaîne <em>Science étonnante</em>.</p>
+<p>Ce parcours s'appuie sur la connaissance des tableaux de tableaux et des dictionnaires.<br>
+Les éléments du module p5 qui permettent de réaliser les animations sont fournis, mais une connaissance préalable des fonctionnalités élémentaires de p5 est souhaitable. On pourra consulter la page <a rel="noopener noreferrer" href="https://www.carnets.info/p5/ref_p5/">p5 sur carnets.info</a></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Sommaire</strong></p>
+<ul>
+<li><a href="#1.-Le-principe">1. Le principe</a></li>
+<li><a href="#2.-La-grille-initiale">2. La grille initiale</a><ul>
+<li><a href="#2.1-Structure-des-donn%C3%A9es">2.1 Structure des données</a></li>
+<li><a href="#2.2-Repr%C3%A9sentation-graphique">2.2 Représentation graphique</a></li>
+</ul>
+</li>
+<li><a href="#3.-La-fourmi">3. La fourmi</a><ul>
+<li><a href="#3.1-Structure-des-donn%C3%A9es">3.1 Structure des données</a></li>
+<li><a href="#3.2-Repr%C3%A9sentation-graphique">3.2 Représentation graphique</a></li>
+</ul>
+</li>
+<li><a href="#4.-D%C3%A9placements-de-la-fourmi">4. Déplacements de la fourmi</a><ul>
+<li><a href="#4.1-La-direction-de-la-fourmi">4.1 La direction de la fourmi</a></li>
+<li><a href="#4.2-La-position-de-la-fourmi">4.2 La position de la fourmi</a></li>
+</ul>
+</li>
+<li><a href="#5.-%C3%89volution-de-la-grille">5. Évolution de la grille</a></li>
+<li><a href="#6.-Premi%C3%A8re-version-du-programme-complet">6. Première version du programme complet</a></li>
+<li><a href="#7.-Quelques-pistes-d%27am%C3%A9lioration">7. Quelques pistes d'amélioration</a><ul>
+<li><a href="#7.1-V%C3%A9rifier-que-la-fourmi-ne-sort-pas-de-la-grille">7.1 Vérifier que la fourmi ne sort pas de la grille</a></li>
+<li><a href="#7.2-Arr%C3%AAter-le-programme-apr%C3%A8s-un-nombre-fix%C3%A9-d%27%C3%A9tapes">7.2 Arrêter le programme après un nombre fixé d'étapes</a></li>
+<li><a href="#7.3-Am%C3%A9liorer-le-trac%C3%A9-de-la-fourmi">7.3 Améliorer le tracé de la fourmi</a></li>
+<li><a href="#7.4-Afficher-le-nombre-d%27%C3%A9tapes">7.4 Afficher le nombre d'étapes</a></li>
+<li><a href="#7.5-Autres-am%C3%A9liorations">7.5 Autres améliorations</a></li>
+</ul>
+</li>
+<li><a href="#8.-Version-finale">8. Version finale</a></li>
+<li><a href="#9.-Observations">9. Observations</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="1.-Le-principe">1. Le principe<a class="anchor-link" href="#1.-Le-principe">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-info">
+<p>On considère une fourmi qui se trouve sur une grille dont les cases sont soit blanches, soit  noires.</p>
+<p>La fourmi se déplace sur la grille en fonction de la couleur de la case sur laquelle elle se trouve :</p>
+<ul>
+<li>si elle se trouve sur une case blanche, elle tourne à droite et avance d'une case,</li>
+<li>si elle se trouve sur une case noire, elle tourne à gauche et avance d'une case,</li>
+<li>et dans tous les cas, la case qu'elle quitte change de couleur.</li>
+</ul>
+<img loading="lazy" alt="No description has been provided for this image" src="langton_noire.png" width="300">
+<img loading="lazy" alt="No description has been provided for this image" src="langton_blanche.png" width="300">
+<p>On souhaite partir d'une grille totalement blanche, avec une fourmi placée au centre, orientée vers le nord, et observer l'évolution de la grille au fur et à mesure des déplacements de la fourmi.</p>
+<p>Voici une animation des 200 premières étapes, avec une fourmi orientée initialement vers l'est.
+<img loading="lazy" alt="LangtonsAntAnimated" src="langtons-ant-animated.gif" title="Krwawobrody, Public domain, via Wikimedia Commons" width="256"></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="2.-La-grille-initiale">2. La grille initiale<a class="anchor-link" href="#2.-La-grille-initiale">¶</a></h2><h3 id="2.1-Structure-des-donn%C3%A9es">2.1 Structure des données<a class="anchor-link" href="#2.1-Structure-des-donn%C3%A9es">¶</a></h3><div class="alert alert-block alert-info">
+<pre><code>    </code></pre>
+<p>Une grille de <span class="math">n × n</span> cases sera représentée en mémoire, à une étape donnée, par un tableau contenant <span class="math">n</span> tableaux de longueur <span class="math">n</span>.<br>
+Les cases noires seront représentées par un 1 et les cases blanches par un 0.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-success">
+<p><strong>Exemple :</strong><br>
+<img loading="lazy" alt="No description has been provided for this image" src="grille3x3.png" width="100">
+Une grille de  <span class="math">3 × 3</span> cases dont les quatre "coins" sont des cases noires et les autres cases sont blanches est représentée par le tableau :<br>
+<code>[[1, 0, 1], [0, 0, 0], [1, 0, 1]]</code></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question 1</strong></p>
+<p>On considère une grille intiale de  de <span class="math">n × n</span> cases blanches, où <span class="math">n</span> est un entier.<br>
+Compléter la fonction <code>grille_initiale</code> pour qu'elle renvoie la grille de la situation initiale, et vérifier les tests proposés.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">grille_initiale</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    renvoie une grille carrée de taille n * n, ne contenant que des zéros</span>
+<span class="sd">    '''</span>
+    <span class="n">grille</span> <span class="o">=</span> <span class="o">...</span>
+    <span class="k">return</span> <span class="n">grille</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">grille_initiale</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="2.2-Repr%C3%A9sentation-graphique">2.2 Représentation graphique<a class="anchor-link" href="#2.2-Repr%C3%A9sentation-graphique">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>La grille initiale est une grille carrée de cases blanches.<br>
+Compléter la fonction <code>dessiner_grille_vide(nb_cases, dim_case)</code> pour qu'elle dessine la grille initiale sous la forme d'une grille de <code>nb_cases</code> lignes et <code>nb_cases</code> colonnes. Chaque case est un carré de dimension <code>dim_case</code>.</p>
+<p>Cette fonction sera appelée une seule fois par la fonction <code>setup()</code> de p5 dans le programme principal.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">dessiner_grille_vide</span><span class="p">(</span><span class="n">nb_cases</span><span class="p">,</span> <span class="n">dim_case</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    dessine la grille initiale : grille de nb_cases lignes et nb_cases colonnes</span>
+<span class="sd">    Chaque case est un carré de dimension dim_case.</span>
+<span class="sd">    '''</span>
+    <span class="n">strokeWeight</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="c1"># épaisseur du tracé</span>
+    <span class="n">stroke</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span>     <span class="c1"># couleur de tracé (gris)</span>
+    <span class="n">fill</span><span class="p">(</span><span class="mi">255</span><span class="p">)</span>       <span class="c1"># couleur de remplissage (blanc)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+            <span class="n">square</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+            
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-success">
+<p><strong>Test :</strong><br>
+Exécuter les deux cellules suivantes : si la fonction <code>dessiner_grille_vide</code> est correcte, une grille de  <span class="math">9 × 9</span> cases doit apparaître.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">p5</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">NB_CASES</span> <span class="o">=</span> <span class="mi">9</span>                     <span class="c1"># nombre de cases du quadrillage par ligne ou colonne</span>
+<span class="n">DIM_CASE</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">//</span> <span class="n">NB_CASES</span>       <span class="c1"># dimension d'une case</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">():</span>
+    <span class="n">createCanvas</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">dessiner_grille_vide</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+<span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="3.-La-fourmi">3. La fourmi<a class="anchor-link" href="#3.-La-fourmi">¶</a></h2><h3 id="3.1-Structure-des-donn%C3%A9es">3.1 Structure des données<a class="anchor-link" href="#3.1-Structure-des-donn%C3%A9es">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-info">
+<pre><code>    </code></pre>
+<p>La fourmi possède, à une étape donnée, une position (donnée par un indice de ligne et un indice de colonne) et une direction.</p>
+<p>On choisit de représenter cette direction par un entier entre 0 et 3 :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center;">direction</th>
+<th style="text-align:center;">nom</th>
+<th style="text-align:center;">code</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<p>→ | est | 0
+↓ | sud|  1
+← | ouest | 2
+↑ | nord| 3</p>
+<p>Avec cette représentation, tourner à droite (d'un quart de tour) revient à ajouter 1 (modulo 4) et tourner à gauche (d'un quart de tour) revient à soustraire 1 (modulo 4).</p>
+<p>Les données concernant la fourmi seront stockées dans un dictionnaire appelé <code>fourmi</code>, dont les clés et valeurs  seront :</p>
+<ul>
+<li><code>'ligne'</code> : l'indice de ligne de l'emplacement de la fourmi</li>
+<li><code>'colonne'</code> : l'indice de colonne de l'emplacement de la fourmi</li>
+<li><code>'direction'</code>: le code de la direction de la fourmi</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-success">
+<p><strong>Exemple :</strong><br>
+<img loading="lazy" alt="No description has been provided for this image" src="fourmi_exemple.png" width="100">
+Voici une fourmi située en ligne 1, colonne 0 d'une grille de  <span class="math">3 × 3</span> cases, et orientée vers le nord (code 3). Elle est représentée par le dictionnaire :<br>
+<code>{'ligne':1, 'colonne':0, 'direction':3}</code></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>On considère une grille de  de <span class="math">n × n</span> cases, où <span class="math">n</span> est un entier. Au départ la fourmi se place au centre de la grille, et elle s'oriente vers le nord.<br>
+Compléter la fonction <code>fourmi_initiale(n)</code> pour qu'elle renvoie le dictionnaire représentant  la position et la direction de la fourmi, et vérifier les tests proposés.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">fourmi_initiale</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    renvoie le dictionnaire dont les clés sont 'ligne', 'colonne' et 'direction' pour une fourmi située</span>
+<span class="sd">    au centre d'une grille de taille n * n, orientée vers le nord</span>
+<span class="sd">    '''</span>
+    <span class="k">return</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">assert</span> <span class="n">fourmi_initiale</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+<span class="k">assert</span> <span class="n">fourmi_initiale</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+<span class="k">assert</span> <span class="n">fourmi_initiale</span><span class="p">(</span><span class="mi">21</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="3.2-Repr%C3%A9sentation-graphique">3.2 Représentation graphique<a class="anchor-link" href="#3.2-Repr%C3%A9sentation-graphique">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong>
+Les données concernant la fourmi sont stockées dans un dictionnaire appelé <code>fourmi</code>, dont les clés sont <code>'ligne'</code>,  <code>'colonne'</code> et <code>'direction'</code>.</p>
+<p>Compléter la fonction <code>tracer_fourmi(fourmi, dim_case)</code> pour qu'elle représente graphiquement la fourmi à sa position sur la grille, où chaque case est un carré de dimension <code>dim_case</code>.</p>
+<p>En première approche, on pourra représenter la fourmi par un disque rouge, sans chercher à tenir compte de la direction de son futur déplacement.</p>
+<p><em>Attention : l'indice de ligne renseigne sur l'ordonnée de la case et l'indice de colone sur son abscisse.</em></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tracer_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">,</span> <span class="n">dim_case</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    représente graphiquement la fourmi sur la grille, </span>
+<span class="sd">    constituée de cases carrées de dimension dim_case</span>
+<span class="sd">    '''</span>
+    <span class="n">fill</span><span class="p">(</span><span class="s1">'red'</span><span class="p">)</span>   <span class="c1"># couleur de remplissage</span>
+    <span class="n">noStroke</span><span class="p">()</span>    <span class="c1"># bords non visibles</span>
+    <span class="n">circle</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-success">
+<p><strong>Test :</strong><br>
+Exécuter la cellule suivante : si la fonction <code>tracer_fourmi</code> est correcte, une "fourmi" rouge doit apparaître au centre d'une grille de  <span class="math">9 × 9</span> cases.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">NB_CASES</span> <span class="o">=</span> <span class="mi">9</span>                      <span class="c1"># nombre de cases du quadrillage par ligne ou colonne</span>
+<span class="n">DIM_CASE</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">//</span> <span class="n">NB_CASES</span>        <span class="c1"># dimension d'une case</span>
+<span class="n">fourmi</span> <span class="o">=</span> <span class="n">fourmi_initiale</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">():</span>
+    <span class="n">createCanvas</span><span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+    <span class="n">dessiner_grille_vide</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">tracer_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">():</span>
+    <span class="k">pass</span>
+<span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="4.-D%C3%A9placements-de-la-fourmi">4. Déplacements de la fourmi<a class="anchor-link" href="#4.-D%C3%A9placements-de-la-fourmi">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-info">
+<p>La fourmi se déplace sur la grille en fonction de la couleur de la case sur laquelle elle se trouve :</p>
+<ul>
+<li>si elle se trouve sur une case blanche, elle tourne à droite et avance d'une case,</li>
+<li>si elle se trouve sur une case noire, elle tourne à gauche et avance d'une case.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="4.1-La-direction-de-la-fourmi">4.1 La direction de la fourmi<a class="anchor-link" href="#4.1-La-direction-de-la-fourmi">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong>
+Compléter la fonction <code>diriger_fourmi(fourmi)</code> pour qu'elle modifie la direction de la fourmi en fonction de la couleur de la case sur laquelle elle se trouve.</p>
+<p>Cette fonction ne renvoie rien. Elle modifie le contenu du dictionnaire <code>fourmi</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># grille est un tableau de tableaux initialisé avec la fonction  grille_initiale()</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">diriger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    fourmi est un dictionnaire, dont les clés sont 'ligne', 'colonne' et 'direction'.</span>
+<span class="sd">    diriger_fourmi modifie la direction de la fourmi en fonction de la couleur de la case sur laquelle elle se trouve.</span>
+<span class="sd">    '''</span>
+    <span class="k">if</span>  <span class="n">grille</span><span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># test sur la couleur de la case courante</span>
+        <span class="n">fourmi</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fourmi</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span> <span class="c1"># changement de direction : à droite   </span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fourmi</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">fourmi</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span> <span class="c1"># changement de direction : à gauche</span>
+        
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="4.2-La-position-de-la-fourmi">4.2 La position de la fourmi<a class="anchor-link" href="#4.2-La-position-de-la-fourmi">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong>
+Compléter la fonction <code>bouger_fourmi(fourmi)</code> pour qu'elle modifie la position de la fourmi en fonction de sa direction.<br>
+Cette fonction ne renvoie rien. Elle modifie le contenu du dictionnaire <code>fourmi</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bouger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    fourmi est un dictionnaire, dont les clés sont 'ligne', 'colonne' et 'direction'.</span>
+<span class="sd">    bouger_fourmi modifie la position de la fourmi en fonction de sa direction.</span>
+<span class="sd">    '''</span>
+    <span class="k">if</span> <span class="o">...</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>            <span class="c1"># direction vers l'est</span>
+        <span class="o">...</span>                 <span class="c1"># déplacement d'une colonne vers l'est</span>
+    <span class="k">elif</span> <span class="o">...</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>          <span class="c1"># direction vers le sud</span>
+        <span class="o">...</span>                 <span class="c1"># déplacement d'une ligne vers le sud</span>
+    <span class="k">elif</span> <span class="o">...</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>          <span class="c1"># direction vers l'ouest</span>
+        <span class="o">...</span>                 <span class="c1"># déplacement d'une colonne vers l'ouest</span>
+    <span class="k">else</span><span class="p">:</span>                   <span class="c1"># direction vers le nord</span>
+        <span class="o">...</span>                 <span class="c1"># déplacement d'une ligne vers le nord   </span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-success">
+<p><strong>Tests :</strong><br>
+Exécuter la cellule suivante pour passer les tests proposés.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># tests</span>
+
+<span class="n">fourmi</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+<span class="n">bouger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">fourmi</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">3</span><span class="p">}</span>
+
+<span class="n">fourmi</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+<span class="n">bouger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">fourmi</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>
+
+<span class="n">fourmi</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+<span class="n">bouger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">fourmi</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+
+<span class="n">fourmi</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+<span class="n">bouger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">fourmi</span> <span class="o">==</span> <span class="p">{</span><span class="s1">'ligne'</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">'colonne'</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s1">'direction'</span><span class="p">:</span><span class="mi">0</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="5.-%C3%89volution-de-la-grille">5. Évolution de la grille<a class="anchor-link" href="#5.-%C3%89volution-de-la-grille">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-info">
+<p>Lorsque la fourmi quitte une case, celle-ci change de couleur. Cela se traduit par deux modifications :</p>
+<ul>
+<li>celle de la couleur associée à la case concernée dans la variable <code>grille</code>,</li>
+<li>celle de la couleur affichée à l'écran.</li></ul></div>
+
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>Créer une fonction <code>tracer_case(ligne, colonne, couleur, dim_case)</code> qui trace à la position (ligne, colonne) une case de la couleur spécifiée, dans une grille dont les cases ont pour dimension <code>dim_case</code>.</p>
+<p><em>Attention : l'indice de ligne renseigne sur l'ordonnée de la case et l'indice de colone sur son abscisse.</em></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tracer_case</span><span class="p">(</span><span class="n">ligne</span><span class="p">,</span> <span class="n">colonne</span><span class="p">,</span> <span class="n">couleur</span><span class="p">,</span> <span class="n">dim_case</span><span class="p">):</span>
+<span class="w">     </span><span class="sd">'''</span>
+<span class="sd">    tracer_case(ligne, colonne, couleur, dim_case) trace à la position (ligne, colonne) </span>
+<span class="sd">    une case de la couleur spécifiée, dans une grille dont les cases ont pour dimension dim_case.</span>
+<span class="sd">    '''</span>
+    <span class="n">stroke</span><span class="p">(</span><span class="mi">180</span><span class="p">)</span>
+    <span class="n">fill</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">square</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>
+    
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>Créer une fonction <code>inverser_couleur(ligne, colonne, dim_case)</code> qui modifie la couleur associée à la case repérée par ses indices de ligne et colonne dans la variable <code>grille</code> et qui appelle la fonction tracer_case pour afficher également cette modification à l'écran.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">inverser_couleur</span><span class="p">(</span><span class="n">ligne</span><span class="p">,</span> <span class="n">colonne</span><span class="p">,</span> <span class="n">dim_case</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    inverser_couleur(ligne, colonne, dim_case) modifie la couleur associée à la case repérée par </span>
+<span class="sd">    ses indices de ligne et colonne dans la variable grille </span>
+<span class="sd">    et appelle la fonction tracer_case pour afficher cette modification à l'écran</span>
+<span class="sd">    '''</span>
+    <span class="k">if</span>  <span class="n">grille</span><span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># test sur couleur de la case </span>
+        <span class="n">grille</span><span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span>    <span class="c1"># inversion de couleur   </span>
+        <span class="n">couleur</span> <span class="o">=</span> <span class="o">...</span>          <span class="c1"># niveau de gris de la couleur ou nom de la couleur</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">grille</span><span class="p">[</span><span class="o">...</span><span class="p">][</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># inversion de couleur </span>
+        <span class="n">couleur</span> <span class="o">=</span> <span class="o">...</span>          <span class="c1"># niveau de gris de la couleur ou nom de la couleur</span>
+    <span class="n">tracer_case</span><span class="p">(</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span>   
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="6.-Premi%C3%A8re-version-du-programme-complet">6. Première version du programme complet<a class="anchor-link" href="#6.-Premi%C3%A8re-version-du-programme-complet">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>Le programme suivant utilise toutes les fonctions déjà créées et permet de voir les déplacements de la fourmi.<br>
+Utiliser ce programme pour en déterminer les limites : quelles améliorations peut-on proposer ?</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">p5</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># programme principal : modifier éventuellement la valeur de NB_CASES et de FRAMERATE</span>
+
+<span class="n">NB_CASES</span> <span class="o">=</span> <span class="mi">15</span>                     <span class="c1"># nombre de cases du quadrillage par ligne ou colonne</span>
+<span class="n">FRAMERATE</span> <span class="o">=</span> <span class="mi">2</span>                     <span class="c1"># nombre d'images par seconde</span>
+
+<span class="c1">#--------------------------------------------------------------------------------------</span>
+
+<span class="n">DIM_CASE</span> <span class="o">=</span> <span class="mi">800</span> <span class="o">//</span> <span class="n">NB_CASES</span>        <span class="c1"># dimension d'une case</span>
+<span class="n">grille</span> <span class="o">=</span> <span class="n">grille_initiale</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">)</span>
+<span class="n">fourmi</span> <span class="o">=</span> <span class="n">fourmi_initiale</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">():</span>
+    <span class="n">createCanvas</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+    <span class="n">dessiner_grille_vide</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">tracer_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">frameRate</span><span class="p">(</span><span class="n">FRAMERATE</span><span class="p">)</span>  
+    
+<span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">():</span>
+    <span class="n">diriger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+    <span class="n">inverser_couleur</span><span class="p">(</span><span class="n">fourmi</span><span class="p">[</span><span class="s1">'ligne'</span><span class="p">],</span> <span class="n">fourmi</span><span class="p">[</span><span class="s1">'colonne'</span><span class="p">],</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">bouger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+    <span class="n">tracer_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    
+<span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">stop</span><span class="p">()</span>  <span class="c1"># permet de mettre fin à l'animation</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="7.-Quelques-pistes-d'am%C3%A9lioration">7. Quelques pistes d'amélioration<a class="anchor-link" href="#7.-Quelques-pistes-d'am%C3%A9lioration">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="7.1-V%C3%A9rifier-que-la-fourmi-ne-sort-pas-de-la-grille">7.1 Vérifier que la fourmi ne sort pas de la grille<a class="anchor-link" href="#7.1-V%C3%A9rifier-que-la-fourmi-ne-sort-pas-de-la-grille">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-info">
+<p>Cette amélioration est indispensable. Quelle que soit la taille de la grille, la fourmi "sortira" de la grille et le programme déclenchera une erreur. On doit donc vérifier, avant de tracer la fourmi, que sa nouvelle position reste bien sur la grille. Si ce n'est pas le cas, on interrompt le programme.</p>
+</div>
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>Réaliser une fonction <code>est_dans_grille(ligne, colonne, grille)</code> qui renvoie <code>True</code> si les indices de ligne et colonne correspondent à une case de la grille et <code>False</code> sinon.</p>
+<p>Appeler cette fonction depuis la fonction <code>draw()</code> de p5. Lorsque <code>est_dans_grille(ligne, colonne, grille)</code> renvoie <code>False</code>, on pourra interrompre l'exécution en appelant la fonction <a rel="noopener noreferrer" href="https://www.carnets.info/jupyter/p5/#rafraichissement"><code>noLoop()</code></a>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">est_dans_grille</span><span class="p">(</span><span class="n">ligne</span><span class="p">,</span> <span class="n">colonne</span><span class="p">,</span> <span class="n">grille</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    est_dans_grille(ligne, colonne, grille) renvoie True si les indices de ligne et colonne </span>
+<span class="sd">    correspondent à une case de grille et False sinon.</span>
+<span class="sd">    '''</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="7.2-Arr%C3%AAter-le-programme-apr%C3%A8s-un-nombre-fix%C3%A9-d'%C3%A9tapes">7.2 Arrêter le programme après un nombre fixé d'étapes<a class="anchor-link" href="#7.2-Arr%C3%AAter-le-programme-apr%C3%A8s-un-nombre-fix%C3%A9-d'%C3%A9tapes">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-info">
+<p>Cette amélioration est optionnelle. Afin de pouvoir observer le "comportement" de la fourmi, on peut souhaiter interrompre ses déplacements après un nombre fixé d'étapes.</p>
+</div>
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>Réaliser une fonction <code>tester_nb_etapes(nb_etapes_max)</code> qui interrompt le programme si le nombre d'étapes réalisées est supérieur à une valeur fixée. On pourra utiliser la variable système <a rel="noopener noreferrer" href="https://www.carnets.info/jupyter/p5/#rafraichissement"><code>frameCount</code></a> de p5 qui comptabilise le nombre d'appels à la fonction draw() réalisés depuis le lancement du programme.</p>
+<p>Appeler cette fonction depuis la fonction <code>draw()</code> de p5.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tester_nb_etapes</span><span class="p">(</span><span class="n">nb_etapes_max</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    tester_nb_etapes(nb_etapes_max) interrompt le programme si le nombre d'étapes réalisées </span>
+<span class="sd">    est supérieur à nb_etapes_max</span>
+<span class="sd">    '''</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="7.3-Am%C3%A9liorer-le-trac%C3%A9-de-la-fourmi">7.3 Améliorer le tracé de la fourmi<a class="anchor-link" href="#7.3-Am%C3%A9liorer-le-trac%C3%A9-de-la-fourmi">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p>Cette amélioration est optionnelle. Modifier la fonction <code>tracer_fourmi</code> afin que le tracé permette d'identifier la direction de déplacement de la fourmi.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="7.4-Afficher-le-nombre-d'%C3%A9tapes">7.4 Afficher le nombre d'étapes<a class="anchor-link" href="#7.4-Afficher-le-nombre-d'%C3%A9tapes">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p>Cette amélioration est optionnelle. Consulter le paragraphe <a rel="noopener noreferrer" href="https://www.carnets.info/p5/ref_p5/#textes">Textes dans p5</a> sur carnets.info et réaliser cette amélioration en autonomie.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">afficher_nb_etapes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    affiche le nombre frameCount à la position (x, y)</span>
+<span class="sd">    '''</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="7.5-Autres-am%C3%A9liorations">7.5 Autres améliorations<a class="anchor-link" href="#7.5-Autres-am%C3%A9liorations">¶</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p>Ajoutez vos propres amélioration en autonomie.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="8.-Version-finale">8. Version finale<a class="anchor-link" href="#8.-Version-finale">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># programme principal : modifier éventuellement la valeur de NB_CASES, FRAMERATE, NB_ETAPES_MAX</span>
+<span class="c1"># commenter les lignes qui appellent des fonctions optionnelles non réalisées</span>
+
+<span class="n">NB_CASES</span> <span class="o">=</span> <span class="mi">35</span>                     <span class="c1"># nombre de cases du quadrillage par ligne ou colonne</span>
+<span class="n">FRAMERATE</span> <span class="o">=</span> <span class="mi">50</span>                    <span class="c1"># nombre d'images par seconde</span>
+<span class="n">NB_ETAPES_MAX</span> <span class="o">=</span> <span class="mi">1500</span>
+
+<span class="c1">#--------------------------------------------------------------------------------------</span>
+
+<span class="n">DIM_CASE</span> <span class="o">=</span> <span class="mi">800</span> <span class="o">//</span> <span class="n">NB_CASES</span>        <span class="c1"># dimension d'une case</span>
+<span class="n">grille</span> <span class="o">=</span> <span class="n">grille_initiale</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">)</span>
+<span class="n">fourmi</span> <span class="o">=</span> <span class="n">fourmi_initiale</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">setup</span><span class="p">():</span>
+    <span class="n">createCanvas</span><span class="p">(</span><span class="mi">800</span><span class="p">,</span> <span class="mi">800</span><span class="p">)</span>
+    <span class="n">dessiner_grille_vide</span><span class="p">(</span><span class="n">NB_CASES</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">tracer_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">frameRate</span><span class="p">(</span><span class="n">FRAMERATE</span><span class="p">)</span>
+    
+<span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">():</span>
+    <span class="n">diriger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+    <span class="n">inverser_couleur</span><span class="p">(</span><span class="n">fourmi</span><span class="p">[</span><span class="s1">'ligne'</span><span class="p">],</span> <span class="n">fourmi</span><span class="p">[</span><span class="s1">'colonne'</span><span class="p">],</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">bouger_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">est_dans_grille</span><span class="p">(</span><span class="n">fourmi</span><span class="p">[</span><span class="s1">'ligne'</span><span class="p">],</span> <span class="n">fourmi</span><span class="p">[</span><span class="s1">'colonne'</span><span class="p">],</span> <span class="n">grille</span><span class="p">):</span>
+        <span class="n">tracer_fourmi</span><span class="p">(</span><span class="n">fourmi</span><span class="p">,</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    <span class="n">tester_nb_etapes</span><span class="p">(</span><span class="n">NB_ETAPES_MAX</span><span class="p">)</span>
+    <span class="n">afficher_nb_etapes</span><span class="p">(</span><span class="n">DIM_CASE</span><span class="p">,</span> <span class="n">NB_CASES</span> <span class="o">*</span> <span class="n">DIM_CASE</span><span class="p">)</span>
+    
+<span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p>Rassembler en une seule cellule la totalité du programme.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="9.-Observations">9. Observations<a class="anchor-link" href="#9.-Observations">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="alert alert-block alert-warning">
+<p><strong>Question</strong></p>
+<p>Indiquer des valeurs de NB_CASES, FRAMERATE et NB_ETAPES_MAX qui permettent d'observer dans un temps raisonnable le phénomème appelé "l'autoroute".</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Nathalie Weibel<br>
+<em>Les activités partagées sur <a rel="noopener noreferrer" href="https://capytale2.ac-paris.fr/web/accueil"><strong>Capytale</strong></a> sont sous licence <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-sa/3.0/fr/">Creative Commons</a>.</em></p>
+</div>
+</div>
+</div>
+</div></div></div>
+</article>
+</main>
+<footer><span>Nathalie Weibel · CC BY-SA 3.0 FR · <a href="https://creativecommons.org/licenses/by-sa/3.0/fr/" rel="license noopener noreferrer">CC BY-SA 3.0 FR</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/capytale/nsi-fourmi-de-langton/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

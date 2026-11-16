@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Opération Pixel Rescue : couleurs, pixels et images</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › SNT</div>
+<main>
+<h1>Opération Pixel Rescue : couleurs, pixels et images</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="snt-pixel-rescue.ipynb" download>Télécharger le notebook (snt-pixel-rescue.ipynb)</a></li><li><a href="autoeval.py">autoeval.py</a></li><li><a href="_visualisation.py">_visualisation.py</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%95%B5%EF%B8%8F%E2%80%8D%E2%99%82%EF%B8%8F-Mission-:-Op%C3%A9ration-Pixel-Rescue">🕵️‍♂️ Mission : Opération Pixel Rescue<a class="anchor-link" href="#%F0%9F%95%B5%EF%B8%8F%E2%80%8D%E2%99%82%EF%B8%8F-Mission-:-Op%C3%A9ration-Pixel-Rescue">¶</a></h1><p><strong>Agent</strong>, bienvenue dans la Pixel Force.</p>
+<p>Une cyber-attaque a corrompu les banques d'images du serveur central. Les couleurs sont déréglées, les pixels sont en désordre et nos mascottes ressemblent à de la bouillie numérique.</p>
+<p><strong>Votre objectif :</strong></p>
+<ol>
+<li>Recalibrer les capteurs de couleurs (RGB).</li>
+<li>Manipuler la grille matricielle.</li>
+<li>Restaurer l'avatar corrompu "Toad".</li>
+</ol>
+<p>À chaque étape validée, vous débloquerez un <strong>Badge de Compétence</strong>.</p>
+<hr>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 🛠️ Initialisation du système (Exécutez cette cellule en premier)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">autoeval</span><span class="w"> </span><span class="kn">import</span> <span class="n">go</span><span class="p">,</span> <span class="n">check_couleurs</span><span class="p">,</span> <span class="n">check_rouge</span><span class="p">,</span> <span class="n">check_melanges</span><span class="p">,</span> <span class="n">check_pixel</span><span class="p">,</span> <span class="n">check_prediction</span><span class="p">,</span> <span class="n">check_toad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ipythonblocks</span><span class="w"> </span><span class="kn">import</span> <span class="n">BlockGrid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">_visualisation</span><span class="w"> </span><span class="kn">import</span> <span class="n">dessiner</span>
+
+<span class="n">go</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%F0%9F%8C%88-Niveau-1-:-Le-Calibrage-des-Couleurs">🌈 Niveau 1 : Le Calibrage des Couleurs<a class="anchor-link" href="#%F0%9F%8C%88-Niveau-1-:-Le-Calibrage-des-Couleurs">¶</a></h2><p>Les écrans fonctionnent selon le principe de la <strong>Synthèse Additive</strong>. Ils utilisent trois lumières de base pour tromper notre oeil et créer toutes les autres couleurs : <strong>Rouge (Red)</strong>, <strong>Vert (Green)</strong>, et <strong>Bleu (Blue)</strong>. C'est le système <strong>RVB</strong> (ou RGB).</p>
+<p>L'absence de lumière donne du <strong>Noir</strong>. La puissance maximale de toutes les lumières donne du <strong>Blanc</strong>.</p>
+<p><img loading="lazy" alt="Schéma de la synthèse additive : trois disques lumineux, rouge, vert et bleu, qui se recouvrent ; rouge et vert donnent du jaune, rouge et bleu du magenta, vert et bleu du cyan, les trois du blanc." src="pj-d6aa6296.svg"></p>
+<h3 id="%F0%9F%93%9D-D%C3%A9fi-1-:-Analyse-spectrale">📝 Défi 1 : Analyse spectrale<a class="anchor-link" href="#%F0%9F%93%9D-D%C3%A9fi-1-:-Analyse-spectrale">¶</a></h3><p>Regardez le schéma ci-dessus et remplissez les variables ci-dessous pour configurer le système.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Remplissez les guillemets avec les noms des couleurs (ex: "rouge et vert")</span>
+
+<span class="n">rep_jaune</span> <span class="o">=</span> <span class="s2">"..."</span>    <span class="c1"># Quelles couleurs donnent le jaune ?</span>
+<span class="n">rep_magenta</span> <span class="o">=</span> <span class="s2">"..."</span>  <span class="c1"># Quelles couleurs donnent le magenta ?</span>
+<span class="n">rep_cyan</span> <span class="o">=</span> <span class="s2">"..."</span>     <span class="c1"># Quelles couleurs donnent le cyan ?</span>
+<span class="n">rep_total</span> <span class="o">=</span> <span class="s2">"..."</span>    <span class="c1"># Quelle couleur obtient-on avec Rouge + Vert + Bleu ?</span>
+
+<span class="c1"># Validation de la réponse</span>
+<span class="n">check_couleurs</span><span class="p">(</span><span class="n">rep_jaune</span><span class="p">,</span> <span class="n">rep_magenta</span><span class="p">,</span> <span class="n">rep_cyan</span><span class="p">,</span> <span class="n">rep_total</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%F0%9F%8E%9B%EF%B8%8F-Niveau-2-:-Contr%C3%B4le-d'intensit%C3%A9">🎛️ Niveau 2 : Contrôle d'intensité<a class="anchor-link" href="#%F0%9F%8E%9B%EF%B8%8F-Niveau-2-:-Contr%C3%B4le-d'intensit%C3%A9">¶</a></h2><p>Chaque canal de couleur (R, G, B) est codé par un nombre entre <strong>0</strong> (éteint) et <strong>255</strong> (intensité max).</p>
+<p>Nous allons utiliser le module <code>BlockGrid</code> pour allumer des pixels.
+La commande <code>BlockGrid(8, 8, fill=(R, G, B))</code> crée une grille de 8x8 pixels remplie avec la couleur définie.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># TEST : Création d'une grille noire (0, 0, 0)</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">G</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">B</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">BlockGrid</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">B</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%93%9D-D%C3%A9fi-2-:-Allumer-le-Rouge">📝 Défi 2 : Allumer le Rouge<a class="anchor-link" href="#%F0%9F%93%9D-D%C3%A9fi-2-:-Allumer-le-Rouge">¶</a></h3><p>Modifiez les variables ci-dessous pour obtenir un <strong>Rouge Pur</strong> (Red au max, les autres à 0).</p>
+<p><strong>Astuce :</strong> Pour vous aider a trouver le code RGB des couleurs vous pouvez utiliser le site <a rel="noopener noreferrer" href="https://htmlcolorcodes.com/">https://htmlcolorcodes.com/</a></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Modifiez ces valeurs</span>
+<span class="n">R</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">G</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">B</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Affichage et validation</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">BlockGrid</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">B</span><span class="p">))</span>
+<span class="n">check_rouge</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="n">grid</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%93%9D-D%C3%A9fi-3-:-La-chimie-des-couleurs">📝 Défi 3 : La chimie des couleurs<a class="anchor-link" href="#%F0%9F%93%9D-D%C3%A9fi-3-:-La-chimie-des-couleurs">¶</a></h3><p>Trouvez les codes numériques pour créer les couleurs secondaires (il vous faudra changer les valeurs des variables). Aidez-vous du Défi 1 !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 1. Pour faire du JAUNE (Rouge + Vert)</span>
+<span class="n">R_jaune</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">G_jaune</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">B_jaune</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># 2. Pour faire du MAGENTA (Rouge + Bleu)</span>
+<span class="n">R_mag</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">G_mag</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">B_mag</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># 3. Pour faire du CYAN (Vert + Bleu)</span>
+<span class="n">R_cyan</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">G_cyan</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">B_cyan</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="c1"># Validation globale</span>
+<span class="n">check_melanges</span><span class="p">(</span><span class="n">R_jaune</span><span class="p">,</span> <span class="n">G_jaune</span><span class="p">,</span> <span class="n">B_jaune</span><span class="p">,</span> <span class="n">R_mag</span><span class="p">,</span> <span class="n">G_mag</span><span class="p">,</span> <span class="n">B_mag</span><span class="p">,</span> <span class="n">R_cyan</span><span class="p">,</span> <span class="n">G_cyan</span><span class="p">,</span> <span class="n">B_cyan</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%A7%A0-R%C3%A9flexion-rapide">🧠 Réflexion rapide<a class="anchor-link" href="#%F0%9F%A7%A0-R%C3%A9flexion-rapide">¶</a></h3><p>Si chaque couleur peut avoir une valeur entre 0 et 255 (donc 256 possibilités), combien de couleurs totales un ordinateur peut-il afficher ?
+<em>Indice : C'est 256 <span class="math">×</span> 256 <span class="math">×</span> 256... cela fait plus de 16 millions !</em></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%F0%9F%8E%AF-Niveau-3-:-Ciblage-de-Pixel">🎯 Niveau 3 : Ciblage de Pixel<a class="anchor-link" href="#%F0%9F%8E%AF-Niveau-3-:-Ciblage-de-Pixel">¶</a></h2><p>Une image est un tableau (une grille). Pour modifier un pixel précis, on utilise ses <strong>coordonnées</strong> <code>[ligne, colonne]</code>.</p>
+<p>⚠️ <strong>Attention :</strong> En informatique, on commence souvent à compter à partir de <strong>0</strong> !</p>
+<ul>
+<li>Le pixel tout en haut à gauche est <code>[0, 0]</code>.</li>
+<li>Le pixel tout en bas à droite (sur une grille 8x8) est <code>[7, 7]</code>.</li>
+</ul>
+<h3 id="%F0%9F%93%9D-D%C3%A9fi-4-:-Tir-de-pr%C3%A9cision">📝 Défi 4 : Tir de précision<a class="anchor-link" href="#%F0%9F%93%9D-D%C3%A9fi-4-:-Tir-de-pr%C3%A9cision">¶</a></h3><p>Activez le pixel en haut à gauche <code>[0, 0]</code> en <strong>ROUGE</strong>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">grille</span> <span class="o">=</span> <span class="n">BlockGrid</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+<span class="c1"># Modifiez la ligne ci-dessous pour mettre du ROUGE (255, 0, 0)</span>
+<span class="n">grille</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># Validation</span>
+<span class="n">check_pixel</span><span class="p">(</span><span class="n">grille</span><span class="p">)</span>
+<span class="n">grille</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%93%9D-D%C3%A9fi-5-:-Encodage-de-matrice">📝 Défi 5 : Encodage de matrice<a class="anchor-link" href="#%F0%9F%93%9D-D%C3%A9fi-5-:-Encodage-de-matrice">¶</a></h3><p>Un virus a corrompu une image on souhaite la recrée. Ecrit un code source permettant de générer l'image ci-dessous.</p>
+<p><img loading="lazy" alt="Screenshot_20251128_094400.png" src="pj-6aade696.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Completer le code ici :</span>
+<span class="n">grille</span> <span class="o">=</span> <span class="n">BlockGrid</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span> <span class="c1"># Fond gris clair</span>
+<span class="n">grille</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>    <span class="c1"># ?</span>
+<span class="o">...</span>
+<span class="c1"># Validation</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">check_prediction</span><span class="p">(</span><span class="n">grille</span><span class="p">)</span>
+    <span class="n">grille</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Code non exécuté ou variable 'grille' manquante."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%F0%9F%91%BE-Niveau-Final-:-Le-Boss-%22Toad%22">👾 Niveau Final : Le Boss "Toad"<a class="anchor-link" href="#%F0%9F%91%BE-Niveau-Final-:-Le-Boss-%22Toad%22">¶</a></h2><p>Pour dessiner une image complexe sans écrire 64 lignes de code, nous utilisons une <strong>Matrice</strong> (une liste de listes).</p>
+<p>Voici l'image originale de Toad :
+<em>[image non reprise dans cette copie]</em></p>
+<h3 id="%E2%9A%94%EF%B8%8F-D%C3%A9fi-Ultime-:-Restauration-de-Toad">⚔️ Défi Ultime : Restauration de Toad<a class="anchor-link" href="#%E2%9A%94%EF%B8%8F-D%C3%A9fi-Ultime-:-Restauration-de-Toad">¶</a></h3><p>Nous avons préparé la palette de couleurs. Vous devez remplir la matrice <code>image_toad</code> pour recréer le personnage pixel par pixel.</p>
+<p><strong>Astuce :</strong> Chaque ligne de la liste correspond à une ligne de l'image (de haut en bas).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered celltag_breakpoint">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># 🎨 Palette de couleurs</span>
+<span class="n">b</span>  <span class="o">=</span> <span class="o">...</span> <span class="c1"># Blanc</span>
+<span class="n">n</span>  <span class="o">=</span> <span class="o">...</span> <span class="c1"># Noir</span>
+<span class="n">v</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>   <span class="c1"># Vert (pour d'autres dessins)</span>
+<span class="n">ch</span> <span class="o">=</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">220</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span> <span class="c1"># Chair (Beige)</span>
+
+<span class="c1"># 🖌️ À vous de remplir la matrice (12 lignes, 12 colonnes)</span>
+<span class="c1"># Remplacez les '...' par les variables de couleur (f, b, r, n, ch)</span>
+<span class="c1"># Regardez bien l'image modèle !</span>
+
+<span class="n">image_toad</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="c1"># Ligne 0 : Haut du chapeau</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="c1"># Ligne 1</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="c1"># ... continuez ...</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> 
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> 
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span> <span class="c1"># Attention aux yeux (n)</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">],</span>
+    <span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+<span class="p">]</span>
+
+<span class="c1"># Validation et Affichage</span>
+<span class="k">if</span> <span class="n">check_toad</span><span class="p">(</span><span class="n">image_toad</span><span class="p">):</span>
+    <span class="c1"># Utilisation de la fonction dessiner (fournie dans _visualisation.py)</span>
+    <span class="n">dessin</span> <span class="o">=</span> <span class="n">dessiner</span><span class="p">(</span><span class="n">image_toad</span><span class="p">)</span>
+    <span class="n">dessin</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<h3 id="%F0%9F%8E%89-Mission-Accomplie-!">🎉 Mission Accomplie !<a class="anchor-link" href="#%F0%9F%8E%89-Mission-Accomplie-!">¶</a></h3><p>Vous avez compris comment les ordinateurs stockent les images : une grille de nombres représentant des mélanges de Rouge, Vert et Bleu.</p>
+<p>Vous pouvez maintenant créer vos propres Pixel Arts !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="%5BBONUS%5D">[BONUS]<a class="anchor-link" href="#%5BBONUS%5D">¶</a></h2><hr>
+<p>Bravo Agent ! En manipulant la matrice, vous avez débloqué un nouveau grade.</p>
+<p>Votre réputation grandit au sein de la Pixel Force. Des clients extérieurs commencent à nous envoyer des commandes spécifiques.</p>
+<p>Voici trois bons de commande que vous devez honorer pour prouver votre maîtrise des boucles et des coordonnées.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%93%A6-Commande-n%C2%B01-:-Le-%22Slash%22">📦 Commande n°1 : Le "Slash"<a class="anchor-link" href="#%F0%9F%93%A6-Commande-n%C2%B01-:-Le-%22Slash%22">¶</a></h3><p><strong>Client :</strong> Start-up "Slash &amp; Co"</p>
+<p><strong>Demande :</strong> "Nous voulons une ligne verte qui monte, du bas-gauche vers le haut-droit."</p>
+<p><strong>Indice technique :</strong> Quand la ligne i augmente (0, 1, 2...), la colonne doit diminuer (7, 6, 5...).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">grille</span> <span class="o">=</span> <span class="n">BlockGrid</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span> <span class="c1"># Fond gris clair</span>
+<span class="n">v</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">20</span><span class="p">):</span>
+    <span class="o">...</span>
+
+    
+<span class="c1"># Validation</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">check_slash</span><span class="p">(</span><span class="n">grille</span><span class="p">)</span>
+    <span class="n">grille</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Code non exécuté ou variable 'grille' manquante."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%93%A6-Commande-n%C2%B02-:-Le-%22X-Men%22">📦 Commande n°2 : Le "X-Men"<a class="anchor-link" href="#%F0%9F%93%A6-Commande-n%C2%B02-:-Le-%22X-Men%22">¶</a></h3><p><strong>Client :</strong> Professeur Xavier</p>
+<p><strong>Demande :</strong> "Il nous faut une croix parfaite pour notre logo. Elle doit traverser l'image de part en part."</p>
+<p><strong>Indice technique :</strong> Dans la même boucle, vous pouvez colorier deux pixels différents : la diagonale normale (i, i) et l'anti-diagonale (i, 7-i).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">grille</span> <span class="o">=</span> <span class="n">BlockGrid</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span> <span class="c1"># Fond gris clair</span>
+<span class="n">v</span>  <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="c1"># La diagonale descendante</span>
+    <span class="o">...</span>
+    <span class="c1"># L'anti-diagonale</span>
+    <span class="o">...</span>
+
+<span class="c1"># Validation</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">check_Xmen</span><span class="p">(</span><span class="n">grille</span><span class="p">)</span>
+    <span class="n">grille</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Code non exécuté ou variable 'grille' manquante."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="%F0%9F%93%A6-Commande-n%C2%B03-:-L'Hypnose-(La-Spirale)-%5BBOSS%5D">📦 Commande n°3 : L'Hypnose (La Spirale) [BOSS]<a class="anchor-link" href="#%F0%9F%93%A6-Commande-n%C2%B03-:-L'Hypnose-(La-Spirale)-%5BBOSS%5D">¶</a></h3><p><strong>Client :</strong> Le Magicien Mysterio</p>
+<p><strong>Demande :</strong> "Je veux une spirale qui part de l'extérieur et tourne vers le centre jusqu'à remplir l'espace."</p>
+<p><strong>Indice technique :</strong> C'est un défi complexe ! Il faut réduire la zone de dessin petit à petit. On dessine le bord haut, puis le bord droit, puis le bas, puis le gauche, et on recommence en resserrant les murs</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">grille</span> <span class="o">=</span> <span class="n">BlockGrid</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">block_size</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">))</span>
+<span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span> <span class="c1"># Vert</span>
+
+<span class="c1"># On définit les murs (limites) de notre spirale</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/snt/fichiers/capytale/snt-pixel-rescue/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

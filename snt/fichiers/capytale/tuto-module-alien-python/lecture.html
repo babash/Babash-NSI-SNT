@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tutoriel du module alien_python (Basthon et Capytale)</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › SNT</div>
+<main>
+<h1>Tutoriel du module alien_python (Basthon et Capytale)</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="tuto-module-alien-python.ipynb" download>Télécharger le notebook (tuto-module-alien-python.ipynb)</a></li><li><a href="alien_python.py">alien_python.py</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 style="text-align:center;font-size:2.5em;">Présentation du module <code>alien_python</code></h1>
+<hr>
+<div style="background:#eee; margin:10px 0;">
+<p><img loading="lazy" alt="" src="alien.svg"></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>SOMMAIRE</strong></p>
+<ul>
+<li><a href="#Introduction">Introduction</a></li>
+<li><a href="#Gen%C3%A8se-du-module">Genèse du module</a></li>
+<li><a href="#Afficher-un-d%C3%A9placement">Afficher un déplacement</a><ul>
+<li><a href="#Exemple-rapide">Exemple rapide</a></li>
+<li><a href="#Afficher-les-num%C3%A9ros-d%27%C3%A9tapes-(et-non-plus-de-lignes)">Afficher les numéros d'étapes (et non plus de lignes)</a></li>
+<li><a href="#Afficher-une-animation">Afficher une animation</a></li>
+</ul>
+</li>
+<li><a href="#Travail-en-autonomie-pour-lire-et-comprendre-un-programme">Travail en autonomie pour lire et comprendre un programme</a><ul>
+<li><a href="#S%C3%A9lectionner-la-case-finale-avec-selectionner_case_finale">Sélectionner la case finale avec <code>selectionner_case_finale</code></a></li>
+<li><a href="#Dessiner-tout-le-parcours-avec-dessiner_parcours">Dessiner tout le parcours avec <code>dessiner_parcours</code></a></li>
+</ul>
+</li>
+<li><a href="#Travail-en-autonomie-pour-apprendre-%C3%A0-%C3%A9crire-un-programme">Travail en autonomie pour apprendre à écrire un programme</a></li>
+<li><a href="#Pour-l%27enseignant--qui-pr%C3%A9pare-ses-exercices">Pour l'enseignant qui prépare ses exercices</a></li>
+<li><a href="#Code-source-du-module">Code source du module</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Introduction">Introduction<a class="anchor-link" href="#Introduction">¶</a></h1><p>Le module <code>alien_python</code> permet d'écrire des programmes pour déplacer un alien dans une grille. L'idée est de faire travailler les élèves sur les notions algorithmiques, de manière débranchée ou non. On peut imaginer toutes sortes d'exercices pour cela, j'en dis davantage par la suite.</p>
+<p><strong>Mais avant d'en dire plus, commencez par afficher les numéros de lignes des cellules de code (Affichage &gt; Afficher les numéros de ligne) puis exécutez les deux cellules suivantes pour tout de suite comprendre le principe !</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alien_python</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>  <span class="c1"># pour charger le module et ses fonctionnalités</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire en début de chaque programme</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+<span class="n">afficher_deplacement</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote>
+<p>Les numéros affichés correspondent aux numéros des lignes du script Python.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><span style="font-size:3em;">📣</span> Ce qui suit a pour but d'expliquer <em>en détail</em> les différentes possibilités offertes par le module. Vous trouverez une version beaucoup plus courte, donc avec moins d'explications, en suivant ce lien : <a rel="noopener noreferrer" href="https://capytale2.ac-paris.fr/basthon/notebook/?id=626498">https://capytale2.ac-paris.fr/basthon/notebook/?id=626498</a>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Gen%C3%A8se-du-module">Genèse du module<a class="anchor-link" href="#Gen%C3%A8se-du-module">¶</a></h1><p>J'ai repris le travail formidable de Mathieu Degrange (voir ici son projet <strong>Alien-Python</strong> : <a rel="noopener noreferrer" href="https://github.com/DegrangeM/alien-python">https://github.com/DegrangeM/alien-python</a>) qui permet de travailler les notions de programmation et d'algorithmique de manière débranchée avec les élèves. L'idée est de donner aux élèves un programme permettant de déplacer un alien dans une grille et les élèves doivent deviner, de tête, la case dans laquelle s'arrêtera l'alien à l'issue du programme donné.</p>
+<p>J'ai eu l'occasion d'utiliser le travail de Mathieu avec mes élèves en SNT cette année scolaire, ils ont apprécié et cela leur a été bénéfique a priori. On peut très bien utiliser cela avec n'importe quelle classe de lycée en cours de mathématiques également, soit pour introduire les notions sur Python, soit pour les entretenir.</p>
+<p>Le module <code>alien_python</code> va un peu plus loin que ce qu'a proposé Mathieu, il permet à la fois :</p>
+<ul>
+<li><strong>aux enseignants</strong> de préparer des exercices ou d'animer des activités sous forme de Notebook (ou de Script-Console) dans Capytale ou Basthon,</li>
+<li>et <strong>aux élèves</strong> de s'entraîner en autonomie.</li>
+</ul>
+<p>Plus précisément, <strong>les élèves peuvent</strong> :</p>
+<ul>
+<li><strong>exécuter un programme</strong> pour voir le déplacement de l'alien</li>
+<li><strong>tester une réponse</strong> en cliquant sur la case finale supposée</li>
+<li><strong>tester un parcours complet</strong> en dessinant le parcours par des clics sur les différentes cases (car au final c'est cela qui importe, davantage que la case finale)</li>
+<li><strong>compléter ou écrire complètement un programme</strong> pour déplacer l'alien comme sur une image qui est fournie</li>
+</ul>
+<blockquote>
+<p>Il y a aussi la possibilité d'animer le déplacement de l'alien, même si je ne suis pas persuadé que ce soit indispensable. J'en parle par la suite.</p>
+</blockquote>
+<p><strong>Idées d'utilisation</strong> :</p>
+<ul>
+<li><strong>questions rapides</strong> en classe : les élèves font sur papier ou dans leur tête et la correction vidéoprojetée peut se faire en exécutant le programme (pour introduire les notions ou les entretenir)</li>
+<li><strong>travail en autonomie pour lire et comprendre un programme</strong> : on leur communique un notebook avec différentes questions et il doivent deviner la case finale ou le déplacement complet en cliquant sur la grille puis il y a un système de vérification et de correction automatique de la réponse proposée par l'élève</li>
+<li><strong>travail en autonomie pour apprendre à écrire un programme</strong> :  on leur communique un notebook avec différents exercices où les élèves doivent compléter, voire écrire entièrement, un programme pour déplacer l'alien selon l'image communiquée, avec vérification et correction automatique de la proposition (un nombre de lignes maximal peut être fixé).</li>
+</ul>
+<blockquote>
+<p><span style="font-size:1.7em;">⚠️</span> En l'état, ce module <strong>fonctionne uniquement sous Basthon</strong> (donc dans <strong>Capytale</strong> également) car il est basé sur le module <code>p5</code> porté par Romain Casati dans Basthon (basé lui-même sur la bibliothèque JavaScript <code>p5.js</code>, mais qui diffère du module <code>p5</code> de Python).</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Afficher-un-d%C3%A9placement">Afficher un déplacement<a class="anchor-link" href="#Afficher-un-d%C3%A9placement">¶</a></h1><p>Le module <code>alien_python</code> est un simple fichier Python appelé <code>alien_python.py</code> qui est à joindre à l'activité sur Capytale ou sur Basthon (dans un Notebook ou un Script-Console). On peut importer ce module avec la ligne suivante, qui est donc à exécuter au début de l'activité.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">alien_python</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Il faut également <strong>afficher les numéros de lignes</strong> des cellules de code du notebook, car celles-ci sont affichées par défaut à côté de chaque position du déplacement. Pour cela, il suffit de cliquer sur Affichage puis sur Afficher/Masquer les numéros de ligne.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Exemple-rapide">Exemple rapide<a class="anchor-link" href="#Exemple-rapide">¶</a></h2><p>Une fois le module chargé, son utilisation est assez simple. Par exemple, le programme qui suit permet de :</p>
+<ul>
+<li>centrer l'alien avec la fonction <code>centrer_alien</code> (<strong>l'alien est toujours au centre dans la case H8 au départ</strong>)</li>
+<li>puis déplacer l'alien grâce aux fonctions <code>gauche</code>, <code>droite</code>, <code>haut</code> et <code>bas</code></li>
+<li>et enfin aficher le déplacement de l'alien avec la fonction <code>afficher_deplacement</code></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire en début de chaque programme</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+<span class="n">afficher_deplacement</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Analyse</strong> : Vous pouvez constater que le déplacement est affiché et qu'un numéro est écrit en bas à droite de chaque position de l'alien : il s'agit du numéro de ligne du programme Python. Par exemple :</p>
+<ul>
+<li>le "1" au départ signifie que c'est la ligne 1 du programme qui a positionné l'alien au centre</li>
+<li>le "3" indique que c'est la ligne 3 du programme qui a déplacé l'alien en H5</li>
+<li>etc.</li>
+</ul>
+<p>Cela permet donc de bien suivre et comprendre le rôle de chaque ligne, et cela devient particulièrement intéressant lorsqu'il y a des boucles.</p>
+<p>On peut passer des paramètres à la fonction <code>afficher_deplacement</code> pour modifier légèrement son comportement.</p>
+<h2 id="Afficher-les-num%C3%A9ros-d'%C3%A9tapes-(et-non-plus-de-lignes)">Afficher les numéros d'étapes (et non plus de lignes)<a class="anchor-link" href="#Afficher-les-num%C3%A9ros-d'%C3%A9tapes-(et-non-plus-de-lignes)">¶</a></h2><p>Pour remplacer les numéros de lignes du programme par le numéro de chaque étape (1, 2, 3, ...) , on utilise</p>
+<div class="highlight"><pre><span></span><span class="n">afficher_deplacement</span><span class="p">(</span><span class="n">etapes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<p>en dernière ligne :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire en début de chaque programme</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">afficher_deplacement</span><span class="p">(</span><span class="n">etapes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote>
+<p>Si vous tenez à tout prix à ne voir aucun numéro, que ce soit de lignes ou d'étapes, il suffit de passer la valeur <code>False</code> au paramètre <code>num_lignes</code> de la fonction <code>afficher_deplacement</code> : <code>afficher_deplacement(num_lignes=False)</code>.<br>
+Se combine aux autres paramètres.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Afficher-une-animation">Afficher une animation<a class="anchor-link" href="#Afficher-une-animation">¶</a></h2><p>Pour afficher une animation interactive du déplacement, on utilise</p>
+<div class="highlight"><pre><span></span><span class="n">afficher_deplacement</span><span class="p">(</span><span class="n">animation</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+<p>en dernière ligne du programme :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire en début de chaque programme</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+<span class="n">afficher_deplacement</span><span class="p">(</span><span class="n">animation</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">etapes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Il suffit d'utiliser les boutons pour jouer l'animation :</p>
+<ul>
+<li>le bouton <code>▶Lecture</code> pour lancer l'animation automatique jusqu'à la fin du déplacement</li>
+<li>les autres boutons pour avancer en mode pas à pas (boutons <code>&lt; Préc.</code> et <code>Suiv. &gt;</code>) ou se positionner directement en première ou dernière position (<code>&lt;&lt; Début</code> et <code>Fin &gt;&gt;</code>). Ceux-ci stoppent l'animation automatique, qui reprend en cliquant à nouveau sur le bouton de lecture.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Travail-en-autonomie-pour-lire-et-comprendre-un-programme">Travail en autonomie pour lire et comprendre un programme<a class="anchor-link" href="#Travail-en-autonomie-pour-lire-et-comprendre-un-programme">¶</a></h1><p>L'idée est de proposer aux élèves un programme et ils doivent devenir mentalement la case finale de l'alien ou tout le parcours de l'alien (toutes les cases par lesquelles l'alien est passé).</p>
+<blockquote>
+<p>On pourrait utiliser la fonction <code>afficher_deplacement</code> comme dans le paragraphe précédent, les élèves n'auraient qu'à comparer leur réponse avec le déplacement affichée. Mais ici, on propose deux fonctionnalités permettant aux élèves de sélectionner la case finale ou de dessiner le parcours directement dans la grille.</p>
+</blockquote>
+<h2 id="S%C3%A9lectionner-la-case-finale-avec-selectionner_case_finale">Sélectionner la case finale avec <code>selectionner_case_finale</code><a class="anchor-link" href="#S%C3%A9lectionner-la-case-finale-avec-selectionner_case_finale">¶</a></h2><p>Pour proposer une grille interactive dans laquelle on peut sélectionner la case finale, il suffit de remplacer la dernière ligne du programme par un appel à la fonction <code>selectionner_case_finale</code> :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">selectionner_case_finale</span><span class="p">()</span>  <span class="c1"># pour pouvoir sélectionner la case finale</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Remarques</strong> :</p>
+<ul>
+<li>Le bouton "Valider" permet de tester si la case sélectionnée est la bonne ou pas. Tant que la case finale n'est pas trouvée on peut retenter sa chance.</li>
+<li>Le bouton "Effacer" permet de déselectionner la case, mais il suffit d'en sélectionner une autre.</li>
+<li>Le bouton "Réponse" permet d'afficher le parcours complet et la case finale. Par défaut, le numéro des lignes du programme s'écrivent à côté de chaque position.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dessiner-tout-le-parcours-avec-dessiner_parcours">Dessiner tout le parcours avec <code>dessiner_parcours</code><a class="anchor-link" href="#Dessiner-tout-le-parcours-avec-dessiner_parcours">¶</a></h2><p>Pour proposer une grille interactive dans laquelle on peut dessiner tout le parcours en cliquant sur la grille, il suffit de remplacer la dernière ligne du programme par un appel à la fonction <code>dessiner_parcours</code> :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">dessiner_parcours</span><span class="p">()</span>  <span class="c1"># pour pouvoir dessiner le parcours</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Remarques</strong> :</p>
+<ul>
+<li>Les boutons "Valider", "Effacer" et "Réponse" ont les mêmes fonctions que précédemment.</li>
+<li>Le numéro d'étape est écrit à côté de chaque position du parcours.</li>
+<li>Il est possible d'effacer la dernière position en cliquant dessus.</li>
+<li>On ne peut se déplacer que verticalement et horizontalement.</li>
+</ul>
+<p>Notez qu'il est possible d'afficher des indications sur un parcours incorrect lorsque l'on clique sur le bouton "Valider". Pour cela, il suffit de passer le paramètre <code>indication=True</code> à la fonction <code>dessiner_parcours</code>. Je vous laisse tester les différents cas de figure :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">dessiner_parcours</span><span class="p">(</span><span class="n">indication</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># pour pouvoir dessiner le parcours</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Travail-en-autonomie-pour-apprendre-%C3%A0-%C3%A9crire-un-programme">Travail en autonomie pour apprendre à écrire un programme<a class="anchor-link" href="#Travail-en-autonomie-pour-apprendre-%C3%A0-%C3%A9crire-un-programme">¶</a></h1><blockquote>
+<p>Ce travail peut être entrepris une fois que les élèves ont bien compris le rôle des fonctions <code>gauche</code>, <code>droite</code>, <code>haut</code> et <code>bas</code>.</p>
+</blockquote>
+<p>Les exemples proposés jusqu'alors permettait de faire travailler les élèves sur la compréhension d'un programme. L'idée est désormais qu'ils apprennent à programmer : on propose aux élèves une image d'un déplacement et ces derniers doivent compléter ou écrire un programme permettant de réaliser le déplacement en question.</p>
+<blockquote>
+<p>On pourrait demander aux élèves d'exécuter le programme qu'ils ont écrit en le terminant par <code>afficher_deplacement</code>, puis de comparer le déplacement affiché avec celui demandé. Mais ici on propose une vérification automatique.</p>
+</blockquote>
+<h2 id="V%C3%A9rifier-un-programme-avec-verifier_programme">Vérifier un programme avec <code>verifier_programme</code><a class="anchor-link" href="#V%C3%A9rifier-un-programme-avec-verifier_programme">¶</a></h2><p>On peut aussi utiliser la fonction <code>verifier_programme(liste_bonnes_cases, nb_max_lignes=None, ...)</code> en dernière ligne du programme qui permet de vérifier si ce dernier est correct ou non. Pour cela, le professeur doit passer en paramètre à la fonction :</p>
+<ul>
+<li>la liste des bonnes cases du parcours : <code>liste_bonnes_cases</code></li>
+<li>éventuellement le nombre maximum de lignes attendu : en changeant la valeur par défaut <code>None</code> du paramètre <code>nb_max_lignes</code></li>
+<li>éventuellement des paramètres optionnels pour activer une animation ou afficher les numéros des étapes</li>
+</ul>
+<p>On détaille cela ci-dessous sur quelques exemples d'énoncés.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Exercice-1-(sans-nombre-maximal-de-lignes)">Exercice 1 (sans nombre maximal de lignes)<a class="anchor-link" href="#Exercice-1-(sans-nombre-maximal-de-lignes)">¶</a></h3><h4 id="%C3%89nonc%C3%A9">Énoncé<a class="anchor-link" href="#%C3%89nonc%C3%A9">¶</a></h4><p>Complétez le programme ci-dessous pour déplacer l'alien comme sur cette image.</p>
+<p><img loading="lazy" alt="ex1" src="ex1.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># obligatoire au début</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="o">...</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H3'</span><span class="p">,</span> <span class="s1">'F3'</span><span class="p">,</span> <span class="s1">'F5'</span><span class="p">,</span> <span class="s1">'F7'</span><span class="p">,</span> <span class="s1">'F9'</span><span class="p">,</span> <span class="s1">'F11'</span><span class="p">,</span> <span class="s1">'F13'</span><span class="p">,</span> <span class="s1">'F15'</span><span class="p">])</span>  <span class="c1"># ne pas modifier</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Remarques</strong> :</p>
+<ul>
+<li>on termine le programme avec un appel à la fonction <code>verifier_programme</code>, c'est obligatoire</li>
+<li>le premier paramètre à lui passer est la liste des bonnes cases du parcours, que le professeur doit renseigner.</li>
+</ul>
+<h4 id="%C3%80-la-place-de-l'%C3%A9l%C3%A8ve">À la place de l'élève<a class="anchor-link" href="#%C3%80-la-place-de-l'%C3%A9l%C3%A8ve">¶</a></h4><p>Si l'élève complète correctement le code, cela donne (je vous laisse essayer par vous-même le cas de programmes incorrects) :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># obligatoire au début</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H3'</span><span class="p">,</span> <span class="s1">'F3'</span><span class="p">,</span> <span class="s1">'F5'</span><span class="p">,</span> <span class="s1">'F7'</span><span class="p">,</span> <span class="s1">'F9'</span><span class="p">,</span> <span class="s1">'F11'</span><span class="p">,</span> <span class="s1">'F13'</span><span class="p">,</span> <span class="s1">'F15'</span><span class="p">])</span>  <span class="c1"># ne pas modifier</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote>
+<p>On peut ajouter le paramètre <code>animation=True</code> à la fonction <code>verifier_programme</code> en remplaçant la dernière ligne par <code>verifier_programme(['H8', 'H3', 'F3', 'F5', 'F7', 'F9', 'F11', 'F13', 'F15'], animation=True)</code> qui permet d'afficher une animation à la place de deux grilles côte à côte. Cela marche aussi pour un programme incorrect (je vous laisse essayer tout cela).</p>
+</blockquote>
+<p>Néanmoins, comme le paramètre <code>nb_max_lignes</code> de la fonction <code>verifier_programme</code> n'est pas définit ici, un élève peut aussi effacer le programme à compléter et le remplacer par un autre qui fonctionne :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># obligatoire au début</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H3'</span><span class="p">,</span> <span class="s1">'F3'</span><span class="p">,</span> <span class="s1">'F5'</span><span class="p">,</span> <span class="s1">'F7'</span><span class="p">,</span> <span class="s1">'F9'</span><span class="p">,</span> <span class="s1">'F11'</span><span class="p">,</span> <span class="s1">'F13'</span><span class="p">,</span> <span class="s1">'F15'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ce n'était évidemment pas la solution envisagée par le professeur et pour y remédier, surtout en ce qui concerne les boucles, on peut définir un nombre maximum de lignes à écrire. C'est ce que nous allons voir dans l'exercice suivant.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Exercice-2-(avec-un-nombre-maximal-de-lignes)">Exercice 2 (avec un nombre maximal de lignes)<a class="anchor-link" href="#Exercice-2-(avec-un-nombre-maximal-de-lignes)">¶</a></h3><h4 id="%C3%89nonc%C3%A9">Énoncé<a class="anchor-link" href="#%C3%89nonc%C3%A9">¶</a></h4><p>Écrivez un programme pour déplacer l'alien comme sur cette image. <strong>Attention, votre programme doit faire moins de 5 lignes</strong>.</p>
+<p><img loading="lazy" alt="ex1" src="ex1.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># obligatoire au début</span>
+
+<span class="o">...</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H3'</span><span class="p">,</span> <span class="s1">'F3'</span><span class="p">,</span> <span class="s1">'F5'</span><span class="p">,</span> <span class="s1">'F7'</span><span class="p">,</span> <span class="s1">'F9'</span><span class="p">,</span> <span class="s1">'F11'</span><span class="p">,</span> <span class="s1">'F13'</span><span class="p">,</span> <span class="s1">'F15'</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># ne pas modifier</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Remarque</strong> : on a ajouté un deuxième paramètre à la fonction <code>verifier_programme</code> qui correspond au nombre maximal de lignes.</p>
+<h4 id="%C3%80-la-place-de-l'%C3%A9l%C3%A8ve">À la place de l'élève<a class="anchor-link" href="#%C3%80-la-place-de-l'%C3%A9l%C3%A8ve">¶</a></h4><p>Si le programme de l'élève engendre le bon déplacement mais dépasse le nombre de lignes autorisé il est prévenu :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># obligatoire au début</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H3'</span><span class="p">,</span> <span class="s1">'F3'</span><span class="p">,</span> <span class="s1">'F5'</span><span class="p">,</span> <span class="s1">'F7'</span><span class="p">,</span> <span class="s1">'F9'</span><span class="p">,</span> <span class="s1">'F11'</span><span class="p">,</span> <span class="s1">'F13'</span><span class="p">,</span> <span class="s1">'F15'</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># ne pas modifier</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ce qui n'est pas le cas si le nombre de lignes est respecté :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># obligatoire au début</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">6</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">verifier_programme</span><span class="p">([</span><span class="s1">'H8'</span><span class="p">,</span> <span class="s1">'H3'</span><span class="p">,</span> <span class="s1">'F3'</span><span class="p">,</span> <span class="s1">'F5'</span><span class="p">,</span> <span class="s1">'F7'</span><span class="p">,</span> <span class="s1">'F9'</span><span class="p">,</span> <span class="s1">'F11'</span><span class="p">,</span> <span class="s1">'F13'</span><span class="p">,</span> <span class="s1">'F15'</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># ne pas modifier</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Remarques</strong> :</p>
+<ul>
+<li>La ligne avec l'instruction obligatoire <code>centrer_alien()</code> <em>est</em> comptée dans le nombre de lignes du programme de l'élève, il faut donc en tenir compte dans le nombre maximal que vous fixez.</li>
+<li>La ligne avec l'appel à la fonction <code>verifier_programme</code> <em>n'est</em> quant à elle <em>pas</em> comptée dans le nombre de lignes du programme, de même que toute ligne située <em>après</em> l'appel à cette fonction.</li>
+<li>Les lignes vides ou constituées uniquement d'espaces (parfois oubliées) ne sont pas comptabilisées !</li>
+<li>⚠️ Un élève qui écrit plusieurs instructions sur une ligne, par exemple <code>gauche(5), haut(2)</code> ou <code>for i in range(6): droite(2)</code> ne sera en revanche pas démasqué !</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Pour-l'enseignant--qui-pr%C3%A9pare-ses-exercices">Pour l'enseignant  qui prépare ses exercices<a class="anchor-link" href="#Pour-l'enseignant--qui-pr%C3%A9pare-ses-exercices">¶</a></h1><p>L'enseignant qui prépare ses exercices peut notamment être intéressé pour :</p>
+<ul>
+<li>faire des essais (pour tester ses questions avant de les proposer aux élèves)</li>
+<li>sauvegarder les images de déplacement générées (pour les inclure aux notebooks proposés aux élèves)</li>
+<li>obtenir la liste des cases parcourues au cours d'un déplacement (pour compléter plus rapidement la liste des cases parcourues de la fonction <code>verifier_programme</code>)</li>
+</ul>
+<p><strong>Tout ceci se trouve dans le notebook plus <em>synthétique</em> disponible à cette adresse : <a rel="noopener noreferrer" href="https://capytale2.ac-paris.fr/basthon/notebook/?id=626498">https://capytale2.ac-paris.fr/basthon/notebook/?id=626498</a></strong></p>
+<h2 id="Sauvegarder-une-image">Sauvegarder une image<a class="anchor-link" href="#Sauvegarder-une-image">¶</a></h2><p>Après avoir affiché la grille souhaitée, on utilise dans une cellule séparée fonction <code>sauvegarder</code> :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire en début de chaque programme</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    
+<span class="n">afficher_deplacement</span><span class="p">(</span><span class="n">etapes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="c1"># ou afficher_deplacement() pour voir les numéros de lignes mais pas forcément pertinent</span>
+<span class="c1"># ou afficher_deplacement(num_lignes=False) pour ne voir aucun numéro</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">sauvegarder</span><span class="p">(</span><span class="s1">'exemple'</span><span class="p">)</span>  <span class="c1"># dans une cellule séparée !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>ATTENTION</strong> : l'appel à la fonction <code>sauvegarder</code> doit se faire <strong>dans une cellule séparée</strong>, pour une raison qui reste mystérieuse pour moi...</p>
+<p>Et pour créer une image avec une grille vide :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire en début de chaque programme</span>
+
+<span class="n">afficher_deplacement</span><span class="p">(</span><span class="n">num_lignes</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">sauvegarder</span><span class="p">(</span><span class="s1">'grille'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="R%C3%A9cup%C3%A9rer-les-cases-d'un-parcours">Récupérer les cases d'un parcours<a class="anchor-link" href="#R%C3%A9cup%C3%A9rer-les-cases-d'un-parcours">¶</a></h1><p>On appelle la fonction <code>cases_du_parcours</code> après avoir écrit le programme souhaité :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">centrer_alien</span><span class="p">()</span>  <span class="c1"># ligne obligatoire en début de chaque programme</span>
+
+<span class="n">gauche</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="n">bas</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">droite</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">haut</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># afficher_deplacement()  # à décommenter si besoin pour vérifier</span>
+<span class="n">cases_du_parcours</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>On peut alors facilement copier-coller cette liste en paramètre de la fonction <code>verifier_programme</code> !</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Code-source-du-module">Code source du module<a class="anchor-link" href="#Code-source-du-module">¶</a></h1><p>Vous pouvez consulter ou télécharger le fichier <code>alien_python.py</code> dans les pièces jointes de ce notebook. Pour voir la dernière version de ce fichier, suivez ce lien : <a rel="noopener noreferrer" href="https://github.com/germainbecker/SNT/blob/master/Capytale/Python/alien_python/alien_python.py">https://github.com/germainbecker/SNT/blob/master/Capytale/Python/alien_python/alien_python.py</a>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p><strong>Références</strong> :</p>
+<ul>
+<li>Le concept de l'alien et des programmes pour le déplacer dans la grille a été imaginé par Mathieu Degrange (<a rel="noopener noreferrer" href="https://github.com/DegrangeM/alien-python">voir son projet sur GitHub</a>). Son projet est sous licence <a rel="noopener noreferrer" href="https://fr.wikipedia.org/wiki/Licence_MIT">MIT</a>. Merci à lui !</li>
+<li>L'image de l'alien utilisée a été réalisée par <a rel="noopener noreferrer" href="https://www.kenney.nl/assets/platformer-pack-redux">Kenney</a> et est sous licence <a rel="noopener noreferrer" href="https://creativecommons.org/publicdomain/zero/1.0/">CC0</a>.</li>
+<li>Le module <code>alien_python</code> utilisé dans ce notebook a été développé par Germain Becker, pour rendre accessible le concept dans Basthon et donc dans Capytale.</li>
+</ul>
+<hr>
+<p>Germain Becker, Lycée Emmanuel Mounier, ANGERS</p>
+<p>Ce document est diffusé sous la licence <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>.</p>
+<p><a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Licence CC BY-SA 4.0</a></p>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Germain Becker (lycée Emmanuel Mounier, Angers) · CC BY-SA 4.0 · module : CC BY-NC-SA · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/snt/fichiers/capytale/tuto-module-alien-python/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

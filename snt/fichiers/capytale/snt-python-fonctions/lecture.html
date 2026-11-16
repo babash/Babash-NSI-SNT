@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SNT, Python, séance 2 : les fonctions</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › SNT</div>
+<main>
+<h1>SNT, Python, séance 2 : les fonctions</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="snt-python-fonctions.ipynb" download>Télécharger le notebook (snt-python-fonctions.ipynb)</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="margin-left: auto; margin-right: auto; background-color: rgb(0,118,111); color: white; padding: 10px;">
+<span><strong>SNT / Programmation Python / Séance 2</strong></span>
+<h1 style="font-size:3em;padding-bottom:30px; text-align:center;">Les fonctions</h1>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-1.-Introduction">🟥 1. Introduction<a class="anchor-link" href="#%F0%9F%9F%A5-1.-Introduction">¶</a></h1><hr>
+<div class="alert" style="color:black; background-color:rgb(255, 214, 220); border-left: 8px solid rgb(255, 50, 80);">
+<p>Dans un langage de programmation, on utilise ce qu'on appelle des <strong>fonctions</strong>. Une fonction est un ensemble d'instructions qui peut recevoir des <strong>paramètres</strong> (qui sont des <em>valeurs</em> ou des <em>variables</em>) et qui peut <strong>renvoyer le contenu d'une ou plusieurs variables</strong>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">❔</span> <strong>Pourquoi utilise-t-on le mot <em>fonction</em> ?</strong></p>
+<p>Par analogie, on utilise le même terme qu'en mathématiques car le principe est identique puisqu'une fonction mathématique reçoit aussi des paramètres et renvoie des valeurs.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Premier-exemple">Premier exemple<a class="anchor-link" href="#Premier-exemple">¶</a></h2><p><strong>Exemple 1</strong> : Prenons la fonction mathématique <span class="math">f</span> définie par <span class="math">f(x) = 2x +1</span>. Celle-ci reçoit un paramètre (ici <span class="math">x</span>) et renvoie une valeur (ici <span class="math">2x+1</span>). Cette fonction mathématique <span class="math">f</span> s'écrirait en la fonction Python suivante.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">f</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">return</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span>
+</pre></div>
+<p>Les fonctions (en programmation) ne servent pas qu'à faire des mathématiques, loin de là, et sont énormément utilisées, partout, tout le temps.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Syntaxe-d'une-fonction-Python">Syntaxe d'une fonction Python<a class="anchor-link" href="#Syntaxe-d'une-fonction-Python">¶</a></h2><div class="alert" style="color:black; background-color:rgb(255, 214, 220); border-left: 8px solid rgb(255, 50, 80);">
+<p>Une fonction Python a la syntaxe suivante :</p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">nom_fonction</span><span class="p">(</span><span class="n">parametre1</span><span class="p">,</span> <span class="n">parametre2</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span><span class="p">):</span>
+    <span class="n">instruction1</span>
+    <span class="n">instruction2</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">valeur_renvoyee_1</span><span class="p">,</span> <span class="n">valeur_renvoyee_2</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
+</pre></div>
+</div>
+<p><strong>Analyse</strong> :</p>
+<ul>
+<li>Le mot clé <code>def</code> annonce que l'on va écrire une fonction ;</li>
+<li>On commence par écrire le <strong>nom</strong> de notre fonction ;</li>
+<li>Ensuite, entre parenthèses, on écrit ses <strong>paramètres</strong> séparés par des virgules (il se peut qu'une fonction ne possède pas de paramètres, auquel cas on écrit tout de même les parenthèses mais avec rien entre elles) ;</li>
+<li>On termine la ligne par un deux points (<code>:</code>) ;</li>
+<li>On <strong>indente</strong> et écrit toutes les <strong>instructions</strong> devant être exécutées par la fonction : toutes les lignes indentées correspondent au <em>bloc d'instructions</em> ;</li>
+<li>Enfin, le bloc d'instruction se termine généralement par le mot clé <code>return</code> qui permet de <strong>renvoyer</strong> le contenu d'une ou plusieurs variables (séparées par des virgules s'il y en a plusieurs)</li>
+</ul>
+<p>Pour fixer les idées, prenons un exemple concret.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Deuxi%C3%A8me-exemple">Deuxième exemple<a class="anchor-link" href="#Deuxi%C3%A8me-exemple">¶</a></h2><p><strong>Exemple 2</strong></p>
+<img loading="lazy" alt="vente en ligne" src="farine.png" width="300">
+<p>Sur un site de vente en ligne, il est possible de modifier la quantité du produit que l'on souhaite acheter (souvent avec des boutons "+" et "-"). Prenons l'exemple d'un paquet de farine bio coûtant 1,15 €. À chaque clic sur un des boutons "+" ou "-", une fonction est chargée de calculer le prix à afficher à l'écran <em>en fonction de</em> la quantité sélectionnée par l'acheteur. Cette fonction pourrait être définie en Python de la façon suivante.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">prix_a_afficher</span><span class="p">(</span><span class="n">quantite</span><span class="p">):</span>
+    <span class="n">prix</span> <span class="o">=</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">quantite</span>
+    <span class="k">return</span> <span class="n">prix</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 1 : Maîtriser le vocabulaire</h2>
+<p>✍️ <strong>Question</strong> : Inspectez le code de cette fonction pour repérer :</p>
+<ul>
+<li>son nom</li>
+<li>son nombre de parametres et leurs noms</li>
+<li>son bloc d'instructions</li>
+<li>le nombre de valeurs renvoyées et leurs noms</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">prix_a_afficher</span><span class="p">(</span><span class="n">quantite</span><span class="p">):</span>
+    <span class="n">prix</span> <span class="o">=</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">quantite</span>
+    <span class="k">return</span> <span class="n">prix</span>
+</pre></div>
+<blockquote>
+<p><span style="font-size:1.5em;">🆘</span> N'hésitez pas à bien relire le paragraphe <a href="#Syntaxe-d%27une-fonction-Python">Syntaxe d'une fonction Python</a> pour répondre.</p>
+</blockquote></div>
+
+</div>
+</div>
+Votre réponse (à compléter):
+
+- nom : 
+- nombre de parametres et leurs noms : 
+- bloc d'instructions : 
+- nombre de valeurs renvoyées et leurs noms : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-2.-%C3%89crire-et-appeler-une-fonction">🟥 2. Écrire et appeler une fonction<a class="anchor-link" href="#%F0%9F%9F%A5-2.-%C3%89crire-et-appeler-une-fonction">¶</a></h1><hr>
+<p>Lorsqu'une fonction est écrite, on peut exécuter son code mais il ne se passera rien à l'écran car cela permet juste de mémoriser la fonction, autrement dit d'enregistrer en mémoire ce que doit faire la fonction.</p>
+<p>Pour utiliser une fonction et exécuter son bloc d'instructions, il faut l'<strong>appeler</strong> pour connaître la valeur qu'elle renvoie, c'est ce que l'on propose dans l'activité qui suit.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 2 : Écrire et appeler une fonction</h2>
+<p><strong>Commencez par exécuter la cellule suivante et regardez la vidéo qui explique comment écrire et appeler une fonction, à la fois dans un notebook et dans un éditeur de code.</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">HTML</span>
+<span class="n">HTML</span><span class="p">(</span><span class="s2">"""&lt;iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/WzF7PqUCzm8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen&gt;&lt;/iframe&gt;"""</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 1 (dans le notebook)</strong> : Recopiez dans la cellule ci-dessous tout le code de la fonction <code>prix_a_afficher</code> que l'on rappelle ci-dessous (sans faire de copier-coller, c'est pour apprendre). <em>Faites attention à ne pas oublier les deux-points à la fin de la première ligne et à respecter les indentations !</em></p>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">prix_a_afficher</span><span class="p">(</span><span class="n">quantite</span><span class="p">):</span>
+    <span class="n">prix</span> <span class="o">=</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">quantite</span>
+    <span class="k">return</span> <span class="n">prix</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prix_a_afficher</span><span class="p">(</span><span class="n">quantite</span><span class="p">):</span>
+    <span class="n">prix</span> <span class="o">=</span> <span class="mf">1.15</span> <span class="o">*</span> <span class="n">quantite</span>
+    <span class="k">return</span> <span class="n">prix</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong> : Appelez la fonction <code>prix_a_afficher</code> pour connaître le prix total affiché si on sélectionne 5 paquets de farine, puis si on en sélectionne 2 paquets de farine.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer ! (pour 5 paquets)</span>
+<span class="n">prix_a_afficher</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer ! (pour 2 paquets)</span>
+<span class="n">prix</span> <span class="o">=</span> <span class="n">prix_a_afficher</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">prix</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Comme indiqué dans la vidéo, dans un éditeur de code c'est un peu différent : on écrit le code de la fonction dans la zone d'édition (à gauche dans Basthon) et on l'appelle dans la console (à droite dans Basthon).</p>
+<p>🐍 <strong>Question 3 (dans un éditeur de code)</strong> : Lancez l'éditeur Basthon en cliquant sur ce lien <a rel="noopener noreferrer" href="https://console.basthon.fr/">https://console.basthon.fr/</a> puis recopiez dans la zone de gauche le code de la fonction <code>prix_a_afficher</code>.</p>
+<p>🐍 <strong>Question 4 (dans un éditeur de code)</strong> : Exécutez le code de cette fonction dans l'éditeur Basthon puis appelez la fonction dans la console (à droite) pour connaître le prix total affiché si on sélectionne 5 paquets de farine puis si on en sélectionne 2.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 3 : Définition d'une image</h2>
+<p><em>[image non reprise dans cette copie]</em></p>
+<p style="text-align:center;">Crédit : <a rel="noopener noreferrer" href="https://pixabay.com/fr/vectors/c%c5%93ur-pixels-carr%c3%a9-amour-rouge-1847868/">Pixabay</a></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Une image numérique est constituée de <strong>pixels</strong>. Le nombre total de pixels composant une image s'appelle la <strong>définition de l'image</strong>.<br>
+Par exemple, une image de 800 pixels en largeur et 600 pixels en hauteur a une définition égale à 800 x 600 = 480 000 pixels.</p>
+<p>✍️ <strong>Question 1</strong> : Calculer à la main la définition de l'image d'illustration ci-dessus (on supposera que chaque carré colorié correspond à 1 pixel).</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong> : On veut écrire une fonction appelée <code>definition_image</code> qui possède deux paramètres <code>L</code> et <code>H</code> correspondant aux nombres de pixels en largeur et en hauteur de l'image. Cette fonction doit calculer et renvoyer la définition de cette image.<br>
+Complétez la fonction ci-dessous (vous remplacerez les pointillés).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">definition_image</span><span class="p">(</span><span class="n">L</span><span class="p">,</span> <span class="o">...</span><span class="p">):</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="o">...</span> <span class="o">*</span> <span class="o">...</span>
+    <span class="k">return</span> <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong> : Appelez cette fonction pour connaître la définition d'un image de 800*600 pixels.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong> : Appelez cette fonction pour connaître la définition de l'image d'illustration ci-dessus. Vous comparerez la valeur renvoyée avec votre réponse à la question 1.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 5</strong> : Lancez l'éditeur Basthon (<a rel="noopener noreferrer" href="https://console.basthon.fr/">https://console.basthon.fr/</a>) puis recopiez, exécutez et appelez cette fonction pour retrouver les résultats aux questions 3 et 4.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">✏️ Activité 4 : Dessiner avec la tortue</h2>
+<img loading="lazy" alt="illustration" src="turtle-animation.gif">
+<p style="text-align:center;">Crédit : <a rel="noopener noreferrer" href="https://commons.wikimedia.org/wiki/File:Turtle-animation.gif">Cormullion</a>, <a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-sa/4.0">CC BY-SA 4.0</a>, via Wikimedia Commons.</p>
+<p>Dans Scratch, on trouve quelques <em>blocs</em> de base, pour avancer ou faire tourner le chat :</p>
+<p><img loading="lazy" alt="illustration" src="scratch_avancer.png">
+<img loading="lazy" alt="illustration" src="scratch_tourner_droite.png">
+<img loading="lazy" alt="illustration" src="scratch_tourner_gauche.png"></p>
+<p>Cela permettait, entre autres, de faire dessiner le chat (ou le lutin).</p>
+<p>En Python, on peut utiliser le module <code>turtle</code> (= tortue en français) pour dessiner. Avec ce module, les équivalents des blocs de base précédents sont les <strong>fonctions</strong> <code>forward</code>, <code>right</code> et <code>left</code>, qui permettent de faire avancer ou tourner une tortue :</p>
+<ul>
+<li><code>forward(x)</code> pour faire avancer de <code>x</code> pixels</li>
+<li><code>right(a)</code> pour faire tourner de <code>a</code> degrés vers la droite</li>
+<li><code>left(a)</code> pour faire tourner de <code>a</code> degrés vers la gauche</li>
+</ul>
+<p>Pour dessiner, on appelle ces fonctions les unes à la suite des autres avec les paramètres souhaités (c'est l’équivalent d’imbriquer les blocs les uns à la suite des autres avec Scratch)</p>
+<p>Par exemple :</p>
+<div class="highlight"><pre><span></span><span class="n">forward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+</pre></div>
+<p>Pour utiliser ces fonctions il faut dire en première ligne à Python que l'on veut charger le module <code>turtle</code>. Cela se fait avec l'instruction</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">turtle</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Exécutez les instructions ci-dessous pour voir un premier dessin !</strong></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">turtle</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>  <span class="c1"># pour charger le module turtle</span>
+
+<span class="n">forward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">left</span><span class="p">(</span><span class="mi">45</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">200</span><span class="p">)</span>
+
+<span class="n">done</span><span class="p">()</span>  <span class="c1"># pour demander l'affichage du tracé</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-danger" style="margin:10px 10%; border-left: 10px solid #a94442;">
+<p><span style="font-size:1.5em;">⚠️</span> La dernière instruction, <code>done()</code>, permet de demander l’affichage du tracé. Si on l’oublie, il ne se passe rien.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>✍️ <strong>Question 1</strong> : Combien les fonctions <code>forward</code>, <code>right</code> et <code>left</code> possèdent-elles de paramètres ? Expliquer rapidement.</p>
+</div>
+</div>
+</div>Votre réponse : 
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 2</strong> : Complétez les instructions suivantes pour dessiner un carré, de 50 pixels de côté. Puis exécutez les instructions pour vérifier (et corriger si nécessaire).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">turtle</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">forward</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="o">...</span>
+<span class="o">...</span>
+<span class="o">...</span>
+<span class="o">...</span>
+<span class="o">...</span>
+<span class="o">...</span>
+
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 3</strong> : Écrivez les instructions permettant de dessiner un carré, de 100 pixels de côté, puis les exécutez.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<blockquote class="alert alert-info" style="background-color:rgb(220,240,255); margin:10px 10%;">
+<p><span style="font-size:1.5em;">🧐</span> Normalement, vous avez du écrire quasiment les mêmes instructions aux questions 2 et 3. Ce n'est pas forcément efficace. Vous allez voir qu'il est préférable de définir une fonction permettant de dessiner un carré puis de l'appeler à chaque fois que l'on veut dessiner un carré.</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 4</strong> : On veut écrire une fonction <code>carre</code> qui possède un paramètre <code>taille</code> qui correspond à la taille des côtés du carré dessiné.</p>
+<p><em>Exemples</em> : L'appel <code>carre(50)</code> devra dessiner un carré de côté 50 pixels, l'appel <code>carre(80)</code> devra dessiner un carré de côté 80 pixels.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">carre</span><span class="p">(</span><span class="n">taille</span><span class="p">):</span>
+    <span class="n">forward</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+    <span class="o">...</span> <span class="c1"># à poursuivre</span>
+   
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Pensez à bien exécuter la cellule ci-dessus pour mémoriser la fonction <code>carre</code></strong>.</p>
+<p>On peut maintenant appeler cette fonction pour tracer d'affilée trois carrés de tailles différentes :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">carre</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+<span class="n">carre</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">carre</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Ces instructions doivent produire le dessin ci-dessous, si ce n'est pas le cas il faut corriger le code de votre fonction <code>carre</code>.</strong></p>
+<p><img loading="lazy" alt="trois carrés" src="trois_carres.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>🐍 <strong>Question 5</strong> : On veut obtenir la figure ci-dessous. Écrivez les bonnes instructions. <em>Ne pas oublier de terminer par <code>done()</code> !</em></p>
+<p><img loading="lazy" alt="plusieurs carrés" src="carres.png"></p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 style="background-color: rgb(0,118,111); color: white; border-radius: 3px;padding: 10px;">💪 Défi !</h2>
+<p>Créez une fonction <code>rectangle</code> qui permet de dessiner un rectangle qui possède la longueur et la largeur voulue, puis utilisez cette fonction pour dessiner un court de tennis dont on rappelle les dimensions ci-dessous.</p>
+<img loading="lazy" alt="dimensions d'un court de tennis" src="Tennis_court_metric.svg" width="250">
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># à vous de jouer !</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="%F0%9F%9F%A5-Bilan">🟥 Bilan<a class="anchor-link" href="#%F0%9F%9F%A5-Bilan">¶</a></h1><hr>
+<ul>
+<li>Une <strong>fonction</strong> permet de regrouper une série d'instructions.</li>
+<li>Une fonction possède un <strong>nom</strong>, éventuellement des <strong>paramètres</strong> qui sont utilisés dans le <strong>bloc d'instructions</strong> de la fonction. La fonction <strong>renvoie</strong> généralement une ou plusieurs valeurs.</li>
+<li>On peut faire <strong>appel</strong> à une fonction pour exécuter les instructions qu'elle contient et connaître la valeur renvoyée par celle-ci. On l'appelle par son nom en précisant les valeurs des paramètres souhaités entre parenthèses.</li>
+<li>En Python :<ul>
+<li>on utilise le mot clé <code>def</code> pour annoncer que l'on va écrire une fonction</li>
+<li>suivi du nom de la fonction puis de ses paramètres écrits entre parenthèses</li>
+<li>il ne faut pas oublier le <code>:</code> à la fin de la première ligne</li>
+<li>le bloc d'instructions d'une fonction doit être <em>indenté</em></li>
+<li>c'est le mot clé <code>return</code> qui permet de renvoyer une ou plusieurs valeurs</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">nom_fonction</span><span class="p">(</span><span class="n">parametre1</span><span class="p">,</span> <span class="n">parametre2</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span><span class="p">):</span>
+    <span class="n">instruction1</span>
+    <span class="n">instruction2</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">valeur_renvoyee_1</span><span class="p">,</span> <span class="n">valeur_renvoyee_2</span><span class="p">,</span> <span class="n">etc</span><span class="o">.</span>
+</pre></div>
+<ul>
+<li>L'un des intérêts d'une fonction est de pouvoir regrouper des instructions susceptibles d'être utilisées à plusieurs reprises. Cela permet donc d'alléger le code puisqu'il suffit ensuite d'appeler la fonction sans avoir à recopier toutes ses instructions à chaque fois.</li>
+<li>Il y a d'autres raisons qui font que l'on utilise beaucoup les fonctions en programmation mais nous ne les aborderons pas.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<hr>
+<p><strong>Références</strong> :</p>
+<ul>
+<li>Les travaux d'Alexandre André sur le module <code>turtle</code> : <a rel="noopener noreferrer" href="https://capytale2.ac-paris.fr/basthon/notebook/?id=32146#">De Scratch à Python : le chat et la tortue</a> et <a rel="noopener noreferrer" href="https://capytale2.ac-paris.fr/basthon/notebook/?id=33841#">Tortue : fonctions, frises, feu d'artifice</a> pour les idées de l'activité 4.</li>
+</ul>
+<hr>
+<p>Les enseignants de SNT du lycée Emmanuel Mounier, ANGERS</p>
+<p><a rel="noopener noreferrer" href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">Licence CC BY-SA 4.0</a></p>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Les enseignants de SNT du lycée Emmanuel Mounier (Angers) · CC BY-SA 4.0 · images : NielsF (CC BY-SA 3.0), Cormullion (CC BY-SA 4.0), Wikimedia Commons · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/snt/fichiers/capytale/snt-python-fonctions/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>

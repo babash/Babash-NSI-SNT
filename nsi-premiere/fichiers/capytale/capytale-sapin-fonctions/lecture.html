@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fonctions : un petit tour en Python pour décorer un sapin</title>
+<style>
+:root{--bg:#EDF1F7;--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A64E8;--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#060A13;--panel:#0B1222;--panel2:#0F182C;--ink:#E3EDFF;--soft:#8D9CBA;--line:#1C2944;--accent:#5EEAFF;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:1.0625rem/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-x:hidden}
+a{color:var(--accent)}.bandeau{padding:.6rem 16px;background:var(--panel);border-bottom:1px solid var(--line);font-size:.9rem}
+main{max-width:60rem;margin:0 auto;padding:16px}h1{font-size:1.6rem;line-height:1.25;margin:.8rem 0 .4rem}
+.meta{color:var(--soft);font-size:.92rem;margin:0 0 1rem}.usage{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);padding:.7rem 1rem;margin:0 0 1.2rem;font-size:.95rem}
+.usage ul{margin:.3rem 0 0;padding-left:1.2rem}
+.nb{--panel:#fff;--panel2:#F5F7FB;--ink:#0D1530;--soft:#4A5772;--line:#CDD6E6;--accent:#0A5BD0;color-scheme:light;background:#fff;color:#0D1530;border:1px solid var(--line);padding:8px 16px;overflow-wrap:anywhere}
+.nb img{max-width:100%;height:auto}.nb table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%}.nb td,.nb th{border:1px solid var(--line);padding:.25rem .5rem}
+.nb .prompt{display:none}.nb .anchor-link{display:none}.nb .input_area{background:var(--panel2);border:1px solid var(--line);margin:.5rem 0;border-radius:3px}
+.nb pre{margin:0;padding:.6rem .8rem;overflow-x:auto;font:.85rem/1.45 var(--mono)}.nb code{font-family:var(--mono);font-size:.88em;background:var(--panel2);padding:.05em .3em;border-radius:3px}
+.nb pre code{background:none;padding:0}.nb .input_area pre,.nb .input_area .highlight{background:transparent}
+.adm{border:1px solid var(--line);border-left:4px solid var(--accent);background:var(--panel2);margin:.8rem 0;padding:.2rem .9rem}.adm-t{font-weight:700;margin:.4rem 0}
+details.adm>summary{cursor:pointer;font-weight:700;padding:.4rem 0}.adm-danger,.adm-bug{border-left-color:#E11D48}.adm-success{border-left-color:#16A34A}.adm-warning{border-left-color:#D97706}.adm-tip{border-left-color:#0891B2}
+.math{font-style:italic}
+footer{max-width:60rem;margin:0 auto;padding:12px 16px 28px;color:var(--soft);font-size:.9rem;border-top:1px solid var(--line)}footer span{display:block}
+@media print{:root,:root:not([data-theme="light"]),:root[data-theme="dark"]{--bg:#fff;--panel:#fff;--panel2:#F5F7FB;--ink:#000;--soft:#333;--line:#999;--accent:#0A3FA0;color-scheme:light}body{background:#fff;color:#000}.bandeau,.usage a[download]{color:#000}.nb{border:0;padding:0}.nb pre{white-space:pre-wrap;overflow-wrap:anywhere;overflow:visible}.nb .input_area{break-inside:avoid-page}.nb img{max-width:100%}}
+.nb a{color:#0A5BD0}.nb details.adm>summary:focus-visible,.nb a:focus-visible,a:focus-visible{outline:3px solid #0A5BD0;outline-offset:2px}
+pre { line-height: 125%; }
+td.linenos .normal { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: #606060; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000;  padding-left: 5px; padding-right: 5px; }
+.nb .highlight .hll {  }
+
+.nb .highlight .c { color: #3d6671; font-style: italic } /* Comment */
+.nb .highlight .err { border: 0 } /* Error */
+.nb .highlight .k { color: #007020; font-weight: bold } /* Keyword */
+.nb .highlight .o { color: #606060 } /* Operator */
+.nb .highlight .ch { color: #3d6671; font-style: italic } /* Comment.Hashbang */
+.nb .highlight .cm { color: #3d6671; font-style: italic } /* Comment.Multiline */
+.nb .highlight .cp { color: #007020 } /* Comment.Preproc */
+.nb .highlight .cpf { color: #3d6671; font-style: italic } /* Comment.PreprocFile */
+.nb .highlight .c1 { color: #3d6671; font-style: italic } /* Comment.Single */
+.nb .highlight .cs { color: #3d6671;  } /* Comment.Special */
+.nb .highlight .gd { color: #A00000 } /* Generic.Deleted */
+.nb .highlight .ge { font-style: italic } /* Generic.Emph */
+.nb .highlight .ges { font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.nb .highlight .gr { color: #c40000 } /* Generic.Error */
+.nb .highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.nb .highlight .gi { color: #007000 } /* Generic.Inserted */
+.nb .highlight .go { color: #5f5f5f } /* Generic.Output */
+.nb .highlight .gp { color: #9c4907; font-weight: bold } /* Generic.Prompt */
+.nb .highlight .gs { font-weight: bold } /* Generic.Strong */
+.nb .highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.nb .highlight .gt { color: #04D } /* Generic.Traceback */
+.nb .highlight .kc { color: #007020; font-weight: bold } /* Keyword.Constant */
+.nb .highlight .kd { color: #007020; font-weight: bold } /* Keyword.Declaration */
+.nb .highlight .kn { color: #007020; font-weight: bold } /* Keyword.Namespace */
+.nb .highlight .kp { color: #007020 } /* Keyword.Pseudo */
+.nb .highlight .kr { color: #007020; font-weight: bold } /* Keyword.Reserved */
+.nb .highlight .kt { color: #902000 } /* Keyword.Type */
+.nb .highlight .m { color: #2b6b4b } /* Literal.Number */
+.nb .highlight .s { color: #38638d } /* Literal.String */
+.nb .highlight .na { color: #38638d } /* Name.Attribute */
+.nb .highlight .nb { color: #007020 } /* Name.Builtin */
+.nb .highlight .nc { color: #0b678d; font-weight: bold } /* Name.Class */
+.nb .highlight .no { color: #39667e } /* Name.Constant */
+.nb .highlight .nd { color: #555; font-weight: bold } /* Name.Decorator */
+.nb .highlight .ni { color: #a4412a; font-weight: bold } /* Name.Entity */
+.nb .highlight .ne { color: #007020 } /* Name.Exception */
+.nb .highlight .nf { color: #06287E } /* Name.Function */
+.nb .highlight .nl { color: #002070; font-weight: bold } /* Name.Label */
+.nb .highlight .nn { color: #0b678d; font-weight: bold } /* Name.Namespace */
+.nb .highlight .nt { color: #062873; font-weight: bold } /* Name.Tag */
+.nb .highlight .nv { color: #874599 } /* Name.Variable */
+.nb .highlight .ow { color: #007020; font-weight: bold } /* Operator.Word */
+.nb .highlight .w { color: #5f5f5f } /* Text.Whitespace */
+.nb .highlight .mb { color: #2b6b4b } /* Literal.Number.Bin */
+.nb .highlight .mf { color: #2b6b4b } /* Literal.Number.Float */
+.nb .highlight .mh { color: #2b6b4b } /* Literal.Number.Hex */
+.nb .highlight .mi { color: #2b6b4b } /* Literal.Number.Integer */
+.nb .highlight .mo { color: #2b6b4b } /* Literal.Number.Oct */
+.nb .highlight .sa { color: #38638d } /* Literal.String.Affix */
+.nb .highlight .sb { color: #38638d } /* Literal.String.Backtick */
+.nb .highlight .sc { color: #38638d } /* Literal.String.Char */
+.nb .highlight .dl { color: #38638d } /* Literal.String.Delimiter */
+.nb .highlight .sd { color: #38638d; font-style: italic } /* Literal.String.Doc */
+.nb .highlight .s2 { color: #38638d } /* Literal.String.Double */
+.nb .highlight .se { color: #38638d; font-weight: bold } /* Literal.String.Escape */
+.nb .highlight .sh { color: #38638d } /* Literal.String.Heredoc */
+.nb .highlight .si { color: #456381; font-style: italic } /* Literal.String.Interpol */
+.nb .highlight .sx { color: #9c4907 } /* Literal.String.Other */
+.nb .highlight .sr { color: #235388 } /* Literal.String.Regex */
+.nb .highlight .s1 { color: #38638d } /* Literal.String.Single */
+.nb .highlight .ss { color: #476a15 } /* Literal.String.Symbol */
+.nb .highlight .bp { color: #007020 } /* Name.Builtin.Pseudo */
+.nb .highlight .fm { color: #06287E } /* Name.Function.Magic */
+.nb .highlight .vc { color: #874599 } /* Name.Variable.Class */
+.nb .highlight .vg { color: #874599 } /* Name.Variable.Global */
+.nb .highlight .vi { color: #874599 } /* Name.Variable.Instance */
+.nb .highlight .vm { color: #874599 } /* Name.Variable.Magic */
+.nb .highlight .il { color: #2b6b4b } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<div class="bandeau"><a href="../../../../index.html">Ressources NSI et SNT</a> › NSI première</div>
+<main>
+<h1>Fonctions : un petit tour en Python pour décorer un sapin</h1>
+<p class="meta">Page de lecture générée à partir d'un notebook Capytale : les cellules ne s'exécutent pas ici.</p>
+<div class="usage"><strong>Pour faire l'activité :</strong> importer le notebook dans Capytale (Créer une activité, notebook, importer) ou l'ouvrir dans Basthon, puis joindre les fichiers annexes.
+<ul><li><a href="capytale-sapin-fonctions.ipynb" download>Télécharger le notebook (capytale-sapin-fonctions.ipynb)</a></li></ul></div>
+<article class="nb">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div style="text-align:center;">
+<div style="display:inline-block;vertical-align: middle;"><img loading="lazy" alt="No description has been provided for this image" src="sapin.png"></div>
+<div style="display:inline-block;background-color:rgba(200,255,200,1); text-align:center; vertical-align: middle; padding:50px 50px;font-weight: bold;font-size: xx-large;">Décorons un sapin</div>
+<div style="display:inline-block;vertical-align: middle;"><img loading="lazy" alt="No description has been provided for this image" src="sapin.png"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Le but de l'activité et d'obtenir un sapin décoré comme ci-dessus.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>On utilise pour cela le module <code>turtle</code>, donc il est indispensable de commencer par valider ( [Ctl]+[Entrée] ) la ligne suivante :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">turtle</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Commen%C3%A7ons-par-dessiner-le-tronc">Commençons par dessiner le tronc<a class="anchor-link" href="#Commen%C3%A7ons-par-dessiner-le-tronc">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<div class="adm adm-info"><p class="adm-t">Avancer et tourner la tortue</p>
+<ul>
+<li><code>forward(20)</code> fait <strong>avancer</strong> la tortue de 20 pixels.</li>
+<li><code>right(90)</code> fait <strong>tourner dans le sens horaire</strong> la tortue de 90°.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 1</strong> Tester le code suivant puis le compléter pour faire revenir la tortue à son point de départ :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">forward</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+<span class="n">forward</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 2</strong> Compléter la fonction suivante, pour qu'elle dessine le tronc du sapin (un rectange de <strong>10px de large</strong> sur <strong>50px de haut</strong>).</p>
+<div class="adm adm-info"><p class="adm-t">Définir une fonction</p>
+<p>Une fois <strong>définie</strong> la fonction <code>tronc</code>, on pourra, à tout moment redessiner ce tronc en <strong>appelant</strong> cette fonction : <code>tronc()</code></p>
+</div>
+<div class="adm adm-info"><p class="adm-t">Colorier une zone</p>
+<ul>
+<li><code>fillcolor("brown")</code> définit la <strong>couleur de coloriage</strong> du dessin en marron.</li>
+<li><code>begin_fill()</code> puis <code>end_fill()</code> <strong>commence</strong> et <strong>termine</strong> le coloriage.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">tronc</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">""" Dessine le tronc du sapin """</span>
+    <span class="n">fillcolor</span><span class="p">(</span><span class="s2">"brown"</span><span class="p">)</span>
+    <span class="n">begin_fill</span><span class="p">()</span>
+    <span class="n">forward</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">forward</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="n">end_fill</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 3</strong> Tester votre fonction en validant la cellule suivante :</p>
+<div class="adm adm-danger"><p class="adm-t">Respecter les contraintes suivantes :</p>
+<p>La tortue doit finir son dessin en <strong>haut</strong>, au <strong>milieu</strong> et tournée vers la <strong>droite</strong>.  <img loading="lazy" alt="Image title" src="tronc.png"></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">tronc</span><span class="p">()</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dessinons-un-branchage">Dessinons un branchage<a class="anchor-link" href="#Dessinons-un-branchage">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 4</strong> Compléter la fonction suivante, pour qu'elle dessine un branchage sous la forme d'un triangle équilatéral vert de côté <code>taille</code> :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">branchage</span><span class="p">(</span><span class="n">taille</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">""" Dessine un triangle équilatéral, vert, de côté 'taille' """</span>
+    <span class="n">fillcolor</span><span class="p">(</span><span class="s2">"green"</span><span class="p">)</span>
+    <span class="n">begin_fill</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="n">end_fill</span><span class="p">()</span>
+
+<span class="n">branchage</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 5</strong> Tester et ajuster la fonction <code>branchage</code> pour que l'exécution (sans modification) de la cellule suivante dessine correctement le branchage au dessus du tronc :</p>
+<div class="adm adm-danger"><p class="adm-t">Attention</p>
+<p>La tortue commence et finit son dessin au mileu du bas du triangle.  <img loading="lazy" alt="Image title" src="branchage1.png"></p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">tronc</span><span class="p">()</span>
+<span class="n">branchage</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span> 
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Ci-dessous, on a repris le même programme, complété de trois lignes.</p>
+<p><strong>Question 6</strong> Le tester et expliquer les lignes 3, 4 et 5.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">tronc</span><span class="p">()</span>
+<span class="n">branchage</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">penup</span><span class="p">()</span>
+<span class="n">backward</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">pendown</span><span class="p">()</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>Compléter :
+
+penup() permet de ...
+backward(50) permet de ...
+pendown() permet de ...
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dessinons-les-boules-color%C3%A9es">Dessinons les boules colorées<a class="anchor-link" href="#Dessinons-les-boules-color%C3%A9es">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 7</strong>  Tester le code ci-dessous permettant de dessiner une boule colorée :</p>
+<div class="adm adm-tip"><p class="adm-t">Quelques couleurs utilisables</p>
+<p><span style="color:blue;">blue</span>,
+<span style="color:orange;background-color:black;padding:0 .25em;border-radius:3px">orange</span>,
+<span style="color:green;">green</span>,
+<span style="color:red;background-color:black;padding:0 .25em;border-radius:3px">red</span>,
+<span style="color:purple;">purple</span>,
+<span style="color:brown;">brown</span>,
+<span style="color:pink;background-color:black;padding:0 .25em;border-radius:3px">pink</span>,
+<span style="color:gray;background-color:black;padding:0 .25em;border-radius:3px">gray</span>,
+<span style="color:olive;background-color:black;padding:0 .25em;border-radius:3px">olive</span>,
+<span style="color:cyan;background-color:black;padding:0 .25em;border-radius:3px">cyan</span>,
+<span style="color:black;">black</span>,
+<span style="color:white;background-color:black;">white</span>,
+<span style="color:magenta;background-color:black;padding:0 .25em;border-radius:3px">magenta</span>,
+<span style="color:yellow;background-color:black;padding:0 .25em;border-radius:3px">yellow</span>.
+<span style="color:gold;background-color:black;padding:0 .25em;border-radius:3px">gold</span>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">boule</span><span class="p">(</span><span class="n">couleur</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">""" Dessine une boule de la couleur demandée. """</span>
+    <span class="n">fillcolor</span><span class="p">(</span><span class="n">couleur</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">forward</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">begin_fill</span><span class="p">()</span>
+    <span class="n">circle</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="mi">360</span><span class="p">)</span>
+    <span class="n">end_fill</span><span class="p">()</span>
+    <span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+    <span class="n">forward</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">right</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+<span class="n">boule</span><span class="p">(</span><span class="s2">"red"</span><span class="p">)</span>
+<span class="n">hideturtle</span><span class="p">()</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 8</strong>  Écrire les appels de fonctions nécessaires au dessin du sapin décoré avec 5 boules également réparties.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">tronc</span><span class="p">()</span>
+<span class="n">branchage</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+<span class="n">penup</span><span class="p">()</span>
+<span class="n">backward</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">pendown</span><span class="p">()</span>
+<span class="n">boule</span><span class="p">(</span><span class="s2">"red"</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">hideturtle</span><span class="p">()</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Pour dessiner tous les brachages du sapin, on souhaite écrire une fonction qui dessine directement un branchage décoré.</p>
+<p><strong>Question 9</strong>  Compléter :</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">branchage_decore</span><span class="p">(</span><span class="n">taille</span><span class="p">,</span> <span class="n">couleur</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">""" Dessine un branchage de la taille demandée</span>
+<span class="sd">    décoré d'une guirlande de 5 boules de la couleur demandée."""</span>
+    <span class="n">branchage</span><span class="p">(</span><span class="n">taille</span><span class="p">)</span>
+    <span class="o">...</span>
+    <span class="n">boule</span><span class="p">(</span><span class="n">couleur</span><span class="p">)</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 10</strong>   Compléter le code ci-dessous pour terminer le dessin du sapin, en ajoutant</p>
+<ul>
+<li>un branchage de 80 pixels de côté, 30 pixels plus haut</li>
+<li>un branchage de 50 pixels de côté, encore 40 pixels plus haut</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">speed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">tronc</span><span class="p">()</span>
+<span class="n">branchage_decore</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dessinons-une-%C3%A9toile-au-sommet">Dessinons une étoile au sommet<a class="anchor-link" href="#Dessinons-une-%C3%A9toile-au-sommet">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 11</strong> <strong>Vérifier</strong> que la fonction suivante dessine un triangle équilatéral (comme <code>branchage</code>) <strong>et modifier</strong> ses valeurs (pas ses instructions) pour qu'elle dessine une étoile à 5 branches.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">etoile_5</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">""" Dessine une étoile à 5 branches """</span>
+    <span class="n">color</span><span class="p">(</span><span class="s2">"green"</span><span class="p">)</span>
+    <span class="n">fillcolor</span><span class="p">(</span><span class="s2">"green"</span><span class="p">)</span>
+    <span class="n">begin_fill</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">numero_branche</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+        <span class="n">forward</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+        <span class="n">left</span><span class="p">(</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">end_fill</span><span class="p">()</span>
+
+<span class="n">etoile_5</span><span class="p">()</span>
+<span class="n">hideturtle</span><span class="p">()</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Question 12</strong>  Terminer votre dessin en plaçant l'étoile au sommet du sapin décoré.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [ ]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">speed</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">tronc</span><span class="p">()</span>
+<span class="n">branchage_decore</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s2">"red"</span><span class="p">)</span>
+<span class="o">...</span>
+<span class="n">done</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+</article>
+</main>
+<footer><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener noreferrer">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/capytale/capytale-sapin-fonctions/lecture.html" rel="noopener noreferrer">Code source sur GitHub</a></span></footer>
+</body>
+</html>
