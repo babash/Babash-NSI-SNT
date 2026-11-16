@@ -16,6 +16,7 @@ reglages.js                 titre du site, liste des rubriques, textes du pied d
 snt/
   ressources.js             ← la liste de la rubrique SNT
   fichiers/                 ← les PDF et fiches de la rubrique SNT
+    capytale/<id>/          les activités Capytale : notebook (.ipynb), page de lecture, fichiers à joindre
   index.html                (ne pas toucher)
 nsi-premiere/   …           même organisation pour chaque rubrique
 nsi-terminale/  …
@@ -29,6 +30,18 @@ supabase/                   le socle commun de la base des applications (SUPABAS
 ```
 
 Chaque fichier a un rôle propriétaire : voir [L'équipe d'agents](AGENTS.md).
+
+## Les activités Capytale
+
+Les dossiers `fichiers/capytale/<id>/` de SNT, de NSI Première et de NSI Terminale réunissent
+21 activités Capytale de l'enseignant et de collègues (novembre 2026), une par dossier, nommé
+d'après l'identifiant de sa fiche (`donnees/ressources/<id>.json`). Chaque dossier contient le
+notebook à importer dans Capytale ou Basthon (`.ipynb`, sorties vidées), une page de lecture
+(`lecture.html`, qui affiche le notebook sans compte et ne l'exécute pas) et les fichiers à
+joindre (modules Python, images, données). Chaque activité garde sa licence, donnée au pied de
+sa page et dans sa fiche ; trois d'entre elles sont sous licence non commerciale (voir
+[Licence](../README.md#licence)). Les listes `ressources.js` ne les montrent pas encore :
+l'onglet « Bibliothèque » les lira.
 
 ## Le décor
 

@@ -9,9 +9,10 @@ continuent d'utiliser les listes `ressources.js` ([LISTES.md](LISTES.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 90 fiches, dont 82 pour les 90 entrées des
-                                listes (une ressource placée dans deux rubriques n'a qu'une fiche)
-                                et 8 pour des fichiers récupérés des conversations de l'enseignant
+  ressources/<id>.json          une fiche par ressource : 109 fiches, dont 82 pour les 90 entrées des
+                                listes (une ressource placée dans deux rubriques n'a qu'une fiche),
+                                8 pour des fichiers récupérés des conversations de l'enseignant
+                                et 19 pour des activités Capytale
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
                                 et la grille d'évaluation du Grand oral
@@ -77,14 +78,14 @@ Quand c'est utile, la fiche note aussi :
 
 Pour une création de l'enseignant, un critère à `false`, ou un éditeur de code dont les
 critères ne sont pas notés, donne un avertissement du script de validation ; pour une
-ressource externe, qui ne se modifie pas, c'est une simple information. Huit fiches ont un
+ressource externe, qui ne se modifie pas, c'est une simple information. Quinze fiches ont un
 avertissement, car ce sont des écarts réels : l'éditeur d'Alien Python, une zone de texte
 simple, ne remplit aucun des cinq critères ; les pages des TD 1 et 2 de POO ne sont ni
 responsives ni auto-correctives ; la licence de la fiche Python de SNT, faite d'après la fiche
 Compute-it, n'est pas connue ; deux sites de collègues ne sont qu'en `http://` ; les critères de
-l'éditeur des deux notebooks Capytale de l'enseignant restent à noter. Ces écarts seront repris
-lors de la revue des ressources publiées ; d'ici là, la validation avec `--strict` (ci-dessous)
-échoue sur ces huit avertissements.
+l'éditeur de neuf notebooks Capytale de l'enseignant (l'éditeur de Capytale) restent à noter. Ces
+écarts seront repris lors de la revue des ressources publiées ; d'ici là, la validation avec
+`--strict` (ci-dessous) échoue sur ces quinze avertissements.
 
 Les fiches écrites le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira. Le
 Système d'exploitation humain, jamais essayé en classe et pas fini, a le statut « brouillon ».
@@ -93,6 +94,18 @@ ressources récupérées des conversations (quatre fiches de réseaux de termina
 Linux de première et leur corrigé, la fiche des erreurs Python, le diaporama sur l'IA en SNT, la
 grille du Grand oral) sont déjà en ligne dans les dossiers `fichiers/` des rubriques, mais les
 listes `ressources.js` ne les montrent pas encore.
+
+Il en va de même pour les 21 activités Capytale ajoutées le 16 novembre 2026, à partir des
+exports de l'enseignant : 19 fiches nouvelles et deux fiches complétées (le sapin des fonctions
+et le Pokédex), au statut « à revoir ». Leurs fichiers sont dans les dossiers `fichiers/capytale/`
+des rubriques (voir [L'organisation du dépôt](ORGANISATION.md#les-activités-capytale)) : le
+notebook, sorties vidées, sans donnée d'élève, une page de lecture et les fichiers à joindre ; leur
+lien principal est la page de lecture. Les activités qui ne nomment pas d'autre auteur·rice sont
+attribuées à l'enseignant, à confirmer. Celles de collègues sont hébergées avec toute la chaîne de
+leurs crédits, seulement quand leur licence permet de les diffuser, et gardent cette licence : la
+fiche le dit (`licence`, `credits`), et trois d'entre elles sont sous licence non commerciale
+(voir [Licence](../README.md#licence)). Quand un original public existe, la fiche le donne aussi en
+« Code source ». Les activités sans auteur nommé ou sans licence connue sont restées de côté.
 
 Pour valider les données, depuis le dossier du site : `python3 scripts/valider_donnees.py`
 (Python 3 seul, rien à installer ; avec `--strict`, les avertissements bloquent aussi). Chaque

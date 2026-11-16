@@ -10,9 +10,9 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   référentiels du dossier `donnees/` (voir [les données de la bibliothèque](BIBLIOTHEQUE.md)). Une erreur fait
   échouer le contrôle (croix rouge). Les avertissements et les informations sont dans le
   résumé du run, sans échec, et les erreurs et avertissements apparaissent aussi en
-  annotations sur les fichiers concernés. Les huit avertissements connus (l'éditeur d'Alien
+  annotations sur les fichiers concernés. Les quinze avertissements connus (l'éditeur d'Alien
   Python, les TD 1 et 2 de POO, la licence de la fiche Python de SNT, deux sites en `http://`,
-  les critères de l'éditeur des deux notebooks Capytale : voir
+  les critères de l'éditeur de neuf notebooks Capytale de l'enseignant : voir
   [les données de la bibliothèque](BIBLIOTHEQUE.md)) y figurent donc à chaque run. Le thésaurus des notions est aussi
   comparé à celui de `main` (pour un envoi sur `main`, à celui d'avant l'envoi) : une notion
   publiée qui a disparu fait échouer le contrôle, car un identifiant publié est définitif. Une
@@ -35,7 +35,10 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   au-delà des 200 premiers) sont signalés dans le résumé. Ensuite, il affiche chaque rubrique
   dans Chrome et vérifie qu'aucune erreur n'apparaît et que le nombre de ressources affichées
   est celui de `ressources.js`. Il ouvre aussi chaque page déposée dans un dossier `fichiers/`
-  (TD, fiches, diaporamas, applications) et vérifie qu'elle s'affiche avec un vrai contenu. Il
+  et citée par une liste (TD, fiches, diaporamas, applications), et vérifie qu'elle s'affiche avec
+  un vrai contenu ; les pages citées seulement par les fiches de la bibliothèque, comme celles
+  des activités Capytale, ne sont pas encore ouvertes par ce contrôle (le Gardien les vérifie avant
+  chaque publication). Il
   vérifie enfin le lien « Code source sur GitHub » : l'accueil et chaque rubrique doivent l'avoir,
   vers le dépôt du réglage `depot`, sinon le contrôle échoue ; une page déposée qui ne l'a pas
   encore est seulement signalée dans le résumé, sans échec (la liste `CODE_SOURCE_EXCEPTIONS` de

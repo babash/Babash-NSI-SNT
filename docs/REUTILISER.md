@@ -33,6 +33,7 @@ Alien Python et Court-circuit passent par Supabase. Pour leur donner ta propre b
 
 - **La licence** : le code reste sous licence MIT (garde le fichier [`LICENSE`](../LICENSE)), les documents sous licence CC BY-SA 4.0, en mentionnant Babash - NSI Tani Malandi ; un document modifié se partage sous la même licence (la section [Licence](../README.md#licence) du README).
 - **Ce qui vient d'ailleurs**, avec sa licence et sa notice : les exercices d'Alien Python (la notice `snt/fichiers/alien-python/LICENCE.txt`, à garder avec `data.js`), les bibliothèques et les polices de Court-circuit (`snt/fichiers/court-circuit/vendor/LICENCES-BIBLIOTHEQUES.txt` et `snt/fichiers/court-circuit/LICENCE.txt`).
+- **Les activités Capytale** (les dossiers `fichiers/capytale/`) : chacune garde sa licence et ses crédits, donnés au pied de sa page de lecture et dans sa fiche (`donnees/ressources/`). Trois activités (Internet de David Landry, les gloutons de Germain Becker et Sébastien Point, l'escape game de Laura Fléron) et les modules `alien_python.py` et `pixel_art.py` sont sous licence non commerciale (CC BY-NC-SA) : pas d'usage commercial, et une version modifiée se partage sous la même licence. La section [Licence](../README.md#licence) du README les détaille.
 - **Les crédits en chaîne** d'une ressource reprise, comme la fiche Python de SNT, ci-dessous.
 
 ## Fiche Python (SNT) : modifications par rapport à l'original
