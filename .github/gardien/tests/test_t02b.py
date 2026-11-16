@@ -65,60 +65,60 @@ def cas(titre, modifier, niveau, motif, code_normal, absent=None):
 
 # 0. Les données telles quelles : aucune erreur ; deux avertissements voulus
 cas("données d'exemple : avertissement voulu (Alien Python, règle 20)", lambda d: None,
-    "ATTENTION", r"alien-python\.json .*règle 20", 0)
+    "ATTENTION", r"/alien-python\.json .*règle 20", 0)
 cas("données d'exemple : avertissement voulu (TD 1 de POO, règle 19)", lambda d: None,
-    "ATTENTION", r"td1-poo\.json .*règle 19", 0)
+    "ATTENTION", r"/td1-poo\.json .*règle 19", 0)
 
 # Règle 20
 cas("création de l'enseignant : éditeur complet, aucun avertissement de règle 20",
     fiche("alien-python", lambda x: x.__setitem__("editeur_code", tous(True))), None, None, 0,
-    absent=r"alien-python\.json .*règle 20")
+    absent=r"/alien-python\.json .*règle 20")
 cas("création de l'enseignant : usage sans « editeur_code »",
     fiche("alien-python", lambda x: x.pop("editeur_code")),
-    "ATTENTION", r"alien-python\.json .*editeur_code.*noter les critères", 0)
+    "ATTENTION", r"/alien-python\.json .*editeur_code.*noter les critères", 0)
 cas("création de l'enseignant : un seul critère à false",
     fiche("alien-python", lambda x: x.__setitem__("editeur_code", dict(tous(True), autocompletion=False))),
-    "ATTENTION", r"alien-python\.json .*il manque.*autocomplétion contextualisée$", 0)
+    "ATTENTION", r"/alien-python\.json .*il manque.*autocomplétion contextualisée$", 0)
 cas("« editeur_code » sans l'usage",
     fiche("alien-python", lambda x: x.__setitem__("usages", ["en-ligne", "en-autonomie"])),
-    "ATTENTION", r"alien-python\.json .*usages.*ajouter l'usage", 0)
+    "ATTENTION", r"/alien-python\.json .*usages.*ajouter l'usage", 0)
 cas("critère manquant dans « editeur_code » (schéma)",
     fiche("alien-python", lambda x: x["editeur_code"].pop("guides_indentation")),
-    "ERREUR", r"alien-python\.json .*champ obligatoire manquant : « guides_indentation »", 1)
+    "ERREUR", r"/alien-python\.json .*champ obligatoire manquant : « guides_indentation »", 1)
 cas("champ inconnu dans « editeur_code » (schéma)",
     fiche("alien-python", lambda x: x["editeur_code"].__setitem__("couleur", True)),
-    "ERREUR", r"alien-python\.json .*champ inconnu « couleur »", 1)
+    "ERREUR", r"/alien-python\.json .*champ inconnu « couleur »", 1)
 cas("critère qui n'est pas un booléen",
     fiche("alien-python", lambda x: x["editeur_code"].__setitem__("coloration", "oui")),
-    "ERREUR", r"alien-python\.json .*editeur_code\.coloration : doit être true ou false", 1)
+    "ERREUR", r"/alien-python\.json .*editeur_code\.coloration : doit être true ou false", 1)
 cas("ressource externe : critère à false, simple information",
     fiche(EXTERNE, lambda x: (x.__setitem__("usages", x["usages"] + ["editeur-de-code"]),
                               x.__setitem__("editeur_code", dict(tous(True), guides_indentation=False)))),
-    "INFO", EXTERNE + r"\.json .*ressource externe, pour information.*guides d'indentation", 0,
-    absent=r"^(ERREUR|ATTENTION) .*" + EXTERNE + r"\.json .*règle 20")
+    "INFO", "/" + EXTERNE + r"\.json .*ressource externe, pour information.*guides d'indentation", 0,
+    absent=r"^(ERREUR|ATTENTION) .*/" + EXTERNE + r"\.json .*règle 20")
 cas("critères du référentiel et du schéma qui ne concordent pas",
     referentiel("valeurs", lambda v: [u["criteres"].pop() for u in v["usages"] if u["id"] == "editeur-de-code"]),
-    "ERREUR", r"valeurs\.json .*ne concordent pas", 1)
+    "ERREUR", r"/valeurs\.json .*ne concordent pas", 1)
 
 # Règle 19
 cas("« td_en_ligne » sur une ressource qui n'est pas un TD",
     fiche("alien-python", lambda x: x.__setitem__("td_en_ligne", {"responsive": True, "auto_corrective": True})),
-    "ATTENTION", r"alien-python\.json .*td_en_ligne.*type « td »", 0)
+    "ATTENTION", r"/alien-python\.json .*td_en_ligne.*type « td »", 0)
 cas("TD : page complète, plus d'avertissement de règle 19",
     fiche("td1-poo", lambda x: x.__setitem__("td_en_ligne", {"responsive": True, "auto_corrective": True})),
-    None, None, 0, absent=r"td1-poo\.json .*règle 19")
+    None, None, 0, absent=r"/td1-poo\.json .*règle 19")
 cas("ressource externe : tous les critères à true, aucune information de règle 20",
     fiche(EXTERNE, lambda x: (x.__setitem__("usages", x["usages"] + ["editeur-de-code"]),
                               x.__setitem__("editeur_code", tous(True)))),
-    None, None, 0, absent=EXTERNE + r"\.json .*règle 20")
+    None, None, 0, absent="/" + EXTERNE + r"\.json .*règle 20")
 cas("TD : critère manquant dans « td_en_ligne » (schéma)",
     fiche("td1-poo", lambda x: x["td_en_ligne"].pop("auto_corrective")),
-    "ERREUR", r"td1-poo\.json .*champ obligatoire manquant : « auto_corrective »", 1)
+    "ERREUR", r"/td1-poo\.json .*champ obligatoire manquant : « auto_corrective »", 1)
 
 # Compétences Pix
 cas("compétence Pix inexistante",
     fiche("fiche-variables-python", lambda x: x.__setitem__("competences_pix", ["programmer", "inventee"])),
-    "ERREUR", r"fiche-variables-python\.json .*« inventee » n'est pas dans le référentiel « competences_pix »", 1)
+    "ERREUR", r"/fiche-variables-python\.json .*« inventee » n'est pas dans le référentiel « competences_pix »", 1)
 
 shutil.rmtree(os.path.join(travail, "cas"), ignore_errors=True)
 bilan.terminer()

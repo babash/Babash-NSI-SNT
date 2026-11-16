@@ -63,10 +63,10 @@ cas("point médian dans un identifiant de section : refusé, avec l'aide qui cit
     doit=r"vitrine\.exemple\.json .*sans accents, espaces ni point médian")
 cas("point médian dans un texte de fiche : accepté",
     fiche("td1-poo", lambda x: x.__setitem__("resume", x["resume"] + " Pour les élèves les plus fort·e·s.")), 0,
-    ne_doit_pas=r"td1-poo\.json › resume")
+    ne_doit_pas=r"/td1-poo\.json › resume")
 cas("point médian dans un identifiant de fiche : refusé",
     fiche("td1-poo", lambda x: x.__setitem__("liees", [{"ressource": "fiche-des-enseignant·e·s", "relation": "voir-aussi"}])),
-    1, doit=r"td1-poo\.json › liees\[0\]\.ressource : .*point médian")
+    1, doit=r"/td1-poo\.json › liees\[0\]\.ressource : .*point médian")
 
 shutil.rmtree(os.path.join(travail, "cas"), ignore_errors=True)
 bilan.terminer()
