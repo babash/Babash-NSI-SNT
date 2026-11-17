@@ -175,6 +175,39 @@ def main():
                          "/bibliotheque/?r=" in page.url and titre in page.locator(".fiche-titre").inner_text())
             ctx.close()
 
+        print("Sections libres et « À la une »")
+        for rub in v["rubriques"]:
+            ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{rub['id']}/")
+            for s in rub["sections"]:
+                if s.get("programme"):
+                    continue
+                sec = page.locator(f"section.theme#{s['id']}")
+                vides = [ss["titre"] for ss in s.get("sous_sections", []) if not ss.get("programme") and not ss["ressources"]]
+                ligne = [x.strip() for x in sec.locator(".programme li").all_inner_texts()]
+                verifier(f"{rub['id']} #{s['id']} : « Au programme » = les sous-sections sans ressource", ligne == vides, (ligne, vides))
+                nb = len(s["ressources"]) + sum(len(ss["ressources"]) for ss in s.get("sous_sections", []))
+                if nb:
+                    verifier(f"{rub['id']} #{s['id']} : des ressources, jamais « Rien ici »", sec.locator("p.vide").count() == 0)
+            ctx.close()
+        une = [u for u in v["a_la_une"] if u.get("etiquette")]
+        for u in une:
+            titre = lire(d, "donnees", "ressources", u["ressource"] + ".json")["titre"]
+            for rub in v["rubriques"]:
+                ids = [x for s in rub["sections"] for x in s["ressources"] + [y for ss in s.get("sous_sections", []) for y in ss["ressources"]]]
+                if u["ressource"] not in ids:
+                    continue
+                ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{rub['id']}/")
+                li = page.locator("li.res", has=page.locator(".titre", has_text=titre)).first
+                tags = [x.strip() for x in li.locator(".tags span:not(.site)").all_inner_texts()]
+                verifier(f"{rub['id']} : « {u['etiquette']} » en tête des étiquettes de {u['ressource']}", tags[:1] == [u["etiquette"]], tags)
+                ctx.close()
+        if une:
+            ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
+            page.fill(".hero .recherche", une[0]["etiquette"].lower())
+            page.wait_for_timeout(200)
+            verifier(f"accueil : la recherche « {une[0]['etiquette'].lower()} » trouve la ressource", page.locator("li.res").count() >= 1)
+            ctx.close()
+
         ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
         cartes = page.locator(".noeud-nom").all_inner_texts()
         verifier("accueil : une carte par rubrique de la vitrine, dans l'ordre", cartes == [r["titre"] for r in v["rubriques"]], cartes)
