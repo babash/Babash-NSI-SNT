@@ -1,0 +1,367 @@
+\section*{TD : Initiation à la Programmation Orientée Objet (POO)}
+
+\begin{Comprendre}
+Ce TD est conçu pour consolider les concepts fondamentaux de la POO. Il vous permettra de manipuler des classes et des objets en vous familiarisant avec le vocabulaire essentiel. Vous rencontrerez des figures marquantes de l'histoire de l'informatique, de l'Antiquité à Internet.
+\end{Comprendre}
+
+\begin{Exercise}[title=La Machine Analytique d'Ada Lovelace (1843)]
+\begin{center}
+    \textit{Travail sur : Vocabulaire et Rôles}
+\end{center}
+
+\textbf{Ada Lovelace}, pionnière de la programmation, a écrit le premier \motcle{algorithme} destiné à la Machine Analytique de Charles Babbage.
+Observez le code ci-dessous.
+
+\begin{lstlisting}[language=Python]
+class Machine:
+    def __init__(self, nom, annee):
+        self.nom = nom
+        self.annee = annee
+        self.en_marche = False
+
+    def allumer(self):
+        self.en_marche = True
+    
+    def get_etat(self):
+        return self.en_marche
+
+machine_babbage = Machine("Analytique", 1843)
+\end{lstlisting}
+
+\Question Quel est le nom de la classe définie dans ce programme ?
+\Question Il y a-t-il un objet dans ce programme, si oui quel est son identifiant (nom).
+\Question Quel est le type (la classe) de la variable \textbf{machine\_babbage} ?
+\Question Citez tous les \motcle{attributs} de la classe.
+\Question Citez toutes les \motcle{méthodes} de la classe.
+\Question Dans la ligne \textbf{self.annee = annee}, que représente \textbf{self} ?
+\Question Quel est l'attribut qui stocke l'état d'allumage de la machine ? Quel est son type (int, str, bool) ?
+\Question Expliquez, avec vos mots, la différence entre \textbf{allumer} et \textbf{get\_etat} laquelle modifie l'objet, laquelle renvoie la valeur ?
+\Question Que vaut \textbf{machine\_babbage.annee} ?
+\begin{lstlisting}[language=Python]
+machine_babbage.allumer()
+print(machine_babbage.en_marche)
+\end{lstlisting}
+\Question Qu'affiche le code ci-dessus ?
+\end{Exercise}
+
+\newpage
+\begin{Exercise}[title=La Pascaline de Blaise Pascal (XVIIe Siècle)]
+\begin{center}
+    \textit{{Tracer le code et le type de retour}}
+\end{center}
+
+\textbf{Blaise Pascal} a conçu une machine à calculer mécanique pour aider son père dans son travail, prouvant que les machines pouvaient exécuter des calculs complexes.
+
+\begin{lstlisting}[language=Python]
+class MachineACalculer:
+    def __init__(self, createur):
+        self.createur = createur
+        self.compteur = 0 # Le cadran d'affichage
+
+    def ajouter(self, nombre):
+        self.compteur += nombre
+
+    def lire_resultat(self):
+        return self.compteur
+
+pascaline = MachineACalculer("Pascal")
+\end{lstlisting}
+
+Précisez la valeur et le type de chaque variable après l'exécution du code suivant :
+
+\begin{lstlisting}[language=Python]
+pascaline.ajouter(10)
+pascaline.ajouter(5)
+resultat_final = pascaline.lire_resultat()
+compteur_actuel = pascaline.compteur
+\end{lstlisting}
+
+\Question Valeur et type de \textbf{resultat\_final} ?
+\Question Valeur et type de \textbf{compteur\_actuel} ?
+\end{Exercise}
+
+\newpage
+\begin{Exercise}[title=L'Interprétation de Grace Hopper (Années 1950)]
+\begin{center}
+    \textit{Le rôle du point « . » et des méthodes qui modifient $\text{\motcle{self}}$}
+\end{center}
+
+\textbf{Grace Hopper},  amirale et informaticienne, fut la pionnière du premier \motcle{compilateur}, un programme qui \textbf{traduit} le code source (lisible par l'humain) en langage machine (exécutable par l'ordinateur). L'une des tâches cruciales du compilateur est de décoder les instructions : identifier à quel objet on s'adresse et quelle action on lui demande.
+
+\textbf{Votre rôle :} Vous êtes le compilateur. Votre mission est de décoder les instructions de la classe Code et de déterminer leur impact.
+
+\begin{lstlisting}[language=Python]
+class Code:
+    def __init__(self, lignes):
+        self.lignes = lignes
+        self.est_nettoye = False # État initial : non nettoyé
+
+    def preparer_compilation(self):
+        # La méthode .upper() transforme le texte en MAJUSCULES.
+        self.lignes = self.lignes.upper() 
+        self.est_nettoye = True
+
+    def afficher_etat(self):
+        return (self.lignes, self.est_nettoye)
+
+mon_code = Code("while True:"
+                "    print('Mouhahah !')" )
+\end{lstlisting}
+
+\Question La méthode \textbf{upper()} est une méthode de quelle classe ? Justifiez.
+\Question Si l'on crée un objet \textbf{mon\_code = Code("while true")}, quelle sera la valeur de l'attribut lignes après l'appel \textbf{mon\_code.preparer\_compilation()} ?
+\Question Quel est le type de la valeur retournée par la méthode \textbf{afficher\_etat()} ?
+\end{Exercise}
+
+\newpage
+\begin{Exercise}[title=Décoder les Données Universelles d'Alan Turing (1936)]
+
+\begin{center}
+\textit{Le Point : Méthode ou Accès ?}
+\end{center}
+
+En 1936, Alan Turing théorise la \motcle{machine universelle}, capable de traiter toute information. En Python, le point (.) est l'opérateur universel pour accéder à cette information, qu'elle soit dans une liste, une chaîne, ou un nombre flottant.
+
+\textbf{Votre rôle :} Déterminez, pour chaque ligne, si le point appelle une action sur un objet (une méthode) ou s'il accède à une donnée structurée (un attribut).
+
+\begin{lstlisting}[language=Python]
+# Données universelles :
+
+ma_liste = [10, 20, 30]
+mon_dict = {'a': 1, 'b': 2}
+mon_texte = "TURING"
+mon_chiffre = 3.14
+
+# Instructions à décoder :
+
+A = ma_liste.append(40)
+B = mon_dict.keys()
+C = mon_texte.lower()
+D = mon_chiffre.is_integer()
+E = mon_dict['a']
+\end{lstlisting}
+
+\Question Dans quelles lignes (A, B, C, D, ou E) le point (.) est-il utilisé pour appeler une méthode ?
+\Question Laquelle des instructions (A, B, C, D, ou E) a pour effet de modifier l'objet sur lequel elle est appelée ?
+\Question Quels sont les types de (A, B, C, D, ou E) ?
+\Question Quelles sont les valeurs de (A, B, C, D, ou E) ?
+\Question Que valent ma\_liste, mon\_dict, mon\_texte, mon\_chiffre à la fin du code.
+\Question L'instruction E utilise-t-elle le point pour accéder à une valeur ? Expliquez brièvement pourquoi l'utilisation des crochets ([]) est une autre manière d'accéder aux données et pour quels types elle est courante.
+\end{Exercise}
+
+\newpage
+
+\begin{Exercise}[title=Le Premier Ordinateur ENIAC (1948) : La Loi de Moore]
+\begin{center}
+    \textit{Création, Modification d'Attribut et Simulation}
+\end{center}
+
+Le premier ordinateur électronique, l'\textbf{ENIAC}, marquait une révolution dans la puissance de calcul. L'ENIAC pouvait effectuer environ \textbf{5 000 additions par seconde}. La puissance d'un ordinateur est souvent mesurée par sa fréquence de processeur, qui correspond au nombre d'opérations primaires qu'il peut réaliser en une seconde.
+
+Plus tard, en 1965, \textbf{Gordon Moore} (cofondateur d'Intel) prédit que la puissance des puces doublerait régulièrement (environ tous les deux ans dans la version qu'il a retenue ensuite)\footnote{Pour connaitre la vrai loi de Moore \url{https://fr.wikipedia.org/wiki/Loi_de_Moore}}. Cette observation est devenue la fameuse « \textbf{Loi de Moore} ». Nous allons simuler cette croissance en considérant que la puissance double tous les deux ans.
+
+\begin{lstlisting}[language=Python]
+class Ordinateur:
+    def __init__(self, nom, annee, puissance):
+        self.nom = nom
+        self.annee = annee
+        self.puissance = puissance
+
+    def augmenter_puissance(self, facteur):
+        self.puissance *= facteur
+\end{lstlisting}
+
+\Question Que vaut \textbf{mon\_vieux\_coucou.puissance} à la fin du code suivant ?
+\begin{lstlisting}[language=Python]
+# Créez l'objet 'eniac' avec les paramètres : "ENIAC", 1948, 5000
+mon_vieux_coucou = Ordinateur("ENIAC", 1948, 5000)
+for i in range(10):
+    mon_vieux_coucou.augmenter_puissance(2.5)
+\end{lstlisting}
+
+\Question Un ordinateur moderne a une puissance arbitraire de $2^{28}$ (soit environ 268 millions d'unités). Combien d'années faut-il à l'ENIAC (d'une puissance 5 000 opérations par seconde) pour atteindre cette puissance en supposant que la puissance double tous les deux ans ?
+
+\Question Cela vérifie-t-il la réalité ?
+
+\Question Compléter le code ci-dessous permettant de réaliser ce calcul
+\begin{lstlisting}[language=Python]
+# Créez l'objet 'eniac' avec les paramètres : "ENIAC", 1948, 5000
+eniac = .........................
+nb_annees = 0
+# La boucle doit continuer tant que la puissance de l'eniac est inférieure à la cible
+while ........... < 2**28:
+    nb_annees ...........
+    # Augmentez la puissance de l'ENIAC par un facteur 2 (sans utiliser de =)
+    .....................
+
+# Afficher le nombre d'annee
+.......................................
+\end{lstlisting}
+
+\Question Selon ce modèle (puissance doublée tous les 2 ans), si un ordinateur a aujourd'hui une puissance de $2^{28}$, quelle puissance (en exposant de 2) aura-t-il dans dix ans ? (Détaillez le calcul.)
+\Question L'augmentation de la fréquence des processeurs est-elle toujours possible à ce rythme aujourd'hui ? Expliquez brièvement pourquoi (considérations physiques).
+\end{Exercise}
+
+\newpage
+\begin{Exercise}[title=L'Ère des Microprocesseurs (Années 1970)]
+\begin{center}
+    \textit{Instanciation, Portée et Écriture de Méthode}
+\end{center}
+
+L'invention des microprocesseurs (comme l'Intel 4004 en 1971) a permis de créer des ordinateurs beaucoup plus petits et personnels. Ces machines, bien que distinctes, utilisent toutes la même structure de base (la classe \textbf{Ordinateur}).
+
+\begin{lstlisting}[language=Python]
+class Ordinateur:
+    def __init__(self, nom, taille):
+        self.nom = nom
+        self.taille = taille  # Taille en mètres cubes (arbitraire)
+        self.allume = False   # État par défaut
+        print(f"DEBUG : Constructeur appelé pour {self.nom}")
+
+    def est_portable(self):
+        # Un ordinateur est portable si sa taille est inférieure ou égale à 1.0 m³
+        ........
+    
+    def allumer(self):
+        # Allume l'ordinateur et affiche l'information
+        # exemple : ENIAC est allumé.
+        ........
+        
+
+def eteindre(machine):
+    # C'est une erreur de POO d'utiliser cette fonction pour éteindre une machine !
+    machine.allume = False
+    print(machine.nom + " est éteint(e).")
+\end{lstlisting}
+
+\Question Ecrire le code Python permettant de créez deux objets de la classe \textbf{Ordinateur} en utilisant les paramètres suivants :
+\begin{itemize}
+    \item apple2 : nommé "Apple II" et de taille 0.8 ($m^3$)
+    \item desktop : nommé "Desktop 95" et de taille 2.5 ($m^3$)
+\end{itemize}
+
+\Question Si ont execute le code Python de la question precedente, qu'affiche le terminal ? et pourquoi ?
+
+\Question Compléter la méthode \textbf{allumer}.
+\Question Compléter la méthode \textbf{est\_portable}.
+
+\Question Expliquez pourquoi vous pouvez appeler la méthode \textbf{apple2.allumer()} mais que vous ne pouvez pas appeler \textbf{apple2.eteindre()}.
+
+\Question Comment faire pour appeler \textbf{eteindre()}
+\Question Est-ce une bonne idée de mettre éteindre en dehors de la classe ? Pourquoi ?
+\end{Exercise}
+
+\newpage
+\begin{Exercise}[title=ARPANET et le Premier Message (1969)]
+\begin{center}
+\textit{Interaction entre Objets et Attributs Complexes}
+\end{center}
+
+\textbf{ARPANET} est le précurseur d'Internet (1969). Il a permis la communication entre différents \textbf{Hôtes} (ordinateurs). Chaque Hôte est connecté au \textbf{Réseau}, qui gère l'envoi des messages. Cet exercice simule un hôte et un réseau qui interagissent.
+
+\begin{lstlisting}[language=Python]
+class Hote:
+    def __init__(self, adresse_ip):
+        self.adresse_ip = adresse_ip
+        self.messages_recus = []
+
+    def recevoir_message(self, message):
+        self.messages_recus.append(message)
+        print(f"Hôte {self.adresse_ip} a reçu : '{message[:10]}...'")
+
+    def lire_boite_reception(self):
+        return self.messages_recus
+
+class Reseau:
+    def __init__(self):
+        self.participants = []
+    
+    def connecter(self, hote):
+        self.participants.append(hote)
+        print(f"Réseau : Hôte {hote.adresse_ip} connecté.")
+    
+    def envoyer_message(self, emetteur_ip, destinataire_ip, message):
+        print(f"Réseau : Tentative d'envoi de {emetteur_ip} vers {destinataire_ip}.")
+        
+        for hote in .......................:
+            # 2. recherche de l'hote destinataire
+            if ............................== destinataire_ip:
+                # 3. Appeler la méthode de l'objet cible 
+                ..............................
+                return True # Message envoyé
+        return False # Destinataire non trouvé
+\end{lstlisting}
+
+\Question Dans la classe \textbf{Hote}, l'attribut \textbf{self.messages\_recus} est une collection. Quel est son type ?
+\Question Dans la classe \textbf{Reseau}, l'attribut \textbf{self.participants} est une collection d'objets. Quel est le type des objets contenus dans cette collection ?
+\Question Si nous ajoutons 3 hôtes au réseau (reseau.connecter(h1), reseau.connecter(h2), reseau.connecter(h3)), quelle sera la longueur de la collection \textbf{reseau.participants} ?
+
+\Question Complétez le code de la méthode \textbf{envoyer\_message} 
+
+\Question Si le message est envoyé avec succès, quelle est l'action réalisée par le réseau sur l'objet destinataire ? (Nommez l'action et la méthode appelée).
+
+\begin{lstlisting}[language=Python]
+reseau_arpa = Reseau()
+h1 = Hote("192.168.1.1")
+h2 = Hote("192.168.1.2")
+
+reseau_arpa.connecter(h1)
+reseau_arpa.connecter(h2)
+
+reseau_arpa.envoyer_message("192.168.1.1", "192.168.1.2", "LOG=LOGIN")
+reseau_arpa.envoyer_message("192.168.1.1", "192.168.1.3", "ERROR")
+
+resultat = h2.lire_boite_reception()
+\end{lstlisting}
+
+\Question Quel est le contenu final de la variable \textbf{resultat} ?
+\Question Pourquoi le deuxième appel à \textbf{reseau\_arpa.envoyer\_message()} retourne-t-il False ?
+\end{Exercise}
+
+\begin{Exercise}[title=Le Protocole TCP/IP (Vint Cerf et Bob Kahn)]
+\begin{center}
+    \textit{Interaction de deux classes (Code complet)}
+\end{center}
+
+\textbf{Vint Cerf} et \textbf{Bob Kahn} ont mis au point le protocole TCP/IP, l'ensemble de règles qui régissent Internet, permettant aux ordinateurs de communiquer efficacement.
+
+\Question Écrivez la classe \textbf{Client} et la classe \textbf{Serveur}. Un \textbf{Client} doit pouvoir se connecter à un \textbf{Serveur}.
+
+\textbf{Consignes :}
+\begin{itemize}
+    \item La classe \textbf{Serveur} a un attribut \textbf{nb\_clients\_connectes} (initialisé à 0).
+    \item La classe \textbf{Client} a un attribut \textbf{connecte\_a} (initialisé à \textbf{None}).
+    \item Écrivez la méthode \textbf{se\_connecter\_a(self, serveur)} dans la classe \textbf{Client} qui réalise deux actions :
+    \begin{enumerate}
+        \item Modifie son propre attribut \textbf{self.connecte\_a} pour qu'il référence l'objet \textbf{serveur}.
+        \item Appelle une méthode du \textbf{serveur} pour incrémenter le nombre de clients connectés du serveur.
+    \end{enumerate}
+\end{itemize}
+\end{Exercise}
+
+\begin{Exercise}[title=Synthèse et Tracé du Code]
+\begin{center}
+    \textit{Synthèse et Tracé}
+\end{center}
+
+On exécute le code ci-dessous en utilisant les classes de l'exercice 8 (complétées).
+
+\begin{lstlisting}[language=Python]
+s1 = Serveur()
+c1 = Client()
+c2 = Client()
+
+c1.se_connecter_a(s1)
+c2.se_connecter_a(s1)
+c3 = Client()
+c3.se_connecter_a(s1)
+
+nb = s1.nb_clients_connectes
+type_c1 = type(c1.connecte_a)
+\end{lstlisting}
+
+\Question Quel est le nom de la méthode que la ligne \textbf{c1.se\_connecter\_a(s1)} appelle sur l'objet \textbf{s1} ?
+\Question Quelle est la valeur finale de la variable \textbf{nb} ?
+\Question Quel est le type de la variable \textbf{type\_c1} ?
+\Question L'objet \textbf{c2} et l'attribut \textbf{c1.connecte\_a} référencent-ils le même objet \textbf{Serveur} ? (Justifiez).
+\end{Exercise}

@@ -1,0 +1,289 @@
+\chapter*{TP : Crée ton propre jeu - Attrape les objets avec Pygame}
+
+\begin{center}
+
+\begin{minipage}{0.8\textwidth}
+\begin{Objectif}
+  \begin{center}
+    Comprendre le fonctionnement d’un petit jeu en Python avec Pygame.\\
+    Modifier et personnaliser un jeu selon tes envies.\\
+    Compléter une partie du code manquante.\\
+    Ajouter de nouvelles fonctionnalités.\\
+\end{center}
+\end{Objectif}
+\end{minipage}
+\end{center}
+
+
+
+\section*{Le jeu}
+Présentons le jeu\\
+% Answer: [trim={left bottom right top},clip]
+    \hspace{5pt}
+    \hspace{5pt}
+    \\
+    \begin{itemize}
+    \item[$\bullet$] Le joueur (carré rouge en bas de l’écran) se déplace à gauche et à droite avec les flèches du clavier.
+    \item[$\bullet$] Un objet (carré vert) tombe du haut de l’écran.
+    \item[$\bullet$] Si le joueur attrape l’objet, le score augmente et un nouvel objet apparaît.
+    \item[$\bullet$] Si l’objet atteint le bas de l’écran, la partie est terminée.
+\end{itemize}
+
+\begin{Avous}
+    Ouvrez Edupython puis ouvrez le code "tp-ramasse-objet.py" situé dans votre répertoire de groupe. Comme d'habitude, copiez le dans votre répertoire perso et enfin
+    \begin{center}
+    \large{\textbf{Testez le jeu !}}
+    \end{center}
+
+\end{Avous}
+\newpage
+\section*{Partie 1 : Comprendre le code}
+
+\subsection*{Se repérer dans le jeu}
+Pour placer les objets dans la fenêtre, on a besoin de se repérer. Nous allons utiliser un repère orthonormé avec des coordonnées (x,y).\\
+A partir de l'image au tableau, répondre aux questions suivantes :
+\begin{enumerate}[resume=globalList]
+    \item Où se trouve le point (0,0) de la fenêtre ?
+    \item Donner les coordonnées pour chacun des quatre coins de l'objet.
+    \item Donner les coordonnées pour chacun des quatre coins du joueur.
+    \item A votre avis, quelle est l'unité de mesure utilisée ?
+\end{enumerate}
+\begin{Comprendre}
+    L'objet va se déplacer vers le bas à une vitesse donnée et le joueur va se déplacer selon les touches "flèche gauche" et "flèche droite" du clavier.
+\end{Comprendre}
+
+\subsection*{Les variables}
+\begin{Avous}
+    Lisez le programme qui vous est donné. Que représentent les variables suivantes ?
+\end{Avous}
+\vspace{-1cm}
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|l|p{8cm}|}
+    \hline
+        Variable & Rôle \\ \hline
+        joueur\_x &  \\ \hline
+        objet\_x, objet\_y &  \\ \hline
+        VITESSE\_OBJET &  \\ \hline
+        score &  \\ \hline
+        jeu\_en\_cours &  \\ \hline
+    \end{tabular}
+\end{table}
+
+
+\begin{enumerate}[resume=globalList]
+    \item A la ligne 7 on lit que des variables sont des constantes. Expliquer pourquoi ces variables sont des constantes.\\
+    \item A la ligne 14, on propose d'initialiser 
+    \begin{itemize}
+        \item la position sur l'axe x pour le joueur et les positions en x et y pour l'objet.
+        \item un score
+    \end{itemize} 
+Expliquer le choix des valeurs qui leur ont été affectées.
+
+\item  Que fait-on de la ligne 24 à la ligne 27 ?
+\end{enumerate}
+
+
+\begin{enumerate}[resume=globalList]
+    \item Quelle variable permet de déplacer le joueur ? 
+    \item  Comment l'objet tombe-t-il ? Comment le jeu sait-il qu’il a été attrapé ?
+    \item Quelle condition met fin au jeu ? 
+\end{enumerate}
+
+\begin{Comprendre}
+\textbf{Aide :}
+\begin{itemize}
+    \item Le jeu vérifie s’il y a une collision en comparant leurs positions.
+    \item Le score augmente lorsqu’un objet est attrapé.
+    \item Le jeu s’arrête si un objet atteint le bas de l’écran.
+\end{itemize}
+\end{Comprendre}
+
+\begin{Avous}
+Complétons un morceau de code. Remplis les trous dans le code suivant
+\end{Avous}
+\begin{lstlisting}[style=pythonstyle, language=python]
+# Position de départ de l'objet
+objet_x = __________  # Position horizontale aléatoire entre 0 et (LARGEUR - TAILLE_OBJET)
+objet_y = __________  # L'objet commence en haut (0)
+
+# L'objet tombe
+objet_y += __________  # On ajoute la vitesse de chute
+
+# Vérification de la collision avec le joueur
+if __________:  # Condition pour savoir si l'objet est attrapé
+    score += 1      # On augmente le score
+    objet_y = 0     # L'objet revient en haut
+\end{lstlisting}
+
+
+
+
+\subsection*{Les fonctions}
+\begin{Avous}
+Changer le paramètre de la fonction delay et observer ce qui se passe.
+\end{Avous}
+
+\begin{enumerate}[resume=globalList]
+\item Rappel - A quoi reconnaît-on une fonction ?
+\item  A votre avis, que font chacune des fonctions suivantes ?
+\end{enumerate}
+\begin{table}[!ht]
+    \centering
+    \begin{tabular}{|l|l|p{8cm}|}
+    \hline
+        Fonction & Appel & Rôle \\ \hline
+        init & ligne 5 & \\ \hline
+        randint & ligne 16 & \\ \hline
+        set\_mode & ligne 21 & \\ \hline
+        set\_caption & ligne 22 & \\ \hline
+        delay & ligne 35 & \\ \hline
+        event.get & ligne 38 & \\ \hline
+        get\_pressed & ligne 43 & \\ \hline
+        fill & ligne 66 & \\ \hline
+        draw.rect & ligne 67  & \\ \hline
+        display.update & ligne 69 & \\ \hline
+        quit & ligne 71 & \\ \hline
+    \end{tabular}
+\end{table}
+\begin{Avous}
+    Changer les paramètres des fonctions de set\_mode et set\_caption et observez ce qui se passe.
+\end{Avous}
+
+Bravo, vous maîtrisez maintenant le programme qui vous a été fourni... Allez-vous pouvoir relever les défis qui vous attendent ?!
+
+\newpage
+
+\section*{Partie 2 : Modifier et personnaliser le jeu}
+\begin{center}
+\begin{minipage}{0.5\textwidth}
+
+    \begin{Objectif}
+        \centering
+        Relevez un maximum de défis !
+    \end{Objectif}
+\end{minipage}
+    \end{center}
+
+
+\subsection*{Défi 1 : Change la couleur du joueur}
+\begin{lstlisting}[style=pythonstyle, language=python]
+COULEUR_JOUEUR = (255, 0, 0)  # Rouge
+\end{lstlisting}
+
+\subsection*{Défi 2 : Augmente la vitesse de l’objet et observe ce qui change.}
+\begin{lstlisting}[style=pythonstyle, language=python]
+VITESSE_OBJET = 6
+\end{lstlisting}
+
+\subsection*{Défi 3 : Agrandis la taille du joueur et des objets.}
+\begin{lstlisting}[style=pythonstyle, language=python]
+TAILLE_JOUEUR = 120
+TAILLE_OBJET = 40
+\end{lstlisting}
+
+
+\subsection*{Défi 4 : Modifie le texte affiché à la fin du jeu.}
+\begin{lstlisting}[style=pythonstyle, language=python]
+if objet_y > HAUTEUR:
+    print(f"Perdu! Votre score est : {score}")
+    jeu_en_cours = False
+\end{lstlisting}
+\vspace{1cm}
+\section*{Partie 3 : Afficher le score en temps réel}
+
+\subsection*{Défi 5: Ajoute l'affichage du score sur l'écran}
+
+\subsubsection*{Ajoute une police d'écriture pour afficher le score}
+
+Une police d'écriture est un style de texte utilisé pour afficher des informations à l’écran. Elle permet de choisir la taille et l’apparence des lettres. Dans Pygame, nous devons créer une police avant d’afficher du texte sur la fenêtre du jeu.
+
+La police doit être ajoutée au début du programme, avant de l'utiliser pour afficher le score.
+\begin{lstlisting}[style=pythonstyle, language=python]
+police_score = pygame.font.Font(None, 36)
+\end{lstlisting}
+
+\subsubsection{Crée une fonction pour afficher le score}
+\begin{lstlisting}[style=pythonstyle, language=python]
+def afficher_score():
+   texte_score = police_score.render(f"Score : {score}", True, (255, 255, 255))
+   fenetre.blit(texte_score, (10, 10))
+\end{lstlisting}
+
+\subsubsection{Appelle cette fonction dans la boucle principale}
+\begin{lstlisting}[style=pythonstyle, language=python]
+afficher_score()
+\end{lstlisting}
+
+
+\newpage
+\section*{Partie 4 : Rendre le jeu plus difficile}
+\subsection*{Défi 6: Augmenter la difficulté du jeu}
+\noindent Ajoute une variable de difficulté
+\begin{lstlisting}[style=pythonstyle, language=python]
+facteur_vitesse = 1.0
+\end{lstlisting}
+Modifie la vitesse de chute de l’objet
+\begin{lstlisting}[style=pythonstyle, language=python]
+objet_y += VITESSE_OBJET * facteur_vitesse
+\end{lstlisting}
+
+\subsection*{Défi 7 : Augmente la difficulté quand un objet est attrapé}
+S'il y a une collision
+\begin{lstlisting}[style=pythonstyle, language=python]
+   facteur_vitesse += 0.1
+\end{lstlisting}
+
+\vspace{0.8cm}
+\section*{Partie 5 : Ajouter de nouvelles fonctionnalités}
+
+\subsection*{Défi 8 : Ajoute des objets spéciaux}
+Ajoute ces deux morceaux de codes aux bons endroits
+\begin{lstlisting}[style=pythonstyle, language=python]
+objets ={'x': random.randint(0, LARGEUR - TAILLE_OBJET),
+           'y': 0,
+           'type': random.choice(['normal', 'bonus', 'malus'])}
+\end{lstlisting}
+\begin{lstlisting}[style=pythonstyle, language=python]
+if objet['type'] == 'bonus':
+    score += 5
+elif objet['type'] == 'malus':
+    score -= 3
+else:
+    score += 1
+\end{lstlisting}
+
+\subsection*{Défi 9 : Ajoute plusieurs objets simultanément}
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+objets = [{'x': random.randint(0, LARGEUR - TAILLE_OBJET),
+           'y': 0,
+           'type': random.choice(['normal', 'bonus', 'malus'])}
+         for _ in range(3)]
+\end{lstlisting}
+
+\subsection*{Défi 10 : Utilise une image plutôt qu'un carré pour représenter le joueur et l'objet}
+\begin{lstlisting}[style=pythonstyle, language=python]
+image_joueur = pygame.image.load("chemin/vers/joueur.png")
+image_objet = pygame.image.load("chemin/vers/objet.png")
+\end{lstlisting}
+
+\vspace{1cm}
+\begin{center}
+    \huge{ Tu as relévé tous les défis ?!}\\
+    \huge{Bravo }
+\end{center}
+
+Tu as appris à analyser, modifier et améliorer un jeu existant avec Pygame.  Continue à tester et à améliorer ton jeu en ajoutant des nouvelles idées !
+
+% \newpage
+
+% \huge{\subsection*{Des idées pour vous aider !}}
+
+% \subsubsection*{Idée 1 : Faire tomber plusieurs objets}
+% Par exemple : À éviter (fait perdre), Bonus (vaut 5 points), Booster (augmente la vitesse du joueur), Champignon (augmente la taille du joueur)...
+
+% \subsubsection*{Idée 2 : Donner un type aux objets}
+% \subsubsection*{Idée 3 : Faire sauter le joueur}
+% \subsection*{Idée 4 : Transformer les objets en images}
+% \subsection{}

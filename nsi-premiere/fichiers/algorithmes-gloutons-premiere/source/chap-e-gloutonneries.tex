@@ -1,0 +1,146 @@
+\section*{TD NSI :  Opération "Le Casse du Siècle"}
+
+\textbf{Objectif de la mission :} \textit{Félicitations agent. Après votre premier succès, vous attaquez la réserve centrale. Ici, les objets sont plus nombreux et le système de sécurité est plus complexe. Vous allez devoir prouver que votre méthode "gloutonne" est la plus rapide, même si elle n'est pas parfaite.}
+
+\begin{Exercise}[title={Le sens des affaires : La stratégie du Ratio }]
+Dans le braquage précédent, nous choisissions soit le plus cher, soit le plus léger. Mais un expert calcule le \textbf{ratio} (le prix pour 1 kg).
+La base de données est mise à jour :
+\begin{lstlisting}[style=pythonstyle, language=Python]
+# "Nom": [poids, prix]
+reserve = {
+    "Lingot de Plomb": [10, 50],  # Ratio = 50/10 = 5
+    "Poudre d'Escampette": [2, 40], # Ratio = 40/2 = 20
+    "Micro-film": [1, 30],         # Ratio = 30/1 = 30
+    "Calice Ancien": [5, 10]       # Ratio = 10/5 = 2
+}
+\end{lstlisting}
+
+\begin{enumerate}
+    \item  Calculez le ratio (prix / poids) du \textbf{Calice Ancien} : \dotfill
+    \item  Entre le \textbf{Lingot} et le \textbf{Micro-film}, lequel est le plus rentable au kilo ? \dotfill
+    \item  Pour la \textbf{Stratégie C : "Priorité au Ratio"}, quel objet choisiriez-vous en premier ? \dotfill
+    \item \textbf{Comparaison :} Si votre sac fait \textbf{10 kg}, quelle stratégie rapporte le plus ici ?
+    \begin{itemize}
+        \item[$\square$] \textbf{Plus cher :} Prend le Lingot de Plomb (50k\texteuro).
+        \item[$\square$] \textbf{Ratio :} Prend le Micro-film (30k\texteuro) + la Poudre (40k\texteuro) + le Calice (10k\texteuro).
+    \end{itemize}
+\end{enumerate}
+\end{Exercise}
+
+\begin{Exercise}[title={Le Bug du Braqueur : Même le ratio échoue ! }]
+Votre sac est limité à \textbf{10 kg}. Voici un coffre très spécifique :
+\begin{lstlisting}[style=pythonstyle, language=Python]
+# [poids, prix] -> le ratio de A est 11, les autres sont a 10
+coffre_piege = {
+    "Objet A": [6, 66],  # Ratio = 11
+    "Objet B": [5, 50],  # Ratio = 10
+    "Objet C": [5, 50]   # Ratio = 10
+}
+\end{lstlisting}
+\begin{enumerate}
+    \item  Appliquez la stratégie gloutonne par \textbf{Ratio} :
+    \begin{itemize}
+        \item Quel objet prenez-vous en premier ? \dotfill
+        \item Reste-t-il de la place pour un autre objet ? \dotfill 
+        \item Valeur totale du butin = \dotfill
+    \end{itemize}
+    \item  Trouvez une combinaison de deux objets qui respecte la limite de 10 kg.
+    \begin{itemize}
+        \item Objets choisis : \dotfill Valeur totale = \dotfill
+    \end{itemize}
+    \item \textbf{Conclusion :} Pourquoi le ratio n'a-t-il pas suffi ici ? \dotfill
+\end{enumerate}
+\end{Exercise}
+
+\newpage
+
+\begin{Exercise}[title={Le défi du coffre géant : Vitesse vs Précision }]
+Imaginons un coffre à \textbf{25 objets}.
+\begin{itemize}
+    \item \textbf{Méthode Exhaustive :} On teste toutes les combinaisons une par une.
+    \item \textbf{Méthode Gloutonne :} On trie et on choisit (votre code précédent).
+\end{itemize}
+
+\begin{enumerate}
+    \item Combien il y a t-il de combinaisons possibles ?
+    \dotfill
+    \item Si on ajoute un 26ème objet, le nombre de combinaisons passe à \textbf{66 millions}. Que remarquez-vous sur l'évolution du travail de l'ordinateur ? \dotfill
+    \item  Un ordinateur met 0,001s avec la méthode gloutonne. Pour la méthode exhaustive sur 50 objets, il lui faudrait \textbf{35 ans}. 
+    Quel est le principal avantage de votre algorithme glouton ? \dotfill
+    \item Sachant qu'un ordinateur fait environ 3 milliards d'opérations par secondes (3GHz) et que tester une combinaison coute environ 100 d'opérations. Est-il raisonnable d'utiliser la méthode exhaustive sur 100 objets ?\dotfill
+    \item Justifiez la réponse précédente par un calcul.
+    .\dotfill
+    .\dotfill
+\end{enumerate}
+\end{Exercise}
+
+\begin{Comprendre}
+ \textbf{BILAN DE MISSION : L'Algorithme Glouton}
+\begin{itemize}
+    \item \textbf{Principe :} Faire le meilleur choix \textbf{local} (immédiat) sans jamais revenir en arrière.
+    \item \textbf{Avantages :} Il est extrêmement \textbf{rapide} et facile à coder.
+    \item \textbf{Inconvénient :} Il ne garantit pas de trouver la solution \textbf{optimale} (la meilleure de toutes).
+    \item \textbf{Efficacité :} Pour le sac à dos, la stratégie du \textbf{ratio} (Prix/Poids) est souvent la plus performante des méthodes gloutonnes.
+\end{itemize}
+\end{Comprendre}
+
+\newpage
+
+\begin{Exercise}[title={[BONUS] La monnaie de sa pièce }]
+Pour s'enfuir, vous devez payer un passeur qui demande \textbf{6\texteuro}. 
+Le système monétaire local utilise des pièces de \textbf{4\texteuro, 3\texteuro{} et 1\texteuro}.
+
+\begin{enumerate}
+    \item  \textbf{Le Réflexe Glouton :} 
+    L'algorithme glouton choisit toujours la plus grosse pièce possible en premier.
+    \begin{itemize}
+        \item Étape 1 : Reste 6\texteuro. Pièce choisie : \dotfill \texteuro.
+        \item Étape 2 : Reste \dotfill \texteuro. Pièce choisie : \dotfill \texteuro.
+        \item Étape 3 : Reste \dotfill \texteuro. Pièce choisie : \dotfill \texteuro.
+        \item \textbf{Résultat :} \dotfill pièces au total.
+    \end{itemize}
+    
+    \item  \textbf{Le Script Glouton :} Complétez la boucle.
+    \begin{lstlisting}[style=pythonstyle, language=Python]
+def rendu_glouton(somme):
+    pieces = [4, 3, 1]
+    solution = []
+    for p in pieces:
+        while somme >= p:
+            solution.append(........)
+            somme = somme - ........
+    return solution
+    \end{lstlisting}
+
+    \item  \textbf{La Méthode Exhaustive (Le "Force Brute") :} 
+    Cette méthode teste toutes les combinaisons de pièces possibles pour trouver le minimum mathématique.
+    Complétez ce raisonnement logique :
+    \begin{itemize}
+        \item Combinaison 1 : [4, 1, 1] $\rightarrow$ 3 pièces.
+        \item Combinaison 2 : [3, 3] $\rightarrow$ \dotfill pièces.
+        \item Combinaison 3 : [3, 1, 1, 1] $\rightarrow$ 4 pièces.
+        \item \textbf{La meilleure solution est donc :} \dotfill
+    \end{itemize}
+
+    \item  \textbf{Analyse de l'expert :}
+    Complétez le script qui compare toutes les décompositions possibles (ici simplifiées) :
+    \begin{lstlisting}[style=pythonstyle, language=Python]
+def rendu_exhaustif(somme):
+    # On imagine toutes les combinaisons qui font "somme"
+    possibilites = [[4, 1, 1], [3, 3], [3, 1, 1, 1], [1, 1, 1, 1, 1, 1]]
+    
+    meilleure_sol = possibilites[0]
+    
+    for combi in possibilites:
+        # Si la longueur de la combinaison actuelle est plus petite
+        if len(combi) < len(................):
+            meilleure_sol = ................
+            
+    return meilleure_sol
+    \end{lstlisting}
+    
+    \item \textbf{Bilan :} Pourquoi n'utilise-t-on pas toujours la méthode exhaustive si elle trouve toujours la solution parfaite ? (Pensez à l'exercice 3 sur le nombre de combinaisons).
+    \dotfill
+    \dotfill
+\end{enumerate}
+\end{Exercise}

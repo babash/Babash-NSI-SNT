@@ -1,0 +1,253 @@
+\chapter*{Rappel - Les fonctions}
+
+\section*{Repérer les fonctions}
+
+\underline{Exercice 1 :}\\
+
+Voici des extraits du code de la bibliothèque Python « openai » (openai-python 0.x, © OpenAI, licence MIT), repérer les définitions et les appels de fonctions (vous pouvez surligner en différentes couleurs).
+Dans chacun des cas, sans chercher à comprendre la fonction, déterminer les paramètres et les valeurs de retours.\\
+\begin{lstlisting}[language=Python]
+   
+def _console_log_level():
+    if openai.log in ["debug", "info"]:
+        return openai.log
+    elif OPENAI_LOG in ["debug", "info"]:
+        return OPENAI_LOG
+    else:
+        return None
+
+def logfmt(props):
+    def fmt(key, val):
+        # Handle case where val is a bytes or bytesarray
+        if hasattr(val, "decode"):
+            val = val.decode("utf-8")
+        # Check if val is already a string to avoid re-encoding into ascii.
+        if not isinstance(val, str):
+            val = str(val)
+        if re.search(r"\s", val):
+            val = repr(val)
+        # key should already be a string
+        if re.search(r"\s", key):
+            key = repr(key)
+        return "{key}={val}".format(key=key, val=val)
+
+    return " ".join([fmt(key, val) for key, val in sorted(props.items())])
+
+
+def get_object_classes():
+    # This is here to avoid a circular dependency
+    from openai.object_classes import OBJECT_CLASSES
+
+    return OBJECT_CLASSES
+
+
+def convert_to_openai_object(
+    resp,
+    api_key=None,
+    api_version=None,
+    organization=None,
+    engine=None,
+    plain_old_data=False,
+):
+    # If we get a OpenAIResponse, we'll want to return a OpenAIObject.
+
+    response_ms: Optional[int] = None
+    if isinstance(resp, openai.openai_response.OpenAIResponse):
+        organization = resp.organization
+        response_ms = resp.response_ms
+        resp = resp.data
+
+    if plain_old_data:
+        return resp
+    elif isinstance(resp, list):
+        return [
+            convert_to_openai_object(
+                i, api_key, api_version, organization, engine=engine
+            )
+            for i in resp
+        ]
+    elif isinstance(resp, dict) and not isinstance(
+        resp, openai.openai_object.OpenAIObject
+    ):
+        resp = resp.copy()
+        klass_name = resp.get("object")
+        if isinstance(klass_name, str):
+            klass = get_object_classes().get(
+                klass_name, openai.openai_object.OpenAIObject
+            )
+        else:
+            klass = openai.openai_object.OpenAIObject
+
+        return klass.construct_from(
+            resp,
+            api_key=api_key,
+            api_version=api_version,
+            organization=organization,
+            response_ms=response_ms,
+            engine=engine,
+        )
+    else:
+        return resp
+
+def merge_dicts(x, y):
+    z = x.copy()
+    z.update(y)
+    return z
+\end{lstlisting}
+
+\section*{Trouver l'erreur}
+
+\underline{Exercice 2 :}\\
+
+Trouvez l'erreur dans la définition de la fonction suivante, expliquez pourquoi cela cause une erreur et formulez une correction.
+
+\begin{lstlisting}[language=Python]
+    def bonjour()
+        print("Bonjour")
+\end{lstlisting}
+
+\underline{Exercice 3 :}\\
+
+Trouvez l'erreur dans la définition de la fonction suivante, expliquez pourquoi cela cause une erreur et formulez une correction.
+
+\begin{lstlisting}[language=Python]
+    def decompte10():
+    print("Debut du decompte")
+        for i in range(10):
+            print(10-i)
+        print(0, "!")
+        print("Fin du decompte")
+\end{lstlisting}
+
+\underline{Exercice 4 :}\\
+
+Trouvez l'erreur dans la définition de la fonction suivante, expliquez pourquoi cela cause une erreur et formulez une correction.
+
+\begin{lstlisting}[language=Python]
+    def decompte(n):
+        if n > 0:
+        print("Vous devez donner un nombre positif")
+        print("Debut du decompte")
+        for i in range(n):
+            print(10-i)
+        print(0, "!")
+        print("Fin du decompte")
+\end{lstlisting}
+
+
+\section*{Compréhension d'algorithmes}
+
+\underline{Exercice 5 :}\\
+Que fait la fonction suivante ? dérouler l'exécution du code ligne par ligne dans un tableau.
+\begin{lstlisting}[language=Python]
+    def mystere(n):
+        a = 1
+        for i in range(1, n+1):
+            a = a*i
+        return a
+
+    mystere(5)
+\end{lstlisting}
+
+\underline{Exercice 6 :}\\
+Que fait la fonction suivante ? dérouler l'exécution du code ligne par ligne dans un tableau.
+\begin{lstlisting}[language=Python]
+    def mystere(a, b):
+        if a > b :
+            temp = a
+            a = b
+            b = temp
+        return a, b
+
+    print(mystere(46, 12))
+\end{lstlisting}
+
+\underline{Exercice 7 :}\\
+Que fait la fonction suivante ? dérouler l'exécution du code ligne par ligne dans un tableau.
+\begin{lstlisting}[language=Python]
+    def mystere(tab, n):
+        for i in range(len(tab)) :
+            tab[i] = tab[i] * n
+        return tab
+
+    print(mystere([3, 6, 10, 1, 0], 5))
+\end{lstlisting}
+
+\underline{Exercice 8 :}\\
+Que fait la fonction suivante ? dérouler l'exécution du code ligne par ligne dans un tableau.
+\begin{lstlisting}[language=Python]
+    def mystere(tab):
+        for i in range(1, len(tab)+1) :
+            if tab[i-1] != tab[-i]:
+                return False
+        return True
+
+    print(mystere([3, 6, 10, 1, 0, 4, 10, 6, 3]))
+\end{lstlisting}
+
+\underline{Exercice 9 :}\\
+Que fait la fonction suivante ? dérouler l'exécution du code ligne par ligne dans un tableau.
+\begin{lstlisting}[language=Python]
+    from math import sqrt # import de la fonction racine carree
+    
+    def mystere(point1, point2):
+        return sqrt((point1[0] - point2[0])**2 + (point1[1] - point2[1])**2)
+
+    def mystere2(tab, depart):
+        point = tab[0]
+        min_dist = mystere(point, depart)
+        for i in range (1, len(tab)):
+            if mystere(tab[i], depart) < min_dist:
+                point = tab[i]
+                min_dist = mystere(tab[i], depart)
+        return point
+
+    print(mystere2([[7, 9], [2, 5], [5, 2]], [0, 0]))
+\end{lstlisting}
+
+\newpage
+\section*{Définition de fonction}
+
+\subsection*{Fonction simple}
+
+Pour chacun des exemples ci-dessous, vous imaginerez un script de test permettant de mettre à l'épreuve votre fonction et déroulerez votre algorithme sur l'exemple de test.
+
+\underline{Exercice 10 :}\\
+Écrire une fonction \textit{alphabet} écrivant les lettres de l'alphabet dans l'ordre en minuscule dans le terminal.
+
+\underline{Exercice 11 :}\\
+Écrire une fonction \textit{factorielle10} qui fait le produit des nombres entre 1 et 10 ($1 \times 2 \times ... \times 9 \times 10)$ et affiche le résultat dans le terminal.
+
+\subsection*{Avec paramètres}
+
+\underline{Exercice 12 :}\\
+Écrire une fonction \textit{factorielle} qui fait le produit des nombres entre 1 et n ($1 \times 2 \times ... \times n-1 \times n)$, $n$ étant un entier passé en paramètres de la fonction.
+
+\underline{Exercice 13 :}\\
+Écrire une fonction \textit{nombre\_de} qui compte le nombre d'occurrences d'une valeur $n$ donnée en paramètre dans un tableau $tab$ également donnée en paramètres et l'affiche dans le terminal.
+
+\subsection*{Avec valeur de retour}
+
+\underline{Exercice 14 :}\\
+Écrire une fonction \textit{puissance} prenant deux paramètres $x$ et $n$ et qui calcule le nombre $x^n$ et le renvoi dans le programme principal.
+
+\underline{Exercice 15 :}\\
+Écrire une fonction qui reçoit une chaîne de caractères en paramètre et qui retourne le nombre de voyelles de cette chaine.
+
+\underline{Exercice 16 :}\\
+Écrire une fonction qui résout une équation du second degré $ax^2+bx+c=0$ avec les paramètres $a$, $b$ et $c$ entrés en paramètres et qui retourne les solutions s'il y en a.
+
+\begin{tcolorbox}[enhanced,
+    colback=green!25!black!10!white,colframe=green!75!black,title=Rappel,
+    drop fuzzy shadow,watermark color=white]
+Il faut d'abord calculer le déterminant $\Delta = b^2-4ac$ et en fonction de sa valeur, retourner les solutions correspondantes.
+\begin{itemize}
+    \item Si $\Delta<0$ il n'y a pas de solution.
+    \item Si $\Delta>0$ il y a deux solutions $\frac{-b+\sqrt{\Delta}}{2a}$ et $\frac{-b-\sqrt{\Delta}}{2a}$.
+    \item Si $\Delta=0$ il n'y a qu'une solution $\frac{-b}{2a}$.
+\end{itemize} 
+\end{tcolorbox}
+
+
+
+

@@ -1,0 +1,205 @@
+\section*{Devoir Maison : La Science du Secret et la Machine Enigma}
+\setcounter{section}{1}
+
+\begin{itemize}
+    \item \textbf{Objectif :} Analyser des algorithmes de chiffrement et comprendre l'histoire de la cryptographie.
+    \item \textbf{Compétences :} Analyse de fonctions (entrées/sorties), boucles, et compréhension des protocoles.
+\end{itemize}
+
+\subsection*{Introduction : L’art de dissimuler le sens}
+
+Depuis l'Antiquité, les chefs d'État et les militaires cherchent à protéger leurs secrets. La cryptographie (du grec kruptos, "caché", et graphein, "écrire") est née de ce besoin.
+\subsubsection*{Le Code de César : La substitution simple}
+
+Jules César utilisait une méthode appelée substitution mono-alphabétique. Le principe est élémentaire : chaque lettre d'un message est remplacée par une autre lettre située un certain nombre de rangs plus loin dans l'alphabet. Par exemple, avec un décalage de 3, le 'A' devient 'D'. Bien que révolutionnaire à son époque, ce système présente une faiblesse majeure : la structure du message ne change pas. Si le "E" est la lettre la plus fréquente dans votre langue, il sera remplacé par une lettre qui deviendra, elle aussi, la plus fréquente du message codé.
+
+\begin{Exercise}[title={Analyse du protocole de César}]
+
+Le code suivant permet de décaler les lettres d'un message pour le rendre illisible.
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+def crypter_cesar(message, cle):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    message_code = ""
+    for lettre in message:
+        indice = alphabet.find(lettre)
+        nouvel_indice = (indice + cle) % 26
+        message_code = message_code + alphabet[nouvel_indice]
+    return message_code
+\end{lstlisting}
+
+\Question Complétez le tableau suivant pour identifier les composants du programme. Vous compléterez la colonne rôle à l'aide de l'une des mentions suivantes : \textit{Texte à cacher}, \textit{Valeur du décalage}, \textit{Référence des 26 lettres}, \textit{Stocke le résultat} et \textit{Message chiffré final}.
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Composant} & \textbf{Nom dans le code} & \textbf{Type de la variable} & \textbf{Rôle (parmi les mentions)} \\ \hline
+Paramètre 1 & & &  \\ \hline
+Paramètre 2 & & &  \\ \hline
+Variable locale 1 & \texttt{alphabet} & &  \\ \hline
+Variable locale 2 & \texttt{message\_code} & &  \\ \hline
+Le Retour & & &  \\ \hline
+\end{tabular}
+\end{center}
+
+\Question A quoi sert l'opérateur \textsc{\% 26} dans le code de la fonction \texttt{crypter\_cesar()} ? \\
+\emptybox{1.5cm}
+
+\Question Complétez le tableau d'avancement pour crypter\_cesar("noix", 4).\\
+\begin{center}
+    \large
+\begin{tabular}{c|c|c|c|c|c}
+\textbf{lettre} & \textbf{indice} & \textbf{nouvel\_indice} & \textbf{alphabet [nouvel\_indice]} &  \textbf{message\_code}\\
+\hline
+&  &  & &\\
+&  &  & &\\
+&  &  & &\\
+&  &  & &\\
+&  &  & &\\
+&  &  & &\\
+&  &  & &\\
+\end{tabular}
+\end{center}
+
+\Question Quelle est la valeur renvoyée par l'appel à:
+\begin{itemize}
+    \item \texttt{crypter\_cesar("bonjour", 2)} ? \dotfill
+    \item \texttt{crypter\_cesar("zigzag", 9)} ? \dotfill
+    \item \texttt{crypter\_cesar("abracadabra", 3)} ? \dotfill
+\end{itemize}
+\end{Exercise}
+
+
+\begin{Exercise}[title={Mission : Créer le protocole de décryptage}]
+
+Pour lire un message intercepté, vous devez coder la fonction inverse permettant de décrypter le code depuis le message codé et la clé.
+
+\Question Logique de programmation (compléter les vides):
+\begin{itemize}
+    \item Je définis la fonction \dotfill avec les entrées \dotfill et \dotfill.
+    \item J'initialise une variable \dotfill avec \dotfill vide.
+    \item Je parcours le message lettre par lettre grâce à une \dotfill.
+    \item Pour chaque lettre, je trouve \dotfill.
+    \item Pour retrouver la lettre d'origine, je dois \dotfill la valeur de la clé à l'indice actuel.
+    \item \dotfill la nouvelle lettre au résultat et je \dotfill la variable \dotfill à la fin.
+\end{itemize}
+
+\Question Quelle est donc la seule différence entre la fonction \texttt{decrypter\_cesar()} et la fonction \texttt{crypter\_cesar()} ? Qu'elle ligne de code va changer ?\\
+\emptybox{2cm}
+\end{Exercise}
+
+\begin{Exercise}[title={Vulnérabilité : Les attaques}]
+\textbf{L'attaque par force brute :}\\
+La force brute consiste à tester toutes les combinaisons possibles.
+\Question Dans l'alphabet de 26 lettres, combien y a-t-il de clés de décalage différentes possibles ? \dotfill
+\Question Pourquoi cela rend-il le code de César fragile face à un ordinateur ? \dotfill\\
+
+\textbf{L'attaque par fréquence :}\\
+En français, la lettre \textbf{E} est à 15\%. Voici le tableau des fréquences :
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+\hline
+E & A & I & S & N & R & T & O & L & U & Autres lettres\\ \hline
+14,7\% & 7,6\% & 7,5\% & 7,1\% & 7,1\% & 6,7\% & 7,2\% & 5,8\% & 5,4\% & 6,3\% & <1\%\\ \hline
+\end{tabular}
+\end{center}
+
+
+
+\Question On intercepte : \texttt{"oh vhfuhw hvw hq wrl"}. La lettre la plus fréquente est le \textbf{h}. Si le \textbf{h} (indice 7) est un \textbf{E} (indice 4), quel est le décalage utilisé ? \dotfill \\
+
+\textbf{Utilisation d'un mot connu (Crib) :}\\
+\Question On sait que le premier mot \texttt{"oh"} est \texttt{"le"}. Vérifiez si cela confirme votre décalage précédent. \\
+\emptybox{2cm}
+
+\Question Décryptez maintenant la fin du message : \dotfill
+\end{Exercise}
+
+\newpage
+
+\subsubsection*{Le Chiffre de Vigenère : Le "chiffre indéchiffrable"}
+
+Au XVIe siècle, Blaise de Vigenère améliore le système en créant la substitution poly-alphabétique. L'idée n'est plus d'utiliser un seul décalage pour tout le message, mais une suite de décalages qui change à chaque lettre, dictée par un mot-clé.
+
+Si votre clé est "BAC" (décalages de 1, 0, 2) :
+\begin{itemize}
+    \item La 1ère lettre du message est décalée de 1.
+    \item La 2ème lettre est décalée de 0.
+    \item La 3ème lettre est décalée de 2.
+    \item La 4ème lettre est de nouveau décalée de 1 (on recommence la clé).
+\end{itemize}
+Grâce à ce système, une même lettre (par exemple "A") pourra être codée par des lettres différentes au sein d'un même message. Cette invention a rendu les messages si sûrs qu'ils ont été considérés comme impossibles à décrypter pendant plus de trois siècles.
+
+\begin{Exercise}[title={Le Chiffre de Vigenère : La sécurité par la rotation}]
+
+Le chiffre de Vigenère est plus robuste car il utilise une liste de décalages (une clé) qui tourne en boucle. Ainsi, une même lettre n'est pas toujours codée de la même façon.
+
+\Question \textbf{Compréhension de l'algorithme} \\
+On souhaite crypter le mot \texttt{"papa"} avec la liste de décalages \texttt{[1, 2]}.
+\begin{itemize}
+    \item La 1ère lettre 'p' subit un décalage de \textbf{1}. Elle devient : \dotfill
+    \item La 2ème lettre 'a' subit un décalage de \textbf{2}. Elle devient : \dotfill
+    \item La 3ème lettre 'p' subit à nouveau le décalage de \textbf{1}. Elle devient : \dotfill
+    \item La 4ème lettre 'a' subit à nouveau le décalage de \textbf{2}. Elle devient : \dotfill
+\end{itemize}
+
+\Question \textbf{Analyse de code (Compléter les trous)} \\
+Complétez l'algorithme suivant qui réalise ce chiffrement poly-alphabétique.
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+def crypter_vigenere(message, liste_cle):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    message_code = ""
+    i = 0  # Position dans la liste_cle
+    for lettre in message:
+        decalage = liste_cle[i]
+        indice = alphabet.find(lettre)
+        nouvel_indice = (indice + decalage) % 26
+        message_code = message_code + alphabet[nouvel_indice]
+        
+        # On passe au decalage suivant pour la prochaine lettre
+        i = i + 1
+        if i == .............(liste_cle): # Si on arrive au bout de la liste
+            i = .............             # On recommence au debut
+            
+    return message_code
+\end{lstlisting}
+
+\Question \textbf{Analyse de la sécurité} \\
+Dans le mot \texttt{"papa"} codé à la Question 1, les deux 'a' du message d'origine sont-ils remplacés par la même lettre dans le message final ? \dotfill
+
+\Question Pourquoi ce système rend-il l'attaque par fréquence (vue à l'exercice précédent) beaucoup plus difficile, voire impossible pour un espion ? \\
+\emptybox{2cm}
+
+\end{Exercise}
+
+\newpage
+\begin{Exercise}[title={Le défi de la machine Enigma et le génie de Bletchley Park}]
+
+Pendant la Seconde Guerre mondiale, l'armée allemande utilisait une machine électromécanique appelée Enigma pour chiffrer ses communications. Contrairement au code de César, où le décalage reste le même pour tout le message, Enigma changeait d'alphabet à chaque pression de touche grâce à un système de rotors mobiles. Cela signifie que si vous tapiez dix fois la lettre "A", vous obteniez dix lettres différentes en sortie.\\
+
+Pour déchiffrer un message, les Allemands devaient posséder la même machine et connaître les réglages quotidiens (l'ordre des rotors, leur position de départ et les branchements des câbles). Ces réglages étaient changés toutes les 24 heures, rendant la tâche des décodeurs alliés presque impossible : il y avait des milliards de combinaisons possibles à tester chaque jour.\\
+
+C’est ici qu’intervient le mathématicien britannique Alan Turing. Travaillant dans le centre secret de Bletchley Park, il a compris qu'on ne pouvait pas vaincre une machine à la main. Il a alors conçu la "Bombe", une machine électromécanique capable de tester des milliers de réglages d'Enigma en quelques minutes.\\
+
+Pour faire fonctionner la Bombe, Turing exploitait deux failles majeures :
+\begin{itemize}
+\item Le "Crib" (mot probable) : L'utilisation de mots prévisibles comme "WETTER" (météo) dans les messages allemands.
+\item La faille de conception : Le fait qu'avec Enigma, une lettre ne pouvait jamais être codée par elle-même.
+\end{itemize}
+C'est cette combinaison de puissance de calcul et d'astuce logique qui a permis de briser le secret des communications allemandes et, selon les historiens, d'écourter la guerre de plus de deux ans.\\
+
+La machine Enigma changeait donc d'alphabet à \textbf{chaque} lettre. Pour la casser, Alan Turing utilisait le mot \texttt{WETTER} (Météo). Or, sur Enigma, \textbf{une lettre ne peut jamais être codée par elle-même}.\\
+
+\Question On intercepte \texttt{RXTTBO}. Peut-il s'agir du mot \texttt{WETTER} ? Justifiez : \dotfill\\
+\dotfill
+
+\Question Pour le code de César, il n'existe que 26 clés possibles. Pour la machine Enigma, en comptant l'ordre des rotors et les câbles, il existe environ 158 000 000 000 000 000 000 de combinaisons différentes. Si un ordinateur moderne testait 1 million de combinaisons par seconde, combien de temps lui faudrait-il pour tester toutes les combinaisons ?\\
+\emptybox{2cm}
+
+\Question Les réglages d'Enigma changeaient toutes les 24 heures. Pourquoi le temps était-il l'ennemi numéro 1 d'Alan Turing ?\\
+\emptybox{2cm}
+
+\Question Pourquoi l'utilisation de rotors qui tournent rend-elle l'attaque par fréquence inutile ? \\
+\emptybox{5cm}
+\end{Exercise}

@@ -1,0 +1,171 @@
+
+% rappel liste
+% rappel dictionnaire
+% rappel fonctions
+
+%tyoe variable, parcours, tour à tour, résultat de la variable
+\setcounter{chapter}{-1}
+\chapter*{Rappel de 1er NSI}
+ Nous allons étudier l'implémentation du morpion. Le jeu est implémenté selon le déroulement suivant : Chaque joueur joue chacun son tour. Le programme demande au joueur où il souhaite jouer. La grille est mise à jour à chaque action. Le jeu s’arrête si la grille est pleine ou si quelqu’un a gagné.
+
+Voici la fonction qui affiche la grille du morpion :
+\begin{lstlisting}{style=pythonstyle, language=Python}
+# La fonction qui affiche la grille dans le terminal
+def afficherGrille(g, gagnant=None):
+    print(" " + g[0][0] + " | " + g[0][1] + " | " + g[0][2] + " ")
+    print("---+---+---")
+    print(" " + g[1][0] + " | " + g[1][1] + " | " + g[1][2] + " ")
+    print("---+---+---")
+    print(" " + g[2][0] + " | " + g[2][1] + " | " + g[2][2] + " \n")
+    
+    if gagnant:
+        print("* Partie terminée : le joueur", gagnant, "a gagné. *")
+
+
+grille = [[" " for _ in range(3)] for _ in range(3)]  # crée un tableau de 9 caractères espaces " 
+\end{lstlisting}
+
+\begin{Exercise}[title={Rappels de fonction}]
+\Question Quel mot clef en python permet de reconnaître une définition de fonction ?
+\Question Quels sont les paramètres de la fonction afficherGrille ?
+\Question Dans le code qui vous a été fourni, quel est le type de grille ? À quoi le reconnaissez-vous ?
+\Question Écrivez l'appel de fonction de afficherGrille avec uniquement la variable \textit{grille} en paramètre.
+\Question Qu'affiche sur le terminal l'appel suivant afficherGrille(grille, gagnant="X")
+\end{Exercise}
+
+\begin{lstlisting}{style=pythonstyle, language=Python}
+joueurs = ("X","O")
+\end{lstlisting}
+\begin{Exercise}[title={Rappels sur les tuples}]
+\Question Quel est le type de la variable joueurs ?
+\Question A votre avis que désigne-t-elle ?
+\Question Écrire la ligne de code qui affiche le nom du deuxième joueur.
+\Question Pouvez-vous modifier le nom du deuxième joueur ? Justifier.
+\end{Exercise}
+
+
+\begin{lstlisting}{style=pythonstyle, language=Python}
+def tourJoueur(joueur, grille):
+    tour = _ _ _ _ input("Sur quelle case voulez vous jouer ?")
+    grille[_ _ _ _ _ ] = joueur
+\end{lstlisting}
+
+\vfill
+% \begin{lstlisting}{style=pythonstyle, language=Python}
+% def grillePleine(grille):
+%     for elt in grille :
+%         if elt == " ":
+%             return False
+%     return True
+% \end{lstlisting}
+
+% \begin{Exercise}[title={Rappels boucle for}]
+% \Question Est-ce un parcours par index ou par valeur ?
+% \Question Quel est le type des retours ? Que représentent-ils ?
+% \end{Exercise}
+
+
+\begin{Exercise}[title={Rappels sur les listes}]
+\begin{lstlisting}{style=pythonstyle, language=Python}
+def ligneGagnante(grille, ligne):
+    if grille[ligne][0] == grille[ligne][1] == grille[ligne][2]:
+        return grille[ligne][0]
+    else : return False
+    
+def colonneGagnante(grille, colonne):
+    if grille[0][colonne] == ___________________ == ___________________:
+        return grille[0][colonne]
+    else : return False
+
+def diagonalGagnante(grille):
+    if ___________________ == ___________________== ___________________ :
+        return grille[0][0]
+    elif ___________________ == ___________________ == ___________________:
+        return grille[2][0]
+    else : return False
+
+\end{lstlisting}
+%len ?
+\Question Complétez les trous
+\Question Quelles sont les valeurs que peut retourner cette fonction ?
+
+\end{Exercise}
+
+\vfill
+
+\begin{Exercise}[title={Rappels sur les dictionnaires}]
+\begin{lstlisting}{style=pythonstyle, language=Python}
+joueurs = {"Lagon": (4, 15),
+           "Corail": (6, 15),
+           "Manta": (11, 20),
+           "Tortue": (19, 30)}
+
+def meilleurRatio(joueurs):
+    meilleur = None
+    rmax = 0
+    for n, (v, j) in joueurs.items():
+        if v/j > rmax:
+            rmax = v/j
+            meilleur = n
+    return meilleur            
+\end{lstlisting}
+
+Le dictionnaire joueurs a pour clé le nom du joueur et pour valeur un tuple (nombre de partie gagnée, nombre de parties jouées).\\
+On pourra utiliser la fonction meilleurRatio pour trouver le joueur ayant le meilleur ratio de victoire.\\
+Pour trouver le total de parties jouées, on peut additionner les deuxièmes valeurs des tuples.
+\Question Quelles sont les clés du dictionnaire joueurs ?
+\Question Quelle est le type des valeurs du dictionnaire joueurs ?
+\Question Que vaut joueurs["Tortue"][0], a quoi cela correspond t-il ?
+\Question A quoi correspond joueurs["Lagon"][1] + joueurs["Corail"][1] + joueurs["Manta"][1] \\ + joueurs["Tortue"][1] ?
+\Question A quoi correspondent les variables n, v, j de la fonction meilleurRatio ?
+\Question Quel est le résultat de meilleurRatio(joueurs) ?
+\Question En cas d'égalité sur le ratio, quel joueur sera retourné par la fonction.
+\Question Tortue vient de gagner une partie contre Lagon donner les instructions permettant de mettre à jour le dictionnaire joueurs.
+\end{Exercise}
+
+\newpage
+%Exercice sur les listes : 1) affichez des valeurs, 2) parcourir des listes, 3) Ajouter les valeurs à une liste
+
+% \begin{Exercise}
+%     \begin{lstlisting}
+% L = [8, 24, 48, 2, 16]
+% taille = len(L)
+
+% #nombre de multiples de 3 présents dans L
+% mult3 = 0
+% for i in range(_ _ _ _ _ ) :
+%  if _ _ _ _ _ _ _ _ _  == 0 :
+%       mult3 += _ _ _
+% print ("Nombre de multiples de 3 : ", mult3)
+%     \end{lstlisting}
+% \Question Complétez le code à trou ci-dessus.
+% \end{Exercise}
+
+
+\begin{Exercise}[title = {Listes et dictionnaires}]
+Voici une structure de données qui récupère le nombres de médailles gagnées par 10 pays participant aux JO de Paris 2024.
+\begin{lstlisting}
+JO_2024 =[["pays" , "or", "argent", "bronze" ] ,
+        ["Italie", 12, 13, 15],
+        ["Japon", 20, 12, 13],
+        ["Etats-Unis", 40, 44, 42],
+        ["Pays-Bas", 15, 7, 12],
+        ["France", 16, 26, 22],
+        ["Chine",40, 27, 24],
+        ["Corée du Sud", 13, 9, 10],
+        ["Allemagne", 12, 13, 8],
+        ["Australie", 18, 19, 16],
+        ["Grande-Bretagne", 14, 22, 29]]
+\end{lstlisting}
+\Question Quelle est la structure de données choisie ?
+\Question Donner l'instruction pour afficher le premier pays de la liste.
+\Question Donner l'instruction pour afficher le dernier pays de la liste.
+\Question Donner l'instruction pour connaître le nombre de pays contenus dans la liste.
+\Question Le gagnant est celui qui a gagné le plus de médailles d'or. Écrire une fonction \textit{gagnant} qui prend en paramètre la liste et qui renvoie le nom du pays qui a gagné le plus de médailles d'or ainsi que le nombre de médailles d'or.\textit{Vous allez devoir parcourir la liste et trouver le maximum de médailles d'or}
+\Question Écrire une fonction \textit{plus\_medailles} qui prend en paramètre la liste et qui renvoie le nom du pays qui a gagné le plus de médailles ainsi que le nombre total de médailles gagnées.
+
+\Question Proposez une autre structure de données pour l'enregistrement du nombre de médailles gagnées par les pays participant aux JO.
+\Question Ecrivez votre nouvel enregistrement avec votre nouvelle structure de données.
+\Question Répondez aux mêmes questions que l'exercice précédent.
+\Question A votre avis, quelle structure est la plus adaptée ?
+\end{Exercise}

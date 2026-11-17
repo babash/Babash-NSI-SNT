@@ -1,0 +1,284 @@
+\setcounter{chapter}{2}
+\chapter{Structures de données : les collections}
+\counterwithout{section}{chapter}
+\vspace{-1cm}
+Dans les chapitres précédents, vous avez appris à utiliser des types de données qui ne contenaient qu'une unique valeur : les int, bool, float, str. 
+Dans ce chapitre, vous allez apprendre à manipuler des collections de données. En effet, si vous souhaitez étudier un ensemble de données comme une liste de musiques, les températures à Mayotte, les quantités d'eau circulant à Mayotte, etc, vous n'allez pas créer une variable pour chaque valeur, vous allez avoir besoin de types adaptés dans lesquels vous allez stocker \textbf{toutes} les musiques, températures...\
+
+En python, il existe trois types structurés qu'on appelle donc \motcle{collection} :~\textbf{les listes, les tuples, les dictionnaires}\\
+
+Le choix de la structure de données est important dès qu'on souhaite stocker et manipuler efficacement des données. Le choix se fait en fonction du \textbf{besoin}. Il est donc important de spécifier son besoin pour choisir la structure de données la plus adéquate. Découvrons ensemble ces nouveaux concepts.
+
+\section{Les listes}
+
+\begin{Definition}
+Comme son nom l'indique, une liste contient une \textbf{série de valeurs.} Les listes regroupent des données de manière à pouvoir y accéder librement : on y accède grâce à leur position dans la série.\\
+On appelle cette position \motcle{index} et les index commencent à {\Huge 0} en Python.\\
+Dans d'autres langages, on appelle les listes des tableaux, c'est la même chose !
+\end{Definition}
+
+
+\subsection*{Créer une liste}
+Pour créer une liste en python, on utilise les [ ], les valeurs sont alors séparées par des virgules.
+\begin{lstlisting}[style=pythonstyle, language=python]
+# Creer une liste vide 
+ma_liste_vide = []
+# Creer une liste de valeur
+ma_liste = [89, 56, 24, 33, 12]
+ma_liste_de_str = ["coco", "banane", "papaye"]
+\end{lstlisting}
+
+\begin{Astuce}
+    Cette méthode est bien pratique, mais si je veux créer une liste de taille 500 ne contenant que des 0, c'est quand même un peu long à écrire...\\
+    Heureusement python a une solution pour moi.
+\begin{lstlisting}[style=pythonstyle, language=python]
+# Creer une liste contenant 500 fois la valeur 0
+l = [0] * 500
+\end{lstlisting}
+\end{Astuce}
+
+\begin{Astuce}
+    Parfois, on voudra ne pas devoir rentrer toutes les valeurs dans un programme, mais plutôt créer une liste à partir d'une boucle. Par exemple, si je veux créer une liste contenant les nombres de 1 à 500.\\
+    Heureusement python a une solution pour moi.
+\begin{lstlisting}[style=pythonstyle, language=python]
+# Creer une liste contenant les nombres de 1 à 500
+l = [i for i in range(1, 501)]
+\end{lstlisting}
+\end{Astuce}
+
+\subsection*{Trouver la longueur}
+Comme les listes permettent de stocker plusieurs valeurs, c'est tout naturellement qu'on veut pouvoir connaître leur longueur (le nombre d'éléments), pour cela, on utilisera la fonction $len$.\\
+La fonction len prend en paramètre la collection dont on veut connaître la longueur et retourne le nombre d'éléments.
+
+\begin{Comprendre}
+Par exemple, le code ci-dessous affichera 6.
+\begin{lstlisting}[style=pythonstyle, language=python]
+l = [5, 9, 12, 22, 31, 16]
+print(len(l))
+\end{lstlisting}
+\end{Comprendre}
+
+\begin{Astuce}
+Ce qui est absolument génial est que la fonction len marchera pour n'importe quelle collection, que ce soit une liste, un tuple, un dictionnaire et même sur les chaines de caractères (str).  
+\end{Astuce}
+
+
+\subsection*{Accéder aux valeurs}
+Dans une liste, les valeurs sont accédées à l'aide des positions, on parle d'\motcle{index}.
+
+\begin{Comprendre}
+    \begin{minipage}{0.45\linewidth}
+    Par exemple, dans la liste l ci-dessus, à l'index 4, on lit/accède à la valeur 31. 
+\end{minipage}\begin{minipage}{0.49\linewidth}
+    \begin{center}
+       
+    \end{center}
+\end{minipage}\\
+\end{Comprendre}
+
+On peut accéder par indice avec des indices positifs en partant du début de la liste ou avec des indices négatifs en partant de la fin de la liste.
+\begin{itemize}
+    \item Pour une liste, l les index positifs commencent à 0 (pour la première valeur) et finissent à l'index $len(l) - 1$ (pour la dernière valeur).
+    \item Pour une liste, l les index négatifs commencent à -1 (pour la dernière valeur) et finissent à l'index $-len(l)$ (pour la première valeur).
+\end{itemize}
+
+\begin{center}
+\begin{tabular}{l c c c c c c c}
+    liste & : &["A", & "B", & "C", & "D", & "E", &"F"]\\
+    indice positif & : & 0 & 1 & 2 & 3 & 4 & 5\\
+    indice négatif & : & -6 & -5 & -4 & -3 & -2 & -1\\
+    longueur len(liste)& : & 6 \\
+\end{tabular}
+\end{center}
+
+Voyons un exemple avec le code ci-dessous :
+\begin{lstlisting}[style=pythonstyle, language=python]
+l = ["A", "B", "C", "D", "E", "F"]
+print(l[0]) # Affiche A
+print(l[3]) # Affiche D
+print(l[-1]) # Affiche F
+print(l[-5]) # Affiche B
+\end{lstlisting}
+
+\subsection*{Modifier une valeur}
+On peut affecter un élément d'une liste à un index donné. On va affecter une nouvelle valeur au ième élément d'une liste.\\
+On utilise le nom de la liste suivie par des crochets qui contienne l'emplacement de la valeur à changer. La nouvelle valeur est suivie par le "égal".
+\begin{Comprendre}
+Par exemple, le code ci-dessous changent les valeurs aux emplacements 0, 2 et -1:
+\begin{lstlisting}[style=pythonstyle, language=python]
+maListe = ["A", "B", "C", "D", "E", "F"]
+maListe[0] = "I"
+maListe[2] = "J"
+maListe[-1] = "K"
+\end{lstlisting}
+La liste maListe contient de nouveaux éléments et s'affiche comme suit : ["I", "B", "J", "D", "E", "K"]
+\end{Comprendre}
+
+\subsection*{Parcourir une liste}
+Pour pourvoir aller lire tous les éléments d'une liste on dit qu'on va \motcle{parcourir} une liste. Pour ce faire, on va utiliser les boucles for. On distingue 2 façons de parcourir une liste :
+\begin{itemize}
+    \item \textbf{Les parcours par index} : grâce à un index i qui va prendre les valeurs de 0 à len(maListe) - 1, on va aller lire les éléments un par un :
+\begin{lstlisting}[style=pythonstyle, language=python]
+maListe = ["A", "B", "C", "D", "E", "F"]
+for i in range(len(maListe)) :
+    print(maListe[i])
+\end{lstlisting}
+    \item \textbf{Les parcours par valeur} : On va lire les éléments contenus dans une liste dans l'ordre. On a plus accès à l'index où cet élément se trouve.
+\begin{lstlisting}[style=pythonstyle, language=python]
+maListe = ["A", "B", "C", "D", "E", "F"]
+for valeur in maListe :
+    print(valeur)
+\end{lstlisting}
+\end{itemize}
+
+
+
+\subsection*{Opération sur les listes}
+\begin{itemize}
+    \item + Concaténation de liste : on peut "coller" deux listes pour n'en avoir qu'une
+    \item * répéte un élément de la liste
+\end{itemize}
+\begin{Comprendre}
+Par exemple, on va afficher la concaténation entre la liste l et la liste m puis on va répéter la liste m.
+\begin{lstlisting}[style=pythonstyle, language=python]
+l = ["A", "B", "C", "D", "E", "F"]
+m = ["G", "H"]
+print(l + m) # affiche ["A", "B", "C", "D", "E", "F", "G", "H"]
+print(m*2) # affiche ["G", "H", "G", "H"]
+\end{lstlisting}    
+\end{Comprendre}
+\vspace{-1cm}
+    
+\subsection*{Fonctions utiles}
+On peut utiliser des fonctionnalités sur les liste. Vous en trouverez la liste détaillée sur la documentation python \href{https://docs.python.org/fr/3/tutorial/datastructures.html}{https://docs.python.org/fr/3/tutorial/datastructures.html}
+En résumé :
+\begin{enumerate}
+    \item append(x) : permet d'ajouter l' élément x à la fin de la liste
+    \item insert(i,x) :  permet d'ajouter l' élément x à l'index i de la liste et décale les autres valeurs à droite.
+    \item remove(x) : supprime de la liste le premier élément dont la valeur est égale à x
+    \item pop(i) : supprime de la liste l'élément d'index i et le renvoie (le dernier élément si on n'indique pas i).
+    \item extend(x) : concatène une liste x à la fin de la liste
+\end{enumerate}
+Voyons quelques exemple d'utilisation :
+\begin{lstlisting}[style=pythonstyle, language=python]
+l = ["A", "B", "C", "D", "E", "F"]
+l.append("H")
+l.append("L")
+l.insert(6, "G")
+l.remove("L")
+l.pop(-1)
+print(l) # Affiche ["A", "B", "C", "D", "E", "F", "G"]
+\end{lstlisting}
+
+\begin{Astuce}
+On appelle ces fonctions des méthodes car elles s'appliquent sur un objet de type \motcle{liste}. Pour appeler ces méthodes, on utilise un notation avec un point de la forme :
+\begin{center}
+nom\_liste.nom\_methode(paramètres) 
+\end{center}
+\end{Astuce}
+
+
+
+\begin{Comprendre}
+    Avez-vous compris la différence entre la méthode append() et extend() ?
+    \vspace{1cm}
+\end{Comprendre}
+
+Une dernière fonction :
+\begin{itemize}
+    \item del maListe[x] : qui va supprimer le xième élément de la liste et décaler les autres élément à gauche.
+\end{itemize}
+Prenons un exemple :
+\begin{lstlisting}[style=pythonstyle, language=python]
+l = ["A", "B", "C", "D", "E", "F"]
+del l[2]
+print(l) # Affiche ["A", "B", "D", "E", "F"]
+\end{lstlisting}
+L'élément C a été supprimée. La liste a désormais une taille de 5 et l'élément à l'index 2 est maintenant "D".
+
+
+\newpage
+% \begin{Exercise}[title={Manipuler une liste simple}]
+%    \Question Faire un schéma représentant la liste de couleurs suivante : "rouge", "vert" et "jaune". 
+%     \Question Modifier le schéma en insérant la couleur "bleu" à la fin de la liste.
+%     \Question Modifier le schéma en retirant la couleur "rouge" de la liste.
+%   \Question La liste est-elle vide ?
+% \Question Combien y-a-t-il d'éléments dans la liste ?
+% \Question A quelle position/index se trouve la couleur "bleu" ? \textbf{Attention, le premier indice est 0 et non 1.}
+% \end{Exercise}
+% \vspace{-0.3cm}
+% Trop facile pour vous ? Apprenons à faire cet exercice en python maintenant !
+
+% \begin{Astuce}
+%     \textbf{Si vous vous demandez pourquoi on commence les indices à 0 et non à 1}, sachez que la communauté informatique est divisée sur la question. A l'origine, dans les années 50, il était effectivement plus simple de commencer par 0 car les programmeurs devaient optimiser l'espace mémoire et le temps de calcul et dans ce contexte cela avait du sens. Dans des langages modernes comme python, cela à moins d'importance. Vous trouverez des informaticiens avec des arguments allant dans un sens comme dans l'autre. A vous de vous faire votre propre opinion en gagnant de l'expérience ! 
+% \end{Astuce}
+
+% {\fontfamily{cmss}\selectfont
+% Comment manipuler les listes avec python ?\\
+% }
+% \begin{lstlisting}[style=pythonstyle, language=python]
+%     # Creer une liste vide 
+%     l = [] # l'identifiant de la liste est l
+
+%     # Creer une liste non vide
+%     l = ["gauche", 3, 2.3, 7, "droite"]
+
+%     # Taille de la liste
+%     print(len(l)) # affiche la taille de la liste : 5
+
+%     # Acceder a un element par son indice
+%     print(l[4]) # affiche "droite"
+
+%     # Cas particulier
+%     # Premier element
+%     print(l[0]) # affiche "gauche"
+%     # Dernier element 
+%     print(l[-1]) # affiche "droite"
+%     print(l[len(l)-1]) # affiche "droite"
+
+%     # Ajouter un element
+%     l.append("haut")
+%     print(l) # affiche ["gauche", 3, 2.3, 7, "droite", "haut"]
+
+%     # Supprimer un element
+%     del(l[3])
+%     print(l) # affiche ["gauche", 3, 2.3, "droite", "haut"]
+% \end{lstlisting}
+
+
+% \section*{Les tuples}
+% \begin{Definition}
+% Comme une liste, un tuple contient une série de valeurs auxquelles on peut accéder librement grâce à leur position. La différence qui fait la spécificité des tuples est que dans un tuple les valeurs sont non modifiables, ainsi \textbf{une fois créer un tuple ne peut plus être modifié} on dit que le tuple est \motcle{non mutable}.
+% \end{Definition}
+
+% \section*{Les dictionnaires}
+
+
+% \section*{Les chaines de caractères (str)}
+% \newpage
+
+% \begin{landscape}
+% \begin{table}
+% \centering
+% \begin{tabular}{p{0.15\linewidth} | p{0.2\linewidth} | p{0.2\linewidth} | p{0.2\linewidth} | p{0.2\linewidth} |}
+%                           & \multicolumn{1}{c|}{Tuples} & \multicolumn{1}{c|}{Liste} & \multicolumn{1}{c|}{Dictionnaire} & \multicolumn{1}{c|}{Chaine de caractères}  \\
+% \hline
+% Définition                &        &       &              &   \\
+% \hline
+% Identifier &        &       &              &   \\
+% \hline
+% Connaitre la longueur     &        &       &              &   \\
+% \hline
+% Créer                     &        &       &              &   \\
+% \hline
+% Accéder à une valeur      &        &       &              &   \\
+% \hline
+% Modifier une valeur       &        &       &              &   \\
+% \hline
+% Parcourir                 &        &       &              &   \\
+% \hline
+% Méthodes utiles           &        &       &              &   \\
+% \hline
+% \end{tabular}
+% \end{table}
+% \end{landscape}
