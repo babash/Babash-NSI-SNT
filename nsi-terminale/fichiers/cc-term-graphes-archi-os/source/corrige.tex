@@ -1,0 +1,420 @@
+\documentclass[12pt, a4paper]{exam}
+% Corrigé rédigé pour le site Ressources NSI et SNT (CC BY-SA 4.0).
+% Compilation : pdflatex (deux passes).
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[a4paper,top=2.3cm,bottom=2.8cm,left=2cm,right=2cm,headsep=0.6cm,footskip=1.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc}
+\usepackage[most]{tcolorbox}
+
+% Coloration du code : même style que les sujets
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{magenta}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    columns=fullflexible,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true,
+    extendedchars=true,
+    literate={à}{{\`a}}1 {â}{{\^a}}1 {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+             {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ù}{{\`u}}1 {û}{{\^u}}1 {ç}{{\c c}}1
+             {É}{{\'E}}1 {À}{{\`A}}1 {œ}{{\oe}}1 {…}{{\ldots}}1
+}
+\lstset{style=mystyle, language=Python}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Encadrés du corrigé (lisibles en noir et blanc)
+\tcbset{corrbase/.style={enhanced, breakable, sharp corners, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  fonttitle=\bfseries\small, coltitle=black, before skip=2mm, after skip=3mm}}
+\newtcolorbox{reponse}[1][Réponse]{corrbase, unbreakable, colback=gray!6, colframe=black, colbacktitle=gray!22, boxrule=0.8pt, title={#1}}
+\newtcolorbox{erreur}[1][Erreur fréquente]{corrbase, colback=white, colframe=black, boxrule=0.4pt, leftrule=3pt, title={#1}, colbacktitle=white, attach title to upper={\ :\ }}
+\newtcolorbox{retenir}[1][À retenir]{corrbase, colback=white, colframe=black, boxrule=0.4pt, borderline={0.4pt}{1.2pt}{black}, title={#1}, colbacktitle=white, attach title to upper={\ :\ }}
+
+% En-tête d'une question : numéro, points, rappel de la question
+\newcommand{\Q}[3]{\par\needspace{5\baselineskip}\bigskip\noindent{\large\bfseries Question #1}\ifx&#2&\else\ \textnormal{(#2)}\fi\par\nopagebreak\smallskip\noindent\textit{#3}\par\nopagebreak\smallskip}
+\newcommand{\Qp}[2]{\par\medskip\noindent\textbf{#1}\ \textit{#2}\par\nopagebreak\smallskip}
+\newcommand{\methode}{\par\noindent\textbf{Méthode.}\ }
+\newcommand{\application}{\par\noindent\textbf{Application.}\ }
+
+% Arbres
+\tikzset{arbre/.style={every node/.style={draw,circle,minimum size=7mm,inner sep=1pt,font=\small},level distance=11mm, thick},
+  marque/.style={fill=gray!35, line width=1.6pt},
+  titre/.style={draw=none, rectangle, inner sep=2pt}}
+
+\raggedbottom
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\setlist{itemsep=1pt, topsep=2pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{corrbase, colback=white, frame hidden, borderline={0.6pt}{0pt}{black, dashed}, title={#1}, colbacktitle=white, attach title to upper={\ :\ }}
+
+\title{Corrigé --- CC Term NSI - Graphes, Architecture matérielle et OS}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Mai 2025 \textperiodcentered{} Durée du contrôle : 2 h \textperiodcentered{} 21 points}
+
+% Graphe des amis : positions des sommets
+\newcommand{\sommetsAmis}{%
+\node (G) at (0,0) {G}; \node (M) at (0,2.2) {M}; \node (N) at (2.6,2.2) {N};
+\node (E) at (5.2,2.2) {E}; \node (A) at (5.2,4.4) {A}; \node (Y) at (7.8,4.4) {Y};
+\node (J) at (7.8,2.2) {J}; \node (L) at (7.8,0) {L};}
+\tikzset{graphe/.style={every node/.style={draw,circle,minimum size=8mm,font=\bfseries}, thick}}
+
+\begin{document}
+\pagestyle{foot}
+\footer{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\maketitle
+\thispagestyle{foot}
+\begin{center}\footnotesize\itshape Exercice de graphes d'après l'exercice 2 du sujet 24-NSIJ1AN1 (baccalauréat 2024, Amérique du Nord, jour 1).\end{center}
+
+\begin{retenir}[Comment lire ce corrigé]
+Pour chaque question : la question rappelée en italique, la réponse attendue dans un cadre gris, puis l'explication (la méthode en étapes, puis son application). Les cadres « Erreur fréquente » montrent les pièges classiques, et les cadres « Remarque sur l'énoncé » signalent un point du sujet à lire avec attention. Le barème du sujet totalise 21 points.
+\end{retenir}
+
+\section*{1. Graphes}
+
+\begin{retenir}[Le vocabulaire des graphes]
+Un \textbf{graphe} est fait de \textbf{sommets} (ici, les personnes) reliés par des \textbf{arêtes} (ici, les amitiés). Le graphe est \textbf{non orienté} : si Gabriel est ami avec Jade, Jade est amie avec Gabriel. Deux sommets reliés par une arête sont \textbf{voisins} ; le nombre de voisins d'un sommet est son \textbf{degré}.
+\end{retenir}
+
+\Q{1}{1 point}{Dessiner le graphe des amitiés (une lettre entourée par personne, un trait par amitié).}
+\begin{reponse}
+\begin{center}
+\begin{tikzpicture}[graphe, x=1cm, y=1cm]
+\sommetsAmis
+\draw (G) -- (M); \draw (G) -- (N); \draw (G) -- (J); \draw (G) -- (Y);
+\draw (M) -- (A); \draw (M) -- (Y);
+\draw (N) -- (E); \draw (N) -- (Y);
+\draw (E) -- (Y); \draw (E) -- (J);
+\draw (A) -- (Y); \draw (Y) -- (J); \draw (J) -- (L);
+\end{tikzpicture}
+\end{center}
+\end{reponse}
+\methode
+\begin{enumerate}
+\item Dessine les 8 sommets : G, J, Y, E, N, M, A, L.
+\item Lis les phrases une par une et trace chaque amitié \textbf{une seule fois} : « Gabriel est ami avec Jade » et « Jade est amie avec Gabriel » donnent le même trait.
+\item Contrôle : la somme des nombres d'amis cités ($4 + 4 + 6 + 3 + 3 + 3 + 2 + 1 = 26$) vaut deux fois le nombre d'arêtes. Le graphe a donc 13 arêtes.
+\end{enumerate}
+La place des sommets ne compte pas : seules comptent les arêtes. Un croisement de traits est permis, mais on essaie de les limiter.
+
+\Q{2 (a)}{1 point}{Compléter la matrice d'adjacence (ordre des sommets : G, J, Y, E, N, M, A, L).}
+\begin{reponse}
+\begin{lstlisting}
+# sommets : G, J, Y, E, N, M, A, L
+matrice_adj = [[0, 1, 1, 0, 1, 1, 0, 0], # G
+               [1, 0, 1, 1, 0, 0, 0, 1], # J
+               [1, 1, 0, 1, 1, 1, 1, 0], # Y
+               [0, 1, 1, 0, 1, 0, 0, 0], # E
+               [1, 0, 1, 1, 0, 0, 0, 0], # N
+               [1, 0, 1, 0, 0, 0, 1, 0], # M
+               [0, 0, 1, 0, 0, 1, 0, 0], # A
+               [0, 1, 0, 0, 0, 0, 0, 0]] # L
+\end{lstlisting}
+\end{reponse}
+\methode
+\begin{enumerate}
+\item La ligne $i$ correspond au $i$\textsuperscript{e} sommet de la liste, la colonne $j$ aussi.
+\item La case (ligne $i$, colonne $j$) vaut 1 si les deux personnes sont amies, 0 sinon.
+\end{enumerate}
+\application Ligne de J : Jade est amie avec G, Y, E et L. Dans l'ordre G, J, Y, E, N, M, A, L, on obtient 1, 0, 1, 1, 0, 0, 0, 1.
+
+\textbf{Contrôles.} La diagonale ne contient que des 0 (personne n'est ami avec soi-même). La matrice est \textbf{symétrique} : la case (J, L) et la case (L, J) valent toutes deux 1. La somme de chaque ligne donne le nombre d'amis : 4, 4, 6, 3, 3, 3, 2, 1.
+
+\Q{2 (b)}{1 point}{Retours de \code{position(sommets, 'G')} et de \code{position(sommets, 'Z')}.}
+\begin{reponse}
+\code{position(sommets, 'G')} renvoie \textbf{0} ; \code{position(sommets, 'Z')} renvoie \textbf{None}.
+\end{reponse}
+\code{'G'} est le premier élément de la liste \code{sommets}, et les indices commencent à 0. \code{'Z'} n'est pas dans la liste : d'après l'énoncé, la fonction renvoie alors \code{None}.
+\begin{erreur}
+Répondre 1 pour \code{'G'} : en Python, le premier élément d'une liste a l'indice 0.
+\end{erreur}
+
+\Q{2 (c)}{2 points}{Compléter la fonction \code{nb\_amis(L, m, s)}.}
+\begin{reponse}
+\begin{lstlisting}
+def nb_amis(L, m, s):
+    pos_s = position(L, s)
+    if pos_s == None:
+        return None
+    amis = 0
+    for i in range(len(m)):
+        amis += m[pos_s][i]
+    return amis
+\end{lstlisting}
+\end{reponse}
+\begin{itemize}
+\item Ligne 2 : on cherche le numéro de ligne du sommet \code{s} dans la matrice, avec la fonction \code{position}.
+\item Lignes 3--4 : si \code{s} n'est pas dans la liste, \code{position} a renvoyé \code{None} : on renvoie \code{None}, comme demandé.
+\item Lignes 5 à 7 : on additionne toutes les cases de la ligne \code{pos\_s}. Chaque 1 est un ami.
+\item Ligne 8 : on renvoie le total.
+\end{itemize}
+\textbf{Trace de} \code{nb\_amis(sommets, matrice\_adj, 'G')} : \code{pos\_s} vaut 0, la ligne 0 est \code{[0, 1, 1, 0, 1, 1, 0, 0]}.
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|l|c|c|c|c|c|c|c|c|}
+\hline
+\code{i} & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
+\code{m[0][i]} & 0 & 1 & 1 & 0 & 1 & 1 & 0 & 0 \\ \hline
+\code{amis} après le tour & 0 & 1 & 2 & 2 & 3 & 4 & 4 & 4 \\ \hline
+\end{tabular}
+\end{center}
+\textbf{Variante} : \code{return sum(m[pos\_s])} remplace les lignes 5 à 8.
+\begin{erreur}
+Écrire \code{m[i][pos\_s]} : ici, cela donne le même résultat, car la matrice est symétrique, mais c'est la colonne et non la ligne. Autre erreur : \code{amis += 1} à chaque tour, qui compte toutes les cases (8) au lieu des seuls 1.
+\end{erreur}
+
+\Q{2 (d)}{1 point}{Retour de \code{nb\_amis(sommets, matrice\_adj, 'G')}.}
+\begin{reponse}
+\textbf{4}
+\end{reponse}
+Gabriel a 4 amis : Jade, Yanis, Nina et Milo. La trace de la question précédente le confirme.
+
+\Q{3 (a)}{1 point}{Compléter le dictionnaire de listes d'adjacence \code{graphe}.}
+\begin{reponse}
+\begin{lstlisting}
+graphe = {'G' : ['J', 'Y', 'N', 'M'],
+          'J' : ['G', 'Y', 'E', 'L'],
+          'Y' : ['G', 'J', 'E', 'N', 'M', 'A'],
+          'E' : ['J', 'Y', 'N'],
+          'N' : ['G', 'Y', 'E'],
+          'M' : ['G', 'Y', 'A'],
+          'A' : ['Y', 'M'],
+          'L' : ['J']}
+\end{lstlisting}
+\end{reponse}
+Chaque clé est un sommet ; sa valeur est la \textbf{liste de ses voisins}. On recopie simplement la liste d'amis de chaque personne, donnée dans l'énoncé. L'ordre des voisins dans une liste n'a pas d'importance pour le graphe (il en a seulement pour l'ordre d'un parcours).
+
+\Q{3 (b)}{2 points}{Écrire la fonction \code{nb\_amis(d, s)} qui renvoie le nombre d'amis de \code{s}.}
+\begin{reponse}
+\begin{lstlisting}
+def nb_amis(d, s):
+    return len(d[s])
+\end{lstlisting}
+Exemple : \code{nb\_amis(graphe, 'L')} renvoie \textbf{1}.
+\end{reponse}
+\code{d[s]} est la liste des amis de \code{s} ; \code{len} donne sa longueur, c'est-à-dire le nombre d'amis. Lou n'a qu'une amie, Jade.
+
+\textbf{Variante} avec une boucle :
+\begin{lstlisting}
+def nb_amis(d, s):
+    total = 0
+    for ami in d[s]:
+        total = total + 1
+    return total
+\end{lstlisting}
+\begin{erreur}
+Écrire \code{len(d)} : c'est le nombre de \emph{clés} du dictionnaire, donc le nombre de personnes (8), pas le nombre d'amis de \code{s}.
+\end{erreur}
+
+\Q{3 (c)}{1 point}{Milo s'est fâché avec Gabriel et Yanis, Anas avec Yanis : le nouveau dictionnaire est donné.}
+\begin{reponse}
+Cette partie ne pose pas de question : elle donne le nouveau graphe, qui sert aux questions (d) et (e). Le voici dessiné :
+\begin{center}
+\begin{tikzpicture}[graphe, x=0.85cm, y=0.8cm]
+\sommetsAmis
+\draw (G) -- (N); \draw (G) -- (J);
+\draw (M) -- (A);
+\draw (N) -- (E); \draw (N) -- (Y);
+\draw (E) -- (Y); \draw (E) -- (J);
+\draw (Y) -- (J); \draw (J) -- (L);
+\end{tikzpicture}
+\end{center}
+\end{reponse}
+On retire du graphe de départ les arêtes M -- G, M -- Y et A -- Y. Le graphe est désormais coupé en deux morceaux : M et A d'un côté, les six autres de l'autre.
+\begin{remarque}
+Cette partie compte 1 point mais ne contient aucune consigne. De plus, le dictionnaire donné retire aussi l'amitié entre Gabriel et Yanis (\code{'G' : ['J', 'N']} et \code{'Y' : ['J', 'E', 'N']}), ce que le texte n'annonce pas. Le dessin ci-dessus suit le dictionnaire donné, qui sert aux questions suivantes. Ce détail ne change pas la réponse à la question (d).
+\end{remarque}
+
+\Q{3 (d)}{1 point}{Donner la liste du cercle d'amis de Lou (les personnes atteignables à partir de Lou).}
+\begin{reponse}
+Le cercle d'amis de Lou est formé de \textbf{Jade, Gabriel, Nina, Yanis et Emma} (J, G, N, Y, E). \\
+Le parcours en profondeur à partir de \code{'L'} renvoie \code{['L', 'J', 'G', 'N', 'Y', 'E']}, qui contient aussi Lou.
+\end{reponse}
+\methode Pars de Lou et suis les arêtes, de voisin en voisin, en notant chaque personne nouvelle. Arrête-toi quand tu ne trouves plus personne de nouveau.
+
+\application avec le parcours en profondeur (question (e)), en prenant les voisins dans l'ordre des listes :
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{Étape} & \textbf{Sommet visité} & \textbf{\code{visites} après l'étape} \\ \hline
+1 & L (voisins : J) & \code{['L']} \\
+2 & J (voisins : G, Y, E, L) & \code{['L', 'J']} \\
+3 & G (voisins : J déjà vu, N) & \code{['L', 'J', 'G']} \\
+4 & N (voisins : G déjà vu, Y) & \code{['L', 'J', 'G', 'N']} \\
+5 & Y (voisins : J déjà vu, E) & \code{['L', 'J', 'G', 'N', 'Y']} \\
+6 & E (tous ses voisins sont déjà vus) & \code{['L', 'J', 'G', 'N', 'Y', 'E']} \\ \hline
+\end{tabular}
+\end{center}
+On remonte ensuite les appels : il ne reste aucun voisin nouveau. Milo et Anas ne sont pas atteignables : ils ne font pas partie du cercle.
+
+\Q{3 (e)}{1 point}{Compléter le code de la fonction \code{parcours\_en\_profondeur(d, s)}.}
+\begin{reponse}
+\begin{lstlisting}
+def parcours_en_profondeur(d, s, visites = []):
+    visites.append(s)
+    for v in d[s]:
+        if v not in visites:
+            parcours_en_profondeur(d, v)
+    return visites
+\end{lstlisting}
+\end{reponse}
+Chaque ligne traduit une ligne de l'algorithme de l'énoncé :
+\begin{itemize}
+\item ligne 2 : « ajouter s à la liste visités » ;
+\item lignes 3--4 : « pour tous les voisins v de s, si v n'est pas dans la liste visités » ;
+\item ligne 5 : l'appel récursif, déjà écrit dans le sujet ;
+\item ligne 6 : « retourner la liste visités ».
+\end{itemize}
+\textbf{Exemple}, avec le graphe de la question (c) :
+\begin{lstlisting}[numbers=none]
+>>> parcours_en_profondeur(graphe, 'L')
+['L', 'J', 'G', 'N', 'Y', 'E']
+\end{lstlisting}
+\begin{remarque}
+Le code du sujet utilise une liste par défaut, \code{visites = []}, et l'appel récursif ne la transmet pas. Cela marche pour \textbf{un} appel, car Python crée cette liste par défaut une seule fois et tous les appels récursifs partagent la même. Mais un deuxième appel la retrouve remplie. Après le parcours depuis \code{'L'} :
+\begin{lstlisting}[numbers=none]
+>>> parcours_en_profondeur(graphe, 'M')
+['L', 'J', 'G', 'N', 'Y', 'E', 'M', 'A']
+\end{lstlisting}
+au lieu de \code{['M', 'A']}. Version plus sûre, qui transmet la liste :
+\begin{lstlisting}
+def parcours_en_profondeur(d, s, visites=None):
+    if visites is None:
+        visites = []
+    visites.append(s)
+    for v in d[s]:
+        if v not in visites:
+            parcours_en_profondeur(d, v, visites)
+    return visites
+\end{lstlisting}
+\end{remarque}
+\begin{erreur}
+Oublier le test \code{if v not in visites}. Le parcours revient alors sans fin entre deux amis (L, J, L, J\ldots) et Python s'arrête avec l'erreur \code{RecursionError: maximum recursion depth exceeded} (« profondeur maximale de récursion dépassée »).
+\end{erreur}
+
+\section*{2. Architecture matérielle}
+
+\Q{4}{2 points}{(a) Différence entre ROM et RAM. (b) Unité de la vitesse d'un processeur. (c) Principe de la loi de Moore. (d) Date du premier ordinateur personnel, à 10 ans près.}
+\begin{reponse}
+(a) La \textbf{RAM} (mémoire vive) garde les données des programmes en cours ; elle est rapide et \textbf{s'efface quand on éteint}. La \textbf{ROM} (mémoire morte) garde son contenu \textbf{même sans courant} ; on y lit le programme de démarrage, mais on n'y écrit pas en temps normal. \\
+(b) Le \textbf{hertz} (Hz), en pratique le gigahertz (GHz) : c'est la \textbf{fréquence d'horloge}, le nombre de cycles par seconde. \\
+(c) Le nombre de \textbf{transistors} sur une puce \textbf{double environ tous les deux ans}. \\
+(d) Dans les \textbf{années 1970} (par exemple le Micral N, français, en 1973).
+\end{reponse}
+\begin{itemize}
+\item (a) RAM veut dire \emph{Random Access Memory} (mémoire à accès direct), ROM \emph{Read Only Memory} (mémoire en lecture seule). Le critère principal : la RAM est \textbf{volatile}, la ROM ne l'est pas.
+\item (b) Un processeur à 3 GHz fait 3 milliards de cycles par seconde. On mesure aussi la puissance de calcul en \textbf{FLOPS} (opérations sur des nombres à virgule par seconde), surtout pour les superordinateurs : cette réponse est acceptable si elle est expliquée.
+\item (c) Gordon Moore, cofondateur d'Intel, l'a énoncée en 1965 (doublement chaque année), puis l'a corrigée en 1975 (tous les deux ans). C'est une observation, pas une loi physique : elle ralentit aujourd'hui, car les transistors approchent de la taille de quelques atomes.
+\item (d) Les ordinateurs personnels apparaissent dans les années 1970 : Micral N (1973), Altair 8800 (1975), Apple II (1977). L'IBM PC date de 1981.
+\end{itemize}
+
+\Q{5}{2 points}{Nommer le composant d'un ordinateur de bureau qui correspond à chaque description.}
+\begin{reponse}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}p{10.3cm}l@{}}
+Il brasse l'air pour refroidir l'intérieur du boîtier. & le \textbf{ventilateur} \\
+Elle transforme le courant du secteur en tensions adaptées. & l'\textbf{alimentation} \\
+Il conserve les données même éteint. & le \textbf{disque dur} (ou SSD) \\
+Il lit et grave les disques optiques (CD, DVD). & le \textbf{lecteur-graveur optique} \\
+Elle relie tous les composants entre eux. & la \textbf{carte mère} \\
+Il exécute les instructions des programmes. & le \textbf{processeur} (CPU) \\
+Elle garde les données des programmes en cours et s'efface à l'extinction. & la \textbf{mémoire vive} (RAM) \\
+Il abrite et protège l'ensemble des composants. & le \textbf{boîtier} \\
+\end{tabular}
+\end{reponse}
+Le genre du pronom aide : « elle » désigne l'alimentation, la carte mère ou la mémoire vive ; « il » le ventilateur, le disque, le lecteur, le processeur ou le boîtier. Le disque dur stocke avec des plateaux magnétiques ; le SSD (\emph{Solid State Drive}) avec des puces de mémoire flash.
+\begin{erreur}
+Confondre la mémoire vive (RAM), qui s'efface, et le disque dur, qui garde les fichiers. Éteindre l'ordinateur vide la RAM, pas le disque.
+\end{erreur}
+
+\section*{3. Système d'exploitation}
+
+\Q{6}{2 points}{(a) Un système d'exploitation libre. (b) Quatre systèmes d'exploitation. (c) Deux des quatre rôles principaux d'un OS. (d) Qu'est-ce qu'un DualBoot ?}
+\begin{reponse}
+(a) \textbf{GNU/Linux} (par exemple les distributions Ubuntu ou Debian). \\
+(b) \textbf{Windows, macOS, GNU/Linux, Android} (ou iOS). \\
+(c) Deux rôles parmi : gérer le \textbf{processeur} (partager son temps entre les programmes), gérer la \textbf{mémoire}, gérer les \textbf{périphériques} (entrées et sorties), gérer les \textbf{fichiers}. \\
+(d) Un \textbf{DualBoot} (double démarrage) est un ordinateur sur lequel \textbf{deux systèmes d'exploitation} sont installés : au démarrage, un menu permet de choisir lequel lancer.
+\end{reponse}
+\begin{itemize}
+\item (a) Un logiciel \textbf{libre} donne le droit de l'utiliser, d'étudier son code source, de le modifier et de le redistribuer. Windows et macOS ne sont pas libres. FreeBSD est un autre exemple de système libre.
+\item (c) Le système d'exploitation est l'intermédiaire entre le matériel et les programmes. Il gère aussi les utilisateurs et leurs droits : cette réponse est acceptée si elle est expliquée.
+\item (d) Exemple : Windows et Ubuntu sur le même disque. Le programme qui affiche le menu de choix au démarrage s'appelle un chargeur d'amorçage (par exemple GRUB). Un seul système fonctionne à la fois.
+\end{itemize}
+
+\Q{7}{3 points}{Explication et résultat des commandes suivantes, en partant du dossier \code{C:}.}
+L'arborescence du sujet, écrite comme l'afficherait la commande \code{tree} (les noms suivis de \code{/} sont des dossiers) :
+\begin{lstlisting}[numbers=none, language={}, basicstyle=\small\ttfamily]
+C:
+|-- www/
+|   |-- index.html
+|   `-- Images/
+|       |-- image1.png
+|       `-- image2.jpg
+|-- Programmes/
+|   |-- Audio/
+|   `-- Programmation/
+|       `-- Python/
+|           |-- HelloWorld.py
+|           `-- script.py
+|-- config.ini
+`-- Users/
+    |-- Toto/
+    |   `-- mesDocs/
+    |       |-- monFichier.txt
+    |       `-- monFilm.avi
+    `-- Tata/
+        `-- sonImage.png
+\end{lstlisting}
+\begin{reponse}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{5.9cm}>{\raggedright\arraybackslash}p{5.2cm}@{}}
+\textbf{Commande} & \textbf{Explication} & \textbf{Résultat} \\
+(a) \code{pwd} & affiche le chemin du dossier courant & affiche \code{C:} (la racine) \\
+(b) \code{ls www} & liste le contenu du dossier \code{www} & affiche \code{index.html} et \code{Images} \\
+(c) \code{cd Users/Tata} & se déplace dans le dossier \code{Tata} & dossier courant : \code{C:/Users/Tata} \\
+(d) \code{rm sonImage.png} & supprime le fichier \code{sonImage.png} & \code{Tata} est maintenant vide \\
+(e) \code{cd ..} & remonte au dossier parent & dossier courant : \code{C:/Users} \\
+(f) \code{mv Tata Toto/} & déplace le dossier \code{Tata} dans \code{Toto} & \code{Tata} devient \code{C:/Users/Toto/Tata} \\
+\end{tabular}
+\end{reponse}
+\textbf{Les commandes, traduites.} \code{pwd} : \emph{print working directory} (afficher le dossier de travail). \code{ls} : \emph{list} (lister). \code{cd} : \emph{change directory} (changer de dossier). \code{rm} : \emph{remove} (supprimer). \code{mv} : \emph{move} (déplacer ou renommer). \code{..} désigne toujours le dossier parent.
+
+\textbf{Suivre le dossier courant.} Le plus sûr est de noter, après chaque commande, le dossier où l'on se trouve : \code{C:} au départ, puis \code{C:/Users/Tata} après (c), puis \code{C:/Users} après (e). La commande (f) est lancée depuis \code{C:/Users} : \code{Tata} et \code{Toto} y sont bien deux sous-dossiers.
+\begin{erreur}
+Croire que \code{rm} envoie le fichier à la corbeille : en ligne de commande, il est supprimé tout de suite, sans confirmation. Autre erreur : penser que \code{mv Tata Toto/} renomme \code{Tata} en \code{Toto}. Comme \code{Toto} existe déjà et est un dossier, \code{Tata} est déplacé \emph{dans} \code{Toto}.
+\end{erreur}
+\begin{remarque}
+Le sujet mélange un nom de disque à la manière de Windows (\code{C:}) et des commandes du terminal Linux (\code{pwd}, \code{ls}, \code{rm}, \code{mv}). Sous Linux, la racine s'écrit \code{/} et \code{pwd} afficherait \code{/}. On garde ici la notation du sujet.
+\end{remarque}
+
+\end{document}
