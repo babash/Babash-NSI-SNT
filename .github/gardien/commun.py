@@ -1,7 +1,8 @@
 """Outils communs aux contrôles du Gardien (aucune dépendance au dépôt).
 
 - rubriques(racine)         : les dossiers listés dans reglages.js
-- pages_site(racine)        : accueil + une page par rubrique
+- pages_site(racine)        : accueil + une page par rubrique (+ la bibliothèque, si la copie l'a :
+                              ses données sont construites par scripts/construire_bibliotheque.py)
 - pages_fichiers(racine)    : les pages HTML déposées dans */fichiers/
 - attendu(racine, rubrique) : nombre de ressource({ … }) dans ressources.js
 - lancer(p)                 : Chrome sans écran (passe par le proxy de la session s'il existe)
@@ -34,7 +35,11 @@ def rubriques(racine):
 
 
 def pages_site(racine):
-    return [("accueil", "")] + [(r, r + "/") for r in rubriques(racine)]
+    pages = [("accueil", "")] + [(r, r + "/") for r in rubriques(racine)]
+    # T50 : l'onglet Bibliothèque n'est pas une rubrique de reglages.js, mais une page du site
+    if os.path.exists(os.path.join(racine, "bibliotheque", "index.html")):
+        pages.append(("bibliotheque", "bibliotheque/"))
+    return pages
 
 
 def pages_fichiers(racine):
