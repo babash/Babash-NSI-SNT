@@ -7,7 +7,8 @@ Pour chaque variante de reglages.js (telle quelle, mention_ia vide, invitation_i
 auteur, réglages absents comme dans un ancien reglages.js), le test copie le site, le sert en
 local, affiche l'accueil et la page SNT dans Chrome, et vérifie dans le pied de page (p.mentions)
 les textes présents et absents et le nom en gras, puis l'absence d'erreur JavaScript et de bloc
-d'erreur (.alerte). Les textes attendus sont ceux que l'enseignant a validés le 07/11/2026 : s'ils
+d'erreur (.alerte). Depuis T51b, l'accueil et les rubriques lisent la bibliothèque construite : chaque
+copie l'a (cadre.bibliotheque). Les textes attendus sont ceux que l'enseignant a validés le 07/11/2026 : s'ils
 changent dans assets/site.js ou dans reglages.js, mettre à jour les constantes ci-dessous.
 Il faut Playwright et Chrome (voir commun.lancer).
 """
@@ -45,6 +46,7 @@ LIRE = """() => { const p = document.querySelector('p.mentions');
 def variante(nom, remplacements):
     """Une copie du site dont reglages.js est modifié ; (dossier, motif introuvable ou None)."""
     d = cadre.copie(source, travail, nom)
+    cadre.bibliotheque(d)   # depuis T51b, l'accueil et les rubriques lisent donnees/bibliotheque.json
     chemin = os.path.join(d, "reglages.js")
     texte = commun.lire(chemin)
     for avant, apres in remplacements:

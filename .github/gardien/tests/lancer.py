@@ -14,12 +14,16 @@ propre processus :
   t26b      4 cas   point médian permis dans les textes, refusé dans les identifiants (T26b)
   t12      24 cas   scripts du contrôle en ligne : attendre_deploiement.py, liens_seconde_passe.py (T12)
   t19      10 cas   pied de page de l'accueil et de SNT selon reglages.js, dans Chrome (T19)
-  t45      33 cas   lien « Code source sur GitHub », encadré d'erreur, verifier-site.py (T45)
-  outils   14 cas   outils du Gardien : caracteres, chemins_readme (et N16), zones, contraste_zone (T32),
-                    contrastes (onglet coupé au bord d'une bande qui défile, T51),
+  t45   31/33 cas   lien « Code source sur GitHub », encadré d'erreur, verifier-site.py (T45) ; 31 cas
+                    quand le site lit la vitrine (T51b), 33 avec les anciennes listes
+  outils   17 cas   outils du Gardien : caracteres, chemins_readme (et N16), zones, contraste_zone (T32),
+                    contrastes (onglet coupé au bord d'une bande qui défile, T51), commun, liens et
+                    annexes_code_source sur un site qui lit la vitrine (T51b),
                     sensibles (adresses masquées, T65)
   harnais  19 cas   harnais du Gardien : empreintes_migration, annexes_code_source, depots.sh,
                     pdf_comparer, texte_rendu, diapo_dessous, pages_depot (T47)
+La bibliothèque (donnees/bibliotheque.json, jamais commitée) est d'abord construite dans la copie
+testée : les copies des tests en héritent (depuis T51b, les rubriques la lisent).
 Les tests lancent les scripts de la copie (scripts/valider_donnees.py, .github/verifier-site.py…) :
 à rejouer quand une branche modifie ces scripts, les données d'exemple de donnees/,
 assets/site.js ou reglages.js. Les outils du Gardien essayés par « outils » et « harnais » sont
@@ -78,6 +82,12 @@ def main():
         shutil.rmtree(site, ignore_errors=True)
         cadre.exporter(depot, o.ref, site)
         print("Version testée : %s (%s), extraite dans %s" % (o.ref, sha.stdout.strip(), site))
+    if site:
+        # T50 et T51b : la bibliothèque est construite à la publication, jamais commitée ; les rubriques
+        # la lisent. On la construit une fois ici : les copies des tests en héritent.
+        b = cadre.bibliotheque(site)
+        if b:
+            print("Bibliothèque construite dans la copie testée : %s" % ("oui" if b[0] == 0 else "ÉCHEC (code %d)\n%s" % b))
     resultats = []
     for nom, avec_site in TESTS:
         if nom not in choisis:

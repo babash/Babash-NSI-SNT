@@ -16,6 +16,9 @@ dossier de travail :
   - contraste_zone.py : une page témoin aux contrastes connus, servie en local (Chrome) ;
   - contrastes.py : un onglet coupé au bord d'une bande qui défile, au-dessus d'un voisin clair,
     n'est mesuré que sur sa partie visible ; un texte visible sous le seuil reste signalé (T51) ;
+  - commun, liens.py et annexes_code_source.py sur un petit site qui lit la vitrine et les fiches
+    (T51b) : rubriques et compte, fichier manquant, lien principal et document GitHub, dépôt sans
+    document « Code source » ;
   - sensibles.py : des textes ordinaires avec « (sur) », « [point] », « (dot) », « [at] », puis deux
     adresses électroniques masquées pour les robots (T65), dans un petit dépôt git.
 """
@@ -238,6 +241,43 @@ with cadre.servir(defile) as url:
     attendre("contrastes.py : onglet coupé au bord d'une bande qui défile, mesuré sur sa partie visible", code, sortie, 1,
              presents=[r"2\.85:1 \(exigé 4\.5\) p « gris 999", r"^accueil 800 light +\d+ textes, 1 sous le seuil"],
              absents=[r"« Bibliothèque coupée »", r"2\.38"])
+
+# ── commun, liens.py, annexes_code_source.py : un site qui lit la vitrine (T51b) ───
+# Un petit site dont assets/site.js charge la bibliothèque construite : les outils comptent et lisent
+# d'après la vitrine et les fiches. La fiche « cachee » n'a aucun document visible de l'extérieur.
+vit = os.path.join(travail, "site-vitrine")
+ecrire(os.path.join(vit, "assets", "site.js"), "var BIBLIOTHEQUE = 'donnees/bibliotheque.json';\nfetch(RACINE + BIBLIOTHEQUE).then(f);\n")
+ecrire(os.path.join(vit, "reglages.js"), 'reglages({\n  depot: "proprio/site",\n  rubriques: [\n    "ancienne",\n  ],\n});\n')
+ecrire(os.path.join(vit, "index.html"), "<p>accueil</p>")
+ecrire(os.path.join(vit, "aa", "fichiers", "td.html"), "<p>td</p>")
+ecrire(os.path.join(vit, "donnees", "vitrine.json"), json.dumps({"rubriques": [
+    {"id": "aa", "sections": [{"id": "s1", "ressources": ["r1", "cachee"], "sous_sections": [{"id": "g", "ressources": ["r2"]}]}]},
+    {"id": "bb", "sections": [{"id": "s2", "ressources": ["r1", "absente"]}]}]}))
+VU, CACHE = {"exterieur": True, "eleve": True}, {"exterieur": False, "eleve": True}
+for rid, docs in (
+        ("r1", [{"role": "page", "fichier": "aa/fichiers/td.html", "principal": True, "visible": VU},
+                {"role": "code-source", "url": "https://github.com/proprio/site", "visible": VU}]),
+        ("r2", [{"role": "page", "url": "https://proprio.github.io/appli/", "principal": True, "visible": VU},
+                {"role": "complement", "url": "https://github.com/proprio/appli", "visible": VU},
+                {"role": "page", "fichier": "aa/fichiers/manque.pdf", "visible": VU}]),
+        ("cachee", [{"role": "page", "url": "https://github.com/proprio/cachee", "principal": True, "visible": CACHE}])):
+    ecrire(os.path.join(vit, "donnees", "ressources", rid + ".json"), json.dumps({"id": rid, "titre": "Titre " + rid, "documents": docs}))
+sys.path.insert(0, OUTILS)
+import commun  # noqa: E402
+obtenu = (commun.lit_la_vitrine(vit), commun.rubriques(vit), commun.attendu(vit, "aa"), commun.attendu(vit, "bb"))
+bilan.verifier("commun (T51b) : rubriques de la vitrine, ressources visibles de l'extérieur comptées",
+               [] if obtenu == (True, ["aa", "bb"], 2, 1) else ["%r au lieu de %r" % (obtenu, (True, ["aa", "bb"], 2, 1))])
+code, sortie = outil("liens.py", vit)
+attendre("liens.py (T51b) : documents des fiches : fichier manquant, lien principal et document GitHub", code, sortie, 1, presents=[
+    r"^Liens internes cassés : 1$", r"donnees/ressources/r2\.json › documents\[2\] : fichier introuvable : aa/fichiers/manque\.pdf",
+    r"^Liens principaux vers GitHub : 1$", r"donnees/ressources/cachee\.json › documents\[0\] : lien principal vers GitHub",
+    r"donnees/ressources/r2\.json › documents\[1\] : document « complement » vers GitHub sans le rôle « code-source »",
+])
+code, sortie = outil("annexes_code_source.py", vit)
+attendre("annexes_code_source.py (T51b) : la fiche d'une application sans document « Code source »", code, sortie, 1, presents=[
+    r"^3 fiche\(s\) ; 3 avec un dépôt de « proprio » ou un fichier déposé ; 2 sans document « Code source » :$",
+    r"^  - r2 : Titre r2$", r"^  - cachee : Titre cachee$",
+], absents=[r"^  - r1 "])
 
 # ── sensibles.py : adresse électronique masquée (T65) ───────────────────────
 # L'adresse et les textes ordinaires sont assemblés à l'exécution : le dépôt est public, et aucune

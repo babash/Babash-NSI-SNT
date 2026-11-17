@@ -10,7 +10,10 @@ après (comme « Publier le site »), puis contrôle les données sensibles (une
 « (at) » ou « [sur] »), les liens internes, le rendu avant et après de l'accueil, des rubriques et de
 la bibliothèque (320, 768 et 1440 px, clair et obscur), les contrastes (mesurés sur la partie affichée
 de chaque texte), la
-navigation au clavier et l'impression A4 des documents touchés ; il lance aussi le contrôle
+navigation au clavier et l'impression A4 des documents touchés. Depuis la bascule des rubriques vers
+la vitrine (T51b), ses outils comptent les ressources attendues d'après la vitrine et les fiches, et
+lisent les liens dans les documents des fiches (ils lisent encore les anciennes listes `ressources.js`
+pour une version du site d'avant la bascule) ; il lance aussi le contrôle
 des pages de [la vérification automatique](VERIFICATION.md). La conformité, elle, se vérifie à la lecture : cahier des charges,
 décisions de l'enseignant et règles de conception (voir [L'équipe d'agents](AGENTS.md)). Il vérifie de
 même les liens vers les dépôts (voir [la règle des liens](LISTES.md#la-règle-des-liens)) : chaque ressource que la branche
@@ -31,7 +34,7 @@ D'autres outils du même dossier servent au cas par cas. Pour le site :
   faible d'une zone de la page, le pied de page par défaut ;
 - `texte_rendu.py` montre les textes et les liens affichés qu'une branche ajoute ou retire,
   page par page, sans lire le code ;
-- `annexes_code_source.py` liste les ressources qui ont un dépôt sans le donner en
+- `annexes_code_source.py` liste les fiches qui ont un dépôt sans le donner en
   « Code source » ; `chemins_readme.py` vérifie que les chemins cités dans un README existent.
 
 Pour les autres dépôts de l'enseignant (applications, mini-sites des TD, diaporamas) :

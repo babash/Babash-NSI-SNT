@@ -10,10 +10,12 @@ Usage (depuis n'importe quel dossier du dépôt) :
      pas origin/main à jour dans les copies de travail des agents) ;
   1. la branche part-elle du dernier main ? (sinon : à rebaser) ; fichiers touchés ;
   2. données sensibles dans les lignes ajoutées (sensibles.py --diff) ;
-  3. liens internes, liens principaux vers GitHub (liens.py) sur la branche ;
+  3. liens internes, liens principaux vers GitHub (liens.py) sur la branche : les documents des
+     fiches depuis T51b, sinon les listes */ressources.js ;
   4. rendu avant/après : accueil + rubriques (+ la bibliothèque, dont les données sont d'abord
      construites dans chaque copie, comme le fait « Publier le site »), 320/768/1440 px,
-     clair/obscur (rendu.py, comparer.py) ;
+     clair/obscur (rendu.py, comparer.py) ; depuis T51b, les rubriques lisent la vitrine et les
+     fiches, et le nombre de ressources attendu en vient (commun.attendu) ;
   5. contrastes et clavier sur la branche (contrastes.py) ;
   6. impression A4 des documents HTML touchés dans */fichiers/ (impression.py) ;
   7. contrôle du dépôt lui-même (.github/verifier-site.py) sur la branche servie en local.

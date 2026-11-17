@@ -6,12 +6,13 @@ Usage :
                    [--polices DOSSIER_FONTSOURCE] [--largeurs 320,768,1440]
                    [--modes light,dark] [--fichiers] [--sans-captures]
 
-Pour chaque page (accueil + rubriques de reglages.js ; avec --fichiers, aussi les pages
+Pour chaque page (accueil + rubriques, celles de la vitrine depuis T51b, sinon de reglages.js ; avec --fichiers, aussi les pages
 HTML déposées dans */fichiers/), relève :
   - les erreurs JavaScript (exceptions et console.error), à part des échecs réseau ;
   - les requêtes en échec (ressources externes injoignables depuis la session, etc.) ;
   - le bloc d'erreur « Une liste de ressources contient une erreur » (.alerte) ;
-  - le nombre de ressources affichées (li.res) et le nombre attendu (ressources.js) ;
+  - le nombre de ressources affichées (li.res) et le nombre attendu (commun.attendu : depuis T51b,
+    les ressources que la vitrine place et qui sont visibles de l'extérieur ; avant, ressources.js) ;
   - le débordement horizontal : défilement horizontal, ou éléments coupés au bord
     (body a overflow-x: hidden, donc un débordement ne se voit pas au défilement) ;
   - une capture pleine page (animations figées, mouvements réduits).

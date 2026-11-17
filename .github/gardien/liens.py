@@ -3,10 +3,14 @@
 
 Usage : python3 -I .github/gardien/liens.py DOSSIER_DU_SITE
 
-1. Dans chaque */ressources.js : chaque `lien:` et chaque annexe relative doit mener à un
-   fichier existant (un dossier « …/ » doit contenir index.html).
-2. Aucun lien principal (`lien:`) vers une page GitHub (github.com, raw.githubusercontent.com,
-   gist.github.com) ; en annexe, le libellé doit annoncer le code source.
+1. Les ressources : depuis T51b (le site lit la vitrine et les fiches), chaque document des fiches
+   donnees/ressources/*.json ; avant, chaque `lien:` et chaque annexe des */ressources.js. Un
+   fichier du site (champ « fichier », ou lien relatif) doit exister (un dossier « …/ » doit
+   contenir index.html).
+2. Aucun lien principal (le document principal d'une fiche, ou `lien:`) vers une page GitHub
+   (github.com, raw.githubusercontent.com, gist.github.com) ; un autre document GitHub doit avoir le
+   rôle « code-source » ou un titre qui commence par « Code source » (fiches), ou un libellé qui
+   annonce le code source (anciennes listes). Ce dernier point est pour information.
 3. Dans chaque page HTML du site (index.html, */fichiers/**.html) : chaque href et src relatif
    doit mener à un fichier existant.
 4. Liste des liens externes en double (même adresse à plusieurs endroits : permis, pour info).
@@ -39,44 +43,75 @@ def existe(base_dir, u, racine):
     return os.path.exists(cible)
 
 
+def fiches(racine, casses, github, annexes_github, toutes):
+    """T51b : les documents de toutes les fiches (la bibliothèque les montre toutes, les rubriques
+    celles que place la vitrine)."""
+    for chemin in sorted(glob.glob(os.path.join(racine, "donnees", "ressources", "*.json"))):
+        rid = os.path.basename(chemin)[:-5]
+        ou_fiche = "donnees/ressources/%s.json" % rid
+        f = commun.fiche(racine, rid)
+        if not isinstance(f, dict):
+            casses.append("%s : fiche illisible" % ou_fiche)
+            continue
+        docs = [d for d in f.get("documents", []) if isinstance(d, dict)]
+        principal = next((d for d in docs if d.get("principal") is True), docs[0] if docs else None)
+        for i, d in enumerate(docs):
+            ou = "%s › documents[%d]" % (ou_fiche, i)
+            if isinstance(d.get("url"), str) and d["url"]:
+                u = d["url"]
+                toutes[u.rstrip("/")].append(ou)
+                if GITHUB.match(u):
+                    if d is principal:
+                        github.append("%s : lien principal vers GitHub : %s" % (ou, u))
+                    elif d.get("role") != "code-source" and not str(d.get("titre") or "").lower().startswith("code source"):
+                        annexes_github.append("%s : document « %s » vers GitHub sans le rôle « code-source » : %s"
+                                              % (ou, d.get("titre") or d.get("role"), u))
+            elif isinstance(d.get("fichier"), str) and d["fichier"]:
+                if not existe(racine, d["fichier"], racine):
+                    casses.append("%s : fichier introuvable : %s" % (ou, d["fichier"]))
+
+
 def main():
     if len(sys.argv) < 2 or sys.argv[1] in ("-h", "--help"):
         print(__doc__.strip())
         sys.exit(0 if sys.argv[1:2] in (["-h"], ["--help"]) else 2)
     racine = os.path.abspath(sys.argv[1])
     casses, github, annexes_github, toutes = [], [], [], collections.defaultdict(list)
-    for rub in sorted(set(commun.rubriques(racine)) | {os.path.basename(os.path.dirname(f)) for f in glob.glob(os.path.join(racine, "*", "ressources.js"))}):
-        fichier = os.path.join(racine, rub, "ressources.js")
-        if not os.path.exists(fichier):
-            continue
-        lignes = commun.lire(fichier).splitlines()
-        dans_commentaire = False
-        dans_annexes = False
-        for i, l in enumerate(lignes, 1):
-            if "/*" in l:
-                dans_commentaire = True
-            if dans_commentaire:
-                if "*/" in l:
-                    dans_commentaire = False
+    if commun.lit_la_vitrine(racine):
+        fiches(racine, casses, github, annexes_github, toutes)
+    else:
+        for rub in sorted(set(commun.rubriques(racine)) | {os.path.basename(os.path.dirname(f)) for f in glob.glob(os.path.join(racine, "*", "ressources.js"))}):
+            fichier = os.path.join(racine, rub, "ressources.js")
+            if not os.path.exists(fichier):
                 continue
-            s = l.strip()
-            if s.startswith("annexes"):
-                dans_annexes = True
-            elif dans_annexes and s.startswith("}"):
-                dans_annexes = False
-            m = re.match(r'\s*lien\s*:\s*"([^"]*)"', l)
-            a = re.match(r'\s*"([^"]+)"\s*:\s*"([^"]*)"', l) if dans_annexes else None
-            for (nature, libelle, u) in ([("lien", "", m.group(1))] if m else []) + ([("annexe", a.group(1), a.group(2))] if a else []):
-                ou = "%s/ressources.js:%d" % (rub, i)
-                if externe(u):
-                    toutes[u.rstrip("/")].append(ou)
-                    if GITHUB.match(u):
-                        if nature == "lien":
-                            github.append("%s : lien principal vers GitHub : %s" % (ou, u))
-                        elif "code source" not in libelle.lower():
-                            annexes_github.append("%s : annexe « %s » vers GitHub sans le libellé « Code source » : %s" % (ou, libelle, u))
-                elif not existe(os.path.join(racine, rub), u, racine):
-                    casses.append("%s : %s introuvable : %s" % (ou, nature, u))
+            lignes = commun.lire(fichier).splitlines()
+            dans_commentaire = False
+            dans_annexes = False
+            for i, l in enumerate(lignes, 1):
+                if "/*" in l:
+                    dans_commentaire = True
+                if dans_commentaire:
+                    if "*/" in l:
+                        dans_commentaire = False
+                    continue
+                s = l.strip()
+                if s.startswith("annexes"):
+                    dans_annexes = True
+                elif dans_annexes and s.startswith("}"):
+                    dans_annexes = False
+                m = re.match(r'\s*lien\s*:\s*"([^"]*)"', l)
+                a = re.match(r'\s*"([^"]+)"\s*:\s*"([^"]*)"', l) if dans_annexes else None
+                for (nature, libelle, u) in ([("lien", "", m.group(1))] if m else []) + ([("annexe", a.group(1), a.group(2))] if a else []):
+                    ou = "%s/ressources.js:%d" % (rub, i)
+                    if externe(u):
+                        toutes[u.rstrip("/")].append(ou)
+                        if GITHUB.match(u):
+                            if nature == "lien":
+                                github.append("%s : lien principal vers GitHub : %s" % (ou, u))
+                            elif "code source" not in libelle.lower():
+                                annexes_github.append("%s : annexe « %s » vers GitHub sans le libellé « Code source » : %s" % (ou, libelle, u))
+                    elif not existe(os.path.join(racine, rub), u, racine):
+                        casses.append("%s : %s introuvable : %s" % (ou, nature, u))
     pages = [os.path.join(racine, "index.html")] + glob.glob(os.path.join(racine, "*", "index.html")) + \
         glob.glob(os.path.join(racine, "*", "fichiers", "**", "*.html"), recursive=True)
     for page in sorted(set(pages)):
