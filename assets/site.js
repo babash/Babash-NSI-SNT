@@ -599,7 +599,18 @@
       ]));
     }
 
-    if (r.texte) li.appendChild(el('p', { html: mettreEnForme(r.texte) }));
+    /* Décision de l'enseignant du 17/11 : l'accroche, puis « En savoir plus » vers la fiche complète de la
+       bibliothèque (ressources tirées de la vitrine). Le lien prend la couleur du texte, souligné ; son nom
+       complet, pour les lecteurs d'écran, est « En savoir plus sur <titre> ». */
+    if (r.texte || r.id) {
+      var texte = el('p', { html: r.texte ? mettreEnForme(r.texte) : null });
+      if (r.id) {
+        if (r.texte) texte.appendChild(document.createTextNode(' '));
+        texte.appendChild(el('a', { class: 'en-savoir-plus', href: urlBibliotheque('?r=' + encodeURIComponent(r.id)) },
+          ['En savoir plus', el('span', { class: 'invisible' }, ' sur « ' + r.titre + ' »')]));
+      }
+      li.appendChild(texte);
+    }
 
     if (r.annexes) {
       var annexes = el('p', { class: 'annexes' });

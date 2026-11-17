@@ -139,6 +139,42 @@ def main():
                      len(ids) == len(rub["sections"]) and all(x in ids for x in ancres), ids)
             verifier(f"{rub['id']} : ni erreur affichée ni erreur JavaScript", page.locator(".alerte").count() == 0 and not erreurs, erreurs)
             ctx.close()
+        print("« En savoir plus »")
+        CONTRASTE = r"""(a) => {
+          const rgb = c => (c.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
+          const lum = c => { const v = rgb(c).map(x => { x /= 255; return x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4); });
+                             return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; };
+          let n = a, fond = 'rgba(0, 0, 0, 0)';
+          while (n && /rgba\(0, 0, 0, 0\)|transparent/.test(fond)) { fond = getComputedStyle(n).backgroundColor; n = n.parentElement; }
+          const l1 = lum(getComputedStyle(a).color), l2 = lum(fond);
+          return (Math.max(l1, l2) + .05) / (Math.min(l1, l2) + .05);
+        }"""
+        rub = v["rubriques"][0]
+        for schema in ("light", "dark"):
+            ctx = nav.new_context(color_scheme=schema)
+            ctx.route(re.compile(r"^https://fonts\.(googleapis|gstatic)\.com/.*"), lambda r: r.fulfill(status=200, body=""))
+            page = ctx.new_page()
+            page.goto(f"{srv.base}/{rub['id']}/", wait_until="networkidle")
+            liens = page.locator("li.res a.en-savoir-plus")
+            verifier(f"{schema} : un lien « En savoir plus » par ressource", liens.count() == page.locator("li.res").count() > 0)
+            mini = min(liens.nth(i).evaluate(CONTRASTE) for i in range(liens.count()))
+            verifier(f"{schema} : contraste du lien au moins 4,5:1 ({mini:.2f}:1)", mini >= 4.5)
+            if schema == "light":
+                premier = page.locator("li.res").first
+                titre = premier.locator(".titre").inner_text().strip()
+                nom = page.get_by_role("link", name=f"En savoir plus sur « {titre} »")
+                verifier("nom accessible : « En savoir plus sur « titre » »", nom.count() >= 1)
+                lien = premier.locator("a.en-savoir-plus")
+                lien.focus()
+                verifier("atteint au clavier, avec un indicateur de focus",
+                         page.evaluate("document.activeElement.classList.contains('en-savoir-plus')")
+                         and lien.evaluate("a => getComputedStyle(a).outlineStyle") != "none")
+                page.keyboard.press("Enter")
+                page.wait_for_selector(".fiche-titre", timeout=10000)
+                verifier("Entrée ouvre la fiche complète de la bibliothèque (?r=…)",
+                         "/bibliotheque/?r=" in page.url and titre in page.locator(".fiche-titre").inner_text())
+            ctx.close()
+
         ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
         cartes = page.locator(".noeud-nom").all_inner_texts()
         verifier("accueil : une carte par rubrique de la vitrine, dans l'ordre", cartes == [r["titre"] for r in v["rubriques"]], cartes)
@@ -147,7 +183,8 @@ def main():
                  [x.strip() for x in nav_] == [r.get("court") or r["titre"] for r in v["rubriques"]] + ["Bibliothèque"], nav_)
         page.fill(".hero .recherche", "cybercase")
         page.wait_for_timeout(200)
-        verifier("accueil : la recherche trouve dans les rubriques", page.locator("li.res").count() >= 1)
+        verifier("accueil : la recherche trouve dans les rubriques, avec « En savoir plus »",
+                 page.locator("li.res").count() >= 1 and page.locator("li.res a.en-savoir-plus").count() == page.locator("li.res").count())
         verifier("accueil : aucune erreur JavaScript", not erreurs, erreurs)
         ctx.close()
         srv.fermer()
