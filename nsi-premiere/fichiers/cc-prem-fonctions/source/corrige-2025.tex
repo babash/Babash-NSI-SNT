@@ -1,0 +1,494 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{needspace}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+% Un code court ne se coupe pas en bas de page
+\AddToHook{env/lstlisting/before}{\needspace{10\baselineskip}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- CC 1re NSI - Fonctions et listes (2025)}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Décembre 2025, durée : 1 h 30}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Fonctions et listes (2025)}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h]
+\end{center}
+
+\begin{questions}
+
+% =====================================================================
+\section{Question de cours (fonctions)}
+
+\question[1\half] \enonce{Soit la fonction \code{somme\_entre\_deux\_nombres}.}
+%%% Bloc commun aux corrigés de fonctions (2024 et 2025) : questions sur somme_entre_deux_nombres
+\begin{lstlisting}
+def somme_entre_deux_nombres(a, b):
+    somme = 0
+    for i in range(a, b):
+        somme += i
+    return somme
+\end{lstlisting}
+\begin{parts}
+\part \enonce{Quels sont les paramètres de la fonction ?}
+\begin{reponse}
+\code{a} et \code{b}.
+\end{reponse}
+Les \textbf{paramètres} sont les noms écrits entre parenthèses dans l'en-tête \code{def ...(a, b):}. Ce sont des variables qui reçoivent les valeurs données lors de l'appel.
+
+\part \enonce{Quelles sont les variables locales de la fonction ?}
+\begin{reponse}
+\code{somme} et \code{i} (ainsi que les paramètres \code{a} et \code{b}, qui sont eux aussi locaux).
+\end{reponse}
+Une variable \textbf{locale} est créée à l'intérieur de la fonction et n'existe que pendant son exécution : après l'appel, \code{somme} et \code{i} ne sont plus accessibles depuis le programme principal. \code{somme} est créée ligne 2, \code{i} est créée par la boucle \code{for} ligne 3.
+
+\part \enonce{Quelles sont les valeurs de retour de la fonction ?}
+\begin{reponse}
+Une seule valeur de retour : \code{somme}, c'est-à-dire la somme des entiers de \code{a} (inclus) à \code{b} (exclu).
+\end{reponse}
+La valeur de retour est ce qui suit le mot-clé \code{return}. Attention : \code{range(a, b)} s'arrête \textbf{avant} \code{b} ; \code{b} n'est pas ajouté.
+\end{parts}
+
+
+\question[1] \enonce{Écrire un appel de \code{somme\_entre\_deux\_nombres} pour \code{a=10} et \code{b=15}, en stockant les valeurs de retour dans des variables.}
+\begin{reponse}
+\begin{lstlisting}
+resultat = somme_entre_deux_nombres(10, 15)
+\end{lstlisting}
+\code{resultat} vaut \textbf{60}.
+\end{reponse}
+\explication
+\begin{enumerate}
+  \item On écrit le nom de la fonction, puis les \textbf{arguments} entre parenthèses, dans l'ordre des paramètres : 10 va dans \code{a}, 15 va dans \code{b}.
+  \item La fonction renvoie \textbf{une} valeur : on la range dans \textbf{une} variable avec \code{=}. Sans variable, la valeur renvoyée serait perdue.
+\end{enumerate}
+\textbf{Trace de l'appel :}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Tour & \code{i} & \code{somme} \\ \hline
+avant & & 0 \\
+1 & 10 & 10 \\
+2 & 11 & 21 \\
+3 & 12 & 33 \\
+4 & 13 & 46 \\
+5 & 14 & 60 \\ \hline
+\end{tabular}
+\end{center}
+\code{range(10, 15)} donne 10, 11, 12, 13, 14 : 15 est exclu.
+\begin{erreur}
+Écrire \code{def somme\_entre\_deux\_nombres(10, 15)} : le mot \code{def} sert à \textbf{définir}, pas à appeler. Autre erreur : appeler sans ranger le résultat : la valeur 60 est calculée puis perdue.
+\end{erreur}
+
+\question[4] \enonce{Associer à chaque numéro du schéma un terme : appeler, arguments, valeur de retour, corps, en-tête, définir, paramètre, nom.}
+\begingroup
+\tikzset{every picture/.append style={scale=0.78, transform shape}}
+\input{figures/fig-schema-fonction}
+\endgroup
+\begin{reponse}
+\begin{tabular}{cl@{\qquad}cl}
+1 & \textbf{définir} une fonction & 5 & \textbf{valeur de retour} \\
+2 & \textbf{appeler} une fonction & 6 & \textbf{nom} de la fonction \\
+3 & \textbf{en-tête} de la fonction & 7 & \textbf{arguments} de la fonction \\
+4 & \textbf{corps} de la fonction & 8 & \textbf{paramètre} \\
+\end{tabular}
+\end{reponse}
+\methode\ Commence par les mots que tu reconnais sûrement, puis termine par élimination.
+\begin{enumerate}
+  \item Le schéma a deux parties. À gauche, le bloc \code{def} est la \textbf{définition}.\\ À droite, la ligne \code{nbrCaractere('Alex')} est l'\textbf{appel}. Le 1 est au-dessus de la définition : « \textbf{définir} une fonction » ; le 2 est au-dessus de l'appel : « \textbf{appeler} une fonction ».
+  \item Le 6 pointe vers le mot \code{nbrCaractere} : c'est le \textbf{nom}. Le 8 pointe vers \code{(ch)} : c'est le \textbf{paramètre}.
+  \item Le 3 pointe vers la première ligne, celle du \code{def} : l'\textbf{en-tête}. Le 4 pointe vers les lignes décalées en dessous : le \textbf{corps}.
+  \item Le 5 pointe vers la ligne \code{return (i)} : ce qui est renvoyé est la \textbf{valeur de retour}.
+  \item Le 7 pointe vers \code{'Alex'}, la valeur donnée lors de l'appel : c'est l'\textbf{argument}.
+\end{enumerate}
+\begin{erreur}
+Confondre \textbf{paramètre} et \textbf{argument}. Le paramètre (\code{ch}) est le nom écrit dans la définition ; l'argument (\code{'Alex'}) est la valeur concrète donnée à l'appel. Lors de l'appel, \code{ch} reçoit \code{'Alex'}, et la fonction renvoie 4 (le nombre de caractères).
+\end{erreur}
+
+
+\question[3] \enonce{Dans le code du jeu « devine le nombre », entourer les définitions des fonctions (en entier) et souligner les appels.}
+\begin{reponse}
+\textbf{Définitions à entourer} (chacune en entier, de la ligne \code{def} à la dernière ligne indentée) :
+\begin{itemize}
+  \item \code{demander\_nombre} : lignes 3 à 5 ;
+  \item \code{aide} : lignes 7 à 11.
+\end{itemize}
+\textbf{Appels à souligner} :
+\begin{itemize}
+  \item ligne 20 : \code{demander\_nombre()} ;
+  \item ligne 21 : \code{aide(rep, nbHasard)}.
+\end{itemize}
+On accepte aussi de souligner les appels de fonctions prédéfinies : \code{int(...)} et \code{input(...)} (ligne 4), \code{print(...)} (lignes 9, 11, 24, 26), \code{random.randint(1, 100)} (ligne 15).
+\end{reponse}
+\textbf{Le code annoté :}
+\begin{lstlisting}[escapechar=@, numbers=none]
+import random
+
+@\fbox{\begin{minipage}{0.75\linewidth}\ttfamily\footnotesize\textcolor{magenta}{def} demander\_nombre():\\
+\hspace*{2em}rep = int(input("quelle est votre choix ?: "))\\
+\hspace*{2em}\textcolor{magenta}{return} rep\end{minipage}}@
+
+@\fbox{\begin{minipage}{0.75\linewidth}\ttfamily\footnotesize\textcolor{magenta}{def} aide(rep, nbHasard):\\
+\hspace*{2em}\textcolor{magenta}{if} rep<nbHasard:\\
+\hspace*{4em}print("+")\\
+\hspace*{2em}\textcolor{magenta}{if} rep>nbHasard:\\
+\hspace*{4em}print("-")\end{minipage}}@
+
+essai = 11
+#on crée une variable qui va stocker le nombre à trouver .
+nbHasard = random.randint(1 , 100)
+rep = 0
+
+while rep != nbHasard and essai > 0:
+    essai = essai - 1
+    rep = @\underline{demander\_nombre()}@
+    @\underline{aide(rep, nbHasard)}@
+
+if essai > 0 :
+    print("Bravo, vous avez trouvé la bonne réponse !")
+else :
+    print("Vous avez perdu !")
+\end{lstlisting}
+
+\methode
+\begin{enumerate}
+  \item Une \textbf{définition} commence par le mot-clé \code{def}, suivi du nom, des parenthèses et des deux-points. Elle comprend \textbf{tout le corps} : toutes les lignes indentées sous le \code{def}. On l'entoure en entier.
+  \item Un \textbf{appel} est le nom d'une fonction suivi de parenthèses, \textbf{sans} \code{def} devant : c'est le moment où la fonction s'exécute.
+  \item Une fonction définie mais jamais appelée ne fait rien. Ici, les deux fonctions sont appelées à chaque tour de la boucle \code{while}.
+\end{enumerate}
+\begin{erreur}
+Souligner la ligne \code{def demander\_nombre():} comme un appel. La ligne \code{def} \textbf{définit} la fonction (elle explique ce qu'elle fera) ; elle ne l'exécute pas.
+\end{erreur}
+
+
+% =====================================================================
+\section{Listes Python}
+
+\question[1\half] \enonce{Manipulation de base.}
+\begin{parts}
+\part \enonce{Comment déclare-t-on une liste vide en Python ?}
+\begin{reponse}
+\lstinline!ma_liste = []!
+\end{reponse}
+Deux crochets sans rien entre eux. Variante : \code{ma\_liste = list()}.
+
+\part \enonce{Quel est le rôle de la fonction \code{len()} appliquée à une liste ?}
+\begin{reponse}
+\code{len()} renvoie la \textbf{longueur} de la liste, c'est-à-dire son nombre d'éléments.
+\end{reponse}
+Exemple : \code{len(["Alice", "Bob", "Charlie"])} vaut 3 ; \code{len([])} vaut 0. Le dernier élément a donc l'indice \code{len(liste) - 1}.
+
+\part \enonce{Quelle méthode ajoute un élément à la fin d'une liste existante ?}
+\begin{reponse}
+La méthode \code{append} : \lstinline!ma_liste.append(element)!
+\end{reponse}
+Une \textbf{méthode} est une fonction attachée à un objet : on l'écrit après un point. Exemple : si \code{L = []}, après \code{L.append(3)}, \code{L} vaut \code{[3]}.
+\end{parts}
+
+\question[2] \enonce{Écrire deux boucles qui parcourent \code{noms = ["Alice", "Bob", "Charlie"]}.}
+\begin{parts}
+\part \enonce{Un parcours par valeur.}
+\begin{reponse}
+\begin{lstlisting}
+for nom in noms:
+    print(nom)
+\end{lstlisting}
+\end{reponse}
+La variable \code{nom} prend directement chaque \textbf{valeur} de la liste : \code{"Alice"}, puis \code{"Bob"}, puis \code{"Charlie"}.
+
+\part \enonce{Un parcours par index.}
+\begin{reponse}
+\begin{lstlisting}
+for i in range(len(noms)):
+    print(noms[i])
+\end{lstlisting}
+\end{reponse}
+La variable \code{i} prend chaque \textbf{indice} (la position) : \code{len(noms)} vaut 3, donc \code{range(3)} donne 0, 1, 2. On lit l'élément avec \code{noms[i]}.
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+Tour & \code{i} & \code{noms[i]} \\ \hline
+1 & 0 & \code{"Alice"} \\
+2 & 1 & \code{"Bob"} \\
+3 & 2 & \code{"Charlie"} \\ \hline
+\end{tabular}
+\end{center}
+Les deux boucles affichent la même chose. Le parcours par index est utile quand on a besoin de la position (par exemple pour comparer un élément avec son voisin).
+\begin{erreur}
+Écrire \code{for i in noms: print(noms[i])} : \code{i} contient \code{"Alice"}, pas un nombre, et \code{noms["Alice"]} provoque une \code{TypeError} (« les indices de liste doivent être des entiers »).
+\end{erreur}
+\end{parts}
+
+% =====================================================================
+\section{Analyse de code}
+
+\question[7] \enonce{Prédire la sortie de chacun des codes suivants.}
+\begin{parts}
+\part
+\begin{lstlisting}
+def operation_simple(n):
+    return n + 3
+
+def processus_A(x):
+    y = operation_simple(x)
+    return y * 4
+
+valeur1 = 7
+valeur2 = 2
+resultat1 = processus_A(valeur1)
+resultat2 = processus_A(valeur2)
+print(resultat1)
+print(resultat2)
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+40
+20
+\end{lstlisting}
+\end{reponse}
+\code{processus\_A(7)} appelle \code{operation\_simple(7)}, qui renvoie $7 + 3 = 10$ ; puis $10 \times 4 = 40$. De même, \code{processus\_A(2)} : $(2 + 3) \times 4 = 20$. Une fonction peut en appeler une autre : on calcule d'abord l'appel le plus intérieur.
+
+\part
+\begin{lstlisting}
+def traitement_B(L):
+    element_cle = L[0]
+    for e in L:
+        if e < element_cle:
+            element_cle = e
+    return element_cle
+
+nombres = [1, 50, 206, 9, 17]
+print(traitement_B(nombres))
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+1
+\end{lstlisting}
+La fonction renvoie le \textbf{minimum} de la liste.
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Tour & \code{e} & \code{e < element\_cle} ? & \code{element\_cle} \\ \hline
+avant & & & 1 \\
+1 & 1 & $1 < 1$ : faux & 1 \\
+2 & 50 & faux & 1 \\
+3 & 206 & faux & 1 \\
+4 & 9 & faux & 1 \\
+5 & 17 & faux & 1 \\ \hline
+\end{tabular}
+\end{center}
+\code{element\_cle} démarre avec le premier élément, puis est remplacé chaque fois qu'on trouve plus petit. Ici le premier élément est déjà le plus petit.
+
+\part
+\begin{lstlisting}
+def fonction_C(liste):
+    resultat = 0
+    for val in liste:
+        resultat = resultat + val
+    return resultat
+
+donnees = [1, 2, 3, 4, 5]
+print(fonction_C(donnees))
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+15
+\end{lstlisting}
+La fonction renvoie la \textbf{somme} des éléments.
+\end{reponse}
+\code{resultat} prend successivement les valeurs 0, 1, 3, 6, 10, 15 (on ajoute 1, puis 2, puis 3, puis 4, puis 5).
+
+\part
+\begin{lstlisting}
+def transformation_D(L):
+    L_nouvelle = []
+    for i in range(len(L) - 1):
+        paire = L[i] + L[i+1]
+        L_nouvelle.append(paire)
+    return L_nouvelle
+
+original = [10, 3, 2, 5, 2, 8]
+resultat = transformation_D(original)
+print(resultat)
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+[13, 5, 7, 7, 10]
+\end{lstlisting}
+Chaque élément est la somme de deux voisins.
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|l|}
+\hline
+\code{i} & \code{L[i]} & \code{L[i+1]} & \code{paire} & \code{L\_nouvelle} \\ \hline
+0 & 10 & 3 & 13 & \code{[13]} \\
+1 & 3 & 2 & 5 & \code{[13, 5]} \\
+2 & 2 & 5 & 7 & \code{[13, 5, 7]} \\
+3 & 5 & 2 & 7 & \code{[13, 5, 7, 7]} \\
+4 & 2 & 8 & 10 & \code{[13, 5, 7, 7, 10]} \\ \hline
+\end{tabular}
+\end{center}
+La liste a 6 éléments : \code{range(len(L) - 1)} donne 0 à 4. On s'arrête à 4 car \code{L[i+1]} doit exister : avec \code{i = 5}, \code{L[6]} provoquerait une \code{IndexError}. Le résultat a donc un élément de moins que la liste de départ.
+
+\part
+\begin{lstlisting}
+def analyse_E(L, cible):
+    for element in L:
+        if element == cible:
+            return True
+    return False
+
+liste_a = ["a", "b", "c"]
+print(analyse_E(liste_a, "d"))
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+False
+\end{lstlisting}
+La fonction teste si \code{cible} est dans la liste.
+\end{reponse}
+Aucun élément n'est égal à \code{"d"} : le \code{return True} n'est jamais atteint. La boucle se termine, puis on exécute \code{return False}, qui est \textbf{après} la boucle (même indentation que le \code{for}).
+\begin{erreur}
+Croire que la fonction renvoie \code{False} dès le premier élément différent. Le \code{return False} est en dehors de la boucle : on ne l'atteint qu'après avoir regardé \textbf{tous} les éléments.
+\end{erreur}
+
+\part
+\begin{lstlisting}
+def methode_F(L, v):
+    compteur = 0
+    for element in L:
+        if element == v:
+            compteur = compteur + 1
+    return compteur
+
+lettres = ["a", "b", "a", "c", "a", "b"]
+print(methode_F(lettres, "b"))
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+2
+\end{lstlisting}
+La fonction compte le nombre d'apparitions de \code{v} dans la liste.
+\end{reponse}
+\code{"b"} est aux indices 1 et 5 : le compteur passe de 0 à 1, puis à 2.
+
+\part
+\begin{lstlisting}
+nombres = [10, 100, 1000]
+chaine = ""
+for i in range(len(nombres)):
+    chaine = chaine + str(nombres[i]) + "-"
+print(chaine)
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+10-100-1000-
+\end{lstlisting}
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|l|}
+\hline
+\code{i} & \code{str(nombres[i])} & \code{chaine} \\ \hline
+avant & & \code{""} \\
+0 & \code{"10"} & \code{"10-"} \\
+1 & \code{"100"} & \code{"10-100-"} \\
+2 & \code{"1000"} & \code{"10-100-1000-"} \\ \hline
+\end{tabular}
+\end{center}
+\code{str()} transforme le nombre en chaîne ; le \code{+} entre deux chaînes les \textbf{colle} (on parle de \textbf{concaténation}). Un tiret est ajouté après chaque nombre, y compris le dernier. Le \code{print} est en dehors de la boucle : il n'affiche qu'une fois, à la fin.
+\begin{erreur}
+Oublier \code{str()} : \code{"" + 10} provoque une \code{TypeError}, car Python n'additionne pas une chaîne et un entier.
+\end{erreur}
+\end{parts}
+
+\end{questions}
+
+\end{document}

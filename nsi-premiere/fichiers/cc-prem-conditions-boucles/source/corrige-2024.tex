@@ -1,0 +1,340 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- CC1 Prem NSI - Conditions et boucles (2024)}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Octobre 2024, durée : 1 h}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Conditions et boucles (2024)}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h]
+\end{center}
+
+\begin{questions}
+
+% =====================================================================
+\section{Question de cours}
+
+\question[2] \enonce{Questions de cours.}
+\begin{parts}
+\part \enonce{Quels sont les 4 types primitifs en Python ?}
+\begin{reponse}
+\code{int} (entier), \code{float} (nombre à virgule, dit « flottant »), \code{bool} (booléen : \code{True} ou \code{False}) et \code{str} (chaîne de caractères).
+\end{reponse}
+Exemples : \code{12} est un \code{int}, \code{12.5} un \code{float}, \code{True} un \code{bool}, \code{"12"} un \code{str}. La fonction \code{type()} donne le type d'une valeur : \code{type(12.5)} affiche \code{<class 'float'>}.
+
+\part \enonce{Quelle fonction permet d'afficher une information d'un utilisateur ?}
+\begin{remarque}
+Les questions (b) et (c) ont presque le même texte. La question (b) demandait sans doute la fonction qui \textbf{récupère ce que tape l'utilisateur ou l'utilisatrice} (la saisie). On répond donc \code{input()} en (b) et \code{print()} en (c). Si tu as répondu \code{print()} aux deux, ta réponse correspond à l'énoncé tel qu'il est écrit.
+\end{remarque}
+\begin{reponse}
+\code{input()} : elle affiche un message, attend que l'on tape une réponse au clavier et la renvoie.
+\end{reponse}
+Exemple : \code{prenom = input("Ton prénom ? ")}. Attention : \code{input()} renvoie toujours une \textbf{chaîne} (\code{str}). Pour un nombre, on convertit : \code{age = int(input("Ton âge ? "))}.
+
+\part \enonce{Quelle fonction permet d'afficher une information en Python ?}
+\begin{reponse}
+\code{print()}
+\end{reponse}
+Exemple : \code{print("Bonjour", prenom)} affiche le texte et la valeur de la variable, séparés par un espace.
+
+\part \enonce{Que signifie le terme indentation ?}
+\begin{reponse}
+L'\textbf{indentation} est le décalage vers la droite du début d'une ligne (4 espaces ou une tabulation). En Python, elle indique quelles instructions font partie d'un bloc (le corps d'un \code{if}, d'une boucle, d'une fonction).
+\end{reponse}
+\begin{lstlisting}
+if note >= 10:
+    print("Admis·e")     # indentée : dans le if
+print("Fin")              # pas indentée : toujours exécutée
+\end{lstlisting}
+En Python, l'indentation n'est pas qu'une question de présentation : une mauvaise indentation change le programme ou provoque une erreur \code{IndentationError}.
+\end{parts}
+
+\question[2] \enonce{Donner les plages de valeurs des appels de \code{range}.}
+\begin{reponse}
+\begin{tabular}{ll}
+\code{range(10)} & 0, 1, 2, 3, 4, 5, 6, 7, 8, 9\\
+\code{range(5, 7)} & 5, 6\\
+\code{range(7, 17, 2)} & 7, 9, 11, 13, 15\\
+\code{range(98, 0, -10)} & 98, 88, 78, 68, 58, 48, 38, 28, 18, 8\\
+\end{tabular}
+\end{reponse}
+\begin{astuce}[À retenir : \code{range(début, fin, pas)}]
+\begin{itemize}
+  \item On part de \code{début} (0 s'il est absent) et on ajoute \code{pas} (1 s'il est absent) à chaque fois.
+  \item On s'arrête \textbf{avant} \code{fin} : la valeur \code{fin} n'est jamais atteinte.
+  \item Avec un pas négatif, on descend, et on s'arrête avant de dépasser \code{fin} vers le bas.
+\end{itemize}
+\end{astuce}
+Pour \code{range(98, 0, -10)} : on enlève 10 à chaque fois : 98, 88, \dots, 18, 8. La suivante serait $-2$, qui a dépassé 0 : on s'arrête.
+
+\begin{erreur}
+Écrire 0, 1, \dots, 10 pour \code{range(10)}. \code{range(10)} donne bien \textbf{10 valeurs}, mais de 0 à 9 : la fin est exclue.
+\end{erreur}
+
+\question[2] \enonce{Quels opérateurs Python réalisent les tests suivants ?}
+\begin{reponse}
+\begin{tabular}{ll}
+différent de : & \code{!=}\\
+strictement supérieur à : & \code{>}\\
+inférieur ou égal à : & \code{<=}\\
+supérieur ou égal à : & \code{>=}\\
+\end{tabular}
+\end{reponse}
+Ces opérateurs \textbf{comparent} deux valeurs et donnent un booléen. Par exemple \code{5 != 3} vaut \code{True}, \code{5 <= 5} vaut \code{True}, \code{5 > 5} vaut \code{False}. Le signe \code{=} s'écrit toujours \textbf{en second} : \code{<=}, \code{>=}, \code{!=}.
+
+\begin{erreur}
+Écrire \code{=<} ou \code{=>} : Python ne les connaît pas (erreur de syntaxe). Et ne pas confondre \code{==} (test d'égalité) avec \code{=} (affectation).
+\end{erreur}
+
+% =====================================================================
+\section{Variables et conditions}
+
+\begin{lstlisting}
+import random
+# random.randint(1, 10) tire un nombre aléatoire entre 1 et 10.
+carte1 = random.randint(1, 10)
+carte2 = random.randint(1, 10)
+carte3 = random.randint(1, 10)
+if carte1 == carte2 == carte3 == 1:
+    score = 300
+elif carte1 == carte2 == carte3:
+    score = 30
+elif carte1 == carte2 or carte2 == carte3 or carte1 == carte3:
+    score = 20
+else:
+    score = carte1 + carte2 + carte3
+if carte1 == 10 or carte2 == 10 or carte3 == 10:
+    score = score + 10
+\end{lstlisting}
+\textit{Le code est rappelé ici sans le décalage de 4 espaces du sujet : en Python, la première ligne d'un programme ne doit pas être indentée.}
+
+\question[1] \enonce{Combien y a-t-il de variables dans ce code ? Quels sont leurs types ?}
+\begin{reponse}
+\textbf{4 variables} : \code{carte1}, \code{carte2}, \code{carte3} et \code{score}. Toutes sont de type \code{int} (entier).
+\end{reponse}
+\explication\ On repère les noms placés à gauche d'un \code{=}. \code{random.randint} renvoie un entier ; \code{score} reçoit 300, 30, 20 ou une somme d'entiers : c'est aussi un entier. \code{random} est un \textbf{module} (une bibliothèque de fonctions), pas une variable que l'on a créée.
+
+\question[3] \enonce{Donner le tableau d'avancement des variables pour \code{carte1=1}, \code{carte2=1}, \code{carte3=3}.}
+\begin{reponse}
+\begin{center}
+\begin{tabular}{|c|l|c|c|c|c|}
+\hline
+Lignes & Test ou instruction & \code{carte1} & \code{carte2} & \code{carte3} & \code{score} \\ \hline
+3 à 5 & tirage & 1 & 1 & 3 & \\
+6 & \code{1 == 1 == 3 == 1} : faux & 1 & 1 & 3 & \\
+8 & \code{1 == 1 == 3} : faux & 1 & 1 & 3 & \\
+10 et 11 & \code{carte1 == carte2} : vrai & 1 & 1 & 3 & 20 \\
+14 & aucune carte ne vaut 10 : faux & 1 & 1 & 3 & \textbf{20} \\ \hline
+\end{tabular}
+\end{center}
+Valeur finale : \code{score} $= 20$.
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Tester les conditions de la chaîne \code{if} / \code{elif} / \code{else} \textbf{dans l'ordre}, et s'arrêter à la première vraie.
+  \item \code{carte1 == carte2 == carte3 == 1} veut dire : les trois cartes sont égales \textbf{et} valent 1. Ici \code{carte3} vaut 3 : faux.
+  \item La 2\textsuperscript{e} condition (trois cartes égales) est fausse aussi. La 3\textsuperscript{e} utilise \code{or} : une seule égalité suffit. \code{carte1 == carte2} est vrai, donc \code{score = 20}. Le \code{else} est sauté.
+  \item Le dernier \code{if} est \textbf{indépendant} : on le teste toujours. Aucune carte ne vaut 10 : le score reste 20.
+\end{enumerate}
+
+\question[2] \enonce{Quel est le score pour chaque tirage ?}
+\begin{reponse}
+\begin{tabular}{ll}
+\code{carte1=1, carte2=1, carte3=1} : & \textbf{300}\\
+\code{carte1=10, carte2=10, carte3=3} : & \textbf{30}\\
+\code{carte1=10, carte2=9, carte3=9} : & \textbf{30}\\
+\code{carte1=1, carte2=9, carte3=2} : & \textbf{12}\\
+\end{tabular}
+\end{reponse}
+\begin{center}
+\small
+\begin{tabular}{|c|l|c|c|}
+\hline
+Cartes & Branche choisie & Un 10 ? & Score \\ \hline
+1, 1, 1 & trois 1 : 300 & non & 300 \\
+10, 10, 3 & une paire (10 et 10) : 20 & oui : $+10$ & 30 \\
+10, 9, 9 & une paire (9 et 9) : 20 & oui : $+10$ & 30 \\
+1, 9, 2 & aucune égalité : $1 + 9 + 2 = 12$ & non & 12 \\ \hline
+\end{tabular}
+\end{center}
+\begin{erreur}
+Pour 1, 1, 1, ajouter aussi les 30 de la ligne suivante. Une seule branche d'une chaîne \code{if} / \code{elif} s'exécute : la première vraie.
+\end{erreur}
+
+% =====================================================================
+\section{Boucles}
+
+\begin{lstlisting}
+n = 3
+for i in range(n):
+   a = i
+   while a > 1:
+      a = a/2
+\end{lstlisting}
+
+\question[1] \enonce{Combien y a-t-il de variables dans ce code ? Quels sont leurs types ?}
+\begin{reponse}
+\textbf{3 variables} : \code{n} (\code{int}), \code{i} (\code{int}) et \code{a} (\code{int}, puis \code{float} après une division \code{/}).
+\end{reponse}
+\explication\ \code{i} est créée par la boucle \code{for}, qui lui donne les valeurs de \code{range(n)} : des entiers. \code{a} reçoit d'abord \code{i} (un entier). Mais l'opérateur \code{/} donne \textbf{toujours} un \code{float} : \code{2/2} vaut \code{1.0}, pas \code{1}.
+
+\question[4] \enonce{Faire le tableau d'avancement des variables.}
+\begin{reponse}
+\begin{center}
+\begin{tabular}{|c|l|c|c|c|c|}
+\hline
+Étape & Instruction & \code{n} & \code{i} & \code{a} & Test \code{a > 1} \\ \hline
+1 & \code{n = 3} & 3 & & & \\
+2 & tour 1 : \code{i = 0}, \code{a = i} & 3 & 0 & 0 & $0 > 1$ : faux \\
+3 & tour 2 : \code{i = 1}, \code{a = i} & 3 & 1 & 1 & $1 > 1$ : faux \\
+4 & tour 3 : \code{i = 2}, \code{a = i} & 3 & 2 & 2 & $2 > 1$ : vrai \\
+5 & \code{a = a/2} & 3 & 2 & 1.0 & $1.0 > 1$ : faux \\ \hline
+\end{tabular}
+\end{center}
+Valeurs finales : \code{n = 3}, \code{i = 2}, \code{a = 1.0}.
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item \code{range(3)} donne 0, 1, 2 : la boucle \code{for} fait 3 tours.
+  \item À chaque tour, \code{a} prend la valeur de \code{i}, puis la boucle \code{while} divise \code{a} par 2 \textbf{tant que} \code{a > 1}.
+  \item Avant chaque passage dans le \code{while}, on teste la condition. Si elle est fausse dès le début, le corps du \code{while} ne s'exécute pas du tout (tours 1 et 2).
+  \item Au tour 3 : $2 > 1$, donc \code{a = 2/2 = 1.0}. On reteste : $1.0 > 1$ est faux (1 n'est pas \textbf{strictement} plus grand que 1) : on sort.
+\end{enumerate}
+\begin{erreur}
+Faire 4 tours (avec \code{i = 3}). \code{range(3)} s'arrête à 2. Autre erreur : continuer à diviser jusqu'à 0,5 ; le test est \code{a > 1}, et $1 > 1$ est faux.
+\end{erreur}
+
+% =====================================================================
+\section{Rédaction de code}
+
+\question[3] \enonce{Écrire un code qui calcule la somme des multiples entiers de 3 entre 1 et 10\,000 (on pourra utiliser \code{\%}).}
+\begin{reponse}
+\begin{lstlisting}
+somme = 0
+for k in range(1, 10001):
+    if k % 3 == 0:
+        somme = somme + k
+print(somme)
+\end{lstlisting}
+Le programme affiche \code{16668333}.
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Créer un \textbf{accumulateur} : une variable qui démarre à 0 et à laquelle on ajoute au fur et à mesure (\code{somme = 0}).
+  \item Parcourir tous les entiers de 1 à 10\,000 : \code{range(1, 10001)}, car la fin est exclue.
+  \item Tester si \code{k} est un multiple de 3 : le reste de la division de \code{k} par 3 vaut 0, c'est-à-dire \code{k \% 3 == 0}.
+  \item Si oui, ajouter \code{k} à la somme. Après la boucle (hors du bloc), afficher le résultat.
+\end{enumerate}
+\textbf{Trace des premiers tours :}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\code{k} & \code{k \% 3} & multiple ? & \code{somme} \\ \hline
+1 & 1 & non & 0 \\
+2 & 2 & non & 0 \\
+3 & 0 & oui & 3 \\
+4 & 1 & non & 3 \\
+5 & 2 & non & 3 \\
+6 & 0 & oui & 9 \\
+\dots & & & \dots \\ \hline
+\end{tabular}
+\end{center}
+\textit{Variante sans \code{\%} :} parcourir directement les multiples avec un pas de 3 : \code{for k in range(3, 10001, 3): somme = somme + k}.
+
+\begin{erreur}
+Écrire \code{range(1, 10000)} : 10\,000 n'est pas un multiple de 3, donc le résultat est le même ici, mais c'est un réflexe à corriger : pour inclure 10\,000, il faut \code{range(1, 10001)}. Autre erreur : mettre \code{somme = 0} \textbf{dans} la boucle ; la somme repart alors de 0 à chaque tour.
+\end{erreur}
+
+\end{questions}
+
+\end{document}
