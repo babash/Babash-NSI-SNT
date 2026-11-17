@@ -9,8 +9,10 @@ bibliothèque, la sert en local et joue des scénarios dans Chromium. Toute requ
 interceptée par un faux GitHub (un dépôt en mémoire, tiré de la copie) : aucun jeton réel, aucune écriture sur le
 vrai dépôt. Le faux jeton est fabriqué par le test.
 Scénarios : sans jeton (liste, fiche, validation, téléchargement de l'archive, brouillon retrouvé, onglets au
-clavier et par cases, aperçu) ; avec jeton (saisie cachée, vérification, enregistrement en un commit, en-têtes,
-contenu écrit, conflit, « Oublier le jeton ») ; rendu à 320 et 1440 px, en clair et en obscur.
+clavier et par cases, aperçu) ; avec jeton et mot de passe administrateur (jeton chiffré sur l'appareil,
+mot de passe trop court ou différent, vérification, enregistrement en un commit, en-têtes, contenu écrit,
+conflit, refus 403, verrouillage, rechargement, mauvais mot de passe, « Oublier cet appareil », aucun secret en
+clair dans le stockage, la page, la console ou l'archive) ; brouillon piégé ; rendu à 320, 768 et 1440 px.
 Il faut Playwright et Chromium. Code de retour : 0 si tous les cas passent, 1 sinon.
 """
 import argparse
@@ -36,6 +38,7 @@ ICI = os.path.dirname(os.path.abspath(__file__))
 RACINE_DEFAUT = os.path.dirname(os.path.dirname(ICI))
 DEPOT = "babash/Babash-NSI-SNT"
 FAUX_JETON = "github_pat_" + "T" * 22 + "_" + "e" * 59   # fabriqué pour le test, forme d'un jeton fin
+FAUX_MDP = "une phrase de test pour la porte"              # mot de passe administrateur du test
 FICHE = "td1-poo"
 CHEMIN = f"donnees/ressources/{FICHE}.json"
 
@@ -211,6 +214,28 @@ def attendre(page, ms=250):
     page.wait_for_timeout(ms)
 
 
+def poser_jeton(page, base, jeton=FAUX_JETON, mdp=FAUX_MDP, confirmer=None, attendre_ok=True):
+    """Première fois sur l'appareil : le jeton et le mot de passe administrateur."""
+    page.goto(base + "/admin/#/jeton")
+    page.wait_for_selector("#mdp-nouveau")
+    page.fill("#jeton", jeton)
+    page.fill("#mdp-nouveau", mdp)
+    page.fill("#mdp-confirmer", mdp if confirmer is None else confirmer)
+    page.click('[data-cle="jeton-enregistrer"]')
+    page.wait_for_selector(".admin-message.ok" if attendre_ok else ".admin-message.erreur", timeout=20000)
+
+
+def secrets_en_clair(page, console):
+    """Les endroits où le jeton ou le mot de passe se lisent en clair (doit rester vide)."""
+    stockage = page.evaluate("JSON.stringify(Object.assign({}, localStorage)) + JSON.stringify(Object.assign({}, sessionStorage))")
+    ou = []
+    for nom, texte in (("stockage", stockage), ("page", page.content()), ("console", "\n".join(console))):
+        for secret in (FAUX_JETON, FAUX_MDP):
+            if secret in texte:
+                ou.append(f"{nom} : {'jeton' if secret == FAUX_JETON else 'mot de passe'}")
+    return ou
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     p.add_argument("--racine", default=RACINE_DEFAUT)
@@ -347,20 +372,31 @@ def main():
             verifier("sans jeton : aucune erreur JavaScript", not erreurs, erreurs)
             ctx.close()
 
-            print("Avec jeton (API GitHub simulée)")
+            print("Avec jeton et mot de passe administrateur (API GitHub simulée)")
             faux = FauxGitHub(copie)
             ctx, page, erreurs, _ = page_neuve(nav, base, faux=faux)
+            console = []
+            page.on("console", lambda m: console.append(m.text))
             page.goto(base + "/admin/#/jeton", wait_until="networkidle")
-            champ = page.locator("#jeton")
-            verifier("le champ du jeton est masqué (type password)", champ.get_attribute("type") == "password")
-            champ.fill(FAUX_JETON)
-            page.click('[data-cle="jeton-enregistrer"]')
-            page.wait_for_selector(".admin-message.ok", timeout=10000)
-            verifier("jeton vérifié : écriture permise", "permet d'écrire" in page.locator(".admin-message").inner_text())
-            verifier("le jeton n'est jamais affiché", FAUX_JETON not in page.content() and champ.input_value() == "")
-            stockage = page.evaluate("JSON.stringify(Object.assign({}, localStorage)) + JSON.stringify(Object.assign({}, sessionStorage))")
-            verifier("le jeton est gardé en mémoire seulement, le temps de la visite (rien dans le navigateur)",
-                     FAUX_JETON not in stockage and "le temps de la visite" in page.locator(".admin-garde").inner_text())
+            verifier("les champs du jeton et du mot de passe sont masqués (type password)",
+                     all(page.locator(x).get_attribute("type") == "password" for x in ("#jeton", "#mdp-nouveau", "#mdp-confirmer")))
+            poser_jeton(page, base, mdp="court", attendre_ok=False)
+            verifier("mot de passe de moins de 10 caractères : refusé, rien de gardé",
+                     "au moins 10 caractères" in page.locator(".admin-message").inner_text()
+                     and page.evaluate("localStorage.getItem('admin-jeton-chiffre')") is None)
+            poser_jeton(page, base, confirmer=FAUX_MDP + " !", attendre_ok=False)
+            verifier("confirmation différente : refusée, rien de gardé",
+                     "pas identiques" in page.locator(".admin-message").inner_text()
+                     and page.evaluate("localStorage.getItem('admin-jeton-chiffre')") is None)
+            poser_jeton(page, base)
+            verifier("jeton chiffré, gardé et vérifié : écriture permise", "permet d'écrire" in page.locator(".admin-message").inner_text())
+            c = json.loads(page.evaluate("localStorage.getItem('admin-jeton-chiffre')") or "{}")
+            verifier("le coffre : PBKDF2 600 000 itérations, sel de 16 octets, vecteur de 12 octets, texte chiffré",
+                     c.get("iterations", 0) >= 600000 and len(base64.b64decode(c.get("sel", ""))) == 16
+                     and len(base64.b64decode(c.get("iv", ""))) == 12 and len(base64.b64decode(c.get("chiffre", ""))) > len(FAUX_JETON), c)
+            verifier("ni le jeton ni le mot de passe en clair (stockage, page, console)", not secrets_en_clair(page, console), secrets_en_clair(page, console))
+            verifier("la page dit ce que protège le mot de passe, et qu'il ne rend pas l'admin secret",
+                     "protège le jeton" in page.locator(".admin-garde").inner_text() and "ne rend pas l'admin secret" in page.locator(".admin-garde").inner_text())
 
             page.goto(base + f"/admin/#/fiche/{FICHE}")
             page.wait_for_selector("#champ-titre")
@@ -413,17 +449,51 @@ def main():
             verifier("écriture refusée (403) : message clair, rien d'écrit", "Contents : Read and write" in page.locator(".admin-message").inner_text())
             faux.ecriture = True
 
-            page.goto(base + "/admin/#/jeton")
-            page.click('[data-cle="jeton-oublier"]')
+            # L'archive, téléchargée avec le jeton en place : aucun secret dedans
+            page.goto(base + f"/admin/#/fiche/{FICHE}")
+            page.wait_for_selector("#champ-accroche")
+            page.fill("#champ-accroche", "Une accroche pour l'archive.")
             attendre(page)
-            verifier("« Oublier le jeton » : la page ne l'a plus", "Aucun jeton" in page.locator(".admin-vue").inner_text())
-            page.fill("#jeton", FAUX_JETON)
-            page.click('[data-cle="jeton-enregistrer"]')
-            page.wait_for_selector(".admin-message.ok", timeout=10000)
-            page.reload(wait_until="networkidle")
+            page.goto(base + "/admin/#/changements")
+            attendre(page)
+            with page.expect_download() as tele:
+                page.click('[data-cle="telecharger-2"]')
+            octets = open(tele.value.path(), "rb").read()
+            verifier("l'archive ne contient ni le jeton ni le mot de passe",
+                     FAUX_JETON.encode() not in octets and FAUX_MDP.encode() not in octets)
+
             page.goto(base + "/admin/#/jeton")
-            attendre(page, 300)
-            verifier("après un rechargement : plus de jeton (garde en mémoire)", "Aucun jeton" in page.locator(".admin-vue").inner_text())
+            page.click('[data-cle="verrouiller"]')
+            attendre(page)
+            verifier("« Verrouiller » : le jeton déchiffré est oublié, l'enregistrement redevient un téléchargement",
+                     "Admin verrouillé" in page.locator(".admin-vue").inner_text()
+                     and page.locator('.admin-barre-bas [data-cle="telecharger"]').count() == 1)
+
+            page.reload(wait_until="networkidle")
+            page.goto(base + "/admin/#/ressources")
+            attendre(page, 400)
+            verifier("visite suivante : l'admin demande le mot de passe", page.locator("#mdp-porte").count() == 1)
+            faux.requetes.clear()
+            page.fill("#mdp-porte", "pas le bon mot de passe")
+            page.click('[data-cle="deverrouiller"]')
+            page.wait_for_selector(".admin-message.erreur", timeout=20000)
+            verifier("mauvais mot de passe : message clair, toujours verrouillé, aucune requête vers GitHub",
+                     "Mot de passe incorrect" in page.locator(".admin-message").inner_text() and not faux.requetes
+                     and page.locator("#mdp-porte").count() == 1)
+            page.fill("#mdp-porte", FAUX_MDP)
+            page.click('[data-cle="deverrouiller"]')
+            page.wait_for_selector(".admin-message.ok", timeout=20000)
+            verifier("bon mot de passe : déverrouillé, le jeton déchiffré sert aux requêtes",
+                     "déverrouillé" in page.locator(".admin-message").inner_text() and page.locator("#mdp-porte").count() == 0
+                     and any(r["auth"] == "Bearer " + FAUX_JETON for r in faux.requetes))
+            verifier("après déverrouillage : toujours aucun secret en clair", not secrets_en_clair(page, console), secrets_en_clair(page, console))
+
+            page.goto(base + "/admin/#/jeton")
+            page.click('[data-cle="oublier-appareil"]')
+            attendre(page)
+            verifier("« Oublier cet appareil » : le jeton chiffré est effacé",
+                     page.evaluate("localStorage.getItem('admin-jeton-chiffre')") is None
+                     and "Aucun jeton sur cet appareil" in page.locator(".admin-vue").inner_text())
             attendues = [e for e in erreurs if "status of 403" in e]   # le refus simulé plus haut
             verifier("avec jeton : aucune erreur JavaScript (hors le refus 403 simulé)", len(attendues) <= 1 and not [e for e in erreurs if e not in attendues], erreurs)
             ctx.close()
@@ -460,10 +530,7 @@ def main():
             with zipfile.ZipFile(tele.value.path()) as z:
                 noms = z.namelist()
             verifier("brouillon piégé : l'archive ne contient que la fiche", noms == [CHEMIN], noms)
-            page.goto(base + "/admin/#/jeton")
-            page.fill("#jeton", FAUX_JETON)
-            page.click('[data-cle="jeton-enregistrer"]')
-            page.wait_for_selector(".admin-message.ok", timeout=10000)
+            poser_jeton(page, base)
             faux.requetes.clear()
             page.goto(base + "/admin/#/changements")
             attendre(page)

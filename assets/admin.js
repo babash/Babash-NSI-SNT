@@ -9,9 +9,12 @@
    - Changements : ce qui est en attente ; enregistrer (un commit par
      l'API GitHub, avec le jeton de l'enseignant) ou télécharger.
 
-   Le jeton est gardé selon GARDE_JETON (un seul endroit à changer) : par
-   défaut en mémoire, le temps de la visite. Il n'est jamais affiché, jamais
-   mis dans une adresse ni dans le dépôt. Avant tout enregistrement,
+   Le mot de passe administrateur (décision du 17/11) protège le jeton GitHub
+   gardé sur l'appareil : le jeton y est chiffré (PBKDF2-SHA-256, 600 000
+   itérations, sel aléatoire ; AES-GCM, vecteur aléatoire), jamais en clair.
+   Déchiffré, il reste en mémoire le temps de la visite. Le mot de passe n'est
+   gardé nulle part et n'est envoyé à personne. Le jeton n'est jamais affiché,
+   jamais mis dans une adresse ni dans le dépôt. Avant tout enregistrement,
    les fichiers sont validés (assets/donnees.js) : un enregistrement ne peut
    pas arrêter « Publier le site ». Si un fichier a changé sur main depuis son
    ouverture, rien n'est écrit (conflit) : l'admin le dit et recharge.
@@ -22,29 +25,66 @@
   var D = window.Donnees;
   var API = 'https://api.github.com';
   var BRANCHE = 'main';
-  var CLE_JETON = 'admin-jeton-github';
-  /* Où garder le jeton (question posée à l'enseignant, 17/11) :
-     - 'memoire' : seulement le temps de la visite, à recoller à chaque fois (par défaut, le plus sûr :
-       l'origine babash.github.io est partagée par toutes les pages publiées du compte, et un script de
-       l'une d'elles pourrait lire ce que garde le navigateur) ;
-     - 'navigateur' : dans le localStorage de ce navigateur, jusqu'à « Oublier le jeton ».
-     Une garde chiffrée par une phrase de passe s'ajoutera ici, si l'enseignant la choisit. */
-  var GARDE_JETON = 'memoire';
-  var GARDES = {
-    memoire: {
-      phrase: 'Le jeton est gardé seulement le temps de la visite, dans la mémoire de cette page : il disparaît quand vous fermez ou rechargez la page, et il faut le recoller à la visite suivante. Rien n\'est écrit dans le navigateur.',
-      lire: function () { return jetonEnMemoire; },
-      ecrire: function (v) { jetonEnMemoire = v; return true; },
-      oublier: function () { jetonEnMemoire = ''; }
-    },
-    navigateur: {
-      phrase: 'Le jeton est gardé dans ce navigateur, sur cet appareil, jusqu\'à « Oublier le jeton ».',
-      lire: function () { try { return localStorage.getItem(CLE_JETON) || ''; } catch (e) { return ''; } },
-      ecrire: function (v) { try { localStorage.setItem(CLE_JETON, v); return true; } catch (e) { return false; } },
-      oublier: function () { try { localStorage.removeItem(CLE_JETON); } catch (e) { /* rien */ } }
-    }
-  };
+  /* Le jeton, chiffré avec le mot de passe administrateur (décision de l'enseignant du 17/11) :
+     localStorage[CLE_COFFRE] = { version, iterations, sel, iv, chiffre } (base64). Le jeton déchiffré
+     reste dans jetonEnMemoire le temps de la visite ; le mot de passe n'est jamais gardé. */
+  var CLE_COFFRE = 'admin-jeton-chiffre';
+  var ANCIENNES_CLES = ['admin-jeton-github']; // gardes précédentes : effacées au démarrage
+  var ITERATIONS = 600000;
+  var MDP_MIN = 10;
   var jetonEnMemoire = '';
+
+  function b64(octets) {
+    var bin = '';
+    for (var i = 0; i < octets.length; i++) bin += String.fromCharCode(octets[i]);
+    return btoa(bin);
+  }
+  function deB64(t) {
+    var bin = atob(t), o = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i);
+    return o;
+  }
+  function cryptoPossible() {
+    return !!(window.crypto && window.crypto.subtle && window.isSecureContext !== false);
+  }
+  function cle(mdp, sel, iterations) {
+    var c = window.crypto.subtle;
+    return c.importKey('raw', new TextEncoder().encode(mdp), 'PBKDF2', false, ['deriveKey']).then(function (base) {
+      return c.deriveKey({ name: 'PBKDF2', hash: 'SHA-256', salt: sel, iterations: iterations },
+        base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+    });
+  }
+  function coffre() {
+    var c = lireStockage(CLE_COFFRE, null);
+    return c && c.version === 1 && c.sel && c.iv && c.chiffre ? c : null;
+  }
+  /* Chiffrer et garder le jeton ; promesse */
+  function fermerCoffre(jetonClair, mdp) {
+    var sel = window.crypto.getRandomValues(new Uint8Array(16));
+    var iv = window.crypto.getRandomValues(new Uint8Array(12));
+    return cle(mdp, sel, ITERATIONS).then(function (k) {
+      return window.crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, k, new TextEncoder().encode(jetonClair));
+    }).then(function (chiffre) {
+      if (!ecrireStockage(CLE_COFFRE, { version: 1, iterations: ITERATIONS, sel: b64(sel), iv: b64(iv), chiffre: b64(new Uint8Array(chiffre)) })) {
+        throw new Error('Le navigateur refuse de garder le jeton chiffré (navigation privée ?).');
+      }
+      jetonEnMemoire = jetonClair;
+    });
+  }
+  /* Déchiffrer le jeton avec le mot de passe ; promesse rejetée si le mot de passe est faux */
+  function ouvrirCoffre(mdp) {
+    var c = coffre();
+    if (!c) return Promise.reject(new Error('Aucun jeton n\'est gardé sur cet appareil.'));
+    return cle(mdp, deB64(c.sel), c.iterations || ITERATIONS).then(function (k) {
+      return window.crypto.subtle.decrypt({ name: 'AES-GCM', iv: deB64(c.iv) }, k, deB64(c.chiffre));
+    }).then(function (clair) {
+      jetonEnMemoire = new TextDecoder().decode(clair);
+    }, function () {
+      throw new Error('Mot de passe incorrect : le jeton n\'a pas pu être déchiffré.');
+    });
+  }
+  function verrouiller() { jetonEnMemoire = ''; etat.chemins = null; }
+  function oublierAppareil() { verrouiller(); ecrireStockage(CLE_COFFRE, null); }
 
   /* Les seuls fichiers que l'admin écrit (contrôle du Gardien, 17/11) : la vitrine et les fiches.
      Tout autre chemin (brouillon ou fichiers récents du navigateur, partagés par toutes les pages de
@@ -92,8 +132,7 @@
     try { if (v == null) localStorage.removeItem(cle); else localStorage.setItem(cle, JSON.stringify(v)); return true; } catch (e) { return false; }
   }
 
-  function garde() { return GARDES[GARDE_JETON] || GARDES.memoire; }
-  function jeton() { return garde().lire(); }
+  function jeton() { return jetonEnMemoire; }
 
   function depot() {
     var d = (O.reglages().depot || 'babash/Babash-NSI-SNT').replace(/^https?:\/\/(www\.)?github\.com\//i, '').replace(/(\.git)?\/*$/, '');
@@ -360,7 +399,7 @@
     { id: 'ressources', nom: 'Ressources' },
     { id: 'onglets', nom: 'Onglets du site' },
     { id: 'changements', nom: 'Changements' },
-    { id: 'jeton', nom: 'Jeton GitHub' }
+    { id: 'jeton', nom: 'Mot de passe' }
   ];
 
   function route() {
@@ -390,6 +429,11 @@
     })));
     vue.appendChild(nav);
     if (etat.message) vue.appendChild(blocMessage());
+    if (r.vue !== 'jeton' && coffre() && !jeton() && cryptoPossible() && !etat.lectureSeule) {
+      var porte = blocDeverrouiller(true);
+      porte.querySelector('.admin-actions').appendChild(bouton('Continuer en lecture', function () { etat.lectureSeule = true; rendre(); }, { cle: 'lecture' }));
+      vue.appendChild(porte);
+    }
     if (r.vue === 'fiche') vueFiche(r.arg);
     else if (r.vue === 'onglets') vueOnglets(r.arg);
     else if (r.vue === 'changements') vueChangements();
@@ -1476,41 +1520,99 @@
 
   /* ── Vue : le jeton ───────────────────────────────────────────── */
 
-  function vueJeton() {
-    vue.appendChild(el('h1', { id: 'contenu' }, 'Jeton GitHub'));
-    var present = !!jeton();
-    vue.appendChild(el('p', null, present
-      ? [el('strong', null, 'Un jeton est en place.'), ' L\'admin peut enregistrer vos changements dans le dépôt.']
-      : [el('strong', null, 'Aucun jeton.'), ' L\'admin fonctionne en lecture : vous pouvez tout modifier, voir l\'aperçu et télécharger les fichiers modifiés, mais pas les enregistrer d\'un clic.']));
-    vue.appendChild(el('p', { class: 'admin-garde' }, el('strong', null, garde().phrase)));
-    vue.appendChild(el('p', { class: 'admin-aide' }, 'Le jeton est une clé qui permet à cette page d\'écrire dans le dépôt, à votre nom. Cette page ne l\'affiche jamais, ne l\'envoie qu\'à GitHub et ne l\'écrit ni dans le dépôt ni dans une adresse. Ce n\'est pas une protection forte de la page (elle est publique), seulement ce qui permet d\'écrire : donnez-lui une durée courte, ce seul dépôt et les seuls « Contents », et révoquez-le en cas de doute.'));
+  function formeJeton(v) { return /^(github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,})$/.test(v); }
 
-    var input = el('input', { type: 'password', id: 'jeton', 'data-cle': 'jeton', autocomplete: 'off', spellcheck: 'false', placeholder: 'github_pat_…' });
-    vue.appendChild(el('div', { class: 'admin-champ' }, [el('label', { for: 'jeton' }, present ? 'Remplacer le jeton' : 'Coller le jeton'), input]));
-    vue.appendChild(el('p', { class: 'admin-actions' }, [
-      bouton(GARDE_JETON === 'memoire' ? 'Utiliser ce jeton pour cette visite' : 'Enregistrer le jeton dans ce navigateur', function () {
-        var v = input.value.trim();
-        input.value = '';
-        if (!/^(github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,})$/.test(v)) {
-          etat.message = { niveau: 'erreur', texte: 'Ce texte ne ressemble pas à un jeton GitHub (il commence par github_pat_). Rien n\'est enregistré.' };
-          rendre();
-          return;
-        }
-        if (!garde().ecrire(v)) {
-          etat.message = { niveau: 'erreur', texte: 'Le navigateur refuse de garder le jeton (navigation privée ?).' };
-          rendre();
-          return;
-        }
-        verifierJeton();
-      }, { classe: 'principal', cle: 'jeton-enregistrer' }),
-      present ? bouton('Oublier le jeton', function () {
-        garde().oublier();
-        etat.chemins = null;
-        etat.message = { niveau: 'ok', texte: 'Jeton oublié : cette page ne l\'a plus. Pensez à le révoquer sur GitHub si vous ne vous en servez plus.' };
-        rendre();
-      }, { cle: 'jeton-oublier' }) : null,
-      present ? bouton('Vérifier le jeton', verifierJeton, { cle: 'jeton-verifier' }) : null
+  function champMdp(id, nom, nouveau) {
+    var input = el('input', { type: 'password', id: id, 'data-cle': id, autocomplete: nouveau ? 'new-password' : 'current-password', spellcheck: 'false' });
+    return { input: input, bloc: el('div', { class: 'admin-champ' }, [el('label', { for: id }, nom), input]) };
+  }
+
+  /* Déverrouiller : le formulaire du mot de passe (vue « Accès » et en tête des autres vues) */
+  function blocDeverrouiller(compact) {
+    var mdp = champMdp(compact ? 'mdp-porte' : 'mdp', 'Mot de passe administrateur', false);
+    var form = el('form', { class: 'admin-porte' + (compact ? ' compact' : '') }, [
+      compact ? el('p', null, [el('strong', null, 'Admin verrouillé.'), ' Le mot de passe déverrouille le jeton gardé sur cet appareil, pour enregistrer d\'un clic. Sans lui, tout reste possible en lecture : modifier, voir l\'aperçu, télécharger les fichiers.']) : null,
+      mdp.bloc,
+      el('p', { class: 'admin-actions' }, [el('button', { type: 'submit', class: 'btn principal', 'data-cle': 'deverrouiller' }, 'Déverrouiller')])
+    ]);
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = mdp.input.value;
+      mdp.input.value = '';
+      etat.message = { niveau: 'info', texte: 'Déchiffrement du jeton…' };
+      rendre();
+      ouvrirCoffre(v).then(function () {
+        etat.message = { niveau: 'ok', texte: 'Admin déverrouillé pour cette visite : vos changements peuvent être enregistrés.' };
+        return chargerArbre().catch(function (err) { etat.message = { niveau: 'erreur', texte: 'Le jeton ne fonctionne pas : ' + err.message }; });
+      }).then(function () { rendre(); }, function (err) {
+        etat.message = { niveau: 'erreur', texte: err.message };
+        rendre('mdp');
+      });
+    });
+    return form;
+  }
+
+  function vueJeton() {
+    vue.appendChild(el('h1', { id: 'contenu' }, 'Mot de passe et jeton'));
+    var garde = !!coffre(), ouvert = !!jeton();
+    vue.appendChild(el('p', null, ouvert
+      ? [el('strong', null, 'Admin déverrouillé.'), ' Vos changements peuvent être enregistrés dans le dépôt jusqu\'à la fin de la visite, ou jusqu\'à « Verrouiller ».']
+      : garde ? [el('strong', null, 'Admin verrouillé.'), ' Un jeton chiffré est gardé sur cet appareil : le mot de passe administrateur le déverrouille.']
+      : [el('strong', null, 'Aucun jeton sur cet appareil.'), ' L\'admin fonctionne en lecture : vous pouvez tout modifier, voir l\'aperçu et télécharger les fichiers modifiés, mais pas les enregistrer d\'un clic.']));
+    vue.appendChild(el('div', { class: 'admin-garde' }, [
+      el('p', null, el('strong', null, 'Ce que protège le mot de passe.')),
+      el('p', null, 'Le mot de passe administrateur protège le jeton GitHub gardé sur cet appareil : le jeton y est chiffré avec lui, jamais écrit en clair. Le mot de passe n\'est gardé nulle part, n\'est envoyé à personne et n\'est jamais écrit dans le dépôt.'),
+      el('p', null, 'Il ne rend pas l\'admin secret : la page et tout le dépôt (fiches, notes, documents cachés) sont publics. Un mot de passe oublié se règle en recollant un jeton (« Oublier cet appareil », puis un nouveau jeton et un nouveau mot de passe).')
     ]));
+    if (!cryptoPossible()) {
+      vue.appendChild(el('div', { class: 'alerte', role: 'alert' }, el('p', null, 'Ce navigateur ne permet pas de chiffrer le jeton (il faut une page en https) : l\'admin reste en lecture.')));
+      return;
+    }
+
+    if (garde && !ouvert) vue.appendChild(blocDeverrouiller(false));
+    if (ouvert) {
+      vue.appendChild(el('p', { class: 'admin-actions' }, [
+        bouton('Verrouiller', function () {
+          verrouiller();
+          etat.message = { niveau: 'ok', texte: 'Admin verrouillé : le jeton déchiffré est oublié. Le mot de passe le déverrouillera de nouveau.' };
+          rendre();
+        }, { classe: 'principal', cle: 'verrouiller' }),
+        bouton('Vérifier le jeton', verifierJeton, { cle: 'jeton-verifier' })
+      ]));
+    }
+    if (garde) {
+      vue.appendChild(el('p', { class: 'admin-actions' }, bouton('Oublier cet appareil', function () {
+        if (!confirm('Effacer le jeton chiffré de cet appareil ? Il faudra recoller un jeton et choisir un mot de passe pour enregistrer de nouveau.')) return;
+        oublierAppareil();
+        etat.message = { niveau: 'ok', texte: 'Cet appareil est oublié : le jeton chiffré est effacé. Pensez à révoquer le jeton sur GitHub si vous ne vous en servez plus.' };
+        rendre();
+      }, { cle: 'oublier-appareil' })));
+    }
+
+    // Première fois, ou remplacement : le jeton et le mot de passe
+    var nouveau = el('form', { class: 'admin-bloc-plat' });
+    nouveau.appendChild(el('h2', null, garde ? 'Remplacer le jeton et le mot de passe' : 'Première fois sur cet appareil'));
+    var jt = el('input', { type: 'password', id: 'jeton', 'data-cle': 'jeton', autocomplete: 'off', spellcheck: 'false', placeholder: 'github_pat_…' });
+    nouveau.appendChild(el('div', { class: 'admin-champ' }, [el('label', { for: 'jeton' }, 'Jeton GitHub'), jt]));
+    var m1 = champMdp('mdp-nouveau', 'Mot de passe administrateur (au moins ' + MDP_MIN + ' caractères)', true);
+    var m2 = champMdp('mdp-confirmer', 'Le même mot de passe, pour confirmer', true);
+    nouveau.appendChild(el('p', { class: 'admin-aide' }, 'Conseil : une phrase facile à retenir pour vous, de quatre ou cinq mots, plutôt qu\'un mot compliqué. Le même mot de passe peut servir sur chaque appareil.'));
+    nouveau.appendChild(m1.bloc);
+    nouveau.appendChild(m2.bloc);
+    nouveau.appendChild(el('p', { class: 'admin-actions' }, el('button', { type: 'submit', class: 'btn principal', 'data-cle': 'jeton-enregistrer' }, 'Chiffrer et garder le jeton sur cet appareil')));
+    nouveau.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = jt.value.trim(), a = m1.input.value, b = m2.input.value;
+      jt.value = ''; m1.input.value = ''; m2.input.value = '';
+      var faute = !formeJeton(v) ? 'Ce texte ne ressemble pas à un jeton GitHub (il commence par github_pat_). Rien n\'est gardé.'
+        : Array.from(a).length < MDP_MIN ? 'Le mot de passe doit avoir au moins ' + MDP_MIN + ' caractères (une phrase, par exemple). Rien n\'est gardé.'
+        : a !== b ? 'Les deux mots de passe ne sont pas identiques. Rien n\'est gardé.' : null;
+      if (faute) { etat.message = { niveau: 'erreur', texte: faute }; rendre('jeton'); return; }
+      etat.message = { niveau: 'info', texte: 'Chiffrement du jeton…' };
+      rendre();
+      fermerCoffre(v, a).then(verifierJeton, function (err) { etat.message = { niveau: 'erreur', texte: err.message }; rendre(); });
+    });
+    vue.appendChild(nouveau);
 
     vue.appendChild(el('h2', null, 'Créer le jeton, pas à pas'));
     vue.appendChild(el('ol', { class: 'admin-etapes' }, [
@@ -1519,9 +1621,7 @@
       el('li', null, [el('strong', null, 'Repository access'), ' : « Only select repositories », puis choisir ', el('code', null, depot()), ' seulement.']),
       el('li', null, [el('strong', null, 'Permissions'), ' › Repository permissions › ', el('strong', null, 'Contents : Read and write'), '. Rien d\'autre (Metadata : Read-only s\'ajoute tout seul).']),
       el('li', null, ['« Generate token », puis copier le jeton (il commence par ', el('code', null, 'github_pat_'), ') : GitHub ne le montre qu\'une fois.']),
-      el('li', null, GARDE_JETON === 'memoire'
-        ? 'Le garder dans votre gestionnaire de mots de passe, puis le coller ci-dessus à chaque visite (« Utiliser ce jeton pour cette visite »).'
-        : 'Le coller ci-dessus, puis « Enregistrer le jeton dans ce navigateur ». À refaire sur chaque appareil (ordinateur, téléphone).'),
+      el('li', null, 'Le coller ci-dessus avec votre mot de passe administrateur, puis « Chiffrer et garder le jeton sur cet appareil ». À faire une fois sur chaque appareil (ordinateur, téléphone) ; ensuite, le mot de passe suffit.'),
       el('li', null, 'En cas de perte d\'un appareil, ou à la fin : révoquer le jeton sur la même page de GitHub.')
     ]));
   }
@@ -1552,7 +1652,7 @@
 
   window.pageAdmin = function (racine, outils) {
     O = outils;
-    if (GARDE_JETON === 'memoire') GARDES.navigateur.oublier(); // rien ne reste d'une garde précédente
+    ANCIENNES_CLES.forEach(function (k) { ecrireStockage(k, null); }); // rien ne reste d'une garde précédente
     el = O.el;
     document.title = 'Admin – ' + O.titreSite();
     racine.appendChild(O.barreHaut('admin'));
