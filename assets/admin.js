@@ -40,6 +40,7 @@
     message: null,   // { niveau: 'ok'|'erreur'|'info', texte, actions }
     occupe: false,
     filtres: { q: '', statut: '', cache: '', ens: '', notes: false },
+    recherches: {},  // la recherche de chaque liste de cases, gardée quand la vue est redessinée
     rubrique: null
   };
   var racinePage, vue, barreBas, annonce;
@@ -345,6 +346,7 @@
     var actif = document.activeElement;
     var cle = focusCle || (actif && actif.getAttribute && actif.getAttribute('data-cle'));
     var y = window.scrollY;
+    etat.focusEnCours = cle || null; // pour les morceaux qui se rouvrent autour du focus (listes de cases)
     O.vider(vue);
     var r = route();
     var nav = el('nav', { class: 'admin-onglets', 'aria-label': 'Espace administrateur' }, el('ul', null, ONGLETS.map(function (o) {
@@ -1041,11 +1043,12 @@
       if (!n) cases.appendChild(el('li', { class: 'vide' }, mots.length ? 'Aucune ressource ne correspond.' : 'Taper un mot pour chercher dans toute la bibliothèque.'));
       else if (n > 40) cases.appendChild(el('li', { class: 'vide' }, (n - 40) + ' autres : préciser la recherche.'));
     }
-    q.addEventListener('input', majCases);
+    q.value = etat.recherches[p] || '';
+    q.addEventListener('input', function () { etat.recherches[p] = q.value; majCases(); });
     choisir.addEventListener('toggle', function () { if (choisir.open) majCases(); });
-    // rouvrir après un changement fait depuis la liste de cases
-    var actif = document.activeElement && document.activeElement.getAttribute && document.activeElement.getAttribute('data-cle');
-    if (actif && actif.indexOf(p + 'case-') === 0) { choisir.open = true; majCases(); }
+    // rouvrir après un changement fait depuis la liste de cases (la vue vient d'être redessinée)
+    var actif = etat.focusEnCours;
+    if (actif && (actif.indexOf(p + 'case-') === 0 || actif === p + 'q')) { choisir.open = true; majCases(); }
     bloc.appendChild(choisir);
     return bloc;
   }
