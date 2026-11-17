@@ -1,9 +1,15 @@
 """Outils communs aux contrôles du Gardien (aucune dépendance au dépôt).
 
-- rubriques(racine)         : les dossiers listés dans reglages.js
-- pages_site(racine)        : accueil + une page par rubrique
+- lit_la_vitrine(racine)    : depuis T51b, le site lit la vitrine et les fiches (et non plus */ressources.js)
+- rubriques(racine)         : les rubriques de la vitrine (T51b), sinon les dossiers listés dans reglages.js
+- vitrine(racine)           : [(rubrique, [identifiants placés, dans l'ordre])] de donnees/vitrine.json
+- fiche(racine, id) / visible_exterieur(fiche) : une fiche de donnees/ressources/, et sa visibilité
+- pages_site(racine)        : accueil + une page par rubrique (+ la bibliothèque, si la copie l'a :
+                              ses données sont construites par scripts/construire_bibliotheque.py)
 - pages_fichiers(racine)    : les pages HTML déposées dans */fichiers/
-- attendu(racine, rubrique) : nombre de ressource({ … }) dans ressources.js
+- attendu(racine, rubrique) : nombre de ressources affichées attendu : celles que la vitrine place et
+                              qui ont un document visible de l'extérieur (T51b), sinon les
+                              ressource({ … }) de ressources.js
 - lancer(p)                 : Chrome sans écran (passe par le proxy de la session s'il existe)
 - polices(contexte, dossier): sert Google Fonts depuis des paquets fontsource locaux
                               (fonts.googleapis.com est bloqué dans les sessions Claude)
@@ -27,14 +33,56 @@ def lire(chemin):
         return f.read()
 
 
+def lit_la_vitrine(racine):
+    """Vrai si les rubriques et l'accueil de cette copie lisent la vitrine et les fiches
+    (donnees/bibliotheque.json, T51b) au lieu des anciennes listes */ressources.js : son
+    assets/site.js charge alors la bibliothèque construite (fetch(RACINE + BIBLIOTHEQUE))."""
+    chemin = os.path.join(racine, "assets", "site.js")
+    return os.path.exists(chemin) and bool(re.search(r"fetch\(RACINE \+ BIBLIOTHEQUE\)", lire(chemin)))
+
+
+def vitrine(racine):
+    """Les rubriques de la vitrine, dans l'ordre : [(identifiant, [identifiants des ressources placées
+    dans ses sections et sous-sections, dans l'ordre de la page])]."""
+    v = json.loads(lire(os.path.join(racine, "donnees", "vitrine.json")))
+    out = []
+    for rub in v.get("rubriques", []):
+        ids = []
+        for s in rub.get("sections", []):
+            ids += s.get("ressources", [])
+            for ss in s.get("sous_sections", []):
+                ids += ss.get("ressources", [])
+        out.append((rub["id"], ids))
+    return out
+
+
+def fiche(racine, rid):
+    """La fiche donnees/ressources/<rid>.json, ou None si elle manque ou ne se lit pas."""
+    try:
+        return json.loads(lire(os.path.join(racine, "donnees", "ressources", rid + ".json")))
+    except (OSError, ValueError):
+        return None
+
+
+def visible_exterieur(f):
+    """Une ressource s'affiche de l'extérieur si un de ses documents l'est (cahier des charges, § 3.2)."""
+    return any(isinstance(d, dict) and (d.get("visible") or {}).get("exterieur") is True for d in (f or {}).get("documents", []))
+
+
 def rubriques(racine):
+    if lit_la_vitrine(racine):
+        return [r for r, _ in vitrine(racine)]
     texte = lire(os.path.join(racine, "reglages.js"))
     bloc = re.search(r"rubriques\s*:\s*\[(.*?)\]", texte, re.S).group(1)
     return re.findall(r'"([^"]+)"', bloc)
 
 
 def pages_site(racine):
-    return [("accueil", "")] + [(r, r + "/") for r in rubriques(racine)]
+    pages = [("accueil", "")] + [(r, r + "/") for r in rubriques(racine)]
+    # T50 : l'onglet Bibliothèque n'est pas une rubrique de reglages.js, mais une page du site
+    if os.path.exists(os.path.join(racine, "bibliotheque", "index.html")):
+        pages.append(("bibliotheque", "bibliotheque/"))
+    return pages
 
 
 def pages_fichiers(racine):
@@ -50,6 +98,9 @@ def sans_commentaires(source):
 
 
 def attendu(racine, rub):
+    if lit_la_vitrine(racine):
+        ids = dict(vitrine(racine)).get(rub, [])
+        return sum(1 for rid in ids if visible_exterieur(fiche(racine, rid)))
     source = sans_commentaires(lire(os.path.join(racine, rub, "ressources.js")))
     return len(re.findall(r"^ressource\(\{", source, re.M))
 

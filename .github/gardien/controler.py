@@ -10,8 +10,12 @@ Usage (depuis n'importe quel dossier du dépôt) :
      pas origin/main à jour dans les copies de travail des agents) ;
   1. la branche part-elle du dernier main ? (sinon : à rebaser) ; fichiers touchés ;
   2. données sensibles dans les lignes ajoutées (sensibles.py --diff) ;
-  3. liens internes, liens principaux vers GitHub (liens.py) sur la branche ;
-  4. rendu avant/après : accueil + rubriques, 320/768/1440 px, clair/obscur (rendu.py, comparer.py) ;
+  3. liens internes, liens principaux vers GitHub (liens.py) sur la branche : les documents des
+     fiches depuis T51b, sinon les listes */ressources.js ;
+  4. rendu avant/après : accueil + rubriques (+ la bibliothèque, dont les données sont d'abord
+     construites dans chaque copie, comme le fait « Publier le site »), 320/768/1440 px,
+     clair/obscur (rendu.py, comparer.py) ; depuis T51b, les rubriques lisent la vitrine et les
+     fiches, et le nombre de ressources attendu en vient (commun.attendu) ;
   5. contrastes et clavier sur la branche (contrastes.py) ;
   6. impression A4 des documents HTML touchés dans */fichiers/ (impression.py) ;
   7. contrôle du dépôt lui-même (.github/verifier-site.py) sur la branche servie en local.
@@ -48,6 +52,18 @@ def exporter(depot, ref, dossier):
     os.makedirs(dossier, exist_ok=True)
     archive = subprocess.run(["git", "archive", ref], cwd=depot, capture_output=True, check=True).stdout
     subprocess.run(["tar", "-x", "-C", dossier], input=archive, check=True)
+
+
+def construire_bibliotheque(dossier):
+    """T50 : les fichiers de la bibliothèque (donnees/bibliotheque*.json) sont construits à la publication,
+    jamais commités. On les construit dans la copie exportée, comme « Publier le site », pour que le rendu,
+    les contrastes et verifier-site.py voient l'onglet Bibliothèque tel qu'il sera en ligne.
+    Renvoie None si la copie n'a pas de bibliothèque, sinon (code de retour, dernières lignes)."""
+    script = os.path.join(dossier, "scripts", "construire_bibliotheque.py")
+    if not os.path.exists(script):
+        return None
+    r = subprocess.run([*PY, "-B", script, "--racine", dossier], capture_output=True, text=True, timeout=900)
+    return r.returncode, "\n".join((r.stdout + r.stderr).strip().splitlines()[-6:])
 
 
 def servir(dossier):
@@ -114,6 +130,15 @@ def main():
     av, ap = os.path.join(travail, "avant"), os.path.join(travail, "apres")
     exporter(depot, base, av)
     exporter(depot, tete, ap)
+    for nom, dossier in (("avant", av), ("après", ap)):
+        bilan = construire_bibliotheque(dossier)
+        if bilan is None:
+            continue
+        print("\n### Construction de la bibliothèque (%s)\n%s" % (nom, bilan[1]), flush=True)
+        if nom == "après":
+            resultats.append(("construction bibliothèque", "vert" if bilan[0] == 0 else "ROUGE"))
+        elif bilan[0]:
+            print("   (la référence ne se construit pas : son rendu de la bibliothèque affichera une erreur)")
     preparer_polices(o.polices)
     srv_av, url_av = servir(av)
     srv_ap, url_ap = servir(ap)

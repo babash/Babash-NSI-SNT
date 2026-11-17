@@ -7,16 +7,19 @@ D'après les essais de l'Architecte (T45c) et du Gardien (T45 et T45d), sur des 
 servies en local et affichées dans Chrome (accueil et SNT) :
   - assets/site.js : le lien du pied de page suit le réglage depot de reglages.js (tel quel ;
     adresse complète en .git ; autre dépôt ; valeur fautive : erreur affichée et lien vers le
-    dépôt par défaut ; réglage absent : dépôt par défaut, sans erreur) ;
-  - l'encadré d'erreur : son titre nomme la cause (les réglages, une liste, les deux) ; l'astuce
-    de la virgule n'apparaît que pour une erreur qui a un numéro de ligne (une virgule retirée),
-    pas pour un champ inconnu ni pour un réglage depot mal écrit ;
+    dépôt par défaut ; réglage absent : dépôt par défaut, sans erreur). Le lien est lu dans le pied
+    de page seulement : depuis T51b, une ressource peut avoir un document « Code source » ;
+  - l'encadré d'erreur : son titre nomme la cause. Depuis T51b (le site lit la vitrine et les fiches,
+    donnees/bibliotheque.json) : la bibliothèque absente (« Les ressources n'ont pas pu s'afficher »),
+    puis avec un réglage depot mal écrit (les deux) ; l'astuce de la virgule n'apparaît jamais.
+    Avant T51b (anciennes listes) : une liste, les réglages, les deux, et l'astuce de la virgule
+    pour une erreur qui a un numéro de ligne (une virgule retirée), pas pour un champ inconnu ;
   - .github/verifier-site.py de la copie : code_source() sur des morceaux de DOM fabriqués
     (entités, icône, casse, adresse hors de GitHub…) et depot() sur des reglages.js fabriqués ;
     puis le contrôle complet sur trois copies : telle quelle (code 0), lien retiré du pied de
     page (code 1, les 6 pages citées), lien vers un autre dépôt (code 1). Depuis T50, la
     bibliothèque (donnees/bibliotheque.json, jamais commitée) est d'abord construite dans chaque
-    copie par scripts/construire_bibliotheque.py, comme le fait « Publier le site ».
+    copie par scripts/construire_bibliotheque.py, comme le fait « Publier le site » (cadre.bibliotheque).
 Les motifs remplacés dans assets/site.js et reglages.js sont ceux de la version du 11/11/2026 :
 s'ils changent, le cas le dit (« motif introuvable »), et il faut mettre ce test à jour.
 Il faut Playwright et Chrome (voir commun.lancer). Compter quelques minutes : verifier-site.py
@@ -43,11 +46,13 @@ DEPOT = ("reglages.js", r'^  depot: "babash/Babash-NSI-SNT",$')
 TITRE_R = "Les réglages du site contiennent une erreur"
 TITRE_L = "Une liste de ressources contient une erreur"
 TITRE_RL = "Les réglages du site et une liste de ressources contiennent des erreurs"
+TITRE_B = "Les ressources n'ont pas pu s'afficher"
+VITRINE = commun.lit_la_vitrine(source)   # T51b : le site lit la vitrine et les fiches
 ASTUCE = "Souvent : une virgule oubliée en fin de ligne"
 
 LIRE = r"""() => {
   const t = s => (s || '').replace(/\s+/g, ' ').trim();
-  const lien = [...document.querySelectorAll('a')].filter(a => t(a.textContent) === 'Code source sur GitHub').map(a => a.href);
+  const lien = [...document.querySelectorAll('footer a')].filter(a => t(a.textContent) === 'Code source sur GitHub').map(a => a.href);
   const alerte = document.querySelector('.alerte');
   return { liens: lien, titre: alerte ? t((alerte.querySelector('strong') || alerte).textContent) : null,
            astuce: alerte ? [...alerte.querySelectorAll('p')].some(p => t(p.textContent).startsWith('Souvent : une virgule')) : false,
@@ -55,9 +60,16 @@ LIRE = r"""() => {
 }"""
 
 
-def copie_modifiee(nom, modifs):
-    """Une copie du site ; modifs : [(fichier, motif regex, remplacement)]. (dossier, motif introuvable ou None)."""
+def copie_modifiee(nom, modifs, bibliotheque=True):
+    """Une copie du site ; modifs : [(fichier, motif regex, remplacement)]. (dossier, motif introuvable ou None).
+    bibliotheque : la bibliothèque construite (comme en ligne), ou retirée (False : publication ratée)."""
     d = cadre.copie(source, travail, nom)
+    if bibliotheque:
+        cadre.bibliotheque(d)
+    else:
+        for n in ("bibliotheque.json", "bibliotheque-complete.json", "bibliotheque-textes.json"):
+            if os.path.exists(os.path.join(d, "donnees", n)):
+                os.remove(os.path.join(d, "donnees", n))
     for fichier, motif, remplacement in modifs:
         chemin = os.path.join(d, fichier)
         texte = commun.lire(chemin)
@@ -85,9 +97,9 @@ def lire(nav, d):
     return resultats
 
 
-def cas_page(nav, titre, nom, modifs, attendu):
+def cas_page(nav, titre, nom, modifs, attendu, bibliotheque=True):
     """attendu(page, infos) -> liste de problèmes."""
-    d, introuvable = copie_modifiee(nom, modifs)
+    d, introuvable = copie_modifiee(nom, modifs, bibliotheque)
     if introuvable:
         bilan.verifier(titre, ["motif introuvable : " + introuvable])
     else:
@@ -129,15 +141,22 @@ with sync_playwright() as p:
              [DEPOT + ('  depot: "babash Babash-NSI-SNT",',)], lien_vers(D, TITRE_R, astuce=False))
     cas_page(nav, "depot absent : dépôt par défaut, sans erreur", "depot-absent", [DEPOT + ("",)], lien_vers(D))
     # ── l'encadré d'erreur : titre et astuce ────────────────────────────────────
-    cas_page(nav, "champ inconnu dans SNT : encadré « liste », sans l'astuce", "champ-inconnu",
-             [premiere_vraie_ressource("ressource({ champInconnu: 1,")],
-             lambda page, i: lien_vers(D, TITRE_L, astuce=False)(page, i))
-    cas_page(nav, "virgule retirée dans SNT : encadré « liste », avec l'astuce", "virgule",
-             [("snt/ressources.js", r'^(ressource\(\{\n  titre: "[^"\n]*"),$', r"\1")],
-             lambda page, i: lien_vers(D, TITRE_L, astuce=True, erreurs_js=True)(page, i))
-    cas_page(nav, "depot mal écrit et virgule retirée : encadré « les deux », avec l'astuce", "les-deux",
-             [DEPOT + ('  depot: "babash Babash-NSI-SNT",',), ("snt/ressources.js", r'^(ressource\(\{\n  titre: "[^"\n]*"),$', r"\1")],
-             lambda page, i: lien_vers(D, TITRE_RL, astuce=True, erreurs_js=True)(page, i))
+    if VITRINE:
+        cas_page(nav, "bibliothèque absente : encadré « ressources », lien du pied de page gardé, sans l'astuce",
+                 "sans-bibliotheque", [], lambda page, i: lien_vers(D, TITRE_B, astuce=False)(page, i), bibliotheque=False)
+        cas_page(nav, "depot mal écrit et bibliothèque absente : encadré « les deux », sans l'astuce", "les-deux",
+                 [DEPOT + ('  depot: "babash Babash-NSI-SNT",',)],
+                 lambda page, i: lien_vers(D, TITRE_RL, astuce=False)(page, i), bibliotheque=False)
+    else:
+        cas_page(nav, "champ inconnu dans SNT : encadré « liste », sans l'astuce", "champ-inconnu",
+                 [premiere_vraie_ressource("ressource({ champInconnu: 1,")],
+                 lambda page, i: lien_vers(D, TITRE_L, astuce=False)(page, i))
+        cas_page(nav, "virgule retirée dans SNT : encadré « liste », avec l'astuce", "virgule",
+                 [("snt/ressources.js", r'^(ressource\(\{\n  titre: "[^"\n]*"),$', r"\1")],
+                 lambda page, i: lien_vers(D, TITRE_L, astuce=True, erreurs_js=True)(page, i))
+        cas_page(nav, "depot mal écrit et virgule retirée : encadré « les deux », avec l'astuce", "les-deux",
+                 [DEPOT + ('  depot: "babash Babash-NSI-SNT",',), ("snt/ressources.js", r'^(ressource\(\{\n  titre: "[^"\n]*"),$', r"\1")],
+                 lambda page, i: lien_vers(D, TITRE_RL, astuce=True, erreurs_js=True)(page, i))
     nav.close()
 
 # ── verifier-site.py : fonctions code_source() et depot() ──────────────────────
@@ -189,16 +208,15 @@ for titre, nom, modifs, code_attendu, motifs in [
     if introuvable:
         bilan.verifier(titre, ["motif introuvable : " + introuvable])
         continue
-    # T50 : la bibliothèque est construite à la publication, jamais commitée ; verifier-site.py
-    # contrôle l'onglet Bibliothèque : on la construit dans la copie, comme « Publier le site ».
-    construire = os.path.join(d, "scripts", "construire_bibliotheque.py")
-    if os.path.exists(construire):
-        c = subprocess.run([sys.executable, "-I", "-B", construire, "--racine", d, "--sans-textes"],
-                           capture_output=True, text=True, timeout=600)
-        if c.returncode != 0:
-            bilan.verifier(titre, ["construction de la bibliothèque : code %d" % c.returncode], (c.stdout + c.stderr)[-1500:])
-            shutil.rmtree(d, ignore_errors=True)
-            continue
+    # T50 : la bibliothèque est construite à la publication, jamais commitée ; copie_modifiee() l'a
+    # construite dans la copie, comme « Publier le site » : on vérifie seulement qu'elle est là.
+    if not os.path.exists(os.path.join(d, "scripts", "construire_bibliotheque.py")) or \
+            os.path.exists(os.path.join(d, "donnees", "bibliotheque.json")):
+        pass
+    else:
+        bilan.verifier(titre, ["la bibliothèque n'a pas pu être construite dans la copie"])
+        shutil.rmtree(d, ignore_errors=True)
+        continue
     with cadre.servir(d) as base:
         r = subprocess.run([sys.executable, "-I", "-B", os.path.join(d, ".github", "verifier-site.py"), base],
                            capture_output=True, text=True, timeout=1200)

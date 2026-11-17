@@ -3,6 +3,8 @@
 - arguments(doc, site)          : lit COPIE_DU_SITE (si site) et DOSSIER_DE_TRAVAIL ; --help affiche doc
 - Bilan                         : compte les cas, affiche « ok » ou « ÉCHEC », puis « N cas, M échec(s) »
 - copie(source, travail, nom)   : copie fraîche du site, sans .git, pour un cas
+- bibliotheque(dossier)         : construit donnees/bibliotheque.json dans une copie qui ne l'a pas encore
+                                  (T50 : jamais commité ; depuis T51b, les rubriques le lisent)
 - exporter(depot, ref, dossier) : extrait une version du dépôt (git archive)
 - json_modifie(chemin, f)       : lit un fichier JSON, lui applique f, puis le réécrit
 - valider(dossier, strict)      : lance scripts/valider_donnees.py de la copie -> (code, sortie)
@@ -64,6 +66,18 @@ def copie(source, travail, nom="cas"):
     shutil.rmtree(d, ignore_errors=True)
     shutil.copytree(source, d, ignore=shutil.ignore_patterns(".git"))
     return d
+
+
+def bibliotheque(dossier):
+    """Construit la bibliothèque de la copie (scripts/construire_bibliotheque.py, sans le texte des
+    documents), comme « Publier le site », si la copie a ce script et pas encore donnees/bibliotheque.json.
+    Renvoie None si rien n'est à faire, sinon (code de retour, fin de la sortie)."""
+    script = os.path.join(dossier, "scripts", "construire_bibliotheque.py")
+    if not os.path.exists(script) or os.path.exists(os.path.join(dossier, "donnees", "bibliotheque.json")):
+        return None
+    r = subprocess.run([sys.executable, "-I", "-B", script, "--racine", dossier, "--sans-textes"],
+                       capture_output=True, text=True, timeout=600)
+    return r.returncode, (r.stdout + r.stderr)[-1500:]
 
 
 def exporter(depot, ref, dossier):
