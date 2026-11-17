@@ -30,8 +30,8 @@ Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans l
 
 1. Sur GitHub, ouvre le fichier `ressources.js` de la rubrique (par exemple `snt/ressources.js`),
    puis clique sur le crayon. Les liens « Modifier la liste » et « Déposer un fichier » ne sont
-   plus en bas des rubriques depuis le 17 novembre 2026 : ce mode d'emploi passera dans
-   l'espace d'administration du site.
+   plus en bas des rubriques depuis le 17 novembre 2026. Les fiches de la bibliothèque, elles, se
+   modifient dans l'[espace administrateur](ADMIN.md).
 2. Repère le bon thème (les lignes `theme("…");`) et colle ce bloc en dessous :
 
 ```js

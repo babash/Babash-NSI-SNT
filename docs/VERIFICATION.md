@@ -39,7 +39,9 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   référentiels du dossier `donnees/` (voir [les données de la bibliothèque](BIBLIOTHEQUE.md)). Une erreur fait
   échouer le contrôle (croix rouge). Le même job essaie ensuite la construction de la
   bibliothèque, comme « Publier le site », dans un dossier temporaire, et lance les tests du
-  thésaurus et de la recherche (`scripts/tests/test_notions.py`, `scripts/tests/test_recherche.js`) :
+  thésaurus et de la recherche (`scripts/tests/test_notions.py`, `scripts/tests/test_recherche.js`),
+  et celui de la validation de l'[espace administrateur](ADMIN.md), comparée à celle du script
+  (`scripts/tests/test_admin_donnees.js`) :
   une branche qui casserait la publication est ainsi repérée avant d'arriver sur `main`. Les avertissements et les informations sont dans le
   résumé du run, sans échec, et les erreurs et avertissements apparaissent aussi en
   annotations sur les fichiers concernés. Les quinze avertissements connus (l'éditeur d'Alien

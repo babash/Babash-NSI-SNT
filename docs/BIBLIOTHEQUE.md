@@ -28,8 +28,8 @@ trois fichiers, à chaque publication, dans le workflow « Publier le site » (v
 
 - `donnees/bibliotheque.json`, la vue de l'extérieur, avec les référentiels et la vitrine, que la
   page lit ;
-- `donnees/bibliotheque-complete.json`, tout, avec ce que voit chaque public, pour l'espace
-  d'administration à venir ;
+- `donnees/bibliotheque-complete.json`, tout, avec ce que voit chaque public, pour
+  l'[espace administrateur](ADMIN.md), qui modifie les fiches et la vitrine ;
 - `donnees/bibliotheque-textes.json`, le texte des documents hébergés (pages HTML, textes, PDF),
   pour la recherche dans le contenu.
 

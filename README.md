@@ -30,6 +30,7 @@ La cinquième rubrique, **Autres ressources**, réunit ce qui sert à tous les n
 - **Un thème** : son nom court après `#`, par exemple `…/nsi-premiere/#types-construits`.
 - **Une recherche** : `…/Babash-NSI-SNT/?q=débranché`.
 - **La bibliothèque** : [babash.github.io/Babash-NSI-SNT/bibliotheque/](https://babash.github.io/Babash-NSI-SNT/bibliotheque/). Son adresse garde la recherche, les filtres et le tri (`…/bibliotheque/?q=boucle`), et la fiche d'une ressource s'ouvre par son identifiant (`…/bibliotheque/?r=lagon-arena`).
+- **L'espace administrateur** : [babash.github.io/Babash-NSI-SNT/admin/](https://babash.github.io/Babash-NSI-SNT/admin/), sans lien depuis les pages publiques ([docs/ADMIN.md](docs/ADMIN.md)).
 - **Le dépôt** : [github.com/babash/Babash-NSI-SNT](https://github.com/babash/Babash-NSI-SNT).
 
 ## Utiliser le site
@@ -42,7 +43,9 @@ La cinquième rubrique, **Autres ressources**, réunit ce qui sert à tous les n
 
 ## Ajouter une ressource
 
-Chaque rubrique a sa liste, `ressources.js`, et ses fichiers, dans son dossier `fichiers` (par exemple `snt/ressources.js` et `snt/fichiers/`) : on les modifie directement sur GitHub. Le mode d'emploi pas à pas est dans [docs/LISTES.md](docs/LISTES.md) : [ajouter une ressource](docs/LISTES.md#ajouter-une-ressource-en-ligne), [un PDF](docs/LISTES.md#ajouter-un-pdf-ou-nimporte-quel-fichier), [ranger une rubrique](docs/LISTES.md#organiser-une-rubrique), et que faire [si la page affiche une erreur](docs/LISTES.md#si-la-page-affiche-une-erreur). Les liens « Modifier la liste » et « Déposer un fichier » ne sont plus en bas des rubriques depuis le 17 novembre 2026 : ce mode d'emploi passera dans l'espace d'administration du site. La bibliothèque, elle, lit les fiches du dossier `donnees/ressources/` ([docs/BIBLIOTHEQUE.md](docs/BIBLIOTHEQUE.md)) : une ressource ajoutée seulement à une liste apparaît dans sa rubrique, pas dans la bibliothèque.
+Chaque rubrique a sa liste, `ressources.js`, et ses fichiers, dans son dossier `fichiers` (par exemple `snt/ressources.js` et `snt/fichiers/`) : on les modifie directement sur GitHub. Le mode d'emploi pas à pas est dans [docs/LISTES.md](docs/LISTES.md) : [ajouter une ressource](docs/LISTES.md#ajouter-une-ressource-en-ligne), [un PDF](docs/LISTES.md#ajouter-un-pdf-ou-nimporte-quel-fichier), [ranger une rubrique](docs/LISTES.md#organiser-une-rubrique), et que faire [si la page affiche une erreur](docs/LISTES.md#si-la-page-affiche-une-erreur). Les liens « Modifier la liste » et « Déposer un fichier » ne sont plus en bas des rubriques depuis le 17 novembre 2026. La bibliothèque, elle, lit les fiches du dossier `donnees/ressources/` ([docs/BIBLIOTHEQUE.md](docs/BIBLIOTHEQUE.md)) : une ressource ajoutée seulement à une liste apparaît dans sa rubrique, pas dans la bibliothèque.
+
+**L'espace administrateur** ([docs/ADMIN.md](docs/ADMIN.md)) annote et modifie les fiches, compose les onglets du site (la vitrine) et en montre l'aperçu, puis enregistre les changements d'un clic, protégé par un mot de passe administrateur, ou les donne à télécharger. Ajouter une nouvelle ressource par un formulaire viendra à l'étape suivante.
 
 **La mise en ligne** : chaque envoi sur `main` est publié par le workflow « Publier le site », dans l'onglet Actions du dépôt, en quelques minutes. Il valide les données, construit la bibliothèque, puis met le site en ligne. S'il échoue (croix rouge), rien n'est publié et le site garde sa version précédente ([docs/VERIFICATION.md](docs/VERIFICATION.md#la-mise-en-ligne)).
 
@@ -57,6 +60,7 @@ Tu peux copier le site pour tes classes, avec tes rubriques et tes ressources : 
 | [Les listes de ressources](docs/LISTES.md) | ajouter une ressource ou un fichier, ranger une rubrique, les réglages et le pied de page, les erreurs |
 | [Réutiliser le site](docs/REUTILISER.md) | ta copie du site, GitHub Pages (source « GitHub Actions »), l'essai sur ton ordinateur, ce qui vient d'ailleurs |
 | [L'organisation du dépôt](docs/ORGANISATION.md) | les dossiers et les fichiers, les activités Capytale, le décor |
+| [L'espace administrateur](docs/ADMIN.md) | modifier les fiches et les onglets, l'aperçu, le mot de passe administrateur et le jeton GitHub pas à pas, enregistrer ou télécharger, les tests |
 | [Les données de la bibliothèque](docs/BIBLIOTHEQUE.md) | l'onglet Bibliothèque, le format des fiches du dossier `donnees/`, le thésaurus des notions, la validation et la construction à chaque publication |
 | [La publication et la vérification automatique](docs/VERIFICATION.md) | la mise en ligne par « Publier le site », les contrôles de l'onglet Actions (la bibliothèque en ligne comprise), et le même contrôle sur ton ordinateur |
 | [Les bases Supabase](docs/SUPABASE.md) | Alien Python, Court-circuit (son code élève facultatif, en service depuis le 13 novembre 2026 : ce qui est enregistré, l'effacement après 12 mois) et le socle commun de la base |
