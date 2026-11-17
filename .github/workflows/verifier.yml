@@ -3,14 +3,17 @@
 #    bibliothèque (dossier donnees/, scripts/valider_donnees.py). Une erreur fait échouer le job ;
 #    les avertissements sont dans le résumé, sans échec. Puis un essai de la construction de
 #    bibliotheque.json (celle de publier.yml) et les tests du thésaurus et de la recherche.
-#  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources.
+#  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources et des
+#    fiches de la bibliothèque (donnees/ressources/*.json : documents, auteurs ; constat N59).
 #    Un lien en échec est revérifié par un second job, donc sur une autre machine, une à deux
 #    minutes plus tard : il n'est déclaré mort que s'il échoue aux deux passes (les pannes
 #    passagères, ou un site qui ignore une machine de GitHub, ne déclenchent plus d'alerte).
 #  - après chaque mise en ligne de main : chaque page du site, affichée dans Chrome, une fois
 #    que GitHub Pages a réellement déployé ce commit (scripts/attendre_deploiement.py), et après
 #    avoir vérifié que les fichiers ajoutés ou modifiés par l'envoi (tous ses commits, depuis
-#    la pointe de main avant l'envoi) sont bien ceux servis en ligne.
+#    la pointe de main avant l'envoi) sont bien ceux servis en ligne. Les pages et les fichiers
+#    déposés cités par les fiches sont contrôlés comme ceux des anciennes listes (N59) ; une page
+#    vue vide est réaffichée deux fois, à 15 s d'intervalle, avant d'être déclarée (N15).
 #  - à la demande (onglet Actions, « Run workflow ») : les liens de la branche choisie, et le
 #    site en ligne tel que main l'a déployé ; la comparaison porte sur le dernier commit de
 #    main, ou sur tous les commits qui suivent le commit indiqué dans « depuis ».
@@ -123,6 +126,7 @@ jobs:
             --exclude "^https://algorea\.org/"
             "reglages.js" "snt/ressources.js" "nsi-premiere/ressources.js"
             "nsi-terminale/ressources.js" "pp/ressources.js" "autres/ressources.js"
+            "donnees/ressources/*.json"
           format: json
           output: lychee/premiere.json
           fail: false
@@ -207,6 +211,9 @@ jobs:
           DEPUIS: ${{ github.event_name == 'push' && github.event.before || inputs.depuis }}
         run: python3 scripts/attendre_deploiement.py --comparer deploye --site https://babash.github.io/Babash-NSI-SNT ${DEPUIS:+--depuis "$DEPUIS"}
 
+      # Les rubriques, l'accueil, puis chaque page et chaque fichier déposés, cités par les
+      # anciennes listes ou par les fiches ; quatre Chrome en même temps.
       - name: Afficher chaque page dans Chrome
         if: steps.deploiement.outputs.a_verifier == 'oui'
+        timeout-minutes: 30
         run: python3 deploye/.github/verifier-site.py https://babash.github.io/Babash-NSI-SNT
