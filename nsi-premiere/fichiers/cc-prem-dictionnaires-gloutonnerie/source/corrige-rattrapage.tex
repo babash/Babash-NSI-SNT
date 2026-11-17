@@ -1,0 +1,366 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{needspace}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- Examen Première NSI (Rattrapage) - Types construits et gloutonnerie}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Types construits et gloutonnerie (rattrapage)}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h]
+\end{center}
+
+\begin{astuce}[À retenir : liste ou dictionnaire ?]
+\begin{itemize}
+  \item Une \textbf{liste} range des valeurs \textbf{dans un ordre}. On y accède par leur \textbf{position} (l'indice : 0, 1, 2\dots) : \code{scores[0]}.
+  \item Un \textbf{dictionnaire} associe des \textbf{clés} à des \textbf{valeurs}. On y accède par la \textbf{clé} : \code{prix["Pomme"]}. Chaque clé est unique.
+  \item Question à se poser : « est-ce que je cherche une donnée par son \textbf{rang} ou par un \textbf{nom} ? »
+\end{itemize}
+\end{astuce}
+
+\begin{questions}
+
+% =====================================================================
+\question \textbf{Maîtrise des types construits}
+
+\begin{parts}
+\part[2] \enonce{Pour chaque besoin, indiquer la structure la plus adaptée (liste ou dictionnaire) et justifier.}
+\begin{reponse}
+\begin{enumerate}
+  \item Carnet d'adresses (nom $\to$ numéro) : \textbf{dictionnaire}. On \textbf{associe} une clé (le nom du contact) à une valeur (le numéro), et on cherche le numéro à partir du nom : \code{carnet["Ali"]}.
+  \item Classement des 10 meilleurs scores : \textbf{liste}. L'\textbf{ordre} compte : le 1\textsuperscript{er} score est à l'indice 0, le 10\textsuperscript{e} à l'indice 9.
+  \item Code d'erreur $\to$ message : \textbf{dictionnaire}. On associe une clé (\code{404}) à une valeur (\code{"Page non trouvée"}) et on cherche le message à partir du code.
+  \item Historique des pages dans l'ordre chronologique : \textbf{liste}. Les pages sont \textbf{ordonnées} dans le temps ; on ajoute chaque nouvelle page à la fin avec \code{append}.
+\end{enumerate}
+\end{reponse}
+\explication\ Repère le mot-clé de l'énoncé : « classement », « dans l'ordre » appellent une \textbf{liste} ; une flèche « $\to$ », « associer » appellent un \textbf{dictionnaire}. Pour les codes d'erreur, ce ne sont pas des positions (il n'y a pas 404 cases avant le message) : ce sont des \textbf{clés}.
+
+\part[1] \enonce{Créer le dictionnaire \code{vaisseau} : clé \code{"modele"}, valeur \code{"X-Wing"} ; clé \code{"energie"}, valeur 80.}
+\begin{reponse}
+\begin{lstlisting}
+vaisseau = {"modele": "X-Wing", "energie": 80}
+\end{lstlisting}
+\end{reponse}
+Un dictionnaire s'écrit entre \textbf{accolades} \code{\{ \}}. Chaque paire s'écrit \code{clé: valeur} ; les paires sont séparées par des virgules. \code{"X-Wing"} est une chaîne (guillemets) ; \code{80} est un entier (pas de guillemets).
+
+\begin{erreur}
+Écrire des crochets \code{[ ]} (c'est une liste) ou oublier les guillemets autour des clés : \code{\{modele: "X-Wing"\}} provoque une \code{NameError}, car Python cherche une variable appelée \code{modele}.
+\end{erreur}
+
+\part[1] \enonce{Avec \code{prix = \{"Pomme": 1.5, "Banane": 2.1\}}, récupérer le prix de la \code{"Banane"} dans une variable \code{p}.}
+\begin{reponse}
+\lstinline!p = prix["Banane"]!
+\end{reponse}
+On écrit le nom du dictionnaire, puis la clé entre \textbf{crochets}. \code{p} vaut 2.1. La clé doit être écrite exactement : \code{prix["banane"]} (minuscule) provoque une \code{KeyError}.
+
+\part[1] \enonce{Modifier le prix de la \code{"Pomme"} à 1.8.}
+\begin{reponse}
+\lstinline!prix["Pomme"] = 1.8!
+\end{reponse}
+On affecte une nouvelle valeur à la clé : l'ancienne valeur (1.5) est remplacée. Le dictionnaire devient \code{\{"Pomme": 1.8, "Banane": 2.1\}}. En Python, les décimaux s'écrivent avec un \textbf{point} : \code{1,8} serait compris comme deux nombres (un tuple).
+
+\part[1] \enonce{Tester si la clé \code{"Cerise"} est présente dans \code{prix} (renvoie un booléen).}
+\begin{reponse}
+\lstinline!"Cerise" in prix!
+\end{reponse}
+L'opérateur \code{in} cherche parmi les \textbf{clés}. Ici, l'expression vaut \code{False}. On l'utilise souvent dans un test : \code{if "Cerise" in prix:}.
+
+\part[\half] \enonce{La boucle \code{for v in prix.values(): print(v)} affiche-t-elle les noms des fruits, les prix ou les deux ?}
+\begin{reponse}
+Les \textbf{prix} (les valeurs) : \code{1.8}, puis \code{2.1}.
+\end{reponse}
+\code{.keys()} donne les clés, \code{.values()} les valeurs, \code{.items()} les paires (clé, valeur).
+
+\part[1] \enonce{Compléter la boucle pour afficher chaque fruit suivi de son prix.}
+\begin{reponse}
+\begin{lstlisting}
+for fruit, valeur in prix.items():
+    print(fruit, "coûte", valeur)
+\end{lstlisting}
+\end{reponse}
+Il y a \textbf{deux} variables de boucle (\code{fruit} et \code{valeur}) : il faut parcourir les \textbf{paires} avec \code{.items()}. À chaque tour, la clé va dans \code{fruit} et la valeur dans \code{valeur}. Affichage :
+\begin{lstlisting}[style=sortie]
+Pomme coûte 1.8
+Banane coûte 2.1
+\end{lstlisting}
+\begin{erreur}
+Écrire \code{for fruit, valeur in prix:} : on parcourt alors les clés seules, et Python essaie de découper la chaîne \code{"Pomme"} en deux variables. On obtient une \code{ValueError}.
+\end{erreur}
+
+\part[\half] \enonce{Avec \code{for k in prix.keys():}, que contient \code{k} au premier tour ?}
+\begin{reponse}
+\code{k} contient \code{"Pomme"}, la première clé du dictionnaire.
+\end{reponse}
+Depuis Python 3.7, un dictionnaire garde l'ordre dans lequel les clés ont été ajoutées : \code{"Pomme"} a été écrite en premier.
+
+\part[2] \enonce{Écrire une boucle \code{for} qui affiche le nom des fruits dont le prix est $> 2.0$.}
+\begin{reponse}
+\begin{lstlisting}
+for fruit, valeur in prix.items():
+    if valeur > 2.0:
+        print(fruit)
+\end{lstlisting}
+Affichage : \code{Banane} (seul prix supérieur à 2.0).
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item On a besoin du nom (pour l'afficher) \textbf{et} du prix (pour le tester) : on parcourt les paires avec \code{.items()}.
+  \item À chaque tour, on teste \code{valeur > 2.0} (« strictement supérieur »).
+  \item Si le test est vrai, on affiche le nom du fruit.
+\end{enumerate}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Tour & \code{fruit} & \code{valeur} & \code{valeur > 2.0} & Affichage \\ \hline
+1 & \code{"Pomme"} & 1.8 & faux & \\
+2 & \code{"Banane"} & 2.1 & vrai & Banane \\ \hline
+\end{tabular}
+\end{center}
+\textit{Variante :} \code{for fruit in prix:} puis \code{if prix[fruit] > 2.0:} et \code{print(fruit)}.
+\end{parts}
+
+% =====================================================================
+\question \textbf{Gestion d'une flotte de véhicules}
+\begin{lstlisting}
+garage = [
+    {"marque": "Renault", "km": 45000, "etat": "neuf"},
+    {"marque": "Peugeot", "km": 120000, "etat": "occasion"},
+    {"marque": "Tesla", "km": 5000, "etat": "neuf"}
+]
+\end{lstlisting}
+\code{garage} est une \textbf{liste de dictionnaires} : on y accède d'abord par un indice (quelle voiture ?), puis par une clé (quelle information ?).
+
+\begin{parts}
+\part[1] \enonce{Quelle instruction donne le kilométrage de la Tesla (3\textsuperscript{e} élément) ?}
+\begin{reponse}
+\lstinline!garage[2]["km"]!
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Le 3\textsuperscript{e} élément a l'indice \textbf{2} (on compte à partir de 0) : \code{garage[2]} est le dictionnaire de la Tesla.
+  \item Dans ce dictionnaire, on lit la clé \code{"km"} : \code{garage[2]["km"]} vaut 5000.
+\end{enumerate}
+\begin{erreur}
+Écrire \code{garage[3]["km"]} : l'indice 3 n'existe pas (indices 0, 1, 2), d'où une \code{IndexError}.
+\end{erreur}
+
+\part[1] \enonce{Que renvoie \code{len(garage)} ? Justifier.}
+\begin{reponse}
+\textbf{3}. \code{garage} est une liste qui contient 3 éléments (trois dictionnaires, un par véhicule), et \code{len} donne le nombre d'éléments d'une liste.
+\end{reponse}
+\code{len} ne compte pas les clés de chaque dictionnaire : pour cela, il faudrait \code{len(garage[0])}, qui vaut aussi 3 (\code{"marque"}, \code{"km"}, \code{"etat"}).
+
+\part[2] \enonce{Compléter la fonction pour qu'elle renvoie le kilométrage moyen des véhicules d'un certain état.}
+\begin{reponse}
+\begin{lstlisting}
+def moyenne_km(liste_voitures, etat_voulu):
+    total_km = 0
+    compteur = 0
+    for voiture in liste_voitures:
+        if voiture["etat"] == etat_voulu:
+            total_km = total_km + voiture["km"]
+            compteur = compteur + 1
+    return total_km / compteur
+\end{lstlisting}
+\end{reponse}
+\explication
+\begin{itemize}
+  \item Ligne 4 : on parcourt le \textbf{paramètre} \code{liste\_voitures}, et pas la variable \code{garage} : la fonction doit marcher avec n'importe quelle liste.
+  \item Ligne 6 : \code{voiture} est un dictionnaire ; on ajoute la valeur de sa clé \code{"km"}.
+  \item Une moyenne, c'est la somme divisée par le nombre d'éléments : c'est le rôle de \code{total\_km} et de \code{compteur}.
+\end{itemize}
+\textbf{Trace de l'appel} \code{moyenne\_km(garage, "neuf")} :
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Tour & \code{voiture["marque"]} & état \code{"neuf"} ? & \code{total\_km} & \code{compteur} \\ \hline
+avant & & & 0 & 0 \\
+1 & Renault & vrai & 45000 & 1 \\
+2 & Peugeot & faux & 45000 & 1 \\
+3 & Tesla & vrai & 50000 & 2 \\ \hline
+\end{tabular}
+\end{center}
+L'appel renvoie $50\,000 \div 2 = $ \textbf{25000.0} (un \code{float}, car \code{/} donne toujours un flottant).
+\begin{erreur}
+Si aucune voiture n'a l'état demandé (par exemple \code{"épave"}), \code{compteur} vaut 0 et la dernière ligne provoque une \code{ZeroDivisionError}. Une version plus sûre teste \code{if compteur == 0: return 0} avant la division.
+\end{erreur}
+\end{parts}
+
+% =====================================================================
+\question \textbf{Le problème du cambrioleur (sac à dos)}
+
+Capacité du sac : \textbf{10 kg}.
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+Objet & Console & Tablette & Statuette & Caméra \\ \hline
+Poids (kg) & 5 & 2 & 7 & 3 \\ \hline
+Valeur (\euro) & 300 & 400 & 700 & 450 \\ \hline
+\end{tabular}
+\end{center}
+
+\begin{parts}
+\part[1] \enonce{Pourquoi \code{print(objet[0])} est-il correct si \code{objet} est une liste, mais pose problème si c'est un dictionnaire ?}
+\begin{reponse}
+Dans une \textbf{liste}, \code{[0]} est un \textbf{indice} : c'est la position du premier élément, ici \code{"Console"}.\\
+Dans un \textbf{dictionnaire}, ce qu'on écrit entre crochets est une \textbf{clé}, pas une position. Les clés sont ici des noms (\code{"Console"}\dots) ; la clé \code{0} n'existe pas, donc Python renvoie une \code{KeyError: 0}.
+\end{reponse}
+Avec un dictionnaire, on écrit la clé : \code{objet["Console"]}. Un dictionnaire n'a pas de « premier élément » accessible par un numéro.
+
+\part[1] \enonce{Stratégie 1 : « la plus grande valeur d'abord ». Quels objets sont pris, pour quelle valeur ?}
+\begin{reponse}
+\textbf{Statuette} et \textbf{Caméra} : $7 + 3 = 10$ kg, pour $700 + 450 = \mathbf{1\,150}$ \textbf{\euro}.
+\end{reponse}
+\methode\ (algorithme glouton)
+\begin{enumerate}
+  \item Trier les objets par valeur décroissante : Statuette (700), Caméra (450), Tablette (400), Console (300).
+  \item Les prendre dans cet ordre, chacun \textbf{s'il rentre} encore, sans jamais revenir sur un choix.
+\end{enumerate}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Objet examiné & Poids & Place restante avant & Décision & Valeur totale \\ \hline
+Statuette (700 \euro) & 7 & 10 & pris & 700 \\
+Caméra (450 \euro) & 3 & 3 & pris & 1150 \\
+Tablette (400 \euro) & 2 & 0 & trop lourd & 1150 \\
+Console (300 \euro) & 5 & 0 & trop lourd & 1150 \\ \hline
+\end{tabular}
+\end{center}
+
+\part[1] \enonce{Stratégie 2 : calculer les ratios valeur/poids de la Tablette et de la Caméra. Laquelle est prioritaire ?}
+\begin{reponse}
+Tablette : $400 \div 2 = 200$ \euro/kg. Caméra : $450 \div 3 = 150$ \euro/kg.\\
+La \textbf{Tablette} est prioritaire, car son ratio est plus grand.
+\end{reponse}
+Le ratio valeur/poids dit combien rapporte \textbf{chaque kilo}. Pour information : Statuette $100$ \euro/kg, Console $60$ \euro/kg. Cette stratégie prend Tablette (2 kg), Caméra (5 kg au total), refuse la Statuette (12 kg : trop lourd), prend la Console (10 kg) : $400 + 450 + 300 = 1\,150$ \euro.
+
+\part[1] \enonce{Trouver une combinaison (10 kg au plus) qui rapporte plus que la stratégie 1. Justifier.}
+\begin{remarque}
+Cette question n'a \textbf{pas de solution} : aucune combinaison ne rapporte plus de 1\,150 \euro. On l'a vérifié en testant toutes les combinaisons possibles (tableau ci-dessous). Avec ces nombres, la stratégie 1 donne déjà la meilleure valeur possible. Pour que la question marche, il suffirait par exemple que la Statuette pèse \textbf{8 kg} : le glouton prendrait alors Statuette + Tablette (1\,100 \euro), et Console + Tablette + Caméra (1\,150 \euro) ferait mieux.
+\end{remarque}
+\begin{reponse}
+Il n'en existe pas : la meilleure valeur possible est \textbf{1\,150 \euro}, déjà atteinte par la stratégie 1. Une autre combinaison l'égale sans la dépasser : \textbf{Console + Tablette + Caméra} ($5 + 2 + 3 = 10$ kg, $300 + 400 + 450 = 1\,150$ \euro).
+\end{reponse}
+\textbf{Méthode pour le prouver :} lister toutes les combinaisons qui tiennent dans 10 kg et calculer leur valeur.
+\begin{center}
+\small
+\begin{tabular}{|l|c|c|}
+\hline
+Combinaison & Poids (kg) & Valeur (\euro) \\ \hline
+Statuette + Caméra & 10 & 1150 \\
+Console + Tablette + Caméra & 10 & 1150 \\
+Tablette + Statuette & 9 & 1100 \\
+Tablette + Caméra & 5 & 850 \\
+Console + Caméra & 8 & 750 \\
+Console + Tablette & 7 & 700 \\
+Statuette seule & 7 & 700 \\
+Un seul autre objet & 2 à 5 & 450 au plus \\ \hline
+\end{tabular}
+\end{center}
+Toutes les autres combinaisons dépassent 10 kg (par exemple Statuette + Console : 12 kg). Une réponse qui montre, par ce raisonnement, qu'on ne peut pas faire mieux est la bonne réponse à cette question.
+
+\part[2] \enonce{Synthèse : compléter avec \textit{rapide, local, optimal, globale}.}
+\begin{reponse}
+L'algorithme glouton est une méthode \textbf{rapide} car il ne revient jamais sur ses pas. À chaque étape, il fait le meilleur choix \textbf{local}. Cependant, ce choix ne garantit pas d'obtenir une solution \textbf{optimale} \textbf{globale}.
+\end{reponse}
+\begin{itemize}
+  \item \textbf{Rapide} : il examine chaque objet une seule fois (après le tri) ; il ne teste pas toutes les combinaisons, dont le nombre explose quand il y a beaucoup d'objets.
+  \item \textbf{Local} : le choix est le meilleur \emph{maintenant}, sans regarder les conséquences.
+  \item \textbf{Optimale globale} : la meilleure solution parmi toutes les solutions possibles. Ici, le glouton l'a trouvée par chance ; avec d'autres données, il peut la manquer.
+\end{itemize}
+\textit{Accord :} « solution » est féminin, on écrit donc « optimale » et « globale ».
+\end{parts}
+
+\end{questions}
+
+\end{document}
