@@ -14,7 +14,9 @@ servies en local et affichées dans Chrome (accueil et SNT) :
   - .github/verifier-site.py de la copie : code_source() sur des morceaux de DOM fabriqués
     (entités, icône, casse, adresse hors de GitHub…) et depot() sur des reglages.js fabriqués ;
     puis le contrôle complet sur trois copies : telle quelle (code 0), lien retiré du pied de
-    page (code 1, les 6 pages citées), lien vers un autre dépôt (code 1).
+    page (code 1, les 6 pages citées), lien vers un autre dépôt (code 1). Depuis T50, la
+    bibliothèque (donnees/bibliotheque.json, jamais commitée) est d'abord construite dans chaque
+    copie par scripts/construire_bibliotheque.py, comme le fait « Publier le site ».
 Les motifs remplacés dans assets/site.js et reglages.js sont ceux de la version du 11/11/2026 :
 s'ils changent, le cas le dit (« motif introuvable »), et il faut mettre ce test à jour.
 Il faut Playwright et Chrome (voir commun.lancer). Compter quelques minutes : verifier-site.py
@@ -187,6 +189,16 @@ for titre, nom, modifs, code_attendu, motifs in [
     if introuvable:
         bilan.verifier(titre, ["motif introuvable : " + introuvable])
         continue
+    # T50 : la bibliothèque est construite à la publication, jamais commitée ; verifier-site.py
+    # contrôle l'onglet Bibliothèque : on la construit dans la copie, comme « Publier le site ».
+    construire = os.path.join(d, "scripts", "construire_bibliotheque.py")
+    if os.path.exists(construire):
+        c = subprocess.run([sys.executable, "-I", "-B", construire, "--racine", d, "--sans-textes"],
+                           capture_output=True, text=True, timeout=600)
+        if c.returncode != 0:
+            bilan.verifier(titre, ["construction de la bibliothèque : code %d" % c.returncode], (c.stdout + c.stderr)[-1500:])
+            shutil.rmtree(d, ignore_errors=True)
+            continue
     with cadre.servir(d) as base:
         r = subprocess.run([sys.executable, "-I", "-B", os.path.join(d, ".github", "verifier-site.py"), base],
                            capture_output=True, text=True, timeout=1200)
