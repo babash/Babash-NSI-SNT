@@ -3,20 +3,25 @@
 
 Usage (depuis la copie du dépôt) :
   python3 -I .github/gardien/pdf_comparer.py AVANT APRES [--mention TEXTE] [--marge-bas 4]
+         [--mention-bas 10] [--sans-a4]
 
 AVANT et APRES : deux fichiers PDF, ou deux dossiers (les PDF de même nom, sous-dossiers compris,
 sont comparés ; ceux qui ne sont que d'un côté sont listés). Par exemple les PDF publiés avant la
 branche et ceux que fabrique son build, ou un PDF LaTeX livré et sa recompilation.
 Pour chaque paire :
   - nombre de pages et format (pdfinfo) ;
+  - chaque page de l'après est au format A4, en portrait ou en paysage, à 2 pt près (pdfinfo, page
+    par page) ; --sans-a4 retire ce contrôle (un diaporama, par exemple) ;
   - mots de l'avant absents de l'après : la comparaison se fait sans les espaces, si bien qu'un mot
     coupé par un retour à la ligne compte comme présent ; mots nouveaux ;
   - avec --mention TEXTE (la mention de l'auteur et de la licence, par exemple) : sur chaque page
     de l'après, la mention est là (suite de mots, la plus basse de la page), aucun autre mot ne la
-    chevauche, et aucun mot ne descend dans les MARGE mm du bas de la page (défaut : 4).
+    chevauche, aucun mot ne descend dans les MARGE mm du bas de la page (--marge-bas, défaut : 4),
+    et le bas de la mention est à MENTION_BAS mm au moins du bord bas (--mention-bas, défaut : 10),
+    pour qu'une imprimante la garde.
 Code de sortie 1 si un point est à examiner : un PDF d'un seul côté, un nombre de pages qui change,
-un mot perdu, une mention absente ou touchée. Le Gardien juge ensuite (un mot perdu peut être une
-coquille corrigée). Il faut pdfinfo et pdftotext (poppler).
+une page hors du format A4, un mot perdu, une mention absente, touchée ou trop basse. Le Gardien
+juge ensuite (un mot perdu peut être une coquille corrigée). Il faut pdfinfo et pdftotext (poppler).
 """
 import argparse
 import os
@@ -33,6 +38,20 @@ def info(pdf):
     return int(pages.group(1)) if pages else 0, (taille.group(1).strip() if taille else "?")
 
 
+A4 = (595.276, 841.89)
+
+
+def hors_a4(pdf, tolerance=2.0):
+    """Les pages qui ne sont pas au format A4 (portrait ou paysage) : [(numéro, largeur, hauteur)]."""
+    sortie = subprocess.run(["pdfinfo", "-f", "1", "-l", "100000", pdf], capture_output=True, text=True).stdout
+    hors = []
+    for m in re.finditer(r"^Page\s+(\d+) size:\s+([\d.]+) x ([\d.]+) pts", sortie, re.M):
+        n, w, h = int(m.group(1)), float(m.group(2)), float(m.group(3))
+        if not any(abs(w - a) <= tolerance and abs(h - b) <= tolerance for a, b in (A4, A4[::-1])):
+            hors.append((n, w, h))
+    return hors
+
+
 def texte(pdf):
     return subprocess.run(["pdftotext", "-enc", "UTF-8", pdf, "-"], capture_output=True, text=True).stdout
 
@@ -45,6 +64,7 @@ def boites(pdf):
     """Page par page : (hauteur, [(mot, xMin, yMin, xMax, yMax)]), d'après pdftotext -bbox."""
     xml = subprocess.run(["pdftotext", "-bbox", "-enc", "UTF-8", pdf, "-"], capture_output=True, text=True).stdout
     xml = re.sub(r"<!DOCTYPE[^>]*>", "", xml).replace('xmlns="http://www.w3.org/1999/xhtml"', "")
+    xml = re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", xml)  # caractères de contrôle, interdits en XML
     pages = []
     for page in ET.fromstring(xml).iter("page"):
         ws = [(w.text or "", float(w.get("xMin")), float(w.get("yMin")), float(w.get("xMax")), float(w.get("yMax")))
@@ -69,7 +89,7 @@ def zone_mention(ws, attendus):
     return (i, i + n), (min(g[1] for g in groupe), min(g[2] for g in groupe), max(g[3] for g in groupe), max(g[4] for g in groupe))
 
 
-def controler_mention(pdf, mention, marge_mm):
+def controler_mention(pdf, mention, marge_mm, mention_bas_mm=10.0):
     attendus = mention.split()
     defauts = []
     for k, (h, ws) in enumerate(boites(pdf), 1):
@@ -85,8 +105,12 @@ def controler_mention(pdf, mention, marge_mm):
             chevauche = not (w[3] < x0 or w[1] > x1 or w[4] < y0 or w[2] > y1)
             if chevauche or w[4] > bas + 0.5:
                 defauts.append("p. %d : « %s » %s" % (k, w[0], "chevauche la mention" if chevauche else "dans la marge du bas"))
+        ecart = (h - y1) * 25.4 / 72
         if y1 > bas + 0.5:
             defauts.append("p. %d : la mention descend dans la marge du bas" % k)
+        elif ecart < mention_bas_mm - 0.2:
+            defauts.append("p. %d : la mention est à %s mm du bord bas (%s au moins)" % (
+                k, ("%.1f" % ecart).replace(".", ","), ("%g" % mention_bas_mm).replace(".", ",")))
     return defauts
 
 
@@ -113,6 +137,8 @@ def main():
     a.add_argument("apres", help="PDF ou dossier d'après")
     a.add_argument("--mention", help="texte de la mention attendue sur chaque page de l'après")
     a.add_argument("--marge-bas", type=float, default=4.0, help="marge du bas, en mm, où aucun mot ne doit descendre")
+    a.add_argument("--mention-bas", type=float, default=10.0, help="écart minimal, en mm, entre le bas de la mention et le bord bas")
+    a.add_argument("--sans-a4", action="store_true", help="ne pas exiger le format A4 pour chaque page de l'après")
     o = a.parse_args()
     for chemin in (o.avant, o.apres):
         if not os.path.exists(chemin):
@@ -136,13 +162,18 @@ def main():
             points.append("pages %d -> %d" % (n_av, n_ap))
         if t_av != t_ap:
             points.append("format %s -> %s" % (t_av, t_ap))
+        hors = [] if o.sans_a4 else hors_a4(ap)
+        if hors:
+            points.append("%d page(s) hors du format A4" % len(hors))
         if perdus:
             points.append("%d mot(s) perdu(s)" % len(perdus))
-        mention = controler_mention(ap, o.mention, o.marge_bas) if o.mention else []
+        mention = controler_mention(ap, o.mention, o.marge_bas, o.mention_bas) if o.mention else []
         if mention:
             points.append("mention : %d défaut(s)" % len(mention))
         examiner += bool(points)
         print("%s : %d page(s) %s -> %d page(s) %s ; %s" % (nom, n_av, t_av, n_ap, t_ap, "À EXAMINER (" + ", ".join(points) + ")" if points else "ok"))
+        if hors:
+            print("    pages hors du format A4 : " + ", ".join("p. %d (%g x %g pt)" % x for x in hors[:20]) + (" …" if len(hors) > 20 else ""))
         if perdus:
             print("    mots de l'avant absents de l'après : " + " ".join(perdus[:60]) + (" …" if len(perdus) > 60 else ""))
         if nouveaux:

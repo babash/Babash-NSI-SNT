@@ -17,8 +17,9 @@ propre processus :
   t45      33 cas   lien « Code source sur GitHub », encadré d'erreur, verifier-site.py (T45)
   outils   13 cas   outils du Gardien : caracteres, chemins_readme (et N16), zones, contraste_zone (T32),
                     sensibles (adresses masquées, T65)
-  harnais  19 cas   harnais du Gardien : empreintes_migration, annexes_code_source, depots.sh,
-                    pdf_comparer, texte_rendu, diapo_dessous, pages_depot (T47)
+  harnais  22 cas   harnais du Gardien : empreintes_migration, annexes_code_source, depots.sh,
+                    pdf_comparer (et le format A4, la mention à 10 mm du bas), texte_rendu,
+                    diapo_dessous, pages_depot (T47, et les textes qui se recouvrent, N61)
 Les tests lancent les scripts de la copie (scripts/valider_donnees.py, .github/verifier-site.py…) :
 à rejouer quand une branche modifie ces scripts, les données d'exemple de donnees/,
 assets/site.js ou reglages.js. Les outils du Gardien essayés par « outils » et « harnais » sont

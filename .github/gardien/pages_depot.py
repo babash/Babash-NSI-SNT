@@ -21,6 +21,13 @@ une (prof.html?demo). Pour chaque page, version, largeur et mode :
     l'élément où le focus reste bloqué (un éditeur de code qui garde la touche Tab, par exemple) ;
   - avec --contrastes : les textes sous 4,5:1 (3:1 pour le grand texte), mesurés comme
     contrastes.py, sur les pixels affichés ;
+  - les textes qui se recouvrent (N61) : deux lignes de texte de deux nœuds différents dont les
+    boîtes se recouvrent sur plus du quart de la plus petite, mesurées sur la moitié centrale de
+    chaque ligne (un interligne serré ne compte pas) et coupées par les blocs qui masquent leur
+    débordement (un bloc de code qui défile ne compte pas) ; sont ignorés les textes invisibles
+    (display, visibility, opacity, clip vide, clip-path inset(50 %), contenu d'un <details>
+    fermé), les textes réservés aux lecteurs d'écran (boîte de 1 px qui masque son débordement)
+    et les textes tournés (leurs boîtes ne sont pas fiables) ; jusqu'à 20 paires par mesure ;
   - une capture pleine page, comparée entre avant et après (hauteurs, bandes de lignes qui
     diffèrent de plus de 8/255, distance au bas de la page).
 Avec --impression, une fois par page et par version (A4, fonds compris, mode clair) : nombre de
@@ -106,6 +113,77 @@ FOCUS = r"""(texte) => {
 }"""
 
 DEFILEMENT = r"""() => { const x0 = scrollX, y0 = scrollY; scrollTo(1e6, y0); const d = scrollX; scrollTo(x0, y0); return d; }"""
+
+# Les textes qui se recouvrent (N61), en coordonnées de la page.
+CHEVAUCHEMENTS = r"""() => {
+  const info = new Map();
+  const etat = (e) => {
+    if (!e || e.nodeType !== 1) return { cache: false, tourne: false, clip: null };
+    if (info.has(e)) return info.get(e);
+    const p = etat(e.parentElement), s = getComputedStyle(e);
+    let cache = p.cache || s.display === 'none' || s.visibility === 'hidden' || s.visibility === 'collapse' ||
+      parseFloat(s.opacity) === 0;
+    const m = /rect\(\s*([-\d.]+)px,?\s*([-\d.]+)px,?\s*([-\d.]+)px,?\s*([-\d.]+)px\s*\)/.exec(s.clip || '');
+    if (m && (s.position === 'absolute' || s.position === 'fixed') && (+m[3] <= +m[1] || +m[2] <= +m[4])) cache = true;
+    if (/inset\(\s*(50|100)%/.test(s.clipPath || '')) cache = true;
+    let tourne = p.tourne;
+    if (s.transform && s.transform !== 'none') {
+      const v = /^matrix\(([^)]+)\)$/.exec(s.transform);
+      if (!v || v[1].split(',').map(Number).slice(1, 3).some(x => Math.abs(x) > 1e-3)) tourne = true;
+    }
+    let clip = p.clip;
+    if (s.overflowX !== 'visible' || s.overflowY !== 'visible') {
+      const r = e.getBoundingClientRect();
+      const b = { l: r.left + scrollX, t: r.top + scrollY, r: r.right + scrollX, b: r.bottom + scrollY };
+      clip = clip ? { l: Math.max(clip.l, b.l), t: Math.max(clip.t, b.t), r: Math.min(clip.r, b.r), b: Math.min(clip.b, b.b) } : b;
+    }
+    const v = { cache, tourne, clip };
+    info.set(e, v);
+    return v;
+  };
+  const boites = [];
+  const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let n, id = 0;
+  while ((n = w.nextNode())) {
+    const texte = n.textContent.replace(/\s+/g, ' ').trim();
+    const p = n.parentElement;
+    if (!texte || !p || /^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE|TITLE)$/.test(p.tagName)) continue;
+    const ferme = p.closest('details:not([open])');
+    if (ferme && !(p.closest('summary') && p.closest('summary').parentElement === ferme)) continue;
+    if (p.checkVisibility && !p.checkVisibility({ opacityProperty: true, visibilityProperty: true, contentVisibilityAuto: true })) continue;
+    const e = etat(p);
+    if (e.cache || e.tourne) continue;
+    const g = document.createRange();
+    g.selectNodeContents(n);
+    id++;
+    for (const q of g.getClientRects()) {
+      let l = q.left + scrollX, t = q.top + scrollY, r = q.right + scrollX, b = q.bottom + scrollY;
+      if (e.clip) { l = Math.max(l, e.clip.l); t = Math.max(t, e.clip.t); r = Math.min(r, e.clip.r); b = Math.min(b, e.clip.b); }
+      if (r - l < 2 || b - t < 2) continue;
+      const h = b - t;
+      boites.push({ id, texte: texte.slice(0, 40), l, r, t: t + h / 4, b: b - h / 4 });
+    }
+  }
+  boites.sort((x, y) => x.t - y.t);
+  const out = [], vus = new Set();
+  for (let i = 0; i < boites.length && out.length < 20; i++) {
+    const a = boites[i];
+    for (let j = i + 1; j < boites.length && out.length < 20; j++) {
+      const c = boites[j];
+      if (c.t >= a.b) break;
+      if (c.id === a.id) continue;
+      const dx = Math.min(a.r, c.r) - Math.max(a.l, c.l), dy = Math.min(a.b, c.b) - Math.max(a.t, c.t);
+      if (dx <= 0 || dy <= 0) continue;
+      const aire = dx * dy, petite = Math.min((a.r - a.l) * (a.b - a.t), (c.r - c.l) * (c.b - c.t));
+      if (aire < 12 || aire < 0.25 * petite) continue;
+      const cle = Math.min(a.id, c.id) + '/' + Math.max(a.id, c.id);
+      if (vus.has(cle)) continue;
+      vus.add(cle);
+      out.push({ a: a.texte, b: c.texte, y: Math.round(a.t), part: Math.round(100 * aire / petite) });
+    }
+  }
+  return out;
+}"""
 
 LIEN_IMPRIME = r"""(texte) => {
   const norme = s => (s || '').replace(/\s+/g, ' ').trim().toLowerCase();
@@ -268,6 +346,7 @@ def main():
                         pg.screenshot(path=capture, full_page=True)
                         r["capture"] = os.path.basename(capture)
                         r["defilement"] = pg.evaluate(DEFILEMENT)
+                        r["chevauchements"] = pg.evaluate(CHEVAUCHEMENTS)
                         if attendu:
                             m = pg.evaluate(LIEN, o.texte_lien)
                             pg.wait_for_timeout(300)
@@ -336,6 +415,8 @@ def main():
             d["console:" + e] = "erreur de la console : " + e
         if r["defilement"] > 0:
             d["defilement"] = "défilement horizontal de %d px" % r["defilement"]
+        for c in r.get("chevauchements", []):
+            d["chevauchement:%s/%s" % (c["a"], c["b"])] = "textes qui se recouvrent : « %s » et « %s »" % (c["a"], c["b"])
         if attendu:
             if not r.get("liens"):
                 d["lien"] = "pas de lien « %s »" % o.texte_lien

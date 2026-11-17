@@ -12,14 +12,16 @@ dossier de travail, sans réseau :
   - depots.sh : l'aide, et « contenues » sur un clone fabriqué (branche contenue, propre, absente) ;
     « attendre » et « etat » passent par l'API GitHub : ils ne sont pas essayés ici ;
   - pdf_comparer.py : des PDF imprimés par Chrome (identiques ; mot perdu, pages en plus, mention
-    absente, mention chevauchée, mot dans la marge du bas ; PDF d'un seul côté) ;
+    absente, mention chevauchée, mot dans la marge du bas ; PDF d'un seul côté ; pages au format
+    Letter et mention à moins de 10 mm du bord bas ; --sans-a4 et --mention-bas) ;
   - texte_rendu.py : une phrase et une adresse de lien qui changent, pages par défaut (Chrome) ;
   - diapo_dessous.py : un faux reveal.js, servi comme un CDN (contenu caché, commandes
     chevauchées, élément absent, reveal.js absent) (Chrome) ;
   - pages_depot.py : un faux dépôt avant/après (lien ajouté, CDN servi sans « .min », faux client
     Supabase, Tailwind compilé, requête bloquée ; contraste du lien, adresse, recouvrement,
     défilement, erreur JavaScript, textes pâles avec --contrastes, piège du clavier, rang du lien
-    au clavier depuis le début de la page ; défaut antérieur ; --preparer ; impression) (Chrome).
+    au clavier depuis le début de la page ; défaut antérieur ; --preparer ; impression ; textes qui
+    se recouvrent, et cinq pièges qui n'en sont pas, N61) (Chrome).
 Il faut Python avec Playwright et Pillow, Chrome ou Chromium, git, bash, et poppler (pdfinfo,
 pdftotext, pdftoppm).
 """
@@ -197,18 +199,21 @@ STYLE_PDF = """@page { size: A4; margin: 0 }
 body { margin: 0; font: 12pt sans-serif }
 .page { position: relative; height: 296mm; padding: 15mm; box-sizing: border-box }
 .page + .page { break-before: page }
-.mention, .intrus, .dessus { position: absolute; bottom: 8mm; margin: 0; font-size: 9pt }
+.mention, .intrus, .dessus { position: absolute; bottom: 12mm; margin: 0; font-size: 9pt }
 .mention { left: 15mm }
 .intrus { left: 48mm }
-.dessus { left: 20mm; bottom: 9.5mm }
+.dessus { left: 20mm; bottom: 13.5mm }
 .bas { position: absolute; right: 15mm; bottom: 0.5mm; margin: 0 }"""
+# Page au format Letter, mention à 6 mm du bord bas (moins des 10 mm exigés).
+STYLE_LETTER = STYLE_PDF.replace("size: A4", "size: letter").replace("height: 296mm", "height: 278mm") + \
+    "\n.mention { bottom: 6mm }"
 
 
-def document(pages):
+def document(pages, style=STYLE_PDF):
     """pages : (texte, avec la mention ?, HTML en plus) pour chaque page A4."""
     corps = "".join('<div class="page"><p>%s</p>%s%s</div>' % (
         texte, ('<p class="mention">%s · CC BY-SA 4.0</p>' % MENTION) if mention else "", plus) for texte, mention, plus in pages)
-    return '<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>%s</style></head><body>%s</body></html>' % (STYLE_PDF, corps)
+    return '<!doctype html><html lang="fr"><head><meta charset="utf-8"><style>%s</style></head><body>%s</body></html>' % (style, corps)
 
 
 DEUX_PAGES = [("Premier paragraphe sur les réseaux.", True, ""), ("Second paragraphe sur le protocole TCP.", True, "")]
@@ -221,6 +226,7 @@ PDF = {
                          ("Une page en plus.", True, '<p class="intrus">INTRUS</p>'),
                          ("Encore une.", True, '<p class="dessus">DESSUS</p>')],
     "pdf-apres/sous/nouveau.pdf": [("Un document ajouté.", True, "")],
+    "pdf-letter/td.pdf": DEUX_PAGES,
 }
 with sync_playwright() as p:
     nav = commun.lancer(p)
@@ -228,7 +234,7 @@ with sync_playwright() as p:
         chemin = os.path.join(travail, nom)
         os.makedirs(os.path.dirname(chemin), exist_ok=True)
         pg = nav.new_page()
-        pg.set_content(document(pages), wait_until="load")
+        pg.set_content(document(pages, STYLE_LETTER if nom.startswith("pdf-letter/") else STYLE_PDF), wait_until="load")
         pg.pdf(path=chemin, format="A4", print_background=True, prefer_css_page_size=True)
         pg.close()
     nav.close()
@@ -246,7 +252,21 @@ attendre("pdf_comparer.py : dossiers ; mot perdu, pages, mention absente, chevau
     r"p\. 1 : « débordement » dans la marge du bas", r"p\. 2 : mention absente",
     r"p\. 3 : « INTRUS » chevauche la mention", r"p\. 4 : « DESSUS » chevauche la mention",
     r"^1 PDF comparé\(s\) ; 3 point\(s\) à examiner$",
-])
+], absents=[r"hors du format A4", r"mm du bord bas"])
+code, sortie = outil("pdf_comparer.py", os.path.join(travail, "pdf-avant", "td.pdf"),
+                     os.path.join(travail, "pdf-letter", "td.pdf"), "--mention", MENTION)
+attendre("pdf_comparer.py : pages au format Letter, mention à moins de 10 mm du bord bas", code, sortie, 1, presents=[
+    r"^td\.pdf : 2 page\(s\) .*\(A4\) -> 2 page\(s\) 612 x 792 pts \(letter\) ; À EXAMINER \(format .*, "
+    r"2 page\(s\) hors du format A4, mention : 2 défaut\(s\)\)$",
+    r"^    pages hors du format A4 : p\. 1 \(612 x 792 pt\), p\. 2 \(612 x 792 pt\)$",
+    r"p\. 1 : la mention est à [3-8],\d mm du bord bas \(10 au moins\)",
+    r"p\. 2 : la mention est à [3-8],\d mm du bord bas \(10 au moins\)",
+], absents=[r"marge du bas", r"chevauche"])
+code, sortie = outil("pdf_comparer.py", os.path.join(travail, "pdf-avant", "td.pdf"),
+                     os.path.join(travail, "pdf-letter", "td.pdf"), "--mention", MENTION, "--sans-a4", "--mention-bas", "3")
+attendre("pdf_comparer.py --sans-a4 --mention-bas 3 : seul le format change, la mention est assez haute", code, sortie, 1, presents=[
+    r"^td\.pdf : .* ; À EXAMINER \(format .*\)$", r"^    mention : présente sur chaque page, rien ne la touche$",
+], absents=[r"hors du format A4", r"mm du bord bas"])
 
 # ── texte_rendu.py (Chrome) ─────────────────────────────────────────────────
 for version, phrase, cible, en_plus, hors in (
@@ -392,5 +412,25 @@ attendre("pages_depot.py --preparer : le panneau ouvert avant les mesures, aucun
     r"^  panneau\.html +800 light ok \[lien \d+\.\d\d:1, texte 12\.63:1, Tab 1\]$",
     r"^3 mesure\(s\) après, 0 avec une alerte nouvelle$",
 ], absents=[r"invisible", r"ALERTE"])
+# N61 : un pied de page posé sur le texte après la branche ; et les pièges qui ne sont pas des chevauchements.
+for d, pied in ((av, "footer{position:static}"), (ap, "footer{position:absolute;top:64px;left:0}")):
+    ecrire(os.path.join(d, "recouvre.html"), page_html("<main><h1>Titre</h1><p>Un paragraphe de texte assez long.</p></main>" +
+                                                        PIED % (" · " + BON), style=STYLE_LIEN + pied))
+PIEGES = ('<main><h1 style="line-height:.8;width:6em">Un titre serré sur deux lignes</h1>'
+          '<span style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Pour lecteur d\'écran</span>'
+          '<div style="position:absolute;width:1px;height:1px;overflow:hidden">Annonce cachée</div>'
+          '<details><summary>Solution</summary><p>Réponse cachée</p></details><p>Texte après la solution.</p>'
+          '<pre style="overflow:auto;width:120px">une_tres_longue_ligne_de_code_qui_defile_dans_son_bloc()</pre>'
+          '<div style="transform:rotate(-12deg);width:4em;line-height:.7"><b>AIDE</b><br><b>3018</b></div></main>')
+for d in (av, ap):
+    ecrire(os.path.join(d, "pieges.html"), page_html(PIEGES + PIED % (" · " + BON), style=STYLE_LIEN))
+code, sortie = outil("pages_depot.py", av, ap, os.path.join(travail, "pages-3"), "recouvre.html", "pieges.html",
+                     "--depot", DEPOT, "--largeurs", "800", "--modes", "light", "--clavier", "", "--attente", "300")
+attendre("pages_depot.py : textes qui se recouvrent (N61), sans les pièges (lecteur d'écran, <details> fermé, code qui défile, texte tourné)",
+         code, sortie, 1, presents=[
+             r"^  recouvre\.html +800 light ALERTE textes qui se recouvrent : « .+ » et « .+ »",
+             r"^  pieges\.html +800 light ok",
+             r"^2 mesure\(s\) après, 1 avec une alerte nouvelle$",
+         ], absents=[r"pieges\.html +800 light ALERTE"])
 
 bilan.terminer()

@@ -33,14 +33,15 @@ D'autres outils du même dossier servent au cas par cas. Pour le site :
 Pour les autres dépôts de l'enseignant (applications, mini-sites des TD, diaporamas) :
 
 - `pages_depot.py` compare les pages avant et après une branche : erreurs JavaScript,
-  débordement, lien « Code source sur GitHub » (adresse, contraste, accès au clavier),
-  contrastes et impression A4 ; seul ce qui est nouveau est une alerte. Il fonctionne sans
+  débordement, textes qui se recouvrent, lien « Code source sur GitHub » (adresse, contraste,
+  accès au clavier), contrastes et impression A4 ; seul ce qui est nouveau est une alerte. Il fonctionne sans
   réseau : les bibliothèques des CDN sont servies depuis leurs paquets, et Supabase est remplacé
   par un faux client, qui ne lit ni n'écrit aucune donnée ;
 - `diapo_dessous.py` vérifie que le pied de page d'un diaporama reveal.js ne cache ni contenu ni
   commande, sur chaque diapositive ;
-- `pdf_comparer.py` compare deux versions d'un PDF : pages, mots perdus ou nouveaux, et la
-  mention de l'auteur et de la licence sur chaque page ;
+- `pdf_comparer.py` compare deux versions d'un PDF : pages, format A4 de chaque page, mots
+  perdus ou nouveaux, et la mention de l'auteur et de la licence sur chaque page, à 10 mm au
+  moins du bord bas ;
 - `empreintes_migration.py` vérifie qu'une migration Supabase commence par `begin;` et finit
   par `commit;`, et calcule l'empreinte qui montre que le fichier du dépôt est bien celui qui a
   été appliqué à la base (en ne lisant que des métadonnées) ;
