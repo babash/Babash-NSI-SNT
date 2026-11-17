@@ -1,0 +1,503 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- CC1 1re NSI - Binaire, variables et conditions (2025)}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Octobre 2025, durée : 2 h}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Binaire, variables, conditions (2025)}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h]
+\end{center}
+
+\begin{questions}
+
+% =====================================================================
+\section{Conversion octets-bits}
+
+\question[2] \enonce{Sam a un téléphone de 80 Go ; un fichier musical pèse environ 240 Mbits. Combien de musiques complètes peut-il stocker ?}
+
+\begin{reponse}
+$80 \text{ Go} = 80 \times 10^9 \times 8 = 640 \times 10^9$ bits et $240 \text{ Mbits} = 240 \times 10^6$ bits.\\
+$\dfrac{640 \times 10^9}{240 \times 10^6} \approx 2\,666{,}7$ : Sam peut stocker \textbf{2\,666 musiques complètes}.
+\end{reponse}
+
+\explication
+On cherche « combien de fois » une musique rentre dans la mémoire : c'est une \textbf{division}. Mais on ne divise que deux quantités \textbf{de même unité}. Or la mémoire est en \textbf{octets} (Go) et la musique en \textbf{bits} (Mbits).
+
+\methode
+\begin{enumerate}
+  \item Mettre la mémoire en bits. 1 Go $= 10^9$ octets et 1 octet $=8$ bits :\\
+  $80 \text{ Go} = 80 \times 10^9 \text{ octets} = 80 \times 10^9 \times 8 \text{ bits} = 640 \times 10^9 \text{ bits}$.
+  \item Mettre la musique en bits. 1 Mbit $= 10^6$ bits : $240 \text{ Mbits} = 240 \times 10^6 \text{ bits}$.
+  \item Diviser :
+  $\dfrac{640 \times 10^9}{240 \times 10^6} = \dfrac{640}{240} \times 10^{3} = \dfrac{8}{3} \times 1\,000 \approx 2\,666{,}7$.
+  \item Interpréter : on ne stocke pas 0,7 musique. On garde la \textbf{partie entière} : 2\,666 musiques complètes.
+\end{enumerate}
+\textit{Autre chemin, aussi juste :} mettre la musique en Mo. $240 \text{ Mbits} = 240 \div 8 = 30$ Mo et $80 \text{ Go} = 80\,000$ Mo ; $80\,000 \div 30 \approx 2\,666{,}7$.
+
+\begin{erreur}
+Oublier le facteur 8 entre bits et octets : on trouve $80\,000 \div 240 \approx 333$ musiques, 8 fois trop peu. Regarde toujours si l'unité est un \textbf{b} (bit) ou un \textbf{o} (octet). Autre erreur : arrondir à 2\,667. La 2\,667\textsuperscript{e} musique ne rentre pas en entier.
+\end{erreur}
+
+% =====================================================================
+\section{Décimal, binaire et hexadécimal}
+
+\question[3] \enonce{Conversions binaire, décimal, hexadécimal.}
+\begin{parts}
+\part \enonce{Convertir $31_{10}$ en binaire en détaillant les calculs.}
+
+\begin{reponse}
+$31_{(10)} = 16 + 8 + 4 + 2 + 1 = \mathbf{1\,1111_{(2)}}$.
+\end{reponse}
+
+\methode\ (les soustractions successives)
+\begin{enumerate}
+  \item Écrire les puissances de 2 : 128, 64, 32, 16, 8, 4, 2, 1.
+  \item Prendre la plus grande puissance qui \textbf{ne dépasse pas} le nombre, la soustraire, et écrire 1 dans sa colonne.
+  \item Recommencer avec le reste. Écrire 0 dans les colonnes non utilisées.
+\end{enumerate}
+\begin{center}
+\begin{tabular}{|l|c|}
+\hline
+Calcul & Reste \\ \hline
+$31 - 16 = 15$ & 15 \\
+$15 - 8 = 7$ & 7 \\
+$7 - 4 = 3$ & 3 \\
+$3 - 2 = 1$ & 1 \\
+$1 - 1 = 0$ & 0 : fini \\ \hline
+\end{tabular}
+\qquad
+\begin{tabular}{l|cccccccc}
+ & $2^7$ & $2^6$ & $2^5$ & $2^4$ & $2^3$ & $2^2$ & $2^1$ & $2^0$\\
+ & 128 & 64 & 32 & 16 & 8 & 4 & 2 & 1\\ \hline
+$31 =$ & 0 & 0 & 0 & 1 & 1 & 1 & 1 & 1\\
+\end{tabular}
+\end{center}
+32 est trop grand ($32 > 31$) : on commence à 16. On lit le résultat de gauche à droite : $1\,1111_{(2)}$ (ou $0001\,1111$ sur un octet).
+
+\textit{Autre méthode :} les divisions successives par 2. $31 = 2 \times 15 + \mathbf{1}$ ; $15 = 2 \times 7 + \mathbf{1}$ ; $7 = 2 \times 3 + \mathbf{1}$ ; $3 = 2 \times 1 + \mathbf{1}$ ; $1 = 2 \times 0 + \mathbf{1}$. On lit les restes \textbf{de bas en haut} : $11111$.
+
+\part \enonce{Pourquoi cette conversion était-elle « facile » à anticiper ?}
+\begin{reponse}
+Parce que $31 = 32 - 1 = 2^5 - 1$. Or $2^5 = 10\,0000_{(2)}$ ; le nombre juste en dessous s'écrit avec cinq chiffres 1 : $1\,1111_{(2)}$.
+\end{reponse}
+C'est comme en base 10 : $1\,000 - 1 = 999$. Retirer 1 à une puissance de la base donne un nombre écrit uniquement avec le plus grand chiffre de la base (9 en base 10, 1 en base 2).
+
+\part \enonce{Convertir $A9_{16}$ en décimal.}
+\begin{reponse}
+$A9_{(16)} = 10 \times 16 + 9 \times 1 = 160 + 9 = \mathbf{169_{(10)}}$.
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Remplacer chaque lettre par sa valeur : A $=10$, B $=11$, C $=12$, D $=13$, E $=14$, F $=15$.
+  \item Chaque position vaut une puissance de 16 : à droite $16^0 = 1$, puis $16^1 = 16$.
+  \item Multiplier chaque chiffre par sa puissance, puis additionner : $10 \times 16 + 9 \times 1 = 169$.
+\end{enumerate}
+\textit{Vérification par le binaire :} A $= 1010$ et 9 $= 1001$, donc $A9_{(16)} = 1010\,1001_{(2)} = 128 + 32 + 8 + 1 = 169$.
+
+\begin{erreur}
+Calculer $10 + 9 = 19$ : on a oublié que le A est à la position des « seizaines » ; il vaut $10 \times 16$.
+\end{erreur}
+\end{parts}
+
+\question[2] \enonce{Chaque octet représente un caractère ASCII. Décoder le message (conseil : passer par l'hexadécimal).}
+
+\begin{reponse}
+Le message est : \textbf{« Bien joue ! »}
+\end{reponse}
+
+\explication
+En ASCII, chaque caractère est codé par \textbf{un octet} (8 bits). Le tableau du sujet donne le caractère à partir de son code \textbf{hexadécimal} : le premier chiffre hexadécimal donne la ligne, le second la colonne.
+
+\methode\ (pour chaque octet)
+\begin{enumerate}
+  \item Couper l'octet en deux paquets de 4 bits.
+  \item Convertir chaque paquet en un chiffre hexadécimal (de 0 à F), avec les poids 8, 4, 2, 1.
+  \item Lire le caractère dans le tableau : ligne $=$ premier chiffre, colonne $=$ second chiffre.
+\end{enumerate}
+Exemple avec le premier octet : $0100\,0010$. $0100 = 4$ et $0010 = 2$. Le code est $42_{(16)}$ : ligne 4, colonne 2, c'est \textbf{B}.
+
+\begin{center}
+\small
+\begin{tabular}{|c|c|c||c|c|c|}
+\hline
+Octet & Hexa & Car. & Octet & Hexa & Car. \\ \hline
+0100 0010 & 42 & B & 0110 1111 & 6F & o \\
+0110 1001 & 69 & i & 0111 0101 & 75 & u \\
+0110 0101 & 65 & e & 0110 0101 & 65 & e \\
+0110 1110 & 6E & n & 0010 0000 & 20 & espace \\
+0010 0000 & 20 & espace & 0010 0001 & 21 & ! \\
+0110 1010 & 6A & j & & & \\ \hline
+\end{tabular}
+\end{center}
+Le tableau se lit colonne de gauche, puis colonne de droite. L'ASCII de base n'a pas de lettres accentuées : c'est pour cela que le message écrit « joue » sans accent.
+
+\begin{erreur}
+Oublier les espaces (code $20_{(16)}$) : ce sont des caractères comme les autres. Autre piège : inverser ligne et colonne (lire $24$ au lieu de $42$).
+\end{erreur}
+
+% =====================================================================
+\section{Complément à 2}
+
+\question[1] \enonce{Vrai ou faux (sans justification demandée).}
+\begin{parts}
+\part
+\begin{reponse}
+\begin{enumerate}
+  \item Les positifs gardent leur représentation classique : \textbf{Vrai}.
+  \item Un nombre plus son opposé vaut 0 : \textbf{Vrai}.
+  \item Le zéro a deux représentations : \textbf{Faux}.
+  \item L'algorithme d'addition reste le même : \textbf{Vrai}.
+\end{enumerate}
+\end{reponse}
+\explication\ Le complément à 2 sert à représenter les entiers \textbf{relatifs} (positifs et négatifs) en binaire.
+\begin{enumerate}
+  \item Sur 8 bits, $5$ s'écrit $0000\,0101$, comme en binaire « normal ».
+  \item $5 = 0000\,0101$ et $-5 = 1111\,1011$. En posant l'addition, on obtient $1\,0000\,0000$ : 9 bits. Le 9\textsuperscript{e} bit (la retenue) ne tient pas sur 8 bits ; il est perdu. Il reste $0000\,0000 = 0$.
+  \item Sur 8 bits, le seul zéro est $0000\,0000$. Le nombre $1000\,0000$ vaut $-128$, pas « $-0$ ». (C'est la méthode « bit de signe + valeur absolue » qui a deux zéros : un défaut que le complément à 2 corrige.)
+  \item Voir le 2 : on additionne bit à bit avec les retenues, comme d'habitude. Le processeur n'a pas besoin d'un circuit spécial pour les négatifs.
+\end{enumerate}
+\end{parts}
+
+\question[1] \enonce{$1001\,0111_{(2)}$ est codé en complément à 2 sur 8 bits. Déterminer sa valeur décimale.}
+
+\begin{reponse}
+$1001\,0111_{(2)} = -128 + 16 + 4 + 2 + 1 = \mathbf{-105}$.
+\end{reponse}
+
+\methode\ (le tableau du complément à 2)
+\begin{enumerate}
+  \item Sur 8 bits, le bit de gauche vaut $-2^7 = -128$ au lieu de $+128$. Les autres gardent leur poids habituel.
+  \item Additionner les poids des bits à 1.
+\end{enumerate}
+\begin{center}
+\begin{tabular}{cccccccc}
+$-2^7$ & $2^6$ & $2^5$ & $2^4$ & $2^3$ & $2^2$ & $2^1$ & $2^0$\\
+$-128$ & 64 & 32 & 16 & 8 & 4 & 2 & 1\\ \hline
+1 & 0 & 0 & 1 & 0 & 1 & 1 & 1\\
+\end{tabular}
+\end{center}
+$-128 + 16 + 4 + 2 + 1 = -128 + 23 = -105$.
+
+\textit{Vérification par l'autre méthode} (inverser les bits, puis ajouter 1) : le nombre commence par 1, il est négatif. On inverse : $0110\,1000$ ; on ajoute 1 : $0110\,1001 = 64 + 32 + 8 + 1 = 105$. Le nombre vaut donc $-105$.
+
+\begin{erreur}
+Calculer $128 + 23 = 151$ : c'est la valeur si l'octet code un entier \textbf{positif} (non signé). L'énoncé dit « complément à 2 » : le bit de gauche compte pour $-128$.
+\end{erreur}
+
+% =====================================================================
+\section{Variables}
+
+\begin{lstlisting}
+a = 6
+b = 3
+c = (a == 3 and b != 3)
+b = a - b
+b = a - b
+e = a - (b+2)
+a = e // 2
+\end{lstlisting}
+
+\question[1\half] \enonce{Combien de variables distinctes ? Quels sont leurs noms ? Quels sont leurs types finaux ?}
+\begin{reponse}
+\textbf{4 variables} : \code{a}, \code{b}, \code{c} et \code{e}.\\
+Types finaux : \code{a} est un \code{int}, \code{b} est un \code{int}, \code{c} est un \code{bool}, \code{e} est un \code{int}.
+\end{reponse}
+\explication
+\begin{itemize}
+  \item Une variable est créée la première fois qu'on lui \textbf{affecte} une valeur (\code{nom = ...}). On compte les noms différents à gauche d'un \code{=} : \code{a}, \code{b}, \code{c}, \code{e}. Réaffecter \code{b} ne crée pas une nouvelle variable.
+  \item \code{c} reçoit le résultat d'une \textbf{comparaison} : c'est un booléen (\code{True} ou \code{False}), type \code{bool}.
+  \item \code{//} est la \textbf{division entière} : \code{1 // 2} donne l'entier 0. Avec \code{/}, on aurait eu \code{0.5}, un \code{float}.
+\end{itemize}
+
+\begin{erreur}
+Confondre \code{=} et \code{==}. Dans \code{c = (a == 3 and b != 3)}, le premier \code{=} \textbf{affecte} ; \code{==} \textbf{compare} et donne un booléen.
+\end{erreur}
+
+\question[2] \enonce{Écrire le tableau de variables : la valeur de chaque variable après chaque ligne.}
+\begin{reponse}
+\begin{center}
+\begin{tabular}{|c|l|c|c|c|c|}
+\hline
+Ligne & Instruction & \code{a} & \code{b} & \code{c} & \code{e} \\ \hline
+1 & \code{a = 6} & 6 & & & \\
+2 & \code{b = 3} & 6 & 3 & & \\
+3 & \code{c = (a == 3 and b != 3)} & 6 & 3 & False & \\
+4 & \code{b = a - b} & 6 & 3 & False & \\
+5 & \code{b = a - b} & 6 & 3 & False & \\
+6 & \code{e = a - (b+2)} & 6 & 3 & False & 1 \\
+7 & \code{a = e // 2} & \textbf{0} & 3 & False & 1 \\ \hline
+\end{tabular}
+\end{center}
+\end{reponse}
+\methode\ Pour chaque ligne : (1) calculer la partie droite du \code{=} avec les valeurs \textbf{actuelles} ; (2) ranger le résultat dans la variable de gauche ; (3) recopier les autres valeurs sans les changer.
+\begin{itemize}
+  \item Ligne 3 : \code{a == 3} donne \code{6 == 3}, donc \code{False}. Avec \code{and}, il suffit d'une partie fausse : \code{c} vaut \code{False}.
+  \item Ligne 4 : $6 - 3 = 3$, \code{b} vaut 3. Ligne 5 : on recalcule $6 - 3 = 3$ ; \code{b} vaut encore 3.
+  \item Ligne 6 : $6 - (3 + 2) = 1$. Ligne 7 : $1 // 2 = 0$ (le quotient entier de 1 par 2 est 0).
+\end{itemize}
+
+% =====================================================================
+\section{Conditions}
+
+\begin{lstlisting}
+# randint(1,6) tire au hasard une valeur entière comprise entre 1 et 6
+de1 = randint(1,6)
+de2 = randint(1,6)
+de3 = randint(1,6)
+if de1+1 == de2 and de2+1 == de3:
+    score = 50
+else :
+    score = 0
+
+if de1 == de2 == de3 :
+    score = score + 200
+elif de1 == de2 :
+    score = score + 20
+elif de1 == de3 :
+    score = score + 20
+elif de2 == de3 :
+    score = score + 20
+
+if de1 == 6 or de2 == 6 or de3 == 6:
+    score = score + 10
+
+print("Vous marquez ",score," points")
+\end{lstlisting}
+
+\begin{astuce}[À retenir : \code{if} et \code{elif}]
+Le programme a \textbf{trois blocs indépendants} : chaque \code{if} est testé. Mais dans une chaîne \code{if} / \code{elif}, \textbf{une seule} branche s'exécute : la première dont la condition est vraie ; les suivantes sont sautées.
+\end{astuce}
+
+\question[2] \enonce{Écrire le tableau de variables pour $de1 = 6$, $de2 = 6$, $de3 = 6$.}
+\begin{reponse}
+\begin{center}
+\begin{tabular}{|c|l|c|c|c|c|}
+\hline
+Lignes & Ce qui se passe & \code{de1} & \code{de2} & \code{de3} & \code{score} \\ \hline
+2 à 4 & tirage des dés & 6 & 6 & 6 & \\
+5 à 8 & \code{6+1 == 6} est faux : \code{else} & 6 & 6 & 6 & 0 \\
+10 et 11 & \code{6 == 6 == 6} est vrai & 6 & 6 & 6 & 200 \\
+12 à 17 & \code{elif} sautés & 6 & 6 & 6 & 200 \\
+19 et 20 & \code{de1 == 6} est vrai & 6 & 6 & 6 & \textbf{210} \\ \hline
+\end{tabular}
+\end{center}
+Le programme affiche : \code{Vous marquez \ 210 \ points}.
+\end{reponse}
+\explication
+\begin{enumerate}
+  \item Premier bloc : \code{de1+1 == de2} donne $7 == 6$ : faux. Avec \code{and}, toute la condition est fausse. On va dans le \code{else} : \code{score = 0}.
+  \item Deuxième bloc : les trois dés sont égaux : \code{score = 0 + 200 = 200}. Comme le \code{if} est vrai, les trois \code{elif} ne sont \textbf{pas} testés.
+  \item Troisième bloc : un dé vaut 6 (\code{or} : une seule condition vraie suffit) : \code{score = 200 + 10 = 210}.
+\end{enumerate}
+\textit{Remarque :} \code{print} avec des virgules ajoute un espace entre chaque élément ; comme les textes contiennent déjà un espace, on voit deux espaces autour de 210.
+
+\begin{erreur}
+Ajouter aussi les +20 des \code{elif} (score 270). Un \code{elif} n'est jamais testé si une branche au-dessus a déjà été exécutée.
+\end{erreur}
+
+\question[2] \enonce{Donner la valeur finale de \code{score} pour chaque jeu de valeurs.}
+\begin{reponse}
+\begin{tabular}{ll}
+$de1 = 6$, $de2 = 3$, $de3 = 4$ : & \textbf{10}\\
+$de1 = 3$, $de2 = 4$, $de3 = 5$ : & \textbf{50}\\
+$de1 = 3$, $de2 = 6$, $de3 = 4$ : & \textbf{10}\\
+$de1 = 1$, $de2 = 1$, $de3 = 4$ : & \textbf{20}\\
+\end{tabular}
+\end{reponse}
+\explication\ (pour toi ; aucune justification n'était demandée)
+\begin{center}
+\small
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Dés & Bloc 1 (suite ?) & Bloc 2 (égalités ?) & Bloc 3 (un 6 ?) & Score \\ \hline
+6, 3, 4 & $7 \ne 3$ : 0 & aucune : $+0$ & oui : $+10$ & 10 \\
+3, 4, 5 & $4 = 4$ et $5 = 5$ : 50 & aucune : $+0$ & non & 50 \\
+3, 6, 4 & $4 \ne 6$ : 0 & aucune : $+0$ & oui : $+10$ & 10 \\
+1, 1, 4 & $2 \ne 1$ : 0 & \code{de1 == de2} : $+20$ & non & 20 \\ \hline
+\end{tabular}
+\end{center}
+Pour 3, 6, 4 : les dés 3 et 4 se suivent, mais dans le désordre ; le test exige \code{de1+1 == de2} \textbf{et} \code{de2+1 == de3}, dans cet ordre.
+
+% =====================================================================
+\question[1\half] \enonce{Compléter le code qui vérifie les trois critères d'un mot de passe.}
+\begin{reponse}
+\begin{lstlisting}
+mot_de_passe_valide = True
+longueur_mdp = 8      # Longueur du mot de passe
+contient_chiffre = True # Le mot de passe contient-il un chiffre ?
+contient_majuscule = False # Le mot de passe contient-il une majuscule ?
+
+# Critère 1 : La longueur doit être supérieure ou égale à 12
+if longueur_mdp < 12 :
+    print("Critère 1 non respecté : Le mot de passe est trop court.")
+    mot_de_passe_valide = False
+
+# Critère 2 : Le mot de passe DOIT contenir un chiffre
+if contient_chiffre == False :
+    print("Critère 2 non respecté : Le mot de passe doit contenir un chiffre.")
+    mot_de_passe_valide = False
+
+# Critère 3 : Le mot de passe DOIT contenir un chiffre ou une majuscule
+if contient_majuscule == False and contient_chiffre == False :
+    print("Critère 3 non respecté : Un mot de passe doit avoir soit un chiffre, soit une majuscule (ou les deux).")
+    mot_de_passe_valide = False
+
+if mot_de_passe_valide :
+    print("Mot de passe Validé.")
+else:
+    print("Mot de passe Non conforme.")
+\end{lstlisting}
+\end{reponse}
+\explication
+\begin{enumerate}
+  \item \textbf{Critère 1.} Le \code{if} doit être vrai quand le critère \textbf{n'est pas} respecté (on affiche alors l'erreur). Le contraire de « $\ge 12$ » est « $< 12$ » : \code{longueur\_mdp < 12}.
+  \item \textbf{Critère 2.} On copie ce que fait le critère 3 : quand un critère n'est pas respecté, on passe l'indicateur à faux : \code{mot\_de\_passe\_valide = False}. Un \textbf{indicateur} (en anglais \textit{flag}) est un booléen qui retient si un problème a eu lieu.
+  \item \textbf{Fin.} Le mot de passe est validé si aucun critère n'a mis l'indicateur à \code{False} : \code{if mot\_de\_passe\_valide :} (ou \code{if mot\_de\_passe\_valide == True :}).
+\end{enumerate}
+Avec les valeurs données (longueur 8, un chiffre, pas de majuscule), le programme affiche :
+\begin{lstlisting}[style=sortie]
+Critère 1 non respecté : Le mot de passe est trop court.
+Mot de passe Non conforme.
+\end{lstlisting}
+
+\begin{erreur}
+Écrire \code{if longueur\_mdp >= 12 :} au critère 1 : le message « trop court » s'afficherait pour les mots de passe assez longs. Lis bien : le bloc s'exécute quand le critère est \textbf{non respecté}.
+\end{erreur}
+
+\question[2] \enonce{Écrire un code avec \code{if}, \code{elif} et \code{else} qui affiche le message adapté selon \code{temperature} et \code{humidite}.}
+\begin{reponse}
+\begin{lstlisting}
+temperature = int(input("Saisissez la température :"))
+humidite = int(input("Saisissez l'humidité :"))
+
+if 20 < temperature < 25 and humidite < 15:
+    print("Journée idéale !")
+elif temperature >= 25 and humidite > 15:
+    print("Chaleur lourde.")
+elif temperature <= 15:
+    print("Prévoyez une veste.")
+else:
+    print("Météo agréable.")
+\end{lstlisting}
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Traduire chaque règle en condition Python :
+  \begin{itemize}
+    \item « strictement entre 20 et 25 (non inclus) » : \code{20 < temperature < 25}\\ (ou \code{temperature > 20 and temperature < 25}) ;
+    \item « strictement inférieure à 15 » : \code{humidite < 15} ; « strictement supérieure à 15 » : \code{humidite > 15} ;
+    \item « supérieure ou égale à 25 » : \code{temperature >= 25} ; « inférieure ou égale à 15 » : \code{temperature <= 15}.
+  \end{itemize}
+  \item Relier deux conditions qui doivent être vraies \textbf{en même temps} par \code{and}.
+  \item Mettre la première règle dans le \code{if}, les suivantes dans des \code{elif}, et « tous les autres cas » dans le \code{else} (sans condition).
+\end{enumerate}
+\textbf{Exemples d'exécution} (testés) :
+\begin{center}
+\small
+\begin{tabular}{|c|c|l|}
+\hline
+\code{temperature} & \code{humidite} & Affichage \\ \hline
+22 & 10 & Journée idéale ! \\
+30 & 80 & Chaleur lourde. \\
+12 & 50 & Prévoyez une veste. \\
+22 & 40 & Météo agréable. \\
+20 & 10 & Météo agréable. (20 est exclu) \\ \hline
+\end{tabular}
+\end{center}
+
+\begin{erreur}
+Écrire \code{20 <= temperature <= 25} : les bornes 20 et 25 seraient incluses, alors que l'énoncé dit « non inclus ». Autre erreur : mettre une condition après \code{else} (\code{else temperature > 15:}) : c'est une erreur de syntaxe, \code{else} n'a jamais de condition.
+\end{erreur}
+
+\end{questions}
+
+\end{document}
