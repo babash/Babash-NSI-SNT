@@ -173,6 +173,7 @@
   window.reglages = function (r) {
     reglagesSite = r || {};
     depotSite = lireDepot(reglagesSite.depot);
+    if (apercu()) return quandPret(afficher);
     var dossiers = liste(reglagesSite.rubriques).slice();
     var ici = pageAPart() ? null : rubriqueDeLaPage();
     if (ici && dossiers.indexOf(ici) < 0) dossiers.push(ici); // rubrique non listée : accessible par son adresse
@@ -268,6 +269,125 @@
       rubrique: rub
     });
   };
+
+  /* ── Les rubriques tirées de la vitrine (donnees/vitrine.json) ─── */
+  /* La vitrine (cahier des charges, § 3.4) et les fiches de la bibliothèque donnent les mêmes rubriques
+     que les anciennes listes ressources.js : thèmes, groupes, ressources. Pour l'instant, seul
+     l'aperçu de l'admin s'en sert (T51) ; les rubriques y passeront ensuite (T51b).
+     donnees : { vitrine, ressources: [fiches vues de l'extérieur], programmes: [], valeurs: {} },
+     la forme de donnees/bibliotheque.json (referentiels.programmes et referentiels.valeurs). */
+  function rubriquesDeVitrine(donnees) {
+    var fiches = {};
+    liste(donnees.ressources).forEach(function (f) { if (f && f.id) fiches[f.id] = f; });
+    var noeuds = {};
+    liste(donnees.programmes).forEach(function (p) {
+      noeuds[p.id] = p;
+      liste(p.themes).forEach(function (t) {
+        noeuds[t.id] = t;
+        liste(t.contenus).forEach(function (c) { noeuds[c.id] = c; });
+      });
+    });
+    var valeurs = donnees.valeurs || {};
+    function libelle(listeNom, id) {
+      var e = liste(valeurs[listeNom]).filter(function (x) { return x.id === id; })[0];
+      return e ? e.libelle : id;
+    }
+    function famille(id) {
+      var e = liste(valeurs.usages).filter(function (x) { return x.id === id; })[0];
+      return e ? e.famille : null;
+    }
+    function adresse(d) {
+      return d.url || (d.fichier ? RACINE + d.fichier : '');
+    }
+    function versRessource(id, t, groupe, rub) {
+      var f = fiches[id];
+      if (!f) return null; // cachée pour l'extérieur, ou fiche absente
+      var docs = liste(f.documents);
+      var principal = docs.filter(function (d) { return d.principal; })[0] || docs[0];
+      var annexes = null;
+      docs.forEach(function (d) {
+        if (d === principal || !adresse(d)) return;
+        annexes = annexes || {};
+        var nom = d.titre || libelle('roles', d.role), k = 2, base = nom;
+        while (annexes[nom]) nom = base + ' (' + (k++) + ')';
+        annexes[nom] = adresse(d);
+      });
+      var tags = liste(f.usages).filter(function (u) { return famille(u) === 'modalite'; }).map(function (u) { return libelle('usages', u); })
+        .concat(liste(f.langages).map(function (l) { return libelle('langages', l); }));
+      return {
+        id: f.id, titre: f.titre, lien: principal ? adresse(principal) : '', texte: f.resume || f.accroche || '',
+        tags: tags, annexes: annexes, theme: t, groupe: groupe, rubrique: rub
+      };
+    }
+    var faites = {};
+    var ordre = [];
+    liste((donnees.vitrine || {}).rubriques).forEach(function (rv, rang) {
+      var prog = rv.programme ? noeuds[rv.programme] : null;
+      var ref = rv.reference_officielle ? noeuds[rv.reference_officielle] : null;
+      var texte = prog || ref;
+      var rub = {
+        id: rv.id, base: RACINE + rv.id + '/', nom: rv.titre, court: rv.court || rv.titre, niveau: rv.niveau || '',
+        presentation: rv.presentation || '',
+        programme: texte && texte.texte_officiel ? { texte: texte.texte_officiel.titre, lien: texte.texte_officiel.lien } : null,
+        couleur: couleur(rv.couleur, rang), themes: []
+      };
+      var nommes = 0;
+      liste(rv.sections).forEach(function (s) {
+        var n = s.programme ? noeuds[s.programme] : null;
+        var nom = n ? n.intitule : s.titre;
+        var court = n ? (n.court || n.intitule) : (s.court || s.titre);
+        var id = s.id || slug(court), base = id, k = 2;
+        while (rub.themes.some(function (x) { return x.id === id; })) id = base + '-' + (k++);
+        var t = {
+          nom: nom, court: court, id: id, couleur: couleur(s.couleur, nommes++),
+          programme: n ? liste(n.contenus).map(function (c) { return c.intitule; }) : [],
+          blocs: [{ groupe: null, ressources: [] }]
+        };
+        function remplir(bloc, ids) {
+          liste(ids).forEach(function (rid) {
+            var r = versRessource(rid, t, bloc.groupe, rub);
+            if (r) bloc.ressources.push(r);
+          });
+        }
+        remplir(t.blocs[0], s.ressources);
+        liste(s.sous_sections).forEach(function (ss) {
+          var c = ss.programme ? noeuds[ss.programme] : null;
+          var bloc = { groupe: c ? c.intitule : ss.titre, ressources: [] };
+          t.blocs.push(bloc);
+          remplir(bloc, ss.ressources);
+        });
+        rub.themes.push(t);
+      });
+      faites[rv.id] = rub;
+      ordre.push(rv.id);
+    });
+    return { rubriques: faites, ordre: ordre };
+  }
+
+  /* L'aperçu de l'admin : …/snt/?apercu ou …/?apercu, avec la vitrine et les fiches que l'admin
+     a rangées dans sessionStorage (clé « apercu-admin »). Rien n'est enregistré. */
+  var donneesApercu;
+  function apercu() {
+    if (donneesApercu !== undefined) return donneesApercu;
+    donneesApercu = null;
+    try {
+      if (!/[?&]apercu(=|&|$)/.test(location.search)) return null;
+      var d = JSON.parse(sessionStorage.getItem('apercu-admin') || 'null');
+      if (!d || !d.vitrine) return null;
+      var r = rubriquesDeVitrine(d);
+      rubriques = r.rubriques;
+      reglagesSite.rubriques = r.ordre;
+      donneesApercu = d;
+    } catch (e) { donneesApercu = null; }
+    return donneesApercu;
+  }
+
+  function bandeauApercu() {
+    return el('div', { class: 'alerte apercu', role: 'note' }, [
+      el('p', null, el('strong', null, 'Aperçu de l\'admin')),
+      el('p', { class: 'petit' }, 'Cette page montre les changements en attente : ils ne sont pas encore enregistrés, et le site en ligne ne les montre pas.')
+    ]);
+  }
 
   /* ── Données ──────────────────────────────────────────────────── */
 
@@ -818,6 +938,7 @@
 
     var alerte = blocAlertes(null);
     if (alerte) page.appendChild(alerte);
+    if (apercu()) page.insertBefore(bandeauApercu(), page.firstChild);
 
     var vue = el('main', { id: 'contenu' });
     page.appendChild(vue);
@@ -887,6 +1008,7 @@
 
     var alerte = blocAlertes([rub.id + '/ressources.js', 'reglages.js']);
     if (alerte) page.appendChild(alerte);
+    if (apercu()) page.insertBefore(bandeauApercu(), page.firstChild);
 
     var corps = el('div', { class: 'rub-corps' });
     var cote = el('aside', { class: 'cote' });
@@ -935,22 +1057,29 @@
     barreHaut: barreHaut, scene: scene, piedDePage: piedDePage, blocAlertes: blocAlertes,
     urlAccueil: urlAccueil, urlRubrique: urlRubrique, urlBibliotheque: urlBibliotheque, urlDepot: urlDepot,
     ordreRubriques: ordreRubriques, titreSite: titreSite, reglages: function () { return reglagesSite; },
-    signaler: signaler, racine: RACINE, surDisque: SUR_DISQUE
+    signaler: signaler, racine: RACINE, surDisque: SUR_DISQUE,
+    rubriquesDeVitrine: rubriquesDeVitrine, blocRessource: blocRessource, champRecherche: champRecherche
+  };
+
+  /* Les pages à part : <div id="site" data-page="…"> et la fonction qui les dessine */
+  var PAGES_A_PART = {
+    bibliotheque: { fonction: 'pageBibliotheque', nom: 'La bibliothèque', script: 'assets/bibliotheque.js' },
+    admin: { fonction: 'pageAdmin', nom: 'L\'espace administrateur', script: 'assets/admin.js' }
   };
 
   function afficher() {
     var racine = document.getElementById('site');
     if (!racine) return;
     vider(racine);
-    var aPart = pageAPart();
-    if (aPart === 'bibliotheque') {
-      if (typeof window.pageBibliotheque === 'function') window.pageBibliotheque(racine, OUTILS);
+    var aPart = PAGES_A_PART[pageAPart()];
+    if (aPart) {
+      if (typeof window[aPart.fonction] === 'function') window[aPart.fonction](racine, OUTILS);
       else {
-        racine.appendChild(barreHaut('bibliotheque'));
+        racine.appendChild(barreHaut(pageAPart()));
         var page = el('div', { class: 'page' });
         page.appendChild(el('div', { class: 'alerte', role: 'alert' }, [
-          el('p', null, el('strong', null, 'La bibliothèque n\'a pas pu s\'afficher')),
-          el('p', { class: 'petit' }, 'Le programme de la page (assets/bibliotheque.js) ne s\'est pas chargé. Recharger la page ; '
+          el('p', null, el('strong', null, aPart.nom + ' n\'a pas pu s\'afficher')),
+          el('p', { class: 'petit' }, 'Le programme de la page (' + aPart.script + ') ne s\'est pas chargé. Recharger la page ; '
             + 'si le message reste, le signaler dans les issues du dépôt GitHub.')
         ]));
         page.appendChild(piedDePage());
