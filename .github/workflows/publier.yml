@@ -1,5 +1,5 @@
 # Publier le site sur GitHub Pages (T50)
-#  À chaque modification de main, et à la demande (onglet Actions, « Run workflow ») :
+#  À chaque modification de main, et à la demande (onglet Actions, « Run workflow », sur main) :
 #   1. valider les données de la bibliothèque : une seule erreur arrête tout, et le site en ligne
 #      reste tel qu'il était (scripts/valider_donnees.py) ;
 #   2. construire donnees/bibliotheque.json, bibliotheque-complete.json et bibliotheque-textes.json
@@ -9,10 +9,14 @@
 #  Un enregistrement de l'admin (une fiche modifiée sur main) suffit donc à mettre le site à jour,
 #  sans commit d'un robot ni fichier commun que deux modifications se disputeraient.
 #
-#  Réglage à faire une fois par l'enseignant : Settings → Pages → Build and deployment → Source :
-#  « GitHub Actions » (au lieu de « Deploy from a branch »). Tant qu'il n'est pas fait, ce workflow
-#  s'arrête avant la mise en ligne, avec un avertissement, et GitHub continue de publier main tel
-#  quel, sans la bibliothèque.
+#  Sur toute autre branche, les étapes 1 et 2 et la préparation du site à mettre en ligne sont
+#  faites aussi, pour prouver que la publication marchera ; rien n'est mis en ligne (job
+#  « Mettre en ligne » sauté).
+#
+#  Réglage de GitHub Pages : Settings → Pages → Build and deployment → Source : « GitHub Actions »
+#  (fait par l'enseignant le 17/11/2026). Depuis, seul ce workflow met le site en ligne : sans lui
+#  sur main, plus rien n'est déployé. Si le réglage revenait à « Deploy from a branch », ce workflow
+#  s'arrêterait avant la mise en ligne, avec un avertissement.
 #  Le contrôle en ligne (verifier.yml, job « Site en ligne ») attend ce déploiement comme avant :
 #  c'est un déploiement de l'environnement « github-pages », pour le même commit.
 # Machines : ubuntu-26.04, comme verifier.yml.
@@ -21,15 +25,15 @@ name: Publier le site
 
 on:
   push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
-# Une seule mise en ligne à la fois ; une nouvelle attend la précédente au lieu de l'annuler
+# Une seule mise en ligne à la fois ; une nouvelle attend la précédente au lieu de l'annuler.
+# Les essais des autres branches ont chacun leur groupe : ils ne retardent jamais main.
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -83,7 +87,7 @@ jobs:
   mettre-en-ligne:
     name: Mettre en ligne
     needs: construire
-    if: needs.construire.outputs.source != 'legacy'
+    if: github.ref == 'refs/heads/main' && needs.construire.outputs.source != 'legacy'
     runs-on: ubuntu-26.04
     timeout-minutes: 10
     permissions:
