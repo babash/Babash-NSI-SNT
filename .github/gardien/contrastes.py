@@ -9,7 +9,10 @@ Usage :
 Contrastes : pour chaque texte visible, la couleur du texte est comparée aux pixels réellement
 affichés derrière lui (capture de la page avec tous les textes rendus transparents), ce qui
 tient compte des dégradés, du décor SVG et des voiles. On retient le fond le moins favorable
-(10e centile). Seuils : 4,5:1 (texte), 3:1 (grand texte : 24 px, ou 18,66 px en gras).
+(10e centile). Seule la partie affichée d'un texte est mesurée : un texte en partie hors d'un
+conteneur qui rogne ou fait défiler son contenu (overflow ≠ visible, par exemple un onglet au
+bord d'une bande qui défile) est mesuré sur sa partie visible (T51).
+Seuils : 4,5:1 (texte), 3:1 (grand texte : 24 px, ou 18,66 px en gras).
 Clavier : parcours à la touche Tab ; on relève le premier élément atteint (lien d'évitement),
 les éléments atteints sans indicateur de focus visible, et le nombre d'arrêts.
 Écrit DOSSIER_SORTIE/contrastes.json ; code de sortie 1 si un problème.
@@ -46,7 +49,21 @@ TEXTES = r"""(zone) => {
     for (let p = e; p; p = p.parentElement) op *= parseFloat(getComputedStyle(p).opacity);
     if (op < 0.05) continue;
     const r = document.createRange(); r.selectNodeContents(n);
-    const boites = [...r.getClientRects()].filter(b => b.width > 2 && b.height > 4)
+    // Seule la partie affichée compte : une boîte est coupée par ses conteneurs qui rognent ou font
+    // défiler leur contenu (overflow ≠ visible), comme un onglet à moitié sorti d'une bande qui défile.
+    // Sinon on mesurerait les pixels de ce qui est dessiné à côté du conteneur, pas derrière le texte.
+    const rogner = b => {
+      let x0 = b.left, y0 = b.top, x1 = b.right, y1 = b.bottom;
+      for (let p = e; p && p !== document.body && p !== document.documentElement; p = p.parentElement) {
+        const s = getComputedStyle(p);
+        if (s.overflowX === 'visible' && s.overflowY === 'visible') continue;
+        const c = p.getBoundingClientRect();
+        if (s.overflowX !== 'visible') { x0 = Math.max(x0, c.left); x1 = Math.min(x1, c.right); }
+        if (s.overflowY !== 'visible') { y0 = Math.max(y0, c.top); y1 = Math.min(y1, c.bottom); }
+      }
+      return { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
+    };
+    const boites = [...r.getClientRects()].map(rogner).filter(b => b.width > 2 && b.height > 4)
       .map(b => ({ x: b.left + scrollX, y: b.top + scrollY, w: b.width, h: b.height }));
     if (!boites.length) continue;
     vus.add(e);

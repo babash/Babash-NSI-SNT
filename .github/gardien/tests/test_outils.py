@@ -14,6 +14,8 @@ dossier de travail :
   - zones.py : des captures synthétiques (pied de page seul, bande modifiée, bruit de 1/255,
     capture d'un seul côté), avec et sans --tolerance ;
   - contraste_zone.py : une page témoin aux contrastes connus, servie en local (Chrome) ;
+  - contrastes.py : un onglet coupé au bord d'une bande qui défile, au-dessus d'un voisin clair,
+    n'est mesuré que sur sa partie visible ; un texte visible sous le seuil reste signalé (T51) ;
   - sensibles.py : des textes ordinaires avec « (sur) », « [point] », « (dot) », « [at] », puis deux
     adresses électroniques masquées pour les robots (T65), dans un petit dépôt git.
 """
@@ -209,6 +211,33 @@ with cadre.servir(temoin) as url:
     code, sortie = outil("contraste_zone.py", url, "--racine", temoin, "--largeurs", "800", "--modes", "light",
                          "--zone", "p.inexistante")
     attendre("contraste_zone.py : zone absente, code 1", code, sortie, 1, presents=[r"zone « p\.inexistante » absente"])
+
+# ── contrastes.py : un onglet coupé au bord d'une bande qui défile (T51) ─────
+# Comme l'onglet « Bibliothèque » à 768 px : sa boîte dépasse de la bande (overflow-x: auto) et
+# passe au-dessus de l'interrupteur clair voisin. Seule sa partie affichée, sur le fond sombre
+# (6,83:1), compte ; mesurée sur toute sa boîte, elle tomberait à 2,38:1. Un texte bien visible
+# sous le seuil reste signalé.
+defile = os.path.join(travail, "site-defile")
+ecrire(os.path.join(defile, "reglages.js"), "reglages({\n  rubriques: [],\n});\n")
+ecrire(os.path.join(defile, "index.html"), """<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Bande</title></head>
+<body style="margin:0;background:#fff;font:16px sans-serif">
+<nav style="display:flex;width:420px;background:#111">
+<ul style="display:flex;overflow-x:auto;white-space:nowrap;width:200px;margin:0;padding:0;list-style:none;scrollbar-width:none">
+<li style="padding:4px 8px"><a href="#a" style="color:#8d9cba">Premier</a></li>
+<li style="padding:4px 8px"><a href="#b" style="color:#8d9cba">Deuxième</a></li>
+<li style="padding:4px 8px"><a href="#c" style="color:#8d9cba">Bibliothèque coupée</a></li>
+</ul>
+<span style="display:block;width:220px;background:#eee;color:#000">Auto</span>
+</nav>
+<p style="color:#999">gris 999 sur blanc (2,85:1), bien visible</p>
+</body></html>
+""")
+with cadre.servir(defile) as url:
+    code, sortie = outil("contrastes.py", url, os.path.join(travail, "contrastes-defile"), "--racine", defile,
+                         "--largeurs", "800", "--modes", "light")
+    attendre("contrastes.py : onglet coupé au bord d'une bande qui défile, mesuré sur sa partie visible", code, sortie, 1,
+             presents=[r"2\.85:1 \(exigé 4\.5\) p « gris 999", r"^accueil 800 light +\d+ textes, 1 sous le seuil"],
+             absents=[r"« Bibliothèque coupée »", r"2\.38"])
 
 # ── sensibles.py : adresse électronique masquée (T65) ───────────────────────
 # L'adresse et les textes ordinaires sont assemblés à l'exécution : le dépôt est public, et aucune

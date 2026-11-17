@@ -4,9 +4,12 @@
 
 Avant chaque publication, le Gardien pré-valide la branche avec ses outils, rangés dans
 `.github/gardien/` : `python3 -I .github/gardien/controler.py --branche origin/<branche>`
-vérifie que la branche part du dernier `main`, puis contrôle les données sensibles (une adresse
+vérifie que la branche part du dernier `main`, construit la bibliothèque dans les copies avant et
+après (comme « Publier le site »), puis contrôle les données sensibles (une adresse
 électronique est reconnue même écrite sous une forme masquée pour les robots, avec « [point] »,
-« (at) » ou « [sur] »), les liens internes, le rendu avant et après (320, 768 et 1440 px, clair et obscur), les contrastes, la
+« (at) » ou « [sur] »), les liens internes, le rendu avant et après de l'accueil, des rubriques et de
+la bibliothèque (320, 768 et 1440 px, clair et obscur), les contrastes (mesurés sur la partie affichée
+de chaque texte), la
 navigation au clavier et l'impression A4 des documents touchés ; il lance aussi le contrôle
 des pages de [la vérification automatique](VERIFICATION.md). La conformité, elle, se vérifie à la lecture : cahier des charges,
 décisions de l'enseignant et règles de conception (voir [L'équipe d'agents](AGENTS.md)). Il vérifie de
