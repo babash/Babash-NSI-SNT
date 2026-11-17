@@ -170,43 +170,44 @@
     return null;
   }
 
+  /* Les rubriques et l'accueil lisent la vitrine et les fiches de la bibliothèque (T51b) :
+     donnees/bibliotheque.json, construit à chaque publication par « Publier le site ». Ce que
+     l'enseignant compose dans l'admin s'affiche donc tel quel. Les anciennes listes
+     (snt/ressources.js…) restent dans le dépôt, mais ne sont plus lues. */
+  var BIBLIOTHEQUE = 'donnees/bibliotheque.json';
+
   window.reglages = function (r) {
     reglagesSite = r || {};
     depotSite = lireDepot(reglagesSite.depot);
     if (apercu()) return quandPret(afficher);
-    var dossiers = liste(reglagesSite.rubriques).slice();
     var ici = pageAPart() ? null : rubriqueDeLaPage();
-    if (ici && dossiers.indexOf(ici) < 0) dossiers.push(ici); // rubrique non listée : accessible par son adresse
-    var restants = dossiers.length;
-    if (!restants) return quandPret(afficher);
 
-    function fini() {
-      restants -= 1;
-      if (restants === 0) quandPret(afficher);
+    function sansDonnees(message) {
+      signaler(BIBLIOTHEQUE, message);
+      if (ici && !rubriques[ici]) nouvelleRubrique({ id: ici, base: RACINE + ici + '/' }, {});
+      quandPret(afficher);
     }
 
-    dossiers.forEach(function (id) {
-      var fichier = id + '/ressources.js';
-      var s = document.createElement('script');
-      s.src = RACINE + fichier;
-      s.async = false; // garder l'ordre
-      s.onload = function () {
-        if (!rubriques[id]) {
-          var deja = erreurs.some(function (e) { return e.fichier === fichier; });
-          if (!deja) signaler(fichier, 'le fichier ne contient aucune ressource ni rubrique.');
-          nouvelleRubrique({ id: id, base: RACINE + id + '/' }, {});
-        }
-        fini();
-      };
-      s.onerror = function () {
-        signaler(fichier, 'fichier introuvable. Le dossier « ' + id + ' » est-il bien écrit dans reglages.js ?');
-        nouvelleRubrique({ id: id, base: RACINE + id + '/' }, {});
-        fini();
-      };
-      document.head.appendChild(s);
+    if (typeof fetch !== 'function') return sansDonnees('ce navigateur est trop ancien pour lire la bibliothèque.');
+    fetch(RACINE + BIBLIOTHEQUE).then(function (rep) {
+      if (!rep.ok) throw new Error('code ' + rep.status);
+      return rep.json();
+    }).then(function (b) {
+      var refs = b.referentiels || {};
+      var r2 = rubriquesDeVitrine({ vitrine: b.vitrine, ressources: b.ressources, programmes: refs.programmes, valeurs: refs.valeurs });
+      rubriques = r2.rubriques;
+      reglagesSite.rubriques = r2.ordre;
+      if (ici && !rubriques[ici]) {
+        signaler(BIBLIOTHEQUE, 'la rubrique « ' + ici + ' » n\'est pas dans la vitrine (donnees/vitrine.json).');
+        nouvelleRubrique({ id: ici, base: RACINE + ici + '/' }, {});
+      }
+      quandPret(afficher);
+    }).catch(function (e) {
+      sansDonnees(SUR_DISQUE
+        ? 'la bibliothèque ne se lit pas depuis un fichier ouvert sur le disque : lancer un petit serveur (python3 -m http.server) à la racine du site.'
+        : 'la liste des ressources n\'a pas pu être lue (' + e.message + '). Recharger la page ; si le message reste, la publication du site a peut-être échoué.');
     });
   };
-
   window.rubrique = function (infos) {
     var d = dossierDuScript();
     if (!d) return;
@@ -272,10 +273,19 @@
 
   /* ── Les rubriques tirées de la vitrine (donnees/vitrine.json) ─── */
   /* La vitrine (cahier des charges, § 3.4) et les fiches de la bibliothèque donnent les mêmes rubriques
-     que les anciennes listes ressources.js : thèmes, groupes, ressources. Pour l'instant, seul
-     l'aperçu de l'admin s'en sert (T51) ; les rubriques y passeront ensuite (T51b).
+     que les anciennes listes ressources.js : thèmes, groupes, ressources. Les rubriques, l'accueil
+     et l'aperçu de l'admin s'en servent (T51, T51b).
      donnees : { vitrine, ressources: [fiches vues de l'extérieur], programmes: [], valeurs: {} },
      la forme de donnees/bibliotheque.json (referentiels.programmes et referentiels.valeurs). */
+  /* Les étiquettes montrées sous une ressource : celles des anciennes listes, tirées de la fiche,
+     avec leur libellé d'alors (décision du 17/11 : même aspect qu'avant la bascule). Les autres
+     usages (en autonomie, éditeur de code…) restent dans la fiche et dans les filtres de la bibliothèque. */
+  var ETIQUETTES = [
+    ['usages', 'en-ligne', 'En ligne'], ['usages', 'a-imprimer', 'À imprimer'], ['usages', 'debranche', 'Débranché'],
+    ['usages', 'compte-ent', 'Connexion ENT'], ['types', 'jeu', 'Jeu'], ['langages', 'python', 'Python'], ['langages', 'sql', 'SQL'],
+    ['usages', 'pour-aller-plus-loin', 'Pour aller plus loin'], ['usages', 'a-adapter', 'À adapter']
+  ];
+
   function rubriquesDeVitrine(donnees) {
     var fiches = {};
     liste(donnees.ressources).forEach(function (f) { if (f && f.id) fiches[f.id] = f; });
@@ -291,10 +301,6 @@
     function libelle(listeNom, id) {
       var e = liste(valeurs[listeNom]).filter(function (x) { return x.id === id; })[0];
       return e ? e.libelle : id;
-    }
-    function famille(id) {
-      var e = liste(valeurs.usages).filter(function (x) { return x.id === id; })[0];
-      return e ? e.famille : null;
     }
     function adresse(d) {
       return d.url || (d.fichier ? RACINE + d.fichier : '');
@@ -312,10 +318,12 @@
         while (annexes[nom]) nom = base + ' (' + (k++) + ')';
         annexes[nom] = adresse(d);
       });
-      var tags = liste(f.usages).filter(function (u) { return famille(u) === 'modalite'; }).map(function (u) { return libelle('usages', u); })
-        .concat(liste(f.langages).map(function (l) { return libelle('langages', l); }));
+      var tags = [];
+      ETIQUETTES.forEach(function (e) {
+        if (liste(f[e[0]]).indexOf(e[1]) >= 0) tags.push(e[2]);
+      });
       return {
-        id: f.id, titre: f.titre, lien: principal ? adresse(principal) : '', texte: f.resume || f.accroche || '',
+        id: f.id, titre: f.titre, lien: principal ? adresse(principal) : '', texte: f.accroche || f.resume || '',
         tags: tags, annexes: annexes, theme: t, groupe: groupe, rubrique: rub
       };
     }
@@ -881,7 +889,9 @@
     /* Le titre nomme ce qui est en cause : les réglages (reglages.js), une liste, ou les deux */
     var reglagesEnCause = liste_.some(function (e) { return e.fichier === 'reglages.js'; });
     var listeEnCause = liste_.some(function (e) { return e.fichier !== 'reglages.js'; });
-    var titre = !reglagesEnCause ? 'Une liste de ressources contient une erreur'
+    var bibliothequeEnCause = liste_.some(function (e) { return e.fichier === BIBLIOTHEQUE; });
+    var titre = bibliothequeEnCause && !reglagesEnCause ? 'Les ressources n\'ont pas pu s\'afficher'
+      : !reglagesEnCause ? 'Une liste de ressources contient une erreur'
       : listeEnCause ? 'Les réglages du site et une liste de ressources contiennent des erreurs'
       : 'Les réglages du site contiennent une erreur';
     return el('div', { class: 'alerte', role: 'alert' }, [
@@ -1006,7 +1016,7 @@
     ]);
     if (intro.childNodes.length) page.appendChild(intro);
 
-    var alerte = blocAlertes([rub.id + '/ressources.js', 'reglages.js']);
+    var alerte = blocAlertes([rub.id + '/ressources.js', 'reglages.js', BIBLIOTHEQUE]);
     if (alerte) page.appendChild(alerte);
     if (apercu()) page.insertBefore(bandeauApercu(), page.firstChild);
 
