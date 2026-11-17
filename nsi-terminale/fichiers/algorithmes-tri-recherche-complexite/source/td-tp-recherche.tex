@@ -1,0 +1,166 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[top=1cm, left=1cm, right=1cm]{geometry}
+\input{environnements/div_packages}
+\input{environnements/env_boites}
+\input{environnements/env_codes}
+\input{environnements/env_couleurs}
+\input{environnements/env_exercices}
+\input{environnements/env_touches}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\title{Les algorithmes de recherche}
+
+\date{}
+
+\lstset{extendedchars=true,literate={é}{{\'e}}1}
+\usepackage{fancyhdr}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}\renewcommand{\headrulewidth}{0pt}}
+\pagestyle{plain}
+\RequirePackage{geometry}\geometry{a4paper,top=1.5cm,bottom=2.8cm,left=2cm,right=2cm,footskip=1.2cm}
+\AtBeginDocument{\hypersetup{pdfauthor={Babash - NSI Tani Malandi et Johanne Bakalara},pdftitle={Complexité, tris et recherche : cours et TD-TP},pdfcreator={LuaLaTeX}}}
+\begin{document}
+
+\chapter*{ Mission : Optimisation Haute Fréquence}
+
+\begin{Comprendre}
+\textbf{CONTEXTE :}  Les serveurs de l'agence saturent ! Votre mission : déterminer quels algorithmes sont capables de supporter des flux massifs de données. Un \textbf{algorithme de recherche} sert à localiser une information dans une base de données.
+    \\ \textbf{Protocole :} Vous allez analyser le code, mesurer le temps \textbf{ET} compter le nombre d'opérations élémentaires. 
+\end{Comprendre}
+
+\begin{lstlisting}[language=Python]
+def recherche_lineaire(tab, valeur):
+    for i in range(len(tab)):
+        if tab[i] == valeur :
+            return i # Cible trouvee !
+    return None # Cible NON trouvee !
+\end{lstlisting}
+
+\begin{Exercise}[title={Check-up technique (Rappels de base) }]
+    \Question Soit \texttt{serveurs = [102, 405, 201, 80, 199]}. Donnez le résultat de :
+    \begin{itemize}
+        \item \texttt{serveurs[1]} : \dotfill \quad \texttt{serveurs[-1]} : \dotfill \quad \texttt{serveurs[1:3]} : \dotfill
+    \end{itemize}
+
+    \Question On souhaite doubler la valeur du troisième élément de la liste \texttt{tab}. Quelle instruction écrire ? \dotfill
+
+    \Question \textbf{L'accès direct :} Quel est l'impact sur le processeur d'un accès type \texttt{serveurs[0]} ? \textit{(Voir le cours)} \dotfill
+    
+    \Question \textbf{La recherche linéaire :} On parcourt la liste du début à la fin. Si la \texttt{valeur} recherchée se trouve à la dernière position d'une liste de taille $n$, combien d'étapes faut-il ? \dotfill
+\end{Exercise}
+
+\begin{Exercise}[title={Analyse du Code }]
+    \Question Observez attentivement le code ci-dessous :
+    \begin{itemize}
+        \item \textbf{Ligne 7 (\texttt{milieu = ...}) :} Pourquoi utilise-t-on une division entière (\texttt{//}) ? \dotfill
+        \item \textbf{Lignes 10 à 12 :} Pourquoi peut-on ignorer toute la partie droite si \texttt{tab[milieu] > valeur} ? \\
+        .\dotfill\\
+        .\dotfill
+    \end{itemize}
+\end{Exercise}
+
+
+\begin{Comprendre}
+    \textbf{Principe :} Si le tableau est \textbf{trié}, on regarde au milieu. Si la cible est plus grande, on ignore la moitié gauche. On divise ainsi la zone de recherche par deux à chaque étape.
+    
+\begin{lstlisting}[language=Python, numbers=left]
+def recherche_dichotomique(tab, valeur):
+    # Attention tab doit etre trié
+    gauche = 0
+    droite = len(tab) - 1
+    while gauche <= droite:
+        # On cible le centre de la zone de recherche
+        milieu = (gauche + droite) // 2  
+        if tab[milieu] == valeur: 
+            return milieu # Cible trouvee !
+        elif tab[milieu] > valeur:
+            # Cible plus petite : on ignore la partie droite
+            droite = milieu - 1
+        else: 
+            # Cible plus grande : on ignore la partie gauche
+            gauche = milieu + 1
+    return None # Cible NON trouvee !
+\end{lstlisting}
+\begin{center}
+    \input{figures/fig-dichotomie}
+\end{center}
+\end{Comprendre}
+
+\begin{Exercise}[title={Simulation de terrain}]
+    On cherche la cible \textbf{17} dans : \texttt{L = [2, 5, 8, 12, 17, 21, 25]}.
+
+    \Question \textbf{Méthode Linéaire :} Combien d'étapes pour trouver 17 ? \dotfill
+    
+    \begin{center}
+    \begin{tabular}{|c|c|c|c|c|c|}
+    \hline
+    Étape & \texttt{gauche} & \texttt{droite} & \texttt{milieu} & \texttt{L[milieu]} & Test \\ \hline
+    1 & 0 & 6 & 3 & 12 & $12 < 17$ (trop petit) \\ \hline
+    2 & & & & & \\ \hline
+    3 & & & & & \\ \hline
+    \end{tabular}
+    \end{center}
+
+    \Question \textbf{Nombre de comparaisons :} Soit deux appels :
+    \begin{itemize}
+        \item \textit{recherche\_dichotomique([1,3,5,6,8,11,13,14,14,17,19,21,23], 19)}
+        \item \textit{recherche\_lineaire([1,3,5,6,8,11,13,14,14,17,19,21,23], 19)}
+    \end{itemize}
+    Donner toutes les comparaisons faites dans chacun des cas.
+    
+    \Question \textbf{Analyse des cas :}
+    \begin{itemize}
+        \item \textbf{Meilleur Cas :}
+        \begin{itemize}
+            \item Pour la méthode linéaire, où doit être la cible pour finir en 1 étape ? \dotfill
+            \item Pour la dichotomie, où doit être la cible pour finir en 1 étape ? \dotfill
+        \end{itemize}
+        \item \textbf{Pire Cas :}
+        \begin{itemize}
+            \item Quel est le pire des cas pour les deux algorithmes ? \dotfill
+            \item Combien d'étapes max pour une liste de taille $100$ en linéaire ? \dotfill
+            \item Combien d'étapes max pour une liste de taille $100$ en dichotomique ? \dotfill
+            \item Combien d'étapes max pour une liste de taille $n$ en linéaire ? \dotfill
+            \item Combien d'étapes max pour une liste de taille $n$ en dichotomique ? \dotfill
+        \end{itemize}
+    \end{itemize}
+    Conclure sur la classe de complexité des deux algorithmes.
+\end{Exercise}
+
+\begin{Exercise}[title={Benchmark : De 10 à 100 Millions}]
+    \Question \textbf{Expérimentation :} Lancez \texttt{recherche\_contest.py}. Notez les résultats (Pire cas) :
+    \begin{center}
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+    Taille ($n$) & \multicolumn{2}{c|}{Recherche Linéaire } & \multicolumn{2}{c|}{Recherche Dichotomique } \\ \hline
+    & Temps (s) & Opérations & Temps (s) & Opérations \\ \hline
+    10 & & & & \\ \hline
+    1 000 & & & & \\ \hline
+    1 000 000 & & & & \\ \hline
+    100 000 000 & & & & \\ \hline
+    \end{tabular}
+    \end{center}
+    
+    \Question \textbf{Observation :} Pour $n=10^8$, la dichotomie a nécessité environ \dotfill opérations.\\
+    Est-ce cohérent avec la fonction $\log_2(n)$ ? \dotfill
+\end{Exercise}
+
+\begin{Exercise}[title={ \textbf{À RETENIR :}Synthèse de l'Agent}]
+    \textit{Complétez le rapport ci-dessous en utilisant les termes : \textbf{trié}, \textbf{linéaire} $O(n)$, \textbf{logarithmique} $O(log(n))$, \textbf{milieu}, \textbf{1}, \textbf{$n$}, \textbf{dichotomique}.}
+    
+    L'efficacité d'une recherche dépend de l'algorithme choisi et de l'organisation des données :\\
+    
+    1. La \textbf{recherche linéaire} consiste à parcourir le tableau un par un. Dans le \textbf{meilleur des cas}, la cible est en première position et nécessite \_\_\_\_\_\_ opération.\\
+    Dans le \textbf{pire des cas}, elle nécessite \_\_\_\_\_\_ opérations.\\
+    Sa complexité est dite \textbf{\rule[-2pt]{2.5cm}{0.4pt}}.
+    
+    2. La \textbf{recherche \rule[-2pt]{2.5cm}{0.4pt}} est beaucoup plus rapide car elle divise la zone de recherche par deux à chaque étape en comparant la cible avec la valeur du \rule[-2pt]{2.5cm}{0.4pt}.
+    
+    3. Cependant, cette méthode ne fonctionne \textbf{que} si le tableau est préalablement \textbf{\rule[-2pt]{2.5cm}{0.4pt}}.\\
+    Sa complexité est alors \textbf{\rule[-2pt]{2.5cm}{0.4pt}} : même pour 100 millions de données, moins de 30 opérations suffisent.
+\end{Exercise}
+\end{document}

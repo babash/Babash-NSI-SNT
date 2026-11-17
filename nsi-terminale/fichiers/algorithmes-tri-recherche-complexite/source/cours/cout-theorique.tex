@@ -1,0 +1,92 @@
+\section*{La notion de coût théorique $T(n)$}
+
+ \textbf{Pourquoi s'embêter avec une fonction mathématique ?}
+Comme nous l'avons vu, compter des opérations sur un code fixe est simple. Mais dans la "vraie vie", un algorithme traite des données de taille variable. 
+
+Le coût théorique $T(n)$ permet de répondre à une question cruciale : \textit{"Si je multiplie par 100 la quantité de données, mon ordinateur mettra-t-il 100 fois plus de temps ou 10 000 fois plus de temps ?"}.
+
+\begin{Definition}[Coût théorique $T(n)$]
+C'est une fonction qui associe à la taille $n$ d'une donnée d'entrée (nombre d'éléments d'une liste, pixels, etc.) le nombre maximum d'opérations élémentaires effectuées.
+\end{Definition}
+
+\begin{itemize}
+    \item \textbf{ Universalité :} $T(n)$ ne dépend pas de la puissance de votre machine.
+    \item \textbf{ Prédiction :} On anticipe le comportement pour des valeurs de $n$ gigantesques.
+    \item \textbf{ Comparaison :} Entre un algorithme en $3n$ et un en $n^2$, on identifie tout de suite le plus efficace.
+\end{itemize}
+
+\subsection*{Exemples fondamentaux : Comprendre le multiplicateur}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=La boucle simple ]
+\begin{lstlisting}[style=pythonstyle, language=python]
+somme = 0               # 1 op
+for i in range(n):      # On repete n fois :
+    somme = somme + i   #   (1 add + 1 aff) = 2 op
+\end{lstlisting}
+\textbf{Analyse :} $T(n) = 1 + n \times 2 = \mathbf{2n + 1}$. Le coût est \textbf{linéaire}.
+\end{tcolorbox}
+
+\begin{tcolorbox}[colback=orange!5!white,colframe=orange!75!black,title=L'appel de fonction ]
+Chaque tour de boucle "pèse" ici le poids de la fonction appelée. 
+\begin{lstlisting}[style=pythonstyle, language=python]
+def carre(x):
+    return x * x        # 1 op (mult)
+
+res = 0                 # 1 op
+for i in range(n):      # n fois :
+    res += carre(i)     # 1 appel + 1 mult + 1 add + 1 aff = 4 op
+\end{lstlisting}
+\textbf{Analyse :} $T(n) = \mathbf{4n + 1}$. Le coût est \textbf{linéaire}.
+\end{tcolorbox}
+
+\newpage
+
+\section*{S'entraîner à calculer $T(n)$ : 3 cas d'école }
+
+L'objectif est de s'habituer à extraire l'expression mathématique de $T(n)$.
+
+\vspace{0.3cm}
+
+\begin{itemize}
+    \item[\textbf{1.}] \textbf{La boucle simple (Coût linéaire)}
+\begin{lstlisting}[style=pythonstyle, language=python]
+def travail(x):
+    return (x + 1) * 2  # 3 op (add + mult + ret)
+
+def algorithme_1(n):
+    total = 0           # 1 op 
+    for i in range(n):  # n fois :
+        total += travail(i) # Appel(1) + travail(3) + add(1) + aff(1) = 6 op 
+    return total        # 1 op
+\end{lstlisting}
+    \textbf{Résultat :} $T(n) = 1 + n \times 6 + 1 = \mathbf{6n + 2}$.
+
+    \vspace{0.5cm}
+
+    \item[\textbf{2.}] \textbf{La double boucle (Coût quadratique)}
+\begin{lstlisting}[style=pythonstyle, language=python]
+compteur = 0                # 1 op
+for i in range(n):          # n fois...
+    for j in range(n):      # ... repete n fois encore !
+        compteur += 1       # 2 op
+\end{lstlisting}
+    \textbf{Logique :} Pour chaque \texttt{i}, on fait \texttt{n} fois l'opération interne. \\
+    \textbf{Résultat :} $T(n) = 1 + n \times (n \times 2) = \mathbf{2n^2 + 1}$.
+
+    \vspace{0.5cm}
+
+    \item[\textbf{3.}] \textbf{Le "Boss" : Fonction complexe dans la boucle}
+\begin{lstlisting}[style=pythonstyle, language=python]
+def sous_fonction(k): # Coute 2k + 2 (boucle k fois + return)
+    res = 0
+    for i in range(k): res += i 
+    return res
+
+def algorithme_5(n):
+    score = 0           # 1 op
+    for j in range(n):  # n fois :
+        score += sous_fonction(n) # Appel avec k = n
+\end{lstlisting}
+    \textbf{Détail :} Chaque tour coûte : $1(appel) + (2n + 2) + 2(add/aff) = 2n + 5$. \\
+    \textbf{Résultat :} $T(n) = 1 + n \times (2n + 5) = \mathbf{2n^2 + 5n + 1}$.
+\end{itemize}

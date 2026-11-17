@@ -1,0 +1,77 @@
+ \textbf{L'enjeu :} Face à un problème informatique, il existe souvent plusieurs solutions. Comment savoir laquelle est la plus efficace ? On pourrait simplement chronométrer le temps d'exécution, mais il y a un problème majeur...
+
+\section*{Pourquoi ne pas simplement utiliser un chronomètre ? }
+
+Le temps d'exécution réel dépend énormément de la machine utilisée. Un même programme sera bien plus rapide sur un ordinateur de compétition que sur un vieux PC de bureau.
+
+\begin{center}
+\begin{tabular}{llc}
+     \hline
+     \textbf{Machine} & \textbf{Fréquence} & \textbf{Capacité de calcul (estimée)} \\ \hline
+     Vieux PC (année 2000) & 0,5 GHz & $500\,000\,000$ op/sec \\
+     PC de la salle NSI & 3,5 GHz & $3\,500\,000\,000$ op/sec \\
+     Serveur de calcul (nombreux c\oe urs) & 3 GHz par c\oe ur & Des centaines de milliards \\ \hline
+\end{tabular}
+\end{center}
+
+Pour comparer les algorithmes de manière juste, on ne compte pas les secondes, mais le nombre d'\motcle{opérations élémentaires}. C'est la \textbf{complexité théorique}.
+
+\vspace{0.3cm}
+\hrule
+\vspace{0.3cm}
+
+\section*{Les Opérations Élémentaires : les briques de base}
+
+\begin{Definition}[Opération élémentaire]
+C'est une instruction de base dont le temps d'exécution est fixe : il ne change pas, peu importe la taille des données.
+\end{Definition}
+
+ \textbf{Le catalogue des opérations :}
+\begin{itemize}
+    \item \textbf{L'affectation :} \texttt{x = 5}.
+    \item \textbf{Les calculs :} \texttt{a + b}, \texttt{x * 2}, \texttt{i += 1}.
+    \item \textbf{Les comparaisons :} \texttt{if score > 100:} ou \texttt{while i < 10:}.
+    \item \textbf{L'accès mémoire :} Lire la valeur de \texttt{variable} ou \texttt{liste[0]}.
+\end{itemize}
+
+\newpage
+
+\subsection*{S'entraîner à compter : 5 cas d'école }
+
+\begin{lstlisting}[style=pythonstyle, language=python]
+# 1. Le cas de base (Calcul direct)
+a = 10              # 1 op (aff)
+res = (a + 3) * 5   # 1 add + 1 mult + 1 aff = 3 op
+# Total : 4 operations elementaires.
+
+# 2. Parcours d'une liste fixe
+ma_liste = [10, 20, 30]     # 1 op (aff)
+for nombre in ma_liste:     # 3 iterations :
+    print(nombre + 1)       # 1 add + 1 affichage = 2 op
+# Total : 1 + (3 * 2) = 7 operations elementaires.
+
+# 3. La boucle while (Prudence !)
+note = 15                   # 1 op (aff)
+while note < 18:            # 3 tests vrais + 1 faux = 4 op
+    note += 1               # 3 * (1 add + 1 aff) = 6 op
+# Total : 1 + 4 + 6 = 11 operations elementaires.
+
+# 4. Double boucle simple (imbriquee)
+points = 0                  # 1 op (aff)
+for i in range(2):          # Repete 2 fois :
+    for j in range(3):      #   Repete 3 fois :
+        points += 1         #     (1 add + 1 aff) = 2 op
+# Total : 1 + (2 * 3 * 2) = 13 operations elementaires.
+
+# 5. Appel de fonction dans une boucle
+def ajoute_neuf(x):
+    for i in range(3):      # 3 tours
+        x += 3              # 1 add + 1 aff = 2 op
+    return x                # 1 op
+
+total = 0                   # 1 op
+for j in range(3):          # 3 fois :
+    # Fonction (7 op) + 1 appel + 1 aff = 9 op
+    total = ajoute_neuf(total) 
+# Total : 1 + (3 * 9) = 28 operations elementaires.
+\end{lstlisting}
