@@ -139,9 +139,20 @@ try {
   for (const f of ['bibliotheque.json', 'bibliotheque-complete.json', 'bibliotheque-textes.json']) {
     fs.rmSync(path.join(copie, 'donnees', f), { force: true });
   }
+  /* Les fiches qui reçoivent une faute : jamais une fiche citée dans les « liees » d'une autre fiche, pour qu'une
+     faute ne touche qu'elle. Une fiche dont l'identifiant change casse sinon le lien de l'autre fiche, que le
+     script signale et que l'admin, qui contrôle la fiche qu'on modifie, ne voit pas (T51c). La vitrine peut les
+     citer : ses erreurs sont rangées sous donnees/vitrine.json, hors de cette comparaison des fiches.
+     Une fiche par faute, réparties sur la liste : le test ne dépend ni du nombre ni de l'ordre des fiches. */
+  const citees = new Set();
+  for (const n of noms) {
+    for (const l of JSON.parse(lire('donnees', 'ressources', n)).liees || []) if (l && l.ressource) citees.add(l.ressource);
+  }
+  const libres = noms.filter((n) => !citees.has(n.replace(/\.json$/, '')));
+  verifier(`assez de fiches citées par aucune autre pour les ${FAUTES.length} fautes (${libres.length})`, libres.length >= FAUTES.length);
   const touchees = {};
   FAUTES.forEach(([nom, faute], i) => {
-    const n = noms[i * 3 % noms.length];
+    const n = libres[Math.floor(i * libres.length / FAUTES.length)];
     const p = path.join(copie, 'donnees', 'ressources', n);
     const f = JSON.parse(fs.readFileSync(p, 'utf8'));
     faute(f);
