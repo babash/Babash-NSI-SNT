@@ -47,13 +47,13 @@ publiée après chaque envoi sur `main` ([VERIFICATION.md](VERIFICATION.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 119 fiches, dont 82 pour les 90 entrées des
+  ressources/<id>.json          une fiche par ressource : 132 fiches, dont 82 pour les 90 entrées des
                                 listes (une ressource placée dans deux rubriques n'a qu'une fiche),
                                 8 pour des fichiers récupérés des conversations de l'enseignant,
                                 19 pour des activités Capytale, 4 pour des ressources tirées d'une
                                 archive de projets de l'enseignant, 1 pour un site externe demandé
                                 par l'enseignant (l'entraînement à l'épreuve pratique d'exomorphisme.fr)
-                                et 5 pour des cours, TD et devoirs de NSI faits avec Johanne Bakalara
+                                et 18 pour des cours, TD et devoirs de NSI faits avec Johanne Bakalara
                                 (projets Overleaf, PDF et sources LaTeX)
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
