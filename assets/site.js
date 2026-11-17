@@ -173,8 +173,9 @@
   window.reglages = function (r) {
     reglagesSite = r || {};
     depotSite = lireDepot(reglagesSite.depot);
+    if (apercu()) return quandPret(afficher);
     var dossiers = liste(reglagesSite.rubriques).slice();
-    var ici = rubriqueDeLaPage();
+    var ici = pageAPart() ? null : rubriqueDeLaPage();
     if (ici && dossiers.indexOf(ici) < 0) dossiers.push(ici); // rubrique non listée : accessible par son adresse
     var restants = dossiers.length;
     if (!restants) return quandPret(afficher);
@@ -269,6 +270,125 @@
     });
   };
 
+  /* ── Les rubriques tirées de la vitrine (donnees/vitrine.json) ─── */
+  /* La vitrine (cahier des charges, § 3.4) et les fiches de la bibliothèque donnent les mêmes rubriques
+     que les anciennes listes ressources.js : thèmes, groupes, ressources. Pour l'instant, seul
+     l'aperçu de l'admin s'en sert (T51) ; les rubriques y passeront ensuite (T51b).
+     donnees : { vitrine, ressources: [fiches vues de l'extérieur], programmes: [], valeurs: {} },
+     la forme de donnees/bibliotheque.json (referentiels.programmes et referentiels.valeurs). */
+  function rubriquesDeVitrine(donnees) {
+    var fiches = {};
+    liste(donnees.ressources).forEach(function (f) { if (f && f.id) fiches[f.id] = f; });
+    var noeuds = {};
+    liste(donnees.programmes).forEach(function (p) {
+      noeuds[p.id] = p;
+      liste(p.themes).forEach(function (t) {
+        noeuds[t.id] = t;
+        liste(t.contenus).forEach(function (c) { noeuds[c.id] = c; });
+      });
+    });
+    var valeurs = donnees.valeurs || {};
+    function libelle(listeNom, id) {
+      var e = liste(valeurs[listeNom]).filter(function (x) { return x.id === id; })[0];
+      return e ? e.libelle : id;
+    }
+    function famille(id) {
+      var e = liste(valeurs.usages).filter(function (x) { return x.id === id; })[0];
+      return e ? e.famille : null;
+    }
+    function adresse(d) {
+      return d.url || (d.fichier ? RACINE + d.fichier : '');
+    }
+    function versRessource(id, t, groupe, rub) {
+      var f = fiches[id];
+      if (!f) return null; // cachée pour l'extérieur, ou fiche absente
+      var docs = liste(f.documents);
+      var principal = docs.filter(function (d) { return d.principal; })[0] || docs[0];
+      var annexes = null;
+      docs.forEach(function (d) {
+        if (d === principal || !adresse(d)) return;
+        annexes = annexes || {};
+        var nom = d.titre || libelle('roles', d.role), k = 2, base = nom;
+        while (annexes[nom]) nom = base + ' (' + (k++) + ')';
+        annexes[nom] = adresse(d);
+      });
+      var tags = liste(f.usages).filter(function (u) { return famille(u) === 'modalite'; }).map(function (u) { return libelle('usages', u); })
+        .concat(liste(f.langages).map(function (l) { return libelle('langages', l); }));
+      return {
+        id: f.id, titre: f.titre, lien: principal ? adresse(principal) : '', texte: f.resume || f.accroche || '',
+        tags: tags, annexes: annexes, theme: t, groupe: groupe, rubrique: rub
+      };
+    }
+    var faites = {};
+    var ordre = [];
+    liste((donnees.vitrine || {}).rubriques).forEach(function (rv, rang) {
+      var prog = rv.programme ? noeuds[rv.programme] : null;
+      var ref = rv.reference_officielle ? noeuds[rv.reference_officielle] : null;
+      var texte = prog || ref;
+      var rub = {
+        id: rv.id, base: RACINE + rv.id + '/', nom: rv.titre, court: rv.court || rv.titre, niveau: rv.niveau || '',
+        presentation: rv.presentation || '',
+        programme: texte && texte.texte_officiel ? { texte: texte.texte_officiel.titre, lien: texte.texte_officiel.lien } : null,
+        couleur: couleur(rv.couleur, rang), themes: []
+      };
+      var nommes = 0;
+      liste(rv.sections).forEach(function (s) {
+        var n = s.programme ? noeuds[s.programme] : null;
+        var nom = n ? n.intitule : s.titre;
+        var court = n ? (n.court || n.intitule) : (s.court || s.titre);
+        var id = s.id || slug(court), base = id, k = 2;
+        while (rub.themes.some(function (x) { return x.id === id; })) id = base + '-' + (k++);
+        var t = {
+          nom: nom, court: court, id: id, couleur: couleur(s.couleur, nommes++),
+          programme: n ? liste(n.contenus).map(function (c) { return c.intitule; }) : [],
+          blocs: [{ groupe: null, ressources: [] }]
+        };
+        function remplir(bloc, ids) {
+          liste(ids).forEach(function (rid) {
+            var r = versRessource(rid, t, bloc.groupe, rub);
+            if (r) bloc.ressources.push(r);
+          });
+        }
+        remplir(t.blocs[0], s.ressources);
+        liste(s.sous_sections).forEach(function (ss) {
+          var c = ss.programme ? noeuds[ss.programme] : null;
+          var bloc = { groupe: c ? c.intitule : ss.titre, ressources: [] };
+          t.blocs.push(bloc);
+          remplir(bloc, ss.ressources);
+        });
+        rub.themes.push(t);
+      });
+      faites[rv.id] = rub;
+      ordre.push(rv.id);
+    });
+    return { rubriques: faites, ordre: ordre };
+  }
+
+  /* L'aperçu de l'admin : …/snt/?apercu ou …/?apercu, avec la vitrine et les fiches que l'admin
+     a rangées dans sessionStorage (clé « apercu-admin »). Rien n'est enregistré. */
+  var donneesApercu;
+  function apercu() {
+    if (donneesApercu !== undefined) return donneesApercu;
+    donneesApercu = null;
+    try {
+      if (!/[?&]apercu(=|&|$)/.test(location.search)) return null;
+      var d = JSON.parse(sessionStorage.getItem('apercu-admin') || 'null');
+      if (!d || !d.vitrine) return null;
+      var r = rubriquesDeVitrine(d);
+      rubriques = r.rubriques;
+      reglagesSite.rubriques = r.ordre;
+      donneesApercu = d;
+    } catch (e) { donneesApercu = null; }
+    return donneesApercu;
+  }
+
+  function bandeauApercu() {
+    return el('div', { class: 'alerte apercu', role: 'note' }, [
+      el('p', null, el('strong', null, 'Aperçu de l\'admin')),
+      el('p', { class: 'petit' }, 'Cette page montre les changements en attente : ils ne sont pas encore enregistrés, et le site en ligne ne les montre pas.')
+    ]);
+  }
+
   /* ── Données ──────────────────────────────────────────────────── */
 
   function ordreRubriques() {
@@ -353,8 +473,15 @@
     return rub.base + (SUR_DISQUE ? 'index.html' : '') + (ancre ? '#' + ancre : '');
   }
 
-  function urlGithub(action, chemin) {
-    return urlDepot() + '/' + action + '/' + (reglagesSite.branche || 'main') + '/' + chemin;
+  /* Une page qui n'est pas une rubrique (la bibliothèque) : <div id="site" data-page="…"> */
+  function pageAPart() {
+    var s = document.getElementById('site');
+    return s ? s.getAttribute('data-page') : null;
+  }
+
+  /* La bibliothèque, avec une recherche ou des filtres (« ?q=boucle ») */
+  function urlBibliotheque(requete) {
+    return RACINE + 'bibliotheque/' + (SUR_DISQUE ? 'index.html' : '') + (requete || '');
   }
 
   /* L'accueil du dépôt : celui de reglages.js, sinon celui du site */
@@ -652,9 +779,21 @@
           href: urlRubrique(r),
           'aria-current': r === active ? 'page' : null
         }, r.court));
-      }))),
+      }).concat(
+        /* Toute la bibliothèque, avec ses filtres (cahier des charges, § 2) */
+        el('li', { style: '--hl:' + COULEURS.cyan }, el('a', {
+          href: urlBibliotheque(),
+          'aria-current': active === 'bibliotheque' ? 'page' : null
+        }, 'Bibliothèque'))
+      ))),
       choixMode()
     ]));
+  }
+
+  /* Le pied de page commun : auteur, licences, code source sur GitHub, mention de l'IA.
+     « Ajouter une ressource » n'y est plus (N13) : ce mode d'emploi ira dans l'admin (T51). */
+  function piedDePage() {
+    return el('footer', { class: 'pied' }, mentions());
   }
 
   /* ── Sommaire des thèmes (colonne de gauche sur grand écran) ──── */
@@ -799,6 +938,7 @@
 
     var alerte = blocAlertes(null);
     if (alerte) page.appendChild(alerte);
+    if (apercu()) page.insertBefore(bandeauApercu(), page.firstChild);
 
     var vue = el('main', { id: 'contenu' });
     page.appendChild(vue);
@@ -821,15 +961,13 @@
       } else {
         vue.appendChild(el('p', { class: 'vide' }, 'Aucune ressource ne correspond à « ' + q + ' ».'));
       }
+      // La bibliothèque cherche plus loin : synonymes, notions, fautes de frappe, texte des documents, filtres
+      vue.appendChild(el('p', { class: 'vers-bibliotheque' }, el('a', { href: urlBibliotheque('?q=' + encodeURIComponent(q)) },
+        'Chercher « ' + q + ' » dans toute la bibliothèque, avec ses filtres')));
     }
     maj(recherche.input.value.trim());
 
-    page.appendChild(el('footer', { class: 'pied' }, [
-      el('h2', null, 'Ajouter une ressource'),
-      el('p', null, 'Chaque rubrique a sa liste dans un petit fichier texte de son dossier. On y ajoute un lien vers une ressource en ligne, ou vers un fichier (PDF, fiche, diaporama) déposé dans le dossier de la rubrique. Le lien « Modifier la liste » se trouve en bas de chaque rubrique.'),
-      depotSite ? el('p', { class: 'actions' }, el('a', { href: urlDepot() + '#readme' }, 'Mode d\'emploi complet')) : null,
-      mentions()
-    ]));
+    page.appendChild(piedDePage());
   }
 
   /* ── Page d'une rubrique ──────────────────────────────────────── */
@@ -870,6 +1008,7 @@
 
     var alerte = blocAlertes([rub.id + '/ressources.js', 'reglages.js']);
     if (alerte) page.appendChild(alerte);
+    if (apercu()) page.insertBefore(bandeauApercu(), page.firstChild);
 
     var corps = el('div', { class: 'rub-corps' });
     var cote = el('aside', { class: 'cote' });
@@ -908,27 +1047,46 @@
     rendre(recherche ? recherche.input.value.trim() : '');
     suivreLecture(zone, details);
 
-    page.appendChild(el('footer', { class: 'pied' }, [
-      el('h2', null, 'Ajouter une ressource'),
-      el('p', null, [
-        'La liste de cette page est dans ', el('code', null, rub.id + '/ressources.js'),
-        '. Pour un PDF ou un autre fichier, le déposer d\'abord dans le dossier ',
-        el('code', null, rub.id + '/fichiers'), ', puis l\'ajouter à la liste avec ',
-        el('code', null, 'lien: "fichiers/nom-du-fichier.pdf"'), '.'
-      ]),
-      depotSite ? el('p', { class: 'actions' }, [
-        el('a', { href: urlGithub('edit', rub.id + '/ressources.js') }, 'Modifier la liste'),
-        el('a', { href: urlGithub('upload', rub.id + '/fichiers') }, 'Déposer un fichier'),
-        el('a', { href: urlDepot() + '#readme' }, 'Mode d\'emploi')
-      ]) : null,
-      mentions()
-    ]));
+    page.appendChild(piedDePage());
   }
+
+  /* Ce que site.js prête aux pages à part (la bibliothèque, bientôt l'admin) */
+  var OUTILS = {
+    el: el, vider: vider, liste: liste, pluriel: pluriel, echapper: echapper, mettreEnForme: mettreEnForme,
+    sansAccents: sansAccents, slug: slug, couleur: couleur, analyser: analyser, lienVers: lienVers,
+    barreHaut: barreHaut, scene: scene, piedDePage: piedDePage, blocAlertes: blocAlertes,
+    urlAccueil: urlAccueil, urlRubrique: urlRubrique, urlBibliotheque: urlBibliotheque, urlDepot: urlDepot,
+    ordreRubriques: ordreRubriques, titreSite: titreSite, reglages: function () { return reglagesSite; },
+    signaler: signaler, racine: RACINE, surDisque: SUR_DISQUE,
+    rubriquesDeVitrine: rubriquesDeVitrine, blocRessource: blocRessource, champRecherche: champRecherche
+  };
+
+  /* Les pages à part : <div id="site" data-page="…"> et la fonction qui les dessine */
+  var PAGES_A_PART = {
+    bibliotheque: { fonction: 'pageBibliotheque', nom: 'La bibliothèque', script: 'assets/bibliotheque.js' },
+    admin: { fonction: 'pageAdmin', nom: 'L\'espace administrateur', script: 'assets/admin.js' }
+  };
 
   function afficher() {
     var racine = document.getElementById('site');
     if (!racine) return;
     vider(racine);
+    var aPart = PAGES_A_PART[pageAPart()];
+    if (aPart) {
+      if (typeof window[aPart.fonction] === 'function') window[aPart.fonction](racine, OUTILS);
+      else {
+        racine.appendChild(barreHaut(pageAPart()));
+        var page = el('div', { class: 'page' });
+        page.appendChild(el('div', { class: 'alerte', role: 'alert' }, [
+          el('p', null, el('strong', null, aPart.nom + ' n\'a pas pu s\'afficher')),
+          el('p', { class: 'petit' }, 'Le programme de la page (' + aPart.script + ') ne s\'est pas chargé. Recharger la page ; '
+            + 'si le message reste, le signaler dans les issues du dépôt GitHub.')
+        ]));
+        page.appendChild(piedDePage());
+        racine.appendChild(page);
+      }
+      return;
+    }
     var id = rubriqueDeLaPage();
     if (id && rubriques[id]) pageRubrique(racine, rubriques[id]);
     else pageAccueil(racine);

@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Attend que GitHub Pages ait réellement mis en ligne un commit, puis le vérifie.
 
-Le site est publié par GitHub Pages (« Deploy from a branch »). Chaque mise en ligne est un
-déploiement de l'environnement « github-pages », qui porte le commit (SHA) déployé et passe
-par les états waiting, queued, in_progress, puis success (ou failure, error). Il devient
-inactive quand un déploiement plus récent le remplace.
+Le site est publié par GitHub Pages, source « GitHub Actions » depuis le 17/11/2026 : le workflow
+« Publier le site » (publier.yml) le met en ligne. Chaque mise en ligne est un déploiement de
+l'environnement « github-pages », qui porte le commit (SHA) déployé et passe par les états
+waiting, queued, in_progress, puis success (ou failure, error). Il devient inactive quand un
+déploiement plus récent le remplace. C'était déjà le cas avec l'ancienne source (« Deploy from a
+branch ») : l'attente n'a pas changé. Si « Publier le site » s'arrête avant la mise en ligne
+(données invalides), aucun déploiement n'arrive et l'attente échoue au bout du délai.
 
 1. Attendre : le script interroge ces déploiements jusqu'à ce que le commit soit en ligne,
    sans se fier au contenu des fichiers. Un envoi qui ne change ni reglages.js ni les listes

@@ -28,8 +28,10 @@ Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans l
 
 ## Ajouter une ressource en ligne
 
-1. En bas de la page de la rubrique, clique sur **Modifier la liste**.
-   Ou bien, sur GitHub : ouvre le fichier `ressources.js` de la rubrique, puis clique sur le crayon.
+1. Sur GitHub, ouvre le fichier `ressources.js` de la rubrique (par exemple `snt/ressources.js`),
+   puis clique sur le crayon. Les liens « Modifier la liste » et « Déposer un fichier » ne sont
+   plus en bas des rubriques depuis le 17 novembre 2026. Les fiches de la bibliothèque, elles, se
+   modifient dans l'[espace administrateur](ADMIN.md).
 2. Repère le bon thème (les lignes `theme("…");`) et colle ce bloc en dessous :
 
 ```js
@@ -41,15 +43,21 @@ ressource({
 });
 ```
 
-3. Clique sur **Commit changes**. Le site se met à jour en une minute environ.
+3. Clique sur **Commit changes**. Le site se met à jour en quelques minutes : le workflow
+   « Publier le site », dans l'onglet **Actions**, valide les données, construit la
+   bibliothèque, puis met le site en ligne ; s'il échoue, le site garde sa version précédente
+   (voir [la mise en ligne](VERIFICATION.md#la-mise-en-ligne)).
 
 L'ordre dans le fichier est l'ordre sur la page. Le compteur du thème, le nom du site
-affiché sous la ressource et l'ouverture dans un nouvel onglet se font tout seuls.
+affiché sous la ressource et l'ouverture dans un nouvel onglet se font tout seuls. La
+ressource apparaît dans sa rubrique ; l'onglet Bibliothèque, lui, lit les fiches du dossier
+`donnees/ressources/` ([BIBLIOTHEQUE.md](BIBLIOTHEQUE.md)).
 
 ## Ajouter un PDF (ou n'importe quel fichier)
 
-1. En bas de la page de la rubrique, clique sur **Déposer un fichier** : le fichier va
-   directement dans le dossier `fichiers` de la rubrique. Valide avec **Commit changes**.
+1. Sur GitHub, ouvre le dossier `fichiers` de la rubrique (par exemple `snt/fichiers/`), puis
+   **Add file → Upload files** : le fichier va directement dans ce dossier. Valide avec
+   **Commit changes**.
 2. Ajoute-le à la liste comme une ressource en ligne, avec le nom du fichier :
 
 ```js
@@ -163,17 +171,16 @@ l'accueil ni dans le menu : pratique pour une page réservée à une classe.
 ## Réglages généraux
 
 `reglages.js` contient le titre du site, sa phrase de présentation, le nom du dépôt GitHub
-(pour le lien « Code source sur GitHub » et les liens « Modifier »), l'ordre des rubriques et
+(pour le lien « Code source sur GitHub »), l'ordre des rubriques et
 les textes du pied de page (voir ci-dessous). Le dépôt s'écrit `"propriétaire/nom"`, par
 exemple `"babash/Babash-NSI-SNT"` ; une adresse `https://github.com/…` est aussi acceptée. Une
 valeur mal écrite affiche une erreur sur la page (voir [Si la page affiche une erreur](#si-la-page-affiche-une-erreur)). Dans
 ce cas, comme quand le réglage manque,
-les liens « Modifier la liste », « Déposer un fichier » et « Mode d'emploi » disparaissent, et
 le lien « Code source sur GitHub » mène au dépôt du site, écrit dans `assets/site.js`.
 
 ## Le pied de page : auteur, licences et IA
 
-En bas de l'accueil et de chaque rubrique, un pied de page rappelle :
+En bas de l'accueil, de chaque rubrique et de la bibliothèque, un pied de page rappelle :
 
 - qui conçoit les ressources, et la place de l'IA : « Ces ressources sont conçues par
   Babash - NSI Tani Malandi ; beaucoup le sont avec l'aide de l'IA. » ;

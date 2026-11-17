@@ -14,8 +14,9 @@ même les liens vers les dépôts (voir [la règle des liens](LISTES.md#la-règl
 ajoute ou modifie et qui a un dépôt le donne en « Code source », et chaque page touchée porte en
 pied de page le lien « Code source sur GitHub » ; si l'un de ces liens manque, il est ajouté
 dans une branche de suite, sans bloquer la publication. Après la publication,
-`bash .github/gardien/attendre_actions.sh <commit>` suit la mise en ligne et lit les résultats
-des contrôles automatiques. Il faut Python avec Playwright et Pillow, Chrome ou Chromium, et
+`bash .github/gardien/attendre_actions.sh <commit>` suit la mise en ligne (« Publier le site »,
+dont le job « Mettre en ligne » doit être vert et non sauté) et lit les résultats des contrôles
+automatiques, dont celui de la bibliothèque en ligne. Il faut Python avec Playwright et Pillow, Chrome ou Chromium, et
 l'outil `gh` de GitHub pour suivre la mise en ligne.
 
 D'autres outils du même dossier servent au cas par cas. Pour le site :
@@ -50,7 +51,8 @@ Pour les autres dépôts de l'enseignant (applications, mini-sites des TD, diapo
 Les tests de non-régression du Gardien se lancent d'un coup :
 `python3 -I .github/gardien/tests/lancer.py --ref origin/<branche>`. Ils vérifient notamment que
 la validation des données détecte toujours les fautes graves, applique les règles 19 et 20 et
-accepte le point médian dans les textes, que les scripts du contrôle en ligne décident juste,
+accepte le point médian dans les textes, que les scripts du contrôle en ligne décident juste (le contrôle complet construit d'abord la
+bibliothèque dans chaque copie, comme « Publier le site »),
 que le pied de page suit ses réglages et porte le lien « Code source sur GitHub », que l'encadré
 d'erreur nomme sa cause, et que les outils du Gardien eux-mêmes trouvent ce qu'ils doivent
 trouver. Chaque outil se lance avec `python3 -I` (ou `bash`) ; son en-tête et `--help` en

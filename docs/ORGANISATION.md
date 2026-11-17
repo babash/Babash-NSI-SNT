@@ -2,7 +2,7 @@
 
 *Les dossiers et les fichiers du site. Retour au [README](../README.md).*
 
-Le site est publié par GitHub Pages depuis la branche `main`, dossier racine : les pages et les fichiers déposés sont en ligne à la même place, sous `https://babash.github.io/Babash-NSI-SNT/` ([Activer GitHub Pages](REUTILISER.md#activer-github-pages-une-seule-fois)).
+Le site est publié par GitHub Pages à partir de la branche `main`, par le workflow « Publier le site » ([la mise en ligne](VERIFICATION.md#la-mise-en-ligne)) : les pages et les fichiers déposés sont en ligne à la même place, sous `https://babash.github.io/Babash-NSI-SNT/`, avec les fichiers de la bibliothèque, construits à la publication et jamais commités ([Activer GitHub Pages](REUTILISER.md#activer-github-pages-une-seule-fois)).
 
 ```
 README.md                   la présentation du site
@@ -22,10 +22,14 @@ nsi-premiere/   …           même organisation pour chaque rubrique
 nsi-terminale/  …
 pp/             …
 autres/         …
+bibliotheque/               l'onglet Bibliothèque (ne pas toucher)
+admin/                      l'espace administrateur (ADMIN.md ; ne pas toucher)
 assets/                     mise en page et fonctionnement (ne pas toucher)
-donnees/                    le format de la future bibliothèque (BIBLIOTHEQUE.md)
-.github/                    vérification automatique (VERIFICATION.md) et outils du Gardien (GARDIEN.md)
-scripts/                    vérification automatique, validation des données, script complet de la base
+donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
+                            ses fichiers bibliotheque*.json sont construits à la publication
+.github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
+scripts/                    vérification automatique, validation des données, construction de la
+                            bibliothèque, script complet de la base
 supabase/                   le socle commun de la base des applications (SUPABASE.md)
 ```
 
@@ -40,8 +44,8 @@ notebook à importer dans Capytale ou Basthon (`.ipynb`, sorties vidées), une p
 (`lecture.html`, qui affiche le notebook sans compte et ne l'exécute pas) et les fichiers à
 joindre (modules Python, images, données). Chaque activité garde sa licence, donnée au pied de
 sa page et dans sa fiche ; trois d'entre elles sont sous licence non commerciale (voir
-[Licence](../README.md#licence)). Les listes `ressources.js` ne les montrent pas encore :
-l'onglet « Bibliothèque » les lira.
+[Licence](../README.md#licence)). Les listes `ressources.js` ne les montrent pas encore ;
+l'onglet « Bibliothèque », si.
 
 ## Le décor
 

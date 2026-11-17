@@ -14,7 +14,7 @@ Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possèd
 (`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style et l'icône
 du site (`assets/favicon.svg`) au Designer, le README, la documentation (`CONTRIBUTING.md` et `docs/`), le
 fichier de licence du dépôt (`LICENSE`) et les outils de `.github/gardien/` au Gardien. Le dossier `donnees/` de
-la future bibliothèque est à l'Architecte (notamment le format des données et les
+la bibliothèque est à l'Architecte (notamment le format des données et les
 référentiels), sauf les fiches des ressources (`donnees/ressources/`) et la vitrine
 (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer des fiches
 d'exemple pour illustrer le format, et un Atelier ou l'Atelier des quiz y écrit la fiche en
