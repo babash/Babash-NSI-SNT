@@ -11,6 +11,7 @@
 \usepackage{array}
 \usepackage{amsmath}
 \usepackage{eurosym}
+\usepackage{needspace}
 \usepackage[most]{tcolorbox}
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows.meta}
@@ -50,7 +51,7 @@
            {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
            {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
            {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
-           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1}
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
 % Terminal (commandes Linux) : sans couleur de mots-clés
 \lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
 % Sortie d'un programme (ce qui s'affiche à l'écran)
@@ -63,12 +64,16 @@
   borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
 \newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
   fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
 \newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
 \newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
 \newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
 \newcommand{\code}[1]{\texttt{#1}}
 % Coupure de ligne possible après un tiret bas (noms de variables longs)
 \DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+% Un code court ne se coupe pas en bas de page
+\AddToHook{env/lstlisting/before}{\needspace{10\baselineskip}}
 \setlength{\parindent}{0pt}
 \setlength{\parskip}{3pt}
 \renewcommand{\arraystretch}{1.25}
@@ -353,6 +358,9 @@ if de1 == 6 or de2 == 6 or de3 == 6:
 print("Vous marquez ",score," points")
 \end{lstlisting}
 
+\begin{remarque}
+Le code utilise \code{randint} sans l'importer : pour qu'il fonctionne, il faut ajouter en première ligne \code{from random import randint}. Cela ne change rien aux questions, où les valeurs des dés sont données.
+\end{remarque}
 \begin{astuce}[À retenir : \code{if} et \code{elif}]
 Le programme a \textbf{trois blocs indépendants} : chaque \code{if} est testé. Mais dans une chaîne \code{if} / \code{elif}, \textbf{une seule} branche s'exécute : la première dont la condition est vraie ; les suivantes sont sautées.
 \end{astuce}
@@ -443,6 +451,9 @@ else:
   \item \textbf{Critère 2.} On copie ce que fait le critère 3 : quand un critère n'est pas respecté, on passe l'indicateur à faux : \code{mot\_de\_passe\_valide = False}. Un \textbf{indicateur} (en anglais \textit{flag}) est un booléen qui retient si un problème a eu lieu.
   \item \textbf{Fin.} Le mot de passe est validé si aucun critère n'a mis l'indicateur à \code{False} : \code{if mot\_de\_passe\_valide :} (ou \code{if mot\_de\_passe\_valide == True :}).
 \end{enumerate}
+\begin{remarque}
+Le critère 3 (« un chiffre ou une majuscule ») ne peut jamais échouer seul : si le mot de passe n'a pas de chiffre, le critère 2 a déjà échoué. Il serait utile si le critère 2 demandait autre chose (par exemple un caractère spécial).
+\end{remarque}
 Avec les valeurs données (longueur 8, un chiffre, pas de majuscule), le programme affiche :
 \begin{lstlisting}[style=sortie]
 Critère 1 non respecté : Le mot de passe est trop court.
