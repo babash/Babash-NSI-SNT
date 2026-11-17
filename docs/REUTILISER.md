@@ -10,20 +10,30 @@ Sur GitHub, le bouton **Fork** copie le dépôt dans ton compte. Pour une simple
 
 ## Activer GitHub Pages (une seule fois)
 
-**Settings → Pages**, puis *Build and deployment* : **Deploy from a branch**,
-**Branch : main**, dossier **/ (root)**, et **Save**.
+**Settings → Pages**, puis *Build and deployment* : **Source : GitHub Actions**. Dans une copie
+faite avec **Fork**, autorise aussi les workflows, que GitHub y désactive au départ : onglet
+**Actions**, puis le bouton qui les active.
 
-Le site est alors en ligne à l'adresse `https://<ton-compte>.github.io/<nom-du-dépôt>/`, et chaque envoi sur `main` le met à jour en une minute environ.
+Chaque envoi sur `main` lance alors le workflow « Publier le site » (`.github/workflows/publier.yml`) :
+il valide les données, construit la bibliothèque et met le site en ligne, en quelques minutes, à
+l'adresse `https://<ton-compte>.github.io/<nom-du-dépôt>/`. Pour une première mise en ligne sans
+rien modifier : onglet **Actions**, « Publier le site », **Run workflow** sur `main`. Avec la
+source « Deploy from a branch », GitHub publierait la branche telle quelle, sans les fichiers de
+la bibliothèque, qui ne sont jamais commités : l'onglet Bibliothèque afficherait une erreur (voir
+[la mise en ligne](VERIFICATION.md#la-mise-en-ligne)).
 
 ## Adapter les réglages
 
-- Dans `reglages.js`, écris le nom de **ton** dépôt dans `depot` (`"ton-compte/nom-du-dépôt"`) : les liens « Modifier la liste », « Déposer un fichier » et « Code source sur GitHub » mèneront alors à ta copie. Le titre, la présentation, l'ordre des rubriques et les textes du pied de page se règlent dans le même fichier : voir [Réglages généraux](LISTES.md#réglages-généraux) et [Le pied de page](LISTES.md#le-pied-de-page--auteur-licences-et-ia).
+- Dans `reglages.js`, écris le nom de **ton** dépôt dans `depot` (`"ton-compte/nom-du-dépôt"`) : le lien « Code source sur GitHub » mènera alors à ta copie. Le titre, la présentation, l'ordre des rubriques et les textes du pied de page se règlent dans le même fichier : voir [Réglages généraux](LISTES.md#réglages-généraux) et [Le pied de page](LISTES.md#le-pied-de-page--auteur-licences-et-ia).
 - Pour tes rubriques : [Ajouter une rubrique](LISTES.md#ajouter-une-rubrique) ; pour tes ressources : [les listes de ressources](LISTES.md).
 
 ## Tester sur ton ordinateur
 
 Télécharge le dépôt (**Code → Download ZIP**), décompresse-le et ouvre `index.html`
-dans ton navigateur. Tout fonctionne sans connexion, sauf les polices et les liens externes.
+dans ton navigateur. Tout fonctionne sans connexion, sauf les polices, les liens externes et
+l'onglet Bibliothèque. Celui-ci a besoin de ses fichiers, construits à la publication, et d'un
+petit serveur : à la racine du dossier, lance `python3 scripts/construire_bibliotheque.py`, puis
+`python3 -m http.server`, et ouvre `http://localhost:8000/bibliotheque/`.
 
 ## Les applications qui utilisent une base
 

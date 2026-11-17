@@ -1,10 +1,48 @@
 # Les données de la bibliothèque (dossier `donnees/`)
 
-*Le format des fiches de la bibliothèque des ressources, et leur validation. Retour au [README](../README.md).*
+*L'onglet Bibliothèque, le format des fiches des ressources, leur validation et leur construction à chaque publication. Retour au [README](../README.md).*
 
-Le site va réunir toutes les ressources dans une bibliothèque unique. Son format a été validé
-par l'enseignant le 7 novembre 2026, mais **le site ne le lit pas encore** : les pages
-continuent d'utiliser les listes `ressources.js` ([LISTES.md](LISTES.md)).
+Le site réunit toutes les ressources dans une bibliothèque unique : l'**onglet Bibliothèque**
+(`bibliotheque/`), depuis le 17 novembre 2026. Son format a été validé par l'enseignant le
+7 novembre 2026. Les pages des rubriques, elles, continuent d'utiliser les listes `ressources.js`
+([LISTES.md](LISTES.md)), jusqu'à leur conversion.
+
+## L'onglet Bibliothèque
+
+La page `bibliotheque/` montre les ressources qui ont au moins un document visible de
+l'extérieur (aujourd'hui toutes, puisque rien n'est caché), avec ces documents seulement :
+
+- une **recherche** par mots-clés et par notions : elle comprend les synonymes du thésaurus,
+  tolère les fautes de frappe et fouille aussi le texte des documents hébergés sur le site
+  (chargé à la première recherche) ;
+- des **filtres** sur tous les classements : enseignement, niveau, programme officiel, notions
+  travaillées, type, modalités, prérequis, durée, documents, formats, langages, données d'élèves,
+  origine, autrices et auteurs, compétences Pix, statut de la fiche ;
+- un tri, deux vues (liste ou cartes) et la **fiche complète** de chaque ressource
+  (`?r=identifiant`), avec ses documents et sa place dans les rubriques ;
+- une adresse qui garde la recherche, les filtres, le tri et la vue : elle se partage telle quelle.
+
+Elle ne lit pas les fiches une à une : `scripts/construire_bibliotheque.py` les rassemble en
+trois fichiers, à chaque publication, dans le workflow « Publier le site » (voir
+[la mise en ligne](VERIFICATION.md#la-mise-en-ligne)) :
+
+- `donnees/bibliotheque.json`, la vue de l'extérieur, avec les référentiels et la vitrine, que la
+  page lit ;
+- `donnees/bibliotheque-complete.json`, tout, avec ce que voit chaque public, pour l'espace
+  d'administration à venir ;
+- `donnees/bibliotheque-textes.json`, le texte des documents hébergés (pages HTML, textes, PDF),
+  pour la recherche dans le contenu.
+
+Ces fichiers ne sont **jamais commités** (`.gitignore` les écarte) : les fiches restent la seule
+source, et une fiche modifiée suffit à mettre la bibliothèque à jour à la publication suivante.
+La construction commence par la validation complète : une seule erreur l'arrête, et rien n'est
+publié. Pour essayer la bibliothèque sur ton ordinateur, à la racine du dépôt :
+`python3 scripts/construire_bibliotheque.py`, puis `python3 -m http.server`, et
+`http://localhost:8000/bibliotheque/`. Ses tests : `python3 -I -B scripts/tests/test_bibliotheque.py`
+et `node scripts/tests/test_recherche.js`. Le contrôle du site en ligne vérifie la bibliothèque
+publiée après chaque envoi sur `main` ([VERIFICATION.md](VERIFICATION.md)).
+
+## Les fichiers
 
 ```
 donnees/
@@ -23,9 +61,15 @@ donnees/
                                 les compétences Pix
   schema/                       la description exacte du format (JSON Schema)
   correspondance-etiquettes.md  comment les listes actuelles seront converties
+  bibliotheque*.json            construits à chaque publication, jamais commités (ci-dessus)
 scripts/valider_donnees.py      la validation des données
 scripts/tests/test_notions.py   ses tests pour le thésaurus, les notions des fiches et la visibilité
+scripts/construire_bibliotheque.py  la construction des fichiers de l'onglet Bibliothèque
+bibliotheque/                   la page de l'onglet ; son programme est assets/bibliotheque.js,
+                                et sa recherche assets/recherche.js
 ```
+
+## Les fiches
 
 Une fiche décrit une ressource et ses documents (activité, version PDF, corrigé, code
 source…). Chaque document a deux réglages de visibilité, pour l'extérieur et pour les élèves.
@@ -53,8 +97,8 @@ Science Framework*, l'*Informatics Reference Framework for School* et CS2023, et
 d'entre elles, 57 difficultés connues des élèves, avec leurs sources : des études, et des
 relevés d'enseignant·e·s, dont le constat de l'enseignant dans ses classes (la trace
 d'exécution, la modélisation d'un problème et la compréhension globale d'un programme). Un
-historique dit ce que chaque version a ajouté ou modifié. Il servira à la recherche de l'onglet
-Bibliothèque, à venir. Proposé par l'Architecte, publié le 12 novembre 2026 et complété le
+historique dit ce que chaque version a ajouté ou modifié. Il sert à la recherche et aux filtres
+de l'onglet Bibliothèque. Proposé par l'Architecte, publié le 12 novembre 2026 et complété le
 même jour, il a été validé le 13 novembre 2026 par l'enseignant, qui peut toujours revenir sur
 une notion. Un identifiant de notion publié ne disparaît jamais : une notion abandonnée
 reste, marquée obsolète. Les mots-clés libres (`mots_cles`) restent.
@@ -91,11 +135,12 @@ l'éditeur de neuf notebooks Capytale de l'enseignant (l'éditeur de Capytale) r
 
 Les fiches écrites le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira. Le
 Système d'exploitation humain, jamais essayé en classe et pas fini, a le statut « brouillon ».
-Comme la vitrine, elles ne s'affichent pas encore : l'onglet « Bibliothèque » les lira. Les huit
-ressources récupérées des conversations (quatre fiches de réseaux de terminale, les commandes
-Linux de première et leur corrigé, la fiche des erreurs Python, le diaporama sur l'IA en SNT, la
-grille du Grand oral) sont déjà en ligne dans les dossiers `fichiers/` des rubriques, mais les
-listes `ressources.js` ne les montrent pas encore.
+L'onglet « Bibliothèque » les affiche toutes, avec leur statut ; la vitrine, elle, ne change pas
+encore les pages des rubriques. Les huit ressources récupérées des conversations (quatre fiches de
+réseaux de terminale, les commandes Linux de première et leur corrigé, la fiche des erreurs
+Python, le diaporama sur l'IA en SNT, la grille du Grand oral) sont en ligne dans les dossiers
+`fichiers/` des rubriques et dans la bibliothèque, mais les listes `ressources.js` ne les montrent
+pas encore.
 
 Il en va de même pour les 21 activités Capytale ajoutées le 16 novembre 2026, à partir des
 exports de l'enseignant : 19 fiches nouvelles et deux fiches complétées (le sapin des fonctions
