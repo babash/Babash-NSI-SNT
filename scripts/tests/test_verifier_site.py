@@ -133,24 +133,45 @@ def unitaires(racine, travail):
                  [] if v.adresse(base, "a b/é.pdf") == base + "/a%20b/%C3%A9.pdf" else [v.adresse(base, "a b/é.pdf")])
 
 
-def copie(racine, travail, nom, fiches, fichiers):
-    """Une copie du dépôt, avec la seule rubrique pp, les fiches et les fichiers donnés."""
+def copie(racine, travail, nom, fiches, fichiers, absents=()):
+    """Une copie du dépôt réduite à la rubrique pp de la vitrine (ses fiches gardées), plus des fiches fabriquées
+    qui citent les fichiers donnés ; la bibliothèque y est construite (le site la lit depuis T51b). Les fiches
+    de « absents » citent un fichier qui manque : elles sont ajoutées après la construction, qui les refuserait."""
     d = os.path.join(travail, nom)
     shutil.rmtree(d, ignore_errors=True)
-    shutil.copytree(racine, d, ignore=shutil.ignore_patterns(".git", ".claude"))
-    chemin = os.path.join(d, "reglages.js")
-    with open(chemin, encoding="utf-8") as f:
-        texte = f.read()
-    texte, n = re.subn(r"rubriques\s*:\s*\[.*?\]", 'rubriques: [\n    "pp",\n  ]', texte, flags=re.S)
-    if n != 1:
-        sys.exit("reglages.js : la liste des rubriques est introuvable ; mettre ce test à jour.")
-    ecrire(chemin, texte)
-    shutil.rmtree(os.path.join(d, "donnees", "ressources"))
-    for ident, docs in fiches.items():
-        ecrire(os.path.join(d, "donnees", "ressources", ident + ".json"),
-               json.dumps({"id": ident, "documents": [{"fichier": f} for f in docs]}))
+    shutil.copytree(racine, d, ignore=shutil.ignore_patterns(".git", ".claude", "bibliotheque*.json"))
+    vitrine = json.load(open(os.path.join(d, "donnees", "vitrine.json"), encoding="utf-8"))
+    vitrine["rubriques"] = [r for r in vitrine["rubriques"] if r["id"] == "pp"]
+    vitrine["a_la_une"] = []
+    garder = {i for s in vitrine["rubriques"][0]["sections"] for i in s["ressources"] + [x for ss in s.get("sous_sections", []) for x in ss["ressources"]]}
+    ecrire(os.path.join(d, "donnees", "vitrine.json"), json.dumps(vitrine, ensure_ascii=False, indent=2) + "\n")
+    exemple = os.path.join(d, "donnees", "vitrine.exemple.json")   # il cite des fiches retirées de la copie
+    if os.path.exists(exemple):
+        os.remove(exemple)
+    dossier = os.path.join(d, "donnees", "ressources")
+    modele = json.load(open(os.path.join(dossier, sorted(garder)[0] + ".json"), encoding="utf-8"))
+    for n in os.listdir(dossier):
+        if n[:-5] not in garder:
+            os.remove(os.path.join(dossier, n))
     for chemin, contenu in fichiers.items():
         ecrire(os.path.join(d, chemin), contenu)
+
+    def fabriquer(ident, docs):
+        f = {k: v for k, v in modele.items() if k not in ("liees", "notions", "notes")}
+        f.update(id=ident, titre="Essai " + ident, documents=[
+            dict({"role": "complement", "fichier": x, "visible": {"exterieur": True, "eleve": True}}, **({"principal": True} if k == 0 else {}))
+            for k, x in enumerate(docs)])
+        ecrire(os.path.join(dossier, ident + ".json"), json.dumps(f, ensure_ascii=False, indent=2) + "\n")
+
+    for ident, docs in fiches.items():
+        if ident not in absents:
+            fabriquer(ident, docs)
+    r = subprocess.run([sys.executable, "-B", os.path.join(racine, "scripts", "construire_bibliotheque.py"), "--racine", d, "--sans-textes"],
+                       capture_output=True, text=True)
+    if r.returncode:
+        sys.exit("construction de la bibliothèque impossible :\n" + r.stdout[-2000:])
+    for ident in absents:
+        fabriquer(ident, fiches[ident])
     return d
 
 
@@ -158,13 +179,12 @@ def complet(racine, travail):
     pp = "pp/fichiers/essai-t35/"
     base_fichiers = {pp + "page.html": PAGE.format(pied=PIED), pp + "dossier/index.html": PAGE.format(pied=PIED),
                      pp + "notes.pdf": "%PDF-1.4 essai", pp + "carnet.ipynb": "{}"}
-    pages_pp = len(re.findall(r'"fichiers/[^"]+\.html"', open(os.path.join(racine, "pp", "ressources.js"), encoding="utf-8").read()))
     fiches = {"essai-a": [pp + "page.html#ancre", pp + "notes.pdf"], "essai-b": [pp + "dossier", pp + "carnet.ipynb"]}
     cas = [
         ("tout est en place : code 0, 2 pages citées par les fiches, ressources inchangées", "tel-quel",
          fiches, {}, None, 0,
-         [r"^pp\s+2 ressources affichées /   2 dans ressources\.js   ok$", r"^Total : 2 ressources$",
-          r"2 pages citées par les fiches ; %d à afficher" % (pages_pp + 2),
+         [r"^pp\s+2 ressources affichées /   2 dans la vitrine   ok$", r"^Total : 2 ressources$",
+          r"2 pages citées par les fiches ; 2 à afficher",
           r"^Pages citées par les fiches : 2 / 2 s'affichent$",
           r"^Lien « Code source sur GitHub » : 2 / 2 pages citées par les fiches$",
           r"^Fichiers déposés \(PDF, notebooks, code…\) : 2 / 2 répondent en ligne$",
@@ -182,10 +202,10 @@ def complet(racine, travail):
          dict(fiches, **{"essai-c": [pp + "manque.pdf"]}), {}, pp + "carnet.ipynb", 1,
          [r"^ - pp/fichiers/essai-t35/manque\.pdf : cité par la fiche essai-c, mais absent du dépôt$",
           r"^ - pp/fichiers/essai-t35/carnet\.ipynb : cité par la fiche essai-b, ne répond pas en ligne \(code 404\)$",
-          r"^Fichiers déposés \(PDF, notebooks, code…\) : 1 / 2 répondent en ligne$"], []),
+          r"^Fichiers déposés \(PDF, notebooks, code…\) : 1 / 2 répondent en ligne$"], ["essai-c"]),
     ]
     for titre, nom, fiches_cas, remplace, cache, code_attendu, motifs, absents in cas:
-        d = copie(racine, travail, nom, fiches_cas, dict(base_fichiers, **remplace))
+        d = copie(racine, travail, nom, fiches_cas, dict(base_fichiers, **remplace), absents)
         servi = d
         if cache:   # le fichier existe dans le dépôt mais pas en ligne : on sert une copie sans lui
             servi = d + "-en-ligne"
