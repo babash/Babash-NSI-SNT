@@ -318,7 +318,7 @@
         while (annexes[nom]) nom = base + ' (' + (k++) + ')';
         annexes[nom] = adresse(d);
       });
-      var tags = [];
+      var tags = etiquettesUne[f.id] ? [etiquettesUne[f.id]] : [];
       ETIQUETTES.forEach(function (e) {
         if (liste(f[e[0]]).indexOf(e[1]) >= 0) tags.push(e[2]);
       });
@@ -327,6 +327,14 @@
         tags: tags, annexes: annexes, theme: t, groupe: groupe, rubrique: rub
       };
     }
+    /* L'étiquette de « À la une » (« Ressource du mois »), en tête des étiquettes de la ressource, partout où
+       elle s'affiche ; dans ses dates, si la vitrine en donne */
+    var etiquettesUne = {};
+    var jour = new Date().toISOString().slice(0, 10);
+    liste((donnees.vitrine || {}).a_la_une).forEach(function (u) {
+      if (!u || !u.etiquette || (u.debut && u.debut > jour) || (u.fin && u.fin < jour)) return;
+      etiquettesUne[u.ressource] = u.etiquette;
+    });
     var faites = {};
     var ordre = [];
     liste((donnees.vitrine || {}).rubriques).forEach(function (rv, rang) {
@@ -348,7 +356,11 @@
         while (rub.themes.some(function (x) { return x.id === id; })) id = base + '-' + (k++);
         var t = {
           nom: nom, court: court, id: id, couleur: couleur(s.couleur, nommes++),
-          programme: n ? liste(n.contenus).map(function (c) { return c.intitule; }) : [],
+          /* « Au programme » : les contenus du thème ; pour une section libre, les titres de ses sous-sections
+             sans ressource (Professeur principal › Orientation), comme dans les anciennes listes */
+          programme: n ? liste(n.contenus).map(function (c) { return c.intitule; })
+            : liste(s.sous_sections).filter(function (ss) { return !ss.programme && ss.titre && !liste(ss.ressources).length; })
+              .map(function (ss) { return ss.titre; }),
           blocs: [{ groupe: null, ressources: [] }]
         };
         function remplir(bloc, ids) {
