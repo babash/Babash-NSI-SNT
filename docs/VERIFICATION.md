@@ -51,7 +51,8 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   branche en retard sur `main` y échoue aussi quand `main` a reçu des notions depuis (elles
   manquent à la branche) : la rebaser sur `main` le règle.
 - **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
-  fichiers `ressources.js` sont testés. Un lien en échec est revérifié par un second job,
+  fichiers `ressources.js` et des fiches de la bibliothèque (`donnees/ressources/*.json` : les
+  documents, les auteurs et autrices, les crédits) sont testés. Un lien en échec est revérifié par un second job,
   « Liens en échec, seconde passe », donc sur une autre machine de GitHub, une à deux minutes
   plus tard : il n'est déclaré mort que s'il échoue aux deux passes, ce qui écarte les pannes
   passagères. Un lien qui ne répond pas à temps aux deux passes compte aussi comme mort.
@@ -72,14 +73,26 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   « bibliothèque 114 ressources affichées / 114 fiches visibles de l'extérieur ») ; une recherche trouve une ressource
   par un mot de son titre ; la fiche complète de trois ressources s'ouvre (`?r=identifiant`). Les
   fichiers construits ne sont pas dans le dépôt : c'est ce contrôle qui les vérifie, et non la
-  comparaison des fichiers. Il ouvre aussi chaque page déposée dans un dossier `fichiers/`
-  et citée par une liste (TD, fiches, diaporamas, applications), et vérifie qu'elle s'affiche avec
-  un vrai contenu ; les pages citées seulement par les fiches de la bibliothèque, comme celles
-  des activités Capytale, ne sont pas encore ouvertes par ce contrôle (le Gardien les vérifie avant
-  chaque publication). Il
-  vérifie enfin le lien « Code source sur GitHub » : l'accueil, chaque rubrique et la bibliothèque doivent l'avoir,
+  comparaison des fichiers.
+
+  Il contrôle ensuite **les fichiers déposés sur le site**, ceux que citent les listes
+  `ressources.js` comme ceux que citent les fiches de la bibliothèque (le champ `fichier` de leurs
+  documents, cachés compris, puisque tout fichier du dépôt est en ligne). Un document de fiche
+  absent du dépôt fait échouer le contrôle. Chaque fichier qui n'est pas une page (PDF, notebook,
+  code…) doit répondre en ligne ; il est redemandé jusqu'à trois fois, à 15 secondes d'intervalle
+  (ligne « Fichiers déposés (PDF, notebooks, code…) : N / N répondent en ligne »). Chaque page
+  (TD, fiches, diaporamas, applications, pages de lecture des activités Capytale) est affichée
+  dans Chrome, quatre à la fois, et doit montrer un vrai contenu : une page vue vide (moins de
+  80 caractères de texte, ou un titre « 404 ») est réaffichée deux fois, à 15 secondes
+  d'intervalle, avant d'être déclarée, et le journal donne pour chaque page la longueur du texte
+  affiché. Les pages citées par les fiches sont comptées à part (ligne « Pages citées par les
+  fiches : N / N s'affichent »), sans changer le compte des ressources des listes. Cette étape a
+  30 minutes au plus.
+
+  Il vérifie enfin le lien « Code source sur GitHub » : l'accueil, chaque rubrique et la bibliothèque doivent l'avoir,
   vers le dépôt du réglage `depot`, sinon le contrôle échoue ; une page déposée qui ne l'a pas
-  encore est seulement signalée dans le résumé, sans échec (la liste `CODE_SOURCE_EXCEPTIONS` de
+  encore, citée par une liste ou par une fiche, est seulement signalée dans le résumé, sans échec
+  (la liste `CODE_SOURCE_EXCEPTIONS` de
   `.github/verifier-site.py` peut en dispenser une page, avec sa raison ; elle est vide). Le
   résumé donne l'heure de chaque étape. Si un commit plus récent est mis en ligne entre-temps,
   c'est son propre contrôle qui vérifie le site, en ne comparant que les fichiers de son envoi ;
@@ -91,6 +104,7 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
 Le même contrôle des pages se lance sur ton ordinateur, depuis le dossier du site :
 `python3 scripts/construire_bibliotheque.py` (les fichiers de la bibliothèque, que `.gitignore`
 écarte), `python3 -m http.server 8000`, puis dans un autre terminal
-`python3 .github/verifier-site.py http://localhost:8000`.
+`python3 .github/verifier-site.py http://localhost:8000` (une à deux minutes). Ses tests :
+`python3 -I -B scripts/tests/test_verifier_site.py`.
 
 Avant chaque publication, le Gardien fait aussi ses propres contrôles : [GARDIEN.md](GARDIEN.md).

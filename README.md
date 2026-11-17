@@ -58,7 +58,7 @@ Tu peux copier le site pour tes classes, avec tes rubriques et tes ressources : 
 | [Réutiliser le site](docs/REUTILISER.md) | ta copie du site, GitHub Pages (source « GitHub Actions »), l'essai sur ton ordinateur, ce qui vient d'ailleurs |
 | [L'organisation du dépôt](docs/ORGANISATION.md) | les dossiers et les fichiers, les activités Capytale, le décor |
 | [Les données de la bibliothèque](docs/BIBLIOTHEQUE.md) | l'onglet Bibliothèque, le format des fiches du dossier `donnees/`, le thésaurus des notions, la validation et la construction à chaque publication |
-| [La publication et la vérification automatique](docs/VERIFICATION.md) | la mise en ligne par « Publier le site », les contrôles de l'onglet Actions (la bibliothèque en ligne comprise), et le même contrôle sur ton ordinateur |
+| [La publication et la vérification automatique](docs/VERIFICATION.md) | la mise en ligne par « Publier le site », les contrôles de l'onglet Actions (la bibliothèque en ligne et les pages citées par les fiches comprises), et le même contrôle sur ton ordinateur |
 | [Les bases Supabase](docs/SUPABASE.md) | Alien Python, Court-circuit (son code élève facultatif, en service depuis le 13 novembre 2026 : ce qui est enregistré, l'effacement après 12 mois) et le socle commun de la base |
 | [L'équipe d'agents](docs/AGENTS.md) | les rôles, qui possède quels fichiers, les règles de conception des ressources |
 | [Les outils du Gardien](docs/GARDIEN.md) | les contrôles avant et après chaque publication |
