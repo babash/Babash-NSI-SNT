@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Vérifie que le site s'affiche correctement.
 
-Pour chaque rubrique de reglages.js :
-  - les fichiers locaux cités dans ressources.js (lien: "fichiers/…") existent ;
+Pour chaque rubrique de la vitrine (donnees/vitrine.json ; depuis T51b, les rubriques lisent la vitrine et les
+fiches, et non plus les anciennes listes ressources.js) :
+  - les fichiers locaux des fiches placées dans la rubrique (champ « fichier ») existent ;
   - la page, affichée dans Chrome sans écran, ne montre pas d'erreur ;
-  - elle affiche autant de ressources que ressources.js en contient.
-Pour les fiches de la bibliothèque (donnees/ressources/*.json, constat N59) :
+  - elle affiche autant de ressources que la vitrine en place, sans compter celles dont tous les documents
+    sont cachés pour l'extérieur.
+Pour toutes les fiches de la bibliothèque (donnees/ressources/*.json, constat N59) :
   - chaque document local (champ « fichier ») existe dans le dépôt et répond en ligne ;
-  - chaque page HTML citée (fichier .html ou dossier) est affichée comme les pages déposées
-    des anciennes listes ; elle est comptée à part (« pages citées par les fiches »), sans
-    changer le compte des ressources des anciennes listes.
-Les fichiers locaux des anciennes listes sont aussi demandés en ligne.
+  - chaque page HTML citée (fichier .html ou dossier) est affichée ; les pages des ressources mises en
+    avant (« pages déposées ») et celles de toutes les fiches (« pages citées par les fiches ») sont
+    comptées à part.
 La bibliothèque (bibliotheque/, T50) : donnees/bibliotheque.json se lit en ligne et correspond aux
 fiches visibles de l'extérieur de cette copie ; la page en affiche autant, sans erreur ; une recherche
 trouve une ressource par un mot de son titre ; trois fiches complètes s'ouvrent (?r=identifiant).
@@ -18,7 +19,7 @@ Une page déposée vue vide est réaffichée deux fois, à 15 s d'intervalle, av
 (constat N15) ; le journal donne, pour chaque page, la longueur du texte rendu.
 Le lien « Code source sur GitHub » (décision de l'enseignant du 10/11/2026, 22:58) :
   - l'accueil, chaque rubrique et la bibliothèque : vers le dépôt de reglages.js (depot) ; s'il manque, échec ;
-  - chaque page déposée dans fichiers/ (anciennes listes ou fiches) : vers un dépôt GitHub ;
+  - chaque page déposée citée par une fiche : vers un dépôt GitHub ;
     s'il manque, avertissement sans échec (une suite, pas un blocage) ; exceptions dans
     CODE_SOURCE_EXCEPTIONS.
 Les pages sont affichées en parallèle (PARALLELE instances de Chrome) pour garder une durée
@@ -59,10 +60,30 @@ def lire(chemin):
         return f.read()
 
 
-def rubriques():
-    texte = lire("reglages.js")
-    bloc = re.search(r"rubriques\s*:\s*\[(.*?)\]", texte, re.S).group(1)
-    return re.findall(r'"([^"]+)"', bloc)
+def vitrine():
+    """Les rubriques de la vitrine : [(identifiant, [identifiants des ressources placées, dans l'ordre])]."""
+    v = json.loads(lire("donnees/vitrine.json"))
+    out = []
+    for rub in v.get("rubriques", []):
+        ids = []
+        for s in rub.get("sections", []):
+            ids += s.get("ressources", [])
+            for ss in s.get("sous_sections", []):
+                ids += ss.get("ressources", [])
+        out.append((rub["id"], ids))
+    return out
+
+
+def fiche(rid):
+    """La fiche d'une ressource, ou None si elle manque ou est illisible (scripts/valider_donnees.py le signale)."""
+    try:
+        return json.loads(lire(f"donnees/ressources/{rid}.json"))
+    except (OSError, ValueError):
+        return None
+
+
+def visible_exterieur(f):
+    return any(isinstance(d, dict) and (d.get("visible") or {}).get("exterieur") is True for d in f.get("documents", []))
 
 
 DEPOT_PAR_DEFAUT = "babash/Babash-NSI-SNT"   # celui d'assets/site.js, si reglages.js n'en donne pas
@@ -274,42 +295,53 @@ def main():
     debut = time.time()
     problemes = []
     total = 0
-    pages_internes = set()          # pages déposées citées par les anciennes listes
-    fichiers_listes = set()         # tous les fichiers locaux des anciennes listes
+    pages_internes = set()          # pages déposées des ressources mises en avant (vitrine)
+    fichiers_listes = set()         # tous leurs fichiers locaux visibles de l'extérieur
     depot_site = "https://github.com/" + depot()
 
     def lien_du_site(nom, page):
-        liens = code_source(page)
+        # Dans le pied de page : une ressource peut avoir un document « Code source sur GitHub » (T51b)
+        pieds = re.findall(r"<footer\b.*?</footer>", page, re.S | re.I)
+        liens = code_source(" ".join(pieds) if pieds else page)
         if depot_site.lower() not in [lien.lower() for lien in liens]:   # GitHub ignore la casse
             problemes.append(f"{nom} : pas de lien « Code source sur GitHub » vers {depot_site}"
                              + (f" (liens trouvés : {', '.join(liens)})" if liens else ""))
 
     # Les pages des rubriques et l'accueil, en parallèle ; les résultats sont lus dans l'ordre.
     with concurrent.futures.ThreadPoolExecutor(PARALLELE) as pool:
-        vues = {rub: pool.submit(afficher, f"{base}/{rub}/") for rub in rubriques()}
+        places = vitrine()
+        vues = {rub: pool.submit(afficher, f"{base}/{rub}/") for rub, _ in places}
         vue_accueil = pool.submit(afficher, f"{base}/")
 
-        for rub, vue in vues.items():
-            # sans les commentaires /* … */, qui contiennent des exemples
-            source = re.sub(r"/\*.*?\*/", "", lire(f"{rub}/ressources.js"), flags=re.S)
-            attendu = len(re.findall(r"^ressource\(\{", source, re.M))
+        for rub, ids in places:
+            vue = vues[rub]
+            fiches = [f for f in (fiche(rid) for rid in ids) if f]
+            if len(fiches) < len(ids):
+                problemes.append(f"{rub} : {len(ids) - len(fiches)} ressource(s) de la vitrine sans fiche lisible")
+            attendu = sum(1 for f in fiches if visible_exterieur(f))
             total += attendu
 
-            for fichier in re.findall(r'"(fichiers/[^"]+)"', source):
-                fichier = re.split(r"[#?]", fichier)[0]
-                if not os.path.exists(os.path.join(RACINE, rub, fichier)):
-                    problemes.append(f"{rub} : le fichier {fichier} n'existe pas")
-                    continue
-                fichiers_listes.add(f"{rub}/{fichier}")
-                if fichier.endswith((".html", "/")):
-                    pages_internes.add(f"{rub}/{fichier}")
+            # Les fichiers déposés sur le site par les ressources mises en avant (documents visibles de l'extérieur)
+            for f in fiches:
+                for d in f.get("documents", []):
+                    if not isinstance(d, dict) or not isinstance(d.get("fichier"), str) or not (d.get("visible") or {}).get("exterieur"):
+                        continue
+                    fichier = re.split(r"[#?]", d["fichier"])[0]
+                    if not os.path.exists(os.path.join(RACINE, fichier)):
+                        problemes.append(f"{rub} : le fichier {fichier} (fiche {f.get('id')}) n'existe pas")
+                        continue
+                    if os.path.isdir(os.path.join(RACINE, fichier)) and not fichier.endswith("/"):
+                        fichier += "/"
+                    fichiers_listes.add(fichier)
+                    if fichier.endswith((".html", ".htm", "/")):
+                        pages_internes.add(fichier)
 
             page = vue.result()
             if 'class="alerte"' in page:
                 problemes.append(f"{rub} : la page affiche une erreur")
             affiche = page.count('<li class="res"')
             etat = "ok" if affiche == attendu else "ÉCART"
-            print(f"{rub:15} {affiche:3} ressources affichées / {attendu:3} dans ressources.js   {etat}")
+            print(f"{rub:15} {affiche:3} ressources affichées / {attendu:3} dans la vitrine   {etat}")
             if affiche != attendu:
                 problemes.append(f"{rub} : {affiche} ressources affichées au lieu de {attendu}")
             lien_du_site(rub, page)
@@ -341,7 +373,7 @@ def main():
         codes = dict(zip(autres, pool.map(lambda c: demander(adresse(base, c)), autres)))
     absents = [c for c in autres if not 200 <= codes[c] < 300]
     for chemin in absents:
-        qui = f"cité par la fiche {', '.join(cites[chemin])}" if chemin in cites else "cité par une ancienne liste"
+        qui = f"cité par la fiche {', '.join(cites[chemin])}" if chemin in cites else "cité par une ressource mise en avant"
         raison = f"code {codes[chemin]}" if codes[chemin] else "aucune réponse"
         problemes.append(f"{chemin} : {qui}, ne répond pas en ligne ({raison})")
     print(f"Fichiers déposés (PDF, notebooks, code…) : {len(autres) - len(absents)} / {len(autres)} répondent en ligne")
@@ -349,9 +381,9 @@ def main():
     # Pages déposées sur le site (TD, fiches, diaporamas, applications) : elles doivent
     # s'afficher avec un vrai contenu, et non une page vide ou une erreur 404.
     a_afficher = sorted(pages_internes | pages_fiches)
-    print(f"\nPages déposées : {len(pages_internes)} citées par les anciennes listes, "
+    print(f"\nPages déposées : {len(pages_internes)} des ressources mises en avant, "
           f"{len(pages_fiches)} pages citées par les fiches"
-          + (f" (dont {len(aussi_listes)} aussi par les anciennes listes)" if aussi_listes else "")
+          + (f" (dont {len(aussi_listes)} mises en avant)" if aussi_listes else "")
           + f" ; {len(a_afficher)} à afficher")
     vides, sans_code = set(), set()
     with concurrent.futures.ThreadPoolExecutor(PARALLELE) as pool:

@@ -18,8 +18,9 @@ reglages({
   // Une invitation, pas une obligation : la licence CC BY-SA 4.0 ne permet pas d'ajouter de condition.
   invitation_ia: "Si tu utilises l'IA pour les modifier, merci de le préciser.",
 
-  // Les rubriques, dans l'ordre de la page d'accueil.
-  // Chaque nom est un dossier qui contient index.html et ressources.js.
+  // Les rubriques. Depuis T51b, le site prend la liste et l'ordre des rubriques dans la vitrine
+  // (donnees/vitrine.json, réglée dans l'admin) : cette liste n'est plus lue par les pages.
+  // Elle reste pour les outils qui la citent encore ; à garder identique à la vitrine.
   rubriques: [
     "snt",
     "nsi-premiere",
