@@ -1,0 +1,503 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{needspace}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+% Un code court ne se coupe pas en bas de page
+\AddToHook{env/lstlisting/before}{\needspace{10\baselineskip}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- Contrôle de rattrapage : algorithmique en Python}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Novembre 2025, durée : 1 h}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Rattrapage d'algorithmique}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h][questions]
+\end{center}
+
+\begin{astuce}[La méthode pour toutes les questions]
+\begin{enumerate}
+  \item Lire le code \textbf{ligne par ligne}, de haut en bas, sans sauter de ligne.
+  \item Tenir à jour, sur le brouillon, la valeur de chaque variable (un petit tableau de trace).
+  \item À chaque \code{if} ou \code{while}, calculer la condition avec les valeurs \textbf{actuelles} : vrai ou faux ?
+  \item Ne noter que ce que \code{print} affiche, à la fin ou au moment où il est exécuté.
+\end{enumerate}
+\end{astuce}
+
+\begin{questions}
+
+% =====================================================================
+\needspace{17\baselineskip}\question \textbf{Compréhension élémentaire des structures de contrôle}
+\begin{parts}
+\needspace{15\baselineskip}\part[1] \enonce{Variable et réaffectation.}
+\begin{lstlisting}
+x = 10
+x = x + 5
+x = 2
+print(x)
+\end{lstlisting}
+\begin{reponse}
+\code{2}
+\end{reponse}
+\code{x} vaut 10, puis 15, puis 2. Une affectation \textbf{remplace} l'ancienne valeur : seule la dernière compte au moment du \code{print}.
+
+\needspace{15\baselineskip}\part[1] \enonce{Condition simple.}
+\begin{lstlisting}
+age = 15
+if age > 18:
+    print(1)
+else:
+    print(0)
+\end{lstlisting}
+\begin{reponse}
+\code{0}
+\end{reponse}
+$15 > 18$ est faux : on exécute le bloc du \code{else}.
+
+\needspace{15\baselineskip}\part[1] \enonce{Structure \code{elif}.}
+\begin{lstlisting}
+n = 50
+if n < 20:
+    res = 1
+elif n < 60:
+    res = 2
+else:
+    res = 3
+print(res)
+\end{lstlisting}
+\begin{reponse}
+\code{2}
+\end{reponse}
+$50 < 20$ est faux ; on teste le \code{elif} : $50 < 60$ est vrai, donc \code{res = 2}. Le \code{else} est sauté, car une branche a déjà été exécutée.
+
+\needspace{15\baselineskip}\part[1] \enonce{\code{if} consécutifs.}
+\begin{lstlisting}
+valeur = 10
+if valeur > 5:
+    valeur = valeur - 5
+if valeur == 5:
+    print(100)
+else:
+    print(0)
+\end{lstlisting}
+\begin{reponse}
+\code{100}
+\end{reponse}
+Premier \code{if} : $10 > 5$ est vrai, \code{valeur} devient 5. Le second \code{if} est \textbf{indépendant} : il est testé avec la \textbf{nouvelle} valeur. $5 == 5$ est vrai : on affiche 100.
+\begin{erreur}
+Tester le second \code{if} avec l'ancienne valeur 10, et répondre 0. Les deux \code{if} s'exécutent l'un après l'autre : le second voit la valeur modifiée par le premier.
+\end{erreur}
+
+\needspace{15\baselineskip}\part[1] \enonce{Boucle \code{for} simple.}
+\begin{lstlisting}
+s = 0
+for k in range(3):
+    s = s + k
+print(s)
+\end{lstlisting}
+\begin{reponse}
+\code{3}
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+ & avant & tour 1 & tour 2 & tour 3 \\ \hline
+\code{k} & & 0 & 1 & 2 \\
+\code{s} & 0 & 0 & 1 & 3 \\ \hline
+\end{tabular}
+\end{center}
+\code{range(3)} donne 0, 1, 2 (pas 3) : $0 + 1 + 2 = 3$.
+
+\needspace{15\baselineskip}\part[1] \enonce{Boucle \code{while} simple.}
+\begin{lstlisting}
+compteur = 3
+while compteur > 0:
+    compteur = compteur - 1
+print(compteur)
+\end{lstlisting}
+\begin{reponse}
+\code{0}
+\end{reponse}
+\code{compteur} passe à 2, 1, puis 0. On reteste : $0 > 0$ est faux, la boucle s'arrête. Le \code{print} est \textbf{après} la boucle (pas indenté) : il n'affiche qu'une fois, la valeur finale 0.
+
+\needspace{15\baselineskip}\part[1] \enonce{Analyse de boucle (piège).}
+\begin{lstlisting}
+a = 10
+while a > 5:
+    a = a + 1
+print(a)
+\end{lstlisting}
+\begin{reponse}
+\textbf{Rien ne s'affiche : c'est une boucle infinie.} Le programme ne s'arrête jamais.
+\end{reponse}
+\code{a} part de 10, qui est plus grand que 5, et \textbf{augmente} à chaque tour (11, 12, 13\dots). La condition \code{a > 5} reste donc toujours vraie : on ne sort jamais de la boucle, et la ligne \code{print(a)} n'est jamais atteinte.
+\begin{astuce}[À retenir]
+Une boucle \code{while} s'arrête seulement si le corps de la boucle fait évoluer une variable \textbf{vers} une valeur qui rend la condition fausse. Vérifie toujours dans quel sens évolue la variable.
+\end{astuce}
+\end{parts}
+
+% =====================================================================
+\needspace{17\baselineskip}\question \textbf{Opérateurs logiques}
+\begin{parts}
+\needspace{15\baselineskip}\part[1] \enonce{Opérateur \code{and}.}
+\begin{lstlisting}
+x = 10
+y = 5
+if x > 5 and y < 2:
+    print("A")
+else:
+    print("B")
+\end{lstlisting}
+\begin{reponse}
+\code{B}
+\end{reponse}
+\code{x > 5} est vrai, mais \code{y < 2} est faux ($5 < 2$). Avec \code{and}, il faut que \textbf{les deux} soient vraies : la condition est fausse, on va dans le \code{else}.
+
+\needspace{15\baselineskip}\part[1] \enonce{Opérateurs \code{or} et \code{not}.}
+\begin{lstlisting}
+test = False
+if not test or 5 == 5:
+    print("Oui")
+else:
+    print("Non")
+\end{lstlisting}
+\begin{reponse}
+\code{Oui}
+\end{reponse}
+\code{not test} vaut \code{not False}, donc \code{True}. Avec \code{or}, une seule partie vraie suffit : la condition est vraie. (De plus, \code{5 == 5} est vrai aussi.)
+\begin{center}
+\small
+\begin{tabular}{|c|c|c|c|}
+\hline
+\code{p} & \code{q} & \code{p and q} & \code{p or q} \\ \hline
+\code{True} & \code{True} & \code{True} & \code{True} \\
+\code{True} & \code{False} & \code{False} & \code{True} \\
+\code{False} & \code{True} & \code{False} & \code{True} \\
+\code{False} & \code{False} & \code{False} & \code{False} \\ \hline
+\end{tabular}
+\end{center}
+\end{parts}
+
+% =====================================================================
+\needspace{17\baselineskip}\question \textbf{Fonctions}
+\begin{parts}
+\needspace{15\baselineskip}\part[1] \enonce{Définition de fonction.}
+\begin{lstlisting}
+def calcul(x):
+    return x * 3
+
+res = calcul(4)
+print(res)
+\end{lstlisting}
+\begin{reponse}
+\code{12}
+\end{reponse}
+À l'appel \code{calcul(4)}, le paramètre \code{x} reçoit 4. La fonction renvoie $4 \times 3 = 12$, qui est rangé dans \code{res}.
+
+\needspace{15\baselineskip}\part[1] \enonce{Appels imbriqués.}
+\begin{lstlisting}
+def f1(n):
+    return n + 1
+
+def f2(n):
+    return f1(n) * 2
+
+print(f2(3))
+\end{lstlisting}
+\begin{reponse}
+\code{8}
+\end{reponse}
+\code{f2(3)} doit calculer \code{f1(3) * 2}. On calcule d'abord \code{f1(3)} $= 3 + 1 = 4$, puis $4 \times 2 = 8$.
+\begin{erreur}
+Calculer $3 \times 2 + 1 = 7$ : l'ordre est faux. Dans \code{f1(n) * 2}, l'appel \code{f1(n)} est calculé en premier, puis multiplié par 2.
+\end{erreur}
+
+\needspace{15\baselineskip}\part[1] \enonce{Ordre des affichages.}
+\begin{lstlisting}
+def fct_a():
+    print("A")
+
+def fct_b():
+    print("B")
+    fct_a()
+
+fct_b()
+\end{lstlisting}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+B
+A
+\end{lstlisting}
+\end{reponse}
+Les \code{def} ne font rien tout seuls. La seule ligne exécutée est \code{fct\_b()}. Dans \code{fct\_b}, on affiche d'abord \code{B}, puis on appelle \code{fct\_a}, qui affiche \code{A}. L'ordre des \code{def} dans le fichier n'a pas d'importance : c'est l'ordre des \textbf{appels} qui compte.
+\end{parts}
+
+% =====================================================================
+\needspace{17\baselineskip}\question \textbf{Questions de synthèse}
+\begin{parts}
+\needspace{15\baselineskip}\part[1] \enonce{Booléens et \code{if} successifs.}
+\begin{lstlisting}
+actif = True
+score = 0
+if actif:
+    score = 10
+    actif = False
+if actif:
+    score = 20
+print(score)
+\end{lstlisting}
+\begin{reponse}
+\code{10}
+\end{reponse}
+Premier \code{if} : \code{actif} vaut \code{True}, donc \code{score = 10} et \code{actif} devient \code{False}. Second \code{if} : \code{actif} vaut maintenant \code{False}, le bloc est sauté. \code{if actif:} veut dire la même chose que \code{if actif == True:}.
+
+\needspace{15\baselineskip}\part[1] \enonce{\code{range} avec bornes.}
+\begin{lstlisting}
+acc = 0
+for i in range(2, 5):
+    acc = acc + i
+print(acc)
+\end{lstlisting}
+\begin{reponse}
+\code{9}
+\end{reponse}
+\code{range(2, 5)} donne 2, 3, 4 (5 est exclu) : $2 + 3 + 4 = 9$.
+\begin{erreur}
+Inclure 5 et trouver 14. La borne de fin d'un \code{range} n'est jamais atteinte.
+\end{erreur}
+\end{parts}
+
+% =====================================================================
+\needspace{17\baselineskip}\question \textbf{Questions de synthèse avancées}
+\begin{parts}
+\needspace{15\baselineskip}\part[1] \enonce{Logique imbriquée.}
+\begin{lstlisting}
+i = 0
+c = 0
+while i < 3:
+    if i < 2:
+        c = c + 10
+    i = i + 1
+print(c)
+\end{lstlisting}
+\begin{reponse}
+\code{20}
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\code{i} au début du tour & \code{i < 2} ? & \code{c} & \code{i} en fin de tour \\ \hline
+0 & vrai & 10 & 1 \\
+1 & vrai & 20 & 2 \\
+2 & faux & 20 & 3 \\ \hline
+\end{tabular}
+\end{center}
+Ensuite $3 < 3$ est faux : la boucle s'arrête. \code{i = i + 1} est au niveau du \code{if} (même indentation), donc il est exécuté à \textbf{chaque} tour, que le test soit vrai ou faux.
+
+\needspace{15\baselineskip}\part[1] \enonce{Synthèse : boucle conditionnelle.}
+\begin{lstlisting}
+total = 0
+for i in range(5):
+    if i > 2:
+        total = total + 1
+    else:
+        total = total + 2
+print(total)
+\end{lstlisting}
+\begin{reponse}
+\code{8}
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\code{i} & 0 & 1 & 2 & 3 & 4 \\ \hline
+\code{i > 2} ? & non & non & non & oui & oui \\
+ajout & $+2$ & $+2$ & $+2$ & $+1$ & $+1$ \\
+\code{total} & 2 & 4 & 6 & 7 & 8 \\ \hline
+\end{tabular}
+\end{center}
+
+\needspace{15\baselineskip}\part[1] \enonce{Synthèse : évolution d'une variable.}
+\begin{lstlisting}
+a = 0
+for i in range(5):
+    if i < 3:
+        a = a + 2
+    else:
+        a = a - 1
+print(a)
+\end{lstlisting}
+\begin{reponse}
+\code{4}
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\code{i} & 0 & 1 & 2 & 3 & 4 \\ \hline
+\code{i < 3} ? & oui & oui & oui & non & non \\
+\code{a} & 2 & 4 & 6 & 5 & 4 \\ \hline
+\end{tabular}
+\end{center}
+
+\needspace{15\baselineskip}\part[1] \enonce{Synthèse : fonction booléenne.}
+\begin{lstlisting}
+def est_grand(x):
+    if x > 10:
+        return True
+    else:
+        return False
+
+n = 5
+if est_grand(n + 10):
+    print(1)
+else:
+    print(0)
+\end{lstlisting}
+\begin{reponse}
+\code{1}
+\end{reponse}
+On calcule d'abord l'argument : \code{n + 10} $= 15$. Puis \code{est\_grand(15)} : $15 > 10$ est vrai, la fonction renvoie \code{True}. Le \code{if} reçoit \code{True} : on affiche 1.
+\begin{erreur}
+Appeler la fonction avec \code{n} (5) au lieu de \code{n + 10}, et répondre 0. L'argument est l'expression \textbf{entière} écrite entre les parenthèses.
+\end{erreur}
+
+\needspace{15\baselineskip}\part[1] \enonce{Synthèse : \code{while} complexe.}
+\begin{lstlisting}
+n = 6
+res = 0
+while n > 0:
+    if n > 3:
+        res = res + n
+    n = n - 2
+print(res)
+\end{lstlisting}
+\begin{reponse}
+\code{10}
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\code{n} au début du tour & \code{n > 3} ? & \code{res} & \code{n} en fin de tour \\ \hline
+6 & oui & 6 & 4 \\
+4 & oui & 10 & 2 \\
+2 & non & 10 & 0 \\ \hline
+\end{tabular}
+\end{center}
+Ensuite $0 > 0$ est faux : la boucle s'arrête. $6 + 4 = 10$.
+
+\needspace{15\baselineskip}\part[1] \enonce{Synthèse : fonction dans une boucle.}
+\begin{lstlisting}
+def transform(x):
+    if x > 5:
+        return 0
+    return x
+
+total = 0
+for k in range(4, 7):
+    total = total + transform(k)
+print(total)
+\end{lstlisting}
+\begin{reponse}
+\code{9}
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\code{k} & \code{transform(k)} & \code{total} \\ \hline
+4 & 4 ($4 > 5$ faux : renvoie \code{x}) & 4 \\
+5 & 5 ($5 > 5$ faux) & 9 \\
+6 & 0 ($6 > 5$ vrai : renvoie 0) & 9 \\ \hline
+\end{tabular}
+\end{center}
+\code{range(4, 7)} donne 4, 5, 6. Dans \code{transform}, un \code{return} arrête la fonction : si \code{x > 5}, on renvoie 0 et la ligne \code{return x} n'est pas exécutée.
+\end{parts}
+\end{questions}
+
+\end{document}
