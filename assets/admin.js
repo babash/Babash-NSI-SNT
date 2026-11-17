@@ -9,8 +9,9 @@
    - Changements : ce qui est en attente ; enregistrer (un commit par
      l'API GitHub, avec le jeton de l'enseignant) ou télécharger.
 
-   Le jeton reste dans ce navigateur (localStorage), n'est jamais affiché,
-   jamais mis dans une adresse ni dans le dépôt. Avant tout enregistrement,
+   Le jeton est gardé selon GARDE_JETON (un seul endroit à changer) : par
+   défaut en mémoire, le temps de la visite. Il n'est jamais affiché, jamais
+   mis dans une adresse ni dans le dépôt. Avant tout enregistrement,
    les fichiers sont validés (assets/donnees.js) : un enregistrement ne peut
    pas arrêter « Publier le site ». Si un fichier a changé sur main depuis son
    ouverture, rien n'est écrit (conflit) : l'admin le dit et recharge.
@@ -22,6 +23,36 @@
   var API = 'https://api.github.com';
   var BRANCHE = 'main';
   var CLE_JETON = 'admin-jeton-github';
+  /* Où garder le jeton (question posée à l'enseignant, 17/11) :
+     - 'memoire' : seulement le temps de la visite, à recoller à chaque fois (par défaut, le plus sûr :
+       l'origine babash.github.io est partagée par toutes les pages publiées du compte, et un script de
+       l'une d'elles pourrait lire ce que garde le navigateur) ;
+     - 'navigateur' : dans le localStorage de ce navigateur, jusqu'à « Oublier le jeton ».
+     Une garde chiffrée par une phrase de passe s'ajoutera ici, si l'enseignant la choisit. */
+  var GARDE_JETON = 'memoire';
+  var GARDES = {
+    memoire: {
+      phrase: 'Le jeton est gardé seulement le temps de la visite, dans la mémoire de cette page : il disparaît quand vous fermez ou rechargez la page, et il faut le recoller à la visite suivante. Rien n\'est écrit dans le navigateur.',
+      lire: function () { return jetonEnMemoire; },
+      ecrire: function (v) { jetonEnMemoire = v; return true; },
+      oublier: function () { jetonEnMemoire = ''; }
+    },
+    navigateur: {
+      phrase: 'Le jeton est gardé dans ce navigateur, sur cet appareil, jusqu\'à « Oublier le jeton ».',
+      lire: function () { try { return localStorage.getItem(CLE_JETON) || ''; } catch (e) { return ''; } },
+      ecrire: function (v) { try { localStorage.setItem(CLE_JETON, v); return true; } catch (e) { return false; } },
+      oublier: function () { try { localStorage.removeItem(CLE_JETON); } catch (e) { /* rien */ } }
+    }
+  };
+  var jetonEnMemoire = '';
+
+  /* Les seuls fichiers que l'admin écrit (contrôle du Gardien, 17/11) : la vitrine et les fiches.
+     Tout autre chemin (brouillon ou fichiers récents du navigateur, partagés par toutes les pages de
+     l'origine) est ignoré et signalé, et n'est jamais écrit ni archivé. */
+  var CHEMIN_FICHE = /^donnees\/ressources\/[a-z0-9]+(-[a-z0-9]+)*\.json$/;
+  function cheminPermis(c) {
+    return c === VITRINE || CHEMIN_FICHE.test(String(c));
+  }
   var CLE_BROUILLON = 'admin-brouillon';
   var CLE_RECENTS = 'admin-recents';
   var RECENT_MS = 30 * 60 * 1000; // le temps que « Publier le site » reconstruise la bibliothèque
@@ -41,7 +72,8 @@
     occupe: false,
     filtres: { q: '', statut: '', cache: '', ens: '', notes: false },
     recherches: {},  // la recherche de chaque liste de cases, gardée quand la vue est redessinée
-    rubrique: null
+    rubrique: null,
+    ignores: []      // chemins refusés trouvés dans le brouillon ou les fichiers récents
   };
   var racinePage, vue, barreBas, annonce;
 
@@ -60,9 +92,8 @@
     try { if (v == null) localStorage.removeItem(cle); else localStorage.setItem(cle, JSON.stringify(v)); return true; } catch (e) { return false; }
   }
 
-  function jeton() {
-    try { return localStorage.getItem(CLE_JETON) || ''; } catch (e) { return ''; }
-  }
+  function garde() { return GARDES[GARDE_JETON] || GARDES.memoire; }
+  function jeton() { return garde().lire(); }
 
   function depot() {
     var d = (O.reglages().depot || 'babash/Babash-NSI-SNT').replace(/^https?:\/\/(www\.)?github\.com\//i, '').replace(/(\.git)?\/*$/, '');
@@ -121,7 +152,7 @@
   }
 
   function enAttente() {
-    return Object.keys(etat.fichiers).filter(modifie).sort(function (a, b) {
+    return Object.keys(etat.fichiers).filter(function (c) { return cheminPermis(c) && modifie(c); }).sort(function (a, b) {
       return a === VITRINE ? -1 : b === VITRINE ? 1 : a < b ? -1 : 1;
     });
   }
@@ -262,9 +293,10 @@
 
   function reprendreBrouillon() {
     var b = lireStockage(CLE_BROUILLON, null);
-    if (!b) return 0;
+    if (!b || typeof b !== 'object') return 0;
     var n = 0;
     Object.keys(b).forEach(function (c) {
+      if (!cheminPermis(c)) { etat.ignores.push(c); return; }
       try {
         etat.fichiers[c] = { base: { texte: b[c].base, objet: JSON.parse(b[c].base), sha: b[c].sha || null }, courant: b[c].courant };
         n++;
@@ -278,6 +310,7 @@
     var r = lireStockage(CLE_RECENTS, {});
     var maintenant = Date.now();
     Object.keys(r).forEach(function (c) {
+      if (!cheminPermis(c)) { etat.ignores.push(c); delete r[c]; return; }
       if (maintenant - r[c].quand > RECENT_MS) { delete r[c]; return; }
       var id = idDeChemin(c);
       try {
@@ -1222,20 +1255,23 @@
 
   function messageParDefaut() {
     var l = enAttente();
-    var fiches = l.filter(function (c) { return c !== VITRINE; }).map(idDeChemin);
+    var fiches = l.map(idDeChemin).filter(Boolean);
     var morceaux = [];
     if (l.indexOf(VITRINE) >= 0) morceaux.push('onglets du site');
-    if (fiches.length === 1) morceaux.push('fiche ' + fiches[0] + ' (' + resumeChangements(cheminFiche(fiches[0])).map(function (x) { return x.split(' :')[0]; }).join(', ') + ')');
-    else if (fiches.length) morceaux.push(fiches.length + ' fiches');
-    var m = morceaux.join(' et ');
+    if (fiches.length === 1) {
+      var champs = etat.fichiers[cheminFiche(fiches[0])] ? resumeChangements(cheminFiche(fiches[0])).map(function (x) { return x.split(' :')[0]; }) : [];
+      morceaux.push('fiche ' + fiches[0] + (champs.length ? ' (' + champs.join(', ') + ')' : ''));
+    } else if (fiches.length) morceaux.push(fiches.length + ' fiches');
+    var m = morceaux.join(' et ') || 'mise à jour des données';
     return m.charAt(0).toUpperCase() + m.slice(1);
   }
+
 
   /* ── Les fichiers à écrire ────────────────────────────────────── */
 
   function textesAEcrire() {
     var jour = aujourdhui();
-    return enAttente().map(function (c) {
+    return enAttente().filter(cheminPermis).map(function (c) {
       var f = etat.fichiers[c];
       var objet = D.copie(f.courant);
       if (c !== VITRINE) {
@@ -1267,6 +1303,7 @@
   }
 
   function zip(fichiers) {
+    fichiers.forEach(function (f) { if (!cheminPermis(f.chemin)) throw new Error('chemin refusé : ' + f.chemin); });
     var enc = new TextEncoder();
     var morceaux = [], central = [], decalage = 0;
     function u16(v) { return [v & 0xFF, (v >>> 8) & 0xFF]; }
@@ -1368,6 +1405,8 @@
             return api('POST', '/git/blobs', { content: encoderTexte(f.texte), encoding: 'base64' });
           }));
         }).then(function (blobs) {
+          var refuses = fichiers.filter(function (f) { return !cheminPermis(f.chemin); });
+          if (refuses.length) throw new Error('chemin refusé : ' + refuses[0].chemin);
           return api('POST', '/git/trees', {
             base_tree: arbre,
             tree: fichiers.map(function (f, i) { return { path: f.chemin, mode: '100644', type: 'blob', sha: blobs[i].sha }; })
@@ -1441,14 +1480,15 @@
     vue.appendChild(el('h1', { id: 'contenu' }, 'Jeton GitHub'));
     var present = !!jeton();
     vue.appendChild(el('p', null, present
-      ? [el('strong', null, 'Un jeton est enregistré dans ce navigateur.'), ' L\'admin peut enregistrer vos changements dans le dépôt.']
-      : [el('strong', null, 'Aucun jeton dans ce navigateur.'), ' L\'admin fonctionne en lecture : vous pouvez tout modifier, voir l\'aperçu et télécharger les fichiers modifiés, mais pas les enregistrer d\'un clic.']));
-    vue.appendChild(el('p', { class: 'admin-aide' }, 'Le jeton est une clé qui permet à cette page d\'écrire dans le dépôt, à votre nom. Il reste dans ce navigateur, sur cet appareil : il n\'est jamais affiché, jamais envoyé ailleurs qu\'à GitHub, jamais écrit dans le dépôt ni dans une adresse. Ce n\'est pas une protection forte de la page (elle est publique), seulement ce qui permet d\'écrire.'));
+      ? [el('strong', null, 'Un jeton est en place.'), ' L\'admin peut enregistrer vos changements dans le dépôt.']
+      : [el('strong', null, 'Aucun jeton.'), ' L\'admin fonctionne en lecture : vous pouvez tout modifier, voir l\'aperçu et télécharger les fichiers modifiés, mais pas les enregistrer d\'un clic.']));
+    vue.appendChild(el('p', { class: 'admin-garde' }, el('strong', null, garde().phrase)));
+    vue.appendChild(el('p', { class: 'admin-aide' }, 'Le jeton est une clé qui permet à cette page d\'écrire dans le dépôt, à votre nom. Cette page ne l\'affiche jamais, ne l\'envoie qu\'à GitHub et ne l\'écrit ni dans le dépôt ni dans une adresse. Ce n\'est pas une protection forte de la page (elle est publique), seulement ce qui permet d\'écrire : donnez-lui une durée courte, ce seul dépôt et les seuls « Contents », et révoquez-le en cas de doute.'));
 
     var input = el('input', { type: 'password', id: 'jeton', 'data-cle': 'jeton', autocomplete: 'off', spellcheck: 'false', placeholder: 'github_pat_…' });
     vue.appendChild(el('div', { class: 'admin-champ' }, [el('label', { for: 'jeton' }, present ? 'Remplacer le jeton' : 'Coller le jeton'), input]));
     vue.appendChild(el('p', { class: 'admin-actions' }, [
-      bouton('Enregistrer le jeton dans ce navigateur', function () {
+      bouton(GARDE_JETON === 'memoire' ? 'Utiliser ce jeton pour cette visite' : 'Enregistrer le jeton dans ce navigateur', function () {
         var v = input.value.trim();
         input.value = '';
         if (!/^(github_pat_[A-Za-z0-9_]{20,}|gh[pousr]_[A-Za-z0-9]{20,})$/.test(v)) {
@@ -1456,7 +1496,7 @@
           rendre();
           return;
         }
-        try { localStorage.setItem(CLE_JETON, v); } catch (e) {
+        if (!garde().ecrire(v)) {
           etat.message = { niveau: 'erreur', texte: 'Le navigateur refuse de garder le jeton (navigation privée ?).' };
           rendre();
           return;
@@ -1464,9 +1504,9 @@
         verifierJeton();
       }, { classe: 'principal', cle: 'jeton-enregistrer' }),
       present ? bouton('Oublier le jeton', function () {
-        try { localStorage.removeItem(CLE_JETON); } catch (e) { /* rien */ }
+        garde().oublier();
         etat.chemins = null;
-        etat.message = { niveau: 'ok', texte: 'Jeton oublié : il n\'est plus dans ce navigateur. Pensez à le révoquer sur GitHub si vous ne vous en servez plus.' };
+        etat.message = { niveau: 'ok', texte: 'Jeton oublié : cette page ne l\'a plus. Pensez à le révoquer sur GitHub si vous ne vous en servez plus.' };
         rendre();
       }, { cle: 'jeton-oublier' }) : null,
       present ? bouton('Vérifier le jeton', verifierJeton, { cle: 'jeton-verifier' }) : null
@@ -1479,7 +1519,9 @@
       el('li', null, [el('strong', null, 'Repository access'), ' : « Only select repositories », puis choisir ', el('code', null, depot()), ' seulement.']),
       el('li', null, [el('strong', null, 'Permissions'), ' › Repository permissions › ', el('strong', null, 'Contents : Read and write'), '. Rien d\'autre (Metadata : Read-only s\'ajoute tout seul).']),
       el('li', null, ['« Generate token », puis copier le jeton (il commence par ', el('code', null, 'github_pat_'), ') : GitHub ne le montre qu\'une fois.']),
-      el('li', null, 'Le coller ci-dessus, puis « Enregistrer le jeton dans ce navigateur ». À refaire sur chaque appareil (ordinateur, téléphone).'),
+      el('li', null, GARDE_JETON === 'memoire'
+        ? 'Le garder dans votre gestionnaire de mots de passe, puis le coller ci-dessus à chaque visite (« Utiliser ce jeton pour cette visite »).'
+        : 'Le coller ci-dessus, puis « Enregistrer le jeton dans ce navigateur ». À refaire sur chaque appareil (ordinateur, téléphone).'),
       el('li', null, 'En cas de perte d\'un appareil, ou à la fin : révoquer le jeton sur la même page de GitHub.')
     ]));
   }
@@ -1510,6 +1552,7 @@
 
   window.pageAdmin = function (racine, outils) {
     O = outils;
+    if (GARDE_JETON === 'memoire') GARDES.navigateur.oublier(); // rien ne reste d'une garde précédente
     el = O.el;
     document.title = 'Admin – ' + O.titreSite();
     racine.appendChild(O.barreHaut('admin'));
@@ -1519,6 +1562,7 @@
     racinePage.appendChild(annonce);
     vue = el('main', { class: 'admin-vue' });
     racinePage.appendChild(vue);
+    racinePage.appendChild(O.piedDePage()); // auteur, licences et « Code source sur GitHub » (décision du 10/11)
     barreBas = el('div', { class: 'admin-barre-bas', role: 'region', 'aria-label': 'Changements en attente', hidden: true });
     racine.appendChild(barreBas);
     vue.appendChild(el('p', { class: 'statut', role: 'status' }, 'Chargement de la bibliothèque…'));
@@ -1539,6 +1583,14 @@
       });
       var n = reprendreBrouillon();
       if (n) etat.message = { niveau: 'info', texte: n + (n > 1 ? ' fichiers modifiés ont été retrouvés' : ' fichier modifié a été retrouvé') + ' dans ce navigateur (changements pas encore enregistrés).' };
+      if (etat.ignores.length) {
+        etat.message = {
+          niveau: 'erreur',
+          texte: 'Des changements gardés dans ce navigateur visaient des fichiers que l\'admin n\'écrit jamais (seulement donnees/vitrine.json et les fiches de donnees/ressources/) : ils sont ignorés.',
+          liste: etat.ignores.slice(0, 10)
+        };
+        garderBrouillon();
+      }
       return chargerArbre().catch(function (e) {
         etat.message = { niveau: 'erreur', texte: 'Le jeton enregistré ne fonctionne pas : ' + e.message };
       });

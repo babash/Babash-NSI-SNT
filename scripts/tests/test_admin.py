@@ -358,8 +358,9 @@ def main():
             page.wait_for_selector(".admin-message.ok", timeout=10000)
             verifier("jeton vérifié : écriture permise", "permet d'écrire" in page.locator(".admin-message").inner_text())
             verifier("le jeton n'est jamais affiché", FAUX_JETON not in page.content() and champ.input_value() == "")
-            verifier("le jeton est gardé dans ce navigateur seulement (localStorage)",
-                     page.evaluate("localStorage.getItem('admin-jeton-github')") == FAUX_JETON)
+            stockage = page.evaluate("JSON.stringify(Object.assign({}, localStorage)) + JSON.stringify(Object.assign({}, sessionStorage))")
+            verifier("le jeton est gardé en mémoire seulement, le temps de la visite (rien dans le navigateur)",
+                     FAUX_JETON not in stockage and "le temps de la visite" in page.locator(".admin-garde").inner_text())
 
             page.goto(base + f"/admin/#/fiche/{FICHE}")
             page.wait_for_selector("#champ-titre")
@@ -415,9 +416,64 @@ def main():
             page.goto(base + "/admin/#/jeton")
             page.click('[data-cle="jeton-oublier"]')
             attendre(page)
-            verifier("« Oublier le jeton » : il n'est plus dans le navigateur", page.evaluate("localStorage.getItem('admin-jeton-github')") is None)
+            verifier("« Oublier le jeton » : la page ne l'a plus", "Aucun jeton" in page.locator(".admin-vue").inner_text())
+            page.fill("#jeton", FAUX_JETON)
+            page.click('[data-cle="jeton-enregistrer"]')
+            page.wait_for_selector(".admin-message.ok", timeout=10000)
+            page.reload(wait_until="networkidle")
+            page.goto(base + "/admin/#/jeton")
+            attendre(page, 300)
+            verifier("après un rechargement : plus de jeton (garde en mémoire)", "Aucun jeton" in page.locator(".admin-vue").inner_text())
             attendues = [e for e in erreurs if "status of 403" in e]   # le refus simulé plus haut
             verifier("avec jeton : aucune erreur JavaScript (hors le refus 403 simulé)", len(attendues) <= 1 and not [e for e in erreurs if e not in attendues], erreurs)
+            ctx.close()
+
+            print("Chemins refusés (brouillon et fichiers récents du navigateur)")
+            faux = FauxGitHub(copie)
+            ctx, page, erreurs, _ = page_neuve(nav, base, faux=faux)
+            page.goto(base + "/admin/", wait_until="networkidle")
+            notions = open(os.path.join(copie, "donnees", "referentiels", "notions.json"), encoding="utf-8").read()
+            bonne = json.loads(origine)
+            bonne["statut"] = "prete"
+            piege = dict(bonne, id="notions")
+            brouillon = {
+                CHEMIN: {"base": origine, "sha": None, "courant": bonne},
+                "donnees/referentiels/notions.json": {"base": notions, "sha": None, "courant": piege},
+                "donnees/ressources/../../assets/site.json": {"base": origine, "sha": None, "courant": bonne},
+                "assets/td1-poo.json": {"base": origine, "sha": None, "courant": bonne},
+            }
+            recents = {"assets/site.js": {"texte": "piege", "quand": 9e15}}
+            page.evaluate("([b, r]) => { localStorage.setItem('admin-brouillon', JSON.stringify(b)); localStorage.setItem('admin-recents', JSON.stringify(r)); }",
+                          [brouillon, recents])
+            page.reload(wait_until="networkidle")
+            attendre(page, 400)
+            msg = page.locator(".admin-message").inner_text()
+            verifier("brouillon piégé : les chemins refusés sont signalés", "ignorés" in msg and "donnees/referentiels/notions.json" in msg
+                     and "assets/site.js" in msg, msg)
+            verifier("brouillon piégé : seul le changement de la fiche reste en attente", "1 fichier modifié" in page.locator(".admin-barre-bas").inner_text())
+            restes = page.evaluate("Object.keys(JSON.parse(localStorage.getItem('admin-brouillon') || '{}'))")
+            verifier("brouillon piégé : les clés refusées sont retirées du navigateur", restes == [CHEMIN], restes)
+            page.goto(base + "/admin/#/changements")
+            attendre(page)
+            with page.expect_download() as tele:
+                page.click('[data-cle="telecharger-2"]')
+            with zipfile.ZipFile(tele.value.path()) as z:
+                noms = z.namelist()
+            verifier("brouillon piégé : l'archive ne contient que la fiche", noms == [CHEMIN], noms)
+            page.goto(base + "/admin/#/jeton")
+            page.fill("#jeton", FAUX_JETON)
+            page.click('[data-cle="jeton-enregistrer"]')
+            page.wait_for_selector(".admin-message.ok", timeout=10000)
+            faux.requetes.clear()
+            page.goto(base + "/admin/#/changements")
+            attendre(page)
+            page.click('[data-cle="enregistrer-2"]')
+            page.wait_for_selector(".admin-message.ok", timeout=15000)
+            arbres = [r["corps"] for r in faux.requetes if r["methode"] == "POST" and r["url"].endswith("/git/trees")]
+            chemins = [e["path"] for t in arbres for e in t["tree"]]
+            verifier("brouillon piégé : le commit n'écrit que la fiche ; le thésaurus est intact",
+                     chemins == [CHEMIN] and faux.fichier_sur_main("donnees/referentiels/notions.json").decode("utf-8") == notions, chemins)
+            verifier("brouillon piégé : la vue « Changements » s'affiche sans erreur JavaScript", not erreurs, erreurs)
             ctx.close()
 
             print("Rendu")
