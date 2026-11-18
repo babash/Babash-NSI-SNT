@@ -1,0 +1,465 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{needspace}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+% Un code court ne se coupe pas en bas de page
+\AddToHook{env/lstlisting/before}{\needspace{10\baselineskip}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- Évaluation NSI - Architecture, OS et Système Linux}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Avril 2026}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Architecture, OS et Linux}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h]
+\end{center}
+
+\begin{questions}
+
+% =====================================================================
+\section{Architecture matérielle (2 points)}
+
+\question[2] \enonce{Donner la signification de chaque acronyme et son rôle principal dans l'ordinateur.}
+
+\begin{reponse}
+\begin{tabular}{|c|p{4.3cm}|p{8.2cm}|}
+\hline
+\textbf{Sigle} & \textbf{Nom complet} & \textbf{Rôle principal} \\ \hline
+CPU & \textit{Central Processing Unit} : processeur, unité centrale de traitement & Exécute les instructions des programmes, une par une, et fait les calculs. C'est le « cerveau » de l'ordinateur. \\ \hline
+GPU & \textit{Graphics Processing Unit} : processeur graphique & Calcule les images affichées à l'écran ; il fait énormément de petits calculs en parallèle (jeux, vidéo, IA). \\ \hline
+RAM & \textit{Random Access Memory} : mémoire vive & Garde les programmes en cours d'exécution et leurs données. Rapide, mais \textbf{volatile} : elle s'efface quand on éteint. \\ \hline
+ROM & \textit{Read Only Memory} : mémoire morte & Mémoire qu'on lit sans la modifier ; elle garde son contenu sans courant. Elle contient le micrologiciel de démarrage (BIOS/UEFI). \\ \hline
+\end{tabular}
+\end{reponse}
+
+\explication
+Un acronyme se lit lettre par lettre : chaque lettre est l'initiale d'un mot anglais. Pour retrouver le rôle, pense au mot important :
+\begin{enumerate}
+  \item \textbf{P}rocessing = traitement : CPU et GPU \emph{calculent} ; le G de GPU veut dire \emph{graphics} (images).
+  \item \textbf{M}emory = mémoire : RAM et ROM \emph{gardent} des informations.
+  \item \textit{Random Access} (accès direct) : on peut lire et écrire n'importe quelle case. \textit{Read Only} (lecture seule) : on lit seulement.
+\end{enumerate}
+\textbf{Volatile} veut dire : qui disparaît quand le courant est coupé.
+
+\begin{erreur}
+Confondre la RAM avec le stockage (disque dur, SSD, clé USB). La RAM est la mémoire de travail : elle s'efface à l'extinction. Le disque garde les fichiers. Un téléphone « 8 Go de RAM et 128 Go de stockage » a donc deux mémoires différentes.
+\end{erreur}
+
+% =====================================================================
+\section{Unités et stockage (3 points)}
+
+\question[1] \enonce{Pour le même prix, vaut-il mieux une clé USB de 250 Mbits ou une clé de 5 Go ? Justifier par le calcul.}
+
+\begin{reponse}
+250 Mbits $= 250 \div 8 = 31{,}25$ Mo, alors que 5 Go $= 5\,000$ Mo.\\
+La clé de \textbf{5 Go} est donc bien meilleure : elle contient $160$ fois plus de données.
+\end{reponse}
+
+\explication
+On ne peut comparer que deux quantités \textbf{dans la même unité}. Ici, il y a deux pièges : des \textbf{bits} contre des \textbf{octets}, et des \textbf{méga} contre des \textbf{giga}.
+
+\methode
+\begin{enumerate}
+  \item Passer des bits aux octets : 1 octet $=$ 8 bits, donc on \textbf{divise par 8}.\\
+  $250 \text{ Mbits} = 250 \div 8 \text{ Mo} = 31{,}25 \text{ Mo}$.
+  \item Passer des Go aux Mo : 1 Go $= 1\,000$ Mo, donc on \textbf{multiplie par 1\,000}.\\
+  $5 \text{ Go} = 5 \times 1\,000 \text{ Mo} = 5\,000 \text{ Mo}$.
+  \item Comparer : $5\,000 \text{ Mo} > 31{,}25 \text{ Mo}$, et $5\,000 \div 31{,}25 = 160$.
+\end{enumerate}
+
+\begin{astuce}
+\begin{itemize}
+  \item 1 octet (o) $=$ 8 bits (b). Le \textbf{b} minuscule est le bit ; le \textbf{o} (ou \textbf{B} en anglais) est l'octet.
+  \item 1 ko $=10^3$ o ; 1 Mo $=10^6$ o ; 1 Go $=10^9$ o ; 1 To $=10^{12}$ o.
+\end{itemize}
+On passe d'une unité à la suivante en multipliant ou en divisant par 1\,000.
+\end{astuce}
+
+\begin{erreur}
+Lire « 250 » et « 5 » et choisir 250 parce que le nombre est plus grand. Sans conversion, la comparaison n'a aucun sens.
+\end{erreur}
+
+\question[2] \enonce{Un disque dur externe a une capacité de 2 To.}
+\begin{parts}
+\part \enonce{Combien de films de 1 Go peut-on stocker sur ce disque ?}
+
+\begin{reponse}
+$2 \text{ To} = 2 \times 1\,000 \text{ Go} = 2\,000 \text{ Go}$, donc on peut stocker $2\,000 \div 1 = \mathbf{2\,000}$ \textbf{films}.
+\end{reponse}
+
+\methode
+\begin{enumerate}
+  \item Convertir la capacité dans l'unité du film : 1 To $= 1\,000$ Go, donc 2 To $= 2\,000$ Go.
+  \item Diviser la capacité par la taille d'un film : $2\,000 \text{ Go} \div 1 \text{ Go} = 2\,000$.
+\end{enumerate}
+\textit{Remarque :} le système d'exploitation affiche parfois un peu moins (environ 1,8 « To »), parce qu'il compte en puissances de 2 ($1 \text{ Tio} = 2^{40}$ octets). En NSI, on utilise les préfixes décimaux du Système international : 1 To $=10^{12}$ octets.
+
+\part \enonce{La vitesse d'écriture est de 20 Mo/s. Combien de temps faut-il pour transférer 1 Go ?}
+
+\begin{reponse}
+$1 \text{ Go} = 1\,000 \text{ Mo}$, donc le temps est $1\,000 \div 20 = \mathbf{50}$ \textbf{secondes}.
+\end{reponse}
+
+\methode
+\begin{enumerate}
+  \item « 20 Mo/s » signifie : 20 Mo sont écrits \textbf{chaque seconde}.
+  \item Mettre la quantité dans la même unité que la vitesse : 1 Go $= 1\,000$ Mo.
+  \item Temps $=$ quantité $\div$ vitesse : $1\,000 \text{ Mo} \div 20 \text{ Mo/s} = 50$ s.
+\end{enumerate}
+\begin{remarque}
+La phrase parle de copier « l'intégralité de ces films », mais la question ne demande que le temps pour \textbf{1 Go}. On répond à la question posée (50 s). Pour tout le disque, il faudrait $2\,000 \times 50 = 100\,000$ s, soit environ 27 h 47 min : cette réponse est aussi acceptée si le calcul est juste.
+\end{remarque}
+
+\begin{erreur}
+Calculer $1 \div 20 = 0{,}05$ s : on a divisé des Go par des Mo/s. Il faut toujours convertir avant de diviser.
+\end{erreur}
+\end{parts}
+
+% =====================================================================
+\section{Système d'exploitation (5 points)}
+
+\question[2] \enonce{Citer et expliquer brièvement les 4 rôles majeurs d'un système d'exploitation (OS).}
+
+\begin{reponse}
+\begin{enumerate}
+  \item \textbf{Gérer le processeur} : il partage le temps du CPU entre les programmes (processus) ; ils semblent tourner en même temps.
+  \item \textbf{Gérer la mémoire} : il donne à chaque programme sa part de RAM et empêche un programme de lire la mémoire d'un autre.
+  \item \textbf{Gérer les fichiers} : il organise le stockage en dossiers et fichiers (l'arborescence) et contrôle qui peut les lire ou les modifier (les droits).
+  \item \textbf{Gérer les périphériques} (entrées-sorties) : il fait communiquer les programmes avec le clavier, l'écran, l'imprimante, le réseau, grâce aux pilotes.
+\end{enumerate}
+\end{reponse}
+
+\explication
+Le système d'exploitation est l'intermédiaire entre le matériel et les logiciels. Chaque rôle correspond à une ressource de l'ordinateur à partager : le processeur, la mémoire, le stockage, les périphériques.
+On cite aussi souvent un rôle d'\textbf{interface avec l'utilisateur ou l'utilisatrice} (le bureau, le terminal) et un rôle de \textbf{sécurité} (comptes, droits). Toute liste de 4 rôles bien expliqués est acceptée si elle correspond au cours.
+
+\question[3] \enonce{Logiciel libre et logiciel propriétaire.}
+\begin{parts}
+\part \enonce{Quelle est la différence fondamentale concernant l'accès au code source ?}
+
+\begin{reponse}
+Le code source d'un logiciel \textbf{libre} est accessible : on a le droit de le lire, de l'étudier, de le modifier et de le redistribuer.
+Le code source d'un logiciel \textbf{propriétaire} est fermé : il n'est pas publié, et sa licence interdit de l'étudier ou de le modifier.
+\end{reponse}
+
+\explication
+Le \textbf{code source} est le texte du programme, écrit par des humains dans un langage de programmation. Un logiciel libre garantit 4 libertés : l'utiliser, l'étudier, le modifier, le redistribuer. Pour étudier et modifier, il faut le code source : c'est pour cela qu'il est ouvert.
+
+\begin{erreur}
+Confondre \emph{libre} et \emph{gratuit}. Un logiciel propriétaire peut être gratuit (beaucoup d'applications mobiles), et un logiciel libre peut être vendu. La différence porte sur les droits et le code source, pas sur le prix.
+\end{erreur}
+
+\part \enonce{Citer un système d'exploitation libre et un système propriétaire.}
+
+\begin{reponse}
+Libre : \textbf{Linux} (par exemple les distributions Ubuntu ou Debian).\\
+Propriétaire : \textbf{Windows} (ou macOS, iOS).
+\end{reponse}
+\textit{Remarque :} Android repose sur Linux, mais les versions des téléphones contiennent souvent des parties propriétaires : ce n'est donc pas le meilleur exemple de système libre.
+\end{parts}
+
+% =====================================================================
+\section{Manipulation du système Avalon (10 points)}
+
+\begin{tcolorbox}[colback=white, colframe=black!75, title=Rappel : arborescence du serveur Avalon]
+\centering
+\begin{tikzpicture}[
+    every node/.style={draw, rounded corners, fill=black!4, font=\footnotesize, minimum width=2.2cm},
+    edge from parent/.style={draw, -stealth, thick},
+    level 1/.style={sibling distance=5cm, level distance=1.4cm},
+    level 2/.style={sibling distance=2.5cm, level distance=1.4cm},
+    level 3/.style={sibling distance=2.5cm, level distance=1.4cm}
+]
+\node {/ (racine)}
+    child {node {bin/ (D)}
+        child {node {ls (F)}}
+        child {node {cp (F)}}
+    }
+    child {node {home/ (D)}
+        child {node {ghost/ (D)}
+            child {node {note.txt (F)}}
+            child {node {scripts/ (D)}
+                child {node {test.sh (F)}}
+            }
+        }
+        child {node {admin/ (D)}}
+    }
+    child {node {var/ (D)}
+        child {node {log/ (D)}
+            child {node {sys.log (F)}}
+        }
+    };
+\end{tikzpicture}
+\end{tcolorbox}
+
+\begin{astuce}[À retenir : les chemins]
+\begin{itemize}
+  \item Un chemin \textbf{absolu} part de la racine \code{/} : il commence par \code{/} et marche depuis n'importe où.
+  \item Un chemin \textbf{relatif} part du dossier où l'on se trouve.
+  \item \code{..} désigne le dossier parent (on remonte d'un étage) ; \code{.} désigne le dossier courant.
+\end{itemize}
+\end{astuce}
+
+\question[2] \enonce{Navigation.}
+\begin{parts}
+\part \enonce{Quelle commande affiche le chemin absolu du répertoire où l'on se trouve ?}
+
+\begin{reponse}
+\lstinline[style=terminal]!pwd!
+\end{reponse}
+\code{pwd} veut dire \textit{print working directory} : « affiche le répertoire de travail ». Par exemple, dans \code{admin}, elle affiche \code{/home/admin}.
+
+\part \enonce{Écrire la commande (chemin relatif) pour aller du dossier \code{bin} au dossier \code{admin}.}
+
+\begin{reponse}
+\lstinline[style=terminal]!cd ../home/admin!
+\end{reponse}
+
+\methode
+\begin{enumerate}
+  \item Repérer sur l'arbre le premier dossier commun à \code{bin} et à \code{admin} : c'est la racine \code{/}.
+  \item Remonter de \code{bin} jusqu'à la racine : un étage, donc \code{..} une fois.
+  \item Redescendre de la racine vers \code{admin} : \code{home}, puis \code{admin}.
+  \item Assembler avec des \code{/} : \code{../home/admin}, précédé de la commande \code{cd} (\textit{change directory}).
+\end{enumerate}
+
+\begin{erreur}
+Écrire \code{cd /home/admin} : la commande marche, mais le chemin est \textbf{absolu} (il commence par \code{/}), alors que la question demande un chemin relatif.
+\end{erreur}
+\end{parts}
+
+\question[4] \enonce{Gestion de fichiers : écrire les commandes, depuis \code{/home/admin}.}
+
+On est dans \code{/home/admin}. Donc \code{..} est \code{/home}, et \code{../..} est la racine \code{/}.
+
+\begin{parts}
+\part \enonce{Créer un dossier nommé \code{credentials}.}
+\begin{reponse}
+\lstinline[style=terminal]!mkdir credentials!
+\end{reponse}
+\code{mkdir} veut dire \textit{make directory} : « crée un dossier ». Le dossier est créé dans le dossier courant : \code{/home/admin/credentials}.
+
+\part \enonce{Déplacer le fichier \code{note.txt} dans le dossier \code{credentials}.}
+\begin{reponse}
+\lstinline[style=terminal]!mv ../ghost/note.txt credentials/!
+\end{reponse}
+\code{mv} (\textit{move}) prend deux chemins : d'abord \textbf{ce qu'on déplace}, ensuite \textbf{où on le met}. \code{note.txt} est dans \code{/home/ghost} : depuis \code{admin}, on remonte dans \code{home} (\code{..}), puis on descend dans \code{ghost}. Le chemin absolu \code{/home/ghost/note.txt} est aussi accepté.
+
+\part \enonce{Afficher le contenu du fichier \code{sys.log} sans quitter le répertoire.}
+\begin{reponse}
+\lstinline[style=terminal]!cat ../../var/log/sys.log!
+\end{reponse}
+\code{cat} affiche le contenu d'un fichier. On remonte deux fois (\code{admin} $\to$ \code{home} $\to$ \code{/}), puis on descend dans \code{var}, puis \code{log}. Variante : \code{cat /var/log/sys.log}.
+
+\part \enonce{Supprimer le fichier \code{cp}.}
+\begin{reponse}
+\lstinline[style=terminal]!rm ../../bin/cp!
+\end{reponse}
+\code{rm} (\textit{remove}) supprime un fichier, sans passer par une corbeille. Variante : \code{rm /bin/cp}. En vrai, \code{/bin} appartient à l'administrateur·rice (\code{root}) : il faudrait des droits d'administration, et supprimer \code{cp} casserait la commande de copie.
+\end{parts}
+
+\begin{erreur}
+Oublier qu'on est dans \code{/home/admin} et écrire \code{mv note.txt credentials} : le système répond qu'il ne trouve pas \code{note.txt}, car ce fichier n'est pas dans \code{admin}. Commence toujours par repérer sur l'arbre où tu es.
+\end{erreur}
+
+\question[4] \enonce{Droits d'accès. On lit avec \code{ls -l} :} \lstinline[style=terminal]!-rw-r--r-- 1 ghost users 1024 test.sh!
+
+\begin{astuce}[À retenir : lire les droits]
+Les 10 caractères se lisent ainsi :\\[2pt]
+{\small\begin{tabular}{|c|c|c|c|}
+\hline
+\code{-} & \code{rw-} & \code{r-{}-} & \code{r-{}-} \\ \hline
+type : \code{-} fichier, \code{d} dossier & propriétaire (\textbf{u}ser) & groupe (\textbf{g}roup) & les autres (\textbf{o}thers) \\ \hline
+\end{tabular}}\\[2pt]
+\code{r} : lire (\textit{read}), \code{w} : écrire (\textit{write}), \code{x} : exécuter (\textit{execute}), \code{-} : droit absent.
+\end{astuce}
+
+\begin{parts}
+\part \enonce{Un membre du groupe \code{users} peut-il exécuter ce script ? Justifier.}
+\begin{reponse}
+\textbf{Non.} Les droits du groupe sont \code{r-{}-} : lecture seulement. Il n'y a pas de \code{x}, donc pas de droit d'exécution.
+\end{reponse}
+Le propriétaire \code{ghost} non plus ne peut pas l'exécuter (\code{rw-}). \textit{Remarque :} comme le groupe peut lire le fichier, il pourrait le faire lire par un interpréteur (\code{bash test.sh}) ; mais il ne peut pas le lancer directement (\code{./test.sh}).
+
+\part \enonce{Donner la valeur octale des droits \code{rw-r-{}-r-{}-}.}
+\begin{reponse}
+\textbf{644}
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Chaque droit a une valeur : \code{r} $=4$, \code{w} $=2$, \code{x} $=1$, \code{-} $=0$.
+  \item On additionne pour chaque groupe de 3 lettres :
+  \code{rw-} $= 4+2+0 = 6$ ; \code{r-{}-} $= 4+0+0 = 4$ ; \code{r-{}-} $= 4$.
+  \item On écrit les trois chiffres à la suite : \textbf{644}.
+\end{enumerate}
+Ces valeurs viennent du binaire : \code{rw-} se lit $110_{(2)} = 6$ et \code{r-{}-} se lit $100_{(2)} = 4$. Un chiffre octal (base 8) code exactement 3 bits.
+
+\part \enonce{Donner la commande qui ajoute le droit d'écriture au groupe et aux autres, en mode symbolique.}
+\begin{reponse}
+\lstinline[style=terminal]!chmod go+w test.sh!
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item \textbf{Qui ?} le groupe \code{g} et les autres \code{o} : on écrit \code{go}.
+  \item \textbf{Quelle opération ?} ajouter : \code{+} (retirer serait \code{-}, fixer exactement serait \code{=}).
+  \item \textbf{Quel droit ?} l'écriture : \code{w}.
+  \item On termine par le nom du fichier.
+\end{enumerate}
+Après la commande, \code{ls -l} affiche \lstinline[style=terminal]!-rw-rw-rw-!, soit 666 en octal.
+
+\begin{erreur}
+Écrire \code{chmod o+w} en pensant que \code{o} veut dire \textit{owner} (propriétaire). Non : \code{o} veut dire \textit{others} (les autres) ; le propriétaire, c'est \code{u} (\textit{user}).
+\end{erreur}
+\end{parts}
+
+% =====================================================================
+\section{Bonus : interprétation d'erreurs Python (2 points)}
+
+\question[2] \enonce{Pour chaque code, expliquer pourquoi l'erreur survient et proposer une correction.}
+
+\begin{astuce}[Lire un message d'erreur]
+La dernière ligne d'un message d'erreur Python donne le \textbf{type} de l'erreur (avant les deux-points), puis un détail en anglais. Traduis le détail : il dit presque toujours ce qui ne va pas.
+\end{astuce}
+
+\textbf{Code 1 : \code{IndexError: list index out of range}} (« indice de liste hors limites »).
+\begin{reponse}
+La liste \code{notes} a 3 éléments, d'indices 0, 1 et 2. \code{range(4)} donne 0, 1, 2, 3 : au 4\textsuperscript{e} tour, \code{notes[3]} n'existe pas.
+\begin{lstlisting}
+notes = [12, 15, 18]
+for i in range(len(notes)):
+    print(notes[i])
+\end{lstlisting}
+\end{reponse}
+\code{len(notes)} vaut 3 : la boucle s'adapte toute seule à la taille de la liste. Variante encore plus simple : \code{for note in notes: print(note)}.
+
+\textbf{Code 2 :} \lstinline[style=terminal]!TypeError: '>=' not supported between instances of 'str' and 'int'!\\ (« \code{>=} n'est pas possible entre une chaîne et un entier »).
+\begin{reponse}
+\code{input()} renvoie toujours une \textbf{chaîne de caractères} (\code{str}), même si on tape un nombre. On ne peut pas comparer le texte \code{"17"} avec l'entier \code{18}. Il faut convertir avec \code{int()} :
+\begin{lstlisting}
+age = int(input("Quel est votre âge ? "))
+if age >= 18:
+    print("Majeur")
+else:
+    print("Mineur")
+\end{lstlisting}
+\end{reponse}
+
+\textbf{Code 3 : \code{ZeroDivisionError: division by zero}} (« division par zéro »).
+\begin{reponse}
+L'appel \code{calcul(10, 0)} calcule \code{10 / 0} : la division par zéro est impossible. On vérifie le diviseur avant de diviser :
+\begin{lstlisting}
+def calcul(a, b):
+    if b == 0:
+        return None   # pas de résultat possible
+    return a / b
+
+print(calcul(10, 0))   # affiche None
+print(calcul(10, 4))   # affiche 2.5
+\end{lstlisting}
+\end{reponse}
+\code{None} est la valeur Python qui signifie « rien ». Une autre correction acceptée : changer l'appel, par exemple \code{calcul(10, 2)}.
+
+\textbf{Code 4 : \code{KeyError: 'poires'}} (« clé absente : \code{'poires'} »).
+\begin{reponse}
+Le dictionnaire \code{inventaire} n'a que les clés \code{"pommes"} et \code{"bananes"}. La clé \code{"poires"} n'existe pas. On teste sa présence avec \code{in} avant d'y accéder :
+\begin{lstlisting}
+inventaire = {"pommes": 5, "bananes": 2}
+if "poires" in inventaire:
+    print(inventaire["poires"])
+else:
+    print("Pas de poires")
+\end{lstlisting}
+\end{reponse}
+Variante : \code{print(inventaire.get("poires", 0))} affiche 0 quand la clé est absente.
+
+\end{questions}
+
+\end{document}

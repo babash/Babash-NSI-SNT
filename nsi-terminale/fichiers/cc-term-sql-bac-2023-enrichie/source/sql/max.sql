@@ -1,0 +1,1 @@
+SELECT MAX(tarif) FROM Objet ;

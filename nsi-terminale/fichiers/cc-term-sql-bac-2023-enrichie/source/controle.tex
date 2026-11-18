@@ -1,0 +1,222 @@
+\documentclass[a4paper, noanswers, addpoints, 12pt]{exam}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta,shadows}
+\usepackage[french]{babel}
+
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{minted}
+\usepackage{eurosym}
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+
+
+\newcommand{\sql}[1] {\textsc{#1}}
+
+
+\title{CC Term NSI - SQL}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Novembre 2024, Durée: 1h30min}
+
+
+\usepackage[a4paper,top=2.3cm,bottom=2.8cm,left=2cm,right=2cm,headsep=0.6cm,footskip=1.2cm]{geometry}
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+\begin{center}\footnotesize\itshape D'après l'exercice 2 du sujet de NSI du baccalauréat 2023 (jour 2, Polynésie, code 23-NSIJ2PO1).\end{center}
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{\makebox[\textwidth]{Nom : \dotfill\ Pr\'enom : \dotfill\ Classe : \makebox[3cm]{\dotfill}}}{}{}
+
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+Le devoir est à rédiger sur une feuille libre.\\
+La clarté de la rédaction et les explications font partie intégrante de la notation. Une réponse non rédigée sans explication sera considérée fausse. Toutes les questions valent 1 points sauf les rédactions de requête qui valent 2 points.\\
+Prenez le temps d'encadrer les réponses.
+
+\end{center}
+
+
+}}
+\end{center}
+
+\vsword{Note:}
+\hsword{Note:}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+
+\section*{Sujet:}
+\begin{center}
+	\textit{Cet exercice traite du thème base de données, et principalement du modèle relationnel et du langage \sql{SQL}.}
+\end{center}
+
+\noindent L'énoncé de cet exercice peut utiliser les mots du langage \sql{SQL} suivants :
+\sql{SELECT}, \sql{FROM}, \sql{WHERE}, \sql{JOIN ON}, \sql{INSERT INTO}, \sql{VALUES}, \sql{UPDATE}, \sql{SET}, \sql{DELETE}, \sql{COUNT}, \sql{AVG}, \sql{LIKE}, \sql{AND}, \sql{OR}.
+
+\medskip
+ 
+\noindent Un site permet à ses membres de proposer à la location du matériel et de louer du  matériel. Ceci permet de mutualiser du matériel entre membres et au propriétaire de rentabiliser cet achat. Le temps d'utilisation du matériel s'en trouve ainsi augmenté et le nombre d'appareils diminué.
+
+\newpage
+
+\noindent Le modèle relationnel est donné par le schéma de la Figure \ref{fig:schena-relationnel}.\\
+
+La table {\tt Membre} contient les informations de chaque utilisateur du site (nom, prénom et code postal).\\
+
+La table {\tt Objet} décrit le type d'objet à la location ainsi que son tarif de location journalier.\\
+
+La table {\tt Reservation} répertorie toutes les réservations effectuées par les membres du site avec notamment leur date de début et de fin de location.\\
+
+La table {\tt Possede} permet de lier les tables {\tt Membre} et {\tt Objet}.
+
+\begin{figure}[h]
+    \begin{center}
+    \input{figures/fig-schema-sql-location}
+    \end{center}
+    \caption{Schéma relationnel}
+    \label{fig:schena-relationnel}
+\end{figure}
+
+\noindent \underline{Conventions utilisées pour le schéma} :
+
+\begin{itemize}
+ \item Les clés primaires et étrangères sont mises en gras.
+ \item La mention (PK) identifie une clé primaire, la mention (FK) une clé étrangère.
+ \item Une flèche part d'une clé étrangère et pointe vers la clé primaire qu'elle référence : les deux attributs doivent partager les mêmes valeurs.
+\end{itemize}
+
+\newpage
+
+\noindent On donne ci-dessous le contenu de ces tables à un instant donné :
+
+\noindent \begin{tabularx}{0.7\linewidth}[t]{|*{4}{>{\centering \arraybackslash}X|}}
+\multicolumn{4}{c}{\bf Membre} \\ \hline
+{\bf id\_membre} & {\bf nom} & {\bf prenom} & {\bf cp} \\ \hline
+1 & "Ali" & "Mohamed" & "69110" \\ \hline
+2 & "Alonso" & "Fernando" & "69005" \\ \hline
+3 & "Dupont" & "Antoine" & "69003" \\ \hline
+4 & "Ferrand" & "Pauline" & "69160" \\ \hline
+5 & "Kane" & "Harry" & "69003" \\ \hline
+\end{tabularx}
+\hfill
+\noindent \begin{tabularx}{0.35\linewidth}[t]{|*{2}{>{\centering \arraybackslash}X|}}
+\multicolumn{2}{c}{\bf Possede} \\ \hline
+{\bf id\_membre} & {\bf id\_objet} \\ \hline
+1 & 4 \\ \hline
+1 & 6 \\ \hline
+2 & 4 \\ \hline
+3 & 3 \\ \hline
+3 & 5 \\ \hline
+4 & 1 \\ \hline
+4 & 2 \\ \hline
+\end{tabularx}
+
+{\centering
+  \begin{tabularx}{0.5\linewidth}{|c|*{1}{>{\centering \arraybackslash}X|c|}}
+  \multicolumn{3}{c}{\bf Objet} \\ \hline
+  {\bf id\_objet} & {\bf description} & {\bf tarif} \\ \hline
+  1 & "Nettoyeur haute pression" & 20 \\ \hline
+  2 & "Taille-haie" & 15 \\ \hline
+  3 & "Perforatrice" & 15 \\ \hline
+  4 & "Appareil à raclette" & 10 \\ \hline
+  5 & "Scie circulaire" & 15 \\ \hline
+  6 & "Appareil à gaufre" & 10 \\ \hline
+  \end{tabularx}
+
+\bigskip
+
+  \begin{tabularx}{\linewidth}{|*{5}{>{\centering \arraybackslash}X|}}
+  \multicolumn{5}{c}{\bf Reservation} \\ \hline
+  {\bf id\_reservation} & {\bf id\_objet} & {\bf id\_membre} & {\bf date\_location} & {\bf date\_retour} \\ \hline
+  1 & 4 & 5 & 2022-02-18 & 2022-02-19 \\ \hline
+  2 & 1 & 2 & 2022-05-05 & 2022-05-06 \\ \hline
+  3 & 3 & 1 & 2022-07-10 & 2022-07-12 \\ \hline
+  4 & 3 & 1 & 2022-08-12 & 2022-08-14 \\ \hline
+  5 & 2 & 2 & 2022-10-20 & 2022-10-22 \\ \hline
+  6 & 2 & 2 & 2022-10-20 & 2022-10-22 \\ \hline
+  \end{tabularx}
+\par}
+
+\bigskip
+
+\begin{questions}
+
+\question[4] Dans cette partie, \textbf{on ne demande pas de requête \sql{SQL}}. En étudiant le contenu des tables ci-dessus :
+\begin{parts}
+\part Rappeler la définition d'une clé primaire.
+\part Indiquer quels sont les prénoms et noms du ou des membres du site qui proposent la location d'un appareil à raclette.
+\part Donner le prénom et le nom du membre qui ne propose pas d'objet à la location.
+\part Le schéma relationnel (sous forme textuelle) des relations {\tt Objet} et {\tt Possede} sont :
+\begin{align*}
+    &\text{Objet(\underline{id\_objet} : INT NOT NULL, description : TEXT, tarif : INT)}\\
+    &\text{Possede(\#id\_membre : INT, \#id\_objet : INT)}
+\end{align*}
+Écrire le schéma relationnel (sous forme textuelle) de la relation {\tt Reservation} en précisant le domaine de chaque
+attribut.
+\end{parts}
+
+\question[3] Dans cette partie, \textbf{on ne demande pas de requête \sql{SQL}}. En étudiant le contenu des tables ci-dessus :
+\begin{parts}
+    \part Donner le résultat de la requête suivante :
+        \inputminted[numbersep=2pt,frame=lines,bgcolor=black!5]{sql}{sql/23-NSIJ2PO1_ex2_q2a.sql} \vspace*{-0.5cm}
+    
+    \part Donner le résultat de la requête suivante :
+        \inputminted[numbersep=2pt,frame=lines,bgcolor=black!5]{sql}{sql/max.sql} \vspace*{-0.5cm}
+    
+    \part  Expliquer ce que fait la requête ci-dessous :
+        \inputminted[numbersep=2pt,frame=lines,bgcolor=black!5]{sql}{sql/like.sql} \vspace*{-0.5cm}
+\end{parts}
+
+\question[6] Dans cette partie, \textbf{on demande d'ecrire des requêtes \sql{SQL}}.
+\begin{parts}
+    \part Écrire une requête permettant de connaître le tarif de location d'une scie circulaire.
+    \part Écrire une requête permettant de connaitre les objets dont la description \textbf{contient} appareil tout en minuscule.
+   \part Écrire une requête permettant de modifier le tarif de location d'un nettoyeur à haute pression pour le passer à 15 \euro{} par jour au lieu de 20 \euro{} par jour.
+\end{parts}
+
+\question[3] Ajout dans la base de donnees :
+\begin{parts}
+   \part Écrire une requête \sql{SQL} permettant d'ajouter Wendie Renard habitant à Villeurbanne (code postal 69100) dans la table {\tt Membre}, avec un {\tt id\_membre}
+    de 6.
+    \part Camille Martin habitant à Bouéni (code postal 97620) vient de s'inscrire sur le site (2024-11-28) et décide de louer l'appareil à gaufre et la scie circulaire qu'il rendra tous deux dans une semaine.\\ Recopier et compléter la requête ci-dessous afin de tenir compte de cette nouvelle situation.
+    \inputminted[numbersep=2pt,frame=lines,bgcolor=black!5]{sql}{sql/insert-into.sql} \vspace*{-0.5cm}
+\end{parts}
+
+\question[4] Dans cette partie, les requêtes utilisent des jointures entre tables. On supposera donc les numéros {\tt id\_membre} et {\tt id\_objet} non connus.
+\begin{parts}
+   \part Écrire une requête permettant de compter le nombre de réservations réalisées par Fernando Alonso.
+   \part Écrire une requête permettant de connaître les noms et prénoms des membres possédant un appareil à raclette.
+\end{parts} 
+\vfill
+
+% \question[3] [Bonus] Suppression de données.
+
+% Rappel : la relation {\tt Objet} décrit le type d'objet à la location. Il n'y a pas d'objet à supprimer dans cette table lors du départ d'un membre.\\
+% \begin{parts}
+    
+% \part Expliquer la limitation importante d'utilisation du service offert par le site si l'on utilisait le couple de clés étrangères {\tt (id\_objet, id\_membre)} en tant que clé primaire de la relation {\tt Reservation}.
+
+% \part Mohamed Ali décide de ne plus être membre du site. Il faut donc le supprimer de la table {\tt Membre}. Expliquer pourquoi cette requête produit une erreur.
+% \inputminted[numbersep=2pt,frame=lines,bgcolor=black!5]{sql}{sql/23-NSIJ2PO1_ex2_q3b.sql} \vspace*{-0.5cm}
+
+
+% \part Proposer une suite de requêtes utilisant le mot clé \sql{DELETE}, précédant la requête ci-dessus, pour supprimer correctement Mohamed Ali, dont l'{\tt id\_membre} est 1, de la base de données.
+% \end{parts}
+
+\end{questions}
+\end{document}

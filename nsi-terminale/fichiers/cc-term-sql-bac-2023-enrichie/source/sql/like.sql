@@ -1,0 +1,1 @@
+SELECT * FROM Reservation WHERE date_location LIKE "2022-%" ;

@@ -1,0 +1,356 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{needspace}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- CC1 Prem NSI - Conditions et boucles (rattrapage 2024)}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Octobre 2024, durée : 1 h}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Conditions et boucles (rattrapage 2024)}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h]
+\end{center}
+
+\begin{questions}
+
+% =====================================================================
+\section{Question de cours}
+
+\question[2] \enonce{Questions de cours.}
+\begin{parts}
+\part \enonce{Quelles sont les 5 structures de contrôle vues jusqu'ici ?}
+\begin{reponse}
+\code{if}, \code{elif}, \code{else} (les instructions conditionnelles), \code{for} et \code{while} (les boucles).
+\end{reponse}
+Une \textbf{structure de contrôle} décide \textbf{quelles} instructions s'exécutent (\code{if}, \code{elif}, \code{else}) ou \textbf{combien de fois} (\code{for}, \code{while}). Sans elles, les instructions s'exécutent une fois chacune, de haut en bas (c'est la \textbf{séquence}).
+\begin{itemize}
+  \item \code{if} : exécute un bloc si une condition est vraie ;
+  \item \code{elif} (« sinon si ») : teste une autre condition si les précédentes sont fausses ;
+  \item \code{else} (« sinon ») : exécute un bloc si toutes les conditions précédentes sont fausses ;
+  \item \code{for} : répète un bloc un nombre de fois connu à l'avance (pour chaque valeur d'un \code{range}, d'une liste\dots) ;
+  \item \code{while} (« tant que ») : répète un bloc tant qu'une condition est vraie.
+\end{itemize}
+
+\part \enonce{Quelle fonction permet de récupérer la saisie d'un utilisateur en Python ?}
+\begin{reponse}
+\code{input()}
+\end{reponse}
+Exemple : \code{prenom = input("Ton prénom ? ")}. Attention : \code{input()} renvoie toujours une \textbf{chaîne} (\code{str}). Pour un nombre, on convertit : \code{pari = int(input("Ton pari ? "))}.
+
+\part \enonce{Quelle fonction permet d'afficher une information en Python ?}
+\begin{reponse}
+\code{print()}
+\end{reponse}
+Exemple : \code{print("Score :", score)} affiche le texte et la valeur de la variable, séparés par un espace.
+
+\part \enonce{Que signifie le terme indentation ?}
+\begin{reponse}
+L'\textbf{indentation} est le décalage vers la droite du début d'une ligne (4 espaces ou une tabulation). En Python, elle indique quelles instructions font partie d'un bloc (le corps d'un \code{if}, d'une boucle, d'une fonction).
+\end{reponse}
+\begin{lstlisting}
+if note >= 10:
+    print("Admis·e")     # indentée : dans le if
+print("Fin")              # pas indentée : toujours exécutée
+\end{lstlisting}
+Une mauvaise indentation change le programme ou provoque une erreur \code{IndentationError}.
+\end{parts}
+
+\question[2] \enonce{Donner les plages de valeurs des appels de \code{range}.}
+\begin{reponse}
+\begin{tabular}{ll}
+\code{range(3)} & 0, 1, 2\\
+\code{range(9, 14)} & 9, 10, 11, 12, 13\\
+\code{range(5, 15, 5)} & 5, 10\\
+\code{range(64, 12, -10)} & 64, 54, 44, 34, 24, 14\\
+\end{tabular}
+\end{reponse}
+\begin{astuce}[À retenir : \code{range(début, fin, pas)}]
+\begin{itemize}
+  \item On part de \code{début} (0 s'il est absent) et on ajoute \code{pas} (1 s'il est absent) à chaque fois.
+  \item On s'arrête \textbf{avant} \code{fin} : la valeur \code{fin} n'est jamais atteinte.
+  \item Avec un pas négatif, on descend, et on s'arrête avant de dépasser \code{fin} vers le bas.
+\end{itemize}
+\end{astuce}
+\begin{itemize}
+  \item \code{range(5, 15, 5)} : 5, puis 10 ; la suivante serait 15, mais 15 est la fin, exclue.
+  \item \code{range(64, 12, -10)} : 64, 54, 44, 34, 24, 14 ; la suivante serait 4, qui est passée sous 12 : on s'arrête.
+\end{itemize}
+
+\begin{erreur}
+Écrire 5, 10, 15 pour \code{range(5, 15, 5)}, ou 0, 1, 2, 3 pour \code{range(3)} : la fin n'est jamais incluse.
+\end{erreur}
+
+\question[2] \enonce{Quels opérateurs Python réalisent les opérations suivantes ?}
+\begin{reponse}
+\begin{tabular}{ll}
+attribuer une valeur à une variable : & \code{=}\\
+calculer le quotient d'une division entière : & \code{//}\\
+tester si deux expressions sont égales : & \code{==}\\
+faire la somme de deux expressions : & \code{+}\\
+\end{tabular}
+\end{reponse}
+\begin{itemize}
+  \item \code{x = 5} range la valeur 5 dans \code{x} : c'est l'\textbf{affectation}.
+  \item \code{17 // 5} vaut 3 (le quotient), et \code{17 \% 5} vaut 2 (le reste), car $17 = 5 \times 3 + 2$. Avec \code{/}, on obtiendrait \code{3.4}.
+  \item \code{x == 5} \textbf{compare} et donne \code{True} ou \code{False}.
+\end{itemize}
+
+\begin{erreur}
+Confondre \code{=} et \code{==}. \code{if x = 5:} provoque une erreur de syntaxe : dans un test, il faut \code{==}.
+\end{erreur}
+
+% =====================================================================
+\section{Variables et conditions}
+
+\begin{lstlisting}
+import random
+# random.randint(1, 10) tire un nombre aléatoire entre 1 et 10.
+pari = int(input("Saisissez un nombre entre 1 et 36 : "))
+score = 0
+roulette = random.randint(1, 36)
+if  roulette == pari:
+    score = score + 35
+else :
+    score = 0
+if -4 <= roulette - pari <= 4 :
+    score = score + 20
+if (roulette % 2) == (pari % 2):
+    score = score + 2
+elif score != 0 :
+    score = score - 2
+\end{lstlisting}
+\begin{remarque}
+Le commentaire de la ligne 2 parle de \code{randint(1, 10)}, mais la ligne 5 tire un nombre entre 1 et 36. C'est la ligne 5 qui compte : le commentaire n'est pas exécuté. Le code est aussi rappelé ici sans le décalage de 4 espaces du sujet : en Python, la première ligne d'un programme ne doit pas être indentée.
+\end{remarque}
+
+\question[1] \enonce{Combien y a-t-il de variables dans ce code ? Quels sont leurs types ?}
+\begin{reponse}
+\textbf{3 variables} : \code{pari}, \code{score} et \code{roulette}. Toutes sont de type \code{int} (entier).
+\end{reponse}
+\explication\ On repère les noms placés à gauche d'un \code{=}. \code{pari} est un entier grâce à \code{int(...)} : sans lui, ce serait une chaîne (\code{str}). \code{random.randint} renvoie un entier. \code{score} ne reçoit que des sommes et différences d'entiers. \code{random} est un \textbf{module} (une bibliothèque de fonctions), pas une variable.
+
+\question[3] \enonce{Donner le tableau d'avancement des variables pour \code{pari=10}, \code{roulette=13}.}
+\begin{reponse}
+\begin{center}
+\begin{tabular}{|c|l|c|c|c|}
+\hline
+Lignes & Test ou instruction & \code{pari} & \code{roulette} & \code{score} \\ \hline
+3 & saisie & 10 & & \\
+4 & \code{score = 0} & 10 & & 0 \\
+5 & tirage & 10 & 13 & 0 \\
+6, 8, 9 & \code{13 == 10} : faux, donc \code{else} & 10 & 13 & 0 \\
+10, 11 & $-4 \le 3 \le 4$ : vrai & 10 & 13 & 20 \\
+12 & \code{1 == 0} : faux & 10 & 13 & 20 \\
+14, 15 & \code{20 != 0} : vrai & 10 & 13 & \textbf{18} \\ \hline
+\end{tabular}
+\end{center}
+Valeur finale : \code{score} $= 18$.
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Ligne 6 : la roulette (13) n'est pas égale au pari (10) : on exécute le \code{else}, \code{score} reste 0.
+  \item Ligne 10 : \code{roulette - pari} $= 13 - 10 = 3$. L'encadrement $-4 \le 3 \le 4$ est vrai : on gagne 20. Ce test veut dire « la roulette est à 4 cases ou moins du pari ».
+  \item Ligne 12 : \code{\%} donne le reste de la division par 2 : 0 si le nombre est pair, 1 s'il est impair. \code{13 \% 2} vaut 1 et \code{10 \% 2} vaut 0 : les parités sont différentes. Le test est faux.
+  \item Ligne 14 : on passe au \code{elif}. \code{score} vaut 20, donc \code{score != 0} est vrai : on retire 2. \code{score} vaut 18.
+\end{enumerate}
+
+\question[2] \enonce{Quel est le score pour chaque jeu de valeurs ?}
+\begin{reponse}
+\begin{tabular}{ll}
+\code{pari=2, roulette=2} : & \textbf{57}\\
+\code{pari=10, roulette=25} : & \textbf{0}\\
+\code{pari=9, roulette=33} : & \textbf{2}\\
+\code{pari=5, roulette=7} : & \textbf{22}\\
+\end{tabular}
+\end{reponse}
+\begin{center}
+\small
+\begin{tabular}{|c|c|c|c|c|}
+\hline
+Pari, roulette & Égalité ? & Écart (roulette $-$ pari) & Même parité ? & Score \\ \hline
+2, 2 & oui : 35 & 0 : $+20$ & oui : $+2$ & 57 \\
+10, 25 & non : 0 & 15 : $+0$ & non, et score $= 0$ : rien & 0 \\
+9, 33 & non : 0 & 24 : $+0$ & oui (impairs) : $+2$ & 2 \\
+5, 7 & non : 0 & 2 : $+20$ & oui (impairs) : $+2$ & 22 \\ \hline
+\end{tabular}
+\end{center}
+Pour 10 et 25 : les parités sont différentes, mais le \code{elif} demande \code{score != 0} ; le score vaut 0, donc on ne retire rien. Le score ne devient jamais négatif.
+
+\begin{erreur}
+Pour 2 et 2, s'arrêter à 35. Les trois \code{if} des lignes 6, 10 et 12 sont \textbf{indépendants} : on les teste tous. Seuls un \code{elif} ou un \code{else} dépendent du \code{if} juste au-dessus.
+\end{erreur}
+
+% =====================================================================
+\section{Boucles}
+
+\needspace{9\baselineskip}
+\begin{lstlisting}
+n = 12
+i = 0
+p = 0
+while (i*p) < n:
+    p = p + 1
+    i = i + 1
+\end{lstlisting}
+
+\question[1] \enonce{Combien y a-t-il de variables dans ce code ? Quels sont leurs types ?}
+\begin{reponse}
+\textbf{3 variables} : \code{n}, \code{i} et \code{p}, toutes de type \code{int}.
+\end{reponse}
+On n'utilise que des entiers, l'addition \code{+} et la multiplication \code{*} : les résultats restent des entiers.
+
+\question[4] \enonce{Faire le tableau d'avancement des variables.}
+\begin{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+Étape & \code{n} & \code{i} & \code{p} & \code{i*p} & Test \code{i*p < n} \\ \hline
+Avant la boucle & 12 & 0 & 0 & 0 & $0 < 12$ : vrai \\
+Tour 1 & 12 & 1 & 1 & 1 & $1 < 12$ : vrai \\
+Tour 2 & 12 & 2 & 2 & 4 & $4 < 12$ : vrai \\
+Tour 3 & 12 & 3 & 3 & 9 & $9 < 12$ : vrai \\
+Tour 4 & 12 & 4 & 4 & 16 & $16 < 12$ : faux, fin \\ \hline
+\end{tabular}
+\end{center}
+Valeurs finales : \code{n = 12}, \code{i = 4}, \code{p = 4}.
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Une boucle \code{while} teste sa condition \textbf{avant} chaque tour. Si elle est vraie, elle exécute le corps, puis revient au test.
+  \item À chaque tour, \code{p} et \code{i} augmentent de 1. Donc \code{i*p} vaut $1 \times 1$, $2 \times 2$, $3 \times 3$, $4 \times 4$ : les carrés.
+  \item Après le tour 4, \code{i*p} vaut 16, qui n'est pas inférieur à 12 : la boucle s'arrête. On a fait 4 tours.
+\end{enumerate}
+\begin{erreur}
+S'arrêter à 3 en pensant que $9$ est « le dernier avant 12 ». La boucle ne sait pas à l'avance qu'elle va dépasser : elle fait le tour qui amène à 16, puis le test échoue.
+\end{erreur}
+
+% =====================================================================
+\section{Rédaction de code}
+
+\question[3] \enonce{Écrire un code qui calcule $\frac{1}{2} + \frac{2}{3} + \frac{3}{4} + \dots + \frac{99}{100}$, avec une boucle.}
+\begin{reponse}
+\begin{lstlisting}
+somme = 0
+for k in range(1, 100):
+    somme = somme + k / (k + 1)
+print(somme)
+\end{lstlisting}
+Le programme affiche environ \code{94.8126}.
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Trouver la forme d'un terme : chaque fraction est $\dfrac{k}{k+1}$, le numérateur $k$ allant de 1 à 99.
+  \item Créer un \textbf{accumulateur} : \code{somme = 0}, avant la boucle.
+  \item Faire varier $k$ de 1 à 99 : \code{range(1, 100)}, car la fin est exclue.
+  \item À chaque tour, ajouter le terme : \code{somme = somme + k / (k + 1)}. Les parenthèses sont obligatoires : \code{k / k + 1} calculerait $\frac{k}{k} + 1 = 2$.
+\end{enumerate}
+\textbf{Trace des premiers tours :}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\code{k} & terme \code{k/(k+1)} & \code{somme} \\ \hline
+1 & 0,5 & 0,5 \\
+2 & 0,666\dots & 1,166\dots \\
+3 & 0,75 & 1,916\dots \\
+\dots & \dots & \dots \\
+99 & 0,99 & 94,81\dots \\ \hline
+\end{tabular}
+\end{center}
+\textit{Variante avec \code{while} :} \code{k = 1}, puis \code{while k < 100:} \code{somme = somme + k/(k+1)} et \code{k = k + 1}. Ne pas oublier d'augmenter \code{k}, sinon la boucle ne s'arrête jamais.
+
+\begin{erreur}
+Écrire \code{range(1, 99)} : le dernier terme $\frac{99}{100}$ est oublié. Vérifie toujours la \textbf{dernière} valeur prise par ta boucle.
+\end{erreur}
+
+\end{questions}
+
+\end{document}

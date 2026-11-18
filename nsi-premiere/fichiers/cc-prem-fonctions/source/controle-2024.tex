@@ -1,0 +1,177 @@
+\documentclass[a4paper, noanswers, addpoints, 12pt]{exam}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta,shadows}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+
+\newcommand\emptybox[1]{%
+ \hbox{\smash{\hspace*{\dimexpr-\hoffset}%
+  }\framebox(\textwidth, #1){}}}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\title{CC 1er NSI - Fonction}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Novembre 2024, Durée: 1h30min}
+
+
+\usepackage[a4paper,top=2.3cm,bottom=2.8cm,left=2cm,right=2cm,headsep=0.6cm,footskip=1.2cm]{geometry}
+\lstset{extendedchars=true,literate={à}{{\`a}}1 {é}{{\'e}}1}
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{\makebox[\textwidth]{Nom : \dotfill\ Pr\'enom : \dotfill\ Classe : \makebox[3cm]{\dotfill}}}{}{}
+
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+Le devoir est à rédiger sur le sujet.\\
+La clarté de la rédaction et les explications font partie intégrante de la notation. Une réponse non rédigée sans explication sera considérée fausse.\\
+\end{center}
+
+
+}}
+\end{center}
+
+\vsword{Note:}
+\hsword{Note:}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+\begin{questions}
+
+\vspace{0.5cm}
+\section{Question de cours : }
+
+\question[1] Une fonction est-elle une structure de contrôle : Vrai ou Faux ?
+\question[3] Soit le code ci-dessous :
+\begin{lstlisting}[style=mystyle, language=Python]
+def somme_entre_deux_nombres(a, b):
+    somme = 0
+    for i in range(a, b):
+        somme += i
+    return somme
+\end{lstlisting}
+\begin{parts}
+    \part Quels sont les paramètres de la fonction ci-dessus ?
+    \part Quels sont les variables locales de la fonction ci-dessus ?
+    \part Quelles sont les valeurs de retour de la fonction ci-dessus ?
+\end{parts}
+\question[2]Écrire un appel de la fonction \textit{somme\_entre\_deux\_nombres} pour a=10 et b=15. On prendra soin de stocker les éventuelles valeurs de retour dans des variables.
+\question[4] Associer à chacun des chiffres du schéma ci-dessous un des termes suivant : appeler, arguments, valeur de retour, corps, en-tête, définir, paramètre, nom. \begin{figure}[h]
+    \centering
+    \input{figures/fig-schema-fonction}
+    \label{fig:schema-a-trou}
+\end{figure}
+
+\section{Compréhension de code : }
+\begin{lstlisting}[style=mystyle, language=Python]
+import random
+
+def demander_nombre():
+    rep = int(input("quelle est votre choix ?: "))
+    return rep
+
+def aide(rep, nbHasard):
+    if rep<nbHasard:
+        print("+")
+    if rep>nbHasard:
+        print("-")
+        
+essai = 11
+#on crée une variable qui va stocker le nombre à trouver .
+nbHasard = random.randint(1 , 100)
+rep = 0
+
+while rep != nbHasard and essai > 0:
+    essai = essai - 1
+    rep = demander_nombre()
+    aide(rep, nbHasard)
+
+if essai > 0 :
+    print("Bravo, vous avez trouvé la bonne réponse !")
+else :
+    print("Vous avez perdu !")
+\end{lstlisting}
+\question[3] Dans le code ci-dessus, entourer les définitions des fonctions (en entière) et souligner les appels.
+
+\begin{lstlisting}[style=mystyle, language=Python]
+from turtle import *
+
+def surprise(cote, repetition):
+  # Au depart la tortue est a l'horizontale.
+  for i in range(repetition):
+    forward((i//4+1)*cote) # forward sert a avancer
+    right(90) # right sert a tourner a droite
+
+surprise(50, 16)
+\end{lstlisting}
+\question[2] Dessiner ce qu'affiche le code ci-dessus. 
+
+\begin{lstlisting}[style=mystyle, language=Python]
+def f(x, y, z):
+    return x + y, x + z, y + z
+
+def g(x, y):
+    if x > 10 :
+        return x, y
+    else :
+        return y, x
+
+def combo(x, y, z):
+    s1, s2, s3  = f(x, y, z)
+    print(s1, s2, s3)
+    a, b = g(s1, s3)
+    print(a, b)
+    return s1 - a, s2 - b 
+
+res1, res2 = combo(4 ,9 ,2)
+print(res1, res2)
+\end{lstlisting}
+\question[3] Qu'affiche le code ci-dessus ?\\
+
+\section{Rédaction de fonction :}
+\question[2] Écrire une fonction division qui renvoie le quotient de deux nombres donnés en paramètres, attention, vous devrez prendre garde que le diviseur soit différent de 0.
+\end{questions}
+\end{document}
+

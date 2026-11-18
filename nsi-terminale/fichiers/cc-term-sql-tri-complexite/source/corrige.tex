@@ -1,0 +1,427 @@
+\documentclass[12pt, a4paper]{exam}
+\usepackage[a4paper,top=2.3cm,bottom=2.8cm,left=2cm,right=2cm,headheight=15pt,headsep=0.6cm,footskip=1.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta}
+\usepackage[most]{tcolorbox}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    columns=fullflexible,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    upquote=true,
+    tabsize=4,
+    xleftmargin=1.5em,
+    framexleftmargin=0.3em,
+    aboveskip=0.6em,
+    belowskip=0.6em,
+    extendedchars=true,
+    literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1 {à}{{\`a}}1 {â}{{\^a}}1
+             {ç}{{\c c}}1 {ù}{{\`u}}1 {û}{{\^u}}1 {ô}{{\^o}}1 {î}{{\^i}}1 {ï}{{\"i}}1
+             {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+             {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {→}{{$\rightarrow$}}1
+}
+\lstset{style=mystyle, language=Python}
+\lstdefinestyle{sqlstyle}{style=mystyle, language=SQL, morekeywords={LIMIT,REFERENCES,IN,TEXT,FLOAT,DATE,VARCHAR,CHAR,REPLACE}, numbers=none, xleftmargin=0.3em, frame=lines}
+
+% Code en ligne
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Titre d'une question : numéro et intitulé, barème à droite
+\newcommand{\Qt}[2]{\subsection*{#1\hfill{\normalfont\small #2}}}
+% Rappel de la consigne en une ligne
+\newcommand{\rappel}[1]{\noindent\textit{Ce qui est demandé :} #1\par\smallskip}
+
+% La réponse attendue, mise en évidence
+\newtcolorbox{reponse}[1][Réponse]{enhanced, breakable, colback=black!5, colframe=black, boxrule=0.9pt, arc=1mm,
+  title={#1}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=black!15, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+% Erreur fréquente
+\newtcolorbox{erreur}{enhanced, breakable, colback=white, colframe=black, boxrule=0.5pt, leftrule=3pt, arc=0mm,
+  title={Erreur fréquente}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=white, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+% Encadré « À retenir »
+\newtcolorbox{retenir}{enhanced, breakable, colback=white, colframe=black, boxrule=0.5pt, arc=1mm, boxsep=1mm,
+  borderline={0.4pt}{1.2pt}{black, dashed},
+  title={À retenir}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=white, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+
+\newcommand{\methode}{\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\noindent\textbf{Explication.}\ }
+
+\setlist{itemsep=0.15em, topsep=0.3em}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+
+% Piles dessinées verticalement (sommet en haut) ; \suppr barre un élément supprimé
+\newcommand{\suppr}[1]{\ooalign{#1\cr\hidewidth\rule[0.55ex]{1em}{1pt}\hidewidth\cr}}
+\newcommand{\pilev}[2]{\begin{tikzpicture}[baseline=(titre.base)]
+  \node[font=\scriptsize, align=center, text width=22mm] (titre) at (0,0) {#1};
+  \foreach \v [count=\k] in {#2} {\node[draw, minimum width=8mm, minimum height=5mm, inner sep=0pt, font=\small] at (0,-0.25-\k*0.5) {\v};}
+\end{tikzpicture}}
+\setlength{\emergencystretch}{3em}
+% Remarque sur l'énoncé (erreur ou ambiguïté du sujet)
+\newtcolorbox{remarque}{enhanced, breakable, colback=white, colframe=black, boxrule=0.5pt, arc=0mm,
+  borderline={0.4pt}{1.2pt}{black, dotted},
+  title={Remarque sur l'énoncé}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=black!8, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\newcommand{\sql}[1]{\textsc{#1}}
+\lstdefinestyle{sqlc}{style=sqlstyle}
+\newcommand{\resultat}[1]{\par\smallskip\noindent\textit{Résultat sur le jeu d'essai :}\par\nopagebreak\begin{center}\footnotesize #1\end{center}}
+
+\title{Corrigé — CC2 Term NSI - SQL, Tri et complexité}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Contrôle de janvier 2024 (1 h)}
+
+\begin{document}
+\pagestyle{headandfoot}
+\firstpageheader{}{}{}
+\runningheader{\small Corrigé}{}{\small SQL, tri et complexité -- janvier 2024}
+\runningheadrule
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{tcolorbox}[colback=white, colframe=black, boxrule=0.5pt, arc=1mm, left=2mm, right=2mm]
+\small\textbf{Comment lire ce corrigé.} Pour chaque question : ce qui est demandé, puis la réponse attendue (encadrée), puis l'explication pas à pas. Essaie d'abord seul·e, puis compare ta démarche, pas seulement ton résultat.
+Les requêtes ont été exécutées avec SQLite et le code Python avec Python 3. Le sujet ne donne pas le contenu des tables : pour montrer un résultat, on utilise un petit \textbf{jeu d'essai} inventé.
+\end{tcolorbox}
+
+\begin{remarque}
+Le barème du sujet donne 12 points à la partie SQL, sans détail par sous-question, puis 2 + 3 + 2 + 3 points : le total fait \textbf{22 points}. Ce corrigé reprend ces points ; c'est à l'enseignant·e de ramener la note sur 20 s'il le faut.
+\end{remarque}
+
+\section*{Partie 1 -- SQL (question 1, 12 points)}
+
+\begin{retenir}
+\begin{itemize}
+\item Abonne(\underline{Abonne\_ID}, Nom, Prenom, DateNaissance, Adresse, Ville, CodePostal) ; Livre(\underline{Livre\_ID}, Titre, Auteur, Genre, ISBN) ; Emprunt(\#Abonne\_ID, \#Livre\_ID, DateEmprunt, DateRetourPrevu, DateRetourReel).
+\item Les dates s'écrivent \code{'AAAA-MM-JJ'} : comparer ou trier ces textes revient à comparer les dates, car l'année vient en premier.
+\end{itemize}
+\end{retenir}
+
+\textbf{Jeu d'essai inventé} (seules les colonnes utiles sont montrées ; les personnes sont fictives) :
+\begin{center}\footnotesize
+\begin{tabular}{|c|l|l|c|l|c|}\hline
+\multicolumn{6}{|c|}{\textbf{Abonne}}\\\hline
+Abonne\_ID & Nom & Prenom & DateNaissance & Ville & CodePostal \\\hline
+801 & Abdou & Nassim & 2007-03-14 & Chirongui & 97620 \\
+802 & Said & Fatima & 1958-11-02 & Chirongui & 97620 \\
+803 & Ahmed & Inès & 1990-06-30 & Mamoudzou & 97600 \\
+804 & Leroy & Paul & 1975-01-20 & Toulouse & 31000 \\
+805 & Combo & Ali & 1949-08-09 & Dembéni & 97660 \\\hline
+\end{tabular}\\[0.5em]
+\begin{tabular}{|c|l|}\hline
+\multicolumn{2}{|c|}{\textbf{Livre}}\\\hline
+Livre\_ID & Titre \\\hline
+4252 & Papillon \\
+4253 & Le Lagon bleu \\\hline
+\end{tabular}\quad
+\begin{tabular}{|c|c|c|c|c|}\hline
+\multicolumn{5}{|c|}{\textbf{Emprunt}}\\\hline
+Abonne\_ID & Livre\_ID & DateEmprunt & DateRetourPrevu & DateRetourReel \\\hline
+801 & 4252 & 2020-10-01 & 2020-10-22 & 2020-10-20 \\
+804 & 4252 & 2020-10-25 & 2020-11-15 & NULL \\
+802 & 4253 & 2020-10-05 & 2020-10-26 & 2020-10-26 \\\hline
+\end{tabular}
+\end{center}
+
+\subsection*{Sélection}
+
+\textbf{a)} \rappel{les noms et prénoms des abonné·es qui habitent à Chirongui.}
+\begin{reponse}
+\begin{lstlisting}[style=sqlc]
+SELECT Nom, Prenom FROM Abonne WHERE Ville = 'Chirongui';
+\end{lstlisting}
+\end{reponse}
+\resultat{\begin{tabular}{|l|l|}\hline Nom & Prenom \\\hline Abdou & Nassim \\ Said & Fatima \\\hline\end{tabular}}
+\methode Quelles colonnes ? \code{Nom, Prenom}. Quelle table ? \code{Abonne}. Quelles lignes ? celles où \code{Ville} vaut \code{'Chirongui'}, entre guillemets car c'est un texte.
+
+\textbf{b)} \rappel{le nom des personnes dont le code postal commence par 976.}
+\begin{reponse}
+\begin{lstlisting}[style=sqlc]
+SELECT Nom FROM Abonne WHERE CodePostal LIKE '976%';
+\end{lstlisting}
+\end{reponse}
+\resultat{\begin{tabular}{|l|}\hline Nom \\\hline Abdou \\ Said \\ Ahmed \\ Combo \\\hline\end{tabular}}
+\explication \sql{LIKE} compare à un motif : \code{\%} remplace n'importe quelle suite de caractères. \code{'976\%'} veut dire « 976, puis n'importe quoi » : le code postal \textbf{commence} par 976 (les codes postaux de Mayotte).
+
+\begin{erreur}
+Écrire \code{'\%976\%'} : on cherche alors les codes qui \textbf{contiennent} 976, n'importe où. Ou écrire \code{CodePostal = '976\%'} : avec \code{=}, le \code{\%} n'est pas un joker, on cherche le texte exact « 976\% ».
+\end{erreur}
+
+\textbf{c)} \rappel{le nom des personnes qui ont emprunté le livre Papillon.}
+\begin{reponse}
+\begin{lstlisting}[style=sqlc]
+SELECT Abonne.Nom
+FROM Abonne
+JOIN Emprunt ON Abonne.Abonne_ID = Emprunt.Abonne_ID
+JOIN Livre ON Emprunt.Livre_ID = Livre.Livre_ID
+WHERE Livre.Titre = 'Papillon';
+\end{lstlisting}
+\end{reponse}
+\resultat{\begin{tabular}{|l|}\hline Nom \\\hline Abdou \\ Leroy \\\hline\end{tabular}}
+\methode
+\begin{enumerate}
+\item Le nom est dans \code{Abonne}, le titre dans \code{Livre} ; le lien entre les deux est la table \code{Emprunt}.
+\item Il faut donc \textbf{deux jointures} : \code{Abonne} avec \code{Emprunt} (par \code{Abonne\_ID}), puis \code{Emprunt} avec \code{Livre} (par \code{Livre\_ID}).
+\item On garde les lignes dont le titre est \code{'Papillon'}.
+\end{enumerate}
+Si une même personne a emprunté le livre deux fois, son nom apparaît deux fois ; \code{SELECT DISTINCT Abonne.Nom} supprime les doublons.
+
+\textbf{d)} \rappel{tous les attributs de l'abonné·e le plus âgé.}
+\begin{reponse}
+\begin{lstlisting}[style=sqlc]
+SELECT * FROM Abonne ORDER BY DateNaissance ASC LIMIT 1;
+\end{lstlisting}
+\end{reponse}
+\resultat{\begin{tabular}{|c|l|l|c|l|l|c|}\hline Abonne\_ID & Nom & Prenom & DateNaissance & Adresse & Ville & CodePostal \\\hline 805 & Combo & Ali & 1949-08-09 & 1 place de la Mairie & Dembéni & 97660 \\\hline\end{tabular}}
+\explication La personne la plus âgée est celle qui est née \textbf{le plus tôt}, donc celle qui a la plus \textbf{petite} date de naissance. On trie par date croissante (\sql{ASC}) et on garde la première ligne (\sql{LIMIT} 1). \code{*} donne tous les attributs.
+
+\textbf{Variante} avec une sous-requête, qui donne toutes les personnes en cas d'égalité :
+\begin{lstlisting}[style=sqlc]
+SELECT * FROM Abonne
+WHERE DateNaissance = (SELECT MIN(DateNaissance) FROM Abonne);
+\end{lstlisting}
+
+\begin{erreur}
+Trier par ordre décroissant (\sql{DESC}) ou utiliser \code{MAX(DateNaissance)} : on obtient la personne la plus \textbf{jeune}, née le plus tard.
+\end{erreur}
+
+\subsection*{Modification}
+
+\textbf{e)} \rappel{ajouter l'emprunt du livre 4252 par l'abonné·e 803, le 2 novembre 2020, pour trois semaines.}
+\begin{reponse}
+\begin{lstlisting}[style=sqlc]
+INSERT INTO Emprunt VALUES (803, 4252, '2020-11-02', '2020-11-23', NULL);
+\end{lstlisting}
+\end{reponse}
+\methode
+\begin{enumerate}
+\item On \textbf{ajoute} une ligne : \sql{INSERT INTO}.
+\item L'ordre des colonnes d'\code{Emprunt} est : \code{Abonne\_ID}, \code{Livre\_ID}, \code{DateEmprunt}, \code{Date\-Retour\-Prevu}, \code{Date\-Retour\-Reel}.
+\item Trois semaines font 21 jours : 2 + 21 = 23, donc le retour est prévu le 2020-11-23 (novembre a 30 jours, on reste dans le mois).
+\item Le livre n'est pas encore rendu : la date de retour réelle est inconnue, on met \sql{NULL} (« pas de valeur »).
+\end{enumerate}
+\textbf{Variante} en nommant les colonnes (la colonne non citée vaut \sql{NULL}) :
+\begin{lstlisting}[style=sqlc]
+INSERT INTO Emprunt (Abonne_ID, Livre_ID, DateEmprunt, DateRetourPrevu)
+VALUES (803, 4252, '2020-11-02', '2020-11-23');
+\end{lstlisting}
+
+\begin{erreur}
+Écrire les identifiants dans le désordre (\code{4252, 803, \ldots}) : la requête est acceptée, mais elle enregistre l'emprunt du livre 803 par l'abonné·e 4252. Autre erreur : écrire la date \code{'02/11/2020'} au lieu du format \code{'2020-11-02'} demandé.
+\end{erreur}
+
+\begin{remarque}
+La table \code{Emprunt} n'a pas de clé primaire dans le schéma. Rien n'empêche donc d'enregistrer deux fois exactement la même ligne : nous l'avons vérifié, SQLite accepte la requête deux fois de suite. On pourrait ajouter un identifiant d'emprunt, ou prendre comme clé primaire le triplet (Abonne\_ID, Livre\_ID, DateEmprunt).
+\end{remarque}
+
+\subsection*{Ajout d'une table}
+
+\textbf{f)} \rappel{créer la table \code{Emplacement} (id, zone, etagere).}
+\begin{reponse}
+\begin{lstlisting}[style=sqlc]
+CREATE TABLE Emplacement (
+    id INT PRIMARY KEY,
+    zone VARCHAR(50),
+    etagere INT,
+    FOREIGN KEY (id) REFERENCES Livre(Livre_ID)
+);
+\end{lstlisting}
+\end{reponse}
+\explication
+\begin{itemize}
+\item Chaque attribut est suivi de son type : \code{INT} pour un entier, \code{VARCHAR(50)} pour un texte de 50 caractères au plus.
+\item \code{id} est « le numéro du livre » : chaque livre a un seul emplacement, \code{id} peut donc être la clé primaire.
+\item C'est aussi une clé étrangère vers \code{Livre(Livre\_ID)} : on ne peut pas ranger un livre qui n'existe pas. Cette ligne est un plus ; la consigne ne l'exige pas explicitement.
+\end{itemize}
+
+\section*{Partie 2 -- Algorithme de tri}
+
+\begin{lstlisting}
+def tri_surprise(tab):
+    if len(tab) < 2:
+        return tab
+    for i in range(1, len(tab)):
+        e = tab[i]
+        j = i - 1
+        while j >= 0 and e < tab[j] :
+            tab[j+1] = tab[j]
+            j = j - 1
+        tab[j+1] = e
+    return tab
+\end{lstlisting}
+
+\Qt{Question 2 -- Reconnaître l'algorithme et sa complexité}{2 points}
+
+\textbf{a)} \rappel{quel est cet algorithme de tri ?}
+\begin{reponse}
+\textbf{Tri par insertion.}
+\end{reponse}
+\explication Pour chaque \code{i}, on prend l'élément \code{e = tab[i]} et on décale vers la droite les éléments déjà triés qui sont plus grands que lui, puis on \textbf{insère} \code{e} à la place libérée. Comme quand on range une carte dans une main déjà triée. Le tri par sélection, lui, cherche le minimum de la partie non triée et l'échange ; le tri fusion coupe le tableau en deux et s'appelle lui-même.
+
+\textbf{b)} \rappel{la complexité de cet algorithme.}
+\begin{reponse}
+\textbf{Quadratique}, en $O(n^2)$.
+\end{reponse}
+\explication On compte les comparaisons dans le pire cas, un tableau trié à l'envers. Pour \code{i} = 1, la boucle \code{while} fait 1 tour ; pour \code{i} = 2, 2 tours ; \ldots ; pour \code{i} = $n-1$, $n-1$ tours. Au total : $1 + 2 + \cdots + (n-1) = \dfrac{n(n-1)}{2}$, de l'ordre de $n^2$. Vérification par programme : pour $n = 100$ éléments rangés à l'envers, on compte 4\,950 comparaisons, soit $100 \times 99 / 2$. (Dans le meilleur cas, un tableau déjà trié, il n'y a que $n - 1$ comparaisons ; la complexité retenue est celle du pire cas.)
+
+\Qt{Question 3 -- Associer les fonctions aux courbes}{3 points}
+\rappel{associer $10$, $x$, $\log_2(x)$, $x\log_2(x)$, $x^2$ et $2^x$ aux courbes A à F.}
+\begin{reponse}
+\begin{tabular}{@{}lll@{}}
+A : $f(x) = 10$ & B : $f(x) = x$ & C : $f(x) = \log_2(x)$ \\
+D : $f(x) = x\log_2(x)$ & E : $f(x) = x^2$ & F : $f(x) = 2^x$
+\end{tabular}
+\end{reponse}
+
+\methode On calcule quelques valeurs simples et on les cherche sur le graphique.
+\begin{center}\small
+\begin{tabular}{|c|c|c|c|c|c|c|}\hline
+$x$ & $10$ & $x$ & $\log_2(x)$ & $x\log_2(x)$ & $x^2$ & $2^x$ \\\hline
+1 & 10 & 1 & 0 & 0 & 1 & 2 \\
+2 & 10 & 2 & 1 & 2 & 4 & 4 \\
+4 & 10 & 4 & 2 & 8 & 16 & 16 \\
+5 & 10 & 5 & 2,32 & 11,6 & 25 & 32 \\
+8 & 10 & 8 & 3 & 24 & 64 & 256 \\\hline
+\end{tabular}
+\end{center}
+\begin{enumerate}
+\item La \textbf{droite horizontale} est la fonction constante $10$.
+\item La \textbf{droite qui passe par l'origine} et par (10~; 10) est $f(x) = x$.
+\item La courbe qui monte \textbf{très lentement} (elle ne dépasse pas 5 sur tout le graphique) est $\log_2(x)$.
+\item La courbe qui passe au-dessus de la droite $f(x)=x$ à partir de $x = 2$, et qui atteint 24 en $x = 8$, est $x\log_2(x)$.
+\item Les deux courbes très raides se croisent en $x = 2$ et $x = 4$. Celle qui part de 1 en $x = 0$ et vaut 32 en $x = 5$ est $2^x$ ; celle qui part de 0 et vaut 25 en $x = 5$ est $x^2$.
+\end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[width=0.9\linewidth,height=7cm,xmin=0,xmax=20,ymin=0,ymax=40,xlabel={$x$},ylabel={$f(x)$},grid=both,
+ every axis plot/.append style={thick, black},domain=0.01:20,samples=200]
+\addplot[solid] {10} node[pos=0.85, above, font=\small] {A : $10$};
+\addplot[dashed] {x};
+\addplot[dotted, very thick] {ln(x)/ln(2)} node[pos=0.85, above, font=\small] {C : $\log_2(x)$};
+\addplot[dashdotted, domain=0.01:11.2] {x*ln(x)/ln(2)} node[pos=0.95, right, font=\small] {D : $x\log_2 x$};
+\addplot[solid, domain=0:6.32] {x^2};
+\addplot[densely dashed, domain=0:5.32] {2^x};
+\draw[->, thin] (axis cs:2.6,35) node[left, font=\small, fill=white, inner sep=1pt] {F : $2^x$} -- (axis cs:5.0,32.5);
+\draw[->, thin] (axis cs:8.2,27) node[right, font=\small, fill=white, inner sep=1pt] {E : $x^2$} -- (axis cs:5.5,29);
+\node[font=\small, fill=white, inner sep=1pt] at (axis cs:17,22) {B : $x$};
+\end{axis}
+\end{tikzpicture}\\
+{\small Les courbes du sujet, redessinées en noir et blanc, avec leur nom écrit à côté.}
+\end{center}
+
+\begin{remarque}
+Dans le sujet, les courbes ne se distinguent que par leur couleur : imprimé en noir et blanc, le graphique ne permet pas de les reconnaître. De plus, les lettres A à F sont données dans le même ordre que la liste des fonctions, ce qui donne la réponse sans réfléchir. Ce corrigé explique comment reconnaître chaque courbe par ses valeurs.
+\end{remarque}
+
+\Qt{Question 4 -- Trace de \code{tri\_surprise([1, 5, 100, 78, 8, 22])}}{2 points}
+\rappel{la valeur de \code{tab} à chaque itération de la boucle \code{while}.}
+
+\methode Pour chaque \code{i}, on note \code{e = tab[i]}. Tant que l'élément à gauche (\code{tab[j]}) est plus grand que \code{e}, on le décale d'une case vers la droite. Puis on écrit \code{e} dans la case libre \code{tab[j+1]}.
+
+\begin{reponse}
+\begin{tabular}{|c|c|l|l|}\hline
+\code{i} & \code{e} & Tour de \code{while} & \code{tab} \\\hline
+1 & 5 & aucun ($5 > 1$) & \code{[1, 5, 100, 78, 8, 22]} \\\hline
+2 & 100 & aucun ($100 > 5$) & \code{[1, 5, 100, 78, 8, 22]} \\\hline
+3 & 78 & 1\textsuperscript{er} tour : 100 décalé & \code{[1, 5, 100, 100, 8, 22]} \\
+  &    & fin : 78 inséré en case 2 & \code{[1, 5, 78, 100, 8, 22]} \\\hline
+4 & 8 & 1\textsuperscript{er} tour : 100 décalé & \code{[1, 5, 78, 100, 100, 22]} \\
+  &   & 2\textsuperscript{e} tour : 78 décalé & \code{[1, 5, 78, 78, 100, 22]} \\
+  &   & fin : 8 inséré en case 2 & \code{[1, 5, 8, 78, 100, 22]} \\\hline
+5 & 22 & 1\textsuperscript{er} tour : 100 décalé & \code{[1, 5, 8, 78, 100, 100]} \\
+  &    & 2\textsuperscript{e} tour : 78 décalé & \code{[1, 5, 8, 78, 78, 100]} \\
+  &    & fin : 22 inséré en case 3 & \code{[1, 5, 8, 22, 78, 100]} \\\hline
+\end{tabular}\\[0.3em]
+La fonction renvoie \code{[1, 5, 8, 22, 78, 100]}. La boucle \code{while} fait 5 tours en tout.
+\end{reponse}
+\explication Pendant les décalages, une valeur apparaît deux fois (par exemple \code{100, 100}) : c'est normal, la valeur de \code{e} est gardée dans la variable \code{e} et sera écrite à la fin. Pour \code{i} = 4, la boucle s'arrête quand \code{j} = 1, car \code{tab[1]} = 5 n'est pas plus grand que 8 : on écrit 8 dans \code{tab[2]}.
+
+\begin{erreur}
+Échanger les deux cases à chaque tour, comme dans un tri à bulles, ou oublier la dernière ligne \code{tab[j+1] = e}. Ici, on \textbf{décale} seulement, et \code{e} n'est écrit qu'une fois, à la fin.
+\end{erreur}
+
+\Qt{Question 5 -- Compléter la fonction \code{fusion}}{3 points}
+\rappel{compléter les trous de \code{fusion(gauche, droite, tab)}.}
+\begin{reponse}
+\begin{lstlisting}
+def fusion(gauche, droite, tab):
+    i = 0
+    j = 0
+    while i + j < len(tab):
+        if j == len(droite) or (i < len(gauche) and gauche[i] < droite[j]):
+            tab[i + j] = gauche[i]
+            i = i + 1
+        else:
+            tab[i + j] = droite[j]
+            j = j + 1
+\end{lstlisting}
+\end{reponse}
+\explication
+\begin{itemize}
+\item Lignes 2 et 3 : \code{i} est l'indice de lecture dans \code{gauche}, \code{j} dans \code{droite}. On commence au début des deux listes : 0.
+\item Ligne 4 : \code{i + j} est le nombre d'éléments déjà recopiés, donc aussi la case de \code{tab} à remplir. On s'arrête quand \code{tab} est plein.
+\item Ligne 5 : on prend dans \code{gauche} si \code{droite} est épuisée (\code{j == len(droite)}), ou s'il reste des éléments à gauche et que celui de gauche est le plus petit.
+\item Lignes 6 et 7 : on recopie \code{gauche[i]} et on avance dans \code{gauche}. Lignes 9 et 10 : sinon, on recopie \code{droite[j]} et on avance dans \code{droite} (\code{j = j + 1}).
+\end{itemize}
+
+Trace de la dernière fusion de \code{tri\_fusion([1, 5, 100, 78, 8, 22])}, avec \code{gauche = [1, 5, 100]} et \code{droite = [8, 22, 78]} (déjà triées par les appels récursifs) :
+\begin{center}\small
+\begin{tabular}{|c|c|c|l|c|l|}\hline
+Tour & \code{i} & \code{j} & Comparaison & Pris dans & \code{tab} en fin de tour \\\hline
+1 & 0 & 0 & $1 < 8$ & gauche & \code{[1, \_, \_, \_, \_, \_]} \\
+2 & 1 & 0 & $5 < 8$ & gauche & \code{[1, 5, \_, \_, \_, \_]} \\
+3 & 2 & 0 & $100 > 8$ & droite & \code{[1, 5, 8, \_, \_, \_]} \\
+4 & 2 & 1 & $100 > 22$ & droite & \code{[1, 5, 8, 22, \_, \_]} \\
+5 & 2 & 2 & $100 > 78$ & droite & \code{[1, 5, 8, 22, 78, \_]} \\
+6 & 2 & 3 & droite épuisée & gauche & \code{[1, 5, 8, 22, 78, 100]} \\\hline
+\end{tabular}
+\end{center}
+(Les colonnes \code{i} et \code{j} donnent les valeurs au début du tour ; « \_ » marque une case pas encore remplie, qui contient encore l'ancienne valeur.) Le code complété a été testé sur 2\,000 tableaux tirés au hasard : il les trie tous correctement.
+
+\begin{erreur}
+Oublier d'avancer \code{j} (ou \code{i}) après avoir recopié un élément : \code{i + j} n'augmente plus et la boucle \code{while} ne s'arrête jamais. Autre erreur : commencer \code{i} ou \code{j} à 1, ce qui saute le premier élément de chaque liste.
+\end{erreur}
+
+\begin{remarque}
+\code{tri\_fusion} trie \code{tab} \textbf{en place} (elle modifie la liste reçue). Elle ne renvoie \code{tab} que pour une liste de moins de 2 éléments ; sinon elle renvoie \code{None}. Ce n'est pas gênant ici, car les appels récursifs n'utilisent pas la valeur renvoyée, mais \code{print(tri\_fusion([3, 1, 2]))} affiche \code{None}.
+\end{remarque}
+
+\end{document}

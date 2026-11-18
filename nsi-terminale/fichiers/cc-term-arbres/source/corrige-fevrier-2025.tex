@@ -1,0 +1,406 @@
+\documentclass[12pt, a4paper]{exam}
+% Corrigé rédigé pour le site Ressources NSI et SNT (CC BY-SA 4.0).
+% Compilation : pdflatex (deux passes).
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[french]{babel}
+\usepackage[a4paper,top=2.3cm,bottom=2.8cm,left=2cm,right=2cm,headsep=0.6cm,footskip=1.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc}
+\usepackage[most]{tcolorbox}
+
+% Coloration du code : même style que les sujets
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{magenta}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    columns=fullflexible,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true,
+    extendedchars=true,
+    literate={à}{{\`a}}1 {â}{{\^a}}1 {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+             {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ù}{{\`u}}1 {û}{{\^u}}1 {ç}{{\c c}}1
+             {É}{{\'E}}1 {À}{{\`A}}1 {œ}{{\oe}}1 {…}{{\ldots}}1
+}
+\lstset{style=mystyle, language=Python}
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Encadrés du corrigé (lisibles en noir et blanc)
+\tcbset{corrbase/.style={enhanced, breakable, sharp corners, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  fonttitle=\bfseries\small, coltitle=black, before skip=2mm, after skip=3mm}}
+\newtcolorbox{reponse}[1][Réponse]{corrbase, unbreakable, colback=gray!6, colframe=black, colbacktitle=gray!22, boxrule=0.8pt, title={#1}}
+\newtcolorbox{erreur}[1][Erreur fréquente]{corrbase, colback=white, colframe=black, boxrule=0.4pt, leftrule=3pt, title={#1}, colbacktitle=white, attach title to upper={\ :\ }}
+\newtcolorbox{retenir}[1][À retenir]{corrbase, colback=white, colframe=black, boxrule=0.4pt, borderline={0.4pt}{1.2pt}{black}, title={#1}, colbacktitle=white, attach title to upper={\ :\ }}
+
+% En-tête d'une question : numéro, points, rappel de la question
+\newcommand{\Q}[3]{\par\needspace{5\baselineskip}\bigskip\noindent{\large\bfseries Question #1}\ifx&#2&\else\ \textnormal{(#2)}\fi\par\nopagebreak\smallskip\noindent\textit{#3}\par\nopagebreak\smallskip}
+\newcommand{\Qp}[2]{\par\medskip\noindent\textbf{#1}\ \textit{#2}\par\nopagebreak\smallskip}
+\newcommand{\methode}{\par\noindent\textbf{Méthode.}\ }
+\newcommand{\application}{\par\noindent\textbf{Application.}\ }
+
+% Arbres
+\tikzset{arbre/.style={every node/.style={draw,circle,minimum size=7mm,inner sep=1pt,font=\small},level distance=11mm, thick},
+  marque/.style={fill=gray!35, line width=1.6pt},
+  titre/.style={draw=none, rectangle, inner sep=2pt}}
+
+\raggedbottom
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\setlist{itemsep=1pt, topsep=2pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{corrbase, colback=white, frame hidden, borderline={0.6pt}{0pt}{black, dashed}, title={#1}, colbacktitle=white, attach title to upper={\ :\ }}
+
+\title{Corrigé --- CC Term NSI - Arbre, récursivité}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Février 2025 \textperiodcentered{} Durée du contrôle : 2 h \textperiodcentered{} 20 points}
+
+\newcommand{\arbreUn}[1][]{%
+\begin{tikzpicture}[arbre, level 1/.style={sibling distance=26mm}, level 2/.style={sibling distance=14mm}]
+\node {13} child {node {6} child {node {7}} child {node {5} child[missing] child {node {1}}}} child {node {4}};
+#1
+\end{tikzpicture}}
+\newcommand{\arbreDeux}[1][]{%
+\begin{tikzpicture}[arbre, level 1/.style={sibling distance=26mm}, level 2/.style={sibling distance=13mm}]
+\node {6} child {node {4} child {node {3}} child {node {5}}} child {node {8} child {node {7}} child {node {9}}};
+#1
+\end{tikzpicture}}
+
+\begin{document}
+\pagestyle{foot}
+\footer{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\maketitle
+\thispagestyle{foot}
+\begin{center}\footnotesize\itshape Exercice sur les arbres d'après l'exercice 1 du sujet de NSI du baccalauréat 2023 (jour 2, Polynésie, code 23-NSIJ2PO1).\end{center}
+
+\begin{retenir}[Comment lire ce corrigé]
+Pour chaque question : la question rappelée en italique, la réponse attendue dans un cadre gris, puis l'explication (la méthode en étapes, puis son application). Les cadres « Erreur fréquente » montrent les pièges classiques. Le sujet demande des réponses rédigées et justifiées : les justifications données ici sont celles qu'on attend sur ta copie.
+\end{retenir}
+
+\begin{center}
+\arbreUn[{\node[titre, font=\bfseries] at (0,0.8) {Arbre 1};}]
+\hspace{1.5cm}
+\arbreDeux[{\node[titre, font=\bfseries] at (0,0.8) {Arbre 2};}]
+\end{center}
+
+\begin{retenir}[Les conventions de ce corrigé]
+La \textbf{profondeur} d'un nœud est le nombre d'arêtes (de traits) entre la racine et lui : la racine a la profondeur 0. La \textbf{hauteur} d'un arbre est la plus grande profondeur d'un de ses nœuds. Certains cours comptent les nœuds au lieu des arêtes : il faut alors ajouter 1 aux hauteurs données ici. Au bac, la convention est rappelée dans l'énoncé.
+\end{retenir}
+
+\section*{1. Notions fondamentales sur les arbres}
+
+\Q{1}{2 points}{Recopier et compléter le texte avec : au maximum, au minimum, exactement, feuille, racine, sous-arbre gauche, sous-arbre droit.}
+\begin{reponse}
+\begin{enumerate}[label=(\alph*)]
+\item Le nœud initial est appelé \textbf{racine}.
+\item Un nœud qui n'a pas d'enfants est appelé \textbf{feuille}.
+\item Un arbre binaire est un arbre dans lequel chaque nœud a \textbf{au maximum} deux enfants.
+\item Un arbre binaire de recherche est un arbre binaire dans lequel tout nœud est associé à une clé qui est :
+supérieure à chaque clé de tous les nœuds de son \textbf{sous-arbre gauche} ;
+inférieure à chaque clé de tous les nœuds de son \textbf{sous-arbre droit}.
+\end{enumerate}
+\end{reponse}
+\begin{itemize}
+\item (c) Dans un arbre binaire, un nœud peut avoir 0 enfant (c'est une feuille), 1 enfant ou 2 enfants. « Exactement deux » est donc faux : le nœud 5 de l'arbre 1 n'a qu'un enfant, et c'est bien un arbre binaire.
+\item (d) Dans un ABR, les petites clés sont à gauche et les grandes à droite. La clé d'un nœud est donc \emph{plus grande} que tout ce qui est à sa gauche et \emph{plus petite} que tout ce qui est à sa droite.
+\end{itemize}
+\begin{erreur}
+Inverser gauche et droite au point (d). Relis la phrase : « supérieure à chaque clé de son\ldots{} » : ce sont les clés \emph{plus petites} que le nœud, donc celles du sous-arbre gauche.
+\end{erreur}
+
+\Q{2}{3 points}{Pour chacun des deux arbres : (a) est-ce un arbre binaire ? (b) est-ce un ABR ? (c) sa hauteur ; (d) son parcours préfixe ; (e) son parcours infixe ; (f) son parcours suffixe.}
+\begin{reponse}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}p{3.2cm}p{6.2cm}p{5.6cm}@{}}
+ & \textbf{Arbre 1} & \textbf{Arbre 2} \\
+(a) arbre binaire ? & oui : chaque nœud a au plus 2 enfants & oui : chaque nœud a au plus 2 enfants \\
+(b) ABR ? & non : 7 est à gauche de 6, alors que $7 > 6$ & oui \\
+(c) hauteur & 3 & 2 \\
+(d) préfixe & 13, 6, 7, 5, 1, 4 & 6, 4, 3, 5, 8, 7, 9 \\
+(e) infixe & 7, 6, 5, 1, 13, 4 & 3, 4, 5, 6, 7, 8, 9 \\
+(f) suffixe & 7, 1, 5, 6, 4, 13 & 3, 5, 4, 7, 9, 8, 6 \\
+\end{tabular}
+\end{reponse}
+
+\Qp{(a) Arbre binaire.}{Un arbre est binaire si chaque nœud a au plus deux enfants.}
+Compte les enfants de chaque nœud. Arbre 1 : 13 en a 2, 6 en a 2, 5 en a 1, les autres 0. Arbre 2 : 6, 4 et 8 en ont 2, les autres 0. Aucun nœud n'a 3 enfants ou plus : les deux arbres sont binaires.
+
+\Qp{(b) Arbre binaire de recherche.}{Pour chaque nœud, tout son sous-arbre gauche doit être plus petit et tout son sous-arbre droit plus grand.}
+\begin{itemize}
+\item \textbf{Arbre 1.} Le nœud 6 a pour enfant gauche 7, et $7 > 6$ : la règle n'est pas respectée. Il y a d'autres problèmes : à droite de 13, on trouve 4, alors que $4 < 13$. Une seule erreur suffit pour répondre « non », mais il faut la citer.
+\item \textbf{Arbre 2.} À gauche de 6 : 3, 4, 5 (tous $< 6$) ; à droite : 7, 8, 9 (tous $> 6$). À gauche de 4 : 3 ; à droite : 5. À gauche de 8 : 7 ; à droite : 9. Tout est respecté.
+\end{itemize}
+\textbf{Contrôle.} Le parcours infixe de l'arbre 2 est croissant (3, 4, 5, 6, 7, 8, 9) : c'est la signature d'un ABR. Celui de l'arbre 1 ne l'est pas.
+
+\Qp{(c) Hauteur.}{On cherche le plus long chemin de la racine à une feuille, en comptant les arêtes.}
+Arbre 1 : 13 $\to$ 6 $\to$ 5 $\to$ 1, soit 3 arêtes. Arbre 2 : 6 $\to$ 4 $\to$ 3, soit 2 arêtes. (Avec la convention qui compte les nœuds : 4 et 3.)
+
+\Qp{(d), (e), (f) Parcours en profondeur.}{Les trois parcours appliquent la même règle à chaque nœud ; seul change le moment où l'on écrit le nœud.}
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Préfixe} & nœud, puis sous-arbre gauche, puis sous-arbre droit \\ \hline
+\textbf{Infixe} & sous-arbre gauche, puis nœud, puis sous-arbre droit \\ \hline
+\textbf{Suffixe} & sous-arbre gauche, puis sous-arbre droit, puis nœud \\ \hline
+\end{tabular}
+\end{center}
+\application Préfixe de l'arbre 1, pas à pas :
+\begin{enumerate}
+\item on écrit la racine \textbf{13}, puis on traite tout le sous-arbre gauche (racine 6), puis le sous-arbre droit (racine 4) ;
+\item sous-arbre de 6 : \textbf{6}, puis son gauche \textbf{7}, puis son droit (racine 5) : \textbf{5}, puis \textbf{1} (5 n'a pas d'enfant gauche) ;
+\item sous-arbre de 4 : \textbf{4}.
+\end{enumerate}
+On obtient 13, 6, 7, 5, 1, 4. Pour l'infixe, 5 n'a pas d'enfant gauche : on écrit 5 \emph{avant} son enfant droit 1, d'où « 5, 1 ».
+\begin{erreur}
+Dans l'infixe de l'arbre 1, écrire « 1, 5 » parce que 1 est en dessous de 5. Or 1 est l'enfant \emph{droit} de 5 : il passe après 5. La position à gauche ou à droite compte, pas la hauteur sur le dessin.
+\end{erreur}
+
+\Q{3}{2 points}{Donner l'ABR obtenu à partir d'un arbre vide en ajoutant 13, 20, 17, 5, 6, 2, 1, 9, 3 dans cet ordre.}
+\begin{reponse}
+\begin{center}
+\begin{tikzpicture}[arbre, level 1/.style={sibling distance=40mm}, level 2/.style={sibling distance=20mm}, level 3/.style={sibling distance=10mm}]
+\node {13}
+  child {node {5} child {node {2} child {node {1}} child {node {3}}} child {node {6} child[missing] child {node {9}}}}
+  child {node {20} child {node {17}} child[missing]};
+\end{tikzpicture}
+\end{center}
+\end{reponse}
+\methode Pour insérer une clé dans un ABR :
+\begin{enumerate}
+\item pars de la racine ;
+\item si la clé est plus petite que le nœud, descends à gauche ; sinon, descends à droite ;
+\item recommence jusqu'à trouver une place vide : la clé devient une nouvelle feuille à cet endroit.
+\end{enumerate}
+\application
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|c|l|l|}
+\hline
+\textbf{Clé} & \textbf{Chemin suivi} & \textbf{Place} \\ \hline
+13 & arbre vide & racine \\
+20 & $20 > 13$ : droite & enfant droit de 13 \\
+17 & $17 > 13$ : droite ; $17 < 20$ : gauche & enfant gauche de 20 \\
+5 & $5 < 13$ : gauche & enfant gauche de 13 \\
+6 & $6 < 13$ : gauche ; $6 > 5$ : droite & enfant droit de 5 \\
+2 & $2 < 13$ : gauche ; $2 < 5$ : gauche & enfant gauche de 5 \\
+1 & $1 < 13$ ; $1 < 5$ ; $1 < 2$ : gauche & enfant gauche de 2 \\
+9 & $9 < 13$ ; $9 > 5$ ; $9 > 6$ : droite & enfant droit de 6 \\
+3 & $3 < 13$ ; $3 < 5$ ; $3 > 2$ : droite & enfant droit de 2 \\ \hline
+\end{tabular}
+\end{center}
+\textbf{Contrôle.} Le parcours infixe de l'arbre obtenu est 1, 2, 3, 5, 6, 9, 13, 17, 20 : il est croissant, l'arbre est bien un ABR.
+\begin{erreur}
+Placer une clé en la comparant seulement à la dernière clé insérée. On compare toujours en partant de la \textbf{racine}. Autre piège : une clé ajoutée ne remplace jamais un nœud existant, elle devient toujours une feuille.
+\end{erreur}
+
+\section*{2. Programmation et implémentation des arbres}
+
+\Q{4}{3 points}{Donner le code permettant d'implémenter l'arbre 2.}
+\begin{reponse}
+\begin{lstlisting}
+n3 = Noeud(3)
+n5 = Noeud(5)
+n7 = Noeud(7)
+n9 = Noeud(9)
+n4 = Noeud(4, n3, n5)
+n8 = Noeud(8, n7, n9)
+arbre2 = Noeud(6, n4, n8)
+\end{lstlisting}
+\end{reponse}
+\methode On imite le code donné pour l'arbre 1.
+\begin{enumerate}
+\item L'appel \code{Noeud(v, g, d)} crée un nœud de valeur \code{v}, d'enfant gauche \code{g} et d'enfant droit \code{d}. Sans \code{g} ni \code{d}, ils valent \code{None} : le nœud est une feuille.
+\item On crée d'abord les \textbf{feuilles} (lignes 1 à 4), car un nœud a besoin que ses enfants existent déjà pour les recevoir.
+\item On remonte ensuite étage par étage : les nœuds 4 et 8 (lignes 5 et 6), puis la racine 6 (ligne 7).
+\item L'ordre des paramètres compte : \code{Noeud(4, n3, n5)} met 3 à gauche et 5 à droite.
+\end{enumerate}
+\textbf{Variante} acceptée, en une seule instruction :
+\begin{lstlisting}
+arbre2 = Noeud(6, Noeud(4, Noeud(3), Noeud(5)),
+                  Noeud(8, Noeud(7), Noeud(9)))
+\end{lstlisting}
+
+\Q{5}{1 point}{(a) Résultat de l'expression \code{arbre1.gauche.droit.valeur} ? (b) Commande pour accéder à la valeur du nœud 1 depuis la racine.}
+\begin{reponse}
+(a) \code{arbre1.gauche.droit.valeur} vaut \textbf{5}. \\
+(b) \code{arbre1.gauche.droit.droit.valeur}
+\end{reponse}
+\methode On lit l'expression de gauche à droite, un point à la fois, en suivant le dessin.
+\application
+\begin{itemize}
+\item \code{arbre1} est le nœud 13 ;
+\item \code{arbre1.gauche} est son enfant gauche : le nœud 6 ;
+\item \code{arbre1.gauche.droit} est l'enfant droit de 6 : le nœud 5 ;
+\item \code{.valeur} donne sa valeur : 5.
+\end{itemize}
+Pour atteindre 1 : 13, à gauche 6, à droite 5, à droite 1. D'où l'expression suivante, qui vaut 1 :
+\begin{center}\code{arbre1.gauche.droit.droit.valeur}\end{center}
+
+\begin{erreur}
+Écrire \code{droite} au lieu de \code{droit}. Python s'arrête alors avec \code{AttributeError: 'Noeud' object has no attribute 'droite'} (« erreur d'attribut » : un objet \code{Noeud} n'a pas d'attribut nommé \code{droite}). Les attributs sont exactement ceux créés dans \code{\_\_init\_\_} : \code{gauche}, \code{droit} et \code{valeur}.
+\end{erreur}
+
+\Q{6}{1 point}{Compléter la fonction \code{est\_feuille} qui teste si un objet de type \code{Noeud} est une feuille.}
+\begin{reponse}
+\begin{lstlisting}
+def est_feuille(abr):
+    if abr.gauche is None and abr.droit is None:
+        return True
+    else:
+        return False
+\end{lstlisting}
+\end{reponse}
+\begin{itemize}
+\item Ligne 2 : une feuille est un nœud sans enfant, donc sans enfant gauche \textbf{et} sans enfant droit. Dans la classe \code{Noeud}, « pas d'enfant » s'écrit \code{None}.
+\item Ligne 3 : si les deux enfants sont absents, c'est une feuille : on renvoie \code{True}.
+\item Ligne 5 : sinon, le nœud a au moins un enfant : on renvoie \code{False}.
+\end{itemize}
+Exemples avec l'arbre 1 : \code{est\_feuille(arbre1)} renvoie \code{False} ; \code{est\_feuille(arbre1.droit)} (le nœud 4) renvoie \code{True} ; \code{est\_feuille(arbre1.gauche.droit)} (le nœud 5, qui a un enfant droit) renvoie \code{False}.
+\textbf{Variante} plus courte : \code{return abr.gauche is None and abr.droit is None}.
+\begin{erreur}
+Écrire \code{or} au lieu de \code{and}. Avec \code{or}, le nœud 5 (pas d'enfant gauche, mais un enfant droit) serait pris pour une feuille. Autre erreur : écrire \code{abr.gauche = None}, avec un seul \code{=} : c'est une affectation, pas une comparaison, et Python signale une erreur de syntaxe dans un \code{if}.
+\end{erreur}
+
+\section*{3. Manipulation récursive des arbres}
+
+\Q{7}{3 points}{(a) La fonction \code{mystere} est-elle récursive ? (b) Valeur de \code{mystere(abr1, 9)}, \code{mystere(abr1, 5)}, \code{mystere(abr2, 6)}, \code{mystere(abr2, 7)}. (c) Que fait la fonction ?}
+\begin{lstlisting}
+def mystere(abr, x):
+    if abr is None :
+        return False
+    elif abr.valeur == x :
+        return True
+    else :
+        return mystere(abr.gauche, x) or mystere(abr.droit, x)
+\end{lstlisting}
+\begin{reponse}
+(a) \textbf{Oui} : à la ligne 7, la fonction \code{mystere} s'appelle elle-même, sur le sous-arbre gauche puis sur le sous-arbre droit. \\
+(b) \code{mystere(abr1, 9)} : \textbf{False} ; \code{mystere(abr1, 5)} : \textbf{True} ; \code{mystere(abr2, 6)} : \textbf{True} ; \code{mystere(abr2, 7)} : \textbf{True}. \\
+(c) \code{mystere(abr, x)} renvoie \code{True} si la valeur \code{x} est présente dans l'arbre \code{abr}, et \code{False} sinon : elle \textbf{recherche} \code{x} dans l'arbre.
+\end{reponse}
+\textbf{(a) Récursivité.} Une fonction est \textbf{récursive} si elle s'appelle elle-même. Il faut aussi un \textbf{cas de base}, qui s'arrête sans appel récursif : ici, l'arbre vide (lignes 2 et 3) et le nœud trouvé (lignes 4 et 5).
+
+\textbf{(b) Le fonctionnement, bloc par bloc.}
+\begin{itemize}
+\item Lignes 2--3 : un arbre vide ne contient rien : \code{x} n'y est pas, on renvoie \code{False}.
+\item Lignes 4--5 : si la racine porte la valeur \code{x}, on l'a trouvée : \code{True}.
+\item Ligne 7 : sinon, on cherche dans le sous-arbre gauche \textbf{ou} dans le sous-arbre droit. Le résultat est \code{True} si \code{x} est dans l'un des deux.
+\end{itemize}
+\textbf{Trace de} \code{mystere(abr1, 5)} (l'arbre 1, de racine 13) :
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Appel} & \textbf{Ce qui se passe} & \textbf{Renvoie} \\ \hline
+\code{mystere(nœud 13, 5)} & $13 \neq 5$ : on cherche à gauche, puis à droite & \code{True} \\
+\quad \code{mystere(nœud 6, 5)} & $6 \neq 5$ : on cherche à gauche, puis à droite & \code{True} \\
+\quad\quad \code{mystere(nœud 7, 5)} & $7 \neq 5$ : ses deux enfants sont \code{None} & \code{False} \\
+\quad\quad \code{mystere(nœud 5, 5)} & la valeur est 5 : trouvé & \code{True} \\ \hline
+\end{tabular}
+\end{center}
+Comme le sous-arbre de 6 renvoie \code{True}, l'opérateur \code{or} n'a pas besoin d'examiner le sous-arbre droit de 13 (le nœud 4) : Python s'arrête dès qu'un des deux côtés vaut \code{True}.
+
+Pour \code{mystere(abr1, 9)}, la fonction visite les 6 nœuds sans trouver 9, et finit sur des arbres vides : elle renvoie \code{False}. Dans l'arbre 2, 6 est la racine (trouvé tout de suite) et 7 est une feuille de l'arbre : \code{True} les deux fois.
+
+\textbf{(c)} Une bonne réponse dit ce que la fonction \textbf{renvoie}, pas comment elle est écrite : « elle renvoie \code{True} si \code{x} est une valeur de l'arbre, \code{False} sinon ».
+\begin{erreur}
+Croire que \code{mystere} profite de la propriété d'ABR. Elle explore les deux côtés : elle marche sur n'importe quel arbre binaire, même l'arbre 1, qui n'est pas un ABR.
+\end{erreur}
+
+\section*{4. Les rotations}
+
+\begin{retenir}[Rotation droite, en trois étapes (code du sujet)]
+\begin{enumerate}
+\item \code{pivot = abr.gauche} : le pivot est l'enfant gauche de la racine.
+\item \code{abr.gauche = pivot.droit} : le sous-arbre droit du pivot devient le sous-arbre gauche de la racine.
+\item \code{pivot.droit = abr} : l'ancienne racine devient l'enfant droit du pivot. Le pivot est la nouvelle racine.
+\end{enumerate}
+La rotation gauche fait exactement la même chose en échangeant partout gauche et droit.
+\end{retenir}
+
+\Q{8}{1 point}{Dessiner l'arbre obtenu après une rotation droite de l'arbre 2.}
+\begin{reponse}
+\begin{center}
+\begin{tikzpicture}[arbre, level 1/.style={sibling distance=26mm}, level 2/.style={sibling distance=14mm}, level 3/.style={sibling distance=10mm}]
+\node {4} child {node {3}} child {node {6} child {node {5}} child {node {8} child {node {7}} child {node {9}}}};
+\end{tikzpicture}
+\end{center}
+\end{reponse}
+\application à l'arbre 2 (racine 6) :
+\begin{enumerate}
+\item le pivot est l'enfant gauche de 6 : le nœud \textbf{4} (avec ses enfants 3 et 5) ;
+\item le sous-arbre droit du pivot (le nœud \textbf{5}) devient l'enfant gauche de 6 ;
+\item le nœud 6 (avec maintenant 5 à gauche et toujours 8, 7, 9 à droite) devient l'enfant droit de 4. Le nœud 3 reste l'enfant gauche de 4.
+\end{enumerate}
+\textbf{Contrôle.} L'infixe est toujours 3, 4, 5, 6, 7, 8, 9 : la rotation a conservé la propriété d'ABR, comme annoncé dans le sujet.
+
+\Q{9}{2 points}{Dessiner l'arbre obtenu après une rotation gauche de l'arbre 1.}
+\begin{reponse}
+\begin{center}
+\begin{tikzpicture}[arbre, level 1/.style={sibling distance=26mm}, level 2/.style={sibling distance=20mm}, level 3/.style={sibling distance=13mm}]
+\node {4} child {node {13} child {node {6} child {node {7}} child {node {5} child[missing] child {node {1}}}} child[missing]} child[missing];
+\end{tikzpicture}
+\end{center}
+\end{reponse}
+\application à l'arbre 1 (racine 13), avec l'algorithme de rotation gauche :
+\begin{enumerate}
+\item le pivot est le sous-arbre droit de la racine : le nœud \textbf{4} ;
+\item le sous-arbre gauche du pivot devient le sous-arbre droit de 13. Ici, 4 n'a pas d'enfant gauche : 13 n'a plus d'enfant droit ;
+\item le nœud 13 (avec tout son sous-arbre gauche 6, 7, 5, 1) devient l'enfant gauche de 4, qui est la nouvelle racine. Le nœud 4 n'a pas d'enfant droit.
+\end{enumerate}
+\textbf{Remarque.} L'arbre 1 n'est pas un ABR, donc le résultat n'en est pas un non plus. La question porte seulement sur la transformation : on applique les étapes sans chercher à ranger les clés. On vérifie qu'on n'a perdu aucun nœud : il y en a toujours 6.
+\begin{erreur}
+Oublier le sous-arbre gauche de 13 en route. Une rotation ne fait que déplacer deux liens : tout ce qui était sous 6 reste sous 6.
+\end{erreur}
+
+\Q{10}{2 points}{Écrire le code d'une fonction \code{rotation\_gauche} qui réalise la rotation gauche d'un ABR autour de sa racine.}
+\begin{reponse}
+\begin{lstlisting}
+def rotation_gauche(abr):
+    pivot = abr.droit
+    abr.droit = pivot.gauche
+    pivot.gauche = abr
+    return Noeud(pivot.valeur, pivot.gauche, pivot.droit)
+\end{lstlisting}
+\end{reponse}
+\methode On part de \code{rotation\_droite} et on échange \code{gauche} et \code{droit} partout. Chaque ligne suit une étape de l'algorithme du sujet :
+\begin{itemize}
+\item ligne 2 : le pivot est le sous-arbre droit de la racine ;
+\item ligne 3 : le sous-arbre gauche du pivot devient le sous-arbre droit de la racine ;
+\item ligne 4 : la racine ainsi modifiée devient le sous-arbre gauche du pivot ;
+\item ligne 5 : on renvoie un nœud de valeur \code{pivot.valeur}, avec les mêmes enfants que le pivot : c'est la nouvelle racine.
+\end{itemize}
+\textbf{Exemple.} Avec l'ABR de racine 20, d'enfants 15 et 30, et 25, 40 sous 30 : \code{rotation\_gauche} renvoie l'arbre de racine 30, de préfixe 30, 20, 15, 25, 40. Son infixe 15, 20, 25, 30, 40 est toujours croissant.
+
+\textbf{Variante.} La ligne 5 peut être remplacée par \code{return pivot} : le pivot est déjà la nouvelle racine, avec les bons enfants.
+\begin{erreur}
+Inverser les lignes 3 et 4. Si on écrit d'abord \code{pivot.gauche = abr}, l'ancien sous-arbre gauche du pivot est perdu : la ligne suivante ne peut plus le récupérer. Autre oubli : le \code{return} final. Sans lui, la fonction renvoie \code{None}.
+\end{erreur}
+
+\end{document}

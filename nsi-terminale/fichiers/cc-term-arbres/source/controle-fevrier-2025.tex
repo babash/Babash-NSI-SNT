@@ -1,0 +1,243 @@
+\documentclass[a4paper, noanswers, addpoints, 12pt]{exam}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta,shadows}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage[most]{tcolorbox}
+\usepackage{minted}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+ 
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle, language=Python}
+
+\title{CC Term NSI - Arbre, récursivité}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{Février 2025, Durée: 2h}
+
+
+\usepackage[a4paper,top=2.3cm,bottom=2.8cm,left=2cm,right=2cm,headsep=0.6cm,footskip=1.2cm]{geometry}
+\begin{document}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+\begin{center}\footnotesize\itshape Exercice sur les arbres d'après l'exercice 1 du sujet de NSI du baccalauréat 2023 (jour 2, Polynésie, code 23-NSIJ2PO1).\end{center}
+
+\pagestyle{headandfoot}
+\thispagestyle{headandfoot}
+\firstpageheader{\makebox[\textwidth]{Nom : \dotfill\ Pr\'enom : \dotfill\ Classe : \makebox[3cm]{\dotfill}}}{}{}
+
+
+\section*{Consignes:}
+\begin{center} 
+\fbox{\parbox{\linewidth}{
+\begin{center}
+Rédigez vos réponses sur une feuille libre.\\
+La clarté de la rédaction et les explications font partie intégrante de la notation. Une réponse non rédigée ou sans explication sera considérée fausse.\\
+Encadrez clairement vos réponses pour une meilleure lisibilité.
+\end{center}
+
+
+}}
+\end{center}
+
+\vsword{Note}
+\hsword{Note}
+
+\section*{Barème :}
+\begin{center}
+  \par\bigskip
+  \gradetable[h]
+\end{center}
+\begin{questions}
+
+\section{Notions fondamentales sur les arbres : }
+
+\question[2] Recopier et compléter le texte ci-dessous en choisissant des expressions parmi
+au maximum, au minimum, exactement, feuille, racine, sous-arbre
+gauche et sous-arbre droit :
+\begin{parts}
+    \item Le noeud initial est appelé ... . 
+    \item Un noeud qui n'a pas d'enfants est appelé ....
+    \item Un arbre binaire est un arbre dans lequel chaque noeud a ... deux enfants.
+    \item Un arbre binaire de recherche est un arbre binaire dans lequel tout
+    noeud est associé à une clé qui est :
+    \begin{itemize}
+        \item supérieure à chaque clé de tous les noeuds de son ...
+        \item inférieure à chaque clé de tous les noeuds de son ....
+    \end{itemize}
+\end{parts}
+
+\newpage
+
+\begin{figure}
+    \centering
+    {\centering
+    \input{figures/fig-arbre1}
+    \par}
+    \caption{Arbre 1}
+    \label{fig:arbre1}
+\end{figure}
+
+\begin{figure}
+    \centering
+    {\centering
+    \input{figures/fig-arbre2}
+    \par}
+    \caption{Arbre 2}
+    \label{fig:arbre2}
+\end{figure}
+
+\question[3] Pour chacun des deux arbres (\ref{fig:arbre1} et \ref{fig:arbre2})
+\begin{parts}
+    \item Déterminez si chaque arbre représenté est un arbre binaire. Justifiez votre réponse en expliquant pourquoi.
+    \item Vérifiez si chaque arbre est un arbre binaire de recherche (ABR) en expliquant pourquoi il satisfait (ou non) les propriétés d'un ABR.
+    \item Donner la hauteur de l'arbre
+    \item Donner le résultat d'un parcours préfixe sur l'arbre.
+    \item Donner le résultat d'un parcours infixe sur l'arbre.
+    \item Donner le résultat d'un parcours suffixe sur l'arbre.
+\end{parts}
+
+\question[2] Donner l'arbre binaire de recherche obtenu à partir d'un arbre vide si l'on ajoute les noeuds 13, 20, 17, 5, 6, 2, 1, 9, 3 dans cet ordre.
+
+\vspace{1cm}
+
+\section{Programmation et implémentation des arbres : }
+
+On considère la classe \textit{Noeud}, nous permettant de définir les arbres binaires, définie de la manière suivante en {\tt python} :
+
+\begin{lstlisting}[style=mystyle, language=Python]
+class Noeud:
+    def __init__(self, v, g=None, d=None):
+        """cree un noeud d'un arbre binaire"""
+        self.gauche = g
+        self.droit = d
+        self.valeur = v
+\end{lstlisting}
+
+Grâce à cette structure de données, on peut implémenter l'arbre de la figure~\ref{fig:arbre1} de la manière suivante.
+\begin{lstlisting}[style=mystyle, language=Python]
+n4 = Noeud(4)
+n7 = Noeud(7)
+n1 = Noeud(1)
+n5 = Noeud(5, None, n1)
+n6 = Noeud(6, n7, n5)
+arbre1 = Noeud(13, n6, n4)
+\end{lstlisting}
+
+\question[3] Donner le code permettant d'implémenter l'arbre~\ref{fig:arbre2}.
+
+\question[1] Manipulation des objets :
+\begin{parts}
+    \item Quel est le résultat de l’expression~\textit{arbre1.gauche.droit.valeur} ?
+    \item Donner la commande permettant d'accéder à la valeur du noeud 1 depuis la racine.
+\end{parts}
+
+\section{Manipulation récursive des arbres : }
+
+% fonction est feuille à compléter
+\question[1] Compléter la fonction~\textit{est\_feuille} ci-dessous permettant de tester si un objet de type  \textit{Noeud} est une feuille :
+\begin{lstlisting}[style=mystyle, language=Python]
+def est_feuille(abr):
+    if ...................................... :
+        return ...
+    else :
+        return False
+\end{lstlisting}
+
+\vfill
+
+\begin{lstlisting}[style=mystyle, language=Python]
+def mystere(abr, x):
+    if abr is None :
+        return False
+    elif abr.valeur == x :
+        return True
+    else :
+        return mystere(abr.gauche, x) or mystere(abr.droit, x)
+\end{lstlisting}
+
+\question[3] Mystère :
+\begin{parts}
+    \item La fonction \textit{mystere} est-elle récursive ? Justifiez.
+    \item Donner le résultat de la fonction \textit{mystere} pour les appels suivants (avec \textit{abr1} et \textit{abr2} sont les arbres des figures~\ref{fig:arbre1} et ~\ref{fig:arbre2}):
+    \begin{itemize}
+        \item \textit{ mystere(abr1, 9)}
+        \item \textit{ mystere(abr1, 5)}
+        \item \textit{ mystere(abr2, 6)}
+        \item \textit{ mystere(abr2, 7)}
+    \end{itemize}
+    \item Expliquer ce que fait la fonction \textit{mystere}.
+\end{parts}
+
+% pivot
+Il existe des algorithmes pour modifier la structure d'un ABR, afin par exemple de diminuer la hauteur d'un ABR, on s'intéresse aux algorithmes appelés rotation, consistant à faire "pivoter" une partie de l'arbre autour d'un de ses noeuds.
+L'exemple ci-dessous permet d'expliquer l'algorithme pour réaliser une rotation droite d'un ABR autour de sa racine :
+
+{\centering
+    \input{figures/fig-rotation}
+    \par}
+
+\begin{center}
+    \textbf{On admet que ces transformations conservent la propriété d'ABR de l'arbre.}
+\end{center}
+
+\newpage
+
+La fonction \textit{rotation\_droite} ci-après renvoie une nouvelle instance de type \textit{Noeud}, correspondant à une rotation droite de l'objet de type~\textit{Noeud} à partir duquel elle est appelée :
+
+\begin{lstlisting}[style=mystyle, language=Python]
+def rotation_droite(abr):
+    pivot = abr.gauche
+    abr.gauche = pivot.droit
+    pivot.droit = abr
+    return Noeud(pivot.valeur, pivot.gauche, pivot.droit)
+\end{lstlisting}
+
+
+Pour réaliser une rotation gauche, on suivra alors l'algorithme suivant :
+\begin{itemize}
+    \item on appelle pivot le sous-arbre droit de la racine de l'arbre,
+    \item le sous-arbre gauche du pivot devient le sous-arbre droit de la racine,
+    \item la racine ainsi modifiée devient le sous-arbre gauche du pivot et la racine du
+pivot devient la nouvelle racine de l'ABR.
+\end{itemize}
+
+\question[1] En suivant les différentes étapes de cet algorithme, dessiner l'arbre obtenu
+après une rotation droite de l'arbre de la figure~\ref{fig:arbre2}.
+
+\question[2] En suivant les différentes étapes de cet algorithme, dessiner l'arbre obtenu
+après une rotation gauche de l'arbre de la figure~\ref{fig:arbre1}.
+
+\question[2] Écrire le code d'une fonction {\tt Python} \textit{rotation\_gauche} qui réalise la
+rotation gauche d'un ABR autour de sa racine.
+
+\end{questions}
+\end{document}

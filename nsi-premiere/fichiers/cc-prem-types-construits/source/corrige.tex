@@ -1,0 +1,466 @@
+\documentclass[addpoints, 11pt]{exam}
+\usepackage[a4paper, left=20mm, right=20mm, top=26mm, bottom=30mm, headsep=6mm, footskip=12mm, headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{eurosym}
+\usepackage{needspace}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+
+% --- Code Python : même style que le sujet, en police à chasse fixe ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\footnotesize\ttfamily,
+    columns=fullflexible,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    xleftmargin=1.5em,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=4,
+    upquote=true
+}
+\lstset{style=mystyle, language=Python, extendedchars=true,
+  literate={à}{{\`a}}1 {â}{{\^a}}1 {ä}{{\"a}}1 {ç}{{\c{c}}}1
+           {é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1
+           {î}{{\^i}}1 {ï}{{\"i}}1 {ô}{{\^o}}1 {ö}{{\"o}}1
+           {ù}{{\`u}}1 {û}{{\^u}}1 {ü}{{\"u}}1 {œ}{{\oe}}2
+           {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c{C}}}1
+           {°}{{\textdegree}}1 {€}{{\euro}}1 {…}{{\dots}}1
+           {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {·}{{\textperiodcentered}}1}
+% Terminal (commandes Linux) : sans couleur de mots-clés
+\lstdefinestyle{terminal}{style=mystyle, language={}, numbers=none, xleftmargin=0.5em}
+% Sortie d'un programme (ce qui s'affiche à l'écran)
+\lstdefinestyle{sortie}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{black!60}, xleftmargin=0.5em}
+
+% --- Boîtes du corrigé (lisibles en noir et blanc) ---
+\newtcolorbox{reponse}[1][Réponse attendue]{enhanced, breakable, colback=white, colframe=black, boxrule=1.2pt, arc=0pt,
+  fonttitle=\bfseries, coltitle=white, colbacktitle=black, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{erreur}[1][Erreur fréquente]{enhanced, breakable, colback=black!6, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  borderline west={3pt}{0pt}{black!70}, fonttitle=\bfseries, coltitle=black, colbacktitle=black!15, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{astuce}[1][À retenir]{enhanced, breakable, colback=white, colframe=black!55, boxrule=0.6pt, arc=2pt,
+  fonttitle=\bfseries, coltitle=black, colbacktitle=black!8, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newtcolorbox{remarque}[1][Remarque sur l'énoncé]{enhanced, breakable, colback=white, colframe=black!70, boxrule=0.6pt, arc=0pt,
+  borderline={0.4pt}{1.2pt}{black!70, dashed}, fonttitle=\bfseries, coltitle=black, colbacktitle=white, title=#1, left=2mm, right=2mm, top=1mm, bottom=1mm, before skip=6pt, after skip=6pt}
+\newcommand{\enonce}[1]{\textit{#1}\par\smallskip}
+\newcommand{\methode}{\par\smallskip\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\par\smallskip\noindent\textbf{Explication.}\ }
+\newcommand{\code}[1]{\texttt{#1}}
+% Coupure de ligne possible après un tiret bas (noms de variables longs)
+\DeclareRobustCommand{\_}{\textunderscore\allowbreak}
+% Un code court ne se coupe pas en bas de page
+\AddToHook{env/lstlisting/before}{\needspace{10\baselineskip}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\renewcommand{\arraystretch}{1.25}
+
+\title{Corrigé --- Examen Première NSI - Types construits}
+\author{Babash - NSI Tani Malandi et Johanne Bakalara}
+\date{}
+
+\begin{document}
+\pagestyle{headandfoot}
+\runningheader{}{}{\footnotesize Corrigé --- Types construits}
+\firstpageheader{}{}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi et Johanne Bakalara \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+
+\begin{astuce}[Comment lire ce corrigé]
+Pour chaque question : la question est rappelée en italique, puis la \textbf{réponse attendue} est encadrée en noir, puis l'\textbf{explication} montre la méthode, étape par étape.
+Les encadrés gris « Erreur fréquente » signalent les pièges les plus courants. Essaie d'abord de refaire la question seul·e, puis compare ta démarche avec celle du corrigé.
+\end{astuce}
+
+\section*{Barème}
+\begin{center}
+  \gradetable[h]
+\end{center}
+
+\begin{astuce}[À retenir : les quatre collections]
+\begin{center}
+\small
+\begin{tabular}{|l|l|c|c|l|}
+\hline
+Type & Exemple & Ordonné & \textbf{Mutable} & Accès \\ \hline
+\code{list} (liste) & \code{[120, 340, 85]} & oui & oui & par indice : \code{l[0]} \\
+\code{tuple} (n-uplet) & \code{("dimanche", "lundi")} & oui & non & par indice : \code{t[0]} \\
+\code{str} (chaîne) & \code{"MayPy"} & oui & non & par indice : \code{s[0]} \\
+\code{dict} (dictionnaire) & \code{\{"Lyon": 18\}} & --- & oui & par clé : \code{d["Lyon"]} \\ \hline
+\end{tabular}
+\end{center}
+\textbf{Mutable} veut dire « que l'on peut modifier après sa création » (changer, ajouter ou supprimer un élément).
+\end{astuce}
+
+\begin{questions}
+
+% =====================================================================
+\section{Comprendre les types construits en Python}
+
+\question[1] \enonce{Associer chaque collection à sa description.}
+\begin{reponse}
+\begin{tabular}{ll}
+\code{list} : & collection ordonnée mutable d'éléments de tout type \\
+\code{dict} : & tableau mutable d'associations de paires de clé et valeur \\
+\code{str} : & collection ordonnée et non mutable \\
+\end{tabular}
+\end{reponse}
+\methode\ Partir de ce qu'on est sûr·e de savoir :
+\begin{enumerate}
+  \item « paires de clé et valeur » : c'est la définition du \textbf{dictionnaire}.
+  \item Une liste se modifie (\code{append}, \code{l[0] = 5}) : elle est \textbf{mutable}.
+  \item Une chaîne ne se modifie pas : \code{s[0] = "b"} provoque une \code{TypeError}. Il reste donc « non mutable » pour \code{str}.
+\end{enumerate}
+\begin{remarque}
+La description « non mutable d'éléments \textbf{de tout type} » décrit mieux un \code{tuple} qu'une chaîne : une chaîne ne contient que des \textbf{caractères}. On l'associe à \code{str} parce que c'est la seule collection non mutable du tableau.
+\end{remarque}
+
+\question[1] \enonce{Associer chaque collection à ses caractéristiques (plusieurs liens possibles).}
+\begin{reponse}
+\begin{tabular}{ll}
+\code{list} : & permet un accès par index ; permet la suppression d'un élément \\
+\code{dict} : & permet un accès par clé ; permet la suppression d'un élément \\
+\code{str} : & ne peut pas être modifié ; permet un accès par index \\
+\end{tabular}
+\end{reponse}
+\begin{itemize}
+  \item Accès par index : \code{l[0]} pour une liste, et aussi \code{s[0]} pour une chaîne (\code{"MayPy"[0]} vaut \code{"M"}).
+  \item Accès par clé : seulement le dictionnaire (\code{d["Lyon"]}).
+  \item Suppression : \code{l.pop()} ou \code{del l[0]} pour une liste, \code{del d["Lyon"]} pour un dictionnaire. Impossible pour une chaîne, qui ne peut pas être modifiée.
+\end{itemize}
+\begin{remarque}
+Dans le tableau du sujet, la caractéristique « permet la suppression d'un élément » est écrite dans la colonne des collections (il manque un séparateur de colonne). Il faut la lire comme une 4\textsuperscript{e} caractéristique.
+\end{remarque}
+
+\question[1] \enonce{MayPy Express : choisir la structure la plus adaptée (\code{str}, \code{tuple}, \code{list} ou \code{dict}) et justifier.}
+\begin{parts}
+\part \enonce{Les chauffeurs disponibles, ajoutés ou retirés au cours de la journée.}
+\begin{reponse}
+\textbf{Une liste} (\code{list}) : on doit pouvoir \textbf{ajouter} et \textbf{retirer} des chauffeurs, il faut donc une collection mutable de taille variable (\code{append}, \code{remove}).
+\end{reponse}
+\part \enonce{Les coordonnées GPS fixes de chaque entrepôt (latitude, longitude).}
+\begin{reponse}
+\textbf{Un tuple} : deux valeurs qui vont ensemble, dans un ordre fixé, et qui \textbf{ne changent pas}. Un tuple ne peut pas être modifié par erreur. Exemple : \code{(-12.78, 45.23)}.
+\end{reponse}
+\part \enonce{Le nombre de livraisons de chaque camion, identifié par sa plaque.}
+\begin{reponse}
+\textbf{Un dictionnaire} : on \textbf{associe} une clé unique (la plaque) à une valeur (le nombre de livraisons). Exemple : \code{\{"AB-123-CD": 42\}}.
+\end{reponse}
+\part \enonce{Un code de suivi, analysé caractère par caractère.}
+\begin{reponse}
+\textbf{Une chaîne de caractères} (\code{str}) : le code est un texte ; on peut le parcourir caractère par caractère (\code{for c in code:}) ou lire un caractère par son indice (\code{code[0]}).
+\end{reponse}
+\end{parts}
+
+% =====================================================================
+\section{Identifier le type d'une variable}
+
+\begin{lstlisting}
+message = "Bienvenue à MayPy Express"
+distances = [120, 340, 85, 210]
+jours_repos = ("dimanche", "lundi")
+temperatures = {
+    "Lyon": 18,
+    "Paris": 20,
+    "Toulouse": 22
+}
+for i in range(len(distances)):
+    print(f"Trajet {i + 1} : {distances[i]} km")
+for temp in temperatures.values():
+    print(f"Température relevée : {temp} °C")
+\end{lstlisting}
+
+\question[4] \enonce{Types des variables et types de parcours.}
+\begin{parts}
+\part \enonce{Donner le type de chaque variable.}
+\begin{reponse}
+\begin{tabular}{ll}
+\code{message} : & \code{str} (chaîne de caractères, entre guillemets) \\
+\code{distances} : & \code{list} (entre crochets) \\
+\code{jours\_repos} : & \code{tuple} (entre parenthèses) \\
+\code{temperatures} : & \code{dict} (entre accolades, avec des paires \code{clé: valeur}) \\
+\code{i} : & \code{int} (les valeurs de \code{range} : 0, 1, 2, 3) \\
+\code{temp} : & \code{int} (les valeurs du dictionnaire : 18, 20, 22) \\
+\end{tabular}
+\end{reponse}
+Repère les \textbf{délimiteurs} : guillemets $\to$ \code{str}, crochets $\to$ \code{list}, parenthèses $\to$ \code{tuple}, accolades avec des « : » $\to$ \code{dict}. Pour une variable de boucle, regarde \textbf{ce que l'on parcourt}.
+
+\part \enonce{Quel type de parcours est utilisé à la ligne 9 ?}
+\begin{reponse}
+Un \textbf{parcours par indice} de la liste \code{distances}.
+\end{reponse}
+\code{i} prend les positions 0 à 3 (\code{range(len(distances))}) et on lit l'élément avec \code{distances[i]}. L'indice sert aussi à numéroter les trajets à partir de 1 (\code{i + 1}). Affichage : \code{Trajet 1 : 120 km}, puis \code{Trajet 2 : 340 km}, etc.
+
+\part \enonce{Quel type de parcours est utilisé à la ligne 11 ?}
+\begin{reponse}
+Un \textbf{parcours des valeurs} du dictionnaire \code{temperatures} (parcours par valeur).
+\end{reponse}
+\code{.values()} donne les valeurs 18, 20, 22, sans les clés. Affichage : \code{Température relevée : 18 °C}, etc.
+\end{parts}
+
+% =====================================================================
+\section{Utiliser les dictionnaires}
+
+\begin{lstlisting}
+camions = {
+    "AB-123-CD": 12,
+    "EF-456-GH": 7,
+    "IJ-789-KL": 16
+}
+\end{lstlisting}
+
+\question[6] \enonce{Manipuler le dictionnaire \code{camions} (plaque $\to$ capacité en tonnes).}
+\begin{parts}
+\part \enonce{Obtenir la capacité du camion \code{"EF-456-GH"}.}
+\begin{reponse}
+\lstinline!camions["EF-456-GH"]!\quad (vaut 7)
+\end{reponse}
+On écrit la clé entre crochets. Pour l'afficher : \code{print(camions["EF-456-GH"])}.
+
+\part \enonce{Ajouter le camion \code{"MN-321-OP"} de capacité 10.}
+\begin{reponse}
+\lstinline!camions["MN-321-OP"] = 10!
+\end{reponse}
+On affecte une valeur à une clé qui n'existe pas encore : la paire est \textbf{ajoutée}. (Si la clé existait, sa valeur serait remplacée.) Un dictionnaire n'a pas de méthode \code{append}.
+
+\part \enonce{Que se passe-t-il avec \code{print(camions["ZZ-999-ZZ"])} ?}
+\begin{reponse}
+Le programme s'arrête sur une erreur \code{KeyError: 'ZZ-999-ZZ'} : cette clé n'existe pas dans le dictionnaire.
+\end{reponse}
+Pour éviter l'erreur, deux solutions :
+\begin{itemize}
+  \item tester d'abord la présence de la clé : \code{if "ZZ-999-ZZ" in camions:} ;
+  \item utiliser la méthode \code{get}, qui renvoie \code{None} au lieu de provoquer une erreur :\\ \code{camions.get("ZZ-999-ZZ")}.
+\end{itemize}
+
+\part \enonce{Afficher toutes les plaques d'immatriculation.}
+\begin{reponse}
+\begin{lstlisting}
+for plaque in camions:
+    print(plaque)
+\end{lstlisting}
+\end{reponse}
+Parcourir un dictionnaire donne ses \textbf{clés}, ici les plaques. Variante équivalente : \code{for plaque in camions.keys():}.
+
+\part \enonce{Afficher chaque plaque et sa capacité, une par ligne (\code{Camion AB-123-CD : 12 tonnes}).}
+\begin{reponse}
+\begin{lstlisting}
+for plaque, capacite in camions.items():
+    print("Camion", plaque, ":", capacite, "tonnes")
+\end{lstlisting}
+\end{reponse}
+\code{.items()} donne les paires (clé, valeur) ; \code{plaque} reçoit la clé et \code{capacite} la valeur. Variante avec une f-chaîne (chaîne formatée, comme dans le code de la question 4) : \code{print(f"Camion \{plaque\} : \{capacite\} tonnes")}. Les deux affichent :
+\begin{lstlisting}[style=sortie]
+Camion AB-123-CD : 12 tonnes
+Camion EF-456-GH : 7 tonnes
+Camion IJ-789-KL : 16 tonnes
+Camion MN-321-OP : 10 tonnes
+\end{lstlisting}
+(La dernière ligne apparaît si le camion \code{"MN-321-OP"} a été ajouté à la question (b).)
+
+\part \enonce{Que va afficher le code qui affiche les plaques des camions de capacité $\ge 10$ ?}
+\begin{reponse}
+\begin{lstlisting}[style=sortie]
+AB-123-CD
+IJ-789-KL
+\end{lstlisting}
+Avec le dictionnaire de départ. Si le camion \code{"MN-321-OP"} (10 tonnes) a été ajouté à la question (b), il s'affiche aussi, car $10 \ge 10$.
+\end{reponse}
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\code{plaque} & \code{capacite} & \code{capacite >= 10} ? \\ \hline
+AB-123-CD & 12 & vrai : affichée \\
+EF-456-GH & 7 & faux \\
+IJ-789-KL & 16 & vrai : affichée \\
+MN-321-OP & 10 & vrai : affichée (si ajoutée) \\ \hline
+\end{tabular}
+\end{center}
+\end{parts}
+
+% =====================================================================
+\section{Carré magique : manipulations avancées de listes}
+
+\begin{lstlisting}
+carre3 = [[2, 7, 6],
+          [9, 5, 1],
+          [4, 3, 8]]
+
+carre4 = [[ 4,  5, 11, 14],
+          [15, 10,  3,  1],
+          [ 6,  8, 13, 12],
+          [ 9, 16,  2,  7]]
+\end{lstlisting}
+Un carré est une \textbf{liste de listes} : \code{carre[i]} est la ligne \code{i}, et \code{carre[i][j]} est le nombre de la ligne \code{i}, colonne \code{j} (on compte à partir de 0).
+
+\question[4] \enonce{Comprendre la notion de carré magique.}
+\begin{parts}
+\part \enonce{Que vaut \code{carre4[2][1]} ?}
+\begin{reponse}
+\code{carre4[2][1]} vaut \textbf{8}.
+\end{reponse}
+\code{carre4[2]} est la 3\textsuperscript{e} ligne : \code{[6, 8, 13, 12]}. Dans cette ligne, l'indice 1 est le 2\textsuperscript{e} nombre : 8.
+\begin{erreur}
+Lire d'abord la colonne, ou compter à partir de 1, et répondre 16 ou 15. Le premier indice choisit la \textbf{ligne}, le second la \textbf{colonne}, et tous deux commencent à 0.
+\end{erreur}
+
+\part \enonce{Prouver que \code{carre3} est magique.}
+\begin{reponse}
+\code{carre3} contient chaque entier de 1 à 9 une seule fois, et toutes les sommes valent \textbf{15} :
+\begin{itemize}
+  \item lignes : $2 + 7 + 6 = 15$ ; $9 + 5 + 1 = 15$ ; $4 + 3 + 8 = 15$ ;
+  \item colonnes : $2 + 9 + 4 = 15$ ; $7 + 5 + 3 = 15$ ; $6 + 1 + 8 = 15$ ;
+  \item diagonales : $2 + 5 + 8 = 15$ ; $6 + 5 + 4 = 15$.
+\end{itemize}
+\end{reponse}
+Il faut vérifier \textbf{les 8 sommes} (3 lignes, 3 colonnes, 2 diagonales) et les nombres de 1 à $n^2 = 9$. Une seule somme différente suffirait à montrer que le carré n'est pas magique.
+
+\part \enonce{Pourquoi \code{carre4} n'est-il pas magique ?}
+\begin{reponse}
+Ses sommes ne sont pas toutes égales : la ligne 0 vaut $4 + 5 + 11 + 14 = 34$, mais la ligne 1 vaut $15 + 10 + 3 + 1 = \mathbf{29}$.
+\end{reponse}
+Un seul contre-exemple suffit. Pour information : les lignes valent 34, 29, 39, 34 et les colonnes 34, 39, 29, 34 ; les deux diagonales valent 34. Le carré contient pourtant bien les nombres de 1 à 16 : c'est uniquement la condition sur les sommes qui n'est pas respectée.
+
+\part \enonce{Donner un carré magique de côté 4.}
+\begin{reponse}
+\begin{lstlisting}
+carre_magique = [[16,  3,  2, 13],
+                 [ 5, 10, 11,  8],
+                 [ 9,  6,  7, 12],
+                 [ 4, 15, 14,  1]]
+\end{lstlisting}
+Toutes les lignes, colonnes et diagonales valent \textbf{34}.
+\end{reponse}
+C'est le carré de la gravure \textit{Melencolia I} d'Albrecht Dürer (1514). La somme magique d'un carré de côté $n$ vaut toujours $\dfrac{n(n^2+1)}{2}$, soit $\dfrac{4 \times 17}{2} = 34$ pour $n = 4$ ; cela permet de vérifier vite une ligne. (Vérifié par un programme, avec la fonction \code{est\_magique} de la question 8.)
+\end{parts}
+
+\begin{lstlisting}
+def somme_ligne(carre: list, n: int) -> int:
+    """
+    carre un tableau carré de nombres
+    n est un nombre entier
+    """
+    somme = 0
+    for nombre in carre[n]:
+        somme = somme + nombre
+    return somme
+\end{lstlisting}
+
+\question[3] \enonce{Automatiser la détection d'un carré magique.}
+\begin{parts}
+\part \enonce{Que vaut \code{somme\_ligne(carre4, 2)} ? À quoi sert cette fonction ?}
+\begin{reponse}
+\code{somme\_ligne(carre4, 2)} vaut $6 + 8 + 13 + 12 = $ \textbf{39}.\\
+La fonction renvoie la \textbf{somme des nombres de la ligne \code{n}} du carré.
+\end{reponse}
+\code{carre[n]} est une ligne (une liste) ; la boucle la parcourt par valeur et additionne ses nombres. Les annotations \code{carre: list}, \code{n: int} et \code{-> int} indiquent les types attendus : elles aident la lecture mais ne changent pas l'exécution.
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\code{nombre} & avant & 6 & 8 & 13 & 12 \\ \hline
+\code{somme} & 0 & 6 & 14 & 27 & 39 \\ \hline
+\end{tabular}
+\end{center}
+
+\part \enonce{Écrire une fonction qui vérifie que les sommes de toutes les lignes sont égales.}
+\begin{reponse}
+\begin{lstlisting}
+def lignes_egales(carre):
+    reference = somme_ligne(carre, 0)
+    for n in range(len(carre)):
+        if somme_ligne(carre, n) != reference:
+            return False
+    return True
+\end{lstlisting}
+\end{reponse}
+\methode
+\begin{enumerate}
+  \item Prendre la somme de la première ligne comme \textbf{référence}.
+  \item Parcourir toutes les lignes par indice (\code{range(len(carre))}) et comparer chaque somme à la référence.
+  \item Dès qu'une somme est différente, renvoyer \code{False} : inutile de continuer.
+  \item Si la boucle se termine sans trouver de différence, renvoyer \code{True} (après la boucle, pas dedans).
+\end{enumerate}
+Tests : \code{lignes\_egales(carre3)} renvoie \code{True} ; \code{lignes\_egales(carre4)} renvoie \code{False} (la ligne 1 vaut 29, et non 34).
+\begin{erreur}
+Mettre \code{else: return True} dans la boucle : la fonction s'arrête dès la première ligne correcte, sans regarder les suivantes.
+\end{erreur}
+
+\part \enonce{Écrire \code{somme\_colonne(carre, n)}, qui renvoie la somme de la colonne \code{n}.}
+\begin{reponse}
+\begin{lstlisting}
+def somme_colonne(carre, n):
+    somme = 0
+    for ligne in carre:
+        somme = somme + ligne[n]
+    return somme
+\end{lstlisting}
+\end{reponse}
+Une colonne n'est pas une liste toute faite : ses nombres sont « à la même place » dans chaque ligne. On parcourt donc les lignes, et on prend dans chacune l'élément d'indice \code{n}. Exemple : \code{somme\_colonne(carre4, 1)} vaut $5 + 10 + 8 + 16 = 39$.
+\textit{Variante par indice :} \code{for i in range(len(carre)): somme = somme + carre[i][n]}.
+\end{parts}
+
+\question[2] \enonce{[Bonus] Écrire une fonction \code{est\_magique} qui renvoie \code{True} si le carré est magique, \code{False} sinon.}
+\begin{reponse}
+\begin{lstlisting}
+def est_magique(carre):
+    t = len(carre)
+    # 1. Tous les entiers de 1 à t*t sont présents
+    nombres = []
+    for ligne in carre:
+        for v in ligne:
+            nombres.append(v)
+    for k in range(1, t*t + 1):
+        if k not in nombres:
+            return False
+    # 2. Lignes et colonnes ont la même somme
+    reference = somme_ligne(carre, 0)
+    for n in range(t):
+        if somme_ligne(carre, n) != reference or somme_colonne(carre, n) != reference:
+            return False
+    # 3. Les deux diagonales aussi
+    diag1 = 0
+    diag2 = 0
+    for i in range(t):
+        diag1 = diag1 + carre[i][i]
+        diag2 = diag2 + carre[i][t - 1 - i]
+    if diag1 != reference or diag2 != reference:
+        return False
+    return True
+\end{lstlisting}
+\end{reponse}
+\explication\ La fonction vérifie, dans l'ordre, les deux conditions de la définition. Elle renvoie \code{False} dès qu'une vérification échoue, et \code{True} seulement à la fin.
+\begin{itemize}
+  \item \textbf{Les nombres.} On met tous les nombres du carré dans une seule liste, puis on vérifie que chaque entier de 1 à $t^2$ y est. Comme il y a exactement $t^2$ cases, chacun est alors présent une seule fois.
+  \item \textbf{La diagonale principale} va d'en haut à gauche à en bas à droite : cases \code{[0][0]}, \code{[1][1]}\dots, donc \code{carre[i][i]}.
+  \item \textbf{L'autre diagonale} va d'en haut à droite à en bas à gauche : pour la ligne \code{i}, la colonne est \code{t - 1 - i} (pour $t = 3$ : colonnes 2, 1, 0).
+\end{itemize}
+Tests : \code{est\_magique(carre3)} renvoie \code{True} ; \code{est\_magique(carre4)} renvoie \code{False} ; le carré de Dürer donne \code{True}. Un carré rempli de 5 a toutes ses sommes égales, mais renvoie \code{False} : il ne contient pas les nombres de 1 à 9.
+
+\end{questions}
+
+\end{document}
