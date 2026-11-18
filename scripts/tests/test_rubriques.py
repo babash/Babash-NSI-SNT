@@ -98,6 +98,24 @@ def attendu(d, rub):
     return out
 
 
+# Les étiquettes des onglets, comme ETIQUETTES dans assets/site.js (T51b, T85)
+ETIQUETTES = [("usages", "en-ligne", "En ligne"), ("usages", "a-imprimer", "À imprimer"), ("usages", "debranche", "Débranché"),
+              ("usages", "compte-ent", "Connexion ENT"), ("types", "cours", "Cours"), ("types", "jeu", "Jeu"),
+              ("langages", "python", "Python"), ("langages", "sql", "SQL"), ("formats", "notebook", "Notebook"),
+              ("usages", "sans-installation", "Rien à installer"),
+              ("usages", "pour-aller-plus-loin", "Pour aller plus loin"), ("usages", "a-adapter", "À adapter")]
+
+
+def etiquettes_attendues(f):
+    """Les étiquettes d'une fiche vue de l'extérieur (bibliotheque.json, formats des documents déduits)."""
+    out = []
+    for champ, valeur, nom in ETIQUETTES:
+        vals = [doc.get("format") for doc in f.get("documents", [])] if champ == "formats" else f.get(champ, [])
+        if valeur in vals:
+            out.append(nom)
+    return out
+
+
 def ouvrir(nav, url, js=True):
     ctx = nav.new_context(java_script_enabled=js)
     ctx.route(re.compile(r"^https://fonts\.(googleapis|gstatic)\.com/.*"), lambda r: r.fulfill(status=200, body=""))
@@ -175,6 +193,20 @@ def main():
                          "/bibliotheque/?r=" in page.url and titre in page.locator(".fiche-titre").inner_text())
             ctx.close()
 
+        print("Étiquettes (T85 : Cours, Notebook, Rien à installer)")
+        biblio = lire(d, "donnees", "bibliotheque.json")
+        publiques = {f["id"]: f for f in biblio["ressources"]}
+        une = {u["ressource"]: u["etiquette"] for u in v["a_la_une"] if u.get("etiquette")}
+        for rub in v["rubriques"]:
+            ids = [x for s_ in rub["sections"] for x in s_["ressources"] + [y for ss in s_.get("sous_sections", []) for y in ss["ressources"]]]
+            ids = [x for x in ids if x in publiques]
+            attendues = [([une[x]] if x in une else []) + etiquettes_attendues(publiques[x]) for x in ids]
+            ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{rub['id']}/")
+            vues = [[t.strip() for t in li.locator(".tags span:not(.site)").all_inner_texts()] for li in page.locator("li.res").all()]
+            ecarts = [(ids[k], vues[k], attendues[k]) for k in range(min(len(ids), len(vues))) if vues[k] != attendues[k]]
+            verifier(f"{rub['id']} : les étiquettes de chaque ressource suivent sa fiche", not ecarts and len(vues) == len(ids), ecarts[:3])
+            ctx.close()
+
         print("Sections libres et « À la une »")
         for rub in v["rubriques"]:
             ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{rub['id']}/")
@@ -240,6 +272,31 @@ def main():
         verifier("deux ressources inversées et une section déplacée : la page suit", titres(page) == attendu(d, r))
         h2 = page.locator("section.theme h2").all_inner_texts()
         verifier("section libre renommée : nouveau titre", any("Section renommée dans l'admin" in x for x in h2), h2)
+        ctx.close()
+        srv.fermer()
+
+        print("Rien à installer")
+        cible_rai = {}
+        def rien_a_installer(dd):
+            vv = lire(dd, "donnees", "vitrine.json")
+            for s_ in vv["rubriques"][0]["sections"]:
+                for rid in s_["ressources"]:
+                    f = lire(dd, "donnees", "ressources", rid + ".json")
+                    if "en-ligne" in f["usages"] and "installation" not in f["usages"]:
+                        f["usages"].append("sans-installation")
+                        ecrire(dd, f, "donnees", "ressources", rid + ".json")
+                        cible_rai.update(titre=f["titre"], rubrique=vv["rubriques"][0]["id"])
+                        return
+        d = copie(racine, travail, rien_a_installer)
+        srv = Serveur(d)
+        ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{cible_rai['rubrique']}/")
+        li = page.locator("li.res", has=page.locator(".titre", has_text=cible_rai["titre"])).first
+        tags = [t.strip() for t in li.locator(".tags span:not(.site)").all_inner_texts()]
+        verifier(f"usage sans-installation : « Rien à installer » sous « {cible_rai['titre']} »", "Rien à installer" in tags, tags)
+        ctx.close()
+        ctx, page, erreurs = ouvrir(nav, f"{srv.base}/bibliotheque/?q=" + "rien à installer")
+        verifier("bibliothèque : la recherche « rien à installer » trouve la ressource",
+                 page.locator(".fiche-titre, .resultat, li", has_text=cible_rai["titre"]).count() >= 1)
         ctx.close()
         srv.fermer()
 
