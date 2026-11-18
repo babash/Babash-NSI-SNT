@@ -15,14 +15,18 @@ Usage (depuis n'importe quel dossier du dépôt) :
   4. rendu avant/après : accueil + rubriques (+ la bibliothèque, dont les données sont d'abord
      construites dans chaque copie, comme le fait « Publier le site »), 320/768/1440 px,
      clair/obscur (rendu.py, comparer.py) ; depuis T51b, les rubriques lisent la vitrine et les
-     fiches, et le nombre de ressources attendu en vient (commun.attendu) ;
+     fiches, et le nombre de ressources attendu en vient (commun.attendu) ; si les captures
+     diffèrent, changements.py dit si c'est le « changement attendu » d'une branche de fiches hors
+     vitrine (seule la bibliothèque change, et seulement par les fiches touchées) : la ligne
+     « avant/après identiques » le dit au lieu de ROUGE ; sinon, différences à examiner ;
   5. contrastes et clavier sur la branche (contrastes.py) ;
   6. impression A4 des documents HTML touchés dans */fichiers/ (impression.py) ;
   7. contrôle du dépôt lui-même (.github/verifier-site.py) sur la branche servie en local.
 Les polices Google, bloquées dans les sessions, sont servies depuis des paquets fontsource
 (téléchargés au besoin depuis npm dans --polices).
-Résumé à la fin. Code de sortie : 0 tout est vert ; 1 un contrôle est rouge ;
-2 seulement des motifs « à relire » (données sensibles : relecture humaine des occurrences).
+Résumé à la fin. Code de sortie : 0 tout est vert (« changement attendu » compte comme vert) ;
+1 un contrôle est rouge ; 2 seulement des motifs « à relire » (données sensibles : relecture
+humaine des occurrences).
 """
 import argparse
 import glob
@@ -151,7 +155,18 @@ def main():
         etape("Rendu après", [*PY, os.path.join(ICI, "rendu.py"), url_ap, os.path.join(travail, "rendu-apres"), "--racine", ap, *commun_args], resultats, "rendu après")
         r = etape("Comparaison avant/après", [*PY, os.path.join(ICI, "comparer.py"), os.path.join(travail, "rendu-avant"), os.path.join(travail, "rendu-apres")], resultats, "avant/après identiques")
         if r.returncode:
-            print("   (différences à examiner : bruit d'anticrénelage possible sur le logo à 320 px, ou changement voulu)")
+            # Une branche de fiches hors vitrine change forcément la bibliothèque : changements.py dit si c'est tout
+            f_comp, f_touches = os.path.join(travail, "comparaison.txt"), os.path.join(travail, "touches.txt")
+            with open(f_comp, "w", encoding="utf-8") as f:
+                f.write(r.stdout)
+            with open(f_touches, "w", encoding="utf-8") as f:
+                f.write(touches + "\n")
+            c = subprocess.run([*PY, os.path.join(ICI, "changements.py"), av, ap, f_comp, f_touches], capture_output=True, text=True)
+            print("\n### Changements attendus (changements.py)\n" + (c.stdout + c.stderr).strip(), flush=True)
+            if c.returncode == 0:
+                resultats[-1] = ("avant/après identiques", "changement attendu")
+            else:
+                print("   (différences à examiner : bruit d'anticrénelage possible sur le logo à 320 px, ou changement voulu)")
         etape("Contrastes et clavier", [*PY, os.path.join(ICI, "contrastes.py"), url_ap, os.path.join(travail, "contrastes"), "--racine", ap, "--largeurs", "320,768,1440", *commun_args], resultats, "contrastes et clavier")
         docs = [l.split("\t")[-1] for l in touches.splitlines() if l[:1] in "AMR" and "/fichiers/" in l and l.endswith(".html")]
         if docs:

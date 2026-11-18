@@ -20,7 +20,11 @@ dossier de travail :
     (T51b) : rubriques et compte, fichier manquant, lien principal et document GitHub, dépôt sans
     document « Code source » ;
   - sensibles.py : des textes ordinaires avec « (sur) », « [point] », « (dot) », « [at] », puis deux
-    adresses électroniques masquées pour les robots (T65), dans un petit dépôt git.
+    adresses électroniques masquées pour les robots (T65), dans un petit dépôt git ;
+  - changements.py (T86) : une fiche ajoutée hors vitrine, où seule la bibliothèque change
+    (changement attendu), une fiche renommée (aussi) ; puis ce qui reste à examiner : un onglet
+    qui change aussi, une fiche non touchée qui change, du code touché, la vitrine construite qui
+    change, aucune page qui diffère.
 """
 import json
 import os
@@ -300,5 +304,64 @@ attendre("sensibles.py : deux adresses masquées ([point] et [sur], (at) et (dot
     r"^\[à examiner\] adresse électronique masquée \| corrige\.html:2 \|",
     r"2 occurrence\(s\) à examiner",
 ])
+
+# ── changements.py : le « changement attendu » d'une branche de fiches hors vitrine (T86) ────
+def biblio(dossier, fiches, vitrine=None, construit="2026-11-18T10:00:00Z"):
+    ecrire(os.path.join(dossier, "donnees", "bibliotheque.json"), json.dumps({
+        "format": 1, "public": "exterieur", "construit": construit, "referentiels": {"valeurs": {}},
+        "vitrine": vitrine or {"rubriques": [{"id": "snt"}]},
+        "ressources": [{"id": i, "titre": t} for i, t in fiches]}, ensure_ascii=False))
+
+
+def comparaison(*differentes):
+    lignes = []
+    for page in ("accueil", "snt", "bibliotheque"):
+        for largeur in (320, 1440):
+            for mode in ("light", "dark"):
+                diff = (page, largeur) in differentes or page in differentes
+                lignes.append("%-36s %s" % ("%s %d %s" % (page, largeur, mode),
+                              "DIFFÉRENT : 0.08 % de pixels différents, zone (22, 218, 284, 900)" if diff
+                              else "identique (3 ressources, captures identique)"))
+    return "\n".join(lignes) + "\n\n2 page(s) différente(s) sur 12\n"
+
+
+def changements(nom, fiches_avant, fiches_apres, touches, differentes=("bibliotheque",), vitrine_apres=None):
+    d = os.path.join(travail, "changements-" + nom)
+    biblio(os.path.join(d, "avant"), fiches_avant)
+    biblio(os.path.join(d, "apres"), fiches_apres, vitrine=vitrine_apres, construit="2026-11-18T11:00:00Z")
+    ecrire(os.path.join(d, "comparaison.txt"), comparaison(*differentes))
+    ecrire(os.path.join(d, "touches.txt"), touches)
+    return outil("changements.py", os.path.join(d, "avant"), os.path.join(d, "apres"),
+                 os.path.join(d, "comparaison.txt"), os.path.join(d, "touches.txt"))
+
+
+AVANT = [("a", "Titre a"), ("b", "Titre b")]
+code, sortie = changements("ajout", AVANT, AVANT + [("c", "Titre c")],
+                           "A\tdonnees/ressources/c.json\nA\tnsi-premiere/fichiers/c/sujet.pdf\n")
+attendre("changements.py : une fiche ajoutée hors vitrine, seule la bibliothèque change : changement attendu", code, sortie, 0,
+         presents=[r"^Fiches touchées par la branche : 1 ; dans la bibliothèque, 1 ajoutée\(s\), 0 modifiée\(s\), 0 retirée\(s\)$",
+                   r"^  ajoutées : c$", r"^Changement attendu : seule la bibliothèque change \(4 capture"])
+code, sortie = changements("onglet", AVANT, AVANT + [("c", "Titre c")], "A\tdonnees/ressources/c.json\n",
+                           differentes=("bibliotheque", ("snt", 320)))
+attendre("changements.py : un onglet change aussi : à examiner", code, sortie, 1,
+         presents=[r"d'autres pages que la bibliothèque diffèrent : snt"], absents=[r"^Changement attendu"])
+code, sortie = changements("voisine", AVANT, [("a", "Titre a"), ("b", "Autre titre"), ("c", "Titre c")],
+                           "A\tdonnees/ressources/c.json\n")
+attendre("changements.py : une fiche que la branche ne touche pas change : à examiner", code, sortie, 1,
+         presents=[r"la fiche « b », que la branche ne touche pas, change \(titre\)"])
+code, sortie = changements("code", AVANT, AVANT + [("c", "Titre c")], "A\tdonnees/ressources/c.json\nM\tassets/site.js\n")
+attendre("changements.py : la branche touche aussi le code : à examiner", code, sortie, 1,
+         presents=[r"touche autre chose que des fiches et des fichiers déposés : assets/site\.js"])
+code, sortie = changements("vitrine", AVANT, AVANT + [("c", "Titre c")], "A\tdonnees/ressources/c.json\n",
+                           vitrine_apres={"rubriques": [{"id": "snt", "titre": "SNT"}]})
+attendre("changements.py : la vitrine construite change : à examiner", code, sortie, 1,
+         presents=[r"« vitrine » change dans donnees/bibliotheque\.json"])
+code, sortie = changements("renommage", AVANT, [("a", "Titre a"), ("b2", "Titre b")],
+                           "R100\tdonnees/ressources/b.json\tdonnees/ressources/b2.json\n")
+attendre("changements.py : une fiche renommée (ancien et nouveau nom touchés) : changement attendu", code, sortie, 0,
+         presents=[r"1 ajoutée\(s\), 0 modifiée\(s\), 1 retirée\(s\)", r"^Changement attendu"])
+code, sortie = changements("rien", AVANT, AVANT, "A\tdonnees/ressources/c.json\n", differentes=())
+attendre("changements.py : aucune page ne diffère : rien à expliquer", code, sortie, 1,
+         presents=[r"aucune page ne diffère"])
 
 bilan.terminer()

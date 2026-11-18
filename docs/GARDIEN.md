@@ -8,7 +8,10 @@ vérifie que la branche part du dernier `main`, construit la bibliothèque dans 
 après (comme « Publier le site »), puis contrôle les données sensibles (une adresse
 électronique est reconnue même écrite sous une forme masquée pour les robots, avec « [point] »,
 « (at) » ou « [sur] »), les liens internes, le rendu avant et après de l'accueil, des rubriques et de
-la bibliothèque (320, 768 et 1440 px, clair et obscur), les contrastes (mesurés sur la partie affichée
+la bibliothèque (320, 768 et 1440 px, clair et obscur ; quand les captures diffèrent,
+`changements.py` reconnaît le « changement attendu » d'une branche de fiches hors vitrine : seule la
+bibliothèque change, et seulement par les fiches que la branche touche ; sinon, les différences
+s'examinent à la main), les contrastes (mesurés sur la partie affichée
 de chaque texte), la
 navigation au clavier et l'impression A4 des documents touchés. Depuis la bascule des rubriques vers
 la vitrine (T51b), ses outils comptent les ressources attendues d'après la vitrine et les fiches, et
