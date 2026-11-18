@@ -83,6 +83,37 @@ verifier(`vitrine : deux ressources inversées dans une section : ${changees} li
 verifier('nouveau fichier : indentation de deux espaces, petites listes sur une ligne',
   D.ecrire({ a: ['x', 'y'], b: { c: 1, d: 'e' }, f: [{ g: 1 }] }) === '{\n  "a": ["x", "y"],\n  "b": { "c": 1, "d": "e" },\n  "f": [\n    {\n      "g": 1\n    }\n  ]\n}\n');
 
+console.log('Format des documents : la page (assets/site.js) et le script (deduire_format)');
+{
+  // site.js dans un bac à sable : il prête deduireFormatDocument (repli de l'aperçu de l'admin, T85)
+  const vm = require('vm');
+  const bac = { window: { addEventListener() {} }, document: { currentScript: { src: 'http://localhost/assets/site.js' }, readyState: 'complete',
+    getElementById() { return null; }, addEventListener() {} }, location: { protocol: 'http:', href: 'http://localhost/', search: '' }, URL, console };
+  bac.window.document = bac.document;
+  vm.runInNewContext(fs.readFileSync(path.join(RACINE, 'assets', 'site.js'), 'utf8'), bac);
+  const deduire = bac.window.deduireFormatDocument;
+  const formats = JSON.parse(lire('donnees', 'referentiels', 'valeurs.json')).formats;
+  const script = execFileSync('python3', ['-B', '-c', [
+    'import json, os, sys',
+    'sys.path.insert(0, os.path.join(sys.argv[1], "scripts"))',
+    'import valider_donnees as vd',
+    'v = vd.Validation(sys.argv[1])',
+    'v.charger_referentiels()',
+    'out = []',
+    'd = os.path.join(sys.argv[1], "donnees", "ressources")',
+    'for n in sorted(os.listdir(d)):',
+    '    for doc in json.load(open(os.path.join(d, n), encoding="utf-8")).get("documents", []):',
+    '        doc = {k: x for k, x in doc.items() if k != "format"}',
+    '        out.append([n, doc.get("url") or doc.get("fichier"), doc.get("url") is not None, v.deduire_format(doc)])',
+    'print(json.dumps(out))'].join('\n'), RACINE], { encoding: 'utf8' });
+  const docs = JSON.parse(script);
+  const ecarts = docs.filter(([, adresse, estUrl, attendu]) => deduire(estUrl ? { url: adresse } : { fichier: adresse }, formats) !== attendu);
+  verifier(`les ${docs.length} documents des fiches : même format pour la page et pour le script`, docs.length > 0 && !ecarts.length,
+    ecarts.slice(0, 5).map((e) => e[0] + ' ' + e[1] + ' : page ' + deduire(e[2] ? { url: e[1] } : { fichier: e[1] }, formats) + ', script ' + e[3]).join('\n'));
+  verifier('Capytale Basthon : notebook (motif du référentiel)',
+    deduire({ url: 'https://capytale2.ac-paris.fr/p/basthon/n/?kernel=python3&id=1' }, formats) === 'notebook');
+}
+
 console.log('Validation des données du dépôt');
 const ids = noms.map((n) => n.replace(/\.json$/, ''));
 const V = validation(RACINE, ids);

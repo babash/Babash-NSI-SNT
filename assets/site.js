@@ -291,16 +291,47 @@
      « sans-installation ») s'ajoutent. « Notebook » : un des documents montrés a le format « notebook »
      (déduit à la construction de la bibliothèque) ; une activité Capytale dont le document principal est
      la page de lecture reste un notebook. */
-  function valeursEtiquette(f, champ) {
+  function valeursEtiquette(f, champ, formats) {
     if (champ === 'formats') {
-      return liste(f.documents).map(function (d) {
-        // une fiche modifiée dans l'admin (aperçu) n'a pas encore son format déduit : le notebook se reconnaît à son adresse
-        var a = String(d.url || d.fichier || '');
-        return d.format || (/\.ipynb([#?]|$)/i.test(a) || /^https?:\/\/(www\.)?nbviewer(\.jupyter)?\.org\//i.test(a) ? 'notebook' : null);
-      });
+      // une fiche modifiée dans l'admin (aperçu) n'a pas encore son format : il se déduit comme à la construction
+      return liste(f.documents).map(function (d) { return d.format || deduireFormat(d, formats); });
     }
     return liste(f[champ]);
   }
+
+  /* Le format d'un document, par les règles du référentiel (valeurs.json, « formats » : motifs, hôtes,
+     extensions, format par défaut), comme deduire_format de scripts/valider_donnees.py */
+  function deduireFormat(d, formats) {
+    formats = liste(formats);
+    var cible = String(d.url || d.fichier || '');
+    var hote = '', chemin;
+    if (d.url) {
+      try {
+        var u = new URL(cible);
+        hote = u.hostname.toLowerCase().replace(/^www\./, '');
+        chemin = u.pathname;
+      } catch (e) { chemin = ''; }
+    } else {
+      chemin = cible.split(/[#?]/)[0];
+    }
+    var i, f;
+    for (i = 0; i < formats.length; i++) {
+      f = formats[i];
+      if (liste(f.motifs).some(function (m) { try { return new RegExp(m).test(cible); } catch (e) { return false; } })) return f.id;
+    }
+    if (hote) {
+      for (i = 0; i < formats.length; i++) if (liste(formats[i].hotes).indexOf(hote) >= 0) return formats[i].id;
+    }
+    var dernier = chemin.replace(/\/+$/, '').split('/').pop();
+    if (dernier.indexOf('.') >= 0 && !/\/$/.test(chemin)) {
+      var ext = dernier.split('.').pop().toLowerCase();
+      for (i = 0; i < formats.length; i++) if (liste(formats[i].extensions).indexOf(ext) >= 0) return formats[i].id;
+    }
+    for (i = 0; i < formats.length; i++) if (formats[i].par_defaut) return formats[i].id;
+    return null;
+  }
+  window.deduireFormatDocument = deduireFormat; // pour le test de parité avec le script (test_admin_donnees.js)
+
 
   function rubriquesDeVitrine(donnees) {
     var fiches = {};
@@ -336,7 +367,7 @@
       });
       var tags = etiquettesUne[f.id] ? [etiquettesUne[f.id]] : [];
       ETIQUETTES.forEach(function (e) {
-        if (valeursEtiquette(f, e[0]).indexOf(e[1]) >= 0) tags.push(e[2]);
+        if (valeursEtiquette(f, e[0], valeurs.formats).indexOf(e[1]) >= 0) tags.push(e[2]);
       });
       return {
         id: f.id, titre: f.titre, lien: principal ? adresse(principal) : '', texte: f.accroche || f.resume || '',
