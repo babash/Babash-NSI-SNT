@@ -1,186 +1,129 @@
-# Les listes de ressources
+# Les rubriques, les ressources et les réglages
 
-*Ajouter, ranger et régler les ressources du site, et que faire si la page affiche une erreur. Retour au [README](../README.md).*
+*Ce que montrent les rubriques, comment ajouter et ranger une ressource, les réglages du site, et que faire si la page affiche une erreur. Retour au [README](../README.md).*
 
 Le site a cinq rubriques : SNT, NSI Première, NSI Terminale, Professeur principal et Autres.
-Chaque rubrique a **sa propre liste de ressources**, dans un petit fichier texte que tu modifies
-directement sur GitHub. Une ressource peut être un lien vers un site, ou un fichier déposé
-sur le site (PDF, fiche HTML, diaporama…).
+Depuis le 17 novembre 2026, elles montrent la **vitrine** (`donnees/vitrine.json`) : pour chaque
+rubrique, ses sections et, dans chacune, les ressources mises en avant, dans l'ordre. Chaque
+ressource vient de sa **fiche** (`donnees/ressources/<identifiant>.json`, voir
+[les données de la bibliothèque](BIBLIOTHEQUE.md)). La vitrine et les fiches se modifient dans
+l'[espace administrateur](ADMIN.md). Les anciennes listes `ressources.js` des rubriques restent
+dans le dépôt, le temps de comparer, mais **ne sont plus lues** : les modifier ne change plus rien
+sur le site.
+
+## Ce que montre une rubrique
+
+- **Ses sections**, dans l'ordre de la vitrine. Une section suit un thème du texte officiel (son
+  titre est celui du programme) ou porte un titre libre (« Préparer le bac », « Sites
+  ressources »…). Le sommaire de gauche et l'adresse (`…/nsi-premiere/#types-construits`) en
+  viennent.
+- **La ligne « Au programme »** sous une section : les contenus du programme pour un thème
+  officiel (en SNT et en NSI). Pour une section libre, ce sont les titres de ses sous-sections qui
+  n'ont pas encore de ressource, comme les trois lignes de « Orientation » en Professeur principal.
+  Un contenu qui a des ressources devient un lien vers son groupe ; les autres restent en
+  pointillés, ce qui montre d'un coup d'œil ce qui reste à couvrir.
+- **Chaque ressource** :
+  - son titre, qui ouvre le document principal de la fiche ;
+  - son accroche, puis « **En savoir plus** », qui ouvre sa fiche complète dans la bibliothèque
+    (décision de l'enseignant du 17 novembre 2026) ;
+  - les autres documents de la fiche, en liens annexes (corrigé, version PDF, code source…) ;
+  - ses étiquettes, tirées de la fiche (En ligne, À imprimer, Débranché, Connexion ENT, Jeu, Python,
+    SQL, Pour aller plus loin, À adapter), et en tête l'étiquette que la vitrine lui donne
+    « À la une », comme « Ressource du mois » ;
+  - son site d'origine, ou « Sur ce site » pour un fichier déposé.
+- Une ressource dont tous les documents sont cachés pour l'extérieur n'apparaît pas.
+
+La recherche de la page d'accueil fouille les titres, textes, étiquettes et thèmes de toutes les
+rubriques ; on peut la partager : `…/Babash-NSI-SNT/?q=débranché`. Chercher « ressource du mois »
+retrouve la ressource mise à la une. Pour chercher plus loin (synonymes, notions, texte des
+documents, filtres) : l'onglet Bibliothèque.
 
 ## La règle des liens
 
 Le lien principal d'une ressource mène **directement** à la ressource
 (la page de l'activité, la fiche, le PDF), jamais à un dépôt GitHub ou à un fichier affiché
 par GitHub. Le dépôt, lui, doit toujours être indiqué, en lien secondaire (décision de
-l'enseignant du 10 novembre 2026) : une ressource qui a un dépôt le donne en annexe, sous le
-nom « Code source », et chaque page publiée (ce site, les applications, les pages en ligne des
-TD) porte en pied de page un lien « Code source sur GitHub » vers son dépôt, à côté de l'auteur
-et de la licence. Pour une ressource externe, qu'on ne modifie pas, on donne son dépôt en
-annexe s'il est public. Depuis le 11 novembre 2026, toutes les ressources des listes conçues
-par Babash - NSI Tani Malandi qui ont un dépôt le donnent en annexe, et le lien « Code source
-sur GitHub » est en bas des pages de ce site, de ses pages déposées dans les dossiers `fichiers`
-et des applications. Pour ce site, le contrôle du site en ligne le vérifie (voir
+l'enseignant du 10 novembre 2026) : la fiche d'une ressource qui a un dépôt le donne dans un
+document de rôle « code source », et chaque page publiée (ce site, les applications, les pages en
+ligne des TD) porte en pied de page un lien « Code source sur GitHub » vers son dépôt, à côté de
+l'auteur et de la licence. Pour une ressource externe, qu'on ne modifie pas, sa fiche donne son
+dépôt s'il est public. Le contrôle du site en ligne vérifie le lien des pages de ce site (voir
 [la vérification automatique](VERIFICATION.md)).
 Quand une activité n'a pas de page en ligne, ses fichiers sont déposés dans le dossier
-`fichiers` de la rubrique (c'est le cas de `nsi-terminale/fichiers/os-humain/`).
+`fichiers` d'une rubrique (c'est le cas de `nsi-terminale/fichiers/os-humain/`).
 
 ---
 
 ## Ajouter une ressource en ligne
 
-1. Sur GitHub, ouvre le fichier `ressources.js` de la rubrique (par exemple `snt/ressources.js`),
-   puis clique sur le crayon. Les liens « Modifier la liste » et « Déposer un fichier » ne sont
-   plus en bas des rubriques depuis le 17 novembre 2026. Les fiches de la bibliothèque, elles, se
-   modifient dans l'[espace administrateur](ADMIN.md).
-2. Repère le bon thème (les lignes `theme("…");`) et colle ce bloc en dessous :
-
-```js
-ressource({
-  titre: "Nom de la ressource",
-  lien: "https://adresse-de-la-ressource",
-  texte: "Ce que font les élèves, en une ou deux phrases.",
-  tags: ["En ligne"],
-});
-```
-
-3. Clique sur **Commit changes**. Le site se met à jour en quelques minutes : le workflow
-   « Publier le site », dans l'onglet **Actions**, valide les données, construit la
-   bibliothèque, puis met le site en ligne ; s'il échoue, le site garde sa version précédente
-   (voir [la mise en ligne](VERIFICATION.md#la-mise-en-ligne)).
-
-L'ordre dans le fichier est l'ordre sur la page. Le compteur du thème, le nom du site
-affiché sous la ressource et l'ouverture dans un nouvel onglet se font tout seuls. La
-ressource apparaît dans sa rubrique ; l'onglet Bibliothèque, lui, lit les fiches du dossier
-`donnees/ressources/` ([BIBLIOTHEQUE.md](BIBLIOTHEQUE.md)).
+1. **Sa fiche** : un fichier `donnees/ressources/<identifiant>.json`, au format décrit dans
+   [`donnees/README.md`](../donnees/README.md). Pour l'instant, on la crée sur GitHub
+   (**Add file → Create new file**) ; l'espace administrateur le fera par un formulaire à
+   l'étape suivante. Le contrôle « Données de la bibliothèque » la vérifie à chaque envoi.
+2. **Sa place** : dans l'[espace administrateur](ADMIN.md), « Onglets du site », la rubrique, la
+   section, puis « Choisir les ressources ». Sans place dans la vitrine, la ressource n'apparaît
+   que dans la bibliothèque.
+3. **Enregistrer** : le site se met à jour en quelques minutes ; le workflow « Publier le site »
+   valide les données, construit la bibliothèque, puis met le site en ligne. S'il échoue, le site
+   garde sa version précédente (voir [la mise en ligne](VERIFICATION.md#la-mise-en-ligne)).
 
 ## Ajouter un PDF (ou n'importe quel fichier)
 
 1. Sur GitHub, ouvre le dossier `fichiers` de la rubrique (par exemple `snt/fichiers/`), puis
-   **Add file → Upload files** : le fichier va directement dans ce dossier. Valide avec
-   **Commit changes**.
-2. Ajoute-le à la liste comme une ressource en ligne, avec le nom du fichier :
+   **Add file → Upload files**. Valide avec **Commit changes**.
+2. Cite-le dans la fiche, par un document qui donne son chemin depuis la racine du site :
+   `"fichier": "snt/fichiers/tp-graphes.pdf"`. Le contrôle des données vérifie qu'il existe.
 
-```js
-ressource({
-  titre: "TP parcours de graphes",
-  lien: "fichiers/tp-graphes.pdf",
-  texte: "Parcours en largeur et en profondeur.",
-  tags: ["À imprimer"],
-});
-```
-
-Le site affiche « PDF » sous la ressource et l'ouvre dans un nouvel onglet.
+Le site affiche « Sur ce site » sous la ressource et ouvre le fichier dans un nouvel onglet.
 Les fichiers que le navigateur ne sait pas afficher (`.py`, `.odt`, `.docx`, `.zip`…)
-sont téléchargés quand tu cliques dessus.
+sont téléchargés quand on clique dessus.
 
 > Conseil : des noms de fichiers sans espaces ni accents (`tp-graphes.pdf` plutôt que `TP Graphes é.pdf`).
 
 ## Une ressource avec plusieurs liens (sujet, corrigé, version en ligne…)
 
-Ajoute `annexes`. Chaque ligne donne le texte du lien, puis son adresse ou son fichier :
-
-```js
-ressource({
-  titre: "TP parcours de graphes",
-  lien: "fichiers/tp-graphes.pdf",
-  texte: "Parcours en largeur et en profondeur.",
-  annexes: {
-    "Corrigé": "fichiers/tp-graphes-corrige.pdf",
-    "Code de départ": "fichiers/graphes.py",
-    "Version Capytale": "https://capytale2.ac-paris.fr/…",
-  },
-});
-```
-
-## Les champs d'une ressource
-
-| Champ | Obligatoire | Contenu |
-|---|---|---|
-| `titre` | oui | Le nom affiché, en gros |
-| `lien` | non | Une adresse `https://…` ou un fichier `fichiers/…` |
-| `texte` | non | La description. Tu peux écrire du `code` entre accents graves et du **gras** entre doubles étoiles |
-| `tags` | non | Des étiquettes entre crochets : `["En ligne", "Python"]` |
-| `annexes` | non | Des liens en plus (voir ci-dessus) |
-
-Étiquettes déjà utilisées : `En ligne`, `À imprimer`, `Débranché`, `Python`, `SQL`, `Jeu`,
-`Cours`, `Notebook`, `Connexion ENT`, `Rien à installer`, `À adapter`, `Pour aller plus loin`,
-`Ressource du mois`. Tu peux en inventer d'autres.
-
-L'étiquette `Ressource du mois` met en avant une ressource (en ce moment : CyberCase, en SNT
-et en NSI Terminale). Chercher « ressource du mois » sur l'accueil la retrouve ; il suffit
-d'enlever l'étiquette le mois suivant.
-
-La recherche de la page d'accueil fouille les titres, textes, étiquettes et thèmes de
-toutes les rubriques. Tu peux partager une recherche : `…/Babash-NSI-SNT/?q=débranché`.
+Une fiche a autant de documents qu'il faut, chacun avec son rôle (énoncé, corrigé, version PDF,
+code source…), son titre et sa visibilité pour l'extérieur et pour les élèves. Le document
+principal ouvre le titre de la ressource ; les autres s'affichent en liens annexes, dans l'ordre
+de la fiche. L'espace administrateur les range et règle leur visibilité.
 
 ---
 
 ## Organiser une rubrique
 
-Dans `ressources.js` :
-
-- `theme("Algorithmique");` commence un nouveau thème. Les ressources en dessous lui appartiennent.
-- Nom long : `theme("Représentation des données : types construits", { court: "Types construits" });`
-  Le nom court sert dans le sommaire et dans l'adresse (`…/nsi-premiere/#types-construits`).
-- Couleur : `theme("Sites ressources", "gris");` Couleurs possibles : bleu, vert, violet, rose,
-  orange, citron, cyan, jaune, lavande, corail, gris. Sans couleur, le site en choisit une.
-- `groupe("Pour aller plus loin");` ajoute un sous-titre à l'intérieur d'un thème.
-- Un thème sans ressource affiche « Rien ici pour l'instant » : tu peux le laisser en attendant.
+Dans l'[espace administrateur](ADMIN.md), « Onglets du site » : l'ordre et le titre des sections,
+leurs sous-sections, les ressources de chacune, dans l'ordre (boutons, glisser-déposer ou cases à
+cocher), et l'aperçu avant d'enregistrer. Une section sans ressource affiche « Rien ici pour
+l'instant » : on peut la laisser en attendant.
 
 ### Ranger selon le programme officiel
 
-Chaque thème de NSI et de SNT liste les contenus du BO dans `programme` :
-
-```js
-theme("Structures de données", {
-  programme: [
-    "Structures de données, interface et implémentation",
-    "Vocabulaire de la programmation objet",
-    "Arbres",
-  ],
-});
-
-groupe("Arbres");          // exactement le même intitulé que dans la liste
-
-ressource({ titre: "Fiche : les arbres", lien: "…" });
-```
-
-Sur la page, la ligne « Au programme » affiche tous les contenus. Ceux qui ont au moins une
-ressource deviennent des liens vers leur sous-section ; les autres restent en pointillés,
-ce qui montre d'un coup d'œil ce qui reste à couvrir.
-
-La référence du texte officiel s'affiche sous la présentation de la rubrique. Elle se règle
-dans `rubrique({ … })` :
-
-```js
-programme: {
-  texte: "Programme de NSI de terminale, BO spécial n° 8 du 25 juillet 2019",
-  lien: "https://…",
-},
-```
+Une section qui suit un thème du programme (`donnees/referentiels/programmes.json`) en prend le
+titre et les contenus ; ses sous-sections sont des contenus du thème. La référence du texte
+officiel s'affiche sous la présentation de la rubrique.
 
 ## Ajouter une rubrique
 
-1. Crée un dossier, par exemple `mathematiques`, avec une copie de `autres/index.html`
-   et de `autres/ressources.js`. Change le nom dans `rubrique({ … })`.
-2. Dans `reglages.js`, ajoute `"mathematiques",` à la liste des rubriques.
-
-Une rubrique absente de `reglages.js` reste visible à son adresse, mais n'apparaît ni sur
-l'accueil ni dans le menu : pratique pour une page réservée à une classe.
+1. Crée un dossier, par exemple `mathematiques`, avec une copie de `autres/index.html`.
+2. Ajoute la rubrique à la vitrine (`donnees/vitrine.json`, voir
+   [`donnees/README.md`](../donnees/README.md)), et son nom à la liste `rubriques` de
+   `reglages.js`, que les pages ne lisent plus mais qu'il faut garder identique à la vitrine.
 
 ## Réglages généraux
 
 `reglages.js` contient le titre du site, sa phrase de présentation, le nom du dépôt GitHub
-(pour le lien « Code source sur GitHub »), l'ordre des rubriques et
+(pour le lien « Code source sur GitHub ») et
 les textes du pied de page (voir ci-dessous). Le dépôt s'écrit `"propriétaire/nom"`, par
 exemple `"babash/Babash-NSI-SNT"` ; une adresse `https://github.com/…` est aussi acceptée. Une
 valeur mal écrite affiche une erreur sur la page (voir [Si la page affiche une erreur](#si-la-page-affiche-une-erreur)). Dans
 ce cas, comme quand le réglage manque,
-le lien « Code source sur GitHub » mène au dépôt du site, écrit dans `assets/site.js`.
+le lien « Code source sur GitHub » mène au dépôt du site, écrit dans `assets/site.js`. La liste et
+l'ordre des rubriques viennent de la vitrine.
 
 ## Le pied de page : auteur, licences et IA
 
-En bas de l'accueil, de chaque rubrique et de la bibliothèque, un pied de page rappelle :
+En bas de l'accueil, de chaque rubrique, de la bibliothèque et de l'espace administrateur, un pied
+de page rappelle :
 
 - qui conçoit les ressources, et la place de l'IA : « Ces ressources sont conçues par
   Babash - NSI Tani Malandi ; beaucoup le sont avec l'aide de l'IA. » ;
@@ -216,24 +159,17 @@ pas `reglages.js`.
 
 ## Si la page affiche une erreur
 
-L'encadré d'erreur dit, dans son titre, quel fichier est en cause :
+L'encadré d'erreur dit, dans son titre, ce qui est en cause :
 
-- « **Une liste de ressources contient une erreur** » : un fichier `ressources.js` ;
+- « **Les ressources n'ont pas pu s'afficher** » : la page n'a pas pu lire
+  `donnees/bibliotheque.json`, construit à chaque publication. Recharger la page ; si le message
+  reste, regarder dans l'onglet **Actions** si « Publier le site » a échoué (une erreur dans les
+  données). Sur ton ordinateur, construis-la d'abord : voir
+  [Tester sur ton ordinateur](REUTILISER.md#tester-sur-ton-ordinateur) ;
 - « **Les réglages du site contiennent une erreur** » : `reglages.js`, par exemple le réglage
   `depot` mal écrit (voir [Réglages généraux](#réglages-généraux)) ; le message dit ce qu'il faut écrire ;
 - « **Les réglages du site et une liste de ressources contiennent des erreurs** » : les deux.
 
-Pour une erreur d'écriture, le message indique le fichier et la ligne, et l'encadré rappelle
-les causes les plus fréquentes. Presque toujours, juste avant la ligne indiquée :
-
-- une **virgule oubliée** à la fin d'une ligne `titre: "…"` ;
-- un **guillemet** pas refermé, ou un guillemet `"` à l'intérieur d'un texte
-  (écris plutôt les guillemets français « … » ou une apostrophe) ;
-- une **accolade** `}` ou une **parenthèse** `)` pas refermée à la fin du bloc `});`.
-
-Les virgules en trop, elles, ne gênent pas : tu peux en laisser une après chaque ligne.
-
-Les autres erreurs n'ont pas de numéro de ligne : un champ inconnu, une ressource sans titre, un
-fichier introuvable, le réglage `depot` mal écrit… Le message dit alors ce qui ne va pas.
-
-Pour essayer une modification sur ton ordinateur avant de l'envoyer : [Tester sur ton ordinateur](REUTILISER.md#tester-sur-ton-ordinateur).
+Pour une erreur d'écriture dans `reglages.js`, le message indique la ligne. Presque toujours,
+juste avant : une **virgule oubliée** en fin de ligne, un **guillemet** pas refermé, ou une
+**accolade** pas refermée.

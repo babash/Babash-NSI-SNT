@@ -35,7 +35,7 @@ La cinquième rubrique, **Autres ressources**, réunit ce qui sert à tous les n
 
 ## Utiliser le site
 
-- **Chaque rubrique** range ses ressources par thème. En SNT et en NSI, la ligne « Au programme » d'un thème affiche les contenus du texte officiel : ceux qui ont une ressource sont des liens, les autres restent en pointillés.
+- **Chaque rubrique** range ses ressources par thème, dans l'ordre choisi dans l'espace administrateur (la vitrine). En SNT et en NSI, la ligne « Au programme » d'un thème affiche les contenus du texte officiel : ceux qui ont une ressource sont des liens, les autres restent en pointillés. Sous chaque ressource, son accroche et « **En savoir plus** », qui ouvre sa fiche complète dans la bibliothèque.
 - **La recherche** de la page d'accueil fouille les titres, les textes, les étiquettes et les thèmes de toutes les rubriques. Chercher « ressource du mois » retrouve la ressource mise en avant.
 - **L'onglet Bibliothèque**, dans la barre du haut, réunit toutes les ressources, y compris celles que les rubriques ne montrent pas encore (les activités Capytale, par exemple). Sa recherche comprend les synonymes et les notions du programme, tolère les fautes de frappe et fouille aussi le texte des documents hébergés sur le site ; ses filtres portent sur tous les classements (enseignement, niveau, programme officiel, notions, type, durée, langages, autrices et auteurs…), et deux vues, en liste ou en cartes, présentent les résultats. Chaque ressource y a sa fiche complète : programme, notions, durée, autrices et auteurs, licence, données d'élèves et tous ses documents. La recherche de l'accueil propose de poursuivre dans la bibliothèque.
 - **Une ressource** s'ouvre dans un nouvel onglet. Un fichier que le navigateur ne sait pas afficher (`.py`, `.odt`, `.docx`, `.zip`…) se télécharge.
@@ -43,9 +43,9 @@ La cinquième rubrique, **Autres ressources**, réunit ce qui sert à tous les n
 
 ## Ajouter une ressource
 
-Chaque rubrique a sa liste, `ressources.js`, et ses fichiers, dans son dossier `fichiers` (par exemple `snt/ressources.js` et `snt/fichiers/`) : on les modifie directement sur GitHub. Le mode d'emploi pas à pas est dans [docs/LISTES.md](docs/LISTES.md) : [ajouter une ressource](docs/LISTES.md#ajouter-une-ressource-en-ligne), [un PDF](docs/LISTES.md#ajouter-un-pdf-ou-nimporte-quel-fichier), [ranger une rubrique](docs/LISTES.md#organiser-une-rubrique), et que faire [si la page affiche une erreur](docs/LISTES.md#si-la-page-affiche-une-erreur). Les liens « Modifier la liste » et « Déposer un fichier » ne sont plus en bas des rubriques depuis le 17 novembre 2026. La bibliothèque, elle, lit les fiches du dossier `donnees/ressources/` ([docs/BIBLIOTHEQUE.md](docs/BIBLIOTHEQUE.md)) : une ressource ajoutée seulement à une liste apparaît dans sa rubrique, pas dans la bibliothèque.
+Depuis le 17 novembre 2026, les rubriques et l'accueil montrent la **vitrine** (`donnees/vitrine.json`) et les **fiches** de la bibliothèque (`donnees/ressources/`) : une ressource a sa fiche, et la vitrine la place dans une section d'une rubrique. Les anciennes listes `ressources.js` restent dans les dossiers des rubriques, mais ne sont plus lues. Les fichiers déposés sur le site restent dans le dossier `fichiers` de chaque rubrique (par exemple `snt/fichiers/`). Le mode d'emploi pas à pas est dans [docs/LISTES.md](docs/LISTES.md) : [ajouter une ressource](docs/LISTES.md#ajouter-une-ressource-en-ligne), [un PDF](docs/LISTES.md#ajouter-un-pdf-ou-nimporte-quel-fichier), [ranger une rubrique](docs/LISTES.md#organiser-une-rubrique), et que faire [si la page affiche une erreur](docs/LISTES.md#si-la-page-affiche-une-erreur).
 
-**L'espace administrateur** ([docs/ADMIN.md](docs/ADMIN.md)) annote et modifie les fiches, compose les onglets du site (la vitrine) et en montre l'aperçu, puis enregistre les changements d'un clic, protégé par un mot de passe administrateur, ou les donne à télécharger. Ajouter une nouvelle ressource par un formulaire viendra à l'étape suivante.
+**L'espace administrateur** ([docs/ADMIN.md](docs/ADMIN.md)) annote et modifie les fiches, compose les onglets du site (la vitrine, que les rubriques montrent telle quelle) et en montre l'aperçu, puis enregistre les changements d'un clic, protégé par un mot de passe administrateur, ou les donne à télécharger. Ajouter une nouvelle ressource par un formulaire viendra à l'étape suivante ; d'ici là, sa fiche se crée sur GitHub.
 
 **La mise en ligne** : chaque envoi sur `main` est publié par le workflow « Publier le site », dans l'onglet Actions du dépôt, en quelques minutes. Il valide les données, construit la bibliothèque, puis met le site en ligne. S'il échoue (croix rouge), rien n'est publié et le site garde sa version précédente ([docs/VERIFICATION.md](docs/VERIFICATION.md#la-mise-en-ligne)).
 
@@ -57,7 +57,7 @@ Tu peux copier le site pour tes classes, avec tes rubriques et tes ressources : 
 
 | Document | Contenu |
 |---|---|
-| [Les listes de ressources](docs/LISTES.md) | ajouter une ressource ou un fichier, ranger une rubrique, les réglages et le pied de page, les erreurs |
+| [Les rubriques et les réglages](docs/LISTES.md) | ce que montre une rubrique, ajouter une ressource ou un fichier, ranger une rubrique, les réglages et le pied de page, les erreurs |
 | [Réutiliser le site](docs/REUTILISER.md) | ta copie du site, GitHub Pages (source « GitHub Actions »), l'essai sur ton ordinateur, ce qui vient d'ailleurs |
 | [L'organisation du dépôt](docs/ORGANISATION.md) | les dossiers et les fichiers, les activités Capytale, le décor |
 | [L'espace administrateur](docs/ADMIN.md) | modifier les fiches et les onglets, l'aperçu, le mot de passe administrateur et le jeton GitHub pas à pas, enregistrer ou télécharger, les tests |

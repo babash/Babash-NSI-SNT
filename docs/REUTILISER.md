@@ -25,7 +25,7 @@ la bibliothèque, qui ne sont jamais commités : l'onglet Bibliothèque afficher
 ## Adapter les réglages
 
 - Dans `reglages.js`, écris le nom de **ton** dépôt dans `depot` (`"ton-compte/nom-du-dépôt"`) : le lien « Code source sur GitHub » mènera alors à ta copie, et l'[espace administrateur](ADMIN.md) (`…/admin/`) écrira dans ton dépôt, avec ton propre jeton. Le titre, la présentation, l'ordre des rubriques et les textes du pied de page se règlent dans le même fichier : voir [Réglages généraux](LISTES.md#réglages-généraux) et [Le pied de page](LISTES.md#le-pied-de-page--auteur-licences-et-ia).
-- Pour tes rubriques : [Ajouter une rubrique](LISTES.md#ajouter-une-rubrique) ; pour tes ressources : [les listes de ressources](LISTES.md).
+- Pour tes rubriques : [Ajouter une rubrique](LISTES.md#ajouter-une-rubrique) ; pour tes ressources : leurs fiches et la vitrine ([les rubriques et les ressources](LISTES.md), [l'espace administrateur](ADMIN.md)).
 
 ## Tester sur ton ordinateur
 

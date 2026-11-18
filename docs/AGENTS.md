@@ -10,7 +10,7 @@ et dès que c'est sûr : un point d'écriture mineur ne bloque pas, il part dans
 Les règles du travail sur GitHub sont détaillées dans [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possède quoi » de
-`CLAUDE.md` : par exemple, les listes `ressources.js` au Bibliothécaire, le moteur
+`CLAUDE.md` : par exemple, les anciennes listes `ressources.js` (plus lues depuis le 17 novembre 2026) au Bibliothécaire, le moteur
 (`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style et l'icône
 du site (`assets/favicon.svg`) au Designer, le README, la documentation (`CONTRIBUTING.md` et `docs/`), le
 fichier de licence du dépôt (`LICENSE`) et les outils de `.github/gardien/` au Gardien. Le dossier `donnees/` de

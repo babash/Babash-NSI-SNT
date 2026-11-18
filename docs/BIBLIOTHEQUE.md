@@ -4,8 +4,9 @@
 
 Le site réunit toutes les ressources dans une bibliothèque unique : l'**onglet Bibliothèque**
 (`bibliotheque/`), depuis le 17 novembre 2026. Son format a été validé par l'enseignant le
-7 novembre 2026. Les pages des rubriques, elles, continuent d'utiliser les listes `ressources.js`
-([LISTES.md](LISTES.md)), jusqu'à leur conversion.
+7 novembre 2026. Depuis le 17 novembre 2026, les pages des rubriques et l'accueil la lisent aussi :
+elles montrent la vitrine (`donnees/vitrine.json`) et les fiches, et non plus les anciennes listes
+`ressources.js` ([LISTES.md](LISTES.md)).
 
 ## L'onglet Bibliothèque
 
@@ -137,12 +138,13 @@ l'éditeur de neuf notebooks Capytale de l'enseignant (l'éditeur de Capytale) r
 
 Les fiches écrites le 12 novembre 2026 ont le statut « à revoir » : l'enseignant les relira. Le
 Système d'exploitation humain, jamais essayé en classe et pas fini, a le statut « brouillon ».
-L'onglet « Bibliothèque » les affiche toutes, avec leur statut ; la vitrine, elle, ne change pas
-encore les pages des rubriques. Les huit ressources récupérées des conversations (quatre fiches de
-réseaux de terminale, les commandes Linux de première et leur corrigé, la fiche des erreurs
-Python, le diaporama sur l'IA en SNT, la grille du Grand oral) sont en ligne dans les dossiers
-`fichiers/` des rubriques et dans la bibliothèque, mais les listes `ressources.js` ne les montrent
-pas encore.
+L'onglet « Bibliothèque » les affiche toutes, avec leur statut ; les rubriques, elles, montrent
+celles que la vitrine place (depuis le 17 novembre 2026). Les huit ressources récupérées des
+conversations (quatre fiches de réseaux de terminale, les commandes Linux de première et leur
+corrigé, la fiche des erreurs Python, le diaporama sur l'IA en SNT, la grille du Grand oral) sont
+en ligne dans les dossiers `fichiers/` des rubriques et dans la bibliothèque ; la vitrine place
+déjà le diaporama sur l'IA (section « Intelligence artificielle » de SNT) et la grille du Grand
+oral (NSI terminale, « Préparer le bac »), pas encore les six autres.
 
 Il en va de même pour les 21 activités Capytale ajoutées le 16 novembre 2026, à partir des
 exports de l'enseignant : 19 fiches nouvelles et deux fiches complétées (le sapin des fonctions

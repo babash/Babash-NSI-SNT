@@ -70,17 +70,19 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   identiques à ceux du dépôt. Les fichiers du site qui ne sont pas comparés (plus de 5 Mo, ou
   au-delà des 200 premiers) sont signalés dans le résumé. Ensuite, il affiche chaque rubrique
   dans Chrome et vérifie qu'aucune erreur n'apparaît et que le nombre de ressources affichées
-  est celui de `ressources.js`. Il vérifie aussi **la bibliothèque** : `donnees/bibliotheque.json`
+  est celui de la vitrine : les ressources qu'elle place dans la rubrique et qui ont un document
+  visible de l'extérieur (ligne « snt 24 ressources affichées / 24 dans la vitrine », par exemple ;
+  depuis le 17 novembre 2026, les rubriques ne lisent plus les listes `ressources.js`). Il vérifie aussi **la bibliothèque** : `donnees/bibliotheque.json`
   se lit en ligne et contient exactement les fiches visibles de l'extérieur du commit publié ; la
   page `bibliotheque/` en affiche autant, sans erreur (dans le journal du job, une ligne comme
-  « bibliothèque 114 ressources affichées / 114 fiches visibles de l'extérieur ») ; une recherche trouve une ressource
+  « bibliothèque 132 ressources affichées / 132 fiches visibles de l'extérieur ») ; une recherche trouve une ressource
   par un mot de son titre ; la fiche complète de trois ressources s'ouvre (`?r=identifiant`). Les
   fichiers construits ne sont pas dans le dépôt : c'est ce contrôle qui les vérifie, et non la
   comparaison des fichiers.
 
-  Il contrôle ensuite **les fichiers déposés sur le site**, ceux que citent les listes
-  `ressources.js` comme ceux que citent les fiches de la bibliothèque (le champ `fichier` de leurs
-  documents, cachés compris, puisque tout fichier du dépôt est en ligne). Un document de fiche
+  Il contrôle ensuite **les fichiers déposés sur le site** que citent les fiches de la
+  bibliothèque (le champ `fichier` de leurs documents, cachés compris, puisque tout fichier du
+  dépôt est en ligne). Un document de fiche
   absent du dépôt fait échouer le contrôle. Chaque fichier qui n'est pas une page (PDF, notebook,
   code…) doit répondre en ligne ; il est redemandé jusqu'à trois fois, à 15 secondes d'intervalle
   (ligne « Fichiers déposés (PDF, notebooks, code…) : N / N répondent en ligne »). Chaque page
@@ -88,13 +90,13 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   dans Chrome, quatre à la fois, et doit montrer un vrai contenu : une page vue vide (moins de
   80 caractères de texte, ou un titre « 404 ») est réaffichée deux fois, à 15 secondes
   d'intervalle, avant d'être déclarée, et le journal donne pour chaque page la longueur du texte
-  affiché. Les pages citées par les fiches sont comptées à part (ligne « Pages citées par les
-  fiches : N / N s'affichent »), sans changer le compte des ressources des listes. Cette étape a
-  30 minutes au plus.
+  affiché. Deux lignes les comptent : « Pages déposées : N / N s'affichent » pour celles des
+  ressources que la vitrine met en avant dans les rubriques, et « Pages citées par les fiches :
+  N / N s'affichent » pour celles de toutes les fiches. Cette étape a 30 minutes au plus.
 
   Il vérifie enfin le lien « Code source sur GitHub » : l'accueil, chaque rubrique et la bibliothèque doivent l'avoir,
   vers le dépôt du réglage `depot`, sinon le contrôle échoue ; une page déposée qui ne l'a pas
-  encore, citée par une liste ou par une fiche, est seulement signalée dans le résumé, sans échec
+  encore, citée par une fiche, est seulement signalée dans le résumé, sans échec
   (la liste `CODE_SOURCE_EXCEPTIONS` de
   `.github/verifier-site.py` peut en dispenser une page, avec sa raison ; elle est vide). Le
   résumé donne l'heure de chaque étape. Si un commit plus récent est mis en ligne entre-temps,

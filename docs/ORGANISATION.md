@@ -14,7 +14,7 @@ CLAUDE.md                   les règles communes de l'équipe d'agents
 index.html                  l'accueil (ne pas toucher)
 reglages.js                 titre du site, liste des rubriques, textes du pied de page
 snt/
-  ressources.js             ← la liste de la rubrique SNT
+  ressources.js             l'ancienne liste de la rubrique SNT, plus lue depuis le 17/11/2026
   fichiers/                 ← les PDF et fiches de la rubrique SNT
     capytale/<id>/          les activités Capytale : notebook (.ipynb), page de lecture, fichiers à joindre
   index.html                (ne pas toucher)
@@ -44,8 +44,8 @@ notebook à importer dans Capytale ou Basthon (`.ipynb`, sorties vidées), une p
 (`lecture.html`, qui affiche le notebook sans compte et ne l'exécute pas) et les fichiers à
 joindre (modules Python, images, données). Chaque activité garde sa licence, donnée au pied de
 sa page et dans sa fiche ; trois d'entre elles sont sous licence non commerciale (voir
-[Licence](../README.md#licence)). Les listes `ressources.js` ne les montrent pas encore ;
-l'onglet « Bibliothèque », si.
+[Licence](../README.md#licence)). La bibliothèque les montre toutes ; les rubriques, celles que la
+vitrine place (le sapin des fonctions et le Pokédex, pour l'instant).
 
 ## Le décor
 
