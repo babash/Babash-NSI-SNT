@@ -48,15 +48,17 @@ publiée après chaque envoi sur `main` ([VERIFICATION.md](VERIFICATION.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 149 fiches, dont 82 pour les 90 entrées des
+  ressources/<id>.json          une fiche par ressource : 163 fiches, dont 82 pour les 90 entrées des
                                 listes (une ressource placée dans deux rubriques n'a qu'une fiche),
                                 8 pour des fichiers récupérés des conversations de l'enseignant,
                                 19 pour des activités Capytale, 4 pour des ressources tirées d'une
                                 archive de projets de l'enseignant, 1 pour un site externe demandé
-                                par l'enseignant (l'entraînement à l'épreuve pratique d'exomorphisme.fr)
-                                et 35 pour des cours, TD, devoirs et contrôles de NSI faits avec
+                                par l'enseignant (l'entraînement à l'épreuve pratique d'exomorphisme.fr),
+                                35 pour des cours, TD, devoirs et contrôles de NSI faits avec
                                 Johanne Bakalara (projets Overleaf, PDF et sources LaTeX ; les
-                                contrôles avec leurs corrigés)
+                                contrôles avec leurs corrigés) et 14 pour des cours, TD, fiches et
+                                séances tirés d'une archive de cours de l'enseignant (dont 3 séances
+                                de SNT faites avec Johanne Bakalara)
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
                                 et la grille d'évaluation du Grand oral
@@ -174,6 +176,14 @@ et leurs sources LaTeX (`source/`, avec un `LISEZMOI.md`). Les 20 contrôles con
 `cc-prem-*` et `cc-term-*`) sont publiés avec leurs 24 corrigés détaillés, écrits le 17 novembre
 2026 à la demande de l'enseignant et donnés au rôle « corrigé » de leur fiche ; comme pour les
 autres évaluations, rien n'est caché pour le moment.
+
+De même pour quatorze ressources tirées, le 16 novembre 2026, d'une archive de cours de
+l'enseignant, au statut « à revoir » : les cours et TD des bases de Python, en pages et en PDF
+(`nsi-premiere/fichiers/bases-python/`), le vocabulaire de NSI, l'architecture matérielle et les
+systèmes d'exploitation de terminale (`nsi-terminale/fichiers/architecture-os/`), la fiche action
+contre le cyberharcèlement, le questionnaire d'orientation pour Parcoursup (sur papier : sa fiche
+le signale dans `donnees_eleves`) et trois séances de SNT faites avec Johanne Bakalara
+(Alien-Python, le binaire et le contrôle sur le système d'exploitation).
 
 Pour valider les données, depuis le dossier du site : `python3 scripts/valider_donnees.py`
 (Python 3 seul, rien à installer ; avec `--strict`, les avertissements bloquent aussi). Chaque
