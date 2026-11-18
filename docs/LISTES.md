@@ -27,9 +27,13 @@ sur le site.
   - son accroche, puis « **En savoir plus** », qui ouvre sa fiche complète dans la bibliothèque
     (décision de l'enseignant du 17 novembre 2026) ;
   - les autres documents de la fiche, en liens annexes (corrigé, version PDF, code source…) ;
-  - ses étiquettes, tirées de la fiche (En ligne, À imprimer, Débranché, Connexion ENT, Jeu, Python,
-    SQL, Pour aller plus loin, À adapter), et en tête l'étiquette que la vitrine lui donne
-    « À la une », comme « Ressource du mois » ;
+  - ses étiquettes, tirées de la fiche (En ligne, À imprimer, Débranché, Connexion ENT, Cours, Jeu,
+    Python, SQL, Notebook, Rien à installer, Pour aller plus loin, À adapter), et en tête l'étiquette
+    que la vitrine lui donne « À la une », comme « Ressource du mois ». « Cours » vient du type de la
+    fiche, « Notebook » d'un document montré au format notebook (un fichier `.ipynb`, une page de
+    nbviewer ou un notebook Capytale), « Rien à installer » de l'usage `sans-installation` : on
+    programme ou on tape des commandes dans le navigateur, là où il faudrait d'habitude installer un
+    logiciel (décision de l'enseignant du 18 novembre 2026) ;
   - son site d'origine, ou « Sur ce site » pour un fichier déposé.
 - Une ressource dont tous les documents sont cachés pour l'extérieur n'apparaît pas.
 
