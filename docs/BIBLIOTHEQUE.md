@@ -48,7 +48,7 @@ publiée après chaque envoi sur `main` ([VERIFICATION.md](VERIFICATION.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 163 fiches, dont 82 pour les 90 entrées des
+  ressources/<id>.json          une fiche par ressource : 173 fiches, dont 82 pour les 90 entrées des
                                 listes (une ressource placée dans deux rubriques n'a qu'une fiche),
                                 8 pour des fichiers récupérés des conversations de l'enseignant,
                                 19 pour des activités Capytale, 4 pour des ressources tirées d'une
@@ -56,9 +56,11 @@ donnees/
                                 par l'enseignant (l'entraînement à l'épreuve pratique d'exomorphisme.fr),
                                 35 pour des cours, TD, devoirs et contrôles de NSI faits avec
                                 Johanne Bakalara (projets Overleaf, PDF et sources LaTeX ; les
-                                contrôles avec leurs corrigés) et 14 pour des cours, TD, fiches et
+                                contrôles avec leurs corrigés), 14 pour des cours, TD, fiches et
                                 séances tirés d'une archive de cours de l'enseignant (dont 3 séances
-                                de SNT faites avec Johanne Bakalara)
+                                de SNT faites avec Johanne Bakalara) et 10 pour les fiches de révision
+                                que la refonte de FichesNSI a ajoutées (22 fiches en tout sur ce site ;
+                                les 10 nouvelles sont dans la bibliothèque, pas encore dans les onglets)
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
                                 et la grille d'évaluation du Grand oral
