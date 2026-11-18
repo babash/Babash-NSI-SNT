@@ -282,9 +282,25 @@
      usages (en autonomie, éditeur de code…) restent dans la fiche et dans les filtres de la bibliothèque. */
   var ETIQUETTES = [
     ['usages', 'en-ligne', 'En ligne'], ['usages', 'a-imprimer', 'À imprimer'], ['usages', 'debranche', 'Débranché'],
-    ['usages', 'compte-ent', 'Connexion ENT'], ['types', 'jeu', 'Jeu'], ['langages', 'python', 'Python'], ['langages', 'sql', 'SQL'],
+    ['usages', 'compte-ent', 'Connexion ENT'], ['types', 'cours', 'Cours'], ['types', 'jeu', 'Jeu'],
+    ['langages', 'python', 'Python'], ['langages', 'sql', 'SQL'], ['formats', 'notebook', 'Notebook'],
+    ['usages', 'sans-installation', 'Rien à installer'],
     ['usages', 'pour-aller-plus-loin', 'Pour aller plus loin'], ['usages', 'a-adapter', 'À adapter']
   ];
+  /* Décision de l'enseignant du 18/11 (T85) : « Cours » (type), « Notebook » et « Rien à installer » (usage
+     « sans-installation ») s'ajoutent. « Notebook » : un des documents montrés a le format « notebook »
+     (déduit à la construction de la bibliothèque) ; une activité Capytale dont le document principal est
+     la page de lecture reste un notebook. */
+  function valeursEtiquette(f, champ) {
+    if (champ === 'formats') {
+      return liste(f.documents).map(function (d) {
+        // une fiche modifiée dans l'admin (aperçu) n'a pas encore son format déduit : le notebook se reconnaît à son adresse
+        var a = String(d.url || d.fichier || '');
+        return d.format || (/\.ipynb([#?]|$)/i.test(a) || /^https?:\/\/(www\.)?nbviewer(\.jupyter)?\.org\//i.test(a) ? 'notebook' : null);
+      });
+    }
+    return liste(f[champ]);
+  }
 
   function rubriquesDeVitrine(donnees) {
     var fiches = {};
@@ -320,7 +336,7 @@
       });
       var tags = etiquettesUne[f.id] ? [etiquettesUne[f.id]] : [];
       ETIQUETTES.forEach(function (e) {
-        if (liste(f[e[0]]).indexOf(e[1]) >= 0) tags.push(e[2]);
+        if (valeursEtiquette(f, e[0]).indexOf(e[1]) >= 0) tags.push(e[2]);
       });
       return {
         id: f.id, titre: f.titre, lien: principal ? adresse(principal) : '', texte: f.accroche || f.resume || '',

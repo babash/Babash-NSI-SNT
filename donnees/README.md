@@ -120,6 +120,13 @@ plateformes restera possible. Les `mots_cles` libres restent.
   se demande dans le rapport ; les référentiels ne changent qu'après validation de l'enseignant.
 - **Types** : une liste (`types`), au moins un, le principal en premier.
 - **Usages** : « utilisable sur téléphone » est une modalité (`sur-telephone`) ; il n'y a pas de prérequis « téléphone ».
+  « Rien à installer » (`sans-installation`, modalité, T85) : on programme ou on tape des commandes dans le
+  navigateur, là où il faudrait d'habitude installer un logiciel ; c'est le contraire du prérequis `installation`,
+  et une fiche qui porte les deux est refusée par la validation (le script et l'admin).
+- **Étiquettes des onglets** (sous chaque ressource des rubriques) : tirées de la fiche, avec les libellés des
+  anciennes listes : En ligne, À imprimer, Débranché, Connexion ENT, Cours (type), Jeu (type), Python, SQL,
+  Notebook (un document montré au format `notebook`), Rien à installer, Pour aller plus loin, À adapter, et
+  l'étiquette de « À la une » (`vitrine.json`). La liste est `ETIQUETTES`, dans `assets/site.js`.
 - **Compétences Pix** (facultatif, ressources de SNT) : `competences_pix`, identifiants de
   `referentiels/competences-pix.json` (les 16 compétences du cadre de référence, par exemple `programmer`).
   Les pages affichent les intitulés de la plateforme Pix, que voient les élèves.

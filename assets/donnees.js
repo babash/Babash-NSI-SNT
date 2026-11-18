@@ -311,6 +311,7 @@
     ['langages', 'langages'], ['competences_pix', 'competences_pix']];
   var HOTES_GITHUB = ['github.com', 'gist.github.com', 'www.github.com'];
   var ROLES_NOTIONS = ['travaillees', 'prerequises', 'enseignees', 'evaluees'];
+  var USAGES_CONTRAIRES = [['sans-installation', 'installation']]; // comme scripts/valider_donnees.py (T85)
 
   /* options : { schemas: { ressource, vitrine }, refs: Referentiels ou objet des référentiels,
                  ids: liste des identifiants des fiches, fichiers: fonction(chemin) → true, false ou null (inconnu) } */
@@ -368,6 +369,12 @@
     });
     [['origine', 'origines'], ['statut', 'statuts']].forEach(function (cl) {
       if (typeof f[cl[0]] === 'string') self.valeur(erreur, cl[0], f[cl[0]], cl[1]);
+    });
+    var usages = Array.isArray(f.usages) ? f.usages : [];
+    USAGES_CONTRAIRES.forEach(function (c) {
+      if (usages.indexOf(c[0]) >= 0 && usages.indexOf(c[1]) >= 0) {
+        erreur('usages', '« ' + c[0] + ' » et « ' + c[1] + ' » se contredisent : n\'en garder qu\'un');
+      }
     });
 
     var vEns = this.refs.valeurs.enseignements || {};

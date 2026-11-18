@@ -117,7 +117,8 @@ const FAUTES = [
   ['jeton GitHub dans une note', (f) => { f.notes = [{ texte: 'github_pat_' + 'A1b2C3d4E5'.repeat(4) }]; }],
   ['facultative sans collecte', (f) => { f.donnees_eleves = { collecte: false, facultative: true }; }],
   ['identifiant différent du fichier', (f) => { f.id = f.id + '-bis'; }],
-  ['mot-clé trop long', (f) => { f.mots_cles = ['x'.repeat(41)]; }]
+  ['mot-clé trop long', (f) => { f.mots_cles = ['x'.repeat(41)]; }],
+  ['« Rien à installer » et « installation » ensemble', (f) => { f.usages = ['en-ligne', 'sans-installation', 'installation']; }]
 ];
 const FAUTES_VITRINE = [
   ['ressource inconnue dans une section', (v) => { v.rubriques[0].sections[0].ressources.push('fiche-qui-n-existe-pas'); }],
