@@ -368,6 +368,31 @@ def main():
             page.click('[data-cle="une-0-retirer"]')
             attendre(page)
             verifier("à la une : une ressource retirée", page.locator(".admin-une > li").count() == avant - 1)
+            # Une fiche Capytale Basthon ouverte et modifiée dans l'admin garde « Notebook » dans l'aperçu (T85)
+            vit = json.load(open(os.path.join(copie, "donnees", "vitrine.json")))
+            places = {(r["id"], x) for r in vit["rubriques"] for s_ in r["sections"]
+                      for x in s_["ressources"] + [y for ss in s_.get("sous_sections", []) for y in ss["ressources"]]}
+            basthon = None
+            for rub_id, rid in sorted(places):
+                f_ = json.load(open(os.path.join(copie, "donnees", "ressources", rid + ".json")))
+                if any("capytale2.ac-paris.fr/p/basthon/n/" in (doc.get("url") or "") and "format" not in doc for doc in f_["documents"]):
+                    basthon = (rub_id, rid, f_["titre"])
+                    break
+            if basthon:
+                page.goto(base + f"/admin/#/fiche/{basthon[1]}")
+                page.wait_for_selector("#champ-statut-prete")
+                page.check("#champ-statut-prete")
+                attendre(page)
+                page.goto(base + f"/admin/#/onglets/{basthon[0]}")
+                page.wait_for_selector('[data-cle="apercu"]')
+                page.click('[data-cle="apercu"]')
+                cadre = page.frame_locator(".admin-iframe")
+                cadre.locator("li.res").first.wait_for(timeout=10000)
+                li = cadre.locator("li.res", has=cadre.locator(".titre", has_text=basthon[2])).first
+                tags = [t.strip() for t in li.locator(".tags span:not(.site)").all_inner_texts()]
+                verifier(f"aperçu : la fiche Capytale Basthon modifiée ({basthon[1]}) garde « Notebook »", "Notebook" in tags, tags)
+            else:
+                verifier("aperçu : une fiche Capytale Basthon mise en avant existe pour le cas « Notebook »", False)
             verifier("sans jeton : aucune requête vers l'API GitHub", not vers_github, vers_github)
             verifier("sans jeton : aucune erreur JavaScript", not erreurs, erreurs)
             ctx.close()

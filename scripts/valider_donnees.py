@@ -62,6 +62,8 @@ CRITERES = [("editeur_code", "usages", "editeur-de-code", "criteres"),
 # Rôles des notions dans une fiche (décision du 13/11/2026, T64) : « travaillees » et « prerequises ». Les fiches sont
 # converties (scripts/convertir_notions_t64.py) : les anciens rôles « enseignees » et « evaluees » sont refusés.
 # « --anciens-roles signaler » les tolère encore, pour vérifier une copie pas encore convertie.
+# Des usages qu'une fiche ne porte pas ensemble (T85, 18/11/2026)
+USAGES_CONTRAIRES = [("sans-installation", "installation")]
 ROLES_NOTIONS = ("travaillees", "prerequises")
 ANCIENS_ROLES_NOTIONS = ("enseignees", "evaluees")
 ANCIENS_ROLES = "refuser"
@@ -1119,6 +1121,10 @@ class Validation:
         for champ, liste in (("origine", "origines"), ("statut", "statuts")):
             if isinstance(f.get(champ), str):
                 self.verifier_valeur(fichier, champ, f[champ], liste)
+        usages = f.get("usages") if isinstance(f.get("usages"), list) else []
+        for oui, non in USAGES_CONTRAIRES:
+            if oui in usages and non in usages:
+                self.rapport.erreur(fichier, "usages", f"« {oui} » et « {non} » se contredisent : n'en garder qu'un")
 
         ens = [e for e in f.get("enseignements", []) if e in self.valeurs.get("enseignements", {})]
         nivs = [n for n in f.get("niveaux", []) if n in self.valeurs.get("niveaux", {})]
