@@ -116,12 +116,19 @@
     const titre = opts.titre || ('File, de la tête vers la queue : ' + (elements.length ? elements.join(', ') : 'vide'));
     return svg(x + 96, y + H + 10, c, titre);
   }
-  function dessinListe(elements, legende) {
+  // Une valeur Python écrite comme Python l'afficherait (à la manière de repr) : True, False, None,
+  // les chaînes entre guillemets (doubles, comme dans le code du cours), les nombres tels quels.
+  const enPython = v => v === true ? 'True' : v === false ? 'False' : v === null ? 'None'
+    : typeof v === 'string' ? '"' + v.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"'
+    : Array.isArray(v) ? '[' + v.map(enPython).join(', ') + ']' : String(v);
+  Q.enPython = enPython;
+  function dessinListe(brut, legende) {
+    const elements = brut.map(enPython);
     const H = 36, l = Math.max(56, ...elements.map(largeurTexte)), n = elements.length;
     let c = '';
     elements.forEach((e, i) => { const x = 10 + i * (l + 4); c += boite(x, 24, l, H, e, i === n - 1 ? 'case sommet' : 'case') + tx(x + l / 2, 16, String(i - n), 'muet petit') + tx(x + l / 2, 80, String(i), 'etiq'); });
     c += tx(10, 98, 'indices', 'muet petit', 'start');
-    return svg(20 + n * (l + 4), 104, c, 'Liste Python ' + JSON.stringify(elements) + ' : indices de 0 à ' + (n - 1) + ', ou de ' + (-n) + ' à -1');
+    return svg(20 + n * (l + 4), 104, c, 'Liste Python ' + enPython(brut) + ' : indices de 0 à ' + (n - 1) + ', ou de ' + (-n) + ' à -1');
   }
   function dessinDecalage(elements) {
     const H = 34, l = 50, n = elements.length;
@@ -138,12 +145,16 @@
   Q.schema = function (s) {
     if (!s || typeof s !== 'object') return '';
     let corps = '';
-    if (s.type === 'pile') corps = dessinPile(s.elements || []);
-    else if (s.type === 'file') corps = dessinFile(s.elements || []);
+    // un schéma « Python » (déduit d'un code, ou marqué python) montre les valeurs comme Python ;
+    // les autres montrent des étiquettes (« copie 1 », « taxi »)
+    const py = s.python === true || !!s.variable || Array.isArray(s.code);
+    const val = l => (py ? (l || []).map(enPython) : (l || []));
+    if (s.type === 'pile') corps = dessinPile(val(s.elements));
+    else if (s.type === 'file') corps = dessinFile(val(s.elements));
     else if (s.type === 'liste') corps = dessinListe(s.elements || []);
     else if (s.type === 'decalage') corps = dessinDecalage(s.elements || []);
-    else if (s.type === 'deux-piles') corps = dessinDeuxPiles(s);
-    else if (s.type === 'etapes') corps = '<ol class="etapes">' + (s.etapes || []).map(e => '<li><div>' + (s.structure === 'file' ? dessinFile(e.elements, {}) : dessinPile(e.elements, { sansEtiquette: true })) + '</div><code>' + Q.colorerLigne(e.op) + '</code></li>').join('') + '</ol>';
+    else if (s.type === 'deux-piles') corps = dessinDeuxPiles(Object.assign({}, s, { gauche: Object.assign({}, s.gauche, { elements: val(s.gauche.elements) }), droite: Object.assign({}, s.droite, { elements: val(s.droite.elements) }) }));
+    else if (s.type === 'etapes') corps = '<ol class="etapes">' + (s.etapes || []).map(e => '<li><div>' + (s.structure === 'file' ? dessinFile(val(e.elements), {}) : dessinPile(val(e.elements), { sansEtiquette: true })) + '</div><code>' + Q.colorerLigne(e.op) + '</code></li>').join('') + '</ol>';
     else if (s.type === 'svg' && typeof s.code === 'string' && /^\s*<svg/.test(s.code) && !/<script|\son[a-z]+\s*=|javascript:/i.test(s.code)) corps = s.code;
     return '<figure class="schema schema-' + echapper(s.type) + '">' + corps + (s.legende ? '<figcaption>' + Q.texte(s.legende) + '</figcaption>' : '') + '</figure>';
   };
