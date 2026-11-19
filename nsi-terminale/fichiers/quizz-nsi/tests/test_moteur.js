@@ -42,8 +42,8 @@ essai('progression : séries et rebonds', () => {
 });
 
 essai('pseudo : prénoms et pseudos acceptés', () => {
-  for (const p of ['Nadia', 'Zaïna', 'Ali', 'Mohamed-Ali', "N'dia", 'kiki_976', 'Élodie M.']) assert.ok(Q.filtrerPseudo(p).ok, p);
-  assert.equal(Q.filtrerPseudo('  Ali   Ben  ').pseudo, 'Ali Ben');
+  for (const p of ['Kobalt', 'Zéphyr', 'Ixo', 'Pixel-42', "L'Orque", 'kiki_976', 'Néon M.', 'Кобальт', 'Ζέφυρος', 'نجمة']) assert.ok(Q.filtrerPseudo(p).ok, p);
+  assert.equal(Q.filtrerPseudo('  Ixo   Neo  ').pseudo, 'Ixo Neo');
 });
 essai('pseudo : longueur bornée', () => {
   assert.equal(Q.filtrerPseudo('A').ok, false);
@@ -51,12 +51,34 @@ essai('pseudo : longueur bornée', () => {
   assert.equal(Q.filtrerPseudo('Abcdefghijklmnop').ok, true);
 });
 essai('pseudo : caractères invisibles refusés', () => {
-  for (const c of [0x200B, 0x200D, 0x202E, 0x2066, 0xFEFF, 0x00AD, 0x0007]) assert.equal(Q.filtrerPseudo('Na' + String.fromCharCode(c) + 'dia').ok, false, c.toString(16));
+  for (const c of [0x200B, 0x200D, 0x202E, 0x2066, 0xFEFF, 0x00AD, 0x0007]) assert.equal(Q.filtrerPseudo('Ko' + String.fromCharCode(c) + 'balt').ok, false, c.toString(16));
 });
 essai('pseudo : rien d\'injectable', () => {
-  for (const p of ['<b>Ali</b>', 'Ali"><img', '{{x}}', 'a&b', 'Ali;drop', '../x', '😀😀']) assert.equal(Q.filtrerPseudo(p).ok, false, p);
+  for (const p of ['<b>Ixo</b>', 'Ixo"><img', '{{x}}', 'a&b', 'Ixo;drop', '../x', '😀😀']) assert.equal(Q.filtrerPseudo(p).ok, false, p);
 });
-essai('pseudo : la clé de comparaison ignore accents et casse', () => assert.equal(Q.clePseudo('Zaïna'), Q.clePseudo('ZAINA')));
+essai('pseudo : la clé de comparaison ignore accents et casse', () => assert.equal(Q.clePseudo('Zéphyr'), Q.clePseudo('ZEPHYR')));
+essai('pseudo : les autres écritures gardent une clé propre (jamais vide)', () => {
+  assert.notEqual(Q.clePseudo('Кобальт'), ''); assert.notEqual(Q.clePseudo('Ζέφυρος'), ''); assert.notEqual(Q.clePseudo('نجمة'), '');
+  assert.notEqual(Q.clePseudo('Кобальт'), Q.clePseudo('Ζέφυρος')); assert.notEqual(Q.clePseudo('نجمة'), Q.clePseudo('نور'));
+});
+essai('pseudo : mélange d\'écritures refusé, sosies ramenés à la même clé', () => {
+  const a = String.fromCharCode(0x430), o = String.fromCharCode(0x43E); // а et о cyrilliques
+  assert.equal(Q.filtrerPseudo('Kob' + a + 'lt').ok, false);           // un double visuel de « Kobalt »
+  assert.equal(Q.clePseudo(String.fromCharCode(0x410, 0x412, 0x421)), Q.clePseudo('ABC')); // « АВС » tout cyrillique
+  assert.equal(Q.clePseudo(String.fromCharCode(0x391, 0x392, 0x395)), Q.clePseudo('abe')); // « ΑΒΕ » tout grec
+  assert.equal(Q.clePseudo('c' + o + 'l'), Q.clePseudo('col'));
+});
+essai('stockage : une entrée « eleve » périmée ou mal formée est effacée', () => {
+  const m = new Map();
+  globalThis.localStorage = { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k) };
+  const t = Date.now();
+  m.set('quizz-nsi:eleve', JSON.stringify({ id: '0123456789abcdef', pseudo: 'Ixo', code: 'ABCD', jusqua: t - 1 }));
+  assert.equal(Q.menage(t), true); assert.equal(m.has('quizz-nsi:eleve'), false);
+  m.set('quizz-nsi:eleve', '{pas du json'); Q.menage(t); assert.equal(m.has('quizz-nsi:eleve'), false);
+  m.set('quizz-nsi:eleve', JSON.stringify({ jusqua: t + 400 * 24 * 3600 * 1000 })); Q.menage(t); assert.equal(m.has('quizz-nsi:eleve'), false); // plus de 12 h : impossible
+  m.set('quizz-nsi:eleve', JSON.stringify({ jusqua: t + 3600 * 1000 })); assert.equal(Q.menage(t), false); assert.equal(m.has('quizz-nsi:eleve'), true);
+  delete globalThis.localStorage;
+});
 essai('code de séance : lecture tolérante', () => {
   assert.equal(Q.lireCode(' abcd '), 'ABCD'); assert.equal(Q.lireCode('ab-cd'), 'ABCD');
   assert.equal(Q.lireCode('ABIO'), null); assert.equal(Q.lireCode('ABC'), null);

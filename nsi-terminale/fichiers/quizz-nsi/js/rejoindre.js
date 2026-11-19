@@ -1,5 +1,8 @@
 /* QuizzNSI : la page élève, pensée pour un téléphone (MIT, Babash - NSI Tani Malandi).
    L'élève entre le code de la séance et un prénom ou un pseudo, puis répond aux questions.
+   Points : le téléphone calcule lui-même ses points (js/bareme.js) à partir de sa réponse, de son temps,
+   de la bonne réponse et du barème reçus à la correction ; personne d'autre ne les reçoit. Sa réponse
+   part chiffrée pour la seule page projetée (js/chiffre.js).
    Sécurité : chaque message reçu est validé par js/messages.js (schéma strict) ; le texte des
    notions et des questions vient du fichier du cours (cours/<id>.json, même site), jamais du canal ;
    les valeurs reçues (points, séries, pseudos du podium) s'affichent par textContent seulement.
@@ -10,6 +13,7 @@
   const Q = window.QuizzNSI, $ = Q.$, el = Q.el;
   const DOUZE_HEURES = 12 * 3600 * 1000;
   let moi = null, seance = null, phase = null, question = null, attenteHote = null, hoteVu = false, renvoi = null, chrono = null, total = 0, numero = 0;
+  let clesHote = [], chiffreur = null;
   const lesCours = new Map();
 
   function obtenirCours(id) {
@@ -64,7 +68,9 @@
     $('moi').textContent = moi.pseudo;
     majPoints();
     ecran(el('div', { class: 'attente' }, el('p', { class: 'grand' }, 'Connexion…'), el('p', {}, 'Séance ' + moi.code)));
-    hoteVu = false;
+    hoteVu = false; clesHote = [];
+    total = historique().total; majPoints();
+    if (!chiffreur && Q.chiffre.disponible()) Q.chiffre.eleve().then(c => { chiffreur = c; }).catch(() => {});
     seance = Q.ouvrirSeance(moi.code, { id: moi.id, pseudo: moi.pseudo, role: 'eleve' }, { onMessage, onPresence, onEtat });
   }
 
@@ -89,7 +95,10 @@
   }
 
   function onPresence(liste) {
-    const vu = Array.isArray(liste) && liste.some(p => { const v = Q.messages.presence(p); return v && v.role === 'hote'; });
+    const hotes = (Array.isArray(liste) ? liste : []).map(Q.messages.presence).filter(v => v && v.role === 'hote');
+    // la réponse est chiffrée pour chaque page projetée présente (en pratique, une seule)
+    clesHote = hotes.filter(h => h.cle).slice(0, 3).map(h => h.cle);
+    const vu = hotes.length > 0;
     if (vu && !hoteVu) { hoteVu = true; if (!phase) ecran(attente('L\'enseignant·e est là. Regarde l\'écran : le cours va commencer.')); seance.envoyer({ t: 'bonjour', id: moi.id }); }
   }
 
@@ -99,9 +108,9 @@
     const m = Q.messages.versEleve(brut, moi.id);
     if (!m) return; // message non conforme : ignoré
     hoteVu = true; clearTimeout(attenteHote);
-    if (m.t === 'retire') { if (m.pourMoi) { Q.stock.oublier('eleve'); Q.session.oublier('eleve'); afficherEntree('L\'enseignant·e a retiré ce pseudo. Choisis-en un autre : ton prénom ou un pseudo, jamais ton nom de famille.'); } return; }
+    if (m.t === 'retire') { if (m.pourMoi) { Q.stock.oublier('eleve'); Q.session.oublier('eleve'); Q.session.oublier('hist:' + moi.code); afficherEntree('L\'enseignant·e a retiré ce pseudo. Choisis-en un autre : ton prénom ou un pseudo, jamais ton nom de famille.'); } return; }
     if (m.t === 'refus') { if (m.pourMoi) { Q.session.oublier('eleve'); afficherEntree(m.raison === 'pris' ? 'Ce pseudo est déjà pris dans la séance : choisis-en un autre.' : 'Ce pseudo n\'est pas accepté : choisis-en un autre.'); } return; }
-    if (m.t === 'recus') { if (m.pourMoi && question && m.qid === question.qid) { question.recu = true; clearInterval(renvoi); majEnvoyee(); } return; }
+    if (m.t === 'recus') { if (question && m.qid === question.qid && question.n && m.n.includes(question.n)) { question.recu = true; clearInterval(renvoi); majEnvoyee(); } return; }
     if (m.t === 'attente') { phase = 'attente'; question = null; ecran(attente('Regarde l\'écran : la suite arrive.')); return; }
     if (m.t === 'fermee') { if (question && m.qid === question.qid) { question.ferme = true; clearInterval(chrono); if (question.choix == null) ecran(attente('Temps écoulé : la correction arrive à l\'écran.')); } return; }
     const n = ++numero; // seul le dernier message reçu s'affiche, même si son cours arrive plus tard
@@ -133,8 +142,12 @@
     if (!q) return;
     if (question && question.qid === q.id && phase === 'question') { if (m.ferme) question.ferme = true; return; } // déjà affichée
     phase = 'question';
-    const ancienne = Q.session.lire('rep:' + moi.code + ':' + q.id, null);
-    question = { qid: q.id, q, choix: Number.isInteger(ancienne) && ancienne >= 0 && ancienne <= 3 ? ancienne : null, recu: false, ferme: m.ferme, fin: m.reste != null ? Date.now() + m.reste : null };
+    const a = Q.session.lire('rep:' + moi.code + ':' + q.id, null);
+    const ancienne = a && typeof a === 'object' && Number.isInteger(a.c) && a.c >= 0 && a.c <= 3 && Number.isFinite(a.ms) && typeof a.n === 'string' && /^[0-9a-f]{16}$/.test(a.n) ? a : null;
+    // le temps déjà écoulé depuis l'ouverture de la question (pour le bonus de rapidité, calculé ici)
+    const ecoule = m.duree > 0 && m.reste != null ? Math.max(0, m.duree * 1000 - m.reste) : 0;
+    question = { qid: q.id, q, choix: ancienne ? ancienne.c : null, ms: ancienne ? ancienne.ms : null, n: ancienne ? ancienne.n : null,
+      depart: Date.now() - ecoule, recu: false, ferme: m.ferme, fin: m.reste != null ? Date.now() + m.reste : null };
     const s = el('section', { class: 'd-question' });
     s.appendChild(Q.fragmentCours(Q.rendreEnonce(q, cours.questions.length)));
     s.appendChild(el('p', { class: 'chrono', id: 'chrono', 'aria-live': 'off' }));
@@ -163,19 +176,55 @@
   }
   function choisir(c) {
     if (!question || question.choix != null || question.ferme || !(c >= 0 && c <= 3)) return;
-    question.choix = c;
-    Q.session.ecrire('rep:' + moi.code + ':' + question.qid, c);
+    question.choix = c; question.ms = Date.now() - question.depart; question.n = Q.nouvelId();
+    Q.session.ecrire('rep:' + moi.code + ':' + question.qid, { c, ms: question.ms, n: question.n });
     bloquer(); majEnvoyee(); envoyerReponse();
     Q.annoncer('Réponse ' + Q.LETTRES[c] + ' envoyée.');
   }
   function envoyerReponse() {
-    const envoi = () => { if (question && question.choix != null && !question.recu && !question.ferme) seance.envoyer({ t: 'rep', id: moi.id, qid: question.qid, c: question.choix }); else clearInterval(renvoi); };
+    const envoi = async () => {
+      if (!(question && question.choix != null && !question.recu && !question.ferme)) { clearInterval(renvoi); return; }
+      if (!chiffreur || !clesHote.length) return; // on réessaie dans 2 s
+      const clair = { id: moi.id, qid: question.qid, c: question.choix, n: question.n };
+      for (const k of clesHote) { try { const env = await chiffreur.chiffrer(clair, k); if (seance) seance.envoyer(Object.assign({ t: 'rep' }, env)); } catch (e) { /* clé illisible : ignorée */ } }
+    };
     clearInterval(renvoi); envoi(); renvoi = setInterval(envoi, 2000);
   }
   function majEnvoyee() {
     const z = $('envoyee'); if (!z || !question) return;
     z.textContent = question.recu ? 'Réponse ' + Q.LETTRES[question.choix] + ' reçue. Attends la correction à l\'écran.' : 'Réponse ' + Q.LETTRES[question.choix] + ' envoyée…';
   }
+
+  /* ── Mes points, calculés ici ───────────── */
+  // L'historique de la séance, dans l'onglet : les questions corrigées, dans l'ordre, et mes résultats.
+  function historique() {
+    const v = moi ? Q.session.lire('hist:' + moi.code, null) : null, h = { ordre: [], res: {}, total: 0 };
+    if (!v || typeof v !== 'object' || !Array.isArray(v.ordre) || !v.res || typeof v.res !== 'object') return h;
+    for (const qid of v.ordre.slice(0, 1000)) {
+      const r = v.res[qid];
+      if (!Q.messages.estQid(qid) || !r || typeof r !== 'object' || h.res[qid]) continue;
+      const ok = (r.c === null || (Number.isInteger(r.c) && r.c >= 0 && r.c <= 3)) && Number.isInteger(r.gain) && r.gain >= 0 && r.gain <= 1000;
+      if (!ok) continue;
+      h.ordre.push(qid); h.res[qid] = { c: r.c, juste: r.juste === true, gain: r.gain, rebond: r.rebond === true }; h.total += r.gain;
+    }
+    return h;
+  }
+  function noter(m) {
+    const h = historique();
+    if (h.res[m.qid]) return { h, r: h.res[m.qid], detail: null };
+    const rep = question && question.qid === m.qid && question.choix != null ? { c: question.choix, ms: question.ms } : null;
+    const pr = m.precedente && h.res[m.precedente] && h.res[m.precedente].c !== null ? (h.res[m.precedente].juste ? 'juste' : 'faux') : null;
+    const juste = rep ? rep.c === m.bonne : false;
+    const p = Q.bareme.points(rep ? { juste, ms: rep.ms } : null, { duree: m.duree, precedente: pr }, m.bareme);
+    const r = { c: rep ? rep.c : null, juste, gain: p.total, rebond: p.detail.rebond > 0 };
+    h.ordre.push(m.qid); h.res[m.qid] = r; h.total += p.total;
+    Q.session.ecrire('hist:' + moi.code, { ordre: h.ordre, res: h.res });
+    return { h, r, detail: rep ? p.detail : null };
+  }
+  const bilanDe = h => {
+    const suite = h.ordre.map(q => h.res[q].c === null ? null : h.res[q].juste ? 'juste' : 'faux');
+    return Object.assign(Q.bareme.progression(suite), { suite });
+  };
 
   function suite(s) {
     if (!s.length) return null;
@@ -189,27 +238,28 @@
   function afficherCorrection(cours, m) {
     const q = trouverQuestion(cours, m.qid);
     if (!q) return;
+    if (q.bonne !== m.bonne) return; // la bonne réponse annoncée doit être celle du fichier du cours
     clearInterval(renvoi); clearInterval(chrono);
     phase = 'correction';
-    const r = m.moi;
-    const choix = r ? r.c : (question && question.qid === q.id ? question.choix : null);
+    const note = noter(m), r = note.r;
+    const choix = r.c;
     question = { qid: q.id, q, choix, recu: true, ferme: true };
-    if (r) { total = r.total; majPoints(); }
+    total = note.h.total; majPoints();
     const s = el('section', { class: 'd-question' },
       el('header', { class: 'q-tete' }, el('p', { class: 'q-num' }, 'Question ' + q.numero + ' sur ' + cours.questions.length + ' · correction'),
         (() => { const h = el('h2', { class: 'q-nom' }); h.appendChild(Q.fragmentCours(Q.texte(q.nom))); return h; })()));
     if (choix == null) s.appendChild(el('div', { class: 'verdict neutre', role: 'status' }, el('span', { class: 'symbole', 'aria-hidden': 'true' }, '•'),
       el('div', {}, el('p', { class: 'v-titre' }, 'Pas de réponse cette fois. La bonne réponse est ' + Q.LETTRES[q.bonne] + '.'))));
     s.appendChild(Q.fragmentCours(Q.rendreCorrection(q, choix)));
-    if (r && r.detail && r.gain > 0) {
-      const d = r.detail, parts = [];
+    if (note.detail && r.gain > 0) {
+      const d = note.detail, parts = [];
       if (d.juste) parts.push(d.juste + ' bonne réponse'); if (d.participation) parts.push(d.participation + ' participation');
       if (d.rapidite) parts.push(d.rapidite + ' rapidité'); if (d.rebond) parts.push(d.rebond + ' rebond');
       s.appendChild(el('p', { class: 'gains' }, '+' + r.gain + ' points ', el('small', {}, '(' + parts.join(', ') + ')')));
       if (d.rebond) s.appendChild(el('p', { class: 'rebonds' }, 'Beau rebond : tu t\'es repris·e juste après une erreur.'));
     }
-    if (r) {
-      const b = r.bilan;
+    {
+      const b = bilanDe(note.h);
       s.appendChild(el('div', { class: 'cadre' }, el('p', {}, el('strong', {}, pluriel(b.justes, 'juste')), ' sur ' + pluriel(b.repondues, 'réponse')
         + (b.serie > 1 ? ' · série en cours : ' + b.serie : '') + (b.rebonds ? ' · rebonds : ' + b.rebonds : '')), suite(b.suite)));
     }
@@ -221,18 +271,23 @@
 
   function afficherFin(cours, m) {
     phase = 'fin'; question = null; clearInterval(renvoi); clearInterval(chrono);
-    const r = m.moi, s = el('section', { class: 'attente' }, el('p', { class: 'grand' }, 'Fin de la séance'));
-    if (r) {
-      total = r.total; majPoints();
-      const b = r.bilan;
+    const h = historique(), s = el('section', { class: 'attente' }, el('p', { class: 'grand' }, 'Fin de la séance'));
+    if (h.ordre.length) {
+      total = h.total; majPoints();
+      const b = bilanDe(h);
       s.append(el('p', { class: 'gains' }, total + ' points'),
         el('p', {}, el('strong', {}, b.justes + ' sur ' + cours.questions.length), ' bonnes réponses · meilleure série : ' + b.meilleure + ' · rebonds : ' + b.rebonds));
       const sv = suite(b.suite); if (sv) s.appendChild(sv);
-      if (r.place <= 3 && m.podium) s.appendChild(el('p', { class: 'rebonds' }, 'Bravo, tu es sur le podium : ' + r.place + (r.place === 1 ? 're' : 'e') + ' place.'));
-      s.appendChild(r.arevoir.length ? el('p', {}, 'À revoir : question' + (r.arevoir.length > 1 ? 's' : '') + ' ' + r.arevoir.join(', ') + '.') : el('p', {}, 'Tout juste : tu peux aider un·e camarade.'));
+      // la place n'est connue que sur le podium affiché à toute la classe ; aucune autre place n'est envoyée
+      const pl = m.podium ? m.podium.find(p => p.pseudo === moi.pseudo) : null;
+      if (pl) s.appendChild(el('p', { class: 'rebonds' }, 'Bravo, tu es sur le podium : ' + pl.place + (pl.place === 1 ? 're' : 'e') + ' place.'));
+      const arevoir = h.ordre.filter(q => !h.res[q].juste).map(q => (cours.questions.find(x => x.id === q) || {}).numero).filter(Number.isInteger);
+      s.appendChild(arevoir.length ? el('p', {}, 'À revoir : question' + (arevoir.length > 1 ? 's' : '') + ' ' + arevoir.join(', ') + '.') : el('p', {}, 'Tout juste : tu peux aider un·e camarade.'));
     } else s.appendChild(el('p', {}, 'Merci d\'avoir suivi le cours.'));
     s.appendChild(el('p', {}, el('a', { class: 'bouton fort', href: 'revision.html?cours=' + encodeURIComponent(cours.id) }, 'Revoir le cours seul·e')));
     ecran(s);
+    // la séance est finie : le code, le pseudo et l'identifiant gardés sur l'appareil sont effacés
+    Q.stock.oublier('eleve');
   }
 
   /* ── Démarrage ──────────────────────────── */
@@ -244,7 +299,7 @@
     else if (ancien) $('champCode').value = ancien.code;
     if (ancien) $('champPseudo').value = ancien.pseudo;
     $('entree').addEventListener('submit', rejoindre);
-    $('quitter').addEventListener('click', () => { Q.stock.oublier('eleve'); Q.session.oublier('eleve'); afficherEntree(''); $('champPseudo').value = ''; });
+    $('quitter').addEventListener('click', () => { Q.stock.oublier('eleve'); Q.session.oublier('eleve'); if (moi) Q.session.oublier('hist:' + moi.code); afficherEntree(''); $('champPseudo').value = ''; });
     // la page rechargée dans le même onglet revient directement dans la séance
     const onglet = lireOnglet();
     if (onglet && (!code || code === onglet.code)) { moi = onglet; entrer(); }

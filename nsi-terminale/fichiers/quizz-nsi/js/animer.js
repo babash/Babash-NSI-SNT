@@ -12,6 +12,7 @@
   const sauver = () => Q.session.ecrire(cle(), st);
   const diapo = () => cours.diapositives[st.index];
   const pluriel = (n, mot) => n + ' ' + mot + (n > 1 ? 's' : '');
+  const envoyer = m => { if (seance) seance.envoyer(m); };
 
   function etatNeuf(code) {
     return { code: code || Q.nouveauCode(), id: Q.nouvelId(), commence: false, index: 0, duree: 45, podium: 'fin',
@@ -60,13 +61,13 @@
     let neuf = false;
     const valides = (Array.isArray(liste) ? liste : []).map(Q.messages.presence).filter(p => p && p.role === 'eleve');
     for (const p of valides) {
-      if (!p.pseudo) { seance.envoyer({ t: 'refus', id: p.id, raison: 'invalide' }); continue; }
+      if (!p.pseudo) { envoyer({ t: 'refus', id: p.id, raison: 'invalide' }); continue; }
       const f = { pseudo: p.pseudo };
       const c = Q.clePseudo(f.pseudo);
       const j = st.joueurs[p.id];
-      if (st.bannis.includes(c)) { if (!j || !j.retire || j.cle !== c) seance.envoyer({ t: 'retire', id: p.id }); if (j) j.retire = true; continue; }
+      if (st.bannis.includes(c)) { if (!j || !j.retire || j.cle !== c) envoyer({ t: 'retire', id: p.id }); if (j) j.retire = true; continue; }
       const pris = Object.entries(st.joueurs).some(([id, k]) => id !== p.id && !k.retire && k.cle === c && (presents.has(id) || valides.some(x => x.id === id)));
-      if (pris && (!j || j.cle !== c)) { seance.envoyer({ t: 'refus', id: p.id, raison: 'pris' }); continue; }
+      if (pris && (!j || j.cle !== c)) { envoyer({ t: 'refus', id: p.id, raison: 'pris' }); continue; }
       if (!j) { st.joueurs[p.id] = { pseudo: f.pseudo, cle: c, rep: {}, total: 0 }; neuf = true; }
       else { if (j.retire && j.cle !== c) { j.retire = false; neuf = true; } j.pseudo = f.pseudo; j.cle = c; }
       presents.set(p.id, p);
@@ -94,25 +95,31 @@
     if (!j) return;
     j.retire = true;
     if (!st.bannis.includes(j.cle)) st.bannis.push(j.cle);
-    seance.envoyer({ t: 'retire', id });
+    envoyer({ t: 'retire', id });
     sauver(); majEleves();
     Q.annoncer('Pseudo ' + j.pseudo + ' retiré.');
   }
 
   /* ── Les messages des élèves ─────────────── */
   let accuses = new Set(), accuseMinuterie = null;
-  function onMessage(brut) {
-    const m = Q.messages.versHote(brut);
-    if (!m || !st.commence && m.t === 'rep') return; // message non conforme : ignoré
-    if (m.t === 'bonjour') { planifierRenvoi(); return; }
-    if (m.t === 'rep') {
+  let cleHote = null; // la paire de clés de la page projetée (js/chiffre.js)
+  async function onMessage(brut) {
+    const env = Q.messages.versHote(brut);
+    if (!env) return; // message non conforme : ignoré
+    if (env.t === 'bonjour') { planifierRenvoi(); return; }
+    if (env.t === 'rep') {
+      if (!st.commence || !cleHote) return;
+      const recu = Date.now();
+      const m = Q.messages.reponse(await cleHote.dechiffrer(env)); // illisible ou forgée : ignorée
+      if (!m) return;
       const d = diapo(), etat = d && d.type === 'question' ? st.q[d.id] : null;
       if (!etat || etat.ferme || m.qid !== d.id) return;
       const j = st.joueurs[m.id];
       if (!j || j.retire) return;
-      if (!j.rep[d.id]) { j.rep[d.id] = { c: m.c, ms: Date.now() - etat.ouverte }; sauver(); majStatut(); }
-      accuses.add(m.id);
-      if (!accuseMinuterie) accuseMinuterie = setTimeout(() => { seance.envoyer({ t: 'recus', qid: d.id, ids: [...accuses] }); accuses = new Set(); accuseMinuterie = null; }, 400);
+      if (!j.rep[d.id]) { j.rep[d.id] = { c: m.c, ms: recu - etat.ouverte }; sauver(); majStatut(); }
+      // l'accusé de réception ne porte qu'un nombre tiré au hasard par le téléphone, pas son identifiant
+      accuses.add(m.n);
+      if (!accuseMinuterie) accuseMinuterie = setTimeout(() => { envoyer({ t: 'recus', qid: d.id, n: [...accuses] }); accuses = new Set(); accuseMinuterie = null; }, 400);
       const repondu = presentsActifs().filter(p => st.joueurs[p.id].rep[d.id]).length;
       if (repondu > 0 && repondu === presentsActifs().length && !etat.ferme) fermer(d, 'Tout le monde a répondu.');
     }
@@ -121,23 +128,22 @@
   // Un message renvoyé quand un·e élève arrive ou revient : il lui donne la phase en cours.
   function planifierRenvoi() {
     clearTimeout(renvoi);
-    renvoi = setTimeout(() => { const m = messagePhase(); if (m) seance.envoyer(m); }, 300);
+    renvoi = setTimeout(() => { const m = messagePhase(); if (m) envoyer(m); }, 300);
   }
 
   // Les messages ne portent que des identifiants et des nombres : le texte est dans le fichier du cours.
   function messageQuestion(d) {
     const e = st.q[d.id];
-    return { t: 'question', cours: cours.id, qid: d.id, reste: e && e.fin ? Math.max(0, Math.round(e.fin - Date.now())) : null, ferme: !!(e && e.ferme) };
+    return { t: 'question', cours: cours.id, qid: d.id, reste: e && e.fin ? Math.max(0, Math.round(e.fin - Date.now())) : null, duree: st.duree, ferme: !!(e && e.ferme) };
   }
+  // La correction ne diffuse que ce que l'écran projeté montre à toute la classe : la bonne réponse,
+  // la répartition en nombres, le podium s'il est affiché. Chaque téléphone calcule ses points avec le
+  // barème et la question corrigée juste avant (pour le rebond).
+  const podiumPublic = () => podium().filter(j => j.place <= 3).slice(0, 20).map(j => ({ pseudo: j.pseudo, total: j.total, place: j.place }));
   function messageCorrection(d) {
-    const res = {};
-    for (const [id, j] of Object.entries(st.joueurs)) {
-      if (j.retire) continue;
-      const r = j.rep[d.id];
-      res[id] = { c: r ? r.c : null, gain: r ? r.gain : 0, detail: r ? r.detail : null, total: j.total, bilan: bilanJoueur(j) };
-    }
-    return { t: 'correction', cours: cours.id, qid: d.id, rep: repartition(d), res,
-      podium: st.podium === 'chaque' ? podium().filter(j => j.place <= 3).slice(0, 20).map(j => ({ pseudo: j.pseudo, total: j.total, place: j.place })) : null };
+    const k = st.ordre.indexOf(d.id);
+    return { t: 'correction', cours: cours.id, qid: d.id, precedente: k > 0 ? st.ordre[k - 1] : null, bonne: d.bonne, rep: repartition(d),
+      bareme: Object.assign({}, B.BAREME), duree: st.duree, podium: st.podium === 'chaque' ? podiumPublic() : null };
   }
   function messagePhase() {
     const d = diapo();
@@ -175,7 +181,7 @@
     e.revelee = true;
     st.ordre.push(d.id);
     sauver();
-    seance.envoyer(messageCorrection(d));
+    envoyer(messageCorrection(d));
   }
 
   /* ── Ouvrir, fermer, corriger une question ── */
@@ -188,7 +194,7 @@
     const e = st.q[d.id];
     if (!e || e.ferme) return;
     e.ferme = true; e.raison = raison || 'Réponses fermées.'; sauver();
-    seance.envoyer({ t: 'fermee', qid: d.id });
+    envoyer({ t: 'fermee', qid: d.id });
     majStatut(); majAction();
   }
 
@@ -200,7 +206,7 @@
     $('barre').style.width = ((st.index + 1) / cours.diapositives.length * 100) + '%';
     $('prec').disabled = st.index === 0;
     if (d.type === 'question') { ouvrir(d); if (st.q[d.id].revelee) montrerCorrection(d); }
-    if (seance) seance.envoyer(messagePhase());
+    envoyer(messagePhase());
     majStatut(); majAction();
     $('scene').focus({ preventScroll: true });
     window.scrollTo(0, 0);
@@ -286,20 +292,19 @@
     if (!b.open) { try { b.showModal(); } catch (e) { b.setAttribute('open', ''); } }
   }
   function messageFin() {
-    const l = podium(), res = {};
-    for (const j of l) { const bj = bilanJoueur(st.joueurs[j.id]); res[j.id] = { total: j.total, place: j.place, bilan: bj, arevoir: st.ordre.filter((qid, k) => bj.suite[k] !== 'juste').map(qid => cours.diapositives.find(x => x.id === qid).numero) }; }
-    return { t: 'fin', cours: cours.id, podium: st.podium === 'jamais' ? null : l.filter(j => j.place <= 3).slice(0, 20).map(j => ({ pseudo: j.pseudo, total: j.total, place: j.place })), res };
+    return { t: 'fin', cours: cours.id, podium: st.podium === 'jamais' ? null : podiumPublic() };
   }
   function terminer() {
     st.fini = true; sauver();
-    seance.envoyer(messageFin());
+    envoyer(messageFin());
     majAction();
     montrerPodium();
   }
 
   /* ── La connexion ───────────────────────── */
-  function connecter() {
+  async function connecter() {
     if (seance) seance.fermer();
+    seance = null;
     presents = new Map();
     const lien = Q.lienEleve(st.code);
     $('code').textContent = st.code; $('codePetit').textContent = st.code; $('codeBarre').textContent = st.code;
@@ -310,7 +315,9 @@
       $('qr').innerHTML = svgQr; $('qrPetit').innerHTML = svgQr;
     } catch (e) { $('qr').textContent = ''; }
     const z = $('etatConnexion');
-    seance = Q.ouvrirSeance(st.code, { id: st.id, role: 'hote' }, {
+    if (!Q.chiffre.disponible()) { z.className = 'etat ko'; z.textContent = 'Ce navigateur ne peut pas chiffrer les réponses (page à ouvrir en https). Le cours marche sans les téléphones.'; return; }
+    try { cleHote = await Q.chiffre.hote(); } catch (e) { z.className = 'etat ko'; z.textContent = 'Le chiffrement des réponses est impossible dans ce navigateur.'; return; }
+    seance = Q.ouvrirSeance(st.code, { id: st.id, role: 'hote', cle: cleHote.publique }, {
       onMessage, onPresence,
       onEtat(e) {
         if (e === 'connexion') { z.className = 'etat'; z.textContent = 'Connexion à la séance en direct…'; }

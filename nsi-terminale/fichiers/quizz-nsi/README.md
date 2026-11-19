@@ -33,7 +33,7 @@ Sans réseau ou sans élève connecté·e, la page d'animation marche comme un s
 | Rapidité (avec une minuterie seulement, et seulement si c'est juste) | de +20 à 0 | un peu d'élan, sans écraser la réflexion |
 | Rebond : une bonne réponse juste après une erreur | +30 | valoriser la progression, pas seulement les meilleur·e·s |
 
-Le classement compte peu (philosophie éducative, § 9) : par défaut, le podium (les 3 premières places) n'apparaît qu'à la fin. Les « beaux rebonds » sont annoncés à toute la classe après chaque question. Chaque élève suit sur son téléphone ses bonnes réponses, sa série et ses rebonds ; sa place ne s'affiche que s'il ou elle est sur le podium.
+Le classement compte peu (philosophie éducative, § 9) : par défaut, le podium (les 3 premières places) n'apparaît qu'à la fin. Les « beaux rebonds » sont annoncés à toute la classe après chaque question. Chaque élève suit sur son téléphone ses points, ses bonnes réponses, sa série et ses rebonds, calculés par son téléphone ; sa place n'est connue que s'il ou elle est sur le podium affiché (aucune autre place n'est envoyée).
 
 ## Le premier cours : piles et files (Terminale NSI)
 
@@ -43,19 +43,20 @@ Le classement compte peu (philosophie éducative, § 9) : par défaut, le podium
 
 | Usage | Comment |
 |---|---|
-| **En classe, tous ensemble** (≈ 40 min, ou en deux fois) | La page d'animation projetée, les téléphones des élèves. |
+| **En classe, toute la classe en même temps** (≈ 40 min, ou en deux fois) | La page d'animation projetée, les téléphones des élèves. |
 | **En binôme ou en îlot** | Un téléphone pour deux ou pour l'îlot : on se met d'accord avant de répondre. |
 | **Seul·e, en révision** | Le mode autonome : les diapositives et les questions, des essais illimités, la correction quand on veut. « Questions seules » saute les notions. La progression reste sur l'appareil. |
 | **Sur papier** | La feuille A4 en noir et blanc (6 pages), le corrigé à part. |
 
 ## Données des élèves
 
-- **Enregistré en ligne** : rien. Une séance passe par les canaux temps réel (diffusion et présence) d'un projet Supabase, **sans aucune table** : le prénom ou le pseudo et les réponses passent en direct, puis disparaissent.
-- **Visible par les autres** : pendant la séance seulement, le prénom ou le pseudo (liste de la page projetée, podium s'il est affiché, rebonds).
-- **Sur l'appareil de l'élève** : le code de séance, le pseudo et un identifiant tiré au hasard, 12 heures au plus, pour revenir après une coupure ; en révision, ses réponses du mode autonome.
+- **Enregistré en ligne** : rien. Une séance passe par les canaux temps réel (diffusion et présence) d'un projet Supabase, **sans aucune table** : rien n'y reste après la séance.
+- **Visible par les autres, pendant la séance seulement** : exactement ce que montre l'écran projeté. La liste des prénoms ou pseudos présents (avec un identifiant tiré au hasard par séance) ; pour chaque question, la bonne réponse et la répartition des réponses en nombres ; les pseudos des « beaux rebonds » ; le podium (pseudos et points des trois premières places) seulement quand l'enseignant·e l'affiche.
+- **Jamais diffusé** : la réponse d'un·e élève (elle part **chiffrée** pour la seule page projetée, [js/chiffre.js](js/chiffre.js)), ses points, sa place hors du podium. Chaque téléphone calcule ses propres points avec le barème ; la page projetée fait son propre calcul, et elle seule fait foi pour le podium (les deux peuvent différer de quelques points de rapidité, selon le délai du réseau).
+- **Sur l'appareil de l'élève** : le code de séance, le pseudo et l'identifiant, pour revenir après une coupure ; effacés à la fin de la séance, et sinon au premier chargement d'une page de QuizzNSI après 12 heures. Dans l'onglet, ses réponses et ses points de la séance, effacés à la fermeture de l'onglet. En révision, ses réponses du mode autonome, gardées jusqu'à « Recommencer à zéro » ou l'effacement des données du navigateur.
 - **Sur l'appareil de l'enseignant·e** : l'état de la séance, dans l'onglet (effacé à sa fermeture).
 - **Canal public, messages contrôlés** : n'importe qui qui connaît le code peut écrire dans le canal. Chaque message reçu est validé par un schéma strict ([js/messages.js](js/messages.js)) et ignoré s'il n'est pas conforme ; les messages ne portent que des identifiants et des nombres (le texte des questions vient du fichier du cours) ; une valeur reçue ne passe jamais par `innerHTML`. Les tests envoient des centaines de messages forgés ([tests/test_messages.js](tests/test_messages.js), [tests/test_parcours.py](tests/test_parcours.py)).
-- **Pseudo filtré** : 2 à 16 caractères, lettres, chiffres, espace, `-`, `'`, `.`, `_` ; tout caractère invisible est refusé ; un pseudo déjà pris est refusé ; tout est affiché comme du texte, jamais comme du HTML.
+- **Pseudo filtré** : 2 à 16 caractères, lettres (de toutes les écritures), chiffres, espace, `-`, `'`, `.`, `_` ; une seule écriture par pseudo (pas de lettre cyrillique glissée dans un mot latin) ; tout caractère invisible est refusé ; un pseudo déjà pris est refusé, à la casse, aux accents et aux sosies près (« АВС » cyrillique = « ABC ») ; tout est affiché comme du texte, jamais comme du HTML.
 
 ## Ajouter un cours
 

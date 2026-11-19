@@ -84,7 +84,7 @@
       "nom": "[Pile ou file] Reconnaître la politique LIFO",
       "objectif": "Reconnaître une pile dans une situation de la vie courante.",
       "enonce": [
-        "Au CDI, les livres rendus sont posés les uns sur les autres sur le comptoir. La documentaliste range toujours le livre du dessus en premier.",
+        "Au CDI, les livres rendus sont posés les uns sur les autres sur le comptoir. On range toujours le livre du dessus en premier.",
         "Quelle structure de données décrit cette situation ?"
       ],
       "options": [
@@ -455,10 +455,10 @@
       "titre": "Le coût de pop(0)",
       "texte": [
         "`pop()` retire le dernier élément : rien d'autre ne bouge. Son coût est **constant**.",
-        "`pop(0)` retire le premier : **tous les autres éléments sont décalés** d'une case. Son coût est proportionnel au nombre `n` d'éléments : il est **linéaire**.",
-        "Pour une grande file, on évite donc `pop(0)`. On peut utiliser deux piles (plus loin) ou `collections.deque`."
+        "`pop(0)` retire le premier : **tous les autres éléments sont décalés** d'une case vers le début. Son coût est proportionnel au nombre `n` d'éléments : il est **linéaire**.",
+        "Pour une très grande file (des centaines de milliers d'éléments), on évite donc `pop(0)`. On peut utiliser deux piles (plus loin) ou `collections.deque`."
       ],
-      "schema": { "type": "decalage", "elements": ["A", "B", "C", "D", "E"], "legende": "pop(0) retire A : B, C, D et E reculent chacun d'une case." }
+      "schema": { "type": "decalage", "elements": ["A", "B", "C", "D", "E"], "legende": "pop(0) retire A : B, C, D et E avancent chacun d'une case vers le début." }
     },
     {
       "type": "question",
@@ -472,7 +472,7 @@
       "options": [
         { "texte": "Elle ne change pas, comme pour `pop()`.", "feedback": "C'est vrai pour `pop()`, qui retire le dernier élément. `pop(0)` doit décaler tous les éléments restants : plus il y en a, plus c'est long." },
         { "texte": "Elle est divisée par deux.", "feedback": "Plus d'éléments ne peut pas rendre le travail plus court : il y a deux fois plus d'éléments à décaler, pas deux fois moins." },
-        { "texte": "Elle double environ : il y a deux fois plus de décalages.", "juste": true, "feedback": "Oui. Chaque élément restant recule d'une case : le travail est proportionnel à `n`. Le coût est linéaire." },
+        { "texte": "Elle double environ : il y a deux fois plus de décalages.", "juste": true, "feedback": "Oui. Chaque élément restant avance d'une case vers le début : le travail est proportionnel à `n`. Le coût est linéaire." },
         { "texte": "Elle est multipliée par quatre environ : le coût est quadratique.", "feedback": "Un coût multiplié par quatre, ce serait un coût quadratique (en `n²`), comme un tri par sélection. Un seul `pop(0)` décale chaque élément une seule fois : coût linéaire." }
       ],
       "explication": "`pop(0)` décale les `n - 1` éléments restants : coût linéaire.",
@@ -654,7 +654,7 @@
       "objectif": "Exécuter à la main un algorithme qui utilise une pile.",
       "enonce": [
         "On considère la fonction suivante.",
-        "Que renvoie `bien_parenthese(\"(()))(\")` ?"
+        "Que renvoie `bien_parenthese(\"(()))(\")`, et pourquoi ?"
       ],
       "code": [
         "def bien_parenthese(texte):",
@@ -767,7 +767,7 @@
       "titre": "Choisir la bonne structure",
       "texte": [
         "Le dernier arrivé doit sortir en premier : **pile**. L'ordre d'arrivée doit être respecté : **file**.",
-        "Puis on choisit l'implémentation : une liste avec `append` et `pop()` est efficace pour une pile ; pour une grande file, on évite `pop(0)`."
+        "Puis on choisit l'implémentation : une liste avec `append` et `pop()` est efficace pour une pile ; pour une très grande file, on évite `pop(0)`."
       ]
     },
     {
@@ -776,16 +776,17 @@
       "nom": "[Bilan] Une structure juste et efficace",
       "objectif": "Choisir une structure et une implémentation adaptées au besoin.",
       "enonce": [
-        "Le logiciel de réservation des ordinateurs du CDI reçoit des milliers de demandes. Il doit les traiter dans l'ordre d'arrivée, rapidement.",
+        "Le serveur qui distribue les mises à jour aux ordinateurs des collèges et lycées de l'île reçoit des centaines de milliers de demandes. Il doit les traiter dans l'ordre d'arrivée, rapidement.",
         "Quelle solution est à la fois juste et efficace ?"
       ],
       "options": [
         { "texte": "Une liste avec `append` pour ajouter et `pop()` pour retirer.", "feedback": "C'est rapide, mais c'est une pile : la dernière demande serait traitée en premier. L'ordre d'arrivée n'est pas respecté." },
         { "texte": "Une file à deux piles : en moyenne, chaque défilement est rapide.", "juste": true, "feedback": "Oui. C'est bien une file (ordre d'arrivée), et chaque élément n'est transvasé qu'une fois : le coût moyen d'un défilement est constant." },
-        { "texte": "Une liste avec `append` et `pop(0)` : elle est juste et rapide.", "feedback": "Elle respecte bien l'ordre d'arrivée, mais chaque `pop(0)` décale toutes les demandes restantes : avec des milliers de demandes, c'est lent." },
+        { "texte": "Une liste avec `append` et `pop(0)` : elle est juste et rapide.", "feedback": "Elle respecte bien l'ordre d'arrivée, mais chaque `pop(0)` décale toutes les demandes restantes : avec des centaines de milliers de demandes, c'est lent." },
         { "texte": "Une liste avec `insert(0, x)` pour ajouter et `pop(0)` pour retirer.", "feedback": "On ajoute et on retire au même bout, le début : c'est une pile ! La dernière demande sortirait en premier." }
       ],
       "explication": "Ordre d'arrivée : une file ; deux piles évitent le coût de `pop(0)`.",
+      "note_verification": "Mesure (Python 3.13, enfiler puis défiler tout) : 1 000 éléments, pop(0) 0,1 ms contre 0,2 ms avec deux piles ; 100 000 : 0,75 s contre 0,02 s ; 200 000 : 3,1 s contre 0,04 s ; 500 000 : 29 s contre 0,11 s. Pour quelques milliers d'éléments, pop(0) reste rapide.",
       "verifications": [
         { "code": ["l = []", "for x in [1, 2, 3]:", "    l.insert(0, x)", "print(l.pop(0))", "l = []", "for x in [1, 2, 3]:", "    l.append(x)", "print(l.pop())"], "sortie": "3\n3", "reprendre_code": false, "option": 3 }
       ]
@@ -799,7 +800,7 @@
           ["Règle", "LIFO : dernier entré, premier sorti", "FIFO : premier entré, premier sorti"],
           ["Ajouter", "`empiler(e)` au sommet", "`enfiler(e)` à la queue"],
           ["Retirer", "`depiler()` au sommet", "`defiler()` en tête"],
-          ["Avec une liste", "`append(e)` et `pop()` : rapide", "`append(e)` et `pop(0)` : lent si la file est grande"],
+          ["Avec une liste", "`append(e)` et `pop()` : rapide", "`append(e)` et `pop(0)` : lent si la file est très grande"],
           ["Exemples", "Annuler, Précédent, pile d'appels", "impressions, paquets d'un routeur"]
         ]
       },
