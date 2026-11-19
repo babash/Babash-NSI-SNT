@@ -10,6 +10,11 @@ Lancement, depuis la racine de QuizzNSI :
    On contrôle : le pseudo invisible refusé, le pseudo déjà pris refusé, le pseudo retiré par
    l'enseignant·e, les 20 questions, les points de chaque élève (recalculés ici d'après le barème),
    le podium et l'écran de fin.
+1 bis. Injection : un·e élève malveillant·e qui connaît le code de séance envoie, pour chaque type de
+   message et chaque champ, une valeur forgée (balise <img onerror>, nombre énorme, négatif, objet,
+   chaîne très longue). Un piège sur innerHTML, outerHTML, insertAdjacentHTML, createContextualFragment
+   et document.write échoue si une donnée venue du canal (marquée XSSMARK) y passe, même échappée :
+   les deux élèves ont un pseudo qui contient XSSMARK, le podium est affiché après chaque question.
 2. Le mode autonome : les 37 diapositives, une erreur puis la bonne réponse, le bilan.
 3. La version imprimable : le sujet et le corrigé en PDF A4, sans débordement.
 4. Toutes les pages à 320, 768 et 1440 px, en clair et en obscur : aucun défilement horizontal.
@@ -65,6 +70,144 @@ def contexte(navigateur, base, **kw):
         return r.continue_()
     ctx.route("**/*", route)
     return ctx
+
+
+MARQUE = "XSSMARK"
+BALISE = '<img src=x onerror="window.__pwned=1">' + MARQUE
+PIEGE = """
+(() => {
+  window.__piege = [];
+  const M = 'XSSMARK', note = (ou, v) => { if (String(v).includes(M)) window.__piege.push(ou + ' : ' + String(v).slice(0, 80)); };
+  for (const p of ['innerHTML', 'outerHTML']) {
+    const d = Object.getOwnPropertyDescriptor(Element.prototype, p);
+    Object.defineProperty(Element.prototype, p, { configurable: true, get() { return d.get.call(this); }, set(v) { note(p, v); d.set.call(this, v); } });
+  }
+  const iah = Element.prototype.insertAdjacentHTML;
+  Element.prototype.insertAdjacentHTML = function (w, v) { note('insertAdjacentHTML', v); return iah.call(this, w, v); };
+  const ccf = Range.prototype.createContextualFragment;
+  Range.prototype.createContextualFragment = function (v) { note('createContextualFragment', v); return ccf.call(this, v); };
+  const dw = Document.prototype.write;
+  Document.prototype.write = function (...v) { note('document.write', v.join('')); return dw.apply(this, v); };
+})();
+"""
+
+
+def forges(moi, autre):
+    """Pour chaque type de message et chaque champ (imbriqué compris), des copies avec une valeur forgée."""
+    import copy
+    bilan = {"justes": 1, "repondues": 1, "serie": 1, "meilleure": 1, "rebonds": 0, "suite": ["juste"]}
+    modeles = [
+        {"t": "attente"},
+        {"t": "notion", "cours": "piles-files", "n": 1},
+        {"t": "question", "cours": "piles-files", "qid": "q01", "reste": 1000, "ferme": False},
+        {"t": "fermee", "qid": "q01"},
+        {"t": "recus", "qid": "q01", "ids": [moi]},
+        {"t": "retire", "id": moi},
+        {"t": "refus", "id": moi, "raison": "pris"},
+        {"t": "correction", "cours": "piles-files", "qid": "q01", "rep": [1, 1, 0, 0],
+         "res": {moi: {"c": 1, "gain": 110, "detail": {"participation": 10, "juste": 100, "rapidite": 0, "rebond": 0}, "total": 110, "bilan": bilan}},
+         "podium": [{"pseudo": "Nadia", "total": 110, "place": 1}]},
+        {"t": "fin", "cours": "piles-files", "res": {moi: {"total": 110, "place": 1, "bilan": bilan, "arevoir": [2]}}, "podium": [{"pseudo": "Nadia", "total": 110, "place": 1}]},
+        {"t": "bonjour", "id": autre},
+        {"t": "rep", "id": autre, "qid": "q01", "c": 1},
+    ]
+    valeurs = [BALISE, 10 ** 300, -1, 2.5, {"html": BALISE}, [BALISE], BALISE * 2000, True]
+
+    def feuilles(o, base=()):
+        if isinstance(o, dict):
+            for k, v in o.items():
+                yield from feuilles(v, base + (k,))
+        elif isinstance(o, list) and o:
+            for i, v in enumerate(o):
+                yield from feuilles(v, base + (i,))
+        else:
+            yield base
+    for m in modeles:
+        for ch in feuilles(m):
+            if ch == ("t",):
+                continue
+            for v in valeurs:
+                c = copy.deepcopy(m)
+                x = c
+                for k in ch[:-1]:
+                    x = x[k]
+                if isinstance(x[ch[-1]], bool) and isinstance(v, bool):
+                    continue
+                x[ch[-1]] = v
+                yield c
+        c = copy.deepcopy(m)
+        c["html"] = BALISE
+        yield c
+
+
+def injection(nav, base):
+    ctx = contexte(nav, base)
+    ctx.add_init_script(PIEGE)
+    prof = ctx.new_page()
+    prof.set_viewport_size({"width": 1440, "height": 900})
+    surveiller(prof, "injection enseignant·e")
+    prof.goto(base + "animer.html?cours=piles-files")
+    attendre_texte(prof, "#etatConnexion", "Séance ouverte")
+    code = prof.inner_text("#code").strip()
+    eleves = []
+    for pseudo in ("Nadia " + MARQUE, MARQUE):
+        e = ctx.new_page()
+        e.set_viewport_size({"width": 320, "height": 740})
+        surveiller(e, "injection " + pseudo)
+        e.goto(base + f"rejoindre.html?s={code}")
+        e.fill("#champPseudo", pseudo)
+        e.click("#rejoindre")
+        eleves.append(e)
+    attendre_texte(prof, "#eleves", "Nadia " + MARQUE)
+    prof.select_option("#duree", "0")
+    prof.select_option("#podium", "chaque")
+    prof.click("#commencer")
+    prof.click("#action")  # notion 1
+    prof.click("#action")  # question 1
+    for e in eleves:
+        e.wait_for_selector('button.option[data-choix="1"]:not([disabled])')
+    moi = eleves[0].evaluate("() => JSON.parse(sessionStorage.getItem('quizz-nsi:eleve')).id")
+    autre = eleves[1].evaluate("() => JSON.parse(sessionStorage.getItem('quizz-nsi:eleve')).id")
+    attaque = ctx.new_page()
+    attaque.goto(base + "index.html")
+    liste = list(forges(moi, autre))
+    attaque.evaluate("""([canal, msgs, balise, moi]) => {
+        const bc = new BroadcastChannel('faux:' + canal);
+        for (const m of msgs) bc.postMessage({ k: 'b', event: 'm', payload: m });
+        // une présence forgée : pseudo piégé, identifiant piégé, clé en plus
+        bc.postMessage({ k: 'p', cle: 'x1', info: { id: 'aaaaaaaaaaaaaaaa', pseudo: balise, role: 'eleve' } });
+        bc.postMessage({ k: 'p', cle: 'x2', info: { id: balise, pseudo: 'Ali', role: 'eleve' } });
+        bc.postMessage({ k: 'p', cle: 'x3', info: { id: 'bbbbbbbbbbbbbbbb', pseudo: 'Ali', role: 'eleve', html: balise } });
+        bc.postMessage({ k: 'p', cle: 'x4', info: { id: 'cccccccccccccccc', pseudo: 'x'.repeat(100000), role: 'eleve' } });
+    }""", ["quizz-nsi:" + code, liste, BALISE, moi])
+    prof.wait_for_timeout(1500)
+    # la séance continue normalement après l'attaque
+    eleves[0].click('button.option[data-choix="1"]')
+    eleves[1].click('button.option[data-choix="0"]')
+    attendre_texte(prof, "#statutQ", "Tout le monde a répondu")
+    prof.click("#action")
+    prof.wait_for_selector("#podiumBoite[open]")
+    attendre_texte(prof, "#podiumCorps", "Nadia " + MARQUE)
+    attendre_texte(eleves[0], ".q-num", "Question 1 sur 20 · correction")
+    attendre_texte(eleves[0], "#points", "110 pts")
+    fermer = "() => { const b = document.getElementById('podiumBoite'); if (b.open) b.close(); }"
+    for _ in range(80):  # jusqu'à la fin, en fermant le podium affiché après chaque question
+        prof.wait_for_timeout(120)
+        if prof.inner_text("#action").startswith("Revoir"):
+            break
+        prof.evaluate(fermer)
+        prof.click("#action")
+    prof.wait_for_selector("#podiumBoite[open]")
+    attendre_texte(eleves[1], "#ecran", "Fin de la séance")
+    for nom, p in (("enseignant·e", prof), ("élève 1", eleves[0]), ("élève 2", eleves[1])):
+        piege = p.evaluate("window.__piege")
+        assert not piege, f"{nom} : une donnée du canal est passée par du HTML : {piege[:3]}"
+        assert p.evaluate("window.__pwned") is None, f"{nom} : script exécuté"
+        assert p.evaluate("document.querySelectorAll('img').length") == 0, f"{nom} : une image a été créée"
+        assert "aaaaaaaaaaaaaaaa" not in p.content() and "<img" not in p.inner_html("body"), f"{nom} : élément forgé affiché"
+    assert "Ali" not in prof.inner_text("#eleves"), "présence forgée affichée"
+    print(f"  injection : {len(liste)} messages forgés et 4 présences forgées ignorés ; aucun innerHTML ne reçoit de donnée du canal")
+    ctx.close()
 
 
 def points(juste, precedente):
@@ -250,6 +393,7 @@ def main():
     with sync_playwright() as pw:
         nav = pw.chromium.launch()
         seance(nav, base)
+        injection(nav, base)
         autonome(nav, base)
         impression(nav, base)
         rendus(nav, base)

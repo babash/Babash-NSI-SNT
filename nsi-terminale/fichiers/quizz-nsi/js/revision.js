@@ -8,6 +8,20 @@
   const cle = () => 'revision:' + cours.id;
   const sauver = () => Q.stock.ecrire(cle(), etat);
 
+  // Le stockage a pu être modifié : on ne garde que des choix 0 à 3 pour des questions du cours.
+  function etatRelu(v) {
+    const e = { premiers: {}, essais: {}, vus: {}, index: 0 }, ids = new Set(cours.questions.map(q => q.id));
+    const choix = c => Number.isInteger(c) && c >= 0 && c <= 3;
+    if (!v || typeof v !== 'object') return e;
+    for (const id of ids) {
+      if (v.premiers && choix(v.premiers[id])) e.premiers[id] = v.premiers[id];
+      if (v.essais && Array.isArray(v.essais[id])) e.essais[id] = v.essais[id].filter(choix).slice(0, 8);
+      if (v.vus && v.vus[id] === true) e.vus[id] = true;
+    }
+    if (Number.isInteger(v.index) && v.index >= 0 && v.index < cours.diapositives.length) e.index = v.index;
+    return e;
+  }
+
   function liste() {
     return $('questionsSeules').checked ? cours.diapositives.filter(d => d.type !== 'notion') : cours.diapositives;
   }
@@ -108,9 +122,7 @@
     catch (e) { Q.erreurPage($('scene'), e.message); document.querySelector('.nav-diapos').hidden = true; return; }
     document.title = 'QuizzNSI · ' + cours.titre + ' · réviser seul·e';
     $('titreCours').textContent = cours.titre + ' · réviser seul·e';
-    etat = Q.stock.lire(cle(), null);
-    if (!etat || typeof etat !== 'object' || !etat.premiers) etat = { premiers: {}, essais: {}, vus: {}, index: 0 };
-    etat.essais = etat.essais || {}; etat.vus = etat.vus || {};
+    etat = etatRelu(Q.stock.lire(cle(), null));
     $('questionsSeules').checked = Q.stock.lire('questions-seules', false) === true;
     diapos = liste();
     $('questionsSeules').addEventListener('change', () => {

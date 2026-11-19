@@ -82,6 +82,8 @@ def verifier_schema(s, ou, r):
     t = s["type"]
     if t in ("pile", "file", "liste", "decalage") and not isinstance(s.get("elements"), list):
         r.erreur(ou, f"le schéma « {t} » demande une liste « elements »")
+    if "code" in s and not liste_de_chaines(s["code"]):
+        r.erreur(ou, "« code » d'un schéma : une liste de lignes")
     if t == "etapes":
         if s.get("structure") not in ("pile", "file"):
             r.erreur(ou, "le schéma « etapes » demande « structure » : pile ou file")
@@ -100,6 +102,62 @@ def verifier_schema(s, ou, r):
         if (not isinstance(code, str) or not code.strip().startswith("<svg") or "<script" in code.lower()
                 or re.search(r"\son[a-z]+\s*=", code.lower()) or "javascript:" in code.lower()):
             r.erreur(ou, "le schéma « svg » doit commencer par <svg et ne contenir ni script ni attribut on…")
+
+
+def programme_schema(s):
+    """Le programme Python qui recalcule l'état dessiné par un schéma, ou None s'il ne se déduit d'aucun code.
+
+    - « etapes » avec « variable » : chaque « op » est du code ; « code → valeur » vérifie aussi la valeur
+      renvoyée ; après chaque étape, le contenu de la variable doit être exactement « elements »
+      (une pile du bas vers le haut, une file de la tête vers la queue, comme le dessin) ;
+    - « pile », « file », « liste », « deux-piles » avec « code » : après le code, chaque variable dessinée
+      (« variable », ou le « nom » de chaque pile pour deux-piles) contient exactement « elements »."""
+    t = s.get("type")
+    lignes = []
+    if t == "etapes" and s.get("variable"):
+        v = s["variable"]
+        if not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", v):
+            return None
+        classe = "Pile" if s.get("structure") == "pile" else "File"
+        if not s["etapes"] or "=" not in s["etapes"][0]["op"].split("→")[0]:
+            lignes.append(f"{v} = {classe}()")
+        for k, e in enumerate(s["etapes"]):
+            code, _, attendu = e["op"].partition("→")
+            code, attendu = code.strip(), attendu.strip()
+            if attendu:
+                lignes.append(f"__r = {code}")
+                lignes.append(f"assert __r == ({attendu}), {f'étape {k + 1} : {code} renvoie '!r} + repr(__r) + {f', le schéma dit {attendu}'!r}")
+            else:
+                lignes.append(code)
+            dessin = e["elements"]
+            msg1, msg2 = f"étape {k + 1} ({code}) : état obtenu ", f", état dessiné {dessin!r}"
+            lignes.append(f"assert {v}.contenu == {dessin!r}, {msg1!r} + repr({v}.contenu) + {msg2!r}")
+        return lignes
+    if t in ("pile", "file", "liste", "deux-piles") and isinstance(s.get("code"), list):
+        lignes = list(s["code"])
+        if t == "deux-piles":
+            cotes = [(s["gauche"]["nom"], s["gauche"]["elements"]), (s["droite"]["nom"], s["droite"]["elements"])]
+        else:
+            cotes = [(s.get("variable", "p" if t == "pile" else "f" if t == "file" else "liste"), s["elements"])]
+        for nom, el in cotes:
+            if not re.fullmatch(r"[A-Za-z_][A-Za-z_0-9]*", nom):
+                return None
+            contenu = nom if t == "liste" else nom + ".contenu"
+            lignes.append(f"assert {contenu} == {el!r}, {f'{nom} : état obtenu '!r} + repr({contenu}) + {f', état dessiné {el!r}'!r}")
+        return lignes
+    return None
+
+
+def verifier_schema_execution(s, prelude, ou, r):
+    if not isinstance(s, dict):
+        return
+    prog = programme_schema(s)
+    if prog is None:
+        return
+    sortie, err, detail = executer(list(prelude) + prog)
+    if err:
+        msg = detail.splitlines()[-1] if detail else err
+        r.erreur(ou, f"schéma faux : {msg}")
 
 
 def executer(lignes, delai=DELAI):
@@ -132,6 +190,8 @@ def verifier_question(q, n, prelude, r, executer_code=True):
         r.erreur(ou, "« code » doit être une liste de lignes")
     if "schema" in q:
         verifier_schema(q["schema"], ou, r)
+        if executer_code:
+            verifier_schema_execution(q["schema"], prelude, ou + ", schéma", r)
     if not isinstance(q.get("explication"), str) or not q["explication"].strip():
         r.erreur(ou, "« explication » manquante (la phrase qui consolide, montrée après la réponse)")
     opts = q.get("options")
@@ -279,6 +339,8 @@ def verifier_cours(chemin, executer_code=True, n_questions=20):
                         r.avert(ou, f"puce de {len(p)} caractères : à raccourcir")
             if "schema" in d:
                 verifier_schema(d["schema"], ou, r)
+                if executer_code:
+                    verifier_schema_execution(d["schema"], prelude, ou + ", schéma", r)
             if "code" in d and not liste_de_chaines(d["code"]):
                 r.erreur(ou, "« code » doit être une liste de lignes")
     if diapos and diapos[0].get("type") != "titre":

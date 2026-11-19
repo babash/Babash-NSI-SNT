@@ -54,6 +54,7 @@ Le classement compte peu (philosophie éducative, § 9) : par défaut, le podium
 - **Visible par les autres** : pendant la séance seulement, le prénom ou le pseudo (liste de la page projetée, podium s'il est affiché, rebonds).
 - **Sur l'appareil de l'élève** : le code de séance, le pseudo et un identifiant tiré au hasard, 12 heures au plus, pour revenir après une coupure ; en révision, ses réponses du mode autonome.
 - **Sur l'appareil de l'enseignant·e** : l'état de la séance, dans l'onglet (effacé à sa fermeture).
+- **Canal public, messages contrôlés** : n'importe qui qui connaît le code peut écrire dans le canal. Chaque message reçu est validé par un schéma strict ([js/messages.js](js/messages.js)) et ignoré s'il n'est pas conforme ; les messages ne portent que des identifiants et des nombres (le texte des questions vient du fichier du cours) ; une valeur reçue ne passe jamais par `innerHTML`. Les tests envoient des centaines de messages forgés ([tests/test_messages.js](tests/test_messages.js), [tests/test_parcours.py](tests/test_parcours.py)).
 - **Pseudo filtré** : 2 à 16 caractères, lettres, chiffres, espace, `-`, `'`, `.`, `_` ; tout caractère invisible est refusé ; un pseudo déjà pris est refusé ; tout est affiché comme du texte, jamais comme du HTML.
 
 ## Ajouter un cours
@@ -69,8 +70,9 @@ python3 -I outils/verifier_cours.py cours/<id>.json     # 20 questions, 4 option
 
 ```bash
 node tests/test_moteur.js                                   # barème, pseudo, échappement, schémas
+node tests/test_messages.js                                 # messages forgés : tous rejetés
 python3 -I -m unittest discover -s tests -p "test_v*.py"    # le vérificateur
-python3 -I tests/test_parcours.py                           # Playwright : séance à 2 élèves, mode autonome,
+python3 -I tests/test_parcours.py                           # Playwright : séance à 2 élèves, injection, mode autonome,
                                                             # impression, 320/768/1440 px, clair et obscur
 ```
 

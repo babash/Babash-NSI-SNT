@@ -1,12 +1,21 @@
 /* QuizzNSI : la page élève, pensée pour un téléphone (MIT, Babash - NSI Tani Malandi).
    L'élève entre le code de la séance et un prénom ou un pseudo, puis répond aux questions.
+   Sécurité : chaque message reçu est validé par js/messages.js (schéma strict) ; le texte des
+   notions et des questions vient du fichier du cours (cours/<id>.json, même site), jamais du canal ;
+   les valeurs reçues (points, séries, pseudos du podium) s'affichent par textContent seulement.
    Rien n'est enregistré en ligne. Sur l'appareil : le code, le pseudo et un identifiant de séance,
    12 heures au plus, pour revenir après une coupure avec ses points (même code et même pseudo). */
 (function () {
   'use strict';
-  const Q = window.QuizzNSI, $ = Q.$;
+  const Q = window.QuizzNSI, $ = Q.$, el = Q.el;
   const DOUZE_HEURES = 12 * 3600 * 1000;
-  let moi = null, seance = null, phase = null, question = null, attenteHote = null, hoteVu = false, renvoi = null, chrono = null, total = 0;
+  let moi = null, seance = null, phase = null, question = null, attenteHote = null, hoteVu = false, renvoi = null, chrono = null, total = 0, numero = 0;
+  const lesCours = new Map();
+
+  function obtenirCours(id) {
+    if (!lesCours.has(id)) lesCours.set(id, Q.chargerCours(id).catch(() => { lesCours.delete(id); return null; }));
+    return lesCours.get(id);
+  }
 
   /* ── L'entrée ───────────────────────────── */
   function afficherEntree(message) {
@@ -15,6 +24,7 @@
     $('jeu').hidden = true; $('entree').hidden = false; $('quitter').hidden = true;
     $('moi').textContent = ''; $('points').textContent = '';
     $('erreurPseudo').textContent = message || '';
+    phase = null; question = null; total = 0;
     if (message) $('champPseudo').focus();
   }
 
@@ -25,9 +35,9 @@
     $('erreurPseudo').textContent = f.ok ? '' : f.raison;
     if (!code) { $('champCode').focus(); return; }
     if (!f.ok) { $('champPseudo').focus(); return; }
-    const ancien = Q.stock.lire('eleve', null);
+    const ancien = lireAncien();
     // même code et même pseudo dans les 12 heures : on garde son identifiant, donc ses points
-    const memes = ancien && ancien.code === code && ancien.jusqua > Date.now() && typeof ancien.pseudo === 'string' && Q.clePseudo(ancien.pseudo) === Q.clePseudo(f.pseudo) && /^[0-9a-f]{16}$/.test(ancien.id);
+    const memes = ancien && ancien.code === code && Q.clePseudo(ancien.pseudo) === Q.clePseudo(f.pseudo);
     const id = memes ? ancien.id : Q.nouvelId();
     moi = { id, pseudo: f.pseudo, code };
     Q.stock.ecrire('eleve', { id, pseudo: f.pseudo, code, jusqua: Date.now() + DOUZE_HEURES });
@@ -35,11 +45,25 @@
     entrer();
   }
 
+  // Le stockage peut avoir été modifié : chaque valeur relue est contrôlée.
+  function lireAncien() {
+    const a = Q.stock.lire('eleve', null);
+    if (!a || typeof a !== 'object' || !Number.isFinite(a.jusqua) || a.jusqua < Date.now()) return null;
+    const f = Q.filtrerPseudo(a.pseudo);
+    return Q.lireCode(a.code) === a.code && f.ok && f.pseudo === a.pseudo && Q.messages.estId(a.id) ? { id: a.id, pseudo: a.pseudo, code: a.code } : null;
+  }
+  function lireOnglet() {
+    const a = Q.session.lire('eleve', null);
+    if (!a || typeof a !== 'object') return null;
+    const f = Q.filtrerPseudo(a.pseudo);
+    return Q.lireCode(a.code) === a.code && f.ok && f.pseudo === a.pseudo && Q.messages.estId(a.id) ? { id: a.id, pseudo: a.pseudo, code: a.code } : null;
+  }
+
   function entrer() {
     $('entree').hidden = true; $('jeu').hidden = false; $('quitter').hidden = false;
     $('moi').textContent = moi.pseudo;
     majPoints();
-    ecran('<div class="attente"><p class="grand">Connexion…</p><p>Séance ' + Q.echapper(moi.code) + '</p></div>');
+    ecran(el('div', { class: 'attente' }, el('p', { class: 'grand' }, 'Connexion…'), el('p', {}, 'Séance ' + moi.code)));
     hoteVu = false;
     seance = Q.ouvrirSeance(moi.code, { id: moi.id, pseudo: moi.pseudo, role: 'eleve' }, { onMessage, onPresence, onEtat });
   }
@@ -51,65 +75,72 @@
       z.className = 'etat ok'; z.textContent = 'Connecté·e à la séance ' + moi.code + '.';
       seance.envoyer({ t: 'bonjour', id: moi.id });
       clearTimeout(attenteHote);
-      attenteHote = setTimeout(() => { if (!hoteVu) ecran('<div class="attente"><p class="grand">En attente de l\'enseignant·e</p><p>Vérifie le code de la séance : <strong>' + Q.echapper(moi.code) + '</strong>. S\'il est faux, quitte et entre le bon code.</p></div>'); }, 9000);
+      attenteHote = setTimeout(() => {
+        if (!hoteVu) ecran(el('div', { class: 'attente' }, el('p', { class: 'grand' }, 'En attente de l\'enseignant·e'),
+          el('p', {}, 'Vérifie le code de la séance : ', el('strong', {}, moi.code), '. S\'il est faux, quitte et entre le bon code.')));
+      }, 9000);
     } else if (e === 'erreur' || e === 'ferme') {
-      z.className = 'etat ko';
-      z.innerHTML = 'Pas de connexion à la séance : vérifie le réseau (wifi ou données mobiles), puis réessaie. '
-        + '<button type="button" class="bouton petit" id="reessayer">Réessayer</button> Tu peux aussi suivre le cours seul·e : <a href="revision.html">réviser seul·e</a>.';
-      const r = $('reessayer'); if (r) r.addEventListener('click', () => { if (seance) seance.fermer(); entrer(); });
+      z.className = 'etat ko'; z.textContent = '';
+      const b = el('button', { type: 'button', class: 'bouton petit' }, 'Réessayer');
+      b.addEventListener('click', () => { if (seance) seance.fermer(); entrer(); });
+      z.append('Pas de connexion à la séance : vérifie le réseau (wifi ou données mobiles), puis réessaie. ', b,
+        ' Tu peux aussi suivre le cours seul·e : ', el('a', { href: 'revision.html' }, 'réviser seul·e'), '.');
     }
   }
 
   function onPresence(liste) {
-    const vu = liste.some(p => p && p.role === 'hote');
+    const vu = Array.isArray(liste) && liste.some(p => { const v = Q.messages.presence(p); return v && v.role === 'hote'; });
     if (vu && !hoteVu) { hoteVu = true; if (!phase) ecran(attente('L\'enseignant·e est là. Regarde l\'écran : le cours va commencer.')); seance.envoyer({ t: 'bonjour', id: moi.id }); }
-    hoteVu = vu || hoteVu;
   }
 
   /* ── Les messages de la séance ──────────── */
-  const chaines = v => Array.isArray(v) && v.every(x => typeof x === 'string');
-  const pourMoi = m => typeof m.id === 'string' && m.id === moi.id;
-  function onMessage(m) {
-    if (!moi || !m || typeof m.t !== 'string') return;
+  function onMessage(brut) {
+    if (!moi) return;
+    const m = Q.messages.versEleve(brut, moi.id);
+    if (!m) return; // message non conforme : ignoré
     hoteVu = true; clearTimeout(attenteHote);
-    if (m.t === 'retire' && pourMoi(m)) { Q.stock.oublier('eleve'); Q.session.oublier('eleve'); afficherEntree('L\'enseignant·e a retiré ce pseudo. Choisis-en un autre : ton prénom ou un pseudo, jamais ton nom de famille.'); return; }
-    if (m.t === 'refus' && pourMoi(m)) { Q.session.oublier('eleve'); afficherEntree(m.raison === 'pris' ? 'Ce pseudo est déjà pris dans la séance : choisis-en un autre.' : 'Ce pseudo n\'est pas accepté : choisis-en un autre.'); return; }
-    if (m.t === 'recus' && question && m.qid === question.qid && Array.isArray(m.ids) && m.ids.includes(moi.id)) { question.recu = true; clearInterval(renvoi); majEnvoyee(); return; }
+    if (m.t === 'retire') { if (m.pourMoi) { Q.stock.oublier('eleve'); Q.session.oublier('eleve'); afficherEntree('L\'enseignant·e a retiré ce pseudo. Choisis-en un autre : ton prénom ou un pseudo, jamais ton nom de famille.'); } return; }
+    if (m.t === 'refus') { if (m.pourMoi) { Q.session.oublier('eleve'); afficherEntree(m.raison === 'pris' ? 'Ce pseudo est déjà pris dans la séance : choisis-en un autre.' : 'Ce pseudo n\'est pas accepté : choisis-en un autre.'); } return; }
+    if (m.t === 'recus') { if (m.pourMoi && question && m.qid === question.qid) { question.recu = true; clearInterval(renvoi); majEnvoyee(); } return; }
     if (m.t === 'attente') { phase = 'attente'; question = null; ecran(attente('Regarde l\'écran : la suite arrive.')); return; }
-    if (m.t === 'notion' && typeof m.titre === 'string' && chaines(m.texte)) { phase = 'notion'; question = null; afficherNotion(m); return; }
-    if (m.t === 'question') { afficherQuestion(m); return; }
-    if (m.t === 'fermee' && question && m.qid === question.qid) { question.ferme = true; clearInterval(chrono); if (question.choix == null) ecran(attente('Temps écoulé : la correction arrive à l\'écran.')); return; }
-    if (m.t === 'correction') { afficherCorrection(m); return; }
-    if (m.t === 'fin') { afficherFin(m); }
+    if (m.t === 'fermee') { if (question && m.qid === question.qid) { question.ferme = true; clearInterval(chrono); if (question.choix == null) ecran(attente('Temps écoulé : la correction arrive à l\'écran.')); } return; }
+    const n = ++numero; // seul le dernier message reçu s'affiche, même si son cours arrive plus tard
+    obtenirCours(m.cours).then(cours => {
+      if (!cours || n !== numero) return;
+      if (m.t === 'notion') afficherNotion(cours, m);
+      else if (m.t === 'question') afficherQuestion(cours, m);
+      else if (m.t === 'correction') afficherCorrection(cours, m);
+      else if (m.t === 'fin') afficherFin(cours, m);
+    });
   }
 
-  function ecran(html) { $('ecran').innerHTML = html; }
-  const attente = texte => '<div class="attente"><p class="grand">' + Q.echapper(moi.pseudo) + ', tu es dans la séance.</p><p>' + Q.echapper(texte) + '</p></div>';
+  function ecran(noeud) { const z = $('ecran'); z.textContent = ''; z.appendChild(noeud); }
+  const attente = texte => el('div', { class: 'attente' }, el('p', { class: 'grand' }, moi.pseudo + ', tu es dans la séance.'), el('p', {}, texte));
   function majPoints() { $('points').textContent = total + ' pts'; }
+  const trouverQuestion = (cours, qid) => cours.questions.find(q => q.id === qid) || null;
 
-  function afficherNotion(m) {
-    const d = { type: 'notion', titre: m.titre, texte: m.texte.slice(0, 6), code: chaines(m.code) ? m.code : null, schema: m.schema && m.schema.type !== 'svg' ? m.schema : null };
-    ecran('<p class="aide">Le cours, en même temps que l\'écran :</p>' + Q.rendreDiapo({ questions: [] }, d, {}));
+  function afficherNotion(cours, m) {
+    const d = cours.diapositives[m.n];
+    if (!d || d.type !== 'notion') return;
+    phase = 'notion'; question = null;
+    const z = el('div', {}, el('p', { class: 'aide' }, 'Le cours, en même temps que l\'écran :'));
+    z.appendChild(Q.fragmentCours(Q.rendreDiapo(cours, d, {})));
+    ecran(z);
   }
 
-  function nettoyerQuestion(m) {
-    if (typeof m.qid !== 'string' || !Array.isArray(m.options) || m.options.length !== 4) return null;
-    return {
-      qid: m.qid, numero: Number.isInteger(m.n) ? m.n : 0, total: Number.isInteger(m.total) ? m.total : 0,
-      nom: String(m.nom || ''), objectif: String(m.objectif || ''), enonce: chaines(m.enonce) ? m.enonce : [],
-      code: chaines(m.code) ? m.code : null, schema: m.schema && typeof m.schema === 'object' && m.schema.type !== 'svg' ? m.schema : null,
-      options: m.options.map(o => ({ texte: o && typeof o.texte === 'string' ? o.texte : '', code: o && chaines(o.code) ? o.code : null, feedback: o && typeof o.feedback === 'string' ? o.feedback : '' })),
-    };
-  }
-
-  function afficherQuestion(m) {
-    const q = nettoyerQuestion(m);
+  function afficherQuestion(cours, m) {
+    const q = trouverQuestion(cours, m.qid);
     if (!q) return;
-    if (question && question.qid === q.qid && phase === 'question') { if (m.ferme) question.ferme = true; return; } // déjà affichée
+    if (question && question.qid === q.id && phase === 'question') { if (m.ferme) question.ferme = true; return; } // déjà affichée
     phase = 'question';
-    const ancienne = Q.session.lire('rep:' + moi.code + ':' + q.qid, null);
-    question = { qid: q.qid, q, choix: Number.isInteger(ancienne) ? ancienne : null, recu: false, ferme: !!m.ferme, fin: Number.isFinite(m.reste) && m.reste != null ? Date.now() + m.reste : null };
-    ecran('<section class="d-question">' + Q.rendreEnonce(q, q.total) + '<p class="chrono" id="chrono" aria-live="off"></p>' + Q.rendreOptions(q, { boutons: true }) + '<p class="envoyee" id="envoyee" role="status"></p></section>');
+    const ancienne = Q.session.lire('rep:' + moi.code + ':' + q.id, null);
+    question = { qid: q.id, q, choix: Number.isInteger(ancienne) && ancienne >= 0 && ancienne <= 3 ? ancienne : null, recu: false, ferme: m.ferme, fin: m.reste != null ? Date.now() + m.reste : null };
+    const s = el('section', { class: 'd-question' });
+    s.appendChild(Q.fragmentCours(Q.rendreEnonce(q, cours.questions.length)));
+    s.appendChild(el('p', { class: 'chrono', id: 'chrono', 'aria-live': 'off' }));
+    s.appendChild(Q.fragmentCours(Q.rendreOptions(q, { boutons: true })));
+    s.appendChild(el('p', { class: 'envoyee', id: 'envoyee', role: 'status' }));
+    ecran(s);
     $('ecran').querySelectorAll('button.option').forEach(b => b.addEventListener('click', () => choisir(+b.dataset.choix)));
     if (question.choix != null || question.ferme) bloquer();
     if (question.choix != null) { majEnvoyee(); envoyerReponse(); }
@@ -127,11 +158,11 @@
   function bloquer() {
     $('ecran').querySelectorAll('button.option').forEach(b => {
       b.disabled = true;
-      if (+b.dataset.choix === question.choix) { b.classList.add('choisie'); if (!b.querySelector('.etiquette')) b.insertAdjacentHTML('beforeend', '<span class="etiquette">Ta réponse</span>'); }
+      if (+b.dataset.choix === question.choix) { b.classList.add('choisie'); if (!b.querySelector('.etiquette')) b.appendChild(el('span', { class: 'etiquette' }, 'Ta réponse')); }
     });
   }
   function choisir(c) {
-    if (!question || question.choix != null || question.ferme) return;
+    if (!question || question.choix != null || question.ferme || !(c >= 0 && c <= 3)) return;
     question.choix = c;
     Q.session.ecrire('rep:' + moi.code + ':' + question.qid, c);
     bloquer(); majEnvoyee(); envoyerReponse();
@@ -146,77 +177,77 @@
     z.textContent = question.recu ? 'Réponse ' + Q.LETTRES[question.choix] + ' reçue. Attends la correction à l\'écran.' : 'Réponse ' + Q.LETTRES[question.choix] + ' envoyée…';
   }
 
-  function suiteHtml(suite) {
-    if (!Array.isArray(suite) || !suite.length) return '';
-    return '<ol class="suite" aria-label="Tes réponses, question par question">' + suite.map((r, i) => '<li class="' + (r === 'juste' ? 'j' : r === 'faux' ? 'f' : '') + '" title="Question jouée n° ' + (i + 1) + '"><span aria-hidden="true">' + (r === 'juste' ? '✓' : r === 'faux' ? '✗' : '–') + '</span><span class="visuel-cache">' + (r === 'juste' ? 'juste' : r === 'faux' ? 'faux' : 'sans réponse') + '</span></li>').join('') + '</ol>';
+  function suite(s) {
+    if (!s.length) return null;
+    return el('ol', { class: 'suite', 'aria-label': 'Tes réponses, question par question' }, s.map((r, i) =>
+      el('li', { class: r === 'juste' ? 'j' : r === 'faux' ? 'f' : '', title: 'Question jouée n° ' + (i + 1) },
+        el('span', { 'aria-hidden': 'true' }, r === 'juste' ? '✓' : r === 'faux' ? '✗' : '–'),
+        el('span', { class: 'visuel-cache' }, r === 'juste' ? 'juste' : r === 'faux' ? 'faux' : 'sans réponse'))));
   }
+  const pluriel = (n, mot) => n + ' ' + mot + (n > 1 ? 's' : '');
 
-  function afficherCorrection(m) {
-    const q = nettoyerQuestion(Object.assign({}, m, { options: m.options }));
-    if (!q || !Number.isInteger(m.bonne) || m.bonne < 0 || m.bonne > 3) return;
+  function afficherCorrection(cours, m) {
+    const q = trouverQuestion(cours, m.qid);
+    if (!q) return;
     clearInterval(renvoi); clearInterval(chrono);
     phase = 'correction';
-    q.bonne = m.bonne; q.explication = typeof m.explication === 'string' ? m.explication : '';
-    const r = m.res && typeof m.res === 'object' ? m.res[moi.id] : null;
-    const choix = r && Number.isInteger(r.c) ? r.c : (question && question.qid === q.qid ? question.choix : null);
-    question = { qid: q.qid, q, choix, recu: true, ferme: true };
-    if (r && Number.isFinite(r.total)) { total = r.total; majPoints(); }
-    let h = '<section class="d-question"><header class="q-tete"><p class="q-num">Question ' + q.numero + ' sur ' + q.total + ' · correction</p><h2 class="q-nom">' + Q.texte(q.nom) + '</h2></header>';
-    if (choix == null) h += '<div class="verdict neutre" role="status"><span class="symbole" aria-hidden="true">•</span><div><p class="v-titre">Pas de réponse cette fois. La bonne réponse est ' + Q.LETTRES[q.bonne] + '.</p></div></div>';
-    h += Q.rendreCorrection(q, choix);
+    const r = m.moi;
+    const choix = r ? r.c : (question && question.qid === q.id ? question.choix : null);
+    question = { qid: q.id, q, choix, recu: true, ferme: true };
+    if (r) { total = r.total; majPoints(); }
+    const s = el('section', { class: 'd-question' },
+      el('header', { class: 'q-tete' }, el('p', { class: 'q-num' }, 'Question ' + q.numero + ' sur ' + cours.questions.length + ' · correction'),
+        (() => { const h = el('h2', { class: 'q-nom' }); h.appendChild(Q.fragmentCours(Q.texte(q.nom))); return h; })()));
+    if (choix == null) s.appendChild(el('div', { class: 'verdict neutre', role: 'status' }, el('span', { class: 'symbole', 'aria-hidden': 'true' }, '•'),
+      el('div', {}, el('p', { class: 'v-titre' }, 'Pas de réponse cette fois. La bonne réponse est ' + Q.LETTRES[q.bonne] + '.'))));
+    s.appendChild(Q.fragmentCours(Q.rendreCorrection(q, choix)));
     if (r && r.detail && r.gain > 0) {
       const d = r.detail, parts = [];
       if (d.juste) parts.push(d.juste + ' bonne réponse'); if (d.participation) parts.push(d.participation + ' participation');
       if (d.rapidite) parts.push(d.rapidite + ' rapidité'); if (d.rebond) parts.push(d.rebond + ' rebond');
-      h += '<p class="gains">+' + r.gain + ' points <small>(' + parts.join(', ') + ')</small></p>';
-      if (d.rebond) h += '<p class="rebonds">Beau rebond : tu t\'es repris·e juste après une erreur.</p>';
+      s.appendChild(el('p', { class: 'gains' }, '+' + r.gain + ' points ', el('small', {}, '(' + parts.join(', ') + ')')));
+      if (d.rebond) s.appendChild(el('p', { class: 'rebonds' }, 'Beau rebond : tu t\'es repris·e juste après une erreur.'));
     }
-    if (r && r.bilan) {
+    if (r) {
       const b = r.bilan;
-      h += '<div class="cadre"><p><strong>' + b.justes + ' juste' + (b.justes > 1 ? 's' : '') + '</strong> sur ' + b.repondues + ' réponse' + (b.repondues > 1 ? 's' : '') + (b.serie > 1 ? ' · série en cours : ' + b.serie : '') + (b.rebonds ? ' · rebonds : ' + b.rebonds : '') + '</p>' + suiteHtml(b.suite) + '</div>';
+      s.appendChild(el('div', { class: 'cadre' }, el('p', {}, el('strong', {}, pluriel(b.justes, 'juste')), ' sur ' + pluriel(b.repondues, 'réponse')
+        + (b.serie > 1 ? ' · série en cours : ' + b.serie : '') + (b.rebonds ? ' · rebonds : ' + b.rebonds : '')), suite(b.suite)));
     }
-    if (Array.isArray(m.podium) && m.podium.length) {
-      const k = m.podium.findIndex(p => p && p.pseudo === moi.pseudo);
-      if (k >= 0) h += '<p class="rebonds">Tu es sur le podium en ce moment.</p>';
-    }
-    ecran(h + '</section>');
+    if (m.podium && m.podium.some(p => p.pseudo === moi.pseudo)) s.appendChild(el('p', { class: 'rebonds' }, 'Tu es sur le podium en ce moment.'));
+    ecran(s);
     $('ecran').focus({ preventScroll: true }); window.scrollTo(0, 0);
     Q.annoncer(choix == null ? 'Correction : pas de réponse.' : choix === q.bonne ? 'Bonne réponse.' : 'Pas cette fois. Lis l\'explication.');
   }
 
-  function afficherFin(m) {
+  function afficherFin(cours, m) {
     phase = 'fin'; question = null; clearInterval(renvoi); clearInterval(chrono);
-    const r = m.res && typeof m.res === 'object' ? m.res[moi.id] : null;
-    let h = '<section class="attente"><p class="grand">Fin de la séance</p>';
-    if (r && r.bilan) {
-      total = Number.isFinite(r.total) ? r.total : total; majPoints();
+    const r = m.moi, s = el('section', { class: 'attente' }, el('p', { class: 'grand' }, 'Fin de la séance'));
+    if (r) {
+      total = r.total; majPoints();
       const b = r.bilan;
-      h += '<p class="gains">' + total + ' points</p><p><strong>' + b.justes + ' sur ' + (m.total || b.repondues) + '</strong> bonnes réponses · meilleure série : ' + b.meilleure + ' · rebonds : ' + b.rebonds + '</p>' + suiteHtml(b.suite);
-      if (Number.isInteger(r.place) && r.place <= 3 && Array.isArray(m.podium)) h += '<p class="rebonds">Bravo, tu es sur le podium : ' + r.place + (r.place === 1 ? 're' : 'e') + ' place.</p>';
-      if (Array.isArray(r.arevoir) && r.arevoir.length) h += '<p>À revoir : question' + (r.arevoir.length > 1 ? 's' : '') + ' ' + r.arevoir.filter(Number.isInteger).join(', ') + '.</p>';
-      else h += '<p>Tout juste : tu peux aider un·e camarade.</p>';
-    } else h += '<p>Merci d\'avoir suivi le cours.</p>';
-    const id = typeof m.cours === 'string' && /^[a-z0-9-]{1,60}$/.test(m.cours) ? m.cours : 'piles-files';
-    h += '<p><a class="bouton fort" href="revision.html?cours=' + id + '">Revoir le cours seul·e</a></p></section>';
-    ecran(h);
+      s.append(el('p', { class: 'gains' }, total + ' points'),
+        el('p', {}, el('strong', {}, b.justes + ' sur ' + cours.questions.length), ' bonnes réponses · meilleure série : ' + b.meilleure + ' · rebonds : ' + b.rebonds));
+      const sv = suite(b.suite); if (sv) s.appendChild(sv);
+      if (r.place <= 3 && m.podium) s.appendChild(el('p', { class: 'rebonds' }, 'Bravo, tu es sur le podium : ' + r.place + (r.place === 1 ? 're' : 'e') + ' place.'));
+      s.appendChild(r.arevoir.length ? el('p', {}, 'À revoir : question' + (r.arevoir.length > 1 ? 's' : '') + ' ' + r.arevoir.join(', ') + '.') : el('p', {}, 'Tout juste : tu peux aider un·e camarade.'));
+    } else s.appendChild(el('p', {}, 'Merci d\'avoir suivi le cours.'));
+    s.appendChild(el('p', {}, el('a', { class: 'bouton fort', href: 'revision.html?cours=' + encodeURIComponent(cours.id) }, 'Revoir le cours seul·e')));
+    ecran(s);
   }
 
   /* ── Démarrage ──────────────────────────── */
   function demarrer() {
     Q.theme();
     const p = new URLSearchParams(location.search), code = Q.lireCode(p.get('s'));
-    const ancien = Q.stock.lire('eleve', null);
+    const ancien = lireAncien();
     if (code) $('champCode').value = code;
-    else if (ancien && ancien.jusqua > Date.now()) $('champCode').value = ancien.code;
-    if (ancien && ancien.jusqua > Date.now() && typeof ancien.pseudo === 'string') $('champPseudo').value = ancien.pseudo;
+    else if (ancien) $('champCode').value = ancien.code;
+    if (ancien) $('champPseudo').value = ancien.pseudo;
     $('entree').addEventListener('submit', rejoindre);
     $('quitter').addEventListener('click', () => { Q.stock.oublier('eleve'); Q.session.oublier('eleve'); afficherEntree(''); $('champPseudo').value = ''; });
     // la page rechargée dans le même onglet revient directement dans la séance
-    const onglet = Q.session.lire('eleve', null);
-    if (onglet && (!code || code === onglet.code) && Q.lireCode(onglet.code) && Q.filtrerPseudo(onglet.pseudo).ok && /^[0-9a-f]{16}$/.test(onglet.id)) {
-      moi = { id: onglet.id, pseudo: onglet.pseudo, code: onglet.code };
-      entrer();
-    }
+    const onglet = lireOnglet();
+    if (onglet && (!code || code === onglet.code)) { moi = onglet; entrer(); }
   }
   demarrer();
 })();

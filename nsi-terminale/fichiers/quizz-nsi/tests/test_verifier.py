@@ -99,5 +99,26 @@ class TestVerifier(unittest.TestCase):
         self.assertTrue(any("svg" in x for x in e))
 
 
+    def schema(self, c, test):
+        return next(d["schema"] for d in c["diapositives"] if isinstance(d.get("schema"), dict) and test(d["schema"]))
+
+    def test_schema_deux_piles_faux(self):
+        # l'erreur relevée par le Gardien : la pile auxiliaire dessinée dans le même ordre que p
+        c = copy.deepcopy(MODELE)
+        self.schema(c, lambda s: s["type"] == "deux-piles" and s["droite"]["nom"] == "aux")["droite"]["elements"] = ["c", "b", "a"]
+        self.assertTrue(any("schéma faux" in x and "aux" in x for x in self.verifier(c, executer=True)))
+
+    def test_schema_etapes_etat_faux(self):
+        c = copy.deepcopy(MODELE)
+        self.schema(c, lambda s: s.get("variable") == "f")["etapes"][3]["elements"] = ["a", "b"]
+        self.assertTrue(any("schéma faux" in x for x in self.verifier(c, executer=True)))
+
+    def test_schema_etapes_valeur_renvoyee_fausse(self):
+        c = copy.deepcopy(MODELE)
+        s = self.schema(c, lambda s: s.get("variable") == "p" and s["etapes"][0]["op"] == "p = Pile()")
+        s["etapes"][3]["op"] = "p.depiler() → 4"
+        self.assertTrue(any("renvoie 1" in x for x in self.verifier(c, executer=True)))
+
+
 if __name__ == "__main__":
     unittest.main()
