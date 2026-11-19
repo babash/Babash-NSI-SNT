@@ -18,7 +18,7 @@ const bilan = () => ({ justes: 2, repondues: 3, serie: 1, meilleure: 2, rebonds:
 const CLE = { x: 'A'.repeat(43), y: 'B'.repeat(43) };
 const VERS_ELEVE = {
   attente: { t: 'attente' },
-  notion: { t: 'notion', cours: 'piles-files', n: 3 },
+  notion: { t: 'notion', cours: 'piles-files', n: 3, f: 2 },
   question: { t: 'question', cours: 'piles-files', qid: 'q01', reste: 30000, duree: 45, ferme: false },
   fermee: { t: 'fermee', qid: 'q01' },
   recus: { t: 'recus', qid: 'q01', n: ['00112233aabbccdd', 'ffeeddccbbaa9988'] },

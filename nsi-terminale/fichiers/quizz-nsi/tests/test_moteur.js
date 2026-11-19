@@ -106,6 +106,12 @@ essai('schéma svg brut : script refusé', () => {
   assert.ok(!Q.schema({ type: 'svg', code: '<svg onload="alert(1)"></svg>' }).includes('onload'));
   assert.ok(Q.schema({ type: 'pile', elements: ['<a>'] }).includes('&lt;a&gt;'));
 });
+essai('schémas Python : les valeurs comme repr', () => {
+  assert.equal(Q.enPython([1, 'chat', 2.36, 'a', true, false, null]), '[1, "chat", 2.36, "a", True, False, None]');
+  const h = Q.schema({ type: 'liste', elements: ['a', true] });
+  assert.ok(h.includes('&quot;a&quot;') && h.includes('True') && !h.includes('>true<'));
+  assert.ok(Q.schema({ type: 'pile', elements: ['copie 1'] }).includes('>copie 1<')); // une étiquette reste sans guillemets
+});
 essai('contrôle léger d\'un cours', () => {
   const c = JSON.parse(require('node:fs').readFileSync(path.join(__dirname, '..', 'cours', 'piles-files.json'), 'utf8'));
   assert.deepEqual(Q.controlerCours(c), []);

@@ -52,7 +52,7 @@
       case 'attente':
         return cles(m, ['t']) ? { t: 'attente' } : null;
       case 'notion':
-        return cles(m, ['t', 'cours', 'n']) && estCours(m.cours) && entier(m.n, 0, MAX_Q) ? { t: 'notion', cours: m.cours, n: m.n } : null;
+        return cles(m, ['t', 'cours', 'n', 'f']) && estCours(m.cours) && entier(m.n, 0, MAX_Q) && entier(m.f, 0, 100) ? { t: 'notion', cours: m.cours, n: m.n, f: m.f } : null;
       case 'question':
         if (!cles(m, ['t', 'cours', 'qid', 'reste', 'duree', 'ferme']) || !estCours(m.cours) || !estQid(m.qid) || typeof m.ferme !== 'boolean' || !entier(m.duree, 0, 3600)) return null;
         if (!(m.reste === null || entier(m.reste, 0, 3600000))) return null;

@@ -5,7 +5,17 @@
   const Q = racine.QuizzNSI;
   const t = Q.texte, e = Q.echapper;
 
-  const liste = (items, cl) => '<ul class="' + (cl || '') + '">' + items.map(x => '<li>' + t(x) + '</li>').join('') + '</ul>';
+  const liste = (items, cl, frag) => '<ul class="' + (cl || '') + '">' + items.map(x => '<li' + (frag ? ' class="frag"' : '') + '>' + t(x) + '</li>').join('') + '</ul>';
+  // Un bloc de code « révélé au clic » : caché derrière un fragment (il apparaît à l'étape suivante).
+  const code = (d, lignes) => d.code_cache ? '<div class="frag code-cache">' + Q.blocCode(lignes) + '</div>' : Q.blocCode(lignes);
+  const consigne = d => d.consigne ? '<div class="consigne frag"><p class="c-titre">À toi</p>' + liste(d.consigne, 'puces') + '</div>' : '';
+
+  /* Les apparitions progressives : les éléments .frag d'une diapositive sont cachés, puis montrés un
+     à un (page projetée, mode autonome) ; le téléphone suit la page projetée. */
+  Q.nbFragments = racineDiapo => racineDiapo.querySelectorAll('.frag').length;
+  Q.montrerFragments = function (racineDiapo, k) {
+    racineDiapo.querySelectorAll('.frag').forEach((e, i) => e.classList.toggle('vu', i < k));
+  };
 
   Q.rendreOptions = function (q, opts) {
     opts = opts || {};
@@ -58,12 +68,26 @@
         + (cours.sous_titre ? '<p class="sous-titre">' + t(cours.sous_titre) + '</p>' : '')
         + (d.texte ? d.texte.map(p => '<p class="intro">' + t(p) + '</p>').join('') : '')
         + '<div class="colonnes"><div class="cadre"><h2>Critères de réussite</h2>' + liste(cours.criteres || []) + '</div>'
-        + '<div class="cadre"><h2>Conventions</h2>' + liste(cours.conventions || []) + '</div></div></section>';
+        + (d.conventions === false ? '' : '<div class="cadre"><h2>Conventions</h2>' + liste(cours.conventions || []) + '</div>') + '</div></section>';
+    }
+    if (d.type === 'partie') {
+      return '<section class="diapo d-partie">' + (d.numero ? '<p class="p-num">' + e(d.numero) + '</p>' : '') + '<h2>' + t(d.titre) + '</h2>'
+        + (d.sous_titre ? '<p class="sous-titre">' + t(d.sous_titre) + '</p>' : '') + '</section>';
+    }
+    if (d.type === 'classe') {
+      // une question ouverte à la classe : pas de réponse à cocher ; les pistes apparaissent une à une
+      return '<section class="diapo d-classe"><p class="surtitre">Question à la classe</p><h2 class="grande-question">' + t(d.question) + '</h2>'
+        + (d.texte ? d.texte.map(p => '<p class="intro">' + t(p) + '</p>').join('') : '')
+        + (d.pistes ? liste(d.pistes, 'pistes', true) : '') + (d.schema ? Q.schema(d.schema) : '') + (d.code ? code(d, d.code) : '') + '</section>';
+    }
+    if (d.type === 'humour') {
+      return '<section class="diapo d-humour"><h2 class="grande-question">' + t(d.titre) + '</h2>' + liste(d.lignes || [], 'escalade', true)
+        + (d.chute ? '<p class="chute frag">' + t(d.chute) + '</p>' : '') + '</section>';
     }
     if (d.type === 'notion') {
-      return '<section class="diapo d-notion"><p class="surtitre">Notion</p><h2 class="d-titre-notion">' + t(d.titre) + '</h2><div class="n-corps"><div class="n-texte">' + liste(d.texte || [], 'puces')
-        + (d.code ? Q.blocCode(d.code) : '') + (d.vocabulaire ? '<p class="vocab"><span>En anglais</span> ' + t(d.vocabulaire) + '</p>' : '') + '</div>'
-        + (d.schema ? Q.schema(d.schema) : '') + '</div></section>';
+      return '<section class="diapo d-notion"><p class="surtitre">' + e(d.surtitre || 'Notion') + '</p><h2 class="d-titre-notion">' + t(d.titre) + '</h2><div class="n-corps"><div class="n-texte">' + liste(d.texte || [], 'puces', d.progressif === true)
+        + (d.code ? code(d, d.code) : '') + (d.vocabulaire ? '<p class="vocab"><span>En anglais</span> ' + t(d.vocabulaire) + '</p>' : '') + consigne(d) + '</div>'
+        + (d.schema ? Q.schema(d.schema) : '') + '</div>' + (d.chute ? '<p class="chute frag">' + t(d.chute) + '</p>' : '') + '</section>';
     }
     if (d.type === 'bilan') {
       const tb = d.tableau;

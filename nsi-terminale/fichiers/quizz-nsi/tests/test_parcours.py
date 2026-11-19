@@ -98,7 +98,7 @@ def forges(moi, autre):
     cle = {"x": "A" * 43, "y": "B" * 43}
     modeles = [
         {"t": "attente"},
-        {"t": "notion", "cours": "piles-files", "n": 1},
+        {"t": "notion", "cours": "piles-files", "n": 1, "f": 0},
         {"t": "question", "cours": "piles-files", "qid": "q01", "reste": 1000, "duree": 45, "ferme": False},
         {"t": "fermee", "qid": "q01"},
         {"t": "recus", "qid": "q01", "n": ["00112233aabbccdd"]},
@@ -162,8 +162,8 @@ def injection(nav, base):
     prof.select_option("#duree", "0")
     prof.select_option("#podium", "chaque")
     prof.click("#commencer")
-    prof.click("#action")  # notion 1
-    prof.click("#action")  # question 1
+    premiere = next(i for i, d in enumerate(COURS["diapositives"]) if d["type"] == "question")
+    suivante(prof, "#action", "#compteur", premiere)  # jusqu'à la question 1
     for e in eleves:
         e.wait_for_selector('button.option[data-choix="1"]:not([disabled])')
     moi = eleves[0].evaluate("() => JSON.parse(sessionStorage.getItem('quizz-nsi:eleve')).id")
@@ -197,7 +197,7 @@ def injection(nav, base):
     attendre_texte(eleves[0], ".q-num", "Question 1 sur 20 · correction")
     attendre_texte(eleves[0], "#points", "110 pts")
     fermer = "() => { const b = document.getElementById('podiumBoite'); if (b.open) b.close(); }"
-    for _ in range(80):  # jusqu'à la fin, en fermant le podium affiché après chaque question
+    for _ in range(250):  # jusqu'à la fin, en fermant le podium affiché après chaque question
         prof.wait_for_timeout(120)
         if prof.inner_text("#action").startswith("Revoir"):
             break
@@ -227,6 +227,16 @@ def injection(nav, base):
     print(f"  confidentialité : {len(vus)} messages écoutés, {len(reps)} réponses chiffrées, aucun résultat individuel")
     print(f"  injection : {len(liste)} messages forgés et 5 présences forgées ignorés (la fausse page projetée est signalée) ; aucun innerHTML ne reçoit de donnée du canal")
     ctx.close()
+
+
+def suivante(page, bouton, compteur, i):
+    """Clique « Suite » ou « Suivante » jusqu'à la diapositive i (les apparitions progressives passent d'abord)."""
+    for _ in range(30):
+        if page.inner_text(compteur).startswith(f"{i + 1} /") or page.inner_text(compteur).startswith(f"Diapositive {i + 1} sur"):
+            return
+        page.click(bouton)
+        page.wait_for_timeout(40)
+    raise AssertionError(f"diapositive {i + 1} jamais atteinte")
 
 
 def points(juste, precedente):
@@ -299,10 +309,17 @@ def seance(nav, base):
     k = 0
     for i, d in enumerate(COURS["diapositives"]):
         if i > 0:
-            prof.click("#action")
-        if d["type"] == "notion" and i == 1:
-            attendre_texte(nadia, "#ecran", d["titre"])
-            nadia.screenshot(path=os.path.join(SORTIE, "eleve-notion-320.png"), full_page=True)
+            suivante(prof, "#action", "#compteur", i)
+        if d["type"] == "humour":
+            # le téléphone suit les apparitions progressives de l'écran projeté
+            assert nadia.evaluate("document.querySelectorAll('#ecran .frag.vu').length") == 0
+            prof.click("#action"); prof.click("#action")
+            nadia.wait_for_function("() => document.querySelectorAll('#ecran .frag.vu').length === 2")
+            while prof.inner_text("#action").startswith("Suite"):
+                prof.click("#action")
+            prof.screenshot(path=os.path.join(SORTIE, "seance-humour-1440.png"))
+            attendre_texte(nadia, "#ecran", d["chute"].rstrip("!").strip())
+            nadia.screenshot(path=os.path.join(SORTIE, "eleve-humour-320.png"), full_page=True)
         if d["type"] != "question":
             continue
         for page, nom, ch in ((nadia, "Kobalt", choix_n), (ali, "Ixo", choix_a)):
@@ -428,7 +445,7 @@ def autonome(nav, base):
     k = 0
     for i, d in enumerate(COURS["diapositives"]):
         if i > 0:
-            p.click("#suiv")
+            suivante(p, "#suiv", "#compteur", i)
         if d["type"] == "question":
             p.wait_for_selector(f'section.d-question[data-q="{k + 1}"]')
             if k == 0:  # une erreur d'abord : feedback, puis nouvel essai
@@ -442,7 +459,7 @@ def autonome(nav, base):
     p.screenshot(path=os.path.join(SORTIE, "autonome-bilan-390.png"), full_page=True)
     p.reload()  # la progression reste sur l'appareil
     attendre_texte(p, "#scene", "19 sur 20")
-    print("  autonome : 37 diapositives, bilan 19 sur 20 du premier coup")
+    print(f"  autonome : {len(COURS['diapositives'])} diapositives, apparitions progressives, bilan 19 sur 20 du premier coup")
     ctx.close()
 
 

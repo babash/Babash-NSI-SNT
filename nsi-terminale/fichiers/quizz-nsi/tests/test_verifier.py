@@ -91,7 +91,7 @@ class TestVerifier(unittest.TestCase):
         self.assertTrue(any("erreur attendue" in x for x in e))
 
     def test_code_sans_verification(self):
-        e = self.modifie(lambda c: questions(c)[2].pop("verifications"))
+        e = self.modifie(lambda c: next(q for q in questions(c) if q.get("code")).pop("verifications"))
         self.assertTrue(any("vérification" in x for x in e))
 
     def test_svg_avec_script_refuse(self):
@@ -118,6 +118,19 @@ class TestVerifier(unittest.TestCase):
         s = self.schema(c, lambda s: s.get("variable") == "p" and s["etapes"][0]["op"] == "p = Pile()")
         s["etapes"][3]["op"] = "p.depiler() → 4"
         self.assertTrue(any("renvoie 1" in x for x in self.verifier(c, executer=True)))
+
+
+    def test_nom_de_variable_inconnu_dans_une_option(self):
+        def f(c):
+            q = next(q for q in questions(c) if q.get("code") and any("impressions" in l for l in q["code"]))
+            q["options"][1]["texte"] = "Il faut écrire `file.pop(0)`."
+        self.assertTrue(any("« file »" in x for x in self.modifie(f)))
+
+    def test_renvoi_a_une_question_suivante(self):
+        def f(c):
+            q = questions(c)[3]
+            q["enonce"][0] += " Comme à la question 4."
+        self.assertTrue(any("renvoi à la question 4" in x for x in self.modifie(f)))
 
 
 if __name__ == "__main__":
