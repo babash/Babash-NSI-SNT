@@ -1,4 +1,4 @@
-/* QuizzNSI : le barème du mode « tous ensemble » (MIT, Babash - NSI Tani Malandi).
+/* QuizzNSI : le barème du mode « en classe » (MIT, Babash - NSI Tani Malandi).
    Fonctions pures, sans page ni réseau : elles sont testées par tests/test_bareme.js (node).
 
    Barème proposé (à valider par l'enseignant·e) :

@@ -89,14 +89,14 @@
   // Une pile : elements du bas vers le haut.
   function dessinPile(elements, opts) {
     opts = opts || {};
-    const H = 34, l = Math.max(110, ...elements.map(largeurTexte)), marge = opts.sansEtiquette ? 8 : 92;
+    const H = 34, l = Math.max(110, ...elements.map(largeurTexte)), marge = opts.sansEtiquette ? 8 : 104;
     const n = elements.length, haut = 28 + Math.max(n, 1) * (H + 4) + 12;
     let c = defs;
     // le récipient : un U ouvert vers le haut
     c += '<path d="M' + (marge - 6) + ' 18 V' + (haut - 6) + ' H' + (marge + l + 6) + ' V18" class="bac"/>';
     elements.forEach((e, i) => { const y = haut - 10 - (i + 1) * (H + 4) + 4; c += boite(marge, y, l, H, e, i === n - 1 ? 'case sommet' : 'case'); });
     if (!n) c += tx(marge + l / 2, haut - 22, 'vide', 'muet');
-    if (n && !opts.sansEtiquette) { const y = haut - 10 - n * (H + 4) + 4 + H / 2; c += tx(marge - 16, y + 5, 'sommet', 'etiq', 'end') + fleche(marge - 12, y, marge - 4, y); }
+    if (n && !opts.sansEtiquette) { const y = haut - 10 - n * (H + 4) + 4 + H / 2; c += tx(marge - 32, y + 5, 'sommet', 'etiq', 'end') + fleche(marge - 26, y, marge - 4, y); }
     const titre = opts.titre || ('Pile, du haut vers le bas : ' + (n ? elements.slice().reverse().join(', ') : 'vide'));
     return svg(marge + l + 14, haut, c, titre);
   }
@@ -125,7 +125,7 @@
     const H = 34, l = 50, n = elements.length;
     let c = defs + tx(6, 20, 'avant', 'muet petit', 'start') + tx(6, 104, 'après pop(0)', 'muet petit', 'start');
     elements.forEach((e, i) => { const x = 10 + i * (l + 6); c += boite(x, 26, l, H, e, i === 0 ? 'case barre' : 'case'); if (i) c += boite(x - l - 6, 110, l, H, e) + fleche(x + l / 2, 26 + H + 2, x - 6 - l / 2, 108); });
-    return svg(20 + n * (l + 6), 150, c, 'pop(0) retire ' + elements[0] + ' : les ' + (n - 1) + ' autres éléments reculent d\'une case');
+    return svg(20 + n * (l + 6), 150, c, 'pop(0) retire ' + elements[0] + ' : les ' + (n - 1) + ' autres éléments avancent d\'une case vers le début');
   }
   function dessinDeuxPiles(s) {
     const g = dessinPile(s.gauche.elements, { sansEtiquette: true, titre: s.gauche.nom }), d = dessinPile(s.droite.elements, { sansEtiquette: true, titre: s.droite.nom });
@@ -187,9 +187,47 @@
     if ([...p].length < 2) return { ok: false, raison: 'Deux caractères au moins.' };
     if ([...p].length > Q.PSEUDO_MAX) return { ok: false, raison: Q.PSEUDO_MAX + ' caractères au plus.' };
     if (!/^[\p{L}\p{M}\p{Nd}][\p{L}\p{M}\p{Nd} '’._-]*$/u.test(p)) return { ok: false, raison: 'Seulement des lettres, des chiffres, des espaces et - \' . _' };
+    if (ecritures(p).size > 1) return { ok: false, raison: 'Écris le pseudo dans une seule écriture (pas de lettres latines mêlées à des lettres cyrilliques, grecques…).' };
     return { ok: true, pseudo: p };
   };
-  Q.clePseudo = p => p.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  // Les écritures des lettres d'un pseudo (latine, cyrillique, grecque, arabe…) : on n'en accepte qu'une,
+  // pour qu'une lettre d'une autre écriture ne fabrique pas un double visuel (« Nаdia » avec un а cyrillique).
+  const ECRITURES = ['Latin', 'Cyrillic', 'Greek', 'Arabic', 'Hebrew', 'Armenian', 'Georgian', 'Devanagari', 'Bengali', 'Thai', 'Hangul', 'Han', 'Hiragana', 'Katakana', 'Ethiopic', 'Tifinagh']
+    .map(n => [n, new RegExp('\\p{Script=' + n + '}', 'u')]);
+  function ecritures(p) {
+    const vues = new Set();
+    for (const c of p) {
+      if (!/\p{L}/u.test(c)) continue;
+      const e = ECRITURES.find(([, r]) => r.test(c));
+      vues.add(e ? e[0] : 'autre');
+    }
+    // le japonais mêle légitimement kanji, hiragana et katakana
+    if ([...vues].every(v => ['Han', 'Hiragana', 'Katakana'].includes(v)) && vues.size > 1) return new Set(['japonais']);
+    return vues;
+  }
+  // La clé de comparaison de deux pseudos : sans accents, sans casse, sans ponctuation, en gardant les
+  // lettres de toutes les écritures ; les lettres cyrilliques et grecques qui ressemblent à une lettre
+  // latine sont ramenées à cette lettre (« АВС » cyrillique et « ABC » latin ont la même clé).
+  const SOSIES = { 'а': 'a', 'в': 'b', 'е': 'e', 'ё': 'e', 'к': 'k', 'м': 'm', 'н': 'h', 'о': 'o', 'р': 'p', 'с': 'c', 'т': 't', 'у': 'y', 'х': 'x', 'і': 'i', 'ї': 'i', 'ј': 'j', 'ѕ': 's', 'ԁ': 'd', 'һ': 'h', 'ӏ': 'l', 'ԛ': 'q', 'ԝ': 'w', 'ү': 'y',
+    'α': 'a', 'β': 'b', 'ε': 'e', 'ζ': 'z', 'η': 'n', 'ι': 'i', 'κ': 'k', 'μ': 'u', 'ν': 'v', 'ο': 'o', 'ρ': 'p', 'τ': 't', 'υ': 'u', 'χ': 'x', 'ω': 'w' };
+  Q.clePseudo = p => [...String(p).normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase()]
+    .map(c => SOSIES[c] || c).filter(c => /[\p{L}\p{N}]/u.test(c)).join('');
+
+  /* ── Ménage du stockage ──────────────────── */
+  // L'entrée « eleve » (code, pseudo, identifiant) vit 12 heures au plus : périmée ou mal formée,
+  // elle est effacée au chargement de chaque page de QuizzNSI (et à la fin d'une séance).
+  Q.DUREE_ELEVE = 12 * 3600 * 1000;
+  Q.menage = function (maintenant) {
+    const t = maintenant || Date.now();
+    try {
+      const brut = localStorage.getItem('quizz-nsi:eleve');
+      if (brut === null) return false;
+      let v = null; try { v = JSON.parse(brut); } catch (e) { v = null; }
+      const ok = v && typeof v === 'object' && Number.isFinite(v.jusqua) && v.jusqua > t && v.jusqua <= t + Q.DUREE_ELEVE;
+      if (!ok) { localStorage.removeItem('quizz-nsi:eleve'); return true; }
+    } catch (e) { /* stockage bloqué : rien à effacer */ }
+    return false;
+  };
 
   /* ── Code de séance ──────────────────────── */
   const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // sans I ni O, faciles à confondre
@@ -246,4 +284,5 @@
   Q.erreurPage = function (conteneur, message) {
     conteneur.innerHTML = '<div class="alerte" role="alert"><p><strong>Le cours ne peut pas s\'afficher.</strong></p><p>' + echapper(message) + '</p></div>';
   };
+  if (typeof localStorage !== 'undefined') Q.menage();
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -4,7 +4,7 @@
 Lancement, depuis la racine de QuizzNSI :
     python3 -I tests/test_parcours.py [DOSSIER_DES_CAPTURES]
 
-1. Une séance « tous ensemble » avec un·e enseignant·e et deux élèves (Nadia et Ali, à 320 px),
+1. Une séance en classe avec un·e enseignant·e et deux élèves (Kobalt et Ixo, à 320 px),
    par le chemin « en ligne » de js/seance.js, mais avec un faux client temps réel
    (tests/faux-temps-reel.js) : aucune requête ne sort, la base n'est jamais appelée.
    On contrôle : le pseudo invisible refusé, le pseudo déjà pris refusé, le pseudo retiré par
@@ -95,21 +95,21 @@ PIEGE = """
 def forges(moi, autre):
     """Pour chaque type de message et chaque champ (imbriqué compris), des copies avec une valeur forgée."""
     import copy
-    bilan = {"justes": 1, "repondues": 1, "serie": 1, "meilleure": 1, "rebonds": 0, "suite": ["juste"]}
+    cle = {"x": "A" * 43, "y": "B" * 43}
     modeles = [
         {"t": "attente"},
         {"t": "notion", "cours": "piles-files", "n": 1},
-        {"t": "question", "cours": "piles-files", "qid": "q01", "reste": 1000, "ferme": False},
+        {"t": "question", "cours": "piles-files", "qid": "q01", "reste": 1000, "duree": 45, "ferme": False},
         {"t": "fermee", "qid": "q01"},
-        {"t": "recus", "qid": "q01", "ids": [moi]},
+        {"t": "recus", "qid": "q01", "n": ["00112233aabbccdd"]},
         {"t": "retire", "id": moi},
         {"t": "refus", "id": moi, "raison": "pris"},
-        {"t": "correction", "cours": "piles-files", "qid": "q01", "rep": [1, 1, 0, 0],
-         "res": {moi: {"c": 1, "gain": 110, "detail": {"participation": 10, "juste": 100, "rapidite": 0, "rebond": 0}, "total": 110, "bilan": bilan}},
-         "podium": [{"pseudo": "Nadia", "total": 110, "place": 1}]},
-        {"t": "fin", "cours": "piles-files", "res": {moi: {"total": 110, "place": 1, "bilan": bilan, "arevoir": [2]}}, "podium": [{"pseudo": "Nadia", "total": 110, "place": 1}]},
+        {"t": "correction", "cours": "piles-files", "qid": "q01", "precedente": None, "bonne": 1, "rep": [1, 1, 0, 0],
+         "bareme": {"participation": 10, "juste": 100, "rapidite": 20, "rebond": 30}, "duree": 0,
+         "podium": [{"pseudo": "Kobalt", "total": 110, "place": 1}]},
+        {"t": "fin", "cours": "piles-files", "podium": [{"pseudo": "Kobalt", "total": 110, "place": 1}]},
         {"t": "bonjour", "id": autre},
-        {"t": "rep", "id": autre, "qid": "q01", "c": 1},
+        {"t": "rep", "de": cle, "iv": "abcdefghijklmnop", "donnees": "QUJDRA"},
     ]
     valeurs = [BALISE, 10 ** 300, -1, 2.5, {"html": BALISE}, [BALISE], BALISE * 2000, True]
 
@@ -150,7 +150,7 @@ def injection(nav, base):
     attendre_texte(prof, "#etatConnexion", "Séance ouverte")
     code = prof.inner_text("#code").strip()
     eleves = []
-    for pseudo in ("Nadia " + MARQUE, MARQUE):
+    for pseudo in ("Kobalt " + MARQUE, MARQUE):
         e = ctx.new_page()
         e.set_viewport_size({"width": 320, "height": 740})
         surveiller(e, "injection " + pseudo)
@@ -158,7 +158,7 @@ def injection(nav, base):
         e.fill("#champPseudo", pseudo)
         e.click("#rejoindre")
         eleves.append(e)
-    attendre_texte(prof, "#eleves", "Nadia " + MARQUE)
+    attendre_texte(prof, "#eleves", "Kobalt " + MARQUE)
     prof.select_option("#duree", "0")
     prof.select_option("#podium", "chaque")
     prof.click("#commencer")
@@ -176,18 +176,22 @@ def injection(nav, base):
         for (const m of msgs) bc.postMessage({ k: 'b', event: 'm', payload: m });
         // une présence forgée : pseudo piégé, identifiant piégé, clé en plus
         bc.postMessage({ k: 'p', cle: 'x1', info: { id: 'aaaaaaaaaaaaaaaa', pseudo: balise, role: 'eleve' } });
-        bc.postMessage({ k: 'p', cle: 'x2', info: { id: balise, pseudo: 'Ali', role: 'eleve' } });
-        bc.postMessage({ k: 'p', cle: 'x3', info: { id: 'bbbbbbbbbbbbbbbb', pseudo: 'Ali', role: 'eleve', html: balise } });
+        bc.postMessage({ k: 'p', cle: 'x2', info: { id: balise, pseudo: 'Ixo', role: 'eleve' } });
+        bc.postMessage({ k: 'p', cle: 'x3', info: { id: 'bbbbbbbbbbbbbbbb', pseudo: 'Ixo', role: 'eleve', html: balise } });
         bc.postMessage({ k: 'p', cle: 'x4', info: { id: 'cccccccccccccccc', pseudo: 'x'.repeat(100000), role: 'eleve' } });
     }""", ["quizz-nsi:" + code, liste, BALISE, moi])
     prof.wait_for_timeout(1500)
+    # un espion écoute tout le canal pendant la suite de la séance
+    espion = ctx.new_page()
+    espion.goto(base + "index.html")
+    espion.evaluate("canal => { window.__vus = []; const bc = new BroadcastChannel('faux:' + canal); bc.onmessage = ({ data }) => { if (data.k === 'b') window.__vus.push(data.payload); }; }", "quizz-nsi:" + code)
     # la séance continue normalement après l'attaque
     eleves[0].click('button.option[data-choix="1"]')
     eleves[1].click('button.option[data-choix="0"]')
     attendre_texte(prof, "#statutQ", "Tout le monde a répondu")
     prof.click("#action")
     prof.wait_for_selector("#podiumBoite[open]")
-    attendre_texte(prof, "#podiumCorps", "Nadia " + MARQUE)
+    attendre_texte(prof, "#podiumCorps", "Kobalt " + MARQUE)
     attendre_texte(eleves[0], ".q-num", "Question 1 sur 20 · correction")
     attendre_texte(eleves[0], "#points", "110 pts")
     fermer = "() => { const b = document.getElementById('podiumBoite'); if (b.open) b.close(); }"
@@ -205,7 +209,20 @@ def injection(nav, base):
         assert p.evaluate("window.__pwned") is None, f"{nom} : script exécuté"
         assert p.evaluate("document.querySelectorAll('img').length") == 0, f"{nom} : une image a été créée"
         assert "aaaaaaaaaaaaaaaa" not in p.content() and "<img" not in p.inner_html("body"), f"{nom} : élément forgé affiché"
-    assert "Ali" not in prof.inner_text("#eleves"), "présence forgée affichée"
+    assert "Ixo" not in prof.inner_text("#eleves"), "présence forgée affichée"
+    # ce que l'espion a vu : aucune réponse lisible, aucun résultat individuel
+    vus = espion.evaluate("window.__vus")
+    reps = [m for m in vus if m.get("t") == "rep"]
+    assert len(reps) >= 2, "les réponses des deux élèves auraient dû passer (chiffrées)"
+    for m in vus:
+        texte = json.dumps(m)
+        if m.get("t") in ("rep", "correction", "fin", "recus", "question"):
+            assert moi not in texte and autre not in texte, f"identifiant d'élève diffusé : {texte[:120]}"
+        if m.get("t") == "rep":
+            assert set(m) == {"t", "de", "iv", "donnees"}, f"réponse en clair : {texte[:120]}"
+        if m.get("t") in ("correction", "fin"):
+            assert "res" not in m, "résultats individuels diffusés"
+    print(f"  confidentialité : {len(vus)} messages écoutés, {len(reps)} réponses chiffrées, aucun résultat individuel")
     print(f"  injection : {len(liste)} messages forgés et 4 présences forgées ignorés ; aucun innerHTML ne reçoit de donnée du canal")
     ctx.close()
 
@@ -245,20 +262,20 @@ def seance(nav, base):
     # un pseudo avec un caractère invisible est refusé avant tout envoi
     p0 = ctx.new_page(); surveiller(p0, "invisible")
     p0.goto(base + f"rejoindre.html?s={code}")
-    p0.fill("#champPseudo", "Na" + chr(0x200B) + "dia")
+    p0.fill("#champPseudo", "Ko" + chr(0x200B) + "balt")
     p0.click("#rejoindre")
     assert "invisible" in p0.inner_text("#erreurPseudo"), p0.inner_text("#erreurPseudo")
     p0.close()
 
-    nadia = eleve("Nadia", theme="light")
-    ali = eleve("Ali", theme="dark")
+    nadia = eleve("Kobalt", theme="light")
+    ali = eleve("Ixo", theme="dark")
     intrus = eleve("Pseudo Bizarre")
     attendre_texte(prof, "#eleves", "Pseudo Bizarre")
-    attendre_texte(prof, "#eleves", "Nadia")
-    attendre_texte(prof, "#eleves", "Ali")
+    attendre_texte(prof, "#eleves", "Kobalt")
+    attendre_texte(prof, "#eleves", "Ixo")
     prof.screenshot(path=os.path.join(SORTIE, "seance-accueil-1440.png"))
     # le même pseudo (à la casse et aux accents près) est refusé
-    double = eleve("NADIA")
+    double = eleve("KOBALT")
     attendre_texte(double, "#erreurPseudo", "déjà pris")
     double.close()
     # l'enseignant·e retire un pseudo : l'élève doit en choisir un autre
@@ -272,11 +289,11 @@ def seance(nav, base):
 
     prof.select_option("#duree", "0")
     prof.click("#commencer")
-    # Nadia : une erreur sur 4, Ali : toujours A (ses rebonds sont rares)
+    # Kobalt : une erreur sur 4, Ixo : toujours A (ses rebonds sont rares)
     choix_n = [BONNES[k] if k % 4 != 1 else (BONNES[k] + 1) % 4 for k in range(20)]
     choix_a = [0] * 20
-    attendu = {"Nadia": 0, "Ali": 0}
-    prec = {"Nadia": None, "Ali": None}
+    attendu = {"Kobalt": 0, "Ixo": 0}
+    prec = {"Kobalt": None, "Ixo": None}
     k = 0
     for i, d in enumerate(COURS["diapositives"]):
         if i > 0:
@@ -286,10 +303,10 @@ def seance(nav, base):
             nadia.screenshot(path=os.path.join(SORTIE, "eleve-notion-320.png"), full_page=True)
         if d["type"] != "question":
             continue
-        for page, nom, ch in ((nadia, "Nadia", choix_n), (ali, "Ali", choix_a)):
+        for page, nom, ch in ((nadia, "Kobalt", choix_n), (ali, "Ixo", choix_a)):
             page.wait_for_selector(f'section.d-question button.option[data-choix="{ch[k]}"]:not([disabled])', timeout=8000)
             attendre_texte(page, ".q-num", f"Question {k + 1} sur 20")
-            if k == 2 and nom == "Nadia":
+            if k == 2 and nom == "Kobalt":
                 page.screenshot(path=os.path.join(SORTIE, "eleve-question-320.png"), full_page=True)
             page.click(f'button.option[data-choix="{ch[k]}"]')
             juste = ch[k] == BONNES[k]
@@ -300,7 +317,7 @@ def seance(nav, base):
         if k == 4:
             prof.screenshot(path=os.path.join(SORTIE, "seance-question-1440.png"))
         prof.click("#action")  # montrer la réponse
-        for page, nom in ((nadia, "Nadia"), (ali, "Ali")):
+        for page, nom in ((nadia, "Kobalt"), (ali, "Ixo")):
             attendre_texte(page, ".q-num", f"Question {k + 1} sur 20 · correction")
             attendre_texte(page, "#points", f"{attendu[nom]} pts")
         if k == 4:
@@ -311,14 +328,34 @@ def seance(nav, base):
     assert k == 20
     prof.click("#action")  # terminer la séance
     prof.wait_for_selector("#podiumBoite[open]")
-    attendre_texte(prof, "#podiumCorps", "Nadia")
+    attendre_texte(prof, "#podiumCorps", "Kobalt")
     prof.screenshot(path=os.path.join(SORTIE, "seance-podium-1440.png"))
     attendre_texte(nadia, "#ecran", "Fin de la séance")
-    attendre_texte(nadia, "#ecran", f"{attendu['Nadia']} points")
+    attendre_texte(nadia, "#ecran", f"{attendu['Kobalt']} points")
     attendre_texte(nadia, "#ecran", "1re place")
     nadia.screenshot(path=os.path.join(SORTIE, "eleve-fin-320.png"), full_page=True)
-    attendre_texte(ali, "#ecran", f"{attendu['Ali']} points")
-    print(f"  séance : 20 questions, points Nadia {attendu['Nadia']}, Ali {attendu['Ali']}, envois {prof.evaluate('window.__fauxTempsReel.envois')}")
+    assert nadia.evaluate("localStorage.getItem('quizz-nsi:eleve')") is None, "l'entrée « eleve » doit être effacée à la fin de la séance"
+    attendre_texte(ali, "#ecran", f"{attendu['Ixo']} points")
+    print(f"  séance : 20 questions, points Kobalt {attendu['Kobalt']}, Ixo {attendu['Ixo']}, envois {prof.evaluate('window.__fauxTempsReel.envois')}")
+    ctx.close()
+
+
+def stockage(nav, base):
+    """L'entrée « eleve » (code, pseudo, identifiant) périmée est effacée au chargement de chaque page."""
+    ctx = contexte(nav, base)
+    p = ctx.new_page()
+    surveiller(p, "stockage")
+    for page in ("index.html", "revision.html", "animer.html", "rejoindre.html", "imprimer.html"):
+        p.goto(base + "index.html")
+        p.evaluate("() => localStorage.setItem('quizz-nsi:eleve', JSON.stringify({ id: '0123456789abcdef', pseudo: 'Ixo', code: 'ABCD', jusqua: Date.now() - 1000 }))")
+        p.goto(base + page)
+        p.wait_for_timeout(200)
+        assert p.evaluate("localStorage.getItem('quizz-nsi:eleve')") is None, f"{page} : entrée périmée gardée"
+    # une entrée valide est gardée, et préremplit la page élève
+    p.evaluate("() => localStorage.setItem('quizz-nsi:eleve', JSON.stringify({ id: '0123456789abcdef', pseudo: 'Ixo', code: 'ABCD', jusqua: Date.now() + 3600000 }))")
+    p.goto(base + "rejoindre.html")
+    assert p.input_value("#champPseudo") == "Ixo"
+    print("  stockage : entrée périmée effacée sur les 5 pages, entrée valide gardée")
     ctx.close()
 
 
@@ -394,6 +431,7 @@ def main():
         nav = pw.chromium.launch()
         seance(nav, base)
         injection(nav, base)
+        stockage(nav, base)
         autonome(nav, base)
         impression(nav, base)
         rendus(nav, base)
