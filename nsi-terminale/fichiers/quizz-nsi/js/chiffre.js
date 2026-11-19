@@ -18,7 +18,7 @@
 
   const disponible = () => !!(racine.crypto && racine.crypto.subtle);
   async function paire() {
-    const p = await crypto.subtle.generateKey(ECDH, true, ['deriveKey']);
+    const p = await crypto.subtle.generateKey(ECDH, false, ['deriveKey']); // clé privée non extractible ; la publique s'exporte toujours
     const j = await crypto.subtle.exportKey('jwk', p.publicKey);
     return { prive: p.privateKey, publique: { x: j.x, y: j.y } };
   }
