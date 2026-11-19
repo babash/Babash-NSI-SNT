@@ -30,9 +30,14 @@ Le modèle complet est [`piles-files.json`](piles-files.json).
 
 Chaque diapositive a un `type` :
 
-- **`titre`** : la première. Champs : `titre`, `texte` (une liste de phrases). Les critères et les conventions s'y affichent seuls.
-- **`notion`** : une idée par diapositive. Champs : `titre` ; `texte`, **3 phrases courtes au plus** ; `schema` (facultatif) ; `code` (facultatif, une liste de lignes) ; `vocabulaire` (facultatif : les mots anglais et leur traduction).
+- **`titre`** : la première. Champs : `titre`, `texte` (une liste de phrases). Les critères et les conventions s'y affichent seuls. `"conventions": false` cache les conventions (rappelées alors sur la feuille imprimée).
+- **`notion`** : une idée par diapositive. Champs : `titre` ; `surtitre` (facultatif, « Notion » par défaut : « Essayons avec ce qu'on connaît », « La solution »…) ; `texte`, **3 phrases courtes au plus** ; `schema` (facultatif) ; `code` (facultatif, une liste de lignes) ; `vocabulaire` (facultatif : les mots anglais et leur traduction) ; `progressif: true` (les phrases apparaissent une à une) ; `code_cache: true` (le code apparaît au clic suivant) ; `consigne` (des consignes d'observation sur le code : « Précise ce qui est affiché », « Repère… ») ; `chute` (une phrase finale, comme « C'est un peu compliqué, non ? »).
+
+**Les apparitions progressives.** Sur la page projetée et en révision, « Suite » montre l'élément suivant de la diapositive avant de passer à la suivante ; les téléphones suivent l'écran projeté (le message de séance porte le nombre d'éléments montrés, `f`). En revenant en arrière, tout est montré.
 - **`question`** : voir plus bas.
+- **`partie`** : un titre de partie, en grand. Champs : `numero` (facultatif), `titre`, `sous_titre`.
+- **`classe`** : une question ouverte à la classe, sans réponse à cocher (« Et si on programmait… ? »). Champs : `question`, `texte` (facultatif), `pistes` (des pistes qui apparaissent une à une), `schema`, `code`.
+- **`humour`** : la diapositive qui dramatise (« Bon, si on continue… »). Champs : `titre`, `lignes` (elles apparaissent une à une), `chute` (la dernière phrase, « Il nous faut agir ! »).
 - **`bilan`** : la dernière. Champs : `titre`, `tableau` (`colonnes` et `lignes`), `ticket` (les questions du ticket de sortie).
 
 ## Les questions (règle 22 de la philosophie éducative)
@@ -62,7 +67,7 @@ Ce qu'il faut relire à la main : les distracteurs viennent d'erreurs typiques d
 
 ## Le texte
 
-Dans tous les textes : `` `code` `` (coloré comme du Python), `**gras**` (pas dans les options), `*italique*`. Tout le reste est affiché tel quel : aucune balise HTML. Un caractère spécial s'écrit lui-même (é, ·, →) ; un caractère invisible est refusé.
+Dans tous les textes : `` `code` `` (coloré comme du Python), `==mot-clé==` (en couleur, et aussi en gras souligné : la couleur ne porte jamais seule l'information), `**gras**` (ni gras ni mot-clé dans les options), `*italique*`. Tout le reste est affiché tel quel : aucune balise HTML. Un caractère spécial s'écrit lui-même (é, ·, →) ; un caractère invisible est refusé.
 
 ## Les schémas
 

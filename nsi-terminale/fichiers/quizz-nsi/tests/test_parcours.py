@@ -197,7 +197,7 @@ def injection(nav, base):
     attendre_texte(eleves[0], ".q-num", "Question 1 sur 20 · correction")
     attendre_texte(eleves[0], "#points", "110 pts")
     fermer = "() => { const b = document.getElementById('podiumBoite'); if (b.open) b.close(); }"
-    for _ in range(80):  # jusqu'à la fin, en fermant le podium affiché après chaque question
+    for _ in range(250):  # jusqu'à la fin, en fermant le podium affiché après chaque question
         prof.wait_for_timeout(120)
         if prof.inner_text("#action").startswith("Revoir"):
             break
