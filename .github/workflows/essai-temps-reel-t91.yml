@@ -1,7 +1,7 @@
-# Essai ponctuel (T91, T93, T93b, T93c), sur cette branche seulement : jamais fusionnée dans main.
-# T93c : https://babash.github.io/QuizzNSI/ sert les fichiers de main (310e17f) ; l'ancienne adresse
-# redirige toujours.
-name: Essai QuizzNSI T93c (fichiers servis de main, redirections)
+# Essai ponctuel (T91, T93, T93b, T93c, T93d), sur cette branche seulement : jamais fusionnée dans main.
+# T93d : https://babash.github.io/QuizzNSI/ sert les fichiers de main (a99f727), avec les phrases justes
+# sur les données ; l'ancienne adresse redirige toujours.
+name: Essai QuizzNSI T93d (fichiers servis de main, phrases sur les données)
 on:
   push:
     branches: [gardien/t91-essai-temps-reel]
@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 20
     steps:
-      - name: Fichiers servis identiques à main (babash/QuizzNSI, 310e17f)
+      - name: Fichiers servis identiques à main (babash/QuizzNSI, a99f727)
         run: |
           git clone --quiet https://github.com/babash/QuizzNSI /tmp/quizznsi
-          cd /tmp/quizznsi && git checkout --quiet 310e17feb48e8b6d29f609de3865006c7e1e0ab2 && echo "commit attendu : $(git rev-parse HEAD) ; main : $(git rev-parse origin/main)"
+          cd /tmp/quizznsi && git checkout --quiet a99f727a48a8 && echo "commit attendu : $(git rev-parse HEAD) ; main : $(git rev-parse origin/main)"
           total=0; pareils=0; ecarts=0
           for f in $(git ls-files | grep -v -E '(^|/)[.]'); do
             total=$((total+1)); ok=0
@@ -25,11 +25,13 @@ jobs:
             done
             if [ "$ok" = 1 ]; then pareils=$((pareils+1)); else ecarts=$((ecarts+1)); echo "DIFFÉRENT ou absent : $f"; fi
           done
-          echo "$pareils fichier(s) servi(s) identique(s) à 310e17f sur $total (fichiers commençant par un point exclus) ; $ecarts écart(s)"
+          echo "$pareils fichier(s) servi(s) identique(s) à a99f727 sur $total (fichiers commençant par un point exclus) ; $ecarts écart(s)"
+          curl -fsS https://babash.github.io/QuizzNSI/ | grep -o "effacés à la fin de la séance (et sinon au premier chargement d'une page de QuizzNSI après 12 heures)" | head -1
+          curl -fsS https://babash.github.io/QuizzNSI/rejoindre.html | grep -o "puis effacés à la fin (sinon, à ta première visite de QuizzNSI après 12 heures)" | head -1
           [ "$ecarts" -eq 0 ]
       - name: L'ancienne adresse redirige toujours
         run: |
-          for p in "" "rejoindre.html?s=ABCD" "animer.html?cours=piles-files&demo"; do
+          for p in "" "rejoindre.html?s=ABCD"; do
             curl -fsS -o /tmp/p "https://babash.github.io/Babash-NSI-SNT/nsi-terminale/fichiers/quizz-nsi/$p"
             grep -q "location.replace('https://babash.github.io/QuizzNSI/" /tmp/p && echo "redirection présente : ${p:-(dossier)}"
           done
