@@ -214,19 +214,24 @@
     .map(c => SOSIES[c] || c).filter(c => /[\p{L}\p{N}]/u.test(c)).join('');
 
   /* ── Ménage du stockage ──────────────────── */
-  // L'entrée « eleve » (code, pseudo, identifiant) vit 12 heures au plus : périmée ou mal formée,
-  // elle est effacée au chargement de chaque page de QuizzNSI (et à la fin d'une séance).
+  // L'entrée « eleve » (code, pseudo, identifiant) et l'historique de séance « hist:<identifiant> »
+  // vivent 12 heures au plus : périmés ou mal formés, ils sont effacés au chargement de chaque page de
+  // QuizzNSI (et à la fin d'une séance, par la page élève).
   Q.DUREE_ELEVE = 12 * 3600 * 1000;
   Q.menage = function (maintenant) {
     const t = maintenant || Date.now();
+    let efface = false;
     try {
-      const brut = localStorage.getItem('quizz-nsi:eleve');
-      if (brut === null) return false;
-      let v = null; try { v = JSON.parse(brut); } catch (e) { v = null; }
-      const ok = v && typeof v === 'object' && Number.isFinite(v.jusqua) && v.jusqua > t && v.jusqua <= t + Q.DUREE_ELEVE;
-      if (!ok) { localStorage.removeItem('quizz-nsi:eleve'); return true; }
+      const cles = [];
+      for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k === 'quizz-nsi:eleve' || /^quizz-nsi:hist:/.test(k)) cles.push(k); }
+      for (const k of cles) {
+        let v = null; try { v = JSON.parse(localStorage.getItem(k)); } catch (e) { v = null; }
+        const ok = v && typeof v === 'object' && Number.isFinite(v.jusqua) && v.jusqua > t && v.jusqua <= t + Q.DUREE_ELEVE
+          && (k === 'quizz-nsi:eleve' || k === 'quizz-nsi:hist:' + v.id);
+        if (!ok) { localStorage.removeItem(k); efface = true; }
+      }
     } catch (e) { /* stockage bloqué : rien à effacer */ }
-    return false;
+    return efface;
   };
 
   /* ── Code de séance ──────────────────────── */

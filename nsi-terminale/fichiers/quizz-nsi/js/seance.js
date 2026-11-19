@@ -35,7 +35,8 @@
     onEtat('connexion');
     delai = setTimeout(() => { if (!fini) onEtat('erreur'); }, 12000);
     ch.on('broadcast', { event: 'm' }, ({ payload }) => { if (payload && typeof payload === 'object') onMessage(payload); });
-    ch.on('presence', { event: 'sync' }, () => onPresence(Object.values(ch.presenceState()).map(l => l[l.length - 1])));
+    // toutes les entrées de présence, y compris deux onglets d'un même appareil sous la même clé
+    ch.on('presence', { event: 'sync' }, () => onPresence(Object.values(ch.presenceState()).flat()));
     ch.subscribe(async st => {
       if (st === 'SUBSCRIBED') { fini = true; clearTimeout(delai); onEtat('connecte'); try { await ch.track(info); } catch (e) { /* présence plus tard */ } }
       else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT') onEtat('erreur');

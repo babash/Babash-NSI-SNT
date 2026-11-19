@@ -70,13 +70,19 @@ essai('pseudo : mélange d\'écritures refusé, sosies ramenés à la même clé
 });
 essai('stockage : une entrée « eleve » périmée ou mal formée est effacée', () => {
   const m = new Map();
-  globalThis.localStorage = { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k) };
+  globalThis.localStorage = { getItem: k => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: k => m.delete(k),
+    key: i => [...m.keys()][i] ?? null, get length() { return m.size; } };
   const t = Date.now();
   m.set('quizz-nsi:eleve', JSON.stringify({ id: '0123456789abcdef', pseudo: 'Ixo', code: 'ABCD', jusqua: t - 1 }));
   assert.equal(Q.menage(t), true); assert.equal(m.has('quizz-nsi:eleve'), false);
   m.set('quizz-nsi:eleve', '{pas du json'); Q.menage(t); assert.equal(m.has('quizz-nsi:eleve'), false);
   m.set('quizz-nsi:eleve', JSON.stringify({ jusqua: t + 400 * 24 * 3600 * 1000 })); Q.menage(t); assert.equal(m.has('quizz-nsi:eleve'), false); // plus de 12 h : impossible
   m.set('quizz-nsi:eleve', JSON.stringify({ jusqua: t + 3600 * 1000 })); assert.equal(Q.menage(t), false); assert.equal(m.has('quizz-nsi:eleve'), true);
+  // l'historique de séance suit les mêmes règles
+  m.set('quizz-nsi:hist:0123456789abcdef', JSON.stringify({ id: '0123456789abcdef', jusqua: t - 1, ordre: [] })); Q.menage(t); assert.equal(m.has('quizz-nsi:hist:0123456789abcdef'), false);
+  m.set('quizz-nsi:hist:0123456789abcdef', JSON.stringify({ id: 'autre', jusqua: t + 1000 })); Q.menage(t); assert.equal(m.has('quizz-nsi:hist:0123456789abcdef'), false);
+  m.set('quizz-nsi:hist:0123456789abcdef', JSON.stringify({ id: '0123456789abcdef', jusqua: t + 1000 })); Q.menage(t); assert.equal(m.has('quizz-nsi:hist:0123456789abcdef'), true);
+  m.set('quizz-nsi:theme', '"dark"'); Q.menage(t); assert.equal(m.has('quizz-nsi:theme'), true); // les réglages ne sont pas concernés
   delete globalThis.localStorage;
 });
 essai('code de séance : lecture tolérante', () => {

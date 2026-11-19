@@ -59,7 +59,12 @@
   function onPresence(liste) {
     presents = new Map();
     let neuf = false;
-    const valides = (Array.isArray(liste) ? liste : []).map(Q.messages.presence).filter(p => p && p.role === 'eleve');
+    const toutes = (Array.isArray(liste) ? liste : []).map(Q.messages.presence).filter(Boolean);
+    // une seule page projetée par séance : on prévient si une autre est dans la présence
+    const autres = toutes.filter(p => p.role === 'hote' && !(p.id === st.id && p.cle && cleHote && p.cle.x === cleHote.publique.x));
+    $('autreHote').hidden = !autres.length;
+    $('autreHote').textContent = autres.length ? 'Attention : une autre page projetée est ouverte sur cette séance (onglet dupliqué, autre ordinateur ?). Ferme-la : les réponses des élèves risquent de n\'arriver qu\'à l\'une des deux.' : '';
+    const valides = toutes.filter(p => p.role === 'eleve');
     for (const p of valides) {
       if (!p.pseudo) { envoyer({ t: 'refus', id: p.id, raison: 'invalide' }); continue; }
       const f = { pseudo: p.pseudo };

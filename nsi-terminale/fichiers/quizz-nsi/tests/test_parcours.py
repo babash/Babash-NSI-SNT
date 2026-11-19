@@ -179,8 +179,10 @@ def injection(nav, base):
         bc.postMessage({ k: 'p', cle: 'x2', info: { id: balise, pseudo: 'Ixo', role: 'eleve' } });
         bc.postMessage({ k: 'p', cle: 'x3', info: { id: 'bbbbbbbbbbbbbbbb', pseudo: 'Ixo', role: 'eleve', html: balise } });
         bc.postMessage({ k: 'p', cle: 'x4', info: { id: 'cccccccccccccccc', pseudo: 'x'.repeat(100000), role: 'eleve' } });
+        bc.postMessage({ k: 'p', cle: 'x5', info: { id: 'dddddddddddddddd', role: 'hote' } });
     }""", ["quizz-nsi:" + code, liste, BALISE, moi])
     prof.wait_for_timeout(1500)
+    attendre_texte(prof, "#autreHote", "une autre page projetée")  # la présence forgée d'une page projetée
     # un espion écoute tout le canal pendant la suite de la séance
     espion = ctx.new_page()
     espion.goto(base + "index.html")
@@ -223,7 +225,7 @@ def injection(nav, base):
         if m.get("t") in ("correction", "fin"):
             assert "res" not in m, "résultats individuels diffusés"
     print(f"  confidentialité : {len(vus)} messages écoutés, {len(reps)} réponses chiffrées, aucun résultat individuel")
-    print(f"  injection : {len(liste)} messages forgés et 4 présences forgées ignorés ; aucun innerHTML ne reçoit de donnée du canal")
+    print(f"  injection : {len(liste)} messages forgés et 5 présences forgées ignorés (la fausse page projetée est signalée) ; aucun innerHTML ne reçoit de donnée du canal")
     ctx.close()
 
 
@@ -314,6 +316,22 @@ def seance(nav, base):
             prec[nom] = "juste" if juste else "faux"
         attendre_texte(prof, "#statutQ", "Tout le monde a répondu")
         attendre_texte(nadia, "#envoyee", "reçue")
+        if k == 5:
+            # réouverture en cours de séance : onglet fermé, QR code scanné de nouveau, sur le même appareil
+            ident = nadia.evaluate("() => JSON.parse(sessionStorage.getItem('quizz-nsi:eleve'))")
+            nadia.close()
+            nadia = ctx.new_page()
+            nadia.set_viewport_size({"width": 320, "height": 740})
+            surveiller(nadia, "Kobalt rouvert")
+            nadia.goto(base + "index.html")
+            # dans ce test, les deux élèves partagent le stockage du navigateur : on remet celui de Kobalt
+            nadia.evaluate("e => localStorage.setItem('quizz-nsi:eleve', JSON.stringify(Object.assign(e, { jusqua: Date.now() + 3600000 })))", ident)
+            nadia.goto(base + f"rejoindre.html?s={code}")
+            assert nadia.input_value("#champPseudo") == "Kobalt"
+            nadia.click("#rejoindre")
+            attendre_texte(nadia, "#points", f"{attendu['Kobalt'] - points(choix_n[k] == BONNES[k], 'juste' if choix_n[k - 1] == BONNES[k - 1] else 'faux')} pts")
+            nadia.wait_for_selector(f'button.option.choisie[data-choix="{choix_n[k]}"]')  # sa réponse est retrouvée
+            print("  réouverture : points et réponse retrouvés après la fermeture de l'onglet")
         if k == 4:
             prof.screenshot(path=os.path.join(SORTIE, "seance-question-1440.png"))
         prof.click("#action")  # montrer la réponse
@@ -337,6 +355,47 @@ def seance(nav, base):
     assert nadia.evaluate("localStorage.getItem('quizz-nsi:eleve')") is None, "l'entrée « eleve » doit être effacée à la fin de la séance"
     attendre_texte(ali, "#ecran", f"{attendu['Ixo']} points")
     print(f"  séance : 20 questions, points Kobalt {attendu['Kobalt']}, Ixo {attendu['Ixo']}, envois {prof.evaluate('window.__fauxTempsReel.envois')}")
+    ctx.close()
+
+
+def sans_chiffrement(nav, base):
+    """Un téléphone qui ne sait pas chiffrer le dit tout de suite ; un accusé qui ne vient pas est signalé."""
+    for nom, script in (("sans crypto.subtle", "Object.defineProperty(window.crypto, 'subtle', { get: () => undefined });"),
+                        ("génération en échec", "crypto.subtle.generateKey = () => Promise.reject(new Error('refus'));")):
+        ctx = contexte(nav, base)
+        ctx.add_init_script(script)
+        p = ctx.new_page()
+        surveiller(p, nom)
+        p.goto(base + "rejoindre.html?s=ABCD")
+        p.fill("#champPseudo", "Ixo")
+        p.click("#rejoindre")
+        attendre_texte(p, "#ecran", "Ce navigateur ne peut pas participer à la séance en direct")
+        assert p.locator('#ecran a[href="revision.html"]').count() == 1
+        ctx.close()
+    # une page projetée qui ne répond jamais : « reçue » ne s'affiche pas, un message le dit
+    ctx = contexte(nav, base)
+    p = ctx.new_page()
+    surveiller(p, "accusé absent")
+    p.goto(base + "rejoindre.html?s=WXYZ")
+    p.fill("#champPseudo", "Ixo")
+    p.click("#rejoindre")
+    faux = ctx.new_page()
+    faux.goto(base + "index.html")
+    faux.evaluate("""async () => {
+        const k = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, false, ['deriveKey']);
+        const j = await crypto.subtle.exportKey('jwk', k.publicKey);
+        const bc = new BroadcastChannel('faux:quizz-nsi:WXYZ');
+        const info = { id: '9999999999999999', role: 'hote', cle: { x: j.x, y: j.y } };
+        bc.onmessage = ({ data }) => { if (data.k === 'p' && data.info.id !== info.id) bc.postMessage({ k: 'p', cle: info.id, info }); };
+        bc.postMessage({ k: 'p', cle: info.id, info });
+        setTimeout(() => bc.postMessage({ k: 'b', event: 'm', payload: { t: 'question', cours: 'piles-files', qid: 'q01', reste: null, duree: 0, ferme: false } }), 500);
+    }""")
+    p.wait_for_selector('button.option[data-choix="1"]:not([disabled])')
+    p.click('button.option[data-choix="1"]')
+    attendre_texte(p, "#envoyee", "choisie")
+    attendre_texte(p, "#envoyee", "n'a pas encore reçu", delai=15000)
+    assert "reçue par" not in p.inner_text("#envoyee")
+    print("  sans chiffrement : message clair (2 cas) ; accusé absent signalé, jamais « reçue »")
     ctx.close()
 
 
@@ -432,6 +491,7 @@ def main():
         seance(nav, base)
         injection(nav, base)
         stockage(nav, base)
+        sans_chiffrement(nav, base)
         autonome(nav, base)
         impression(nav, base)
         rendus(nav, base)
