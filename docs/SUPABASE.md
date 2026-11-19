@@ -6,14 +6,14 @@ Trois ressources passent par **Supabase** :
 - Alien Python y enregistre la progression des élèves ;
 - Court-circuit y garde le code élève et les programmes des élèves qui le veulent (« Mes codes »), et
   passe par son temps réel pour les duels, qui ne sont pas enregistrés ;
-- QuizzNSI ne passe que par son temps réel, pour les séances en classe, qui ne sont pas
-  enregistrées.
+- QuizzNSI, dans son propre dépôt depuis le 19 novembre 2026, ne passe que par son temps réel,
+  pour les séances en classe, qui ne sont pas enregistrées.
 
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
 | Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | le schéma `court_circuit` du code élève, depuis le 13 novembre 2026 : `eleves` et `programmes` (données d'élèves), `mots` et `menage` ; les duels passent par les canaux temps réel (diffusion et présence), sans table |
-| QuizzNSI (NSI Terminale, Structures de données : le cours-quiz « Piles et files ») | `nsi-terminale/fichiers/quizz-nsi/` | la même base commune | aucune : les séances passent par les canaux temps réel (diffusion et présence), sans table ni fonction |
+| QuizzNSI (NSI Terminale, Structures de données : le cours-quiz « Piles et files ») | le dépôt [babash/QuizzNSI](https://github.com/babash/QuizzNSI) (l'ancien dossier `nsi-terminale/fichiers/quizz-nsi/` redirige vers [babash.github.io/QuizzNSI](https://babash.github.io/QuizzNSI/)) | la même base commune | aucune : les séances passent par les canaux temps réel (diffusion et présence), sans table ni fonction |
 
 **Alien Python**
 
@@ -77,9 +77,10 @@ Trois ressources passent par **Supabase** :
 
 - **Les séances ne sont pas enregistrées.** La page projetée et les téléphones passent par les
   canaux temps réel de la base commune (diffusion et présence), avec la clé « publishable » de
-  `nsi-terminale/fichiers/quizz-nsi/config.js`, sans aucune table ni fonction. L'essai du
-  19 novembre 2026 sur la vraie base, par GitHub Actions, l'a vérifié : une seule connexion, la
-  websocket du temps réel, et aucun appel à une table ou à une fonction.
+  son [`config.js`](https://github.com/babash/QuizzNSI/blob/main/config.js), sans aucune table ni
+  fonction. L'essai du 19 novembre 2026 sur la vraie base, par GitHub Actions, l'a vérifié : une
+  seule connexion, la websocket du temps réel, et aucun appel à une table ou à une fonction. Il a
+  été refait le même jour depuis la nouvelle adresse, `https://babash.github.io/QuizzNSI/`.
 - **Ce qui circule** pendant la séance :
   - dans la présence : le prénom ou le pseudo et un identifiant tiré au hasard de chaque élève, et
     la clé publique de la page projetée ;
@@ -105,7 +106,7 @@ Trois ressources passent par **Supabase** :
   imprimable.
 - Pour ta propre copie : mets l'adresse et la clé publique de ton projet Supabase dans
   `config.js`, ou laisse l'adresse vide pour le mode démo (entre les onglets d'un même navigateur).
-  Le [README de QuizzNSI](../nsi-terminale/fichiers/quizz-nsi/README.md) donne le détail.
+  Le [README de QuizzNSI](https://github.com/babash/QuizzNSI#readme) donne le détail.
 
 **Le socle commun de la base (dossier `supabase/`)**
 
