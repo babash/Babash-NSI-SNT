@@ -31,18 +31,18 @@
   /* ── Coloration du Python ────────────────── */
   const MOTS = new Set('False None True and as assert break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield'.split(' '));
   const NATIFS = new Set('print len range list reversed int str float bool dict set tuple min max sum abs input isinstance enumerate sorted append pop insert'.split(' '));
-  const JETON = /(#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_À-ÿ][A-Za-z_0-9À-ÿ]*)|(\s+)|(.)/g;
+  const MORCEAU = /(#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_À-ÿ][A-Za-z_0-9À-ÿ]*)|(\s+)|(.)/g;
   function colorerLigne(ligne) {
     let html = '', m, precedent = '';
-    JETON.lastIndex = 0;
-    while ((m = JETON.exec(ligne)) !== null) {
-      if (m[0] === '') { JETON.lastIndex++; continue; }
+    MORCEAU.lastIndex = 0;
+    while ((m = MORCEAU.exec(ligne)) !== null) {
+      if (m[0] === '') { MORCEAU.lastIndex++; continue; }
       const [t, com, ch, nb, id] = m;
       if (com) html += '<span class="c-com">' + echapper(com) + '</span>';
       else if (ch) html += '<span class="c-ch">' + echapper(ch) + '</span>';
       else if (nb) html += '<span class="c-nb">' + nb + '</span>';
       else if (id) {
-        const suite = ligne.slice(JETON.lastIndex);
+        const suite = ligne.slice(MORCEAU.lastIndex);
         if (MOTS.has(id)) html += '<span class="c-mot">' + id + '</span>';
         else if (precedent === 'def' || precedent === 'class') html += '<span class="c-def">' + echapper(id) + '</span>';
         else if (/^\s*\(/.test(suite)) html += '<span class="' + (NATIFS.has(id) ? 'c-nat' : 'c-fn') + '">' + echapper(id) + '</span>';
