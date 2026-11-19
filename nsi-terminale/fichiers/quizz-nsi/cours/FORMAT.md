@@ -79,11 +79,11 @@ Les schémas sont dessinés par le moteur, en SVG, à partir des données ; ils 
 | `file` | `elements` : de la tête vers la queue | une file horizontale, tête (sortie) à gauche |
 | `etapes` | `structure` (`pile` ou `file`), `etapes` : `[{ "op": "p.empiler(4)", "elements": [4] }, …]` (6 au plus) | l'état après chaque opération |
 | `deux-piles` | `gauche` et `droite` : `{ "nom": "entree", "elements": [...] }`, `fleche` | deux piles côte à côte |
-| `liste` | `elements` | une liste Python avec ses indices positifs et négatifs |
+| `liste` | `elements` : des valeurs Python (`1`, `"chat"`, `true` en JSON) | une liste Python avec ses indices ; les valeurs s'affichent comme Python les écrit : `True`, `None`, `"chat"` |
 | `decalage` | `elements` | le décalage provoqué par `pop(0)` |
 | `svg` | `code` : un SVG écrit à la main (sans script ni attribut `on…`) | pour les autres cours (arbres, graphes) ; pas envoyé aux téléphones |
 
-Chaque schéma accepte une `legende`.
+Chaque schéma accepte une `legende`. Un schéma « Python » (`liste`, ou tout schéma avec `variable`, `code` ou `"python": true`) affiche ses valeurs comme Python (`True`, `None`, chaînes entre guillemets) ; les autres affichent des étiquettes (« copie 1 », « taxi »).
 
 **Un schéma qui se déduit d'un code est vérifié par exécution** (contrôle du vérificateur) :
 - `etapes` avec `"variable": "p"` (ou `"f"`) : chaque `op` est du Python (`p.empiler(4)`) ; `p.depiler() → 1` vérifie aussi la valeur renvoyée ; après chaque étape, le contenu de la variable doit être exactement `elements` ;

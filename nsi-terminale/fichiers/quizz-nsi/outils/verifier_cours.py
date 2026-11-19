@@ -229,6 +229,24 @@ def verifier_question(q, n, prelude, r, executer_code=True):
         fb = o.get("feedback")
         if not isinstance(fb, str) or len(fb.strip()) < FEEDBACK_MIN:
             r.erreur(oo, f"feedback manquant ou trop court (au moins {FEEDBACK_MIN} caractères qui expliquent)")
+    # les noms cités en code dans les options et les feedbacks (`impressions.pop(0)`, `aux[0]`)
+    # doivent exister dans le code de la question (ou dans le prélude)
+    if q.get("code"):
+        connus = set(re.findall(r"[A-Za-z_]\w*", "\n".join(q["code"] + list(prelude))))
+        for i, o in enumerate(opts):
+            if not isinstance(o, dict):
+                continue
+            for champ in ("texte", "feedback"):
+                for seg in re.findall(r"`([^`]+)`", str(o.get(champ, ""))):
+                    m = re.match(r"\s*([A-Za-z_]\w*)\s*[.\[]", seg)
+                    if m and m.group(1) not in connus:
+                        r.erreur(f"{ou}, option {LETTRES[i]}", f"« {m.group(1)} » ({champ}) n'existe pas dans le code de la question")
+    # un renvoi « question n » vise une question déjà posée, jamais elle-même ni une suivante
+    textes = list(q.get("enonce", [])) + [str(q.get("explication", ""))] + [str(o.get(k, "")) for o in opts if isinstance(o, dict) for k in ("texte", "feedback")]
+    for t in textes:
+        for m in re.finditer(r"[Qq]uestion (\d+)", t):
+            if int(m.group(1)) >= n:
+                r.erreur(ou, f"renvoi à la question {m.group(1)} : elle n'est pas encore posée (ou c'est celle-ci)")
     juste = justes[0] if len(justes) == 1 else None
     plus_longue = juste is not None and longueurs[juste] == max(longueurs) and longueurs.count(max(longueurs)) == 1
 
