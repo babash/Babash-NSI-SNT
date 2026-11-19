@@ -216,7 +216,7 @@
     if (onglet && (!code || code === onglet.code) && Q.lireCode(onglet.code) && Q.filtrerPseudo(onglet.pseudo).ok && /^[0-9a-f]{16}$/.test(onglet.id)) {
       moi = { id: onglet.id, pseudo: onglet.pseudo, code: onglet.code };
       entrer();
-    } else (code ? $('champPseudo') : $('champCode')).focus();
+    }
   }
   demarrer();
 })();

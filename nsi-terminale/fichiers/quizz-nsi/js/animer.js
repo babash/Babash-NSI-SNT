@@ -194,7 +194,7 @@
     sc.querySelectorAll('.option').forEach(o => {
       const i = +o.dataset.choix, pc = total ? Math.round(rep[i] / total * 100) : 0;
       if (i === d.bonne) { o.classList.add('bonne-rep'); o.insertAdjacentHTML('beforeend', '<span class="etiquette">✓ Bonne réponse</span>'); }
-      o.insertAdjacentHTML('beforeend', '<span class="rep-barre" aria-hidden="true"><span style="width:' + pc + '%"></span></span><span class="rep-nb">' + rep[i] + ' <small>(' + pc + ' %)</small></span>');
+      o.insertAdjacentHTML('beforeend', '<span class="rep-nb">' + rep[i] + ' réponse' + (rep[i] > 1 ? 's' : '') + ' <small>(' + pc + ' %)</small></span><span class="rep-barre" aria-hidden="true"><span style="width:' + pc + '%"></span></span>');
     });
     sc.querySelector('.options').classList.add('corrigees', 'avec-barres');
     const justes = rep[d.bonne];
