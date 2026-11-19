@@ -27,7 +27,8 @@ jobs:
           done
           curl -sS -o /dev/null -w "dossier : HTTP %{http_code}\n" "$A/"
           for f in js/commun.js cours/piles-files.json config.js vendor/temps-reel.js; do
-            c=$(curl -sS -o /dev/null -w '%{http_code}' "$A/$f"); echo "supprimé : $f -> HTTP $c"; [ "$c" = "404" ] || ecarts=$((ecarts+1))
+            for essai in 1 2 3 4 5; do c=$(curl -sS -o /dev/null -w '%{http_code}' "$A/$f"); case "$c" in 5*) echo "  $f : HTTP $c (essai $essai, erreur passagère du serveur : on réessaie)"; sleep 6;; *) break;; esac; done
+            echo "supprimé : $f -> HTTP $c"; [ "$c" = "404" ] || ecarts=$((ecarts+1))
           done
           echo "$ecarts écart(s)"; [ "$ecarts" -eq 0 ]
       - name: Les redirections dans Chromium
