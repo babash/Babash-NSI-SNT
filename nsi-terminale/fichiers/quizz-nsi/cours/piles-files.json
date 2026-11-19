@@ -1,0 +1,809 @@
+{
+  "format": "quizz-nsi/1",
+  "id": "piles-files",
+  "titre": "Piles et files",
+  "sous_titre": "Cours-quiz d'introduction : 15 notions courtes, 20 questions",
+  "niveau": "Terminale NSI",
+  "programme": "Structures de données : listes, piles, files (interface et implémentation ; distinguer une structure de son implémentation)",
+  "fiche": "https://babash.github.io/FichesNSI/fiches/piles-files/",
+  "auteur": "Babash - NSI Tani Malandi",
+  "licence": "CC BY-SA 4.0",
+  "duree_minutes": 45,
+  "sources": [
+    "Chapitre 1 « Interface et implémentation - Listes, piles, files » (Terminale NSI)",
+    "CC1 de Terminale « Pile, File et rappels de 1re » 2024 et 2025, d'après les sujets de bac 21-NSIJ2G11 et 22-NSIJ2ME1",
+    "TP « Une file avec deux piles » (CodEx)"
+  ],
+  "criteres": [
+    "Niveau 1 : je dis si une situation est une pile (LIFO) ou une file (FIFO).",
+    "Niveau 2 : je donne l'état d'une pile ou d'une file après une suite d'opérations.",
+    "Niveau 3 : j'analyse un code qui utilise les primitives et j'y trouve l'erreur."
+  ],
+  "conventions": [
+    "Une pile s'écrit du haut (le sommet) vers le bas, comme au bac : « 3, 1, 4 » veut dire que 3 est au sommet.",
+    "Une file s'écrit de la tête (le prochain élément à sortir) vers la queue (le dernier arrivé).",
+    "Les primitives sont celles du cours : `Pile()`, `est_vide()`, `empiler(e)`, `depiler()`, `sommet()`, `taille()` ; `File()`, `est_vide()`, `enfiler(e)`, `defiler()`, `taille()`.",
+    "`depiler()` et `defiler()` retirent l'élément et le renvoient. Dépiler une pile vide ou défiler une file vide provoque une erreur."
+  ],
+  "prelude_python": [
+    "class Pile:",
+    "    def __init__(self):",
+    "        self.contenu = []",
+    "    def est_vide(self):",
+    "        return len(self.contenu) == 0",
+    "    def empiler(self, e):",
+    "        self.contenu.append(e)",
+    "    def depiler(self):",
+    "        return self.contenu.pop()",
+    "    def sommet(self):",
+    "        return self.contenu[-1]",
+    "    def taille(self):",
+    "        return len(self.contenu)",
+    "",
+    "class File:",
+    "    def __init__(self):",
+    "        self.contenu = []",
+    "    def est_vide(self):",
+    "        return len(self.contenu) == 0",
+    "    def enfiler(self, e):",
+    "        self.contenu.append(e)",
+    "    def defiler(self):",
+    "        return self.contenu.pop(0)",
+    "    def taille(self):",
+    "        return len(self.contenu)",
+    "",
+    "def haut_vers_bas(p):",
+    "    return list(reversed(p.contenu))",
+    "",
+    "def tete_vers_queue(f):",
+    "    return list(f.contenu)"
+  ],
+  "diapositives": [
+    {
+      "type": "titre",
+      "titre": "Piles et files",
+      "texte": [
+        "Deux structures de données linéaires : on range les éléments les uns après les autres.",
+        "Ce qui change : **par où on les retire**."
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "La pile : dernier entré, premier sorti",
+      "texte": [
+        "On ajoute et on retire toujours **au même bout** : le **sommet**.",
+        "Le dernier élément ajouté est le premier retiré : **LIFO** (*last in, first out*, en anglais : « dernier entré, premier sorti »).",
+        "Exemple : une pile de copies sur le bureau. On pose la copie sur le dessus, on corrige celle du dessus."
+      ],
+      "schema": { "type": "pile", "elements": ["copie 1", "copie 2", "copie 3"], "legende": "La copie 3, posée en dernier, sortira en premier." },
+      "vocabulaire": "pile = stack ; empiler = push ; dépiler = pop"
+    },
+    {
+      "type": "question",
+      "id": "q01",
+      "nom": "[Pile ou file] Reconnaître la politique LIFO",
+      "objectif": "Reconnaître une pile dans une situation de la vie courante.",
+      "enonce": [
+        "Au CDI, les livres rendus sont posés les uns sur les autres sur le comptoir. La documentaliste range toujours le livre du dessus en premier.",
+        "Quelle structure de données décrit cette situation ?"
+      ],
+      "options": [
+        { "texte": "Une file : premier entré, premier sorti (FIFO).", "feedback": "Pas tout à fait. Dans une file, le premier livre posé serait rangé en premier. Ici, on prend le livre du dessus, c'est-à-dire le dernier posé." },
+        { "texte": "Une pile : dernier entré, premier sorti (LIFO).", "juste": true, "feedback": "Oui. On pose et on prend toujours au même bout, le dessus : c'est le sommet d'une pile. Le dernier livre posé est le premier rangé." },
+        { "texte": "Une pile : premier entré, premier sorti (FIFO).", "feedback": "Tu as bien reconnu une pile, mais l'acronyme ne va pas avec : une pile, c'est LIFO, « dernier entré, premier sorti ». FIFO, c'est la file." },
+        { "texte": "Une file : dernier entré, premier sorti (LIFO).", "feedback": "L'acronyme LIFO est juste, mais il décrit une pile, pas une file. Retiens : Pile = LIFO, File = FIFO." }
+      ],
+      "explication": "Un seul bout pour ajouter et retirer : c'est une pile, LIFO."
+    },
+    {
+      "type": "notion",
+      "titre": "La file : premier entré, premier sorti",
+      "texte": [
+        "On ajoute à un bout, la **queue**, et on retire à l'autre bout, la **tête**.",
+        "Le premier élément ajouté est le premier retiré : **FIFO** (*first in, first out* : « premier entré, premier sorti »).",
+        "Exemple : la file d'attente des voitures à l'embarcadère de la barge. On embarque dans l'ordre d'arrivée."
+      ],
+      "schema": { "type": "file", "elements": ["taxi", "camionnette", "moto"], "legende": "Le taxi, arrivé en premier, embarque en premier." },
+      "vocabulaire": "file = queue ; enfiler = enqueue ; défiler = dequeue"
+    },
+    {
+      "type": "question",
+      "id": "q02",
+      "nom": "[Pile ou file] Justifier le choix d'une file",
+      "objectif": "Associer la file à la politique « premier entré, premier sorti ».",
+      "enonce": [
+        "Une imprimante partagée du lycée reçoit des demandes d'impression. Elle les imprime dans l'ordre où elles sont arrivées.",
+        "Quelle affirmation est juste ?"
+      ],
+      "options": [
+        { "texte": "C'est une pile, car on retire toujours la demande du dessus.", "feedback": "Avec une pile, la dernière demande arrivée serait imprimée en premier. Les premières demandes pourraient attendre très longtemps : ce n'est pas l'ordre d'arrivée." },
+        { "texte": "C'est une file, car la dernière demande arrivée est imprimée en premier.", "feedback": "Le mot « file » est juste, mais pas la raison : « la dernière arrivée sort en premier », c'est la règle d'une pile (LIFO). Une file sert dans l'ordre d'arrivée." },
+        { "texte": "C'est une pile, car les demandes sont rangées les unes après les autres.", "feedback": "Dans une pile comme dans une file, les éléments sont rangés les uns après les autres : ce sont deux structures linéaires. Ce qui les distingue, c'est le bout par lequel on retire." },
+        { "texte": "C'est une file, car la première demande arrivée sort en premier.", "juste": true, "feedback": "Exact. Premier arrivé, premier servi : c'est la politique FIFO d'une file. On enfile à la queue, on défile en tête." }
+      ],
+      "explication": "Ordre d'arrivée respecté : file, FIFO."
+    },
+    {
+      "type": "notion",
+      "titre": "Interface et primitives de la pile",
+      "texte": [
+        "L'**interface** dit ce qu'on peut faire avec la structure : ce sont ses **primitives**. L'**implémentation** dit comment c'est programmé.",
+        "Primitives : `Pile()` crée une pile vide ; `p.est_vide()` ; `p.empiler(e)` ; `p.depiler()` **retire** le sommet et le renvoie ; `p.sommet()` le renvoie **sans le retirer** ; `p.taille()`.",
+        "Au bac, on rencontre aussi l'écriture en fonctions : `empiler(p, e)`, `depiler(p)`… C'est la même interface."
+      ],
+      "schema": { "type": "etapes", "structure": "pile", "etapes": [
+        { "op": "p = Pile()", "elements": [] },
+        { "op": "p.empiler(4)", "elements": [4] },
+        { "op": "p.empiler(1)", "elements": [4, 1] },
+        { "op": "p.depiler() → 1", "elements": [4] },
+        { "op": "p.sommet() → 4", "elements": [4] }
+      ] }
+    },
+    {
+      "type": "question",
+      "id": "q03",
+      "nom": "[Pile] Quel élément sort en premier ?",
+      "objectif": "Appliquer la règle LIFO avec les primitives `empiler` et `depiler`.",
+      "enonce": [
+        "On exécute le code suivant.",
+        "Quelle est la valeur de `x` ?"
+      ],
+      "code": [
+        "p = Pile()",
+        "p.empiler(\"lundi\")",
+        "p.empiler(\"mardi\")",
+        "p.empiler(\"mercredi\")",
+        "x = p.depiler()"
+      ],
+      "options": [
+        { "texte": "`\"mercredi\"`", "juste": true, "feedback": "Oui : \"mercredi\" a été empilé en dernier, il est au sommet. `depiler()` retire le sommet et le renvoie." },
+        { "texte": "`\"lundi\"`", "feedback": "\"lundi\" est le premier élément ajouté : il sortirait en premier d'une file. Dans une pile, il est tout en bas : il sortira en dernier." },
+        { "texte": "`\"mardi\"`", "feedback": "\"mardi\" est au milieu. `depiler()` ne prend jamais au milieu : seulement au sommet, c'est-à-dire le dernier élément empilé." },
+        { "texte": "`[\"lundi\", \"mardi\"]`", "feedback": "C'est ce qui reste dans la pile, pas ce que renvoie `depiler()`. La fonction renvoie un seul élément : celui qu'elle retire." }
+      ],
+      "explication": "`depiler()` renvoie le dernier élément empilé : \"mercredi\".",
+      "verifications": [
+        { "code": ["print(x)", "print(haut_vers_bas(p))"], "sortie": "mercredi\n['mardi', 'lundi']" }
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q04",
+      "nom": "[Primitives] `sommet` ou `depiler` ?",
+      "objectif": "Distinguer une primitive qui lit le sommet d'une primitive qui le retire.",
+      "enonce": [
+        "La pile `p` contient, du haut vers le bas : 7, 2, 9. On exécute `x = p.sommet()`.",
+        "Que valent `x` et `p` ensuite ?"
+      ],
+      "schema": { "type": "pile", "elements": [9, 2, 7] },
+      "options": [
+        { "texte": "`x` vaut 7 et `p` contient 2, 9.", "feedback": "Tu as bien trouvé le sommet, 7. Mais `sommet()` ne le retire pas : c'est `depiler()` qui retire. Ici, la pile ne change pas." },
+        { "texte": "`x` vaut 9 et `p` contient 7, 2, 9.", "feedback": "9 est en bas de la pile, pas au sommet. Rappel de la convention : on écrit la pile du haut vers le bas, donc le sommet est le premier nombre, 7." },
+        { "texte": "`x` vaut 7 et `p` contient 7, 2, 9.", "juste": true, "feedback": "Exact. `sommet()` renvoie l'élément du haut sans le retirer : la pile est inchangée." },
+        { "texte": "`x` vaut 9 et `p` contient 7, 2.", "feedback": "Deux confusions : 9 est le bas de la pile, et `sommet()` ne retire rien. Écris d'abord la pile verticalement, sommet en haut." }
+      ],
+      "explication": "`sommet()` lit le haut sans le retirer ; `depiler()` le lit et le retire.",
+      "verifications": [
+        { "code": ["p = Pile()", "for e in [9, 2, 7]:", "    p.empiler(e)", "x = p.sommet()", "print(x, haut_vers_bas(p))"], "sortie": "7 [7, 2, 9]" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Suivre l'état d'une pile",
+      "texte": [
+        "Méthode : on **dessine la pile après chaque ligne**, sommet en haut.",
+        "`empiler` ajoute en haut ; `depiler` enlève le haut. On ne touche jamais au milieu.",
+        "À la fin, on lit la pile **du haut vers le bas** (la convention du bac)."
+      ],
+      "schema": { "type": "etapes", "structure": "pile", "etapes": [
+        { "op": "empiler(\"a\")", "elements": ["a"] },
+        { "op": "empiler(\"b\")", "elements": ["a", "b"] },
+        { "op": "depiler()", "elements": ["a"] },
+        { "op": "empiler(\"c\")", "elements": ["a", "c"] }
+      ], "legende": "Lecture finale : c, a." }
+    },
+    {
+      "type": "question",
+      "id": "q05",
+      "nom": "[Pile] État après une suite d'opérations",
+      "objectif": "Suivre pas à pas une pile pour donner son contenu final.",
+      "enonce": [
+        "On exécute le code suivant.",
+        "Que contient `p` à la fin, du haut vers le bas ?"
+      ],
+      "code": [
+        "p = Pile()",
+        "p.empiler(4)",
+        "p.empiler(1)",
+        "p.empiler(8)",
+        "p.depiler()",
+        "p.empiler(5)",
+        "p.depiler()",
+        "p.empiler(3)"
+      ],
+      "options": [
+        { "texte": "4, 1, 3", "feedback": "Ce sont les bons éléments, mais lus du bas vers le haut. La convention est du haut vers le bas : le dernier empilé, 3, s'écrit en premier." },
+        { "texte": "3, 5, 8", "feedback": "Tu as retiré à chaque fois le plus ancien élément, comme dans une file. Dans une pile, `depiler()` retire le plus récent : d'abord 8, puis 5." },
+        { "texte": "3, 1, 4", "juste": true, "feedback": "Bravo. 8 puis 5 sont retirés juste après avoir été empilés. Il reste 4 et 1, puis 3 arrive au sommet." },
+        { "texte": "3, 5, 8, 1, 4", "feedback": "Tu as oublié les `depiler()`. Chacun retire l'élément du sommet : la pile perd un élément à chaque fois." }
+      ],
+      "explication": "8 et 5 sont dépilés juste après leur arrivée : il reste 3, 1, 4.",
+      "trace": {
+        "colonnes": ["Instruction", "Pile (du haut vers le bas)"],
+        "lignes": [
+          ["p.empiler(4)", "4"],
+          ["p.empiler(1)", "1, 4"],
+          ["p.empiler(8)", "8, 1, 4"],
+          ["p.depiler()", "1, 4"],
+          ["p.empiler(5)", "5, 1, 4"],
+          ["p.depiler()", "1, 4"],
+          ["p.empiler(3)", "3, 1, 4"]
+        ]
+      },
+      "verifications": [
+        { "code": ["print(haut_vers_bas(p))"], "sortie": "[3, 1, 4]" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Les primitives de la file",
+      "texte": [
+        "`File()` crée une file vide ; `f.est_vide()` ; `f.enfiler(e)` ajoute `e` **à la queue** ; `f.defiler()` **retire** l'élément de **tête** et le renvoie ; `f.taille()`.",
+        "Un élément défilé puis enfilé de nouveau repart **à la queue** : il fait la queue une deuxième fois."
+      ],
+      "schema": { "type": "etapes", "structure": "file", "etapes": [
+        { "op": "f.enfiler(\"a\")", "elements": ["a"] },
+        { "op": "f.enfiler(\"b\")", "elements": ["a", "b"] },
+        { "op": "f.defiler() → \"a\"", "elements": ["b"] },
+        { "op": "f.enfiler(\"a\")", "elements": ["b", "a"] }
+      ] }
+    },
+    {
+      "type": "question",
+      "id": "q06",
+      "nom": "[File] Défiler puis enfiler de nouveau",
+      "objectif": "Suivre une file quand un élément défilé est remis dans la file.",
+      "enonce": [
+        "On exécute le code suivant, avec des noms de communes de Mayotte.",
+        "Que vaut `y`, et que contient `f` à la fin, de la tête vers la queue ?"
+      ],
+      "code": [
+        "f = File()",
+        "f.enfiler(\"Dzaoudzi\")",
+        "f.enfiler(\"Sada\")",
+        "f.enfiler(\"Kani-Kéli\")",
+        "x = f.defiler()",
+        "f.enfiler(x)",
+        "y = f.defiler()"
+      ],
+      "options": [
+        { "texte": "`y` vaut \"Sada\" ; `f` contient \"Kani-Kéli\", \"Dzaoudzi\".", "juste": true, "feedback": "Exact. \"Dzaoudzi\" sort en tête, puis repart à la queue. La nouvelle tête est \"Sada\" : c'est elle qui sort ensuite." },
+        { "texte": "`y` vaut \"Kani-Kéli\" ; `f` contient \"Dzaoudzi\", \"Sada\".", "feedback": "Tu as fait comme avec une pile : tu as retiré le dernier arrivé. Une file retire toujours en tête, le plus ancien élément." },
+        { "texte": "`y` vaut \"Dzaoudzi\" ; `f` contient \"Sada\", \"Kani-Kéli\".", "feedback": "Tu as remis \"Dzaoudzi\" en tête. Or `enfiler` ajoute toujours à la queue : l'élément refait la queue derrière les autres." },
+        { "texte": "`y` vaut \"Sada\" ; `f` contient \"Kani-Kéli\".", "feedback": "`y` est juste, mais tu as perdu \"Dzaoudzi\". La ligne `f.enfiler(x)` le remet à la queue de la file." }
+      ],
+      "explication": "« Défiler puis enfiler » fait passer la tête à la queue.",
+      "trace": {
+        "colonnes": ["Instruction", "File (de la tête vers la queue)"],
+        "lignes": [
+          ["3 × enfiler", "Dzaoudzi, Sada, Kani-Kéli"],
+          ["x = f.defiler()", "Sada, Kani-Kéli (x vaut Dzaoudzi)"],
+          ["f.enfiler(x)", "Sada, Kani-Kéli, Dzaoudzi"],
+          ["y = f.defiler()", "Kani-Kéli, Dzaoudzi (y vaut Sada)"]
+        ]
+      },
+      "verifications": [
+        { "code": ["print(y, tete_vers_queue(f))"], "sortie": "Sada ['Kani-Kéli', 'Dzaoudzi']" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "À quoi servent les piles et les files ?",
+      "texte": [
+        "**Pile** : le bouton Annuler (Ctrl + Z) défait la dernière action ; le bouton Précédent du navigateur ; les appels de fonctions en attente.",
+        "**File** : les impressions en attente ; les paquets qu'un routeur doit envoyer, dans l'ordre d'arrivée ; les processus qui attendent leur tour sur le processeur."
+      ],
+      "schema": { "type": "pile", "elements": ["écrire « Bonjour »", "mettre en gras", "effacer un mot"], "legende": "Ctrl + Z défait d'abord « effacer un mot »." }
+    },
+    {
+      "type": "question",
+      "id": "q07",
+      "nom": "[Applications] Reconnaître une file en informatique",
+      "objectif": "Reconnaître une file parmi des usages courants des piles et des files.",
+      "enonce": [
+        "Laquelle de ces situations se modélise naturellement par une **file** ?"
+      ],
+      "options": [
+        { "texte": "Le bouton Annuler d'un traitement de texte, qui défait la dernière action.", "feedback": "Annuler défait d'abord la dernière action : dernier entré, premier sorti. C'est une pile." },
+        { "texte": "Le bouton Précédent d'un navigateur web.", "feedback": "Précédent revient à la dernière page visitée avant la page actuelle : c'est la plus récente qui ressort. C'est une pile." },
+        { "texte": "Les appels de fonctions en attente pendant une récursion.", "feedback": "Le dernier appel lancé est le premier terminé : c'est la pile d'appels. Tu la reverras avec la récursivité." },
+        { "texte": "Les paquets de données qu'un routeur envoie dans l'ordre d'arrivée.", "juste": true, "feedback": "Oui. Les paquets attendent dans une file : le premier arrivé au routeur est le premier envoyé (FIFO)." }
+      ],
+      "explication": "Annuler, Précédent, appels de fonctions : piles. Paquets d'un routeur : file."
+    },
+    {
+      "type": "notion",
+      "titre": "Attention : dépiler une pile vide",
+      "texte": [
+        "`depiler()` sur une pile vide provoque une **erreur**. Avec une liste Python, le message est : `IndexError: pop from empty list` (« erreur d'indice : retrait dans une liste vide »).",
+        "Avant de dépiler, on **teste** `est_vide()`. Pour vider une pile : `while not p.est_vide():`."
+      ],
+      "schema": { "type": "pile", "elements": [], "legende": "Pile vide : depiler() provoque une erreur." }
+    },
+    {
+      "type": "question",
+      "id": "q08",
+      "nom": "[Erreur] Dépiler plus d'éléments qu'il n'y en a",
+      "objectif": "Prévoir l'erreur provoquée par un dépilement sur une pile vide.",
+      "enonce": [
+        "On exécute le code suivant.",
+        "Que se passe-t-il ?"
+      ],
+      "code": [
+        "p = Pile()",
+        "p.empiler(10)",
+        "p.empiler(20)",
+        "total = 0",
+        "for i in range(3):",
+        "    total = total + p.depiler()"
+      ],
+      "options": [
+        { "texte": "`total` vaut 30 : le troisième `depiler()` ne fait rien.", "feedback": "Une pile vide ne renvoie pas « rien » quand on la dépile : elle provoque une erreur. Le programme s'arrête avant la fin de la boucle." },
+        { "texte": "Une erreur se produit au troisième tour : la pile est vide.", "juste": true, "feedback": "Exact. Après deux tours, 20 puis 10 sont sortis. Au troisième tour, `depiler()` provoque `IndexError: pop from empty list`, l'erreur d'une liste vide." },
+        { "texte": "`total` vaut 60, car le sommet 20 est lu trois fois.", "feedback": "Tu as fait comme si `depiler()` lisait le sommet sans le retirer : ça, c'est `sommet()`. `depiler()` retire l'élément, la pile se vide." },
+        { "texte": "`total` vaut 30 et `p` contient encore les éléments 20 et 10.", "feedback": "`depiler()` retire les éléments : après deux tours, la pile est vide. Et le troisième tour provoque une erreur." }
+      ],
+      "explication": "Trois dépilements pour deux éléments : erreur au troisième, `IndexError`.",
+      "verifications": [
+        { "code": [], "erreur": "IndexError" },
+        { "code": ["p = Pile()", "p.empiler(10)", "p.empiler(20)", "total = 0", "try:", "    for i in range(3):", "        total = total + p.depiler()", "except IndexError as e:", "    print(i, total, e)"], "sortie": "2 30 pop from empty list", "reprendre_code": false }
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q09",
+      "nom": "[Erreur] Corriger la boucle qui vide une pile",
+      "objectif": "Choisir la boucle qui vide une pile sans erreur, quelle que soit sa taille.",
+      "enonce": [
+        "On veut additionner tous les éléments de la pile `p` du code précédent, sans connaître sa taille à l'avance.",
+        "Quelle boucle convient ?"
+      ],
+      "options": [
+        { "code": ["while not p.est_vide():", "    total = total + p.depiler()"], "juste": true, "feedback": "Oui. La boucle s'arrête exactement quand la pile est vide : aucune erreur, quelle que soit la taille. C'est la boucle à retenir." },
+        { "code": ["while p.est_vide():", "    total = total + p.depiler()"], "feedback": "La condition est inversée : la pile n'est pas vide au départ, donc la boucle ne fait aucun tour et `total` reste à 0. Il faut « tant que la pile n'est pas vide »." },
+        { "code": ["for i in range(p.taille() + 1):", "    total = total + p.depiler()"], "feedback": "Avec `+ 1`, la boucle fait un tour de trop : le dernier tour dépile une pile vide et provoque encore `IndexError`." },
+        { "code": ["if not p.est_vide():", "    total = total + p.depiler()"], "feedback": "Un `if` ne s'exécute qu'une fois : on ne dépile que le sommet, et `total` vaut 20. Pour répéter, il faut une boucle `while`." }
+      ],
+      "explication": "`while not p.est_vide():` dépile tant qu'il reste un élément.",
+      "verifications": [
+        { "code": ["p = Pile()", "p.empiler(10)", "p.empiler(20)", "total = 0", "while not p.est_vide():", "    total = total + p.depiler()", "print(total)"], "sortie": "30", "reprendre_code": false },
+        { "code": ["p = Pile()", "p.empiler(10)", "p.empiler(20)", "total = 0", "while p.est_vide():", "    total = total + p.depiler()", "print(total)"], "sortie": "0", "reprendre_code": false, "option": 1 },
+        { "code": ["p = Pile()", "p.empiler(10)", "p.empiler(20)", "total = 0", "for i in range(p.taille() + 1):", "    total = total + p.depiler()"], "erreur": "IndexError", "reprendre_code": false, "option": 2 },
+        { "code": ["p = Pile()", "p.empiler(10)", "p.empiler(20)", "total = 0", "if not p.est_vide():", "    total = total + p.depiler()", "print(total)"], "sortie": "20", "reprendre_code": false, "option": 3 }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Implémenter une pile avec une liste Python",
+      "texte": [
+        "Une implémentation possible : une liste Python dont le **dernier élément est le sommet**.",
+        "`empiler` → `liste.append(e)` ; `depiler` → `liste.pop()` ; `sommet` → `liste[-1]` ; `est_vide` → `len(liste) == 0`.",
+        "Une file avec une liste : `append(e)` pour enfiler, `pop(0)` pour défiler (la tête est l'indice 0)."
+      ],
+      "schema": { "type": "liste", "elements": [4, 1, 8], "legende": "Bas de la pile : indice 0. Sommet : indice -1." },
+      "code": [
+        "class Pile:",
+        "    def __init__(self):",
+        "        self.contenu = []",
+        "    def empiler(self, e):",
+        "        self.contenu.append(e)",
+        "    def depiler(self):",
+        "        return self.contenu.pop()"
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q10",
+      "nom": "[Implémentation] Lire le sommet d'une liste",
+      "objectif": "Traduire la primitive `sommet` avec une liste Python.",
+      "enonce": [
+        "Une pile est représentée par une liste Python `pile`. Le sommet est le dernier élément de la liste.",
+        "Quelle expression donne le sommet **sans modifier** la pile ?"
+      ],
+      "options": [
+        { "texte": "`pile.pop()`", "feedback": "`pop()` renvoie bien le dernier élément, mais il le retire : c'est `depiler`, pas `sommet`. La pile serait modifiée." },
+        { "texte": "`pile[0]`", "feedback": "L'indice 0 est le premier élément de la liste, c'est-à-dire le bas de la pile ici. Le sommet est à l'autre bout." },
+        { "texte": "`pile[len(pile)]`", "feedback": "Les indices vont de 0 à `len(pile) - 1`. `pile[len(pile)]` sort de la liste : `IndexError: list index out of range` (« indice hors de la liste »)." },
+        { "texte": "`pile[-1]`", "juste": true, "feedback": "Oui. L'indice -1 désigne le dernier élément, sans le retirer. C'est aussi `pile[len(pile) - 1]`." }
+      ],
+      "explication": "Sommet = dernier élément : `pile[-1]`.",
+      "verifications": [
+        { "code": ["pile = [4, 1, 8]", "print(pile[-1], pile)", "print(pile[0])", "try:", "    pile[len(pile)]", "except IndexError as e:", "    print(e)"], "sortie": "8 [4, 1, 8]\n4\nlist index out of range" }
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q11",
+      "nom": "[Implémentation] Trouver l'erreur dans un défilement",
+      "objectif": "Repérer qu'une file implémentée par une liste se défile avec `pop(0)`.",
+      "enonce": [
+        "Le code suivant représente une file par une liste : la tête est le premier élément. La ligne 5 doit défiler.",
+        "Qu'affiche ce code, et que faut-il en conclure ?"
+      ],
+      "code": [
+        "file = []",
+        "file.append(\"A\")",
+        "file.append(\"B\")",
+        "file.append(\"C\")",
+        "x = file.pop()",
+        "print(x, file)"
+      ],
+      "options": [
+        { "texte": "Il affiche `A ['B', 'C']` : le code est juste.", "feedback": "`pop()` sans argument ne retire pas le premier élément, mais le dernier. Le code affiche C : il se comporte comme une pile." },
+        { "texte": "Il affiche `C ['A', 'B']` : il faut écrire `file.pop(0)`.", "juste": true, "feedback": "Exact. `pop()` retire le dernier élément : on obtient une pile. Pour défiler en tête, on retire l'indice 0 avec `pop(0)`." },
+        { "texte": "Il affiche `A ['B', 'C']`, mais il faut écrire `file.pop(-1)`.", "feedback": "`pop(-1)` fait exactement comme `pop()` : il retire le dernier élément. Pour une file dont la tête est au début, c'est `pop(0)`." },
+        { "texte": "Il provoque une erreur : `pop()` a besoin d'un indice.", "feedback": "L'indice de `pop` est facultatif : sans indice, `pop()` retire le dernier élément. Il n'y a pas d'erreur ici." }
+      ],
+      "explication": "`pop()` retire à la fin (pile) ; `pop(0)` retire au début (file).",
+      "verifications": [
+        { "code": [], "sortie": "C ['A', 'B']" },
+        { "code": ["file = [\"A\", \"B\", \"C\"]", "print(file.pop(0), file)"], "sortie": "A ['B', 'C']", "reprendre_code": false }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Le coût de pop(0)",
+      "texte": [
+        "`pop()` retire le dernier élément : rien d'autre ne bouge. Son coût est **constant**.",
+        "`pop(0)` retire le premier : **tous les autres éléments sont décalés** d'une case. Son coût est proportionnel au nombre `n` d'éléments : il est **linéaire**.",
+        "Pour une grande file, on évite donc `pop(0)`. On peut utiliser deux piles (plus loin) ou `collections.deque`."
+      ],
+      "schema": { "type": "decalage", "elements": ["A", "B", "C", "D", "E"], "legende": "pop(0) retire A : B, C, D et E reculent chacun d'une case." }
+    },
+    {
+      "type": "question",
+      "id": "q12",
+      "nom": "[Coût] Défiler avec `pop(0)` dans une grande liste",
+      "objectif": "Évaluer le coût d'un défilement avec `pop(0)`.",
+      "enonce": [
+        "Une file de `n` éléments est une liste Python. On défile avec `pop(0)`.",
+        "Si la file contient deux fois plus d'éléments, comment évolue, environ, la durée d'**un** défilement ?"
+      ],
+      "options": [
+        { "texte": "Elle ne change pas, comme pour `pop()`.", "feedback": "C'est vrai pour `pop()`, qui retire le dernier élément. `pop(0)` doit décaler tous les éléments restants : plus il y en a, plus c'est long." },
+        { "texte": "Elle est divisée par deux.", "feedback": "Plus d'éléments ne peut pas rendre le travail plus court : il y a deux fois plus d'éléments à décaler, pas deux fois moins." },
+        { "texte": "Elle double environ : il y a deux fois plus de décalages.", "juste": true, "feedback": "Oui. Chaque élément restant recule d'une case : le travail est proportionnel à `n`. Le coût est linéaire." },
+        { "texte": "Elle est multipliée par quatre environ : le coût est quadratique.", "feedback": "Un coût multiplié par quatre, ce serait un coût quadratique (en `n²`), comme un tri par sélection. Un seul `pop(0)` décale chaque élément une seule fois : coût linéaire." }
+      ],
+      "explication": "`pop(0)` décale les `n - 1` éléments restants : coût linéaire.",
+      "note_verification": "Mesure faite avec timeit (Python 3.13) : environ 32 µs pour 200 000 éléments, 112 µs pour 400 000 et 242 µs pour 800 000 ; `pop()` reste vers 0,02 µs."
+    },
+    {
+      "type": "notion",
+      "titre": "Parcourir une pile sans la détruire",
+      "texte": [
+        "Avec les seules primitives, on ne voit que le sommet. Pour tout lire, on **dépile dans une pile auxiliaire** (`aux`).",
+        "Puis on **rempile** tout de `aux` vers `p` : la pile retrouve son ordre de départ.",
+        "Sans cette deuxième boucle, `p` reste vide à la fin."
+      ],
+      "schema": { "type": "deux-piles", "gauche": { "nom": "p", "elements": [] }, "droite": { "nom": "aux", "elements": ["c", "b", "a"] }, "fleche": "on rempile dans p", "legende": "p contenait a, b, c (du haut vers le bas) : aux les a dans l'ordre inverse." }
+    },
+    {
+      "type": "question",
+      "id": "q13",
+      "nom": "[Parcours] Compter sans détruire la pile",
+      "objectif": "Analyser une fonction qui parcourt une pile puis la reconstruit.",
+      "enonce": [
+        "La pile `p` contient, du haut vers le bas : 2, 5, 2, 7. On exécute `n = compter(p, 2)`.",
+        "Que valent `n` et `p` ensuite ?"
+      ],
+      "code": [
+        "def compter(p, x):",
+        "    aux = Pile()",
+        "    n = 0",
+        "    while not p.est_vide():",
+        "        e = p.depiler()",
+        "        if e == x:",
+        "            n = n + 1",
+        "        aux.empiler(e)",
+        "    while not aux.est_vide():",
+        "        p.empiler(aux.depiler())",
+        "    return n"
+      ],
+      "options": [
+        { "texte": "`n` vaut 2 et `p` est vide.", "feedback": "La première boucle vide bien `p`, mais regarde la seconde : elle rempile tous les éléments de `aux` dans `p`." },
+        { "texte": "`n` vaut 2 et `p` contient 7, 2, 5, 2.", "feedback": "Un seul passage dans une autre pile inverse l'ordre, mais ici il y en a deux : de `p` vers `aux`, puis de `aux` vers `p`. Deux inversions redonnent l'ordre de départ." },
+        { "texte": "`n` vaut 1 et `p` contient 2, 5, 2, 7.", "feedback": "La boucle ne s'arrête pas au premier 2 trouvé : elle dépile jusqu'à ce que `p` soit vide, et compte chaque 2." },
+        { "texte": "`n` vaut 2 et `p` contient 2, 5, 2, 7.", "juste": true, "feedback": "Exact. Deux 2 sont comptés. Le passage par `aux` inverse l'ordre, le retour l'inverse encore : `p` est comme au départ." }
+      ],
+      "explication": "Dépiler dans `aux`, puis rempiler : on lit tout, et la pile est intacte.",
+      "verifications": [
+        { "code": ["p = Pile()", "for e in [7, 2, 5, 2]:", "    p.empiler(e)", "n = compter(p, 2)", "print(n, haut_vers_bas(p))"], "sortie": "2 [2, 5, 2, 7]" }
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q14",
+      "nom": "[Erreur] La fonction qui vide la pile par accident",
+      "objectif": "Trouver l'erreur d'une fonction qui doit lire une pile sans la modifier.",
+      "enonce": [
+        "La fonction `fond` doit renvoyer l'élément du bas d'une pile `p` non vide, **sans modifier** `p`.",
+        "Quel est le problème de ce code ?"
+      ],
+      "code": [
+        "def fond(p):",
+        "    aux = Pile()",
+        "    while not p.est_vide():",
+        "        aux.empiler(p.depiler())",
+        "    resultat = aux.sommet()",
+        "    return resultat"
+      ],
+      "options": [
+        { "texte": "`p` est vide à la fin : il manque la boucle qui rempile `aux` dans `p`.", "juste": true, "feedback": "Bien vu. Le fond de `p` arrive au sommet de `aux`, donc le résultat est juste. Mais il manque la boucle qui rempile `aux` dans `p` : la pile de départ est détruite." },
+        { "texte": "Elle renvoie le sommet de `p` au lieu de l'élément du fond.", "feedback": "En passant dans `aux`, l'ordre s'inverse : le fond de `p` devient le sommet de `aux`. Le résultat est donc bien le fond." },
+        { "texte": "`aux.sommet()` provoque une erreur, car la pile `aux` est encore vide à ce moment.", "feedback": "`aux` est vide au début, mais la boucle y met tous les éléments de `p`, qui n'est pas vide. Au moment de `aux.sommet()`, `aux` est pleine." },
+        { "texte": "Il n'y a pas d'erreur : `p` est inchangée.", "feedback": "Chaque `p.depiler()` retire un élément de `p`. À la sortie de la boucle, `p` est vide : elle a été modifiée." }
+      ],
+      "explication": "On lit le fond au sommet de `aux`, mais il faut rempiler dans `p`.",
+      "verifications": [
+        { "code": ["p = Pile()", "for e in [\"bas\", \"milieu\", \"haut\"]:", "    p.empiler(e)", "print(fond(p), p.est_vide())"], "sortie": "bas True" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Une file avec deux piles",
+      "texte": [
+        "Deux piles : `entree` et `sortie`. Pour **enfiler**, on empile dans `entree`.",
+        "Pour **défiler** : si `sortie` est vide, on **transvase** toute `entree` dans `sortie` (l'ordre s'inverse : le plus ancien arrive au sommet). Puis on dépile `sortie`.",
+        "Chaque élément n'est transvasé qu'une fois : en moyenne, un défilement coûte un temps constant."
+      ],
+      "schema": { "type": "deux-piles", "gauche": { "nom": "entree", "elements": [1, 2, 3] }, "droite": { "nom": "sortie", "elements": [] }, "fleche": "transvaser si sortie est vide", "legende": "Après le transvasement, 1, le plus ancien, sera au sommet de sortie." },
+      "code": [
+        "class FileDeuxPiles:",
+        "    def __init__(self):",
+        "        self.entree = Pile()",
+        "        self.sortie = Pile()",
+        "    def enfiler(self, e):",
+        "        self.entree.empiler(e)",
+        "    def defiler(self):",
+        "        if self.sortie.est_vide():",
+        "            while not self.entree.est_vide():",
+        "                self.sortie.empiler(self.entree.depiler())",
+        "        return self.sortie.depiler()"
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q15",
+      "nom": "[File à deux piles] L'état des deux piles",
+      "objectif": "Suivre le transvasement d'une file implémentée avec deux piles.",
+      "enonce": [
+        "Avec la classe `FileDeuxPiles` de la diapositive précédente, on enfile 1, puis 2, puis 3, puis on défile une fois (cela renvoie 1).",
+        "Que contiennent ensuite `entree` et `sortie`, du haut vers le bas ?"
+      ],
+      "options": [
+        { "texte": "`entree` : 2, 1 ; `sortie` vide.", "feedback": "Tu as dépilé directement `entree` : on aurait obtenu 3, le dernier arrivé. Pour défiler, on transvase d'abord `entree` dans `sortie`." },
+        { "texte": "`entree` vide ; `sortie` : 3, 2.", "feedback": "Le transvasement inverse l'ordre : 3 était au sommet de `entree`, il arrive en bas de `sortie`. Le sommet de `sortie` est 1, puis 2 après le défilement." },
+        { "texte": "`entree` vide ; `sortie` : 2, 3.", "juste": true, "feedback": "Exact. Le transvasement met 1 au sommet de `sortie`, puis on le dépile. Il reste 2 au sommet et 3 dessous : ils sortiront dans l'ordre d'arrivée." },
+        { "texte": "`entree` : 2, 3 ; `sortie` vide.", "feedback": "Les éléments transvasés ne reviennent pas dans `entree`. Ils restent dans `sortie`, prêts à être défilés dans le bon ordre." }
+      ],
+      "explication": "Transvaser inverse l'ordre : le plus ancien arrive au sommet de `sortie`.",
+      "verifications": [
+        { "code": ["class FileDeuxPiles:", "    def __init__(self):", "        self.entree = Pile()", "        self.sortie = Pile()", "    def enfiler(self, e):", "        self.entree.empiler(e)", "    def defiler(self):", "        if self.sortie.est_vide():", "            while not self.entree.est_vide():", "                self.sortie.empiler(self.entree.depiler())", "        return self.sortie.depiler()", "f = FileDeuxPiles()", "for e in [1, 2, 3]:", "    f.enfiler(e)", "print(f.defiler(), haut_vers_bas(f.entree), haut_vers_bas(f.sortie))"], "sortie": "1 [] [2, 3]", "reprendre_code": false }
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q16",
+      "nom": "[File à deux piles] Transvaser seulement si la sortie est vide",
+      "objectif": "Comprendre pourquoi on ne transvase que lorsque la pile de sortie est vide.",
+      "enonce": [
+        "Avec la même classe, on enfile 1 et 2, on défile une fois (cela renvoie 1), on enfile 3, puis on défile deux fois.",
+        "Quelles valeurs renvoient ces deux derniers défilements, dans l'ordre ?"
+      ],
+      "code": [
+        "def defiler(self):",
+        "    if self.sortie.est_vide():",
+        "        while not self.entree.est_vide():",
+        "            self.sortie.empiler(self.entree.depiler())",
+        "    return self.sortie.depiler()"
+      ],
+      "options": [
+        { "texte": "3, puis 2", "feedback": "C'est ce qu'on obtiendrait en transvasant à chaque défilement : 3 passerait par-dessus 2. Grâce au `if`, on ne transvase que si `sortie` est vide." },
+        { "texte": "2, puis 3", "juste": true, "feedback": "Oui. `sortie` contient encore 2 : on le défile sans transvaser. Ensuite `sortie` est vide, on transvase 3 et on le défile. L'ordre d'arrivée est respecté." },
+        { "texte": "2, puis une erreur", "feedback": "Après le défilement de 2, `sortie` est vide, mais le `if` déclenche le transvasement : 3 passe de `entree` à `sortie`. Il n'y a pas d'erreur." },
+        { "texte": "2, puis 2", "feedback": "`depiler()` retire l'élément : 2 ne peut pas sortir deux fois. Le second défilement renvoie l'élément suivant, 3." }
+      ],
+      "explication": "On ne transvase que si `sortie` est vide : l'ordre d'arrivée est gardé.",
+      "trace": {
+        "colonnes": ["Opération", "entree (haut → bas)", "sortie (haut → bas)", "Renvoie"],
+        "lignes": [
+          ["enfiler 1, enfiler 2", "2, 1", "vide", ""],
+          ["defiler", "vide", "2", "1"],
+          ["enfiler 3", "3", "2", ""],
+          ["defiler", "3", "vide", "2"],
+          ["defiler", "vide", "vide", "3"]
+        ]
+      },
+      "verifications": [
+        { "code": ["class FileDeuxPiles:", "    def __init__(self):", "        self.entree = Pile()", "        self.sortie = Pile()", "    def enfiler(self, e):", "        self.entree.empiler(e)", "f = FileDeuxPiles()", "FileDeuxPiles.defiler = defiler", "f.enfiler(1)", "f.enfiler(2)", "print(f.defiler())", "f.enfiler(3)", "print(f.defiler(), f.defiler())"], "sortie": "1\n2 3" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Une pile pour vérifier les parenthèses",
+      "texte": [
+        "On lit le texte de gauche à droite. Une parenthèse ouvrante `(` : on l'**empile**. Une fermante `)` : on **dépile** l'ouvrante qui lui correspond.",
+        "Si on doit dépiler une pile vide, une `)` n'a pas d'ouvrante : c'est faux. À la fin, la pile doit être vide.",
+        "C'est ce que fait l'éditeur de code quand il signale une parenthèse en trop."
+      ],
+      "schema": { "type": "etapes", "structure": "pile", "etapes": [
+        { "op": "(", "elements": ["("] },
+        { "op": "(", "elements": ["(", "("] },
+        { "op": ")", "elements": ["("] },
+        { "op": ")", "elements": [] }
+      ], "legende": "« (()) » : la pile finit vide, le texte est bien parenthésé." }
+    },
+    {
+      "type": "question",
+      "id": "q17",
+      "nom": "[Analyse de code] Le vérificateur de parenthèses",
+      "objectif": "Exécuter à la main un algorithme qui utilise une pile.",
+      "enonce": [
+        "On considère la fonction suivante.",
+        "Que renvoie `bien_parenthese(\"(()))(\")` ?"
+      ],
+      "code": [
+        "def bien_parenthese(texte):",
+        "    p = Pile()",
+        "    for c in texte:",
+        "        if c == \"(\":",
+        "            p.empiler(c)",
+        "        elif c == \")\":",
+        "            if p.est_vide():",
+        "                return False",
+        "            p.depiler()",
+        "    return p.est_vide()"
+      ],
+      "options": [
+        { "texte": "`False` : au 5e caractère, la pile est vide.", "juste": true, "feedback": "Exact. Les deux `(` sont dépilées par les deux premières `)`. La troisième `)` trouve la pile vide : la fonction renvoie `False` tout de suite." },
+        { "texte": "`True` : il y a autant de `(` que de `)`.", "feedback": "Il y a bien trois `(` et trois `)`, mais l'ordre compte : une `)` arrive avant son ouvrante. Compter ne suffit pas, il faut la pile." },
+        { "texte": "`False` : la pile n'est pas vide à la fin.", "feedback": "La réponse `False` est juste, mais pas la raison : la fonction s'arrête au 5e caractère, avant la fin du texte. Le dernier `(` n'est jamais lu." },
+        { "texte": "Une erreur `IndexError`, car on dépile une pile vide.", "feedback": "Le test `if p.est_vide():` protège le `depiler()` : on renvoie `False` avant de dépiler. Il n'y a pas d'erreur." }
+      ],
+      "explication": "La 3e `)` n'a plus d'ouvrante : `False`, dès le 5e caractère.",
+      "trace": {
+        "colonnes": ["Caractère", "Action", "Pile (du haut vers le bas)"],
+        "lignes": [
+          ["1 : (", "empiler", "("],
+          ["2 : (", "empiler", "(, ("],
+          ["3 : )", "dépiler", "("],
+          ["4 : )", "dépiler", "vide"],
+          ["5 : )", "pile vide : renvoie False", "vide"]
+        ]
+      },
+      "verifications": [
+        { "code": ["print(bien_parenthese(\"(()))(\"), bien_parenthese(\"(())\"), bien_parenthese(\"(()\"))"], "sortie": "False True False" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "La pile d'appels",
+      "texte": [
+        "Quand une fonction en appelle une autre, l'appel en cours est mis **en attente** : Python l'**empile** dans la pile d'appels.",
+        "Un appel terminé est **dépilé**, et le précédent reprend : dernier appelé, premier terminé.",
+        "Cette pile a une taille limitée : en Python, environ 1 000 appels par défaut."
+      ],
+      "schema": { "type": "pile", "elements": ["somme(3)", "somme(2)", "somme(1)", "somme(0)"], "legende": "somme(0) se termine en premier, puis somme(1)…" }
+    },
+    {
+      "type": "question",
+      "id": "q18",
+      "nom": "[Pile d'appels] Lire une erreur de récursion",
+      "objectif": "Expliquer `RecursionError` par la pile d'appels.",
+      "enonce": [
+        "L'appel `somme(100000)` provoque l'erreur `RecursionError: maximum recursion depth exceeded` (« profondeur maximale de récursion dépassée »).",
+        "Pourquoi ?"
+      ],
+      "code": [
+        "def somme(n):",
+        "    if n == 0:",
+        "        return 0",
+        "    return n + somme(n - 1)"
+      ],
+      "options": [
+        { "texte": "Le résultat devient trop grand pour être rangé dans un entier Python.", "feedback": "En Python, les entiers n'ont pas de limite de taille : `somme(500)` donne d'ailleurs 125250 sans problème. Le message parle de profondeur, pas de taille du nombre." },
+        { "texte": "La condition `n == 0` n'est jamais atteinte.", "feedback": "`n` diminue de 1 à chaque appel : la condition finirait par être vraie. Le problème arrive avant, à cause du nombre d'appels en attente." },
+        { "texte": "Les appels en attente remplissent la pile d'appels, qui est limitée.", "juste": true, "feedback": "Exact. Chaque appel attend le résultat du suivant : 100 000 appels s'empilent, bien plus que la limite d'environ 1 000. Python arrête le programme." },
+        { "texte": "La fonction n'utilise pas les primitives `empiler` et `depiler`.", "feedback": "La pile d'appels est gérée par Python lui-même, sans primitive dans ton code. C'est elle qui déborde ici." }
+      ],
+      "explication": "Trop d'appels en attente : la pile d'appels déborde.",
+      "verifications": [
+        { "code": ["import sys", "print(sys.getrecursionlimit(), somme(500))", "somme(100000)"], "sortie": "1000 125250", "erreur": "RecursionError" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Combiner une pile et une file",
+      "texte": [
+        "Passer des éléments d'une file dans une pile, puis de la pile dans la file : **l'ordre s'inverse**.",
+        "Le premier défilé est empilé en premier : il se retrouve en bas de la pile, donc il ressort en dernier."
+      ],
+      "schema": { "type": "file", "elements": ["a", "b", "c"], "legende": "Défiler a, b, c puis les empiler : c sera au sommet." }
+    },
+    {
+      "type": "question",
+      "id": "q19",
+      "nom": "[Analyse de code] Une file qui passe par une pile",
+      "objectif": "Prévoir l'effet combiné d'une file et d'une pile.",
+      "enonce": [
+        "La file `f` contient, de la tête vers la queue : 1, 2, 3, 4. On exécute `mystere(f)`.",
+        "Que contient `f` ensuite, de la tête vers la queue ?"
+      ],
+      "code": [
+        "def mystere(f):",
+        "    p = Pile()",
+        "    while not f.est_vide():",
+        "        p.empiler(f.defiler())",
+        "    while not p.est_vide():",
+        "        f.enfiler(p.depiler())"
+      ],
+      "options": [
+        { "texte": "1, 2, 3, 4", "feedback": "Une file garde l'ordre, mais une pile l'inverse : on ne revient pas à l'ordre de départ. Suis la pile : 4 est empilé en dernier, il ressort en premier." },
+        { "texte": "`f` est vide : les éléments sont restés dans `p`.", "feedback": "La seconde boucle vide `p` et remet chaque élément dans `f` : `f` n'est pas vide à la fin." },
+        { "texte": "1, 2, 3, 4, 4, 3, 2, 1", "feedback": "`defiler()` retire l'élément de `f`, il ne le copie pas. Après la première boucle, `f` est vide." },
+        { "texte": "4, 3, 2, 1", "juste": true, "feedback": "Oui. La pile reçoit 1, 2, 3, 4 ; 4 est au sommet. On dépile 4, 3, 2, 1, enfilés dans cet ordre : la file est renversée." }
+      ],
+      "explication": "File vers pile, puis pile vers file : l'ordre est renversé.",
+      "verifications": [
+        { "code": ["f = File()", "for e in [1, 2, 3, 4]:", "    f.enfiler(e)", "mystere(f)", "print(tete_vers_queue(f))"], "sortie": "[4, 3, 2, 1]" }
+      ]
+    },
+    {
+      "type": "notion",
+      "titre": "Choisir la bonne structure",
+      "texte": [
+        "Le dernier arrivé doit sortir en premier : **pile**. L'ordre d'arrivée doit être respecté : **file**.",
+        "Puis on choisit l'implémentation : une liste avec `append` et `pop()` est efficace pour une pile ; pour une grande file, on évite `pop(0)`."
+      ]
+    },
+    {
+      "type": "question",
+      "id": "q20",
+      "nom": "[Bilan] Une structure juste et efficace",
+      "objectif": "Choisir une structure et une implémentation adaptées au besoin.",
+      "enonce": [
+        "Le logiciel de réservation des ordinateurs du CDI reçoit des milliers de demandes. Il doit les traiter dans l'ordre d'arrivée, rapidement.",
+        "Quelle solution est à la fois juste et efficace ?"
+      ],
+      "options": [
+        { "texte": "Une liste avec `append` pour ajouter et `pop()` pour retirer.", "feedback": "C'est rapide, mais c'est une pile : la dernière demande serait traitée en premier. L'ordre d'arrivée n'est pas respecté." },
+        { "texte": "Une file à deux piles : en moyenne, chaque défilement est rapide.", "juste": true, "feedback": "Oui. C'est bien une file (ordre d'arrivée), et chaque élément n'est transvasé qu'une fois : le coût moyen d'un défilement est constant." },
+        { "texte": "Une liste avec `append` et `pop(0)` : elle est juste et rapide.", "feedback": "Elle respecte bien l'ordre d'arrivée, mais chaque `pop(0)` décale toutes les demandes restantes : avec des milliers de demandes, c'est lent." },
+        { "texte": "Une liste avec `insert(0, x)` pour ajouter et `pop(0)` pour retirer.", "feedback": "On ajoute et on retire au même bout, le début : c'est une pile ! La dernière demande sortirait en premier." }
+      ],
+      "explication": "Ordre d'arrivée : une file ; deux piles évitent le coût de `pop(0)`.",
+      "verifications": [
+        { "code": ["l = []", "for x in [1, 2, 3]:", "    l.insert(0, x)", "print(l.pop(0))", "l = []", "for x in [1, 2, 3]:", "    l.append(x)", "print(l.pop())"], "sortie": "3\n3", "reprendre_code": false, "option": 3 }
+      ]
+    },
+    {
+      "type": "bilan",
+      "titre": "À retenir",
+      "tableau": {
+        "colonnes": ["", "Pile", "File"],
+        "lignes": [
+          ["Règle", "LIFO : dernier entré, premier sorti", "FIFO : premier entré, premier sorti"],
+          ["Ajouter", "`empiler(e)` au sommet", "`enfiler(e)` à la queue"],
+          ["Retirer", "`depiler()` au sommet", "`defiler()` en tête"],
+          ["Avec une liste", "`append(e)` et `pop()` : rapide", "`append(e)` et `pop(0)` : lent si la file est grande"],
+          ["Exemples", "Annuler, Précédent, pile d'appels", "impressions, paquets d'un routeur"]
+        ]
+      },
+      "ticket": [
+        "Quelle notion est encore floue pour toi aujourd'hui ?",
+        "De 1 à 5, à quel point peux-tu expliquer la différence entre une pile et une file à un·e camarade ?"
+      ]
+    }
+  ]
+}
