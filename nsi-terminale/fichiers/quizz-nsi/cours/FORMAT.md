@@ -26,6 +26,10 @@ Le modèle complet est [`piles-files.json`](piles-files.json).
 | `prelude_python` | non | des lignes Python exécutées avant chaque vérification (par exemple les classes `Pile` et `File`) |
 | `diapositives` | oui | la suite des diapositives, dans l'ordre du cours |
 
+## La règle des exemples (pour tous les cours)
+
+Chaque notion s'ancre **d'abord dans un exemple du quotidien à Mayotte**, connu de tous les élèves, **puis dans son usage informatique** (consigne de l'enseignant, 19/11). Pour les piles et les files : la boîte de chips en tube (la pile), la file au doukabé et le bouchon jusqu'à Mamoudzou (la file), puis le bouton « Annuler » et l'imprimante de la salle info. Des scènes du quotidien, sans cliché ni moquerie, sans nom de marque ; les schémas sont des SVG originaux et sobres, sans personnage. Tout mot d'une langue locale est signalé à l'enseignant pour vérification et n'est jamais nécessaire pour comprendre.
+
 ## Les diapositives
 
 Chaque diapositive a un `type` :
