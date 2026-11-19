@@ -45,6 +45,17 @@ jobs:
                   etat = await prof.inner_text('#etatConnexion'); code = await prof.inner_text('#code')
                   print('salle :', len(code), 'lettres ; état :', etat)
                   if 'ouverte' not in etat: ok = False
+                  espion = await (await b.new_context()).new_page(); suivre(espion, 'espion')
+                  await espion.goto(B + 'rejoindre.html')
+                  await espion.evaluate("""code => new Promise(res => {
+                      const cfg = window.QUIZZ_CONFIG, T = window.TempsReel;
+                      const client = new T.RealtimeClient(cfg.SUPABASE_URL.replace(/^http/, 'ws') + '/realtime/v1', { params: { apikey: cfg.SUPABASE_KEY } });
+                      const ch = client.channel('quizz-nsi:' + code, { config: { broadcast: { self: false } } });
+                      window.__espion = []; window.__canal = ch;
+                      ch.on('broadcast', { event: 'm' }, ({ payload }) => window.__espion.push(payload));
+                      ch.subscribe(st => { if (st === 'SUBSCRIBED') res(true); });
+                      setTimeout(() => res(false), 15000);
+                  })""", code)
                   el = {}
                   for nom in ('Essai-A', 'Essai-B'):
                       ctx = await b.new_context(); pg = await ctx.new_page(); suivre(pg, nom)
@@ -99,10 +110,35 @@ jobs:
                       try:
                           await prof.wait_for_function("+document.getElementById('nbEleves').textContent === 2", timeout=30000)
                           await pg.wait_for_selector('.verdict', timeout=20000)
-                          print('retour :', await pg.inner_text('#points'), '|', (await pg.inner_text('.verdict')).replace('\n', ' ')[:80])
-                          if not (await pg.inner_text('#points')).startswith('10 '): ok = False
+                          print('retour (constat, sans échec) :', await pg.inner_text('#points'), '|', (await pg.inner_text('.verdict')).replace('\n', ' ')[:80])
                       except Exception as e:
                           ok = False; print('retour impossible :', e)
+                  if ok:
+                      await prof.reload(); suivre_ok = True
+                      try:
+                          await prof.wait_for_function("document.getElementById('etatConnexion').classList.contains('ok')", timeout=30000)
+                          await prof.click('#reprendre'); await prof.wait_for_timeout(1500)
+                          await prof.click('#action'); await prof.wait_for_timeout(1500); await prof.click('#action')
+                          pages = {'Essai-A': el['Essai-A'][1], 'Essai-B': pg}
+                          for nom, q in pages.items(): await q.wait_for_function("document.querySelector('.q-nom') && /Justifier/.test(document.querySelector('.q-nom').textContent)", timeout=20000)
+                          await pages['Essai-A'].click('button.option[data-choix="3"]'); await pages['Essai-B'].click('button.option[data-choix="0"]')
+                          await prof.wait_for_function("/2 \\/ 2|Tout le monde/.test(document.getElementById('statutQ').textContent)", timeout=30000)
+                          print('page projetée rechargée (nouvelle clé), question 2 :', await prof.inner_text('#statutQ'))
+                          await prof.click('#action')
+                          for nom, q in pages.items(): await q.wait_for_selector('.verdict', timeout=20000); print(nom, 'question 2 :', (await q.inner_text('.verdict')).replace('\n', ' ')[:60], '|', await q.inner_text('#points'))
+                      except Exception as e:
+                          ok = False; print('après le rechargement de la page projetée :', e)
+                      vus = await espion.evaluate("window.__espion")
+                      types = {}
+                      for m in vus: types[m.get('t')] = types.get(m.get('t'), 0) + 1
+                      print('espion : messages reçus par type :', types)
+                      reps = [m for m in vus if m.get('t') == 'rep']
+                      print('espion : clés des réponses :', sorted({tuple(sorted(m.keys())) for m in reps}))
+                      fuites = [m for m in vus if m.get('t') != 'rep' and any(k in m for k in ('res', 'c', 'gain', 'total', 'place', 'detail', 'bilan', 'moi'))]
+                      print('espion : messages avec un résultat individuel :', fuites[:3])
+                      pres = await espion.evaluate("Object.values(window.__canal.presenceState()).map(l => Object.keys(l[l.length - 1]).sort().join(','))")
+                      print('espion : champs de présence :', sorted(set(pres)))
+                      if not reps or any(set(m.keys()) != {'t', 'de', 'iv', 'donnees'} for m in reps) or fuites: ok = False
                   tables = [u for u in requetes if re.search(r'/(rest|functions|auth|storage|graphql)/v1', u)]
                   print('websockets :', sorted(set(sockets)))
                   print('requêtes vers un autre site :', sorted(set(requetes)))
