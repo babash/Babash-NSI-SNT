@@ -110,7 +110,8 @@ jobs:
                       try:
                           await prof.wait_for_function("+document.getElementById('nbEleves').textContent === 2", timeout=30000)
                           await pg.wait_for_selector('.verdict', timeout=20000)
-                          print('retour (constat, sans échec) :', await pg.inner_text('#points'), '|', (await pg.inner_text('.verdict')).replace('\n', ' ')[:80])
+                          print('retour (page rouverte dans un nouvel onglet) :', await pg.inner_text('#points'), '|', (await pg.inner_text('.verdict')).replace('\n', ' ')[:80])
+                          if not (await pg.inner_text('#points')).startswith('10 '): ok = False; print('points perdus à la réouverture')
                       except Exception as e:
                           ok = False; print('retour impossible :', e)
                   if ok:
@@ -128,6 +129,19 @@ jobs:
                           for nom, q in pages.items(): await q.wait_for_selector('.verdict', timeout=20000); print(nom, 'question 2 :', (await q.inner_text('.verdict')).replace('\n', ' ')[:60], '|', await q.inner_text('#points'))
                       except Exception as e:
                           ok = False; print('après le rechargement de la page projetée :', e)
+                      # une fausse page projetée entre dans la présence : la vraie doit la signaler
+                      faux = await espion.evaluate("""code => new Promise(async res => {
+                          const cfg = window.QUIZZ_CONFIG, T = window.TempsReel, h = await QuizzNSI.chiffre.hote();
+                          const c2 = new T.RealtimeClient(cfg.SUPABASE_URL.replace(/^http/, 'ws') + '/realtime/v1', { params: { apikey: cfg.SUPABASE_KEY } });
+                          const ch = c2.channel('quizz-nsi:' + code, { config: { presence: { key: 'fedcba9876543210' } } });
+                          ch.subscribe(async st => { if (st === 'SUBSCRIBED') { await ch.track({ id: 'fedcba9876543210', role: 'hote', cle: h.publique }); res(true); } });
+                          setTimeout(() => res(false), 15000);
+                      })""", code)
+                      try:
+                          await prof.wait_for_function("!document.getElementById('autreHote').hidden", timeout=20000)
+                          print('fausse page projetée signalée :', await prof.inner_text('#autreHote'))
+                      except Exception as e:
+                          ok = False; print('fausse page projetée non signalée :', faux, e)
                       vus = await espion.evaluate("window.__espion")
                       types = {}
                       for m in vus: types[m.get('t')] = types.get(m.get('t'), 0) + 1
