@@ -82,7 +82,7 @@ def verifier_schema(s, ou, r):
     t = s["type"]
     if t in ("pile", "file", "liste", "decalage") and not isinstance(s.get("elements"), list):
         r.erreur(ou, f"le schéma « {t} » demande une liste « elements »")
-    if "code" in s and not liste_de_chaines(s["code"]):
+    if "code" in s and s.get("type") != "svg" and not liste_de_chaines(s["code"]):
         r.erreur(ou, "« code » d'un schéma : une liste de lignes")
     if t == "etapes":
         if s.get("structure") not in ("pile", "file"):
