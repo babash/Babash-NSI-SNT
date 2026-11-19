@@ -21,10 +21,10 @@
   "Niveau 3 : j'analyse un code qui utilise les primitives et j'y trouve l'erreur."
  ],
  "conventions": [
-  "Une pile s'écrit du haut (sa ==tête==, ou ==sommet==) vers le bas, comme au bac : « 3, 1, 4 » veut dire que 3 est à la tête.",
+  "Une pile s'écrit du haut (son ==sommet==) vers le bas, comme au bac : « 3, 1, 4 » veut dire que 3 est au sommet.",
   "Une file s'écrit de la tête (le prochain élément à sortir) vers la queue (le dernier arrivé).",
-  "Les primitives sont celles du cours : `Pile()`, `empiler(e)`, `depiler()`, `tete()`, `est_vide()`, `taille()` ; `File()`, `enfiler(e)`, `defiler()`, `tete()`, `est_vide()`, `taille()`.",
-  "`depiler()` et `defiler()` retirent l'élément et le renvoient ; `tete()` le renvoie sans le retirer. Dépiler une pile vide ou défiler une file vide provoque une erreur."
+  "Les primitives sont celles du cours : `Pile()`, `empiler(e)`, `depiler()`, `sommet()`, `est_vide()`, `taille()` ; `File()`, `enfiler(e)`, `defiler()`, `tete()`, `est_vide()`, `taille()`.",
+  "`depiler()` et `defiler()` retirent l'élément et le renvoient ; `sommet()` (pile) et `tete()` (file) le renvoient sans le retirer. Dépiler une pile vide ou défiler une file vide provoque une erreur."
  ],
  "prelude_python": [
   "class Pile:",
@@ -36,7 +36,7 @@
   "        self.contenu.append(e)",
   "    def depiler(self):",
   "        return self.contenu.pop()",
-  "    def tete(self):",
+  "    def sommet(self):",
   "        return self.contenu[-1]",
   "    def taille(self):",
   "        return len(self.contenu)",
@@ -376,7 +376,7 @@
    "type": "notion",
    "titre": "La pile en détail",
    "texte": [
-    "On ajoute et on retire toujours ==au même bout== : la ==tête== de la pile, qu'on appelle aussi son ==sommet==.",
+    "On ajoute et on retire toujours ==au même bout== : le ==sommet== de la pile (certains cours l'appellent aussi la « tête » de la pile).",
     "Le dernier élément ajouté est le premier retiré : ==LIFO== (*last in, first out*, en anglais : « dernier entré, premier sorti »).",
     "Exemples : une pile de copies sur le bureau, le bouton Annuler, le bouton Précédent du navigateur."
    ],
@@ -441,9 +441,9 @@
    "type": "notion",
    "titre": "L'interface de la pile",
    "texte": [
-    "==Empiler== : ajoute un élément à la tête. ==Dépiler== : retire l'élément de tête et le renvoie. ==Tête== : renvoie l'élément de tête ==sans le retirer==.",
+    "==Empiler== : ajoute un élément au sommet. ==Dépiler== : retire l'élément du sommet et le renvoie. ==Sommet== : renvoie l'élément du sommet ==sans le retirer== (on dit aussi « tête » de la pile).",
     "==Pile vide ?== : vrai si la pile est vide. ==Taille== : le nombre d'éléments.",
-    "En Python, dans ce cours : `Pile()`, `p.empiler(e)`, `p.depiler()`, `p.tete()`, `p.est_vide()`, `p.taille()`. Au bac, on rencontre aussi `empiler(p, e)`, `sommet(p)`… C'est la même interface."
+    "En Python, dans ce cours : `Pile()`, `p.empiler(e)`, `p.depiler()`, `p.sommet()`, `p.est_vide()`, `p.taille()`. Au bac, on rencontre aussi l'écriture en fonctions : `empiler(p, e)`, `sommet(p)`… C'est la même interface."
    ],
    "schema": {
     "type": "etapes",
@@ -474,22 +474,22 @@
       ]
      },
      {
-      "op": "p.tete() → 4",
+      "op": "p.sommet() → 4",
       "elements": [
        4
       ]
      }
     ]
    },
-   "vocabulaire": "pile = stack ; empiler = push ; dépiler = pop ; tête ou sommet = top"
+   "vocabulaire": "pile = stack ; empiler = push ; dépiler = pop ; sommet = top"
   },
   {
    "type": "question",
    "id": "q05",
-   "nom": "[Primitives] `tete` ou `depiler` ?",
+   "nom": "[Primitives] `sommet` ou `depiler` ?",
    "objectif": "Distinguer une primitive qui lit le sommet d'une primitive qui le retire.",
    "enonce": [
-    "La pile `p` contient, du haut vers le bas : 7, 2, 9. On exécute `x = p.tete()`.",
+    "La pile `p` contient, du haut vers le bas : 7, 2, 9. On exécute `x = p.sommet()`.",
     "Que valent `x` et `p` ensuite ?"
    ],
    "schema": {
@@ -503,7 +503,7 @@
    "options": [
     {
      "texte": "`x` vaut 7 et `p` contient 2, 9.",
-     "feedback": "Tu as bien trouvé le sommet, 7. Mais `tete()` ne le retire pas : c'est `depiler()` qui retire. Ici, la pile ne change pas."
+     "feedback": "Tu as bien trouvé le sommet, 7. Mais `sommet()` ne le retire pas : c'est `depiler()` qui retire. Ici, la pile ne change pas."
     },
     {
      "texte": "`x` vaut 9 et `p` contient 7, 2, 9.",
@@ -512,21 +512,21 @@
     {
      "texte": "`x` vaut 7 et `p` contient 7, 2, 9.",
      "juste": true,
-     "feedback": "Exact. `tete()` renvoie l'élément du haut sans le retirer : la pile est inchangée."
+     "feedback": "Exact. `sommet()` renvoie l'élément du haut sans le retirer : la pile est inchangée."
     },
     {
      "texte": "`x` vaut 9 et `p` contient 7, 2.",
-     "feedback": "Deux confusions : 9 est le bas de la pile, et `tete()` ne retire rien. Écris d'abord la pile verticalement, sommet en haut."
+     "feedback": "Deux confusions : 9 est le bas de la pile, et `sommet()` ne retire rien. Écris d'abord la pile verticalement, sommet en haut."
     }
    ],
-   "explication": "`tete()` lit le haut sans le retirer ; `depiler()` le lit et le retire.",
+   "explication": "`sommet()` lit le haut sans le retirer ; `depiler()` le lit et le retire.",
    "verifications": [
     {
      "code": [
       "p = Pile()",
       "for e in [9, 2, 7]:",
       "    p.empiler(e)",
-      "x = p.tete()",
+      "x = p.sommet()",
       "print(x, haut_vers_bas(p))"
      ],
      "sortie": "7 [7, 2, 9]"
@@ -702,7 +702,7 @@
     },
     {
      "texte": "`total` vaut 60, car le sommet 20 est lu trois fois.",
-     "feedback": "Tu as fait comme si `depiler()` lisait le sommet sans le retirer : ça, c'est `tete()`. `depiler()` retire l'élément, la pile se vide."
+     "feedback": "Tu as fait comme si `depiler()` lisait le sommet sans le retirer : ça, c'est `sommet()`. `depiler()` retire l'élément, la pile se vide."
     },
     {
      "texte": "`total` vaut 30 et `p` contient encore les éléments 20 et 10.",
@@ -1025,7 +1025,7 @@
    "type": "notion",
    "titre": "Pile et file avec une liste Python",
    "texte": [
-    "Pile : le ==dernier élément== de la liste est la tête. `empiler` → `append(e)` ; `depiler` → `pop()` ; `tete` → `l[-1]` ; `est_vide` → `len(l) == 0`.",
+    "Pile : le ==dernier élément== de la liste est le sommet. `empiler` → `append(e)` ; `depiler` → `pop()` ; `sommet` → `l[-1]` ; `est_vide` → `len(l) == 0`.",
     "File : la tête est l'==indice 0==. `enfiler` → `append(e)` ; `defiler` → `pop(0)` ; `tete` → `l[0]`.",
     "On cache la liste dans une classe : on ne peut plus que ==empiler et dépiler==. La règle est imposée."
    ],
@@ -1056,8 +1056,8 @@
   {
    "type": "question",
    "id": "q11",
-   "nom": "[Implémentation] Lire la tête d'une pile",
-   "objectif": "Traduire la primitive `tete` avec une liste Python.",
+   "nom": "[Implémentation] Lire le sommet d'une pile",
+   "objectif": "Traduire la primitive `sommet` avec une liste Python.",
    "enonce": [
     "Une pile est représentée par une liste Python `pile`. Le sommet est le dernier élément de la liste.",
     "Quelle expression donne le sommet **sans modifier** la pile ?"
@@ -1065,7 +1065,7 @@
    "options": [
     {
      "texte": "`pile.pop()`",
-     "feedback": "`pop()` renvoie bien le dernier élément, mais il le retire : c'est `depiler`, pas `tete`. La pile serait modifiée."
+     "feedback": "`pop()` renvoie bien le dernier élément, mais il le retire : c'est `depiler`, pas `sommet`. La pile serait modifiée."
     },
     {
      "texte": "`pile[0]`",
@@ -1257,7 +1257,7 @@
     "    aux = Pile()",
     "    while not p.est_vide():",
     "        aux.empiler(p.depiler())",
-    "    resultat = aux.tete()",
+    "    resultat = aux.sommet()",
     "    return resultat"
    ],
    "options": [
@@ -1271,8 +1271,8 @@
      "feedback": "En passant dans `aux`, l'ordre s'inverse : le fond de `p` devient le sommet de `aux`. Le résultat est donc bien le fond."
     },
     {
-     "texte": "`aux.tete()` provoque une erreur, car la pile `aux` est encore vide à ce moment.",
-     "feedback": "`aux` est vide au début, mais la boucle y met tous les éléments de `p`, qui n'est pas vide. Au moment de `aux.tete()`, `aux` est pleine."
+     "texte": "`aux.sommet()` provoque une erreur, car la pile `aux` est encore vide à ce moment.",
+     "feedback": "`aux` est vide au début, mais la boucle y met tous les éléments de `p`, qui n'est pas vide. Au moment de `aux.sommet()`, `aux` est pleine."
     },
     {
      "texte": "Il n'y a pas d'erreur : `p` est inchangée.",
