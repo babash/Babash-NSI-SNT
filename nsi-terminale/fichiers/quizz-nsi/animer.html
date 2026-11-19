@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuizzNSI · animer la séance</title>
+<meta name="description" content="Page à projeter : le cours en diapositives, le code de séance et le QR code, les réponses des élèves en direct.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/polices.css">
+<link rel="stylesheet" href="css/quizz.css">
+<link rel="stylesheet" href="css/seance.css">
+<script>try{var t=localStorage.getItem('quizz-nsi:theme');t=t&&JSON.parse(t);if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body class="projete">
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<header class="barre">
+  <a class="marque" href="index.html">Quizz<b>NSI</b></a>
+  <span class="titre-page" id="titreCours">Animer la séance</span>
+  <div class="actions">
+    <span class="pastille-seance" id="pastilleSeance" hidden><span>Séance</span> <b id="codeBarre">····</b> · <span id="nbBarre">0 élève</span></span>
+    <button class="bouton petit" type="button" id="btnRejoindre" aria-expanded="false" aria-controls="carteRejoindre" hidden>Code et QR code</button>
+    <button class="bouton petit" type="button" id="btnPodium" hidden>Podium</button>
+    <button class="bouton petit" type="button" id="btnPleinEcran">Plein écran</button>
+    <button class="bouton petit" type="button" data-bascule-theme>Affichage obscur</button>
+  </div>
+</header>
+<main id="contenu" tabindex="-1">
+  <p class="visuel-cache" id="annonce" aria-live="polite"></p>
+  <p id="autreHote" class="alerte" role="alert" hidden></p>
+
+  <section id="accueil" class="accueil-seance" hidden>
+    <div class="rejoindre-grand cadre">
+      <div id="qr" class="qr" role="img" aria-label="QR code du lien de la séance"></div>
+      <div>
+        <p class="etape">Sur un téléphone ou un ordinateur, ouvrez</p>
+        <p class="lien" id="lien"></p>
+        <p class="etape">puis entrez le code</p>
+        <p class="code-seance" id="code">····</p>
+        <p><button class="bouton petit" type="button" id="copier">Copier le lien</button> <button class="bouton petit" type="button" id="nouvelle">Nouveau code</button></p>
+        <p id="etatConnexion" class="etat" role="status"></p>
+      </div>
+    </div>
+    <div class="cadre reglages">
+      <h2>Élèves dans la séance : <span id="nbEleves">0</span></h2>
+      <p class="aide">Un prénom ou un pseudo, au choix de chaque élève, jamais un nom de famille. Un pseudo déplacé se retire d'un clic : l'élève en choisit un autre.</p>
+      <ul class="eleves" id="eleves" aria-live="polite"></ul>
+      <div class="ligne-reglage">
+        <label for="duree">Temps par question</label>
+        <select id="duree"><option value="0">Sans minuterie</option><option value="20">20 s</option><option value="30">30 s</option><option value="45" selected>45 s</option><option value="60">1 min</option><option value="90">1 min 30</option></select>
+      </div>
+      <div class="ligne-reglage">
+        <label for="podium">Classement</label>
+        <select id="podium"><option value="fin" selected>Podium à la fin seulement</option><option value="chaque">Podium après chaque question</option><option value="jamais">Pas de classement</option></select>
+      </div>
+      <p class="aide">Barème : répondre +10 ; bonne réponse +100 ; rapidité jusqu'à +20 (avec une minuterie) ; rebond +30 (bonne réponse juste après une erreur).</p>
+      <p><button class="bouton fort" type="button" id="commencer">Commencer le cours</button> <button class="bouton" type="button" id="reprendre" hidden>Reprendre</button></p>
+      <p class="aide">Sans élève connecté·e, le cours marche aussi, comme un simple diaporama.</p>
+    </div>
+  </section>
+
+  <div id="scene" tabindex="-1" hidden></div>
+
+  <aside id="carteRejoindre" class="carte-rejoindre cadre" hidden>
+    <div id="qrPetit" class="qr" role="img" aria-label="QR code du lien de la séance"></div>
+    <div><p class="code-seance petit" id="codePetit">····</p><p class="lien" id="lienPetit"></p>
+    <h3>Élèves : <span id="nbEleves2">0</span></h3><ul class="eleves" id="eleves2"></ul></div>
+  </aside>
+
+  <dialog id="podiumBoite" class="podium-boite" aria-labelledby="podiumTitre">
+    <h2 id="podiumTitre">Podium</h2>
+    <div id="podiumCorps"></div>
+    <form method="dialog"><button class="bouton fort" type="submit">Fermer</button></form>
+  </dialog>
+</main>
+<nav class="nav-diapos commandes" aria-label="Commandes de la séance" id="commandes" hidden>
+  <button class="bouton" type="button" id="prec">← Précédente</button>
+  <span class="compteur" id="compteur"></span>
+  <div class="progression" aria-hidden="true"><span id="barre"></span></div>
+  <span class="statut-q" id="statutQ" role="status"></span>
+  <button class="bouton fort" type="button" id="action">Suivante →</button>
+</nav>
+<footer class="pied">QuizzNSI · Babash - NSI Tani Malandi · code MIT, contenus CC BY-SA 4.0 · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/quizz-nsi" rel="noopener">Code source sur GitHub</a> · au clavier : flèches, Entrée, P (podium), J (code)</footer>
+<script src="config.js"></script>
+<script src="vendor/temps-reel.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="js/commun.js"></script>
+<script src="js/chiffre.js"></script>
+<script src="js/messages.js"></script>
+<script src="js/bareme.js"></script>
+<script src="js/seance.js"></script>
+<script src="js/diapos.js"></script>
+<script src="js/animer.js"></script>
+</body>
+</html>
