@@ -279,35 +279,7 @@ On remonte ensuite les appels : il ne reste aucun voisin nouveau. Milo et Anas n
 \Q{3 (e)}{1 point}{Compléter le code de la fonction \code{parcours\_en\_profondeur(d, s)}.}
 \begin{reponse}
 \begin{lstlisting}
-def parcours_en_profondeur(d, s, visites = []):
-    visites.append(s)
-    for v in d[s]:
-        if v not in visites:
-            parcours_en_profondeur(d, v)
-    return visites
-\end{lstlisting}
-\end{reponse}
-Chaque ligne traduit une ligne de l'algorithme de l'énoncé :
-\begin{itemize}
-\item ligne 2 : « ajouter s à la liste visités » ;
-\item lignes 3--4 : « pour tous les voisins v de s, si v n'est pas dans la liste visités » ;
-\item ligne 5 : l'appel récursif, déjà écrit dans le sujet ;
-\item ligne 6 : « retourner la liste visités ».
-\end{itemize}
-\textbf{Exemple}, avec le graphe de la question (c) :
-\begin{lstlisting}[numbers=none]
->>> parcours_en_profondeur(graphe, 'L')
-['L', 'J', 'G', 'N', 'Y', 'E']
-\end{lstlisting}
-\begin{remarque}
-Le code du sujet utilise une liste par défaut, \code{visites = []}, et l'appel récursif ne la transmet pas. Cela marche pour \textbf{un} appel, car Python crée cette liste par défaut une seule fois et tous les appels récursifs partagent la même. Mais un deuxième appel la retrouve remplie. Après le parcours depuis \code{'L'} :
-\begin{lstlisting}[numbers=none]
->>> parcours_en_profondeur(graphe, 'M')
-['L', 'J', 'G', 'N', 'Y', 'E', 'M', 'A']
-\end{lstlisting}
-au lieu de \code{['M', 'A']}. Version plus sûre, qui transmet la liste :
-\begin{lstlisting}
-def parcours_en_profondeur(d, s, visites=None):
+def parcours_en_profondeur(d, s, visites = None):
     if visites is None:
         visites = []
     visites.append(s)
@@ -316,6 +288,22 @@ def parcours_en_profondeur(d, s, visites=None):
             parcours_en_profondeur(d, v, visites)
     return visites
 \end{lstlisting}
+\end{reponse}
+Chaque ligne traduit une ligne de l'algorithme de l'énoncé :
+\begin{itemize}
+\item lignes 2--3 : déjà écrites dans le sujet, elles créent la liste vide au premier appel ;
+\item ligne 4 : « ajouter s à la liste visités » ;
+\item lignes 5--6 : « pour tous les voisins v de s, si v n'est pas dans la liste visités » ;
+\item ligne 7 : l'appel récursif, déjà écrit dans le sujet : il \textbf{transmet} la liste \code{visites} ;
+\item ligne 8 : « retourner la liste visités ».
+\end{itemize}
+\textbf{Exemple}, avec le graphe de la question (c) :
+\begin{lstlisting}[numbers=none]
+>>> parcours_en_profondeur(graphe, 'L')
+['L', 'J', 'G', 'N', 'Y', 'E']
+\end{lstlisting}
+\begin{remarque}
+Pourquoi \code{visites = None} et non \code{visites = []} ? Une liste écrite en valeur par défaut est créée \textbf{une seule fois}, et tous les appels de la fonction la partagent. Avec \code{visites = []}, un deuxième parcours retrouverait la liste déjà remplie par le premier : après \code{parcours\_en\_profondeur(graphe, 'L')}, l'appel depuis \code{'M'} renverrait \code{['L', 'J', 'G', 'N', 'Y', 'E', 'M', 'A']} au lieu de \code{['M', 'A']}. Avec \code{None}, chaque parcours part d'une liste neuve, et les appels récursifs se passent la même liste. Vérifié : \code{parcours\_en\_profondeur(graphe, 'M')} renvoie \code{['M', 'A']}.
 \end{remarque}
 \begin{erreur}
 Oublier le test \code{if v not in visites}. Le parcours revient alors sans fin entre deux amis (L, J, L, J\ldots) et Python s'arrête avec l'erreur \code{RecursionError: maximum recursion depth exceeded} (« profondeur maximale de récursion dépassée »).
