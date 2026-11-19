@@ -3,7 +3,7 @@
 # pages élèves dans Chrome, avec le vrai temps réel (canaux de diffusion et de présence, clé
 # « publishable », aucune table ni fonction), et vérifie : salle ouverte, deux élèves vus, une notion,
 # une question, ses réponses et sa correction, puis une coupure et un retour.
-name: Essai temps réel QuizzNSI T91 (site en ligne)
+name: Essai temps réel QuizzNSI T92
 on:
   push:
     branches: [gardien/t91-essai-temps-reel]
@@ -25,7 +25,7 @@ jobs:
           cat > /tmp/essai.py <<'PY'
           import asyncio, re, sys
           from playwright.async_api import async_playwright
-          B = 'https://babash.github.io/Babash-NSI-SNT/nsi-terminale/fichiers/quizz-nsi/'
+          B = 'http://localhost:8765/'
           async def main():
               async with async_playwright() as p:
                   b = await p.chromium.launch()
@@ -70,11 +70,27 @@ jobs:
                   for nom, (ctx, pg) in el.items(): print(nom, ':', await pg.inner_text('#connexion'), '|', (await pg.inner_text('#ecran'))[:90].replace('\n', ' '))
                   if ok:
                       await prof.click('#commencer'); await prof.wait_for_timeout(1500)
-                      await prof.click('#action'); await prof.wait_for_timeout(3000)
-                      for nom, (ctx, pg) in el.items():
-                          t = (await pg.inner_text('#ecran'))[:90].replace('\n', ' '); print(nom, 'notion :', t)
-                          if 'pile' not in t.lower(): ok = False
-                      await prof.click('#action')
+                      ecarts, etapes = [], 0
+                      async def comparer(pages):
+                          vp = await prof.evaluate("document.querySelectorAll('#scene .frag.vu').length")
+                          tp = await prof.evaluate("(document.querySelector('#scene h2') || {}).textContent || ''")
+                          for nom, pg in pages.items():
+                              ok2 = False
+                              for _ in range(16):
+                                  ve = await pg.evaluate("document.querySelectorAll('#ecran .frag.vu').length")
+                                  te = await pg.evaluate("(document.querySelector('#ecran h2') || {}).textContent || ''")
+                                  if ve == vp and te == tp: ok2 = True; break
+                                  await pg.wait_for_timeout(500)
+                              if not ok2: ecarts.append((nom, tp[:30], vp, ve, te[:30]))
+                      async def jusqua_question(pages):
+                          nonlocal_etapes = 0
+                          while not await prof.query_selector('#scene .d-question') and nonlocal_etapes < 40:
+                              await prof.click('#action'); nonlocal_etapes += 1; await prof.wait_for_timeout(700)
+                              if not await prof.query_selector('#scene .d-question'): await comparer(pages)
+                          return nonlocal_etapes
+                      etapes = await jusqua_question({n: pg for n, (c, pg) in el.items()})
+                      print('apparitions suivies par les téléphones :', etapes, 'pas jusqu\'à la question 1 ; écarts :', ecarts)
+                      if ecarts: ok = False
                       for nom, (ctx, pg) in el.items(): await pg.wait_for_selector('button.option', timeout=20000)
                       print('question vue :', (await el['Essai-A'][1].inner_text('.q-nom')))
                       await el['Essai-A'][1].click('button.option[data-choix="1"]')
@@ -119,10 +135,13 @@ jobs:
                       try:
                           await prof.wait_for_function("document.getElementById('etatConnexion').classList.contains('ok')", timeout=30000)
                           await prof.click('#reprendre'); await prof.wait_for_timeout(1500)
-                          await prof.click('#action'); await prof.wait_for_timeout(1500); await prof.click('#action')
                           pages = {'Essai-A': el['Essai-A'][1], 'Essai-B': pg}
-                          for nom, q in pages.items(): await q.wait_for_function("document.querySelector('.q-nom') && /Justifier/.test(document.querySelector('.q-nom').textContent)", timeout=20000)
-                          await pages['Essai-A'].click('button.option[data-choix="3"]'); await pages['Essai-B'].click('button.option[data-choix="0"]')
+                          await prof.click('#action'); await prof.wait_for_timeout(700)
+                          ecarts.clear(); n2 = await jusqua_question(pages)
+                          print('après le rechargement, apparitions suivies :', n2, 'pas ; écarts :', ecarts)
+                          if ecarts: ok = False
+                          for nom, q in pages.items(): await q.wait_for_function("document.querySelector('.q-nom') && /LIFO/.test(document.querySelector('.q-nom').textContent)", timeout=20000)
+                          await pages['Essai-A'].click('button.option[data-choix="1"]'); await pages['Essai-B'].click('button.option[data-choix="0"]')
                           await prof.wait_for_function("/2 \\/ 2|Tout le monde/.test(document.getElementById('statutQ').textContent)", timeout=30000)
                           print('page projetée rechargée (nouvelle clé), question 2 :', await prof.inner_text('#statutQ'))
                           await prof.click('#action')
