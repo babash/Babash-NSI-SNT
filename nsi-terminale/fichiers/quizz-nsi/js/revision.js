@@ -23,8 +23,23 @@
   }
 
   function liste() {
-    return $('questionsSeules').checked ? cours.diapositives.filter(d => d.type !== 'notion') : cours.diapositives;
+    // « Questions seules » : sans les notions, les parties, les questions à la classe ni l'humour
+    return $('questionsSeules').checked ? cours.diapositives.filter(d => d.type === 'titre' || d.type === 'question' || d.type === 'bilan') : cours.diapositives;
   }
+
+  let vus = 0, arriere = false;
+  const reste = () => Q.nbFragments($('scene')) - vus;
+  function majSuivante() {
+    const r = reste();
+    $('suiv').textContent = r > 0 ? 'Suite (' + r + ') →' : 'Suivante →';
+    $('suiv').disabled = r <= 0 && index === diapos.length - 1;
+  }
+  // « Suivante » montre d'abord l'élément suivant de la diapositive, puis passe à la suivante
+  function avancer(focus) {
+    if (reste() > 0) { vus++; Q.montrerFragments($('scene'), vus); majSuivante(); return; }
+    if (index < diapos.length - 1) afficher(index + 1, focus);
+  }
+  function reculer(focus) { if (index > 0) { arriere = true; afficher(index - 1, focus); } }
 
   function afficher(i, focus) {
     index = Math.max(0, Math.min(diapos.length - 1, i));
@@ -32,11 +47,13 @@
     etat.index = cours.diapositives.indexOf(d); sauver();
     const scene = $('scene');
     scene.innerHTML = Q.rendreDiapo(cours, d, { boutons: true, fin: d.type === 'bilan' ? bilanPerso() : '' });
+    // apparitions progressives : en arrivant par « Suivante », on les montre une à une ; en revenant en arrière, tout est montré
+    vus = arriere ? Q.nbFragments(scene) : 0; arriere = false;
+    Q.montrerFragments(scene, vus); majSuivante();
     const nq = d.type === 'question' ? ' · question ' + d.numero + ' sur ' + cours.questions.length : '';
     $('compteur').textContent = 'Diapositive ' + (index + 1) + ' sur ' + diapos.length + nq;
     $('barre').style.width = ((index + 1) / diapos.length * 100) + '%';
     $('prec').disabled = index === 0;
-    $('suiv').disabled = index === diapos.length - 1;
     if (d.type === 'question') brancherQuestion(d);
     if (d.type === 'bilan') brancherBilan();
     try { history.replaceState(null, '', '#' + (cours.diapositives.indexOf(d) + 1)); } catch (e) { /* rien */ }
@@ -108,8 +125,8 @@
   document.addEventListener('keydown', ev => {
     if (ev.target.closest && ev.target.closest('input, textarea, select')) return;
     if (ev.altKey || ev.ctrlKey || ev.metaKey) return;
-    if (ev.key === 'ArrowRight' || ev.key === 'PageDown') { if (index < diapos.length - 1) { ev.preventDefault(); afficher(index + 1); } }
-    else if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') { if (index > 0) { ev.preventDefault(); afficher(index - 1); } }
+    if (ev.key === 'ArrowRight' || ev.key === 'PageDown') { ev.preventDefault(); avancer(); }
+    else if (ev.key === 'ArrowLeft' || ev.key === 'PageUp') { ev.preventDefault(); reculer(); }
     else if (/^[abcd]$/i.test(ev.key)) {
       const b = $('scene').querySelector('button.option[data-choix="' + 'abcd'.indexOf(ev.key.toLowerCase()) + '"]');
       if (b && !b.disabled) { ev.preventDefault(); b.click(); }
@@ -130,8 +147,8 @@
       const actuelle = diapos[index]; diapos = liste();
       const k = diapos.indexOf(actuelle); afficher(k >= 0 ? k : 0, false);
     });
-    $('prec').addEventListener('click', () => afficher(index - 1, false));
-    $('suiv').addEventListener('click', () => afficher(index + 1, false));
+    $('prec').addEventListener('click', () => reculer(false));
+    $('suiv').addEventListener('click', () => avancer(false));
     const h = parseInt(location.hash.slice(1), 10);
     const depart = Number.isInteger(h) && h >= 1 ? cours.diapositives[h - 1] : cours.diapositives[etat.index || 0];
     const k = diapos.indexOf(depart);

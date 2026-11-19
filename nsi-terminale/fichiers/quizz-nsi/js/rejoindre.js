@@ -136,18 +136,22 @@
     });
   }
 
-  function ecran(noeud) { const z = $('ecran'); z.textContent = ''; z.appendChild(noeud); }
+  function ecran(noeud) { const z = $('ecran'); z.textContent = ''; delete z.dataset.n; z.appendChild(noeud); }
   const attente = texte => el('div', { class: 'attente' }, el('p', { class: 'grand' }, moi.pseudo + ', tu es dans la séance.'), el('p', {}, texte));
   function majPoints() { $('points').textContent = total + ' pts'; }
   const trouverQuestion = (cours, qid) => cours.questions.find(q => q.id === qid) || null;
 
   function afficherNotion(cours, m) {
     const d = cours.diapositives[m.n];
-    if (!d || d.type !== 'notion') return;
+    if (!d || d.type === 'question') return;
+    // même diapositive : on ne montre que les éléments apparus en plus (pas de clignotement)
+    if (phase === 'notion' && question === null && $('ecran').dataset.n === String(m.n)) { Q.montrerFragments($('ecran'), m.f); return; }
     phase = 'notion'; question = null;
     const z = el('div', {}, el('p', { class: 'aide' }, 'Le cours, en même temps que l\'écran :'));
-    z.appendChild(Q.fragmentCours(Q.rendreDiapo(cours, d, {})));
+    z.appendChild(Q.fragmentCours(Q.rendreDiapo(cours, d, { fin: '' })));
     ecran(z);
+    $('ecran').dataset.n = String(m.n);
+    Q.montrerFragments($('ecran'), m.f);
   }
 
   function afficherQuestion(cours, m) {
