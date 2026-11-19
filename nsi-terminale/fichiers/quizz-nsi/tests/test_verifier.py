@@ -91,7 +91,7 @@ class TestVerifier(unittest.TestCase):
         self.assertTrue(any("erreur attendue" in x for x in e))
 
     def test_code_sans_verification(self):
-        e = self.modifie(lambda c: questions(c)[2].pop("verifications"))
+        e = self.modifie(lambda c: next(q for q in questions(c) if q.get("code")).pop("verifications"))
         self.assertTrue(any("vérification" in x for x in e))
 
     def test_svg_avec_script_refuse(self):

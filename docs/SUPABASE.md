@@ -2,14 +2,18 @@
 
 *Les applications du site qui utilisent une base, et le socle commun de la base. Retour au [README](../README.md).*
 
-Deux ressources passent par **Supabase** : Alien Python y enregistre la progression des élèves ;
-Court-circuit y garde le code élève et les programmes des élèves qui le veulent (« Mes codes »), et
-passe par son temps réel pour les duels, qui ne sont pas enregistrés.
+Trois ressources passent par **Supabase** :
+- Alien Python y enregistre la progression des élèves ;
+- Court-circuit y garde le code élève et les programmes des élèves qui le veulent (« Mes codes »), et
+  passe par son temps réel pour les duels, qui ne sont pas enregistrés ;
+- QuizzNSI ne passe que par son temps réel, pour les séances en classe, qui ne sont pas
+  enregistrées.
 
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
 | Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | le schéma `court_circuit` du code élève, depuis le 13 novembre 2026 : `eleves` et `programmes` (données d'élèves), `mots` et `menage` ; les duels passent par les canaux temps réel (diffusion et présence), sans table |
+| QuizzNSI (NSI Terminale, Structures de données : le cours-quiz « Piles et files ») | `nsi-terminale/fichiers/quizz-nsi/` | la même base commune | aucune : les séances passent par les canaux temps réel (diffusion et présence), sans table ni fonction |
 
 **Alien Python**
 
@@ -69,10 +73,44 @@ passe par son temps réel pour les duels, qui ne sont pas enregistrés.
 - Sur l'appareil, le pseudo, le programme en cours, les étoiles, le niveau de Zéro et le jeton de
   session du code élève restent un jour au plus.
 
+**QuizzNSI**
+
+- **Les séances ne sont pas enregistrées.** La page projetée et les téléphones passent par les
+  canaux temps réel de la base commune (diffusion et présence), avec la clé « publishable » de
+  `nsi-terminale/fichiers/quizz-nsi/config.js`, sans aucune table ni fonction. L'essai du
+  19 novembre 2026 sur la vraie base, par GitHub Actions, l'a vérifié : une seule connexion, la
+  websocket du temps réel, et aucun appel à une table ou à une fonction.
+- **Ce qui circule** pendant la séance :
+  - dans la présence : le prénom ou le pseudo et un identifiant tiré au hasard de chaque élève, et
+    la clé publique de la page projetée ;
+  - dans la diffusion : ce que montre l'écran projeté (la notion, la question, la bonne réponse, la
+    répartition des réponses en nombres, le podium quand il est affiché).
+- **Ce qui est protégé** :
+  - la réponse de chaque élève part chiffrée pour la page projetée (ECDH P-256 et AES-GCM, dans le
+    navigateur) ;
+  - les points et la place d'un·e élève ne sont envoyés à personne : chaque téléphone calcule ses
+    points, et la page projetée fait foi pour le podium ;
+  - chaque message reçu est contrôlé par un schéma strict, et aucune valeur reçue ne passe par du
+    HTML.
+- **Les risques acceptés** pour une séance de classe sans compte : quiconque connaît le code de
+  séance peut ouvrir une fausse page projetée, qui reçoit aussi les réponses (la vraie page le
+  signale) ; il peut aussi faire sortir un·e élève, répondre à sa place ou lui afficher de faux
+  points ; les bonnes réponses se lisent dans le fichier du cours, public. Le mode temps réel est
+  une demande de l'enseignant (décision P10, à confirmer).
+- **Sur l'appareil de l'élève** : le code de séance, le pseudo, l'identifiant et l'historique de la
+  séance, pour revenir après une coupure. Ils sont effacés à la fin de la séance, au départ, au
+  retrait du pseudo, et sinon au premier chargement d'une page de QuizzNSI après 12 heures.
+- Un navigateur qui ne sait pas chiffrer les réponses (page en http, navigateur trop ancien) le
+  dit dès l'entrée, et propose le mode autonome, qui marche sans réseau, comme la version
+  imprimable.
+- Pour ta propre copie : mets l'adresse et la clé publique de ton projet Supabase dans
+  `config.js`, ou laisse l'adresse vide pour le mode démo (entre les onglets d'un même navigateur).
+  Le [README de QuizzNSI](../nsi-terminale/fichiers/quizz-nsi/README.md) donne le détail.
+
 **Le socle commun de la base (dossier `supabase/`)**
 
-- La base commune porte SNT 1er jour, Expédition Gombessa, Alien Python et Court-circuit (son
-  code élève et son temps réel). Le dossier `supabase/` du site garde les migrations qui ne
+- La base commune porte SNT 1er jour, Expédition Gombessa, Alien Python, Court-circuit (son
+  code élève et son temps réel) et le temps réel de QuizzNSI. Le dossier `supabase/` du site garde les migrations qui ne
   relèvent d'aucune application, chacune appliquée après l'accord de l'enseignant sur le SQL :
   `0001` à `0004` (n° 2 du plan de la base unique) le 11 novembre 2026, et `0005` le
   13 novembre 2026 :

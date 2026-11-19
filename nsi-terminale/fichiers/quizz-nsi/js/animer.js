@@ -15,7 +15,7 @@
   const envoyer = m => { if (seance) seance.envoyer(m); };
 
   function etatNeuf(code) {
-    return { code: code || Q.nouveauCode(), id: Q.nouvelId(), commence: false, index: 0, duree: 45, podium: 'fin',
+    return { code: code || Q.nouveauCode(), id: Q.nouvelId(), commence: false, index: 0, f: 0, duree: 45, podium: 'fin',
       joueurs: {}, bannis: [], q: {}, ordre: [], fini: false };
   }
 
@@ -27,7 +27,7 @@
     if (!ent(v.index, 0, cours.diapositives.length - 1) || !DUREES.includes(v.duree) || !PODIUMS.includes(v.podium)) return null;
     const qids = new Set(cours.questions.map(q => q.id));
     const st = etatNeuf(v.code);
-    Object.assign(st, { id: v.id, commence: v.commence === true, fini: v.fini === true, index: v.index, duree: v.duree, podium: v.podium });
+    Object.assign(st, { id: v.id, commence: v.commence === true, fini: v.fini === true, index: v.index, f: ent(v.f, 0, 100) ? v.f : 0, duree: v.duree, podium: v.podium });
     st.bannis = Array.isArray(v.bannis) ? v.bannis.filter(c => typeof c === 'string' && /^[a-z0-9]{0,64}$/.test(c)) : [];
     st.ordre = Array.isArray(v.ordre) ? v.ordre.filter(q => qids.has(q)) : [];
     if (v.q && typeof v.q === 'object') for (const [qid, e] of Object.entries(v.q)) {
@@ -155,8 +155,9 @@
     if (st.fini) return messageFin();
     if (!st.commence) return { t: 'attente' };
     if (d.type === 'question') { const e = st.q[d.id]; return e && e.revelee ? messageCorrection(d) : messageQuestion(d); }
-    if (d.type === 'notion') return { t: 'notion', cours: cours.id, n: st.index };
-    return { t: 'attente' };
+    // toute autre diapositive (titre, partie, question à la classe, humour, notion, bilan) : le téléphone
+    // l'affiche à partir du fichier du cours, avec le même nombre d'éléments déjà apparus
+    return { t: 'notion', cours: cours.id, n: st.index, f: st.f };
   }
 
   /* ── Le score ───────────────────────────── */
@@ -207,6 +208,7 @@
   function afficher() {
     const d = diapo();
     $('scene').innerHTML = Q.rendreDiapo(cours, d, { boutons: false });
+    st.f = Math.min(st.f, Q.nbFragments($('scene'))); Q.montrerFragments($('scene'), st.f);
     $('compteur').textContent = (st.index + 1) + ' / ' + cours.diapositives.length + (d.type === 'question' ? ' · question ' + d.numero + ' sur ' + cours.questions.length : '');
     $('barre').style.width = ((st.index + 1) / cours.diapositives.length * 100) + '%';
     $('prec').disabled = st.index === 0;
@@ -228,8 +230,10 @@
     z.textContent = t;
   }
 
+  const fragmentsRestants = () => Q.nbFragments($('scene')) - st.f;
   function majAction() {
     const a = $('action'), d = diapo();
+    if (d.type !== 'question' && fragmentsRestants() > 0) { a.textContent = 'Suite (' + fragmentsRestants() + ') →'; return; }
     if (st.index === cours.diapositives.length - 1) { a.textContent = st.fini ? 'Revoir le podium' : 'Terminer la séance'; return; }
     if (d.type === 'question' && st.q[d.id] && !st.q[d.id].revelee) { a.textContent = 'Montrer la réponse'; return; }
     a.textContent = 'Suivante →';
@@ -260,12 +264,16 @@
 
   function action() {
     const d = diapo();
+    // d'abord les apparitions progressives de la diapositive, une à une
+    if (d.type !== 'question' && fragmentsRestants() > 0) { st.f++; sauver(); Q.montrerFragments($('scene'), st.f); envoyer(messagePhase()); majAction(); return; }
     if (st.index === cours.diapositives.length - 1) { terminer(); return; }
     if (d.type === 'question' && st.q[d.id] && !st.q[d.id].revelee) { corriger(d); montrerCorrection(d); Q.annoncer('Correction affichée.'); return; }
     aller(st.index + 1);
   }
   function aller(i) {
+    const avant = st.index;
     st.index = Math.max(0, Math.min(cours.diapositives.length - 1, i));
+    st.f = st.index < avant ? 100 : 0; // en revenant en arrière, tout est montré
     sauver(); afficher();
   }
 

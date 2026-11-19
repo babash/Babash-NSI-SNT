@@ -29,7 +29,7 @@ import unicodedata
 
 FORMAT = "quizz-nsi/1"
 LETTRES = "ABCD"
-TYPES_DIAPO = {"titre", "notion", "question", "bilan"}
+TYPES_DIAPO = {"titre", "partie", "classe", "humour", "notion", "question", "bilan"}
 TYPES_SCHEMA = {"pile", "file", "etapes", "deux-piles", "liste", "decalage", "svg"}
 FEEDBACK_MIN = 40          # caractères : un feedback plus court n'explique rien
 TEXTE_NOTION_MAX = 3       # puces par notion (peu de texte, règle 3)
@@ -220,7 +220,7 @@ def verifier_question(q, n, prelude, r, executer_code=True):
         if "code" in o and not liste_de_chaines(code):
             r.erreur(oo, "« code » doit être une liste de lignes")
         contenu = (texte if isinstance(texte, str) else "") + "\n".join(code if liste_de_chaines(code) else [])
-        if "**" in contenu or "<b>" in contenu.lower() or "<strong" in contenu.lower():
+        if "**" in contenu or "==" in contenu.replace("== ", "").replace(" ==", "") or "<b>" in contenu.lower() or "<strong" in contenu.lower():
             r.erreur(oo, "aucune mise en avant dans une option (gras interdit)")
         if contenu in vus:
             r.erreur(oo, "option identique à une autre")
@@ -325,6 +325,22 @@ def verifier_cours(chemin, executer_code=True, n_questions=20):
             if d.get("id") in ids:
                 r.erreur(ou, f"identifiant en double : {d.get('id')}")
             ids.add(d.get("id"))
+        elif d["type"] == "partie":
+            if not isinstance(d.get("titre"), str) or not d["titre"].strip():
+                r.erreur(ou, "une partie a un titre")
+        elif d["type"] == "classe":
+            if not isinstance(d.get("question"), str) or not d["question"].strip():
+                r.erreur(ou, "une question à la classe a une « question »")
+            for champ in ("pistes", "texte"):
+                if champ in d and not liste_de_chaines(d[champ]):
+                    r.erreur(ou, f"« {champ} » : une liste de phrases")
+            if "code" in d and not liste_de_chaines(d["code"]):
+                r.erreur(ou, "« code » doit être une liste de lignes")
+            if "schema" in d:
+                verifier_schema(d["schema"], ou, r)
+        elif d["type"] == "humour":
+            if not isinstance(d.get("titre"), str) or not liste_de_chaines(d.get("lignes", [])) or not d.get("lignes"):
+                r.erreur(ou, "une diapositive d'humour a un « titre » et des « lignes »")
         elif d["type"] == "notion":
             if not isinstance(d.get("titre"), str) or not d["titre"].strip():
                 r.erreur(ou, "une notion a un titre")
@@ -343,6 +359,8 @@ def verifier_cours(chemin, executer_code=True, n_questions=20):
                     verifier_schema_execution(d["schema"], prelude, ou + ", schéma", r)
             if "code" in d and not liste_de_chaines(d["code"]):
                 r.erreur(ou, "« code » doit être une liste de lignes")
+            if "consigne" in d and not liste_de_chaines(d["consigne"]):
+                r.erreur(ou, "« consigne » : une liste de consignes d'observation")
     if diapos and diapos[0].get("type") != "titre":
         r.avert("diapositive 1", "un cours commence d'habitude par une diapositive « titre »")
     if n_questions and len(questions) != n_questions:

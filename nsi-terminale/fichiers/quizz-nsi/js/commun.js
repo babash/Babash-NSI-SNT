@@ -18,11 +18,13 @@
   const echapper = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ECH[c]);
   Q.echapper = echapper;
 
-  // `code` → <code>, **gras** → <strong>, *italique* → <em>. Le code n'est pas retouché.
+  // `code` → <code>, ==mot-clé== → <strong class="cle">, **gras** → <strong>, *italique* → <em>. Le code n'est pas retouché.
   Q.texte = function (s) {
     return String(s == null ? '' : s).split('`').map((morceau, i) => {
       if (i % 2) return '<code class="py">' + colorerLigne(morceau) + '</code>';
       return echapper(morceau)
+        // ==mot-clé== : en couleur, et aussi en gras souligné (la couleur ne porte jamais seule l'information)
+        .replace(/==(.+?)==/g, '<strong class="cle">$1</strong>')
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>');
     }).join('');
