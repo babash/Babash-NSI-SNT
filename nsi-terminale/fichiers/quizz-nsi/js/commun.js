@@ -224,6 +224,24 @@
   };
 
   Q.$ = id => document.getElementById(id);
+  /* Créer un élément sans HTML : les enfants texte passent par des nœuds texte (jamais innerHTML).
+     C'est la seule façon d'afficher une valeur reçue par le canal ou lue dans le stockage. */
+  Q.el = function (tag, attrs) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || /^on/i.test(k)) continue;
+      if (k === 'class') e.className = String(v); else e.setAttribute(k, String(v));
+    }
+    for (let i = 2; i < arguments.length; i++) {
+      const c = arguments[i];
+      if (c == null || c === false) continue;
+      if (Array.isArray(c)) c.forEach(x => { if (x != null) e.appendChild(typeof x === 'object' ? x : document.createTextNode(String(x))); });
+      else e.appendChild(typeof c === 'object' ? c : document.createTextNode(String(c)));
+    }
+    return e;
+  };
+  // Un fragment de HTML produit par le moteur à partir du fichier du cours (contenu local, échappé).
+  Q.fragmentCours = function (html) { const t = document.createElement('template'); t.innerHTML = html; return t.content; };
   Q.annoncer = function (texte) { const z = Q.$('annonce'); if (z) { z.textContent = ''; setTimeout(() => { z.textContent = texte; }, 30); } };
   Q.erreurPage = function (conteneur, message) {
     conteneur.innerHTML = '<div class="alerte" role="alert"><p><strong>Le cours ne peut pas s\'afficher.</strong></p><p>' + echapper(message) + '</p></div>';

@@ -78,7 +78,13 @@ Les schémas sont dessinés par le moteur, en SVG, à partir des données ; ils 
 | `decalage` | `elements` | le décalage provoqué par `pop(0)` |
 | `svg` | `code` : un SVG écrit à la main (sans script ni attribut `on…`) | pour les autres cours (arbres, graphes) ; pas envoyé aux téléphones |
 
-Chaque schéma accepte une `legende`. Pour un nouveau type récurrent (un arbre binaire, un graphe), mieux vaut l'ajouter au moteur (`js/commun.js`, fonction `Q.schema`) qu'écrire du SVG à la main.
+Chaque schéma accepte une `legende`.
+
+**Un schéma qui se déduit d'un code est vérifié par exécution** (contrôle du vérificateur) :
+- `etapes` avec `"variable": "p"` (ou `"f"`) : chaque `op` est du Python (`p.empiler(4)`) ; `p.depiler() → 1` vérifie aussi la valeur renvoyée ; après chaque étape, le contenu de la variable doit être exactement `elements` ;
+- `pile`, `file`, `liste` ou `deux-piles` avec `"code": [lignes]` : après ce code, chaque variable dessinée (`variable`, ou le `nom` de chaque pile pour `deux-piles`) doit contenir exactement `elements`.
+
+Rappel : pour une pile, `elements` va **du bas vers le haut** ; pour une file, de la tête vers la queue. Pour un nouveau type récurrent (un arbre binaire, un graphe), mieux vaut l'ajouter au moteur (`js/commun.js`, fonction `Q.schema`) qu'écrire du SVG à la main.
 
 ## Les vérifications
 

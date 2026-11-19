@@ -131,7 +131,7 @@
         "Primitives : `Pile()` crée une pile vide ; `p.est_vide()` ; `p.empiler(e)` ; `p.depiler()` **retire** le sommet et le renvoie ; `p.sommet()` le renvoie **sans le retirer** ; `p.taille()`.",
         "Au bac, on rencontre aussi l'écriture en fonctions : `empiler(p, e)`, `depiler(p)`… C'est la même interface."
       ],
-      "schema": { "type": "etapes", "structure": "pile", "etapes": [
+      "schema": { "type": "etapes", "structure": "pile", "variable": "p", "etapes": [
         { "op": "p = Pile()", "elements": [] },
         { "op": "p.empiler(4)", "elements": [4] },
         { "op": "p.empiler(1)", "elements": [4, 1] },
@@ -195,11 +195,11 @@
         "`empiler` ajoute en haut ; `depiler` enlève le haut. On ne touche jamais au milieu.",
         "À la fin, on lit la pile **du haut vers le bas** (la convention du bac)."
       ],
-      "schema": { "type": "etapes", "structure": "pile", "etapes": [
-        { "op": "empiler(\"a\")", "elements": ["a"] },
-        { "op": "empiler(\"b\")", "elements": ["a", "b"] },
-        { "op": "depiler()", "elements": ["a"] },
-        { "op": "empiler(\"c\")", "elements": ["a", "c"] }
+      "schema": { "type": "etapes", "structure": "pile", "variable": "p", "etapes": [
+        { "op": "p.empiler(\"a\")", "elements": ["a"] },
+        { "op": "p.empiler(\"b\")", "elements": ["a", "b"] },
+        { "op": "p.depiler() → \"b\"", "elements": ["a"] },
+        { "op": "p.empiler(\"c\")", "elements": ["a", "c"] }
       ], "legende": "Lecture finale : c, a." }
     },
     {
@@ -251,7 +251,7 @@
         "`File()` crée une file vide ; `f.est_vide()` ; `f.enfiler(e)` ajoute `e` **à la queue** ; `f.defiler()` **retire** l'élément de **tête** et le renvoie ; `f.taille()`.",
         "Un élément défilé puis enfilé de nouveau repart **à la queue** : il fait la queue une deuxième fois."
       ],
-      "schema": { "type": "etapes", "structure": "file", "etapes": [
+      "schema": { "type": "etapes", "structure": "file", "variable": "f", "etapes": [
         { "op": "f.enfiler(\"a\")", "elements": ["a"] },
         { "op": "f.enfiler(\"b\")", "elements": ["a", "b"] },
         { "op": "f.defiler() → \"a\"", "elements": ["b"] },
@@ -486,7 +486,8 @@
         "Puis on **rempile** tout de `aux` vers `p` : la pile retrouve son ordre de départ.",
         "Sans cette deuxième boucle, `p` reste vide à la fin."
       ],
-      "schema": { "type": "deux-piles", "gauche": { "nom": "p", "elements": [] }, "droite": { "nom": "aux", "elements": ["c", "b", "a"] }, "fleche": "on rempile dans p", "legende": "p contenait a, b, c (du haut vers le bas) : aux les a dans l'ordre inverse." }
+      "schema": { "type": "deux-piles", "gauche": { "nom": "p", "elements": [] }, "droite": { "nom": "aux", "elements": ["a", "b", "c"] }, "fleche": "on rempile dans p",
+        "code": ["p = Pile()", "for e in [\"c\", \"b\", \"a\"]:", "    p.empiler(e)", "aux = Pile()", "while not p.est_vide():", "    aux.empiler(p.depiler())"], "legende": "p contenait a, b, c (du haut vers le bas) : aux les a dans l'ordre inverse." }
     },
     {
       "type": "question",
@@ -557,7 +558,8 @@
         "Pour **défiler** : si `sortie` est vide, on **transvase** toute `entree` dans `sortie` (l'ordre s'inverse : le plus ancien arrive au sommet). Puis on dépile `sortie`.",
         "Chaque élément n'est transvasé qu'une fois : en moyenne, un défilement coûte un temps constant."
       ],
-      "schema": { "type": "deux-piles", "gauche": { "nom": "entree", "elements": [1, 2, 3] }, "droite": { "nom": "sortie", "elements": [] }, "fleche": "transvaser si sortie est vide", "legende": "Après le transvasement, 1, le plus ancien, sera au sommet de sortie." },
+      "schema": { "type": "deux-piles", "gauche": { "nom": "entree", "elements": [1, 2, 3] }, "droite": { "nom": "sortie", "elements": [] }, "fleche": "transvaser si sortie est vide",
+        "code": ["entree = Pile()", "sortie = Pile()", "for e in [1, 2, 3]:", "    entree.empiler(e)"], "legende": "Après le transvasement, 1, le plus ancien, sera au sommet de sortie." },
       "code": [
         "class FileDeuxPiles:",
         "    def __init__(self):",
