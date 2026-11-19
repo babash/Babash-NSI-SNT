@@ -1,9 +1,9 @@
-# Essai ponctuel de QuizzNSI (T91), sur cette branche seulement : jamais fusionnée dans main.
+# Essai ponctuel de QuizzNSI (T91, puis T93 : la nouvelle adresse), sur cette branche seulement : jamais fusionnée dans main.
 # Les sessions ne joignent pas Supabase ; ce job, lui, a Internet. Il ouvre la page projetée et deux
 # pages élèves dans Chrome, avec le vrai temps réel (canaux de diffusion et de présence, clé
 # « publishable », aucune table ni fonction), et vérifie : salle ouverte, deux élèves vus, une notion,
 # une question, ses réponses et sa correction, puis une coupure et un retour.
-name: Essai temps réel QuizzNSI T92b (site en ligne)
+name: Essai QuizzNSI T93 (babash.github.io/QuizzNSI et la vraie base)
 on:
   push:
     branches: [gardien/t91-essai-temps-reel]
@@ -19,13 +19,26 @@ jobs:
         run: |
           python3 -m pip install --quiet --break-system-packages playwright || python3 -m pip install --quiet playwright
           python3 -m playwright install --with-deps chromium
+      - name: Fichiers servis identiques à main (babash/QuizzNSI)
+        run: |
+          git clone --quiet --depth 1 --branch main https://github.com/babash/QuizzNSI /tmp/quizznsi
+          cd /tmp/quizznsi && echo "main de babash/QuizzNSI : $(git rev-parse HEAD)"
+          curl -sS -o /dev/null -w 'racine : HTTP %{http_code}, %{content_type}\n' https://babash.github.io/QuizzNSI/
+          curl -sS -o /dev/null -w 'sans « / » final : HTTP %{http_code} vers %{redirect_url}\n' https://babash.github.io/QuizzNSI
+          total=0; pareils=0; ecarts=0
+          for f in $(git ls-files | grep -v -E '(^|/)[.]'); do
+            total=$((total+1))
+            if curl -fsS --retry 3 -o /tmp/servi "https://babash.github.io/QuizzNSI/$f" && cmp -s /tmp/servi "$f"; then pareils=$((pareils+1)); else ecarts=$((ecarts+1)); echo "DIFFÉRENT ou absent : $f"; fi
+          done
+          if curl -fsS -o /tmp/racine https://babash.github.io/QuizzNSI/ && cmp -s /tmp/racine index.html; then echo "la racine sert index.html de main"; else echo "la racine ne sert pas index.html de main"; ecarts=$((ecarts+1)); fi
+          echo "$pareils fichier(s) servi(s) identique(s) à main sur $total (fichiers commençant par un point exclus) ; $ecarts écart(s)"
+          [ "$ecarts" -eq 0 ]
       - name: Une séance en direct, à trois pages
         run: |
-          cd nsi-terminale/fichiers/quizz-nsi && (python3 -m http.server 8765 >/dev/null 2>&1 &) && sleep 1
           cat > /tmp/essai.py <<'PY'
           import asyncio, re, sys
           from playwright.async_api import async_playwright
-          B = 'https://babash.github.io/Babash-NSI-SNT/nsi-terminale/fichiers/quizz-nsi/'
+          B = 'https://babash.github.io/QuizzNSI/'
           async def main():
               async with async_playwright() as p:
                   b = await p.chromium.launch()
