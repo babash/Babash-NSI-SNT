@@ -52,6 +52,7 @@ On ne fait jamais d'essai sur une table de données d'élèves de la base en lig
 | `0003-schema-commun.sql` | cible | `base_unique_0003_schema_commun` | Crée le schéma `commun` : le compteur d'essais, le sel secret, six fonctions internes et le registre des tables. |
 | `0004-ancien-projet-sequence-pantheon.sql` | **ancien projet de Lagon Arena** | `base_unique_0004_ancien_projet_sequence_pantheon` | Retire à `anon` ses droits sur `pantheon_id_seq`. |
 | `0005-registre-court-circuit.sql` | cible | `base_unique_0005_registre_court_circuit` | Range le schéma `court_circuit` et le préfixe `cc_` dans le registre des tables. |
+| `0009-registre-vacances.sql` (et son inverse) | cible | `base_unique_0009_registre_vacances` | Range le schéma `vacances` et le préfixe `cv_` (Calendrier des vacances, T105) dans le registre. Il reprend la vue de `0006` (Hello GO, appliquée le 17/11 ; ses fichiers sont sur la branche `gardien/t73-registre`). Les numéros `0007` et `0008` sont pris par le compte commun (T101), qui ne touche pas au registre. **Appliqué le 20/11 (15:33).** Mode d'emploi : `calendrier/supabase/LISEZMOI.md`. Le `schema.sql` du socle ne le contient pas encore : il sera refait quand `0006` sera sur `main`. |
 | `NNNN-…-inverse.sql` | le même | `…_inverse` | Le SQL inverse de chaque migration. |
 | `schema.sql` | un projet neuf | — | Le script complet du socle (0001, 0003 et 0005), pour la copie d'un·e collègue. |
 

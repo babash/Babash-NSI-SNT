@@ -1,0 +1,1345 @@
+{
+ "$schema": "./exercice.schema.json",
+ "theme": {
+  "id": "py-variables-types",
+  "titre": "Variables, calculs et types",
+  "nature": "notion",
+  "niveaux": [
+   "nsi-1re"
+  ],
+  "langage": "python",
+  "programme": [
+   "nsi-1re-2019.langages.constructions-elementaires"
+  ],
+  "notions": [
+   "prog.variable",
+   "prog.affectation",
+   "prog.arithmetique",
+   "prog.type",
+   "donnees.chaine"
+  ]
+ },
+ "exercices": [
+  {
+   "id": "py-variables-types-001",
+   "type": "vraifaux",
+   "titre": "Vrai ou faux : les variables",
+   "objectif": "Savoir ce que fait une affectation.",
+   "notions": [
+    "prog.variable",
+    "prog.affectation"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "x = 5 range la valeur 5 dans la variable x.",
+       "reponse": true,
+       "explication": "Le signe = de Python est une affectation : la valeur de droite va dans la variable de gauche."
+      },
+      {
+       "texte": "En Python, x = 5 et 5 = x veulent dire la même chose.",
+       "reponse": false,
+       "explication": "On écrit toujours la variable à gauche. 5 = x provoque une SyntaxError."
+      },
+      {
+       "texte": "Après a = 2 puis a = 7, la variable a vaut 7.",
+       "reponse": true,
+       "explication": "Une nouvelle affectation remplace l'ancienne valeur.",
+       "code": "a = 2\na = 7",
+       "verifier": "a == 7"
+      },
+      {
+       "texte": "Un nom de variable peut commencer par un chiffre, comme 2x.",
+       "reponse": false,
+       "explication": "Un nom commence par une lettre ou _ : x2 est permis, 2x non."
+      },
+      {
+       "texte": "Python fait la différence entre Prix et prix.",
+       "reponse": true,
+       "explication": "Les majuscules comptent : ce sont deux variables différentes."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "Après ce code, b vaut 3.",
+       "reponse": true,
+       "explication": "b reçoit la valeur de a au moment de l'affectation : 3. Changer a ensuite ne change pas b.",
+       "code": "a = 3\nb = a\na = 10",
+       "verifier": "b == 3"
+      },
+      {
+       "texte": "Après ce code, x vaut 6.",
+       "reponse": true,
+       "explication": "x + 1 se calcule avec l'ancienne valeur (5), puis le résultat va dans x.",
+       "code": "x = 5\nx = x + 1",
+       "verifier": "x == 6"
+      },
+      {
+       "texte": "Après ce code, total vaut 0.",
+       "reponse": false,
+       "explication": "total = total + 4 ajoute 4 : total vaut 4.",
+       "code": "total = 0\ntotal = total + 4",
+       "verifier": "total == 0"
+      },
+      {
+       "texte": "x += 2 veut dire la même chose que x = x + 2.",
+       "reponse": true,
+       "explication": "+= est un raccourci : on ajoute à la valeur actuelle."
+      },
+      {
+       "texte": "Une variable doit être créée avant d'être utilisée à droite d'un =.",
+       "reponse": true,
+       "explication": "Sinon, Python affiche un message comme NameError: name 'x' is not defined (x n'est pas défini)."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "Après ce code, a vaut 4 et b vaut 9.",
+       "reponse": true,
+       "explication": "Python calcule d'abord la droite (b, a), puis range : a et b s'échangent.",
+       "code": "a = 9\nb = 4\na, b = b, a",
+       "verifier": "a == 4 and b == 9"
+      },
+      {
+       "texte": "Après ce code, a et b valent tous les deux 9.",
+       "reponse": false,
+       "explication": "Les deux affectations ont lieu l'une après l'autre : a vaut 4, puis b reçoit a, donc 4.",
+       "code": "a = 9\nb = 4\na = b\nb = a",
+       "verifier": "a == 9 and b == 9"
+      },
+      {
+       "texte": "Après ce code, n vaut 12.",
+       "reponse": true,
+       "explication": "n vaut 3, puis 6 (3 * 2), puis 12 (6 * 2).",
+       "code": "n = 3\nn = n * 2\nn = n * 2",
+       "verifier": "n == 12"
+      },
+      {
+       "texte": "Après ce code, s vaut 15.",
+       "reponse": false,
+       "explication": "s vaut 10, puis 13, puis 10 - 3 = 7 : chaque ligne part de la valeur précédente.",
+       "code": "s = 10\ns = s + 3\ns = s - 6",
+       "verifier": "s == 15"
+      },
+      {
+       "texte": "Après ce code, m vaut 2.",
+       "reponse": true,
+       "explication": "m vaut 17 // 5 = 3, puis 3 - 1 = 2.",
+       "code": "m = 17 // 5\nm = m - 1",
+       "verifier": "m == 2"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-002",
+   "type": "sortie",
+   "titre": "Que va-t-il s'afficher ?",
+   "objectif": "Suivre les valeurs d'une variable, ligne après ligne.",
+   "notions": [
+    "prog.affectation",
+    "prog.trace"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "x = 4\nx = x + 3\nprint(x)",
+       "options": [
+        "43",
+        "x",
+        "7",
+        "4"
+       ],
+       "bonne": 2,
+       "retours": [
+        "x + 3 est une addition de nombres, pas un collage de textes.",
+        "print(x) affiche la valeur de x, pas son nom.",
+        "Juste : x vaut 4, puis 4 + 3.",
+        "La deuxième ligne change x avant l'affichage."
+       ],
+       "aides": [
+        "Note la valeur de x après chaque ligne."
+       ]
+      },
+      {
+       "code": "a = 2\nb = a * 5\nprint(b)",
+       "options": [
+        "25",
+        "2",
+        "10",
+        "a * 5"
+       ],
+       "bonne": 2,
+       "retours": [
+        "* est la multiplication : 2 * 5, pas 5 * 5.",
+        "On affiche b, pas a.",
+        "Juste : b = 2 * 5.",
+        "Python calcule l'expression avant de la ranger."
+       ],
+       "aides": [
+        "Remplace a par sa valeur."
+       ]
+      },
+      {
+       "code": "prix = 12\nprix = prix - 2\nprix = prix * 2\nprint(prix)",
+       "options": [
+        "20",
+        "22",
+        "24",
+        "10"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : 12, puis 10, puis 20.",
+        "Chaque ligne part de la valeur précédente : 12 - 2 = 10.",
+        "La soustraction a lieu avant la multiplication, dans l'ordre des lignes.",
+        "Il reste une ligne après prix - 2."
+       ],
+       "aides": [
+        "Écris prix à côté de chaque ligne."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "a = 5\nb = 3\na = a + b\nb = a - b\nprint(a, b)",
+       "options": [
+        "8 3",
+        "8 5",
+        "8 -3",
+        "5 3"
+       ],
+       "bonne": 1,
+       "retours": [
+        "b change aussi à la ligne 4.",
+        "Juste : a devient 8, puis b = 8 - 3.",
+        "a - b se calcule avec a = 8 et b = 3.",
+        "a change à la ligne 3."
+       ],
+       "aides": [
+        "Fais un tableau à deux colonnes : a et b."
+       ]
+      },
+      {
+       "code": "n = 7\nn = n // 2\nprint(n)",
+       "options": [
+        "3.5",
+        "4",
+        "1",
+        "3"
+       ],
+       "bonne": 3,
+       "retours": [
+        "/ donnerait 3.5 ; // garde la partie entière.",
+        "// arrondit vers le bas, pas au plus proche.",
+        "1 est le reste (7 % 2), pas le quotient.",
+        "Juste : // est la division entière."
+       ],
+       "aides": [
+        "// garde seulement la partie entière du quotient."
+       ]
+      },
+      {
+       "code": "x = 10\ny = x\nx = 1\nprint(y)",
+       "options": [
+        "11",
+        "10",
+        "1",
+        "x"
+       ],
+       "bonne": 1,
+       "retours": [
+        "Aucune addition ici.",
+        "Juste : y a reçu la valeur 10 ; changer x ensuite ne change pas y.",
+        "y n'est pas lié à x : il a reçu une valeur.",
+        "On affiche la valeur de y."
+       ],
+       "aides": [
+        "Que vaut x au moment où l'on écrit y = x ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "a = 3\nb = 4\nc = a\na = b\nb = c\nprint(a * 10 + b)",
+       "reponse": "43",
+       "explication": "c garde l'ancienne valeur de a : a et b s'échangent (a = 4, b = 3). 4 * 10 + 3 = 43.",
+       "aides": [
+        "La variable c sert à garder une valeur.",
+        "Note a, b et c après chaque ligne."
+       ]
+      },
+      {
+       "code": "n = 5\nn = n * n\nn = n % 7\nprint(n)",
+       "reponse": "4",
+       "explication": "n vaut 5, puis 25, puis le reste de 25 par 7 : 25 = 3 * 7 + 4, donc 4.",
+       "aides": [
+        "% donne le reste de la division."
+       ]
+      },
+      {
+       "code": "x = 2\nx = x ** 3\nx = x - x // 3\nprint(x)",
+       "reponse": "6",
+       "explication": "x vaut 2, puis 2 ** 3 = 8, puis 8 - 8 // 3 = 8 - 2 = 6.",
+       "aides": [
+        "** est la puissance.",
+        "// est calculé avant la soustraction."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-003",
+   "type": "associer",
+   "titre": "Les bons opérateurs",
+   "objectif": "Connaître le résultat des opérateurs de calcul.",
+   "notions": [
+    "prog.arithmetique"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque calcul à son résultat.",
+       "paires": [
+        [
+         "7 + 2",
+         "9"
+        ],
+        [
+         "7 * 2",
+         "14"
+        ],
+        [
+         "7 - 2",
+         "5"
+        ],
+        [
+         "7 / 2",
+         "3.5"
+        ]
+       ],
+       "explication": "/ donne toujours un nombre à virgule (float) : 7 / 2 vaut 3.5.",
+       "aides": [
+        "En Python, / donne un nombre à virgule."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque calcul à son résultat.",
+       "paires": [
+        [
+         "17 // 5",
+         "3"
+        ],
+        [
+         "17 % 5",
+         "2"
+        ],
+        [
+         "2 ** 4",
+         "16"
+        ],
+        [
+         "17 / 2",
+         "8.5"
+        ],
+        [
+         "10 // 10",
+         "1"
+        ]
+       ],
+       "explication": "// donne le quotient entier, % le reste, ** la puissance.",
+       "aides": [
+        "17 = 3 x 5 + 2.",
+        "2 ** 4 = 2 x 2 x 2 x 2."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "print(2 + 3 * 4)",
+         "14"
+        ],
+        [
+         "print((2 + 3) * 4)",
+         "20"
+        ],
+        [
+         "print(20 - 6 // 3)",
+         "18"
+        ],
+        [
+         "print(2 ** 3 % 5)",
+         "3"
+        ],
+        [
+         "print(-7 // 2)",
+         "-4"
+        ]
+       ],
+       "explication": "Les priorités : ** d'abord, puis *, /, // et %, puis + et -. Les parenthèses passent avant tout. -7 // 2 arrondit vers le bas : -4.",
+       "executer": true,
+       "aides": [
+        "Les parenthèses d'abord, puis ** , puis * // %, puis + -.",
+        "// arrondit toujours vers le bas, même pour un nombre négatif."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-004",
+   "type": "erreur",
+   "titre": "Chasse au bug",
+   "objectif": "Repérer et corriger une erreur dans un programme court.",
+   "notions": [
+    "prog.debogage",
+    "prog.affectation"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher Bonjour.",
+       "lignes": [
+        "print(Bonjour)"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "Print(\"Bonjour\")",
+        "print(bonjour)",
+        "print(\"Bonjour\")"
+       ],
+       "bonne": 2,
+       "affiche": "Bonjour",
+       "explication": "Un texte s'écrit entre guillemets. Sans eux, Python cherche une variable Bonjour (NameError).",
+       "aides": [
+        "Python affiche NameError : il croit que Bonjour est une variable."
+       ],
+       "message": "NameError: name 'Bonjour' is not defined"
+      },
+      {
+       "but": "Afficher 12.",
+       "lignes": [
+        "a = 5",
+        "b = 7",
+        "print(a + c)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "print(a + C)",
+        "print(a + b)",
+        "print(a, b)"
+       ],
+       "bonne": 1,
+       "affiche": "12",
+       "explication": "c n'existe pas : la variable s'appelle b.",
+       "aides": [
+        "Quelles variables existent ?"
+       ],
+       "message": "NameError: name 'c' is not defined"
+      },
+      {
+       "but": "Ranger 10 dans n, puis afficher n.",
+       "lignes": [
+        "n == 10",
+        "print(n)"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "n := 10",
+        "n = 10",
+        "10 = n"
+       ],
+       "bonne": 1,
+       "affiche": "10",
+       "explication": "== compare, = range. Pour ranger une valeur, un seul signe =.",
+       "aides": [
+        "== pose une question ; = range une valeur."
+       ],
+       "message": "NameError: name 'n' is not defined"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le double de 8.",
+       "lignes": [
+        "nombre = 8",
+        "double = nombre * 2",
+        "print(nombre)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "print(\"double\")",
+        "print(nombre * 3)",
+        "print(double)"
+       ],
+       "bonne": 2,
+       "affiche": "16",
+       "explication": "Le calcul est juste, mais on affiche la mauvaise variable.",
+       "aides": [
+        "Le programme affiche 8 : quelle variable faut-il montrer ?"
+       ],
+       "affiche_fautif": "8"
+      },
+      {
+       "but": "Afficher l'âge dans 5 ans (15 + 5).",
+       "lignes": [
+        "age = 15",
+        "age + 5",
+        "print(age)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "5 + age",
+        "age = age + 5",
+        "age == age + 5"
+       ],
+       "bonne": 1,
+       "affiche": "20",
+       "explication": "age + 5 calcule un résultat, mais ne le range nulle part : age vaut toujours 15.",
+       "aides": [
+        "La ligne 2 calcule, mais garde-t-elle le résultat ?"
+       ],
+       "affiche_fautif": "15"
+      },
+      {
+       "but": "Afficher le prix total de 3 cahiers à 2 euros.",
+       "lignes": [
+        "prix = 2",
+        "quantite = 3",
+        "total = prix + quantite",
+        "print(total)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "total = prix ** quantite",
+        "total = quantite - prix",
+        "total = prix * quantite"
+       ],
+       "bonne": 2,
+       "affiche": "6",
+       "explication": "Pour 3 objets au même prix, on multiplie.",
+       "aides": [
+        "3 cahiers à 2 euros : quelle opération ?"
+       ],
+       "affiche_fautif": "5"
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher la moyenne de 12 et 15 (13.5).",
+       "lignes": [
+        "a = 12",
+        "b = 15",
+        "moyenne = a + b / 2",
+        "print(moyenne)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "moyenne = a + (b / 2)",
+        "moyenne = (a + b) / 2",
+        "moyenne = (a + b) // 2"
+       ],
+       "bonne": 1,
+       "affiche": "13.5",
+       "explication": "La division passe avant l'addition : il faut des parenthèses. // donnerait 13, pas 13.5.",
+       "aides": [
+        "Le programme affiche 19.5 : quelle opération est faite en premier ?"
+       ],
+       "affiche_fautif": "19.5"
+      },
+      {
+       "but": "Afficher le reste de 23 divisé par 4 (3).",
+       "lignes": [
+        "n = 23",
+        "reste = n // 4",
+        "print(reste)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "reste = n % 4",
+        "reste = n / 4",
+        "reste = 4 % n"
+       ],
+       "bonne": 0,
+       "affiche": "3",
+       "explication": "// donne le quotient (5), % donne le reste (3).",
+       "aides": [
+        "23 = 5 x 4 + 3 : lequel est le reste ?"
+       ],
+       "affiche_fautif": "5"
+      },
+      {
+       "but": "Échanger a et b, puis afficher 2 1.",
+       "lignes": [
+        "a = 1",
+        "b = 2",
+        "a = b",
+        "b = a",
+        "print(a, b)"
+       ],
+       "ligne": 3,
+       "corrections": [
+        "a = a",
+        "b = 1",
+        "b = b"
+       ],
+       "bonne": 1,
+       "affiche": "2 1",
+       "explication": "Après a = b, l'ancienne valeur de a est perdue. Ici, b doit recevoir 1. Mieux encore : a, b = b, a.",
+       "aides": [
+        "Après la ligne 3, que vaut a ?"
+       ],
+       "affiche_fautif": "2 2"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-005",
+   "type": "completer",
+   "titre": "Les pièces manquantes",
+   "objectif": "Choisir l'opérateur ou la variable qui convient.",
+   "notions": [
+    "prog.arithmetique",
+    "prog.affectation"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher 15.",
+       "lignes": [
+        "a = 10",
+        "b = 5",
+        "print(a {0} b)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "-",
+          "*",
+          "+"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "15",
+       "explication": "10 + 5 = 15.",
+       "aides": [
+        "Quelle opération donne 15 à partir de 10 et 5 ?"
+       ]
+      },
+      {
+       "but": "Afficher le texte Kenza.",
+       "lignes": [
+        "prenom = {0}",
+        "print(prenom)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "\"Kenza\"",
+          "Kenza",
+          "'prenom'"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Kenza",
+       "explication": "Un texte s'écrit entre guillemets.",
+       "aides": [
+        "Sans guillemets, Python cherche une variable."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le reste de 17 par 3 (2).",
+       "lignes": [
+        "n = 17",
+        "print(n {0} 3)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "//",
+          "%",
+          "/"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "2",
+       "explication": "% donne le reste, // le quotient, / la division à virgule.",
+       "aides": [
+        "17 = 5 x 3 + 2."
+       ]
+      },
+      {
+       "but": "Afficher le carré de 9 (81).",
+       "lignes": [
+        "x = 9",
+        "carre = x {0} {1}",
+        "print(carre)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "*",
+          "+",
+          "**"
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "3",
+          "2",
+          "9"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "81",
+       "explication": "x ** 2 est x au carré. x * 9 donnerait aussi 81 ici, mais seulement parce que x vaut 9 : la question demande le carré.",
+       "aides": [
+        "** est la puissance."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Échanger a et b, puis afficher 7 3.",
+       "lignes": [
+        "a = 3",
+        "b = 7",
+        "a, b = {0}",
+        "print(a, b)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "b, a",
+          "b, b",
+          "a, b"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "7 3",
+       "explication": "a, b = b, a calcule d'abord b, a, puis range : l'échange se fait sans variable de plus.",
+       "aides": [
+        "La droite est calculée avant d'être rangée."
+       ]
+      },
+      {
+       "but": "Convertir 135 minutes en heures et minutes (2 h 15).",
+       "lignes": [
+        "t = 135",
+        "h = t {0} 60",
+        "m = t {1} 60",
+        "print(h, \"h\", m)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "%",
+          "/",
+          "//"
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "-",
+          "//",
+          "%"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "2 h 15",
+       "explication": "135 // 60 = 2 heures, 135 % 60 = 15 minutes.",
+       "aides": [
+        "Les heures : le quotient par 60.",
+        "Les minutes : le reste."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-006",
+   "type": "ordre",
+   "titre": "Le puzzle de code",
+   "objectif": "Remettre un programme dans l'ordre : on crée, on calcule, on affiche.",
+   "notions": [
+    "prog.sequence"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Calculer et afficher le prix de 4 croissants à 1 euro 50.",
+       "lignes": [
+        "prix, quantite = 1.5, 4",
+        "total = prix * quantite",
+        "print(total)"
+       ],
+       "affiche": "6.0",
+       "aides": [
+        "Une variable doit exister avant d'être utilisée."
+       ]
+      },
+      {
+       "but": "Afficher Bonjour Sam !",
+       "lignes": [
+        "prenom = \"Sam\"",
+        "message = \"Bonjour \" + prenom + \" !\"",
+        "print(message)"
+       ],
+       "affiche": "Bonjour Sam !",
+       "aides": [
+        "On crée le prénom, puis le message, puis on l'affiche."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Convertir 3 heures en minutes, puis en secondes.",
+       "lignes": [
+        "heures = 3",
+        "minutes = heures * 60",
+        "secondes = minutes * 60",
+        "print(minutes, secondes)"
+       ],
+       "affiche": "180 10800",
+       "aides": [
+        "Les secondes se calculent à partir des minutes."
+       ]
+      },
+      {
+       "but": "Calculer la moyenne de trois notes.",
+       "lignes": [
+        "n1, n2, n3 = 12, 15, 9",
+        "somme = n1 + n2 + n3",
+        "moyenne = somme / 3",
+        "print(moyenne)"
+       ],
+       "affiche": "12.0",
+       "aides": [
+        "La somme a besoin des trois notes."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Échanger a et b avec une variable c, puis afficher 8 5.",
+       "lignes": [
+        "a, b = 5, 8",
+        "c = a",
+        "a = b",
+        "b = c",
+        "print(a, b)"
+       ],
+       "affiche": "8 5",
+       "aides": [
+        "c garde a avant qu'on l'écrase.",
+        "Le dernier à recevoir sa nouvelle valeur est b."
+       ]
+      },
+      {
+       "but": "Rendre la monnaie sur 50 euros pour un achat de 37 euros, en billets de 10 et en pièces.",
+       "lignes": [
+        "paye, achat = 50, 37",
+        "rendu = paye - achat",
+        "billets = rendu // 10",
+        "pieces = rendu - billets * 10",
+        "print(billets, pieces)"
+       ],
+       "affiche": "1 3",
+       "aides": [
+        "On calcule d'abord ce qu'il faut rendre.",
+        "Les pièces : ce qui reste une fois les billets donnés."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-007",
+   "type": "vraifaux",
+   "titre": "Vrai ou faux : les types",
+   "objectif": "Reconnaître les types de base : int, float, str, bool.",
+   "notions": [
+    "prog.type",
+    "donnees.chaine",
+    "donnees.booleen"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "42 est un entier (int).",
+       "reponse": true,
+       "explication": "Un nombre sans virgule est un int."
+      },
+      {
+       "texte": "3.0 est un entier (int).",
+       "reponse": false,
+       "explication": "Avec un point, c'est un nombre à virgule (float), même si la partie après le point est 0."
+      },
+      {
+       "texte": "\"42\" est un texte (str).",
+       "reponse": true,
+       "explication": "Entre guillemets, c'est un texte, même s'il ne contient que des chiffres."
+      },
+      {
+       "texte": "True et False sont des booléens (bool).",
+       "reponse": true,
+       "explication": "Un booléen vaut True (vrai) ou False (faux)."
+      },
+      {
+       "texte": "En Python, on écrit vrai pour True.",
+       "reponse": false,
+       "explication": "Python est en anglais : True et False, avec une majuscule."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "type(7 / 7) est float.",
+       "reponse": true,
+       "explication": "/ donne toujours un float : 7 / 7 vaut 1.0.",
+       "code": "t = type(7 / 7)",
+       "verifier": "t == float"
+      },
+      {
+       "texte": "\"3\" + \"4\" vaut \"7\".",
+       "reponse": false,
+       "explication": "+ colle deux textes : \"3\" + \"4\" vaut \"34\".",
+       "code": "r = \"3\" + \"4\"",
+       "verifier": "r == \"7\""
+      },
+      {
+       "texte": "int(\"12\") + 1 vaut 13.",
+       "reponse": true,
+       "explication": "int() transforme le texte \"12\" en nombre 12.",
+       "code": "r = int(\"12\") + 1",
+       "verifier": "r == 13"
+      },
+      {
+       "texte": "str(5) + \"0\" vaut \"50\".",
+       "reponse": true,
+       "explication": "str(5) est le texte \"5\" ; collé à \"0\", cela donne \"50\".",
+       "code": "r = str(5) + \"0\"",
+       "verifier": "r == \"50\""
+      },
+      {
+       "texte": "\"ab\" * 3 provoque une erreur.",
+       "reponse": false,
+       "explication": "Un texte multiplié par un entier se répète : \"ababab\"."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "int(7.9) vaut 8.",
+       "reponse": false,
+       "explication": "int() coupe la partie décimale, sans arrondir : int(7.9) vaut 7.",
+       "code": "r = int(7.9)",
+       "verifier": "r == 8"
+      },
+      {
+       "texte": "0.1 + 0.2 == 0.3 est vrai en Python.",
+       "reponse": false,
+       "explication": "Les nombres à virgule sont approchés en binaire : 0.1 + 0.2 vaut 0.30000000000000004.",
+       "code": "r = (0.1 + 0.2 == 0.3)",
+       "verifier": "r == True"
+      },
+      {
+       "texte": "len(\"Mayotte\") vaut 7.",
+       "reponse": true,
+       "explication": "len compte les caractères : M, a, y, o, t, t, e.",
+       "code": "r = len(\"Mayotte\")",
+       "verifier": "r == 7"
+      },
+      {
+       "texte": "\"5\" + 3 provoque une erreur.",
+       "reponse": true,
+       "explication": "On ne peut pas ajouter un texte et un nombre : TypeError. Il faut convertir avec int() ou str()."
+      },
+      {
+       "texte": "bool(0) vaut False.",
+       "reponse": true,
+       "explication": "Le nombre 0 est considéré comme faux ; les autres nombres comme vrais.",
+       "code": "r = bool(0)",
+       "verifier": "r == False"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-008",
+   "type": "sortie",
+   "titre": "Les textes à l'écran",
+   "objectif": "Prévoir l'affichage d'opérations sur les chaînes de caractères.",
+   "notions": [
+    "donnees.chaine",
+    "prog.trace"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "mot = \"barge\"\nprint(len(mot))",
+       "options": [
+        "barge",
+        "4",
+        "5",
+        "6"
+       ],
+       "bonne": 2,
+       "retours": [
+        "len donne un nombre : la longueur.",
+        "Compte bien toutes les lettres.",
+        "Juste : b, a, r, g, e.",
+        "Il n'y a pas d'espace caché."
+       ],
+       "aides": [
+        "Compte les lettres."
+       ]
+      },
+      {
+       "code": "a = \"Bon\"\nb = \"jour\"\nprint(a + b)",
+       "options": [
+        "Bon + jour",
+        "Bon jour",
+        "Bonjour",
+        "a + b"
+       ],
+       "bonne": 2,
+       "retours": [
+        "Le + est calculé, il ne s'affiche pas.",
+        "+ ne rajoute pas d'espace.",
+        "Juste : + colle les textes.",
+        "On affiche les valeurs, pas les noms."
+       ],
+       "aides": [
+        "+ entre deux textes les colle."
+       ]
+      },
+      {
+       "code": "s = \"NSI\"\nprint(s[0])",
+       "options": [
+        "I",
+        "NSI",
+        "S",
+        "N"
+       ],
+       "bonne": 3,
+       "retours": [
+        "I est le dernier, d'indice 2.",
+        "s[0] est un seul caractère.",
+        "S a l'indice 1 : on compte à partir de 0.",
+        "Juste : le premier caractère a l'indice 0."
+       ],
+       "aides": [
+        "Les indices commencent à 0."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "s = \"Mamoudzou\"\nprint(s[2])",
+       "options": [
+        "a",
+        "m",
+        "M",
+        "o"
+       ],
+       "bonne": 1,
+       "retours": [
+        "a a l'indice 1.",
+        "Juste : M est en 0, a en 1, m en 2.",
+        "M a l'indice 0.",
+        "o a l'indice 3."
+       ],
+       "aides": [
+        "Numérote les lettres à partir de 0."
+       ]
+      },
+      {
+       "code": "s = \"barge\"\nprint(s[-1])",
+       "options": [
+        "b",
+        "erreur",
+        "e",
+        "g"
+       ],
+       "bonne": 2,
+       "retours": [
+        "b est s[0].",
+        "Les indices négatifs sont permis : on compte depuis la fin.",
+        "Juste : -1 désigne le dernier caractère.",
+        "g est s[-2]."
+       ],
+       "aides": [
+        "-1, c'est le dernier."
+       ]
+      },
+      {
+       "code": "print(\"ha\" * 3 + \"!\")",
+       "options": [
+        "ha ha ha !",
+        "ha!ha!ha!",
+        "ha3!",
+        "hahaha!"
+       ],
+       "bonne": 3,
+       "retours": [
+        "Aucun espace n'est ajouté.",
+        "* est calculé avant + : on répète \"ha\", puis on ajoute \"!\".",
+        "* répète le texte, il n'écrit pas le nombre.",
+        "Juste : * répète, puis + colle."
+       ],
+       "aides": [
+        "* passe avant +."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "s = \"informatique\"\nprint(s[2] + s[-1] + s[5])",
+       "reponse": "fem",
+       "explication": "s[2] = f, s[-1] = e, s[5] = m : on obtient fem.",
+       "aides": [
+        "i n f o r m a t i q u e : numérote à partir de 0.",
+        "s[-1] est le dernier caractère."
+       ]
+      },
+      {
+       "code": "a = \"12\"\nb = \"3\"\nprint(int(a + b) + 1)",
+       "reponse": "124",
+       "explication": "a + b colle les textes : \"123\". int(\"123\") + 1 = 124.",
+       "aides": [
+        "Les guillemets comptent : a + b est un collage.",
+        "int() transforme le texte en nombre."
+       ]
+      },
+      {
+       "code": "prenom = \"Naima\"\nprint(len(prenom) * 2 - 1)",
+       "reponse": "9",
+       "explication": "len(\"Naima\") vaut 5 ; 5 * 2 - 1 = 9.",
+       "aides": [
+        "Compte les lettres de Naima.",
+        "* passe avant -."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-variables-types-009",
+   "type": "associer",
+   "titre": "Textes en mots-clés",
+   "objectif": "Associer une opération sur un texte à son résultat.",
+   "notions": [
+    "donnees.chaine"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "s = \"barge\"\nprint(s[0])",
+         "b"
+        ],
+        [
+         "s = \"barge\"\nprint(s[-1])",
+         "e"
+        ],
+        [
+         "s = \"barge\"\nprint(len(s))",
+         "5"
+        ],
+        [
+         "s = \"barge\"\nprint(s.upper())",
+         "BARGE"
+        ]
+       ],
+       "explication": "s[0] est le premier caractère, s[-1] le dernier, len la longueur, upper() met en majuscules.",
+       "executer": true,
+       "aides": [
+        "Les indices commencent à 0."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "s = \"Mayotte\"\nprint(s[1:4])",
+         "ayo"
+        ],
+        [
+         "s = \"Mayotte\"\nprint(s[:3])",
+         "May"
+        ],
+        [
+         "s = \"Mayotte\"\nprint(s[4:])",
+         "tte"
+        ],
+        [
+         "s = \"Mayotte\"\nprint(s.lower())",
+         "mayotte"
+        ],
+        [
+         "s = \"Mayotte\"\nprint(s.count(\"t\"))",
+         "2"
+        ]
+       ],
+       "explication": "s[a:b] donne les caractères de a à b exclu ; sans début, on part de 0 ; sans fin, on va au bout.",
+       "executer": true,
+       "aides": [
+        "s[1:4] donne les indices 1, 2 et 3."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "s = \"Bonjour\"\nprint(s[::-1])",
+         "ruojnoB"
+        ],
+        [
+         "s = \"Bonjour\"\nprint(s.replace(\"o\", \"0\"))",
+         "B0nj0ur"
+        ],
+        [
+         "s = \"Bonjour\"\nprint(\"j\" in s)",
+         "True"
+        ],
+        [
+         "s = \"Bonjour\"\nprint(s.find(\"j\"))",
+         "3"
+        ],
+        [
+         "s = \"Bonjour\"\nprint(s[1] + s[3])",
+         "oj"
+        ]
+       ],
+       "explication": "s[::-1] retourne le texte ; replace remplace ; in teste la présence ; find donne l'indice de la première apparition.",
+       "executer": true,
+       "aides": [
+        "find donne un indice, qui commence à 0."
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

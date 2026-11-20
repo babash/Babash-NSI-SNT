@@ -19,7 +19,9 @@ référentiels), sauf les fiches des ressources (`donnees/ressources/`) et la vi
 (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer des fiches
 d'exemple pour illustrer le format, et un Atelier ou l'Atelier des quiz y écrit la fiche en
 brouillon de la ressource qu'il crée. Le dossier `qcm/` (les sources XML des quiz Pronote,
-leurs aperçus et leurs outils) est à l'Atelier des quiz.
+leurs aperçus et leurs outils) est à l'Atelier des quiz. Depuis le 20 novembre 2026, le
+Calendrier des vacances (`calendrier/`) et le futur espace `enseignant/` sont à l'Architecte, sauf
+le contenu des exercices du Calendrier (`calendrier/exercices/<thème>.json`), écrit par les Ateliers.
 Un agent ne modifie que ses fichiers ; pour les autres, il le signale dans son rapport.
 Une session Claude que l'enseignant lance lui-même pour développer une application suit
 toutes ces règles, publication par le Gardien comprise.
@@ -52,8 +54,9 @@ l'enseignant :
   depuis n'importe où ; l'enseignant·e a aussi un code et voit ceux de ses élèves, et un lien
   de classe, avec son QR code, permet de rejoindre la classe. Les pages en ligne des TD, elles,
   restent sans compte ni envoi de données ;
-- un **quiz** (un QCM pour Pronote) part d'une note de cadrage que l'enseignant valide avant
-  toute génération. Ses questions sont des QCU à 4 options : une juste et trois distracteurs
+- un **quiz** (un QCM pour Pronote) part d'une note de cadrage validée avant toute génération :
+  depuis le 20 novembre 2026, l'enseignant a délégué au chef d'orchestre la validation et la
+  correction des QCM Pronote. Ses questions sont des QCU à 4 options : une juste et trois distracteurs
   tirés des erreurs typiques des élèves, avec pour chaque option un feedback bienveillant qui
   explique, et l'objectif affiché au début de chaque question ; on y analyse du code et on y
   cherche des erreurs. Le fichier suit le format XML Moodle que lit Pronote, avec toutes ses
@@ -64,6 +67,20 @@ Une ressource externe ne se modifie pas : sa fiche peut signaler ce qui lui manq
 vérifie ces règles avant de publier une ressource. Les ressources déjà en ligne n'ont pas
 encore été revues sous cet angle.
 
+Les décisions de l'enseignant du 20 novembre 2026 s'y ajoutent (`CLAUDE.md`, § 4 à § 6) :
+- « On ne se compare pas, mais on peut être fier·e de ce qu'on a appris » : aucun classement,
+  aucun rang, aucun score visible, aucune « série de jours » (on dit « jours différents ») ;
+  l'XP reste cachée et se dépense en apparences d'avatar ;
+- on ne demande jamais son genre à un·e élève, et toute personnalisation va sur tout avatar ;
+- dans un exercice « trouve l'erreur », le message d'erreur réel est toujours donné (Python 3.13,
+  ou SQLite pour le SQL), avec la coloration syntaxique ; le code affiché a une indentation très
+  visible et une coloration qui se lit aussi en noir et blanc, et les consoles sont compactes ;
+- les exemples viennent du quotidien des élèves à Mayotte (la barge, le taxi, le marché, le
+  lagon…), avec des prénoms variés, sans nom de famille, ni marque, ni cliché ;
+- l'univers « Mamoudzou 2046 » ne sert qu'aux jeux et aux avatars ; le nouveau style des
+  feuilles, « Signal pirate », n'est pas encore appliqué ;
+- le cours-quiz (dépôt QuizzNSI) vient en tête de séquence, avant le cours ou le TD.
+
 Règle d'écriture : les pages du site et les documents pour les élèves s'écrivent en langage
 inclusif chaque fois que c'est pertinent (formulations épicènes, double flexion, féminisation
 des fonctions et point médian, comme « enseignant·e·s »), selon la décision de l'enseignant du
@@ -71,4 +88,6 @@ des fonctions et point médian, comme « enseignant·e·s »), selon la décisio
 
 Les documents de coordination (cahier des charges, philosophie éducative, registre des
 décisions, organisation des agents, tableau des tâches, journal des publications, rapport du
-Gardien) sont dans le projet claude.ai « Site SNT-NSI ».
+Gardien) sont dans le projet claude.ai « Site SNT-NSI ». Leur partie pédagogique, la
+philosophie, les règles universelles et les types de ressources, est publiée dans
+[La pédagogie du site](pedagogie/README.md).

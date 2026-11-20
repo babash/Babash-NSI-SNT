@@ -1019,7 +1019,10 @@
     lireAdresse();
     ui.input.value = etat.q;
     ui.chapo.textContent = O.pluriel(fiches.length, 'ressource', 'ressources') + ' de SNT, de NSI et pour la classe, avec leurs documents. '
-      + 'Cherchez un mot ou une notion (« boucle » trouve aussi for et while), puis affinez avec les filtres.';
+      + 'Cherchez un mot ou une notion (« boucle » trouve aussi for et while), puis affinez avec les filtres. ';
+    /* T116 : les exercices du bac NSI par chapitre, sur leur propre page */
+    ui.chapo.appendChild(el('a', { href: O.racine + 'bibliotheque/annales/' + (O.surDisque ? 'index.html' : '') }, 'Annales du bac NSI par notion'));
+    ui.chapo.appendChild(document.createTextNode('.'));
     chercher();
     rendre();
     window.addEventListener('popstate', function () {
