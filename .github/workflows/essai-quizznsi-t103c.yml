@@ -1,0 +1,28 @@
+# Essai ponctuel (T103c, QuizzNSI), sur cette branche seulement : jamais fusionnée dans main.
+# Les fichiers servis par https://babash.github.io/QuizzNSI/ sont ceux de main (102a13532347aa42cc7ede9fb13534241e9d915c). Aucun appel à la base.
+name: Essai QuizzNSI T103c (fichiers servis)
+on:
+  push:
+    branches: [gardien/t91-essai-temps-reel]
+permissions:
+  contents: read
+jobs:
+  essai:
+    runs-on: ubuntu-26.04
+    timeout-minutes: 15
+    steps:
+      - name: Fichiers servis identiques à main (babash/QuizzNSI)
+        run: |
+          git clone --quiet https://github.com/babash/QuizzNSI /tmp/qz
+          cd /tmp/qz && git checkout --quiet 102a13532347aa42cc7ede9fb13534241e9d915c && echo "commit attendu : $(git rev-parse HEAD) ; main : $(git rev-parse origin/main)"
+          total=0; pareils=0; ecarts=0
+          for f in $(git ls-files | grep -v -E '(^|/)[.]' | grep -E '\.(html|js|css|json|svg|md|txt)$'); do
+            total=$((total+1)); ok=0
+            for essai in 1 2 3; do
+              if curl -fsS -o /tmp/servi "https://babash.github.io/QuizzNSI/$f" && cmp -s /tmp/servi "$f"; then ok=1; break; fi
+              sleep 8
+            done
+            if [ "$ok" = 1 ]; then pareils=$((pareils+1)); else ecarts=$((ecarts+1)); echo "DIFFÉRENT ou absent : $f"; fi
+          done
+          echo "$pareils fichier(s) servi(s) identique(s) sur $total ; $ecarts écart(s)"
+          [ "$ecarts" -eq 0 ]
