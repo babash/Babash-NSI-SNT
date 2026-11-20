@@ -1,0 +1,291 @@
+{
+  "format": "qcm-pronote/1",
+  "id": "nsi1-erreurs-python-1",
+  "titre": "NSI 1re · Lire les erreurs de Python 1 (sans fonctions)",
+  "niveau": "nsi-premiere",
+  "justification_niveau": "la mise au point des programmes (lire une erreur, la corriger) est au programme de première ; ce premier quiz n'utilise pas de fonctions et convient dès le début de l'année.",
+  "programme": ["nsi-1re-2019.langages.mise-au-point : Mise au point de programmes", "nsi-1re-2019.langages.constructions-elementaires : Constructions élémentaires"],
+  "notions": ["prog.debogage", "prog.type", "donnees.tableau", "donnees.dictionnaire"],
+  "auteur": "Babash - NSI Tani Malandi",
+  "licence": "CC BY-SA 4.0",
+  "sources": ["Erreurs Python (Sans fonctions) (export `4f5c5c92`, 15 questions)"],
+  "contexte": "Des programmes de quelques lignes ; les messages sont ceux de Python 3.13, vérifiés par exécution.",
+  "objectifs": [
+    "Lire la dernière ligne d'un message d'erreur de Python : le type d'erreur et son explication en anglais.",
+    "Relier chaque type d'erreur (NameError, SyntaxError, IndentationError, IndexError, KeyError, TypeError, ValueError, ZeroDivisionError, AttributeError) à sa cause.",
+    "Choisir la correction qui fait disparaître l'erreur."
+  ],
+  "progression": "Une erreur par question, des plus fréquentes en début d'année (faute de frappe, deux-points, indentation) aux erreurs de types.",
+  "forme": [
+    "Messages d'erreur mis à jour pour Python 3.13 (Q1, Q2, Q3, Q9, Q15) et vérifiés par exécution.",
+    "Les 15 questions passent de `single=false` (cases à cocher) à `single=true` : une seule réponse était juste.",
+    "Un feedback pour chaque option (seule la bonne réponse en avait un) ; chaque message anglais est traduit dans le feedback.",
+    "Noms « [Erreurs] … », objectif affiché ; code coloré et console séparée (modèle « Traiter les erreurs _1 »).",
+    "Positions de la bonne réponse replacées : l'original suivait le motif C, A, D, B répété."
+  ],
+  "retirees": [],
+  "questions": [
+    {
+      "id": "q01", "origine": "Erreurs sans fonctions Q1",
+      "nom": "[Erreurs] NameError : une faute de frappe",
+      "objectif": "Lire un NameError et trouver le nom mal écrit.",
+      "enonce": ["Le programme suivant est exécuté."],
+      "code": ["rayon = 5", "pi = 3.14", "surface = pii * rayon**2", "print(surface)"],
+      "console": ["NameError: name 'pii' is not defined. Did you mean: 'pi'?"],
+      "question": ["Quelle correction faut-il faire ?"],
+      "options": [
+        {"texte": "Ajouter des guillemets autour de pii", "feedback": "'pii' deviendrait un texte : Python ne pourrait plus le multiplier par un nombre pour calculer la surface. Le message montre une faute de frappe."},
+        {"texte": "Supprimer la ligne pi = 3.14", "feedback": "Cette ligne crée la variable qu'il faut utiliser. Sans elle, l'erreur resterait, et même pi n'existerait plus."},
+        {"texte": "Écrire pi au lieu de pii", "juste": true, "feedback": "Oui : le message dit « le nom 'pii' n'est pas défini. Voulais-tu dire 'pi' ? ». La variable créée s'appelle pi : c'est une faute de frappe."},
+        {"texte": "Remplacer le symbole * par +", "feedback": "Le signe * n'est pas en cause : NameError parle d'un nom inconnu, ici pii. Corrige le nom, le calcul sera bon."}
+      ],
+      "verifications": [
+        {"message": "NameError: name 'pii' is not defined. Did you mean: 'pi'?"},
+        {"option": "correction", "reprendre_code": false, "code": ["rayon = 5", "pi = 3.14", "surface = pi * rayon**2", "print(surface)"], "sortie": "78.5"}
+      ],
+      "fond": {"avant": "console « NameError: name 'pii' is not defined »", "apres": "console « NameError: name 'pii' is not defined. Did you mean: 'pi'? »", "raison": "message réel de Python 3.13 (référence choisie)."}
+    },
+    {
+      "id": "q02", "origine": "Erreurs sans fonctions Q2",
+      "nom": "[Erreurs] SyntaxError : les deux-points du if",
+      "objectif": "Lire « expected ':' » et compléter la ligne du if.",
+      "code": ["age = 16", "if age >= 18", "    print('Majeur')"],
+      "console": ["SyntaxError: expected ':'"],
+      "question": ["Quelle correction faut-il faire ?"],
+      "options": [
+        {"texte": "Ajouter « : » à la fin de la ligne du if", "juste": true, "feedback": "Oui : « expected ':' » veut dire « deux-points attendus ». Toute ligne qui ouvre un bloc (if, else, for, while, def) se termine par deux-points."},
+        {"texte": "Mettre des parenthèses autour de 18", "feedback": "Les parenthèses ne changent rien ici. Le message dit ce qui manque : « expected ':' », des deux-points à la fin de la ligne."},
+        {"texte": "Écrire IF en majuscules", "feedback": "Python distingue majuscules et minuscules : les mots-clés s'écrivent en minuscules, comme if. IF serait une nouvelle erreur."},
+        {"texte": "Retirer l'indentation devant print", "feedback": "print doit justement être indenté, car il fait partie du bloc du if. Ce qui manque, ce sont les deux-points."}
+      ],
+      "verifications": [
+        {"message": "SyntaxError: expected ':'"},
+        {"option": "correction", "reprendre_code": false, "code": ["age = 16", "if age >= 18:", "    print('Majeur')", "print('fin')"], "sortie": "fin"}
+      ],
+      "fond": {"avant": "console « SyntaxError: invalid syntax »", "apres": "console « SyntaxError: expected ':' »", "raison": "message réel de Python 3.13."}
+    },
+    {
+      "id": "q03", "origine": "Erreurs sans fonctions Q3",
+      "nom": "[Erreurs] IndentationError : le corps d'une boucle",
+      "objectif": "Lire une IndentationError et indenter le corps d'une boucle.",
+      "code": ["for i in range(3):", "print(i)"],
+      "console": ["IndentationError: expected an indented block after 'for' statement on line 1"],
+      "question": ["Quelle correction faut-il faire ?"],
+      "options": [
+        {"texte": "Supprimer les deux-points après range(3)", "feedback": "Les deux-points sont obligatoires après for. Le message parle d'autre chose : « bloc indenté attendu après le for »."},
+        {"texte": "Remplacer i par x", "feedback": "Le nom de la variable n'a pas d'importance. Le message demande un bloc indenté, c'est-à-dire décalé vers la droite."},
+        {"texte": "Indenter print(i) de 4 espaces", "juste": true, "feedback": "Oui : le message dit « un bloc indenté était attendu après l'instruction for de la ligne 1 ». Le corps de la boucle se décale de 4 espaces."},
+        {"texte": "Supprimer la boucle for", "feedback": "Le programme n'afficherait plus 0, 1 et 2. On garde la boucle et on décale print(i) pour qu'il soit dans son bloc."}
+      ],
+      "verifications": [
+        {"message": "IndentationError: expected an indented block after 'for' statement on line 1"},
+        {"option": "correction", "reprendre_code": false, "code": ["for i in range(3):", "    print(i)"], "sortie": "0\n1\n2"}
+      ],
+      "fond": [
+        {"avant": "console « IndentationError: expected an indented block »", "apres": "console « IndentationError: expected an indented block after 'for' statement on line 1 »", "raison": "message réel de Python 3.13."},
+        {"avant": "distracteur « Mettre print(i) sur la même ligne que le for »", "apres": "distracteur « Supprimer la boucle for »", "raison": "« for i in range(3): print(i) » sur une ligne est du Python valide : le distracteur corrigeait aussi l'erreur."}
+      ]
+    },
+    {
+      "id": "q04", "origine": "Erreurs sans fonctions Q4",
+      "nom": "[Erreurs] IndexError : un indice de trop",
+      "objectif": "Lire une IndexError et retrouver les indices valides d'une liste.",
+      "code": ["couleurs = ['rouge', 'vert', 'bleu']", "print(couleurs[3])"],
+      "console": ["IndexError: list index out of range"],
+      "question": ["Pourquoi cette erreur ?"],
+      "options": [
+        {"texte": "On ne peut pas mettre de texte dans une liste", "feedback": "Une liste peut contenir des textes, des nombres, et même d'autres listes. Le message parle d'un indice « hors limites »."},
+        {"texte": "L'indice 3 n'existe pas : les indices vont de 0 à 2", "juste": true, "feedback": "Oui : « list index out of range » veut dire « indice de liste hors limites ». Avec 3 éléments, les indices sont 0, 1 et 2."},
+        {"texte": "Il faut des parenthèses au lieu des crochets", "feedback": "couleurs(3) provoquerait une autre erreur : on lit un élément d'une liste avec des crochets. Le problème est la valeur 3."},
+        {"texte": "La liste doit être triée par ordre alphabétique", "feedback": "L'ordre des éléments ne change rien à l'accès par indice. Ce qui compte, c'est que l'indice existe : ici, il va de 0 à 2."}
+      ],
+      "verifications": [{"message": "IndexError: list index out of range"}]
+    },
+    {
+      "id": "q05", "origine": "Erreurs sans fonctions Q5",
+      "nom": "[Erreurs] KeyError : une clé mal écrite",
+      "objectif": "Lire une KeyError et respecter l'écriture exacte d'une clé.",
+      "code": ["capitales = {'France': 'Paris', 'Italie': 'Rome'}", "print(capitales['italie'])"],
+      "console": ["KeyError: 'italie'"],
+      "question": ["Quelle correction faut-il faire ?"],
+      "options": [
+        {"texte": "Utiliser un indice numérique : capitales[1]", "feedback": "Un dictionnaire n'a pas d'indices 0, 1, 2 : on y accède par ses clés. capitales[1] donnerait une nouvelle KeyError."},
+        {"texte": "Inverser les clés et les valeurs", "feedback": "Le dictionnaire est bien construit. KeyError signale seulement que la clé 'italie' n'existe pas : regarde son écriture."},
+        {"texte": "Écrire capitales['Italie']", "juste": true, "feedback": "Oui : KeyError: 'italie' signifie « clé introuvable ». Python distingue majuscules et minuscules : 'Italie' et 'italie' sont deux clés différentes."},
+        {"texte": "Remplacer les crochets par des accolades", "feedback": "Les accolades servent à écrire le dictionnaire. Pour lire une valeur, on garde les crochets, avec la clé exacte."}
+      ],
+      "verifications": [
+        {"message": "KeyError: 'italie'"},
+        {"option": "correction", "reprendre_code": false, "code": ["capitales = {'France': 'Paris', 'Italie': 'Rome'}", "print(capitales['Italie'])"], "sortie": "Rome"}
+      ]
+    },
+    {
+      "id": "q06", "origine": "Erreurs sans fonctions Q6",
+      "nom": "[Erreurs] TypeError : ajouter un nombre à un texte",
+      "objectif": "Lire une TypeError de concaténation et insérer un nombre dans un texte.",
+      "code": ["points = 50", "bilan = 'Total : ' + points"],
+      "console": ["TypeError: can only concatenate str (not \"int\") to str"],
+      "question": ["Quelle correction donne à `bilan` la valeur `'Total : 50'` ?"],
+      "options": [
+        {"texte": "bilan = f'Total : {points}'", "juste": true, "feedback": "Oui : le message dit « on ne peut coller (concaténer) à un str qu'un autre str, pas un int ». La f-string convertit points en texte. str(points) marcherait aussi."},
+        {"texte": "bilan = 'Total : ' * points", "feedback": "Multiplier un texte par 50 le répète 50 fois : « Total : Total : … ». Ce n'est pas le résultat voulu."},
+        {"texte": "bilan = int('Total : ') + points", "feedback": "'Total : ' ne contient pas de chiffres : int() ne peut pas le convertir (ValueError). C'est le nombre qu'il faut transformer en texte."},
+        {"texte": "bilan = 'Total : ' + 'points'", "feedback": "Avec des guillemets, 'points' est le mot points, pas la valeur 50 : on obtiendrait 'Total : points'."}
+      ],
+      "verifications": [
+        {"message": "TypeError: can only concatenate str (not \"int\") to str"},
+        {"option": "correction", "reprendre_code": false, "code": ["points = 50", "bilan = f'Total : {points}'", "print(bilan)"], "sortie": "Total : 50"},
+        {"option": "int()", "reprendre_code": false, "code": ["points = 50", "bilan = int('Total : ') + points"], "erreur": "ValueError"}
+      ],
+      "fond": {"avant": "« Quelle est la solution la plus moderne ? » ; distracteurs « Multiplier le texte par les points », « Convertir \"Total : \" en entier », « Supprimer la variable points »", "apres": "« Quelle correction donne à bilan la valeur 'Total : 50' ? » ; distracteurs écrits en code, dont « 'Total : ' + 'points' »", "raison": "« la plus moderne » n'est pas un critère vérifiable, et « supprimer la variable » ne répondait à rien ; la bonne réponse (f-string) est conservée."}
+    },
+    {
+      "id": "q07", "origine": "Erreurs sans fonctions Q7",
+      "nom": "[Erreurs] TypeError : des crochets sur un entier",
+      "objectif": "Lire « not subscriptable » et reconnaître qu'un entier n'a pas d'indices.",
+      "code": ["vitesse = 90", "print(vitesse[0])"],
+      "console": ["TypeError: 'int' object is not subscriptable"],
+      "question": ["Que signifie ce message ?"],
+      "options": [
+        {"texte": "L'entier 90 est trop grand pour Python", "feedback": "Python accepte des entiers immenses. Le message dit qu'un int « n'accepte pas les indices » (not subscriptable)."},
+        {"texte": "Il faut utiliser l'indice 1", "feedback": "Aucun indice ne convient : un entier n'est pas une suite d'éléments. vitesse[1] donnerait la même erreur."},
+        {"texte": "La variable vitesse n'est pas définie", "feedback": "Ce serait une NameError. Ici, vitesse existe et vaut 90 : c'est l'usage des crochets qui pose problème."},
+        {"texte": "Des crochets sont utilisés sur un entier", "juste": true, "feedback": "Oui : « subscriptable » veut dire « qui accepte des indices ». Seules les listes, les chaînes ou les tuples s'utilisent avec [ ]."}
+      ],
+      "verifications": [{"message": "TypeError: 'int' object is not subscriptable"}]
+    },
+    {
+      "id": "q08", "origine": "Erreurs sans fonctions Q8",
+      "nom": "[Erreurs] ValueError : convertir des lettres en entier",
+      "objectif": "Lire une ValueError de int() et en trouver la cause.",
+      "code": ["saisie = 'abc'", "nombre = int(saisie)"],
+      "console": ["ValueError: invalid literal for int() with base 10: 'abc'"],
+      "question": ["Pourquoi cette erreur ?"],
+      "options": [
+        {"texte": "Il faut utiliser float('abc') à la place", "feedback": "float() refuse aussi des lettres : il donnerait une ValueError du même genre. Le problème vient du contenu de la chaîne."},
+        {"texte": "int() n'accepte pas des lettres", "juste": true, "feedback": "Oui : le message dit « écriture invalide pour int() en base 10 : 'abc' ». int() attend une chaîne de chiffres, comme '42'."},
+        {"texte": "La base 10 n'existe pas en Python", "feedback": "La base 10 est la base par défaut de int(). Le message cite la base pour dire que 'abc' n'est pas un nombre écrit en base 10."},
+        {"texte": "La variable saisie doit être une liste", "feedback": "int() attend une chaîne ou un nombre, pas une liste. Ici, c'est le contenu de la chaîne, des lettres, qui pose problème."}
+      ],
+      "verifications": [
+        {"message": "ValueError: invalid literal for int() with base 10: 'abc'"},
+        {"option": "float", "reprendre_code": false, "code": ["float('abc')"], "erreur": "ValueError"}
+      ]
+    },
+    {
+      "id": "q09", "origine": "Erreurs sans fonctions Q9",
+      "nom": "[Erreurs] SyntaxError : une chaîne jamais fermée",
+      "objectif": "Lire « unterminated string literal » et trouver le guillemet manquant.",
+      "code": ["message = \"Bienvenue à tous", "print(message)"],
+      "console": ["SyntaxError: unterminated string literal (detected at line 1)"],
+      "question": ["Quelle est l'erreur ?"],
+      "options": [
+        {"texte": "Il manque le guillemet fermant à la fin du texte", "juste": true, "feedback": "Oui : « unterminated string literal » veut dire « chaîne de caractères non terminée », détectée à la ligne 1. Il faut fermer le guillemet après « tous »."},
+        {"texte": "Il manque un point-virgule à la fin de la ligne", "feedback": "En Python, on ne termine pas les lignes par un point-virgule. Le message parle d'une chaîne non terminée."},
+        {"texte": "Le mot message est réservé par Python", "feedback": "message est un nom de variable autorisé. L'erreur vient de la chaîne de la ligne 1, qui n'est jamais fermée."},
+        {"texte": "L'accent du « à » provoque l'erreur", "feedback": "Python accepte les accents dans les chaînes. Ce qui manque, c'est le guillemet de fin."}
+      ],
+      "verifications": [{"message": "SyntaxError: unterminated string literal (detected at line 1)"}],
+      "fond": {"avant": "console « SyntaxError: EOL while scanning string literal » ; feedback « EOL signifie End Of Line »", "apres": "console « SyntaxError: unterminated string literal (detected at line 1) »", "raison": "message réel de Python 3.13 ; le mot EOL n'apparaît plus depuis Python 3.10."}
+    },
+    {
+      "id": "q10", "origine": "Erreurs sans fonctions Q10",
+      "nom": "[Erreurs] ZeroDivisionError : éviter la division par zéro",
+      "objectif": "Lire une ZeroDivisionError et la prévenir par un test.",
+      "code": ["total = 100", "nb_personnes = 0", "part = total / nb_personnes"],
+      "console": ["ZeroDivisionError: division by zero"],
+      "question": ["Comment éviter cet arrêt du programme ?"],
+      "options": [
+        {"texte": "Utiliser // au lieu de /", "feedback": "La division entière // par zéro est aussi impossible : Python donnerait la même erreur."},
+        {"texte": "Multiplier par zéro à la place", "feedback": "On obtiendrait 0, un résultat faux : partager 100 entre des personnes n'est pas multiplier. Il faut éviter le cas nb_personnes = 0."},
+        {"texte": "Tester avec un if que nb_personnes != 0", "juste": true, "feedback": "Oui : « division by zero » veut dire « division par zéro ». On ne divise que si nb_personnes != 0, et on traite l'autre cas à part."},
+        {"texte": "Mettre nb_personnes entre guillemets", "feedback": "'0' serait un texte : diviser un nombre par un texte provoque une TypeError. Il faut tester la valeur avant de diviser."}
+      ],
+      "verifications": [
+        {"message": "ZeroDivisionError: division by zero"},
+        {"option": "//", "reprendre_code": false, "code": ["print(100 // 0)"], "erreur": "ZeroDivisionError"}
+      ]
+    },
+    {
+      "id": "q11", "origine": "Erreurs sans fonctions Q11",
+      "nom": "[Erreurs] AttributeError : append sur un texte",
+      "objectif": "Lire une AttributeError et savoir quelles méthodes a un type.",
+      "code": ["nom = 'Alice'", "nom.append(' ')"],
+      "console": ["AttributeError: 'str' object has no attribute 'append'"],
+      "question": ["Pourquoi cette erreur ?"],
+      "options": [
+        {"texte": "Il faut écrire APPEND en majuscules", "feedback": "Les noms de méthodes sont en minuscules, et append n'existe pour les chaînes ni en minuscules ni en majuscules."},
+        {"texte": "Les chaînes n'ont pas de méthode append", "juste": true, "feedback": "Oui : le message dit « un objet str n'a pas d'attribut append ». Pour un texte, on fabrique une nouvelle chaîne : nom = nom + ' '."},
+        {"texte": "La variable nom est vide", "feedback": "nom vaut 'Alice', elle n'est pas vide. Le message dit que le type str n'a pas de méthode append."},
+        {"texte": "Il manque une ligne import math", "feedback": "append ne vient d'aucun module. C'est une méthode des listes, que les chaînes n'ont pas."}
+      ],
+      "verifications": [{"message": "AttributeError: 'str' object has no attribute 'append'"}]
+    },
+    {
+      "id": "q12", "origine": "Erreurs sans fonctions Q12",
+      "nom": "[Erreurs] NameError : utiliser une variable trop tôt",
+      "objectif": "Voir qu'une variable doit recevoir une valeur avant d'être utilisée.",
+      "code": ["print(valeur)", "valeur = 20"],
+      "console": ["NameError: name 'valeur' is not defined"],
+      "question": ["Le nom `valeur` est pourtant bien écrit. Pourquoi l'erreur ?"],
+      "options": [
+        {"texte": "Il faut écrire valeur = '20'", "feedback": "Le type de la valeur ne change rien : à la ligne 1, valeur n'existe pas encore, quelle que soit sa future valeur."},
+        {"texte": "Python lit le programme de bas en haut", "feedback": "C'est l'inverse : Python exécute les lignes de haut en bas. Quand il arrive à print, la ligne valeur = 20 n'a pas encore été exécutée."},
+        {"texte": "Python ne gère pas les entiers au début d'un programme", "feedback": "Un entier peut apparaître n'importe où. Le problème est l'ordre des lignes : la variable est utilisée avant d'être créée."},
+        {"texte": "La variable est utilisée avant d'avoir reçu une valeur", "juste": true, "feedback": "Oui : « name 'valeur' is not defined » veut dire « le nom valeur n'est pas défini ». Python lit de haut en bas : il faut échanger les deux lignes."}
+      ],
+      "verifications": [{"message": "NameError: name 'valeur' is not defined"}],
+      "fond": {"avant": "distracteur « Le print doit être à la fin de tout le fichier »", "apres": "distracteur « Python lit le programme de bas en haut »", "raison": "déplacer le print après l'affectation corrige l'erreur : le distracteur n'était pas vraiment faux."}
+    },
+    {
+      "id": "q13", "origine": "Erreurs sans fonctions Q13",
+      "nom": "[Erreurs] ValueError : trop de variables à remplir",
+      "objectif": "Lire « not enough values to unpack » et compter variables et valeurs.",
+      "code": ["coords = (10, 20)", "x, y, z = coords"],
+      "console": ["ValueError: not enough values to unpack (expected 3, got 2)"],
+      "question": ["Quel est le problème ?"],
+      "options": [
+        {"texte": "3 variables à remplir, mais 2 valeurs seulement", "juste": true, "feedback": "Oui : le message dit « pas assez de valeurs à répartir (3 attendues, 2 reçues) ». Il faut autant de variables que de valeurs."},
+        {"texte": "On ne peut pas nommer une variable z", "feedback": "z est un nom de variable autorisé. Le message compte : 3 variables attendent une valeur, le tuple n'en a que 2."},
+        {"texte": "Il faut des crochets autour de (10, 20)", "feedback": "Une liste [10, 20] a aussi 2 valeurs : l'erreur serait la même. Le problème est le nombre de valeurs."},
+        {"texte": "Les valeurs 10 et 20 doivent être des textes", "feedback": "Le type des valeurs ne compte pas ici : Python ne trouve que 2 valeurs pour remplir 3 variables."}
+      ],
+      "verifications": [{"message": "ValueError: not enough values to unpack (expected 3, got 2)"}]
+    },
+    {
+      "id": "q14", "origine": "Erreurs sans fonctions Q14",
+      "nom": "[Erreurs] TypeError : boucler sur un entier",
+      "objectif": "Lire « not iterable » et utiliser range pour répéter une action.",
+      "code": ["score = 10", "for i in score:", "    print(i)"],
+      "console": ["TypeError: 'int' object is not iterable"],
+      "question": ["Comment corriger pour répéter l'affichage 10 fois ?"],
+      "options": [
+        {"texte": "Écrire score = '10'", "feedback": "La boucle parcourrait la chaîne '10' : elle afficherait 1 puis 0, soit 2 tours seulement."},
+        {"texte": "Retirer l'indentation de print", "feedback": "print sortirait de la boucle, et l'erreur de la ligne 2 resterait : un entier ne se parcourt pas."},
+        {"texte": "Écrire for i in range(score):", "juste": true, "feedback": "Oui : « not iterable » veut dire « qu'on ne peut pas parcourir ». range(score) fabrique la suite 0, 1, …, 9 : 10 tours."},
+        {"texte": "Écrire while i in score:", "feedback": "i n'existe pas encore, et le test « in » sur un entier provoque aussi une TypeError. Pour répéter n fois, on utilise for i in range(n)."}
+      ],
+      "verifications": [
+        {"message": "TypeError: 'int' object is not iterable"},
+        {"option": "correction", "reprendre_code": false, "code": ["score = 10", "c = 0", "for i in range(score):", "    c += 1", "print(c)"], "sortie": "10"},
+        {"option": "chaîne", "reprendre_code": false, "code": ["for i in '10':", "    print(i)"], "sortie": "1\n0"}
+      ]
+    },
+    {
+      "id": "q15", "origine": "Erreurs sans fonctions Q15",
+      "nom": "[Erreurs] SyntaxError : une parenthèse jamais fermée",
+      "objectif": "Lire « '(' was never closed » et trouver la parenthèse manquante.",
+      "code": ["print('Début'", "print('Fin')"],
+      "console": ["SyntaxError: '(' was never closed"],
+      "question": ["D'où vient l'erreur ?"],
+      "options": [
+        {"texte": "On ne peut pas écrire deux print à la suite", "feedback": "On peut enchaîner autant de print qu'on veut, un par ligne. Le message parle d'une parenthèse ouverte jamais fermée."},
+        {"texte": "Il faut écrire Début et Fin en majuscules", "feedback": "Le contenu des chaînes est libre. Le message dit « la parenthèse ( n'a jamais été fermée »."},
+        {"texte": "La parenthèse fermante de la première ligne manque", "juste": true, "feedback": "Oui : « '(' was never closed » veut dire « la parenthèse ( n'a jamais été fermée ». Python montre la ligne où elle s'ouvre : la première."},
+        {"texte": "Il manque les deux-points à la fin", "feedback": "Les deux-points ne s'écrivent qu'après if, for, while, def… Un print n'en a pas besoin."}
+      ],
+      "verifications": [{"message": "SyntaxError: '(' was never closed"}],
+      "fond": {"avant": "console « SyntaxError: unexpected EOF while parsing » ; feedback « jusqu'à la fin du fichier (EOF) »", "apres": "console « SyntaxError: '(' was never closed »", "raison": "message réel de Python 3.13."}
+    }
+  ]
+}

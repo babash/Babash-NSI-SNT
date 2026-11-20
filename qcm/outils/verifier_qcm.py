@@ -109,10 +109,11 @@ def verifier_execution(quiz, q):
                 if 'erreur_sql' not in ver or ver['erreur_sql'] not in str(e):
                     err(quiz['id'], qid, f'{lab} : erreur SQL inattendue : {e}')
             continue
-        code = '\n'.join(quiz.get('prelude_python', []))
+        lignes = list(quiz.get('prelude_python', []))
         if ver.get('reprendre_code', True) and q.get('code'):
-            code += '\n' + '\n'.join(q['code'])
-        code += '\n' + '\n'.join(ver.get('code', [])) + '\n'
+            lignes += q['code']
+        lignes += ver.get('code', [])
+        code = '\n'.join(lignes) + '\n'
         sortie, derniere = executer_python(code)
         if 'message' in ver:
             if derniere != ver['message']:
