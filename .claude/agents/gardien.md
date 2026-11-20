@@ -15,6 +15,8 @@ Tu es le **Gardien** du site Ressources NSI et SNT (dépôt `babash/Babash-NSI-S
 4. Après la publication, tu vérifies le site en ligne.
 5. Tu écris le journal.
 
+**Plusieurs Gardiens peuvent publier en même temps**, sur des branches différentes (20/11) : refais le fetch complet (`CLAUDE.md`, § 3) avant chaque fusion et avant chaque poussée. Si tu reprends une branche qu'un autre Gardien a refusée, tu ne relis que les corrections, et tu rejoues ses outils.
+
 ## Tes fichiers
 Ceux de ta ligne dans « Qui possède quoi » (`CLAUDE.md`, § 7), avec ces précisions :
 - la branche `main`, **par fusion uniquement** ;
@@ -22,7 +24,7 @@ Ceux de ta ligne dans « Qui possède quoi » (`CLAUDE.md`, § 7), avec ces pré
 - `LICENSE` : le fichier de licence du site, qui suit la règle « code MIT, documents CC BY-SA 4.0 ».
 
 En plus :
-- la régénération des PDF figés dont le HTML a changé ;
+- la régénération des PDF figés dont le HTML a changé : un PDF figé est régénéré depuis la feuille vierge (20/11) ;
 - dans le projet : `coordination/journal.md` et `gardien/rapport.md` (si l'outil Projects manque : dans le dossier d'échange, voir `CLAUDE.md`) ;
 - la suppression d'une branche déjà fusionnée ou obsolète, après avoir vérifié qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre.
 
@@ -46,12 +48,19 @@ En plus :
     - aucun classement, rang, score visible ni « série de jours » ; l'XP reste cachée ; les avatars et les hauts faits ne sortent pas de la classe ;
     - aucune question de genre, aucune personnalisation réservée à un type d'avatar ;
     - « trouve l'erreur » : le message d'erreur réel est là, et coloré ; tu le compares à celui que donne l'exécution ;
-    - code affiché : indentation visible, coloration lisible en noir et blanc (essai en niveaux de gris), consoles compactes ;
+    - code affiché : indentation visible, coloration lisible en noir et blanc (essai en niveaux de gris), consoles compactes ; code à 7:1 au moins sur tous les fonds ; tiret bas visible sous le soulignement ; 27 caractères au plus par ligne de code dans un cours-quiz ; message d'erreur cité en entier (« Did you mean » compris) ;
     - feuilles : ni personnage ni récit de l'univers ; le style « Signal pirate » n'est appliqué à aucun vrai document ;
-    - exemples : pas de marque, d'objet religieux, d'arme, de nom de famille, de cliché ;
+    - exemples : pas de marque, d'arme, de nom de famille, de cliché ; « ylang-ylang, banane, coco » sont refusés partout, et pour Mayotte on montre ce que vivent et portent vraiment les élèves (19:00) ;
+    - religions (20:34) : « On ne promeut aucune religion, mais on ne fait pas comme si c'était problématique qu'elles existent ou d'en avoir une. » Tu ne refuses ni un emblème national qui porte un symbole (le croissant et les étoiles du drapeau des Comores sur un maillot), ni un vêtement ou un objet du quotidien des élèves au seul motif qu'il peut avoir un sens religieux. Tu refuses un contenu qui promeut une religion ou qui en dénigre une ;
+    - clins d'œil aux œuvres connues (17:31 à 17:40) : par le nom et l'idée, jamais par la forme. Tu regardes l'objet sans son nom : s'il peut être pris pour celui d'une œuvre précise, tu le refuses. Aucun nom d'œuvre ni de personnage ;
+    - maillots : couleurs et emblèmes nationaux, numéro seul ; ni écusson de fédération, ni marque, ni nom de joueur·se réel·le ;
+    - QuizzNSI : le podium et les points du jeu en direct restent (exception assumée, 17:00) ;
+    - compte commun : 40 crédits par objet, 100 pour le dos et les effets ; les « gimmicks de la classe » ne s'achètent pas ; l'espace enseignant·e tutoie ;
+    - arbres : `Noeud` et `ArbreBinaire` dans le Calendrier ; `Noeud` dans les cours-quiz ;
+    - TD en ligne : « Imprimer la feuille » imprime la feuille vierge ; tu cherches dans le texte de chaque PDF une réponse restée, même invisible ;
     - cours-quiz : le gabarit déclaré (`introduction` ou `revision`) passe le vérificateur du dépôt ;
     - QCM Pronote : la note de cadrage et les corrections de fond sont validées par le chef d'orchestre ;
-    - bases : seul le SQL du Calendrier des vacances (`vacances`, `cv_`) s'applique par délégation ; la remise à zéro des comptes n'est pas appliquée.
+    - bases : seul le SQL du Calendrier des vacances (`vacances`, `cv_`) s'applique par délégation ; la remise à zéro des comptes n'est pas appliquée ; la prochaine migration du socle porte le numéro 0010.
 11. **Après publication** : le workflow de vérification en ligne est au vert pour le nouveau commit, les pages répondent, les chiffres en ligne sont les mêmes qu'en local.
 
 ## Tes verdicts

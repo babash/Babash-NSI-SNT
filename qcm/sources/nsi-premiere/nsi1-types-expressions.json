@@ -1,0 +1,833 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsi1-types-expressions",
+ "titre": "NSI 1re · Types, expressions et affectations",
+ "niveau": "nsi-premiere",
+ "justification_niveau": "types de base (int, float, bool, str) et constructions élémentaires (expressions, affectation) : début de première ; convient aussi en seconde (SNT, affectations et variables).",
+ "programme": [
+  "nsi-1re-2019.types-de-base : Représentation des données : types et valeurs de base",
+  "nsi-1re-2019.langages.constructions-elementaires : Constructions élémentaires",
+  "snt-2019.programmation.affectations-variables : Affectations, variables"
+ ],
+ "notions": [
+  "prog.type",
+  "prog.arithmetique",
+  "prog.comparaison",
+  "donnees.chaine",
+  "prog.affectation",
+  "prog.variable"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Variables (export `401f5dd7`, 9 questions)",
+  "11 questions nouvelles (conversions, opérateurs, erreur de concaténation, affectation)"
+ ],
+ "contexte": "Des expressions courtes ; des mangues rangées en sacs pour le reste de la division.",
+ "objectifs": [
+  "Prévoir le type d'une valeur et d'une expression : int, float, bool, str.",
+  "Calculer avec /, //, %, ** et la priorité des opérations.",
+  "Convertir avec int et str, et lire une TypeError de concaténation.",
+  "Comprendre l'affectation : calculer la droite, ranger à gauche ; une copie ne suit pas l'original."
+ ],
+ "progression": "Q1 à Q6 : types et conversions ; Q7 à Q12 : opérateurs arithmétiques ; Q13 à Q14 : comparaisons ; Q15 à Q17 : chaînes et erreur de concaténation ; Q18 à Q20 : affectation (difficultés connues du référentiel des notions).",
+ "forme": [
+  "Titre « Variables » remplacé par « Types, expressions et affectations », qui dit ce que le quiz évalue ; 11 questions ajoutées d'après la note de cadrage (9 questions de cours seulement).",
+  "Noms « [Types] … », « [Opérateurs] … » ; « Égalité stricte de chaînes » (une notion de JavaScript) devient « Comparer un texte et un nombre avec == » ; objectif affiché.",
+  "Expressions en code coloré ; « retourné » remplacé par « valeur de l'expression ».",
+  "Un feedback pour chaque option (aucun avant), au tutoiement.",
+  "Positions replacées : A était juste six fois de suite.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q01, q02, q13) : l'objectif dit la compétence, pas la réponse."
+ ],
+ "retirees": [],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "Variables Q1",
+   "nom": "[Types] Entier + flottant",
+   "objectif": "Prévoir le type du résultat d'une opération entre un entier et un flottant.",
+   "question": [
+    "Quel est le type de la valeur de l'expression `3 + 2.0` ?"
+   ],
+   "options": [
+    {
+     "texte": "int",
+     "feedback": "3 est un entier, mais 2.0 est un flottant (il a un point). Dès qu'un flottant est dans le calcul, le résultat est un flottant : 5.0."
+    },
+    {
+     "texte": "float",
+     "feedback": "Oui : 3 + 2.0 vaut 5.0. Un calcul entre un int et un float donne un float (un nombre à virgule).",
+     "juste": true
+    },
+    {
+     "texte": "str",
+     "feedback": "Il n'y a pas de guillemets : ce sont des nombres, pas des textes. Le résultat est le nombre 5.0."
+    },
+    {
+     "texte": "bool",
+     "feedback": "Un bool vaut True ou False ; il vient d'une comparaison. Une addition donne un nombre."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(type(3 + 2.0).__name__, 3 + 2.0)"
+     ],
+     "sortie": "float 5.0"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q02",
+   "origine": "Variables Q5",
+   "nom": "[Types] Entier × flottant",
+   "objectif": "Prévoir le type du résultat d'une multiplication avec un flottant.",
+   "question": [
+    "Quel est le type de la valeur de l'expression `3 * 1.0` ?"
+   ],
+   "options": [
+    {
+     "texte": "float",
+     "feedback": "Oui : 3 * 1.0 vaut 3.0. Même si le résultat « tombe juste », il reste un float, car 1.0 est un float.",
+     "juste": true
+    },
+    {
+     "texte": "int",
+     "feedback": "Le résultat a la même valeur que 3, mais il s'écrit 3.0 : c'est un float, car 1.0 est un float."
+    },
+    {
+     "texte": "str",
+     "feedback": "Il n'y a pas de guillemets : c'est un calcul sur des nombres."
+    },
+    {
+     "texte": "bool",
+     "feedback": "Un bool vient d'une comparaison (comme 3 > 1). Une multiplication donne un nombre."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(type(3 * 1.0).__name__, 3 * 1.0)"
+     ],
+     "sortie": "float 3.0"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q03",
+   "origine": "Variables Q3",
+   "nom": "[Types] Le type de False",
+   "objectif": "Reconnaître une valeur booléenne.",
+   "question": [
+    "Quel est le type de la valeur `False` ?"
+   ],
+   "options": [
+    {
+     "texte": "int",
+     "feedback": "False s'écrit sans guillemets et avec une majuscule : c'est une valeur de vérité, pas un nombre entier."
+    },
+    {
+     "texte": "str",
+     "feedback": "Sans guillemets, False n'est pas un texte. \"False\", avec des guillemets, serait un str."
+    },
+    {
+     "texte": "bool",
+     "feedback": "Oui : True et False sont les deux valeurs du type bool (booléen), le type des conditions.",
+     "juste": true
+    },
+    {
+     "texte": "NoneType",
+     "feedback": "NoneType est le type de la seule valeur None, qui veut dire « rien ». False veut dire « faux »."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(type(False).__name__)"
+     ],
+     "sortie": "bool"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q04",
+   "origine": "Variables Q4",
+   "nom": "[Types] Un nombre entre guillemets",
+   "objectif": "Savoir qu'une valeur entre guillemets est une chaîne de caractères.",
+   "question": [
+    "Quel est le type de la valeur `\"42\"` ?"
+   ],
+   "options": [
+    {
+     "texte": "int",
+     "feedback": "Les guillemets changent tout : \"42\" est un texte de deux caractères, 4 et 2. Sans guillemets, 42 serait un int."
+    },
+    {
+     "texte": "float",
+     "feedback": "Un float s'écrit avec un point, sans guillemets, comme 42.0. Ici, les guillemets en font un texte."
+    },
+    {
+     "texte": "NoneType",
+     "feedback": "NoneType est le type de None seulement. \"42\" est un texte."
+    },
+    {
+     "texte": "str",
+     "feedback": "Oui : tout ce qui est entre guillemets est une chaîne de caractères (str, pour string, « chaîne »).",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(type(\"42\").__name__)"
+     ],
+     "sortie": "str"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q05",
+   "nom": "[Types] Convertir un nombre à virgule en entier",
+   "objectif": "Savoir que int tronque un flottant (il ne l'arrondit pas).",
+   "question": [
+    "Quelle est la valeur de l'expression `int(7.9)` ?"
+   ],
+   "options": [
+    {
+     "texte": "8",
+     "feedback": "int n'arrondit pas : il coupe la partie après la virgule. Pour arrondir, on utilise round(7.9), qui donne 8."
+    },
+    {
+     "texte": "7",
+     "feedback": "Oui : int garde la partie entière et coupe le reste. int(7.9) vaut 7.",
+     "juste": true
+    },
+    {
+     "texte": "7.9",
+     "feedback": "int change le type : le résultat est un entier, sans virgule."
+    },
+    {
+     "texte": "Une erreur",
+     "feedback": "int accepte un flottant : la conversion est permise. Elle donne 7."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(int(7.9)))"
+     ],
+     "sortie": "7"
+    }
+   ]
+  },
+  {
+   "id": "q06",
+   "nom": "[Types] Convertir un texte en entier",
+   "objectif": "Utiliser int pour calculer avec un nombre écrit dans un texte.",
+   "question": [
+    "Quelle est la valeur de l'expression `int(\"42\") + 1` ?"
+   ],
+   "options": [
+    {
+     "texte": "\"421\"",
+     "feedback": "\"421\" serait une concaténation de textes. Ici, int(\"42\") donne le nombre 42 : on fait une vraie addition."
+    },
+    {
+     "texte": "42",
+     "feedback": "Le + 1 n'est pas oublié : après la conversion, Python calcule 42 + 1 = 43."
+    },
+    {
+     "texte": "43",
+     "feedback": "Oui : int(\"42\") transforme le texte en nombre 42, puis 42 + 1 = 43. C'est ce qu'on fait avec le résultat de input().",
+     "juste": true
+    },
+    {
+     "texte": "Une erreur TypeError",
+     "feedback": "Il n'y a pas d'erreur : int(\"42\") est un nombre, et on peut lui ajouter 1. Sans int, \"42\" + 1 donnerait une TypeError."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(int(\"42\") + 1))"
+     ],
+     "sortie": "43"
+    }
+   ]
+  },
+  {
+   "id": "q07",
+   "origine": "Variables Q2",
+   "nom": "[Opérateurs] La division entière //",
+   "objectif": "Calculer un quotient entier avec //.",
+   "question": [
+    "Quelle est la valeur de l'expression `7 // 2` ?"
+   ],
+   "options": [
+    {
+     "texte": "3",
+     "feedback": "Oui : // donne le quotient entier. 7 = 2 × 3 + 1, donc 7 // 2 vaut 3.",
+     "juste": true
+    },
+    {
+     "texte": "3.5",
+     "feedback": "3.5 est le résultat de la division 7 / 2, avec une seule barre. Avec deux barres, // garde le quotient entier."
+    },
+    {
+     "texte": "4",
+     "feedback": "// n'arrondit pas à l'entier le plus proche : il garde le quotient de la division euclidienne, 3."
+    },
+    {
+     "texte": "7/2",
+     "feedback": "Python calcule l'expression : il n'affiche pas une fraction. 7 // 2 vaut 3."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(7 // 2))"
+     ],
+     "sortie": "3"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q08",
+   "nom": "[Opérateurs] La division / donne un flottant",
+   "objectif": "Savoir que / donne toujours un float.",
+   "question": [
+    "Quelle est la valeur de l'expression `6 / 2` ?"
+   ],
+   "options": [
+    {
+     "texte": "3",
+     "feedback": "La division tombe juste, mais / donne toujours un float : 3.0. Pour un entier, on écrirait 6 // 2."
+    },
+    {
+     "texte": "3.0",
+     "feedback": "Oui : avec /, le résultat est toujours un float, même quand la division tombe juste.",
+     "juste": true
+    },
+    {
+     "texte": "\"3\"",
+     "feedback": "Il n'y a pas de texte ici : c'est un calcul. Le résultat est le nombre 3.0."
+    },
+    {
+     "texte": "6/2",
+     "feedback": "Python calcule l'expression : il n'affiche pas une fraction."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(6 / 2))"
+     ],
+     "sortie": "3.0"
+    }
+   ]
+  },
+  {
+   "id": "q09",
+   "nom": "[Opérateurs] Le reste %",
+   "objectif": "Calculer le reste d'une division avec %.",
+   "enonce": [
+    "On range 17 mangues dans des sacs de 5."
+   ],
+   "question": [
+    "Quelle est la valeur de l'expression `17 % 5`, le nombre de mangues qui restent hors des sacs ? Répondre par un nombre."
+   ],
+   "type": "numerique",
+   "reponse": 2,
+   "tolerance": 0,
+   "feedback": "17 % 5 vaut 2 : 17 = 5 × 3 + 2. On remplit 3 sacs (17 // 5 = 3) et il reste 2 mangues. % donne le reste, // le quotient.",
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(17 % 5))"
+     ],
+     "sortie": "2"
+    }
+   ]
+  },
+  {
+   "id": "q10",
+   "nom": "[Opérateurs] La priorité des opérations",
+   "objectif": "Appliquer la priorité de * sur +.",
+   "question": [
+    "Quelle est la valeur de l'expression `2 + 3 * 4` ?"
+   ],
+   "options": [
+    {
+     "texte": "20",
+     "feedback": "Tu as calculé de gauche à droite : (2 + 3) × 4. Mais, comme en mathématiques, la multiplication passe avant l'addition."
+    },
+    {
+     "texte": "9",
+     "feedback": "9 serait 2 + 3 + 4. Le signe * est une multiplication : 3 * 4 = 12."
+    },
+    {
+     "texte": "24",
+     "feedback": "24 serait 2 × 3 × 4. Le premier signe est une addition."
+    },
+    {
+     "texte": "14",
+     "feedback": "Oui : comme en mathématiques, * passe avant + : 3 * 4 = 12, puis 2 + 12 = 14.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(2 + 3 * 4))"
+     ],
+     "sortie": "14"
+    }
+   ]
+  },
+  {
+   "id": "q11",
+   "nom": "[Opérateurs] La puissance **",
+   "objectif": "Calculer une puissance avec **.",
+   "question": [
+    "Quelle est la valeur de l'expression `2 ** 3` ?"
+   ],
+   "options": [
+    {
+     "texte": "6",
+     "feedback": "6 serait 2 * 3. Avec deux étoiles, ** est la puissance : 2 × 2 × 2."
+    },
+    {
+     "texte": "9",
+     "feedback": "9 serait 3 ** 2. Le premier nombre est la base : 2 ** 3 = 2 × 2 × 2."
+    },
+    {
+     "texte": "8",
+     "feedback": "Oui : 2 ** 3 = 2 × 2 × 2 = 8. Le nombre de droite dit combien de fois on multiplie.",
+     "juste": true
+    },
+    {
+     "texte": "Une erreur",
+     "feedback": "** est bien un opérateur de Python : la puissance."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(2 ** 3))"
+     ],
+     "sortie": "8"
+    }
+   ]
+  },
+  {
+   "id": "q12",
+   "nom": "[Opérateurs] Le sens de chaque opérateur",
+   "objectif": "Associer chaque opérateur arithmétique à son sens.",
+   "question": [
+    "Associer chaque opérateur à ce qu'il calcule."
+   ],
+   "type": "appariement",
+   "paires": [
+    [
+     "/",
+     "la division (résultat flottant)"
+    ],
+    [
+     "//",
+     "le quotient entier"
+    ],
+    [
+     "%",
+     "le reste de la division"
+    ],
+    [
+     "**",
+     "la puissance"
+    ]
+   ],
+   "feedback": "Avec 7 et 2 : 7 / 2 = 3.5 ; 7 // 2 = 3 ; 7 % 2 = 1 ; 7 ** 2 = 49. Le quotient et le reste vont ensemble : 7 = 2 × 3 + 1.",
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(7 / 2, 7 // 2, 7 % 2, 7 ** 2)"
+     ],
+     "sortie": "3.5 3 1 49"
+    }
+   ]
+  },
+  {
+   "id": "q13",
+   "origine": "Variables Q7",
+   "nom": "[Comparaisons] Le résultat d'une comparaison",
+   "objectif": "Prévoir la valeur d'une comparaison.",
+   "question": [
+    "Quelle est la valeur de l'expression `5 > 3` ?"
+   ],
+   "options": [
+    {
+     "texte": "False",
+     "feedback": "5 est bien plus grand que 3 : la comparaison est vraie."
+    },
+    {
+     "texte": "None",
+     "feedback": "Une comparaison donne toujours une valeur de vérité, True ou False, jamais None."
+    },
+    {
+     "texte": "True",
+     "feedback": "Oui : 5 > 3 est vrai. Une comparaison donne un booléen, True ou False.",
+     "juste": true
+    },
+    {
+     "texte": "5",
+     "feedback": "Une comparaison ne renvoie pas le plus grand nombre : elle dit si c'est vrai ou faux."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(5 > 3))"
+     ],
+     "sortie": "True"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q14",
+   "origine": "Variables Q8",
+   "nom": "[Comparaisons] Comparer un texte et un nombre avec ==",
+   "objectif": "Savoir que == compare aussi les types.",
+   "question": [
+    "Quelle est la valeur de l'expression `\"42\" == 42` ?"
+   ],
+   "options": [
+    {
+     "texte": "True",
+     "feedback": "Pour nous, c'est le même nombre ; pour Python, \"42\" est un texte et 42 un nombre : deux valeurs différentes."
+    },
+    {
+     "texte": "False",
+     "feedback": "Oui : un str et un int ne sont jamais égaux pour ==. Il faut convertir d'abord : int(\"42\") == 42 vaut True.",
+     "juste": true
+    },
+    {
+     "texte": "None",
+     "feedback": "Une comparaison donne toujours True ou False, jamais None."
+    },
+    {
+     "texte": "\"False\"",
+     "feedback": "Le résultat est la valeur False, sans guillemets : un booléen, pas un texte."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(\"42\" == 42))"
+     ],
+     "sortie": "False"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q15",
+   "origine": "Variables Q6",
+   "nom": "[Chaînes] + entre deux textes",
+   "objectif": "Savoir que + met deux chaînes bout à bout (concaténation).",
+   "question": [
+    "Quelle est la valeur de l'expression `\"3\" + \"4\"` ?"
+   ],
+   "options": [
+    {
+     "texte": "\"34\"",
+     "feedback": "Oui : entre deux textes, + les met bout à bout (on dit « concaténer »). \"3\" + \"4\" donne \"34\".",
+     "juste": true
+    },
+    {
+     "texte": "7",
+     "feedback": "Les guillemets font de \"3\" et \"4\" des textes, pas des nombres : + ne fait pas d'addition ici."
+    },
+    {
+     "texte": "Une erreur TypeError",
+     "feedback": "Il n'y a pas d'erreur : + est permis entre deux textes. L'erreur viendrait d'un texte + un nombre, comme \"3\" + 4."
+    },
+    {
+     "texte": "\"7\"",
+     "feedback": "Python ne calcule pas avec des textes : il les met bout à bout, \"3\" puis \"4\"."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(repr(\"3\" + \"4\"))"
+     ],
+     "sortie": "'34'"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q16",
+   "origine": "Variables Q9",
+   "nom": "[Chaînes] Texte × entier",
+   "objectif": "Prévoir le type de la répétition d'une chaîne.",
+   "question": [
+    "Quel est le type de la valeur de l'expression `\"3\" * 2` ?"
+   ],
+   "options": [
+    {
+     "texte": "int",
+     "feedback": "\"3\" est un texte : * le répète, il ne calcule pas 3 × 2. Le résultat est \"33\", un texte."
+    },
+    {
+     "texte": "list",
+     "feedback": "Il n'y a pas de crochets : le résultat n'est pas une liste, c'est le texte \"33\"."
+    },
+    {
+     "texte": "Une erreur TypeError",
+     "feedback": "Un texte multiplié par un entier est permis : il est répété. \"3\" * 2 vaut \"33\"."
+    },
+    {
+     "texte": "str",
+     "feedback": "Oui : \"3\" * 2 répète le texte deux fois et donne \"33\", un str.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(type(\"3\" * 2).__name__, repr(\"3\" * 2))"
+     ],
+     "sortie": "str '33'"
+    }
+   ],
+   "fond": {
+    "avant": "cases à cocher (single=false), une seule réponse juste",
+    "apres": "QCU (une seule réponse)",
+    "raison": "une seule réponse juste : avec des cases à cocher, un·e élève pouvait cocher plusieurs réponses."
+   }
+  },
+  {
+   "id": "q17",
+   "nom": "[Erreurs] Coller un texte et un nombre",
+   "objectif": "Lire une TypeError de concaténation et convertir le nombre en texte.",
+   "enonce": [
+    "Le programme suivant est exécuté. Python s'arrête sur l'erreur affichée dans la console."
+   ],
+   "code": [
+    "age = 16",
+    "print(\"J'ai \" + age + \" ans\")"
+   ],
+   "console": [
+    "TypeError: can only concatenate str (not \"int\") to str"
+   ],
+   "question": [
+    "Quelle correction faut-il faire ?"
+   ],
+   "options": [
+    {
+     "texte": "Écrire int(age) au lieu de age",
+     "feedback": "age est déjà un int : int(age) ne change rien, et l'erreur reste. Il faut le transformer en texte."
+    },
+    {
+     "texte": "Écrire str(age) au lieu de age",
+     "feedback": "Oui. Le message dit « on ne peut coller (concaténer) à un str qu'un str, pas un int ». str(age) donne \"16\".",
+     "juste": true
+    },
+    {
+     "texte": "Écrire age entre guillemets : \"age\"",
+     "feedback": "Le programme afficherait le mot age, pas la valeur 16 : « J'ai age ans »."
+    },
+    {
+     "texte": "Remplacer les + par des *",
+     "feedback": "Un texte multiplié par un texte provoque aussi une TypeError. C'est age qu'il faut convertir en texte."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "TypeError: can only concatenate str (not \"int\") to str"
+    },
+    {
+     "option": "correction",
+     "reprendre_code": false,
+     "code": [
+      "age = 16",
+      "print(\"J'ai \" + str(age) + \" ans\")"
+     ],
+     "sortie": "J'ai 16 ans"
+    },
+    {
+     "option": "int",
+     "reprendre_code": false,
+     "code": [
+      "age = 16",
+      "print(\"J'ai \" + int(age) + \" ans\")"
+     ],
+     "erreur": "TypeError"
+    }
+   ]
+  },
+  {
+   "id": "q18",
+   "nom": "[Affectation] Une variable qui reçoit un calcul",
+   "objectif": "Comprendre qu'une affectation calcule à droite, puis range à gauche.",
+   "code": [
+    "x = 3",
+    "x = x + 2",
+    "print(x)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "3",
+     "feedback": "La ligne 2 change x : elle calcule x + 2 avec l'ancienne valeur (3 + 2), puis range 5 dans x."
+    },
+    {
+     "texte": "5",
+     "feedback": "Oui : Python calcule d'abord la droite, 3 + 2 = 5, puis range le résultat dans x. L'ancienne valeur est remplacée.",
+     "juste": true
+    },
+    {
+     "texte": "x + 2",
+     "feedback": "Une affectation ne garde pas le calcul : elle le fait tout de suite et range le résultat, 5."
+    },
+    {
+     "texte": "Une erreur : x ne peut pas valoir x + 2",
+     "feedback": "Ce n'est pas une équation de mathématiques : = veut dire « ranger dans ». x = x + 2 ajoute 2 à x."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "5"
+    }
+   ]
+  },
+  {
+   "id": "q19",
+   "nom": "[Affectation] Copier une valeur",
+   "objectif": "Savoir qu'après b = a, changer a ne change pas b.",
+   "code": [
+    "a = 5",
+    "b = a",
+    "a = 7",
+    "print(b)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "7",
+     "feedback": "b = a copie la valeur de a à ce moment-là : 5. Ensuite, a change, mais b ne suit pas."
+    },
+    {
+     "texte": "a",
+     "feedback": "print(b) affiche la valeur de b, pas le nom a. b a reçu 5."
+    },
+    {
+     "texte": "Une erreur",
+     "feedback": "Chaque ligne est permise : on peut donner une nouvelle valeur à a après l'avoir copiée dans b."
+    },
+    {
+     "texte": "5",
+     "feedback": "Oui : b = a range dans b la valeur de a, 5. Changer a ensuite ne change pas b : les deux variables ne sont pas liées.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "5"
+    }
+   ]
+  },
+  {
+   "id": "q20",
+   "nom": "[Affectation] Échanger deux variables",
+   "objectif": "Suivre deux affectations successives et repérer la valeur perdue.",
+   "code": [
+    "a = 1",
+    "b = 2",
+    "a = b",
+    "b = a",
+    "print(a, b)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "2 1",
+     "feedback": "C'est l'échange voulu, mais ces lignes ne le font pas : après a = b, a vaut 2, et l'ancienne valeur 1 est perdue."
+    },
+    {
+     "texte": "2 2",
+     "feedback": "Oui : a = b donne 2 à a ; puis b = a donne à b la valeur actuelle de a, 2. La valeur 1 est perdue : il faudrait une variable de plus.",
+     "juste": true
+    },
+    {
+     "texte": "1 2",
+     "feedback": "Les lignes 3 et 4 changent les variables : a reçoit 2, puis b reçoit la valeur de a."
+    },
+    {
+     "texte": "1 1",
+     "feedback": "La ligne 3, a = b, range la valeur de b (2) dans a : c'est la droite qui va dans la gauche."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "2 2"
+    }
+   ]
+  }
+ ]
+}

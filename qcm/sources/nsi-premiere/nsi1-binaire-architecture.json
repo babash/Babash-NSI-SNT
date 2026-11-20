@@ -1,0 +1,510 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsi1-binaire-architecture",
+ "titre": "NSI 1re · Binaire et architecture",
+ "niveau": "nsi-premiere",
+ "justification_niveau": "écriture d'un entier positif en base 2, représentation d'un texte, et modèle d'architecture (transistor, mémoires) : programme de première.",
+ "programme": [
+  "nsi-1re-2019.types-de-base.entiers-base-b : Écriture d'un entier positif dans une base b ⩾ 2",
+  "nsi-1re-2019.types-de-base.texte : Représentation d'un texte en machine",
+  "nsi-1re-2019.architecture-os.von-neumann : Modèle d'architecture séquentielle (von Neumann)"
+ ],
+ "notions": [
+  "donnees.binaire",
+  "donnees.texte",
+  "archi.portes-logiques",
+  "archi.memoire"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Quiz SNT: Binaire, RVB et Architecture (export `5eef362f`, Q1 à Q6, Q8 à Q10, Q16, Q19 et Q20), retirées du quiz SNT par le lot 2"
+ ],
+ "contexte": "Des octets à lire et à écrire ; un compteur de passagers de la barge ; un mot en ASCII.",
+ "objectifs": [
+  "Passer de l'écriture binaire d'un entier à son écriture décimale, et inversement.",
+  "Connaître la plus grande valeur codable sur n bits (2ⁿ - 1) et le nombre minimal de bits pour un entier.",
+  "Coder un mot en ASCII, un octet par lettre.",
+  "Connaître le rôle du transistor et distinguer mémoire de masse, mémoire vive et processeur."
+ ],
+ "progression": "Q1 à Q3 : lire et écrire sur 4 bits, poids des bits ; Q4 : la plus grande valeur ; Q5 à Q8 : octets ; Q9 : nombre de bits ; Q10 : texte ; Q11 et Q12 : architecture.",
+ "forme": [
+  "Questions retirées du quiz SNT (le binaire et l'architecture sont au programme de NSI 1re), réunies dans un quiz à part (délégation de l'enseignant au chef d'orchestre, 20/11/2026 : 12 questions, au moins 10).",
+  "Noms « [Binaire] … », « [Texte] … », « [Architecture] … » ; objectif affiché ; énoncés impersonnels (« Représentez » retiré).",
+  "Feedbacks récrits au tutoiement : chacun nomme l'erreur (bits lus à l'envers, bit oublié, 2ⁿ au lieu de 2ⁿ - 1…) et dit comment raisonner ; plusieurs faisaient moins de 40 caractères.",
+  "Puissances écrites en exposant (2³ au lieu de « 23 », perdu à l'export) ; sigles anglais expliqués (HDD, SSD, Binary Digit retirés ou traduits).",
+  "Positions replacées : la bonne réponse était en B dans 6 questions sur 12.",
+  "Relecture du Gardien (20/11) : 2 retour(s) réécrit(s) (q01, q02), pour ne dire que l'erreur vérifiée par le calcul ou l'exécution, avec le message complet de Python 3.13, de SQLite ou de Bash.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q11) : l'objectif dit la compétence, pas la réponse."
+ ],
+ "retirees": [],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "Quiz SNT Q1",
+   "nom": "[Binaire] Lire un nombre de 4 bits",
+   "objectif": "Passer de l'écriture binaire d'un entier à son écriture décimale.",
+   "question": [
+    "Quel nombre décimal s'écrit 1100 en binaire ?"
+   ],
+   "options": [
+    {
+     "texte": "6",
+     "feedback": "6 s'écrit 0110 en binaire, pas 1100. Écris les poids au-dessus des bits (8, 4, 2, 1), puis additionne ceux des bits à 1 : 8 + 4."
+    },
+    {
+     "texte": "12",
+     "feedback": "Oui : 1100 = 1 × 8 + 1 × 4 + 0 × 2 + 0 × 1 = 12. Chaque bit à 1 apporte son poids.",
+     "juste": true
+    },
+    {
+     "texte": "10",
+     "feedback": "10 s'écrit 1010. Écris les poids au-dessus des bits (8, 4, 2, 1), puis additionne ceux des bits à 1."
+    },
+    {
+     "texte": "14",
+     "feedback": "14 s'écrit 1110 : il a trois bits à 1. Ici, seuls les bits de poids 8 et 4 sont à 1."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(int(\"1100\", 2), int(\"0110\", 2), int(\"1010\", 2), int(\"1110\", 2))"
+     ],
+     "sortie": "12 6 10 14"
+    }
+   ]
+  },
+  {
+   "id": "q02",
+   "origine": "Quiz SNT Q2",
+   "nom": "[Binaire] Écrire 7 sur 4 bits",
+   "objectif": "Passer de l'écriture décimale d'un entier à son écriture binaire sur un nombre de bits donné.",
+   "question": [
+    "Quelle est l'écriture binaire sur 4 bits du nombre 7 ?"
+   ],
+   "options": [
+    {
+     "texte": "1001",
+     "feedback": "1001 vaut 8 + 1 = 9. Pour 7, cherche les poids qui donnent 7 : 4 + 2 + 1."
+    },
+    {
+     "texte": "0011",
+     "feedback": "0011 vaut 2 + 1 = 3. Il manque le bit de poids 4 : 7 = 4 + 2 + 1."
+    },
+    {
+     "texte": "0111",
+     "feedback": "Oui : 7 = 4 + 2 + 1, donc les trois bits de droite sont à 1 : 0111. Le 0 de gauche complète les 4 bits.",
+     "juste": true
+    },
+    {
+     "texte": "1100",
+     "feedback": "1100 vaut 8 + 4 = 12, pas 7. Pour 7, cherche les poids qui donnent 7 : 4 + 2 + 1, donc 0111."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(format(7, \"04b\"))"
+     ],
+     "sortie": "0111"
+    }
+   ],
+   "fond": {
+    "avant": "« Représentez le nombre décimal 7 en binaire sur 4 bits. »",
+    "apres": "« Quelle est l'écriture binaire sur 4 bits du nombre 7 ? »",
+    "raison": "énoncé impersonnel, comme au bac ; même question, mêmes options."
+   }
+  },
+  {
+   "id": "q03",
+   "origine": "Quiz SNT Q3",
+   "nom": "[Binaire] Un seul bit à 1 dans un octet",
+   "objectif": "Connaître les poids des bits d'un octet.",
+   "question": [
+    "Quel nombre décimal représente l'octet 00001000 ?"
+   ],
+   "options": [
+    {
+     "texte": "16",
+     "feedback": "16 s'écrit 00010000 : son bit à 1 est une case plus à gauche. Compte les poids depuis la droite : 1, 2, 4, 8."
+    },
+    {
+     "texte": "4",
+     "feedback": "4 s'écrit 00000100. Ici, le bit à 1 est en quatrième position en partant de la droite : son poids est 8."
+    },
+    {
+     "texte": "1",
+     "feedback": "1 s'écrit 00000001 : seul le bit tout à droite est à 1. Ici, c'est le quatrième bit depuis la droite."
+    },
+    {
+     "texte": "8",
+     "feedback": "Oui : le seul bit à 1 a le poids 2³ = 8. Les poids, de droite à gauche : 1, 2, 4, 8, 16…",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(int(\"00001000\", 2))"
+     ],
+     "sortie": "8"
+    }
+   ]
+  },
+  {
+   "id": "q04",
+   "origine": "Quiz SNT Q4",
+   "nom": "[Binaire] Le plus grand nombre sur 5 bits",
+   "objectif": "Calculer la plus grande valeur codable sur n bits : 2ⁿ - 1.",
+   "question": [
+    "Quel est le plus grand entier positif que l'on peut écrire avec 5 bits ?"
+   ],
+   "options": [
+    {
+     "texte": "16",
+     "feedback": "16 = 2⁴ est le nombre de valeurs sur 4 bits. Sur 5 bits, la plus grande valeur est 11111."
+    },
+    {
+     "texte": "32",
+     "feedback": "32 = 2⁵ est le nombre de valeurs possibles, de 0 à 31. Comme on commence à 0, la plus grande est 31."
+    },
+    {
+     "texte": "31",
+     "feedback": "Oui : 11111 = 16 + 8 + 4 + 2 + 1 = 31, c'est-à-dire 2⁵ - 1. Retiens : sur n bits, de 0 à 2ⁿ - 1.",
+     "juste": true
+    },
+    {
+     "texte": "63",
+     "feedback": "63 = 2⁶ - 1 est la plus grande valeur sur 6 bits. Avec 5 bits, on s'arrête à 2⁵ - 1."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(int(\"11111\", 2), 2 ** 5 - 1)"
+     ],
+     "sortie": "31 31"
+    }
+   ]
+  },
+  {
+   "id": "q05",
+   "origine": "Quiz SNT Q5",
+   "nom": "[Binaire] Lire un octet",
+   "objectif": "Passer de l'écriture binaire d'un octet à son écriture décimale.",
+   "question": [
+    "Quel nombre décimal représente l'octet 11000001 ?"
+   ],
+   "options": [
+    {
+     "texte": "193",
+     "feedback": "Oui : 11000001 = 128 + 64 + 1 = 193. N'oublie aucun bit à 1, même le dernier.",
+     "juste": true
+    },
+    {
+     "texte": "129",
+     "feedback": "129 s'écrit 10000001 : tu as oublié le bit de poids 64, le deuxième en partant de la gauche."
+    },
+    {
+     "texte": "192",
+     "feedback": "192 s'écrit 11000000 : tu as oublié le bit de poids 1, tout à droite."
+    },
+    {
+     "texte": "255",
+     "feedback": "255 s'écrit 11111111 : tous les bits seraient à 1. Ici, trois bits seulement sont à 1."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(int(\"11000001\", 2), int(\"10000001\", 2), int(\"11000000\", 2))"
+     ],
+     "sortie": "193 129 192"
+    }
+   ]
+  },
+  {
+   "id": "q06",
+   "origine": "Quiz SNT Q6",
+   "nom": "[Binaire] Écrire 150 sur 8 bits",
+   "objectif": "Décomposer un entier en somme de puissances de 2 pour l'écrire en binaire.",
+   "question": [
+    "Quelle est l'écriture binaire sur 8 bits du nombre 150 ?"
+   ],
+   "options": [
+    {
+     "texte": "10101010",
+     "feedback": "10101010 vaut 128 + 32 + 8 + 2 = 170. Pour 150, retire les plus grands poids possibles : 150 - 128 = 22, puis 22 - 16 = 6…"
+    },
+    {
+     "texte": "10010110",
+     "feedback": "Oui : 150 = 128 + 16 + 4 + 2. On met un 1 sous chacun de ces poids : 10010110.",
+     "juste": true
+    },
+    {
+     "texte": "11110000",
+     "feedback": "11110000 vaut 128 + 64 + 32 + 16 = 240 : c'est trop. Après 128, il reste 22, et 64 ne rentre pas dans 22."
+    },
+    {
+     "texte": "10011000",
+     "feedback": "10011000 vaut 128 + 16 + 8 = 152. Après 128 et 16, il reste 6 = 4 + 2, et non 8."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(format(150, \"08b\"), int(\"10101010\", 2), int(\"11110000\", 2), int(\"10011000\", 2))"
+     ],
+     "sortie": "10010110 170 240 152"
+    }
+   ],
+   "fond": {
+    "avant": "« Représentez le nombre décimal 150 en binaire sur 8 bits. »",
+    "apres": "« Quelle est l'écriture binaire sur 8 bits du nombre 150 ? »",
+    "raison": "énoncé impersonnel ; même question, mêmes options."
+   }
+  },
+  {
+   "id": "q07",
+   "origine": "Quiz SNT Q8",
+   "nom": "[Binaire] Écrire 200 sur 8 bits",
+   "objectif": "Décomposer un entier en somme de puissances de 2 pour l'écrire en binaire.",
+   "question": [
+    "Quelle est l'écriture binaire sur 8 bits du nombre 200 ?"
+   ],
+   "options": [
+    {
+     "texte": "10001000",
+     "feedback": "10001000 vaut 128 + 8 = 136 : il manque le poids 64. Après 128, il reste 72 = 64 + 8."
+    },
+    {
+     "texte": "11111111",
+     "feedback": "11111111 vaut 255, le plus grand octet. Pour 200, tous les bits ne sont pas à 1."
+    },
+    {
+     "texte": "00100100",
+     "feedback": "00100100 vaut 32 + 4 = 36. Pour un nombre plus grand que 128, le bit de gauche est forcément à 1."
+    },
+    {
+     "texte": "11001000",
+     "feedback": "Oui : 200 = 128 + 64 + 8, donc 11001000. Vérifie toujours en additionnant les poids des bits à 1.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(format(200, \"08b\"), int(\"10001000\", 2), int(\"00100100\", 2))"
+     ],
+     "sortie": "11001000 136 36"
+    }
+   ],
+   "fond": {
+    "avant": "« Représentez le nombre décimal 200 en binaire sur 8 bits. »",
+    "apres": "« Quelle est l'écriture binaire sur 8 bits du nombre 200 ? »",
+    "raison": "énoncé impersonnel ; même question, mêmes options."
+   }
+  },
+  {
+   "id": "q08",
+   "origine": "Quiz SNT Q9",
+   "nom": "[Binaire] Un octet qui alterne",
+   "objectif": "Passer de l'écriture binaire d'un octet à son écriture décimale.",
+   "question": [
+    "Quel nombre décimal représente l'octet 01010101 ?"
+   ],
+   "options": [
+    {
+     "texte": "170",
+     "feedback": "170 s'écrit 10101010 : ce sont les bits de l'autre série. Ici, le bit de gauche, de poids 128, est à 0."
+    },
+    {
+     "texte": "128",
+     "feedback": "128 s'écrit 10000000. Ici, le bit de poids 128 est à 0 : regarde les bits à 1 un par un."
+    },
+    {
+     "texte": "85",
+     "feedback": "Oui : 01010101 = 64 + 16 + 4 + 1 = 85. Les bits à 1 sont un sur deux, en partant de la droite.",
+     "juste": true
+    },
+    {
+     "texte": "64",
+     "feedback": "64 n'est que le premier bit à 1. Il faut ajouter les poids de tous les bits à 1 : 64 + 16 + 4 + 1."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(int(\"01010101\", 2), int(\"10101010\", 2))"
+     ],
+     "sortie": "85 170"
+    }
+   ]
+  },
+  {
+   "id": "q09",
+   "origine": "Quiz SNT Q10",
+   "nom": "[Binaire] Combien de bits pour 300 ?",
+   "objectif": "Trouver le nombre minimal de bits pour écrire un entier.",
+   "enonce": [
+    "Un compteur doit compter jusqu'à 300 passagers sur la barge."
+   ],
+   "question": [
+    "Combien de bits faut-il, au minimum, pour écrire le nombre 300 en binaire ?"
+   ],
+   "options": [
+    {
+     "texte": "7 bits",
+     "feedback": "Avec 7 bits, on va de 0 à 2⁷ - 1 = 127 : c'est trop peu pour 300."
+    },
+    {
+     "texte": "8 bits",
+     "feedback": "Un octet va jusqu'à 255 seulement. On peut écrire en binaire des nombres plus grands que 255, avec plus de bits."
+    },
+    {
+     "texte": "10 bits",
+     "feedback": "10 bits suffisent, mais on peut faire avec moins : 9 bits vont déjà jusqu'à 511."
+    },
+    {
+     "texte": "9 bits",
+     "feedback": "Oui : 8 bits vont jusqu'à 255, trop peu ; 9 bits vont jusqu'à 2⁹ - 1 = 511. 300 s'écrit 100101100.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(len(format(300, \"b\")), 2 ** 8 - 1, 2 ** 9 - 1)"
+     ],
+     "sortie": "9 255 511"
+    }
+   ],
+   "fond": {
+    "avant": "« Si l'on souhaite coder le nombre décimal 300 en binaire, combien de bits sont nécessaires au minimum ? »",
+    "apres": "un compteur de passagers de la barge, puis la même question",
+    "raison": "contexte de Mayotte, phrases plus courtes ; même question, mêmes options."
+   }
+  },
+  {
+   "id": "q10",
+   "origine": "Quiz SNT Q20",
+   "nom": "[Texte] Un mot en ASCII",
+   "objectif": "Coder un texte en binaire avec la table ASCII.",
+   "enonce": [
+    "Dans la table ASCII, L a le code 76, E a le code 69 et A a le code 65."
+   ],
+   "question": [
+    "Quel est le codage binaire, un octet par lettre, du mot LEA ?"
+   ],
+   "options": [
+    {
+     "texte": "01000001 01000101 01001100",
+     "feedback": "Ce sont les bons octets, mais dans l'ordre A, E, L : le mot serait AEL. On garde l'ordre des lettres."
+    },
+    {
+     "texte": "1001100 1000101 1000001",
+     "feedback": "Les valeurs sont justes, mais écrites sur 7 bits. Un octet a 8 bits : on ajoute un 0 à gauche."
+    },
+    {
+     "texte": "01001100 01000101 01000001",
+     "feedback": "Oui : 76 = 64 + 8 + 4 donne 01001100 ; 69 = 64 + 4 + 1 donne 01000101 ; 65 = 64 + 1 donne 01000001.",
+     "juste": true
+    },
+    {
+     "texte": "1101000 1000101 1000001",
+     "feedback": "Le premier code ne vaut pas 76 : 1101000 vaut 104. Et chaque code doit avoir 8 bits."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(\" \".join(format(ord(c), \"08b\") for c in \"LEA\"))"
+     ],
+     "sortie": "01001100 01000101 01000001"
+    }
+   ],
+   "fond": {
+    "avant": "« En utilisant la table ASCII (L=76, E=69, A=65), quel est le code binaire sur 8 bits du mot LEA ? »",
+    "apres": "les codes dans une phrase à part, puis la question",
+    "raison": "phrases plus courtes ; même question, mêmes options."
+   }
+  },
+  {
+   "id": "q11",
+   "origine": "Quiz SNT Q16",
+   "nom": "[Architecture] Le composant de base d'un processeur",
+   "objectif": "Connaître le composant de base des circuits d'un processeur.",
+   "question": [
+    "Quel composant électronique fonctionne comme un interrupteur commandé, et sert de brique de base aux processeurs ?"
+   ],
+   "options": [
+    {
+     "texte": "Le condensateur",
+     "feedback": "Un condensateur garde un peu de charge électrique, un court moment. Il ne commute pas : il ne joue pas le rôle d'un interrupteur."
+    },
+    {
+     "texte": "Le transistor",
+     "feedback": "Oui : un transistor laisse passer le courant ou non, selon une commande : c'est un 0 ou un 1. Un processeur en contient des milliards, assemblés en portes logiques.",
+     "juste": true
+    },
+    {
+     "texte": "Le transformateur",
+     "feedback": "Un transformateur change la tension d'un courant alternatif, comme dans un chargeur. Il ne fait aucun calcul."
+    },
+    {
+     "texte": "La résistance",
+     "feedback": "Une résistance limite le courant. Elle ne peut pas passer d'un état à l'autre, comme un interrupteur."
+    }
+   ],
+   "fond": {
+    "avant": "« … composant électronique fondamental, souvent décrit comme un interrupteur ou un amplificateur, qui permet de stocker un bit (0 ou 1) et est à la base de la construction des microprocesseurs ? »",
+    "apres": "« Quel composant électronique fonctionne comme un interrupteur commandé, et sert de brique de base aux processeurs ? »",
+    "raison": "un transistor seul ne stocke pas un bit : il en faut plusieurs pour une case mémoire. Même réponse (le transistor), mêmes distracteurs."
+   }
+  },
+  {
+   "id": "q12",
+   "origine": "Quiz SNT Q19",
+   "nom": "[Architecture] Le rôle du disque dur ou du SSD",
+   "objectif": "Distinguer la mémoire de masse, la mémoire vive et le processeur.",
+   "question": [
+    "Quel est le rôle principal du disque dur ou du SSD (une mémoire de masse sans pièce mobile) dans un ordinateur ?"
+   ],
+   "options": [
+    {
+     "texte": "Exécuter les instructions des programmes et faire les calculs",
+     "feedback": "C'est le rôle du processeur. Le disque garde les données, mais il ne calcule pas."
+    },
+    {
+     "texte": "Garder les données et les programmes, même ordinateur éteint",
+     "feedback": "Oui : c'est la mémoire de masse. Elle garde les fichiers sans courant, alors que la mémoire vive s'efface à l'arrêt.",
+     "juste": true
+    },
+    {
+     "texte": "Garder un court moment les données utilisées par le processeur",
+     "feedback": "C'est le rôle de la mémoire vive (RAM) : rapide, mais effacée quand on éteint. Le disque, lui, garde tout."
+    },
+    {
+     "texte": "Calculer et afficher les images à l'écran",
+     "feedback": "C'est le rôle de la carte graphique. Le disque peut stocker des images, mais il ne les calcule pas."
+    }
+   ],
+   "fond": {
+    "avant": "« … du disque dur (HDD) ou du SSD (Solid State Drive) … » ; options terminées par le nom du composant (mémoire vive, mémoire de masse)",
+    "apres": "« … du disque dur ou du SSD (une mémoire de masse sans pièce mobile) … » ; noms des composants dans les retours",
+    "raison": "sigles anglais expliqués en français ; les parenthèses des options donnaient une indication. Même question, même réponse."
+   }
+  }
+ ]
+}

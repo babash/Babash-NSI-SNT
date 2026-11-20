@@ -1,0 +1,1372 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsit-sql-2-jointures-mises-a-jour",
+ "titre": "NSI Tle · SQL 2 : jointures et mises à jour",
+ "niveau": "nsi-terminale",
+ "justification_niveau": "jointures (JOIN … ON) et requêtes de mise à jour (INSERT, UPDATE, DELETE) : programme de terminale, rubrique Bases de données.",
+ "programme": [
+  "nsi-tle-2019.bases-de-donnees.sql : Construire des requêtes d'interrogation (SELECT, FROM, WHERE, JOIN) et de mise à jour (UPDATE, INSERT, DELETE)",
+  "nsi-tle-2019.bases-de-donnees.modele-relationnel : contraintes d'intégrité (clé étrangère)"
+ ],
+ "notions": [
+  "donnees.bdd.sql.jointure",
+  "donnees.bdd.sql.mise-a-jour",
+  "donnees.bdd.sql.interrogation",
+  "donnees.bdd.relationnel"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "SQL (export `0fe685bf`) : Q3, Q14, Q20 à Q28, Q31 à Q35",
+  "SQL et Modèle Relationnel - 40 Questions Fondamentales (export `194a9996`) : Q24, Q35, Q38, Q39"
+ ],
+ "contexte": "Mayotte : villages et pirogues, récifs et mesures, plongées à Bandrélé, tortues vertes, écoles, navires. SGBD de référence : SQLite ; chaque requête est exécutée.",
+ "schema_sql": [
+  "CREATE TABLE VILLAGE(id_v INTEGER PRIMARY KEY, nom_v TEXT);",
+  "INSERT INTO VILLAGE VALUES (1, 'Bouéni'), (2, 'Sada'), (3, 'Chiconi');",
+  "CREATE TABLE PIROGUE(id_p INTEGER PRIMARY KEY, nom_p TEXT, couleur TEXT, id_v INTEGER REFERENCES VILLAGE(id_v));",
+  "INSERT INTO PIROGUE VALUES (1, 'Pirogue 1', 'bleu', 1), (2, 'Pirogue 2', 'rouge', 2), (3, 'Pirogue 3', 'vert', 2), (4, 'Pirogue 4', 'jaune', 1);",
+  "CREATE TABLE CLASSE(id_classe INTEGER PRIMARY KEY, nom_c TEXT);",
+  "INSERT INTO CLASSE VALUES (1, 'Terminale 1'), (2, 'Terminale 2');",
+  "CREATE TABLE ELEVE(id_e INTEGER PRIMARY KEY, nom TEXT, id_classe INTEGER REFERENCES CLASSE(id_classe));",
+  "INSERT INTO ELEVE VALUES (1, 'Élève A', 1), (2, 'Élève B', 2), (3, 'Élève C', 2);",
+  "CREATE TABLE ZONE(id_z INTEGER PRIMARY KEY, nom_z TEXT);",
+  "INSERT INTO ZONE VALUES (1, 'Nord'), (2, 'Sud');",
+  "CREATE TABLE RECIF(id_r INTEGER PRIMARY KEY, nom_r TEXT, id_z INTEGER REFERENCES ZONE(id_z));",
+  "INSERT INTO RECIF VALUES (1, 'Grand Corail', 1), (2, 'Banc sud', 2);",
+  "CREATE TABLE MESURE(id_m INTEGER PRIMARY KEY, valeur REAL, id_r INTEGER REFERENCES RECIF(id_r));",
+  "INSERT INTO MESURE VALUES (1, 27.5, 1), (2, 28.0, 2), (3, 29.1, 2);",
+  "CREATE TABLE CLUB(id_club INTEGER PRIMARY KEY, nom TEXT);",
+  "INSERT INTO CLUB VALUES (1, 'Club du lagon');",
+  "CREATE TABLE PLONGEUR(id_plongeur INTEGER PRIMARY KEY, nom TEXT, id_club INTEGER REFERENCES CLUB(id_club));",
+  "INSERT INTO PLONGEUR VALUES (1, 'Plongeuse A', 1), (2, 'Plongeur B', 1);",
+  "CREATE TABLE PLONGEE(id_plongee INTEGER PRIMARY KEY, lieu TEXT, profondeur REAL, id_plongeur INTEGER REFERENCES PLONGEUR(id_plongeur));",
+  "INSERT INTO PLONGEE VALUES (1, 'Bandrélé', 12, 1), (2, 'Bandrélé', 25, 2), (3, 'Passe en S', 18, 1), (4, 'Bandrélé', 8, 2);",
+  "CREATE TABLE TORTUE(id_t INTEGER PRIMARY KEY, espece TEXT, poids REAL);",
+  "INSERT INTO TORTUE VALUES (1, 'verte', 120), (2, 'verte', 95), (3, 'imbriquée', 130), (4, 'verte', 140);",
+  "CREATE TABLE CLIENT(nom TEXT, ville TEXT);",
+  "INSERT INTO CLIENT VALUES ('Client A', 'Mamoudzou'), ('Client B', 'Koungou');",
+  "CREATE TABLE ECOLE(id_e INTEGER PRIMARY KEY, nom TEXT, ville TEXT);",
+  "INSERT INTO ECOLE VALUES (41, 'École A', 'Kawéni'), (42, 'École B', 'Passamaïnty');",
+  "CREATE TABLE NAVIRE(nom TEXT, tonnage INTEGER, port TEXT);",
+  "INSERT INTO NAVIRE VALUES ('Atlas', 300, 'Longoni'), ('Vieux Port', 120, 'Dzaoudzi');",
+  "CREATE TABLE RESERVOIR(id_r INTEGER PRIMARY KEY, nom TEXT, volume INTEGER);",
+  "INSERT INTO RESERVOIR VALUES (1, 'R1', 400), (2, 'R2', 750);"
+ ],
+ "objectifs": [
+  "Écrire la condition d'une jointure : la clé étrangère d'une table égale à la clé primaire de l'autre.",
+  "Écrire une jointure suivie d'un filtre, et une jointure sur trois tables.",
+  "Reconnaître un produit cartésien, et lever l'ambiguïté d'un nom de colonne.",
+  "Écrire des requêtes INSERT, UPDATE et DELETE, et prévoir leur effet.",
+  "Expliquer le rôle de l'intégrité référentielle lors d'une suppression."
+ ],
+ "progression": "Q1 à Q10 : jointures ; Q11 à Q14 : requêtes plus complètes et lecture d'erreurs ; Q15 à Q20 : contraintes et mises à jour.",
+ "forme": [
+  "Noms « [Jointures] … », « [SQL] … » ou « [Mises à jour] … » ; objectif affiché ; feedbacks au tutoiement, sans « Faux. » ni « Syntaxe fantaisiste ».",
+  "Requêtes exécutées dans SQLite sur une base de test ; les feedbacks décrivent ce que fait vraiment SQLite.",
+  "Contexte de Mayotte ajouté aux questions reprises du quiz de 40 (elles parlaient de Lyon, Paris et Hugo).",
+  "« 10 litres » devient « 10 m³ », unité des autres questions sur les réservoirs ; « plongeur » devient « plongeur ou plongeuse » dans les énoncés.",
+  "Positions rééquilibrées.",
+  "Relecture du Gardien (20/11) : 3 retour(s) réécrit(s) (q06, q12, q16), pour ne dire que l'erreur vérifiée par le calcul ou l'exécution, avec le message complet de Python 3.13, de SQLite ou de Bash.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q07, q10, q13, q14, q15, q20) : l'objectif dit la compétence, pas la réponse.",
+  "q13 : la console donne le vrai message de SQLite, « Parse error: no such column: Mamoudzou »."
+ ],
+ "retirees": [
+  {
+   "origine": "SQL 40 Q1, Q2, Q3 (attribut, clé primaire, clé étrangère)",
+   "raison": "doublons de SQL Q4, Q1 et Q2 (quiz SQL 1)."
+  },
+  {
+   "origine": "SQL 40 Q5, Q6, Q7, Q8 (SELECT *, WHERE, choix des colonnes, comparaison)",
+   "raison": "doublons de SQL Q6 et Q7 (quiz SQL 1)."
+  },
+  {
+   "origine": "SQL 40 Q9, Q10 (ORDER BY, DESC)",
+   "raison": "doublons de SQL Q10 (quiz SQL 1)."
+  },
+  {
+   "origine": "SQL 40 Q11, Q12, Q13, Q15 (AND, OR, BETWEEN, LIKE)",
+   "raison": "doublons de SQL Q9, Q13, Q19 et Q8 (quiz SQL 1)."
+  },
+  {
+   "origine": "SQL 40 Q14 (DISTINCT)",
+   "raison": "doublon de SQL Q15 (quiz SQL 1) ; elle avait deux bonnes réponses (GROUP BY donne le même résultat que DISTINCT)."
+  },
+  {
+   "origine": "SQL 40 Q16 à Q20 (COUNT, MAX, MIN, SUM, AVG)",
+   "raison": "doublons de SQL Q11, Q27, Q17 et Q12 (quiz SQL 1 et 2) ; MIN est cité dans le feedback de la question sur MAX."
+  },
+  {
+   "origine": "SQL 40 Q21, Q22, Q23, Q31, Q36, Q37 (mot-clé JOIN, clause ON, syntaxe de jointure)",
+   "raison": "doublons de SQL Q21 et Q22 (questions 1 et 2 de ce quiz)."
+  },
+  {
+   "origine": "SQL 40 Q25 à Q28, Q30 (INSERT, UPDATE, DELETE, DROP)",
+   "raison": "doublons de SQL Q23, Q24, Q25 et Q34 (questions 16 à 20 de ce quiz)."
+  },
+  {
+   "origine": "SQL 40 Q29 (CREATE TABLE)",
+   "raison": "hors programme : le BO demande les requêtes d'interrogation et de mise à jour, pas la création de tables."
+  },
+  {
+   "origine": "SQL 40 Q32, Q33, Q34, Q40 (préfixe de table, utilité d'une jointure, jointure et filtre, plusieurs jointures)",
+   "raison": "doublons de SQL 40 Q24 et de SQL Q32 et Q26 (questions 6, 3 et 4 de ce quiz)."
+  }
+ ],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "SQL Q21",
+   "nom": "[Jointures] Écrire la condition de jointure",
+   "objectif": "Relier la clé étrangère d'une table à la clé primaire de l'autre.",
+   "enonce": [
+    "Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c)."
+   ],
+   "question": [
+    "Quelle est la condition de jointure correcte entre ELEVE et CLASSE ?"
+   ],
+   "options": [
+    {
+     "texte": "ON ELEVE.id_classe = CLASSE.id_classe",
+     "juste": true,
+     "feedback": "Oui : la clé étrangère #id_classe de ELEVE est égale à la clé primaire id_classe de CLASSE. Chaque élève est relié à sa classe."
+    },
+    {
+     "texte": "ON ELEVE.id_e = CLASSE.id_classe",
+     "feedback": "id_e identifie l'élève, pas sa classe : l'élève n° 2 serait relié à la classe n° 2 par hasard. On relie la clé étrangère à la clé primaire."
+    },
+    {
+     "texte": "WHERE ELEVE.nom = CLASSE.nom_c",
+     "feedback": "Un nom d'élève n'est jamais égal à un nom de classe : on n'obtiendrait rien. La jointure se fait sur les identifiants."
+    },
+    {
+     "texte": "JOIN ON ELEVE = CLASSE",
+     "feedback": "On ne compare pas deux tables entières : il faut dire quels attributs doivent être égaux, ici les id_classe."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT nom, nom_c FROM ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe",
+     "resultat": [
+      [
+       "Élève A",
+       "Terminale 1"
+      ],
+      [
+       "Élève B",
+       "Terminale 2"
+      ],
+      [
+       "Élève C",
+       "Terminale 2"
+      ]
+     ]
+    },
+    {
+     "option": "id_e",
+     "sql": "SELECT nom, nom_c FROM ELEVE JOIN CLASSE ON ELEVE.id_e = CLASSE.id_classe",
+     "resultat": [
+      [
+       "Élève A",
+       "Terminale 1"
+      ],
+      [
+       "Élève B",
+       "Terminale 2"
+      ]
+     ]
+    },
+    {
+     "option": "noms",
+     "sql": "SELECT nom FROM ELEVE, CLASSE WHERE ELEVE.nom = CLASSE.nom_c",
+     "resultat": []
+    },
+    {
+     "option": "tables",
+     "sql": "SELECT * FROM ELEVE JOIN ON ELEVE = CLASSE",
+     "erreur_sql": "syntax error"
+    }
+   ]
+  },
+  {
+   "id": "q02",
+   "origine": "SQL Q22",
+   "nom": "[Jointures] Afficher des colonnes de deux tables",
+   "objectif": "Écrire une jointure complète, sans produit cartésien.",
+   "enonce": [
+    "Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c)."
+   ],
+   "question": [
+    "Quelle requête affiche le nom de chaque élève et le nom de sa classe ?"
+   ],
+   "options": [
+    {
+     "texte": "SELECT ELEVE.nom, CLASSE.nom_c FROM ELEVE, CLASSE;",
+     "feedback": "Sans condition, on obtient un produit cartésien : chaque élève associé à toutes les classes. 3 élèves et 2 classes donnent 6 lignes."
+    },
+    {
+     "texte": "SELECT nom, nom_c FROM ELEVE JOIN CLASSE;",
+     "feedback": "SQLite accepte un JOIN sans ON, mais il fait alors un produit cartésien, comme une virgule : chaque élève avec chaque classe. La condition ON est indispensable."
+    },
+    {
+     "texte": "SELECT nom, nom_c FROM ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe;",
+     "juste": true,
+     "feedback": "Oui : JOIN … ON garde seulement les paires où la classe de l'élève est bien cette classe. On obtient une ligne par élève."
+    },
+    {
+     "texte": "SELECT nom, nom_c WHERE ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe;",
+     "feedback": "L'ordre des clauses est fixe : SELECT, FROM (avec les tables et le JOIN), puis WHERE. Ici, SQLite signale une erreur de syntaxe."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT count(*) FROM ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe",
+     "resultat": [
+      [
+       3
+      ]
+     ]
+    },
+    {
+     "option": "virgule",
+     "sql": "SELECT count(*) FROM ELEVE, CLASSE",
+     "resultat": [
+      [
+       6
+      ]
+     ]
+    },
+    {
+     "option": "JOIN sans ON",
+     "sql": "SELECT count(*) FROM ELEVE JOIN CLASSE",
+     "resultat": [
+      [
+       6
+      ]
+     ]
+    },
+    {
+     "option": "WHERE JOIN",
+     "sql": "SELECT nom, nom_c WHERE ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe",
+     "erreur_sql": "syntax error"
+    }
+   ],
+   "fond": {
+    "avant": "feedback de « JOIN CLASSE; » : « Syntaxe invalide. Un JOIN nécessite toujours une clause ON »",
+    "apres": "feedback : SQLite l'accepte et fait un produit cartésien",
+    "raison": "vérifié dans SQLite (référence choisie) : JOIN sans ON n'est pas une erreur."
+   }
+  },
+  {
+   "id": "q03",
+   "origine": "SQL Q32",
+   "nom": "[Jointures] Une jointure suivie d'un filtre",
+   "objectif": "Filtrer sur un attribut d'une autre table grâce à une jointure.",
+   "enonce": [
+    "Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v)."
+   ],
+   "question": [
+    "Quelle requête affiche les noms des pirogues du village de Bouéni ?"
+   ],
+   "options": [
+    {
+     "texte": "SELECT nom_p FROM PIROGUE WHERE nom_v = 'Bouéni';",
+     "feedback": "nom_v n'est pas un attribut de PIROGUE : SQLite répond « no such column: nom_v ». Il faut d'abord joindre VILLAGE."
+    },
+    {
+     "texte": "SELECT nom_p FROM PIROGUE JOIN VILLAGE ON PIROGUE.id_v = VILLAGE.id_v WHERE nom_v = 'Bouéni';",
+     "juste": true,
+     "feedback": "Oui : la jointure relie chaque pirogue à son village, puis WHERE garde celles de Bouéni."
+    },
+    {
+     "texte": "SELECT nom_p FROM PIROGUE JOIN VILLAGE WHERE nom_v = 'Bouéni';",
+     "feedback": "Sans ON, SQLite associe chaque pirogue à chaque village : toutes les pirogues ressortent avec le village de Bouéni, même celles de Sada."
+    },
+    {
+     "texte": "SELECT nom_p FROM PIROGUE, VILLAGE WHERE nom_v = 'Bouéni';",
+     "feedback": "C'est un produit cartésien : la condition de jointure manque. Toutes les pirogues seraient affichées, pas seulement celles de Bouéni."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT nom_p FROM PIROGUE JOIN VILLAGE ON PIROGUE.id_v = VILLAGE.id_v WHERE nom_v = 'Bouéni'",
+     "resultat": [
+      [
+       "Pirogue 1"
+      ],
+      [
+       "Pirogue 4"
+      ]
+     ]
+    },
+    {
+     "option": "sans jointure",
+     "sql": "SELECT nom_p FROM PIROGUE WHERE nom_v = 'Bouéni'",
+     "erreur_sql": "no such column: nom_v"
+    },
+    {
+     "option": "JOIN sans ON",
+     "sql": "SELECT count(*) FROM PIROGUE JOIN VILLAGE WHERE nom_v = 'Bouéni'",
+     "resultat": [
+      [
+       4
+      ]
+     ]
+    },
+    {
+     "option": "virgule",
+     "sql": "SELECT count(*) FROM PIROGUE, VILLAGE WHERE nom_v = 'Bouéni'",
+     "resultat": [
+      [
+       4
+      ]
+     ]
+    }
+   ],
+   "fond": {
+    "avant": "feedback de « JOIN VILLAGE WHERE … » : « Invalide. Il manque la clause ON »",
+    "apres": "feedback : SQLite l'accepte, mais toutes les pirogues ressortent",
+    "raison": "vérifié dans SQLite : la requête s'exécute, elle donne un résultat faux."
+   }
+  },
+  {
+   "id": "q04",
+   "origine": "SQL Q26",
+   "nom": "[Jointures] Joindre trois tables",
+   "objectif": "Enchaîner deux jointures en suivant les clés étrangères.",
+   "enonce": [
+    "Schéma : ZONE (id_z, nom_z) ; RECIF (id_r, nom_r, #id_z) ; MESURE (id_m, valeur, #id_r)."
+   ],
+   "question": [
+    "Quelle clause FROM relie correctement les zones aux mesures ?"
+   ],
+   "options": [
+    {
+     "texte": "FROM ZONE JOIN MESURE ON ZONE.id_z = MESURE.id_r",
+     "feedback": "MESURE n'a pas de lien direct avec ZONE : comparer un identifiant de zone à un identifiant de récif relie des lignes au hasard. Il faut passer par RECIF."
+    },
+    {
+     "texte": "FROM ZONE, RECIF, MESURE",
+     "feedback": "Sans condition, c'est un produit cartésien de trois tables : chaque zone avec chaque récif et chaque mesure. Le résultat est faux et très long."
+    },
+    {
+     "texte": "FROM ZONE JOIN RECIF JOIN MESURE ON id_z = id_r",
+     "feedback": "id_z existe dans ZONE et dans RECIF : SQLite répond « ambiguous column name ». Chaque jointure a besoin de sa propre condition, avec le nom de la table devant."
+    },
+    {
+     "texte": "FROM ZONE JOIN RECIF ON ZONE.id_z = RECIF.id_z JOIN MESURE ON RECIF.id_r = MESURE.id_r",
+     "juste": true,
+     "feedback": "Oui : on suit les clés étrangères, de MESURE vers RECIF, puis de RECIF vers ZONE. Une condition ON pour chaque JOIN."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT nom_z, valeur FROM ZONE JOIN RECIF ON ZONE.id_z = RECIF.id_z JOIN MESURE ON RECIF.id_r = MESURE.id_r",
+     "resultat": [
+      [
+       "Nord",
+       27.5
+      ],
+      [
+       "Sud",
+       28.0
+      ],
+      [
+       "Sud",
+       29.1
+      ]
+     ]
+    },
+    {
+     "option": "direct",
+     "sql": "SELECT nom_z, valeur FROM ZONE JOIN MESURE ON ZONE.id_z = MESURE.id_r",
+     "resultat": [
+      [
+       "Nord",
+       27.5
+      ],
+      [
+       "Sud",
+       28.0
+      ],
+      [
+       "Sud",
+       29.1
+      ]
+     ]
+    },
+    {
+     "option": "cartésien",
+     "sql": "SELECT count(*) FROM ZONE, RECIF, MESURE",
+     "resultat": [
+      [
+       12
+      ]
+     ]
+    },
+    {
+     "option": "ON unique",
+     "sql": "SELECT * FROM ZONE JOIN RECIF JOIN MESURE ON id_z = id_r",
+     "erreur_sql": "ambiguous column name"
+    }
+   ],
+   "note_verification": "Sur la base de test, la jointure directe ZONE-MESURE donne par coïncidence le même résultat (les identifiants se suivent) ; elle est fausse en général, comme le dit le feedback.",
+   "fond": {
+    "avant": "feedback de « JOIN RECIF JOIN MESURE ON id_z = id_r » : « Chaque JOIN doit avoir sa propre clause ON »",
+    "apres": "feedback : SQLite signale un nom de colonne ambigu (id_z est dans deux tables)",
+    "raison": "dans SQLite, le premier JOIN sans ON est accepté ; l'erreur réelle est l'ambiguïté."
+   }
+  },
+  {
+   "id": "q05",
+   "origine": "SQL Q27",
+   "nom": "[SQL] La profondeur maximale : MAX",
+   "objectif": "Obtenir la plus grande valeur d'une colonne avec MAX.",
+   "enonce": [
+    "Schéma : PLONGEUR (id_plongeur, nom, #id_club) ; PLONGEE (id_plongee, lieu, profondeur, #id_plongeur), profondeur en mètres."
+   ],
+   "question": [
+    "Quelle requête affiche la plus grande profondeur atteinte lors d'une plongée ?"
+   ],
+   "options": [
+    {
+     "texte": "SELECT MAX(*) FROM PLONGEE;",
+     "feedback": "MAX s'applique à une colonne précise, celle dont on veut la plus grande valeur : SQLite refuse MAX(*)."
+    },
+    {
+     "texte": "SELECT MAX(profondeur) FROM PLONGEE;",
+     "juste": true,
+     "feedback": "Oui : MAX renvoie la plus grande valeur de la colonne (25 m ici). Pas besoin de jointure : on ne demande que la valeur. MIN donnerait la plus petite."
+    },
+    {
+     "texte": "SELECT profondeur FROM PLONGEE ORDER BY profondeur;",
+     "feedback": "Ce tri est croissant : la première ligne est la profondeur la plus faible, et toutes les plongées sont affichées. Il faudrait DESC, ou plus simplement MAX."
+    },
+    {
+     "texte": "SELECT AVG(profondeur) FROM PLONGEE;",
+     "feedback": "AVG calcule la moyenne des profondeurs, pas la plus grande."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT MAX(profondeur) FROM PLONGEE",
+     "resultat": [
+      [
+       25.0
+      ]
+     ]
+    },
+    {
+     "option": "MAX(*)",
+     "sql": "SELECT MAX(*) FROM PLONGEE",
+     "erreur_sql": "wrong number of arguments"
+    },
+    {
+     "option": "ORDER BY",
+     "sql": "SELECT profondeur FROM PLONGEE ORDER BY profondeur LIMIT 1",
+     "resultat": [
+      [
+       8.0
+      ]
+     ]
+    }
+   ],
+   "fond": [
+    {
+     "avant": "schéma « PLONGEUR (nom, #id_p) ; PLONGEE (id_p, profondeur) »",
+     "apres": "schéma « PLONGEUR (id_plongeur, nom, #id_club) ; PLONGEE (id_plongee, lieu, profondeur, #id_plongeur) »",
+     "raison": "la clé étrangère était du mauvais côté (un plongeur n'aurait eu qu'une seule plongée)."
+    },
+    {
+     "avant": "distracteur « SELECT depth FROM PLONGEE ORDER BY depth; »",
+     "apres": "« SELECT profondeur FROM PLONGEE ORDER BY profondeur; »",
+     "raison": "la colonne depth n'existe pas : l'option échouait pour une autre raison que celle expliquée (l'absence de DESC)."
+    }
+   ]
+  },
+  {
+   "id": "q06",
+   "origine": "SQL 40 Q24",
+   "nom": "[Jointures] Deux colonnes de même nom",
+   "objectif": "Préfixer un attribut par le nom de sa table pour lever une ambiguïté.",
+   "enonce": [
+    "Les tables PLONGEUR (id_plongeur, nom, #id_club) et CLUB (id_club, nom) ont toutes deux un attribut nom."
+   ],
+   "question": [
+    "Dans une jointure de ces deux tables, comment désigner le nom du plongeur ou de la plongeuse ?"
+   ],
+   "options": [
+    {
+     "texte": "nom.PLONGEUR",
+     "feedback": "L'ordre est inversé : on écrit d'abord la table, puis l'attribut. Ici, SQLite répond « no such column: nom.PLONGEUR »."
+    },
+    {
+     "texte": "PLONGEUR->nom",
+     "feedback": "La flèche n'est pas la notation d'un attribut de table en SQL. On écrit la table, un point, puis l'attribut."
+    },
+    {
+     "texte": "PLONGEUR(nom)",
+     "feedback": "Les parenthèses servent aux fonctions. Ici, SQLite lit d'abord nom, qu'il trouve dans les deux tables, et répond « ambiguous column name ». On écrit PLONGEUR.nom."
+    },
+    {
+     "texte": "PLONGEUR.nom",
+     "juste": true,
+     "feedback": "Oui : table.attribut lève l'ambiguïté. Sans préfixe, SQLite répondrait « ambiguous column name: nom »."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT PLONGEUR.nom FROM PLONGEUR JOIN CLUB ON PLONGEUR.id_club = CLUB.id_club",
+     "resultat": [
+      [
+       "Plongeuse A"
+      ],
+      [
+       "Plongeur B"
+      ]
+     ]
+    },
+    {
+     "option": "sans préfixe",
+     "sql": "SELECT nom FROM PLONGEUR JOIN CLUB ON PLONGEUR.id_club = CLUB.id_club",
+     "erreur_sql": "ambiguous column name: nom"
+    },
+    {
+     "option": "inversé",
+     "sql": "SELECT nom.PLONGEUR FROM PLONGEUR JOIN CLUB ON PLONGEUR.id_club = CLUB.id_club",
+     "erreur_sql": "no such column"
+    },
+    {
+     "option": "parenthèses",
+     "sql": "SELECT PLONGEUR(nom) FROM PLONGEUR JOIN CLUB ON PLONGEUR.id_club = CLUB.id_club",
+     "erreur_sql": "ambiguous column name"
+    }
+   ]
+  },
+  {
+   "id": "q07",
+   "origine": "SQL 40 Q35",
+   "nom": "[Jointures] Oublier la condition de liaison",
+   "objectif": "Prévoir le résultat d'une requête sur deux tables sans condition de liaison.",
+   "enonce": [
+    "La table PIROGUE a 4 lignes, la table VILLAGE en a 3. On exécute `SELECT * FROM PIROGUE, VILLAGE;`, sans condition."
+   ],
+   "question": [
+    "Que se passe-t-il ?"
+   ],
+   "options": [
+    {
+     "texte": "Le SGBD trouve tout seul la clé étrangère et fait la liaison",
+     "feedback": "Le SGBD ne devine jamais la liaison : sans condition, il associe tout avec tout. C'est à la requête de dire quelles colonnes doivent être égales."
+    },
+    {
+     "texte": "La requête provoque une erreur, car la condition de jointure manque",
+     "feedback": "La requête est valide : elle s'exécute. Mais elle donne toutes les combinaisons, ce qui n'est en général pas le résultat voulu."
+    },
+    {
+     "texte": "On obtient les 12 combinaisons : c'est un produit cartésien",
+     "juste": true,
+     "feedback": "Oui : chaque pirogue est associée à chaque village, 4 × 3 = 12 lignes. Il faut une condition de jointure pour ne garder que les bonnes paires."
+    },
+    {
+     "texte": "La requête ne renvoie aucune ligne, faute de condition",
+     "feedback": "C'est l'inverse : sans condition, aucune ligne n'est écartée. On obtient 4 × 3 = 12 lignes."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT count(*) FROM PIROGUE, VILLAGE",
+     "resultat": [
+      [
+       12
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "q08",
+   "origine": "SQL 40 Q38",
+   "nom": "[Jointures] L'ordre des tables dans une jointure",
+   "objectif": "Savoir qu'une jointure ne dépend pas de l'ordre des tables.",
+   "question": [
+    "Dans une jointure `A JOIN B ON …`, l'ordre des tables (A JOIN B ou B JOIN A) change-t-il les lignes obtenues ?"
+   ],
+   "options": [
+    {
+     "texte": "Oui, les données obtenues sont différentes",
+     "feedback": "La condition est la même dans les deux cas : les mêmes paires de lignes sont gardées. Seul l'ordre des colonnes avec SELECT * peut changer."
+    },
+    {
+     "texte": "Non, les lignes obtenues sont les mêmes",
+     "juste": true,
+     "feedback": "Oui : la jointure garde les paires où la condition est vraie, dans un sens comme dans l'autre. Avec SELECT *, seules les colonnes changent de place."
+    },
+    {
+     "texte": "Oui, SQL refuse l'un des deux sens",
+     "feedback": "Les deux sens sont acceptés : une jointure peut s'écrire à partir de n'importe laquelle des deux tables."
+    },
+    {
+     "texte": "Seulement si les tables ont plus de 100 lignes",
+     "feedback": "La taille des tables ne change pas le résultat d'une jointure : les paires gardées sont les mêmes dans les deux sens."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT nom_p, nom_v FROM PIROGUE JOIN VILLAGE ON PIROGUE.id_v = VILLAGE.id_v ORDER BY nom_p",
+     "resultat": [
+      [
+       "Pirogue 1",
+       "Bouéni"
+      ],
+      [
+       "Pirogue 2",
+       "Sada"
+      ],
+      [
+       "Pirogue 3",
+       "Sada"
+      ],
+      [
+       "Pirogue 4",
+       "Bouéni"
+      ]
+     ]
+    },
+    {
+     "option": "autre sens",
+     "sql": "SELECT nom_p, nom_v FROM VILLAGE JOIN PIROGUE ON PIROGUE.id_v = VILLAGE.id_v ORDER BY nom_p",
+     "resultat": [
+      [
+       "Pirogue 1",
+       "Bouéni"
+      ],
+      [
+       "Pirogue 2",
+       "Sada"
+      ],
+      [
+       "Pirogue 3",
+       "Sada"
+      ],
+      [
+       "Pirogue 4",
+       "Bouéni"
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "q09",
+   "origine": "SQL 40 Q39",
+   "nom": "[Jointures] Un alias de table avec AS",
+   "objectif": "Comprendre le rôle d'un alias de table.",
+   "question": [
+    "À quoi sert `AS` dans `FROM PIROGUE AS P JOIN VILLAGE AS V ON P.id_v = V.id_v` ?"
+   ],
+   "options": [
+    {
+     "texte": "À trier les lignes des deux tables avant la jointure",
+     "feedback": "Le tri s'écrit ORDER BY, à la fin de la requête. AS donne un autre nom, plus court, à une table."
+    },
+    {
+     "texte": "À créer une copie de chaque table, le temps de la requête",
+     "feedback": "Aucune table n'est copiée : P et V sont d'autres noms pour PIROGUE et VILLAGE, le temps de la requête."
+    },
+    {
+     "texte": "À donner un nom court à chaque table, dans la requête",
+     "juste": true,
+     "feedback": "Oui : P et V sont des alias. On écrit P.id_v au lieu de PIROGUE.id_v ; ils n'existent que dans cette requête."
+    },
+    {
+     "texte": "À protéger l'accès aux données des deux tables",
+     "feedback": "Les droits d'accès se gèrent ailleurs, dans le SGBD. AS ne fait que renommer une table dans la requête."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT count(*) FROM PIROGUE AS P JOIN VILLAGE AS V ON P.id_v = V.id_v",
+     "resultat": [
+      [
+       4
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "q10",
+   "origine": "SQL Q20",
+   "nom": "[SQL] Renommer une colonne du résultat",
+   "objectif": "Donner un autre nom à une colonne affichée.",
+   "enonce": [
+    "Table : VILLAGE (id_v, nom_v)."
+   ],
+   "question": [
+    "Quelle requête affiche la colonne nom_v sous le titre village, sans modifier la table ?"
+   ],
+   "options": [
+    {
+     "texte": "SELECT nom_v RENAME village FROM VILLAGE;",
+     "feedback": "RENAME sert à modifier la structure d'une table (ALTER TABLE … RENAME). Dans un SELECT, SQLite signale une erreur de syntaxe."
+    },
+    {
+     "texte": "SELECT nom_v IS village FROM VILLAGE;",
+     "feedback": "IS compare deux valeurs : SQLite cherche une colonne village pour la comparer à nom_v, et répond « no such column: village »."
+    },
+    {
+     "texte": "SELECT nom_v AS village FROM VILLAGE;",
+     "juste": true,
+     "feedback": "Oui : AS donne un alias à la colonne, le temps de la requête. La table, elle, n'est pas modifiée."
+    },
+    {
+     "texte": "SELECT nom_v -> village FROM VILLAGE;",
+     "feedback": "La flèche ne renomme pas une colonne (dans SQLite, elle sert à lire du JSON) : SQLite cherche une colonne village et ne la trouve pas."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT nom_v AS village FROM VILLAGE WHERE id_v = 1",
+     "resultat": [
+      [
+       "Bouéni"
+      ]
+     ]
+    },
+    {
+     "option": "RENAME",
+     "sql": "SELECT nom_v RENAME village FROM VILLAGE",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "IS",
+     "sql": "SELECT nom_v IS village FROM VILLAGE",
+     "erreur_sql": "no such column: village"
+    },
+    {
+     "option": "flèche",
+     "sql": "SELECT nom_v -> village FROM VILLAGE",
+     "erreur_sql": "no such column: village"
+    }
+   ],
+   "fond": {
+    "avant": "options « SELECT nom_long RENAME nom; », « … IS nom; », « … -> nom; » sans FROM, et bonne réponse « SELECT nom_long AS nom FROM ...; »",
+    "apres": "quatre requêtes complètes et exécutables sur la table VILLAGE",
+    "raison": "la bonne réponse était la seule à avoir un FROM : elle se repérait sans réfléchir."
+   }
+  },
+  {
+   "id": "q11",
+   "origine": "SQL Q28",
+   "nom": "[SQL] Compter avec deux conditions",
+   "objectif": "Filtrer avec AND avant de compter.",
+   "enonce": [
+    "Table : TORTUE (id_t, espece, poids), poids en kg."
+   ],
+   "question": [
+    "Quelle requête donne le nombre de tortues vertes de plus de 100 kg ?"
+   ],
+   "options": [
+    {
+     "texte": "SELECT COUNT(*) FROM TORTUE WHERE espece = 'verte' AND poids > 100;",
+     "juste": true,
+     "feedback": "Oui : WHERE garde les tortues vertes de plus de 100 kg, puis COUNT(*) compte ces lignes."
+    },
+    {
+     "texte": "SELECT COUNT(*) FROM TORTUE WHERE espece = 'verte' OR poids > 100;",
+     "feedback": "OR compte aussi les tortues vertes légères et les grosses tortues d'autres espèces : le nombre est trop grand."
+    },
+    {
+     "texte": "SELECT SUM(*) FROM TORTUE WHERE espece = 'verte' AND poids > 100;",
+     "feedback": "SUM additionne des valeurs, il ne compte pas des lignes, et SQLite refuse SUM(*)."
+    },
+    {
+     "texte": "SELECT espece, poids FROM TORTUE WHERE espece = 'verte' AND poids > 100;",
+     "feedback": "Le filtre est bon, mais cette requête affiche les tortues une à une ; elle ne donne pas leur nombre. Il faut COUNT(*)."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT COUNT(*) FROM TORTUE WHERE espece = 'verte' AND poids > 100",
+     "resultat": [
+      [
+       2
+      ]
+     ]
+    },
+    {
+     "option": "OR",
+     "sql": "SELECT COUNT(*) FROM TORTUE WHERE espece = 'verte' OR poids > 100",
+     "resultat": [
+      [
+       4
+      ]
+     ]
+    },
+    {
+     "option": "SUM(*)",
+     "sql": "SELECT SUM(*) FROM TORTUE WHERE espece = 'verte' AND poids > 100",
+     "erreur_sql": "wrong number of arguments"
+    }
+   ],
+   "fond": {
+    "avant": "« le nombre de tortues 'Luth' pesant plus de 200kg »",
+    "apres": "« le nombre de tortues vertes de plus de 100 kg »",
+    "raison": "contexte : à Mayotte, ce sont les tortues vertes et imbriquées qui pondent ; la tortue luth y est rare. Même requête."
+   }
+  },
+  {
+   "id": "q12",
+   "origine": "SQL Q35",
+   "nom": "[SQL] Deux conditions sur les plongées",
+   "objectif": "Combiner une condition sur un texte et une condition sur un nombre.",
+   "enonce": [
+    "Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur)."
+   ],
+   "question": [
+    "Quelle condition garde les plongées faites à Bandrélé à moins de 20 m de profondeur ?"
+   ],
+   "options": [
+    {
+     "texte": "WHERE lieu = 'Bandrélé' OR profondeur < 20",
+     "feedback": "OR garderait aussi les plongées profondes de Bandrélé et les plongées peu profondes ailleurs. Les deux conditions doivent être vraies : AND."
+    },
+    {
+     "texte": "WHERE lieu = 'Bandrélé', profondeur < 20",
+     "feedback": "Les conditions ne se séparent pas par une virgule : SQLite signale une erreur de syntaxe."
+    },
+    {
+     "texte": "WHERE lieu = Bandrélé AND profondeur < 20",
+     "feedback": "Sans apostrophes, Bandrélé est lu comme un nom de colonne : SQLite répond « no such column: Bandrélé ». Un texte s'écrit entre apostrophes."
+    },
+    {
+     "texte": "WHERE lieu = 'Bandrélé' AND profondeur < 20",
+     "juste": true,
+     "feedback": "Oui : AND garde les plongées qui remplissent les deux conditions à la fois."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT id_plongee FROM PLONGEE WHERE lieu = 'Bandrélé' AND profondeur < 20",
+     "resultat": [
+      [
+       1
+      ],
+      [
+       4
+      ]
+     ]
+    },
+    {
+     "option": "OR",
+     "sql": "SELECT id_plongee FROM PLONGEE WHERE lieu = 'Bandrélé' OR profondeur < 20",
+     "resultat": [
+      [
+       1
+      ],
+      [
+       2
+      ],
+      [
+       3
+      ],
+      [
+       4
+      ]
+     ]
+    },
+    {
+     "option": "virgule",
+     "sql": "SELECT * FROM PLONGEE WHERE lieu = 'Bandrélé', profondeur < 20",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "apostrophes",
+     "sql": "SELECT * FROM PLONGEE WHERE lieu = Bandrélé AND profondeur < 20",
+     "erreur_sql": "no such column"
+    }
+   ],
+   "fond": {
+    "avant": "distracteur « WHERE lieu IS 'Bandrélé' AND depth < 20 »",
+    "apres": "distracteur « WHERE lieu = Bandrélé AND profondeur < 20 »",
+    "raison": "l'option cumulait deux erreurs (IS, qui marche dans SQLite, et la colonne depth, qui n'existe pas) ; une seule erreur, typique, est gardée."
+   }
+  },
+  {
+   "id": "q13",
+   "origine": "SQL Q31",
+   "nom": "[SQL] Trouver l'erreur dans une requête",
+   "objectif": "Lire le message de SQLite et corriger l'écriture d'une valeur texte.",
+   "code": [
+    "SELECT nom FROM CLIENT WHERE ville = Mamoudzou;"
+   ],
+   "langage": "sql",
+   "question": [
+    "Pourquoi cette requête provoque-t-elle une erreur ?"
+   ],
+   "options": [
+    {
+     "texte": "Il manque des apostrophes autour de Mamoudzou",
+     "juste": true,
+     "feedback": "Oui : sans apostrophes, SQLite cherche une colonne nommée Mamoudzou et répond « no such column: Mamoudzou ». On écrit ville = 'Mamoudzou'."
+    },
+    {
+     "texte": "Le nom Mamoudzou doit être écrit en majuscules",
+     "feedback": "Les majuscules ne changent rien ici : MAMOUDZOU serait aussi lu comme un nom de colonne. Ce qui manque, ce sont les apostrophes."
+    },
+    {
+     "texte": "On ne peut pas filtrer sur une ville",
+     "feedback": "On peut filtrer sur n'importe quel attribut. Le problème est l'écriture de la valeur."
+    },
+    {
+     "texte": "Il manque un point-virgule après SELECT nom",
+     "feedback": "Le point-virgule ne se met qu'à la fin de la requête complète, et il y est déjà."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT nom FROM CLIENT WHERE ville = Mamoudzou",
+     "erreur_sql": "no such column: Mamoudzou"
+    },
+    {
+     "option": "correction",
+     "sql": "SELECT nom FROM CLIENT WHERE ville = 'Mamoudzou'",
+     "resultat": [
+      [
+       "Client A"
+      ]
+     ]
+    }
+   ],
+   "enonce": [
+    "SQLite exécute la requête suivante et affiche le message d'erreur de la console."
+   ],
+   "console": [
+    "Parse error: no such column: Mamoudzou"
+   ]
+  },
+  {
+   "id": "q14",
+   "origine": "SQL Q14",
+   "nom": "[SQL] Limiter le nombre de lignes",
+   "objectif": "Garder seulement les premières lignes d'un résultat.",
+   "enonce": [
+    "Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur)."
+   ],
+   "question": [
+    "Quelle requête n'affiche que les 3 premières lignes du résultat ?"
+   ],
+   "options": [
+    {
+     "texte": "SELECT TOP 3 * FROM PLONGEE;",
+     "feedback": "TOP existe dans certains SGBD, mais pas dans SQLite, qui signale une erreur. SQLite (comme MySQL) utilise LIMIT."
+    },
+    {
+     "texte": "SELECT * FROM PLONGEE STOP 3;",
+     "feedback": "STOP n'est pas un mot-clé SQL : SQLite signale une erreur de syntaxe."
+    },
+    {
+     "texte": "SELECT * FROM PLONGEE LIMIT 3;",
+     "juste": true,
+     "feedback": "Oui : LIMIT, à la fin de la requête, garde les 3 premières lignes. Avec ORDER BY avant, on choisit lesquelles."
+    },
+    {
+     "texte": "SELECT * FROM PLONGEE WHERE row < 3;",
+     "feedback": "row n'est pas une colonne de la table : SQLite répond « no such column: row ». Le nombre de lignes se limite avec LIMIT."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "SELECT count(*) FROM (SELECT * FROM PLONGEE LIMIT 3)",
+     "resultat": [
+      [
+       3
+      ]
+     ]
+    },
+    {
+     "option": "TOP",
+     "sql": "SELECT TOP 3 * FROM PLONGEE",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "STOP",
+     "sql": "SELECT * FROM PLONGEE STOP 3",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "row",
+     "sql": "SELECT * FROM PLONGEE WHERE row < 3",
+     "erreur_sql": "no such column: row"
+    }
+   ],
+   "fond": {
+    "avant": "requêtes sur une table nommée TABLE (« SELECT * FROM TABLE LIMIT 3; »)",
+    "apres": "requêtes sur la table PLONGEE",
+    "raison": "TABLE est un mot réservé : la bonne réponse provoquait une erreur de syntaxe."
+   }
+  },
+  {
+   "id": "q15",
+   "origine": "SQL Q3",
+   "nom": "[Mises à jour] Supprimer une ligne encore référencée",
+   "objectif": "Prévoir la réponse du SGBD quand une ligne supprimée est encore référencée.",
+   "enonce": [
+    "Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v). Le contrôle des clés étrangères est activé (dans SQLite : `PRAGMA foreign_keys = ON`)."
+   ],
+   "question": [
+    "On tente de supprimer un village alors que des pirogues y sont encore reliées. Que se passe-t-il ?"
+   ],
+   "options": [
+    {
+     "texte": "La suppression est refusée, pour préserver l'intégrité référentielle",
+     "juste": true,
+     "feedback": "Oui : supprimer le village laisserait des pirogues qui pointent vers un village inexistant. SQLite répond « FOREIGN KEY constraint failed »."
+    },
+    {
+     "texte": "Le village est supprimé, et toutes ses pirogues sont effacées avec lui",
+     "feedback": "Cela n'arrive que si la clé étrangère est déclarée avec ON DELETE CASCADE. Sans cette option, la suppression est refusée."
+    },
+    {
+     "texte": "Le village est supprimé, et la clé étrangère des pirogues passe à 0",
+     "feedback": "Le SGBD ne choisit jamais une valeur de remplacement tout seul. Sans option particulière, il refuse la suppression."
+    },
+    {
+     "texte": "Rien de spécial : la contrainte est ignorée",
+     "feedback": "Le contrôle est activé : la contrainte est vérifiée à chaque modification. C'est son rôle."
+    }
+   ],
+   "cles_etrangeres": true,
+   "verifications": [
+    {
+     "sql": "DELETE FROM VILLAGE WHERE id_v = 1",
+     "erreur_sql": "FOREIGN KEY constraint failed"
+    }
+   ],
+   "fond": {
+    "avant": "« … que se passe-t-il par défaut ? »",
+    "apres": "l'énoncé précise que le contrôle des clés étrangères est activé",
+    "raison": "dans SQLite, les clés étrangères ne sont pas contrôlées par défaut : la suppression passait et laissait des pirogues orphelines."
+   }
+  },
+  {
+   "id": "q16",
+   "origine": "SQL Q23",
+   "nom": "[Mises à jour] Ajouter une ligne : INSERT",
+   "objectif": "Écrire une requête INSERT INTO … VALUES.",
+   "enonce": [
+    "Table : NAVIRE (nom, tonnage, port)."
+   ],
+   "question": [
+    "Quelle requête ajoute un navire nommé « Mamoudzou Express », de 400 tonnes ?"
+   ],
+   "options": [
+    {
+     "texte": "ADD INTO NAVIRE VALUES ('Mamoudzou Express', 400);",
+     "feedback": "Le mot-clé de l'ajout est INSERT INTO, pas ADD : SQLite signale une erreur de syntaxe."
+    },
+    {
+     "texte": "INSERT INTO NAVIRE (nom, tonnage) VALUES ('Mamoudzou Express', 400);",
+     "juste": true,
+     "feedback": "Oui : INSERT INTO table (colonnes) VALUES (valeurs) ajoute une ligne. Le port, non donné, reste vide (NULL)."
+    },
+    {
+     "texte": "UPDATE NAVIRE SET nom = 'Mamoudzou Express';",
+     "feedback": "UPDATE modifie des lignes qui existent déjà : ici, il renommerait tous les navires ! Pour ajouter une ligne, on utilise INSERT."
+    },
+    {
+     "texte": "INSERT INTO NAVIRE ('Mamoudzou Express', 400);",
+     "feedback": "Il manque le mot-clé VALUES devant les valeurs : SQLite signale une erreur de syntaxe. On écrit INSERT INTO table (colonnes) VALUES (valeurs)."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "INSERT INTO NAVIRE (nom, tonnage) VALUES ('Mamoudzou Express', 400)",
+     "apres": "SELECT count(*) FROM NAVIRE WHERE nom = 'Mamoudzou Express'",
+     "resultat": [
+      [
+       1
+      ]
+     ]
+    },
+    {
+     "option": "ADD",
+     "sql": "ADD INTO NAVIRE VALUES ('Mamoudzou Express', 400)",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "UPDATE",
+     "sql": "UPDATE NAVIRE SET nom = 'Mamoudzou Express'",
+     "apres": "SELECT count(*) FROM NAVIRE WHERE nom = 'Mamoudzou Express'",
+     "resultat": [
+      [
+       2
+      ]
+     ]
+    },
+    {
+     "option": "sans VALUES",
+     "sql": "INSERT INTO NAVIRE ('Mamoudzou Express', 400)",
+     "erreur_sql": "syntax error"
+    }
+   ]
+  },
+  {
+   "id": "q17",
+   "origine": "SQL Q24",
+   "nom": "[Mises à jour] Modifier une ligne : UPDATE",
+   "objectif": "Écrire un UPDATE … SET … WHERE qui ne modifie qu'une ligne.",
+   "enonce": [
+    "Table : ECOLE (id_e, nom, ville)."
+   ],
+   "question": [
+    "Quelle requête change la ville de l'école n° 42 en « Mtsapéré » ?"
+   ],
+   "options": [
+    {
+     "texte": "UPDATE ECOLE WHERE id_e = 42 SET ville = 'Mtsapéré';",
+     "feedback": "L'ordre est fixe : SET vient avant WHERE. Ici, SQLite signale une erreur de syntaxe."
+    },
+    {
+     "texte": "MODIFY ECOLE SET ville = 'Mtsapéré' WHERE id_e = 42;",
+     "feedback": "MODIFY n'est pas un mot-clé SQL : une modification de lignes s'écrit avec UPDATE."
+    },
+    {
+     "texte": "UPDATE ECOLE SET ville = 'Mtsapéré' WHERE id_e = 42;",
+     "juste": true,
+     "feedback": "Oui : UPDATE table SET colonne = valeur WHERE condition. Seule la ligne n° 42 est modifiée."
+    },
+    {
+     "texte": "UPDATE ECOLE SET ville = 'Mtsapéré';",
+     "feedback": "Attention : sans WHERE, toutes les écoles de la table seraient placées à Mtsapéré. Le WHERE choisit les lignes à modifier."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "UPDATE ECOLE SET ville = 'Mtsapéré' WHERE id_e = 42",
+     "apres": "SELECT id_e, ville FROM ECOLE ORDER BY id_e",
+     "resultat": [
+      [
+       41,
+       "Kawéni"
+      ],
+      [
+       42,
+       "Mtsapéré"
+      ]
+     ]
+    },
+    {
+     "option": "ordre",
+     "sql": "UPDATE ECOLE WHERE id_e = 42 SET ville = 'Mtsapéré'",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "MODIFY",
+     "sql": "MODIFY ECOLE SET ville = 'Mtsapéré' WHERE id_e = 42",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "sans WHERE",
+     "sql": "UPDATE ECOLE SET ville = 'Mtsapéré'",
+     "apres": "SELECT count(*) FROM ECOLE WHERE ville = 'Mtsapéré'",
+     "resultat": [
+      [
+       2
+      ]
+     ]
+    }
+   ],
+   "fond": {
+    "avant": "distracteur « MODIFY ECOLE SET ville = 'Mtsapéré'; » (sans WHERE)",
+    "apres": "« MODIFY ECOLE SET ville = 'Mtsapéré' WHERE id_e = 42; »",
+    "raison": "une seule erreur par distracteur (le mot-clé), pour que l'élève voie ce qu'elle teste."
+   }
+  },
+  {
+   "id": "q18",
+   "origine": "SQL Q33",
+   "nom": "[Mises à jour] Un UPDATE qui calcule",
+   "objectif": "Utiliser la valeur actuelle d'une colonne dans un UPDATE.",
+   "enonce": [
+    "Table : RESERVOIR (id_r, nom, volume), volume en m³."
+   ],
+   "question": [
+    "Quelle requête augmente de 10 m³ le volume de tous les réservoirs ?"
+   ],
+   "options": [
+    {
+     "texte": "UPDATE RESERVOIR SET volume = volume + 10;",
+     "juste": true,
+     "feedback": "Oui : pour chaque ligne, la nouvelle valeur est calculée à partir de l'ancienne. Sans WHERE, toutes les lignes sont concernées, comme demandé."
+    },
+    {
+     "texte": "SET volume = volume + 10 FROM RESERVOIR;",
+     "feedback": "Une requête de modification commence par UPDATE : ici, SQLite signale une erreur de syntaxe."
+    },
+    {
+     "texte": "UPDATE RESERVOIR volume + 10;",
+     "feedback": "Il manque SET et le signe = : on doit dire quelle colonne reçoit quelle valeur."
+    },
+    {
+     "texte": "SELECT volume + 10 FROM RESERVOIR;",
+     "feedback": "SELECT affiche les volumes augmentés, mais n'enregistre rien : la table n'est pas modifiée."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "UPDATE RESERVOIR SET volume = volume + 10",
+     "apres": "SELECT volume FROM RESERVOIR ORDER BY id_r",
+     "resultat": [
+      [
+       410
+      ],
+      [
+       760
+      ]
+     ]
+    },
+    {
+     "option": "SET seul",
+     "sql": "SET volume = volume + 10 FROM RESERVOIR",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "sans SET",
+     "sql": "UPDATE RESERVOIR volume + 10",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "SELECT",
+     "sql": "SELECT volume + 10 FROM RESERVOIR",
+     "apres": "SELECT volume FROM RESERVOIR ORDER BY id_r",
+     "resultat": [
+      [
+       400
+      ],
+      [
+       750
+      ]
+     ]
+    }
+   ]
+  },
+  {
+   "id": "q19",
+   "origine": "SQL Q25",
+   "nom": "[Mises à jour] Supprimer une ligne : DELETE",
+   "objectif": "Écrire un DELETE FROM … WHERE.",
+   "enonce": [
+    "Table : NAVIRE (nom, tonnage, port)."
+   ],
+   "question": [
+    "Quelle requête supprime le navire nommé « Vieux Port » ?"
+   ],
+   "options": [
+    {
+     "texte": "REMOVE FROM NAVIRE WHERE nom = 'Vieux Port';",
+     "feedback": "REMOVE n'est pas un mot-clé SQL : la suppression de lignes s'écrit DELETE FROM."
+    },
+    {
+     "texte": "DELETE nom = 'Vieux Port' FROM NAVIRE;",
+     "feedback": "La condition se place après FROM, dans un WHERE : DELETE FROM table WHERE condition. Ici, SQLite signale une erreur."
+    },
+    {
+     "texte": "DROP FROM NAVIRE WHERE nom = 'Vieux Port';",
+     "feedback": "DROP supprime une table entière (DROP TABLE), pas une ligne. Il ne s'écrit pas avec FROM et WHERE."
+    },
+    {
+     "texte": "DELETE FROM NAVIRE WHERE nom = 'Vieux Port';",
+     "juste": true,
+     "feedback": "Oui : DELETE FROM, suivi d'un WHERE, supprime seulement les lignes qui vérifient la condition."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "DELETE FROM NAVIRE WHERE nom = 'Vieux Port'",
+     "apres": "SELECT nom FROM NAVIRE",
+     "resultat": [
+      [
+       "Atlas"
+      ]
+     ]
+    },
+    {
+     "option": "REMOVE",
+     "sql": "REMOVE FROM NAVIRE WHERE nom = 'Vieux Port'",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "ordre",
+     "sql": "DELETE nom = 'Vieux Port' FROM NAVIRE",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "DROP",
+     "sql": "DROP FROM NAVIRE WHERE nom = 'Vieux Port'",
+     "erreur_sql": "syntax error"
+    }
+   ]
+  },
+  {
+   "id": "q20",
+   "origine": "SQL Q34",
+   "nom": "[Mises à jour] Supprimer une table entière",
+   "objectif": "Distinguer la suppression des lignes et la suppression de la table.",
+   "question": [
+    "Quelle requête supprime définitivement la table NAVIRE, avec toutes ses données ?"
+   ],
+   "options": [
+    {
+     "texte": "DELETE TABLE NAVIRE;",
+     "feedback": "SQLite signale une erreur de syntaxe : DELETE s'écrit DELETE FROM et supprime des lignes, jamais la table elle-même."
+    },
+    {
+     "texte": "REMOVE TABLE NAVIRE;",
+     "feedback": "REMOVE n'est pas un mot-clé SQL. La suppression d'une table s'écrit DROP TABLE."
+    },
+    {
+     "texte": "DROP TABLE NAVIRE;",
+     "juste": true,
+     "feedback": "Oui : DROP TABLE détruit la table, sa structure et son contenu. Après, toute requête sur NAVIRE échoue : « no such table »."
+    },
+    {
+     "texte": "DELETE * FROM NAVIRE;",
+     "feedback": "L'étoile n'a pas sa place dans un DELETE : SQLite signale une erreur. DELETE FROM NAVIRE; viderait la table, mais la garderait."
+    }
+   ],
+   "verifications": [
+    {
+     "sql": "DROP TABLE NAVIRE",
+     "apres": "SELECT count(*) FROM sqlite_master WHERE name = 'NAVIRE'",
+     "resultat": [
+      [
+       0
+      ]
+     ]
+    },
+    {
+     "option": "DELETE TABLE",
+     "sql": "DELETE TABLE NAVIRE",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "REMOVE",
+     "sql": "REMOVE TABLE NAVIRE",
+     "erreur_sql": "syntax error"
+    },
+    {
+     "option": "DELETE *",
+     "sql": "DELETE * FROM NAVIRE",
+     "erreur_sql": "syntax error"
+    }
+   ],
+   "fond": {
+    "avant": "feedbacks « DELETE supprime les lignes mais garde la table vide » (DELETE TABLE NAVIRE) et « Ceci vide la table mais ne la supprime pas » (DELETE * FROM NAVIRE)",
+    "apres": "feedbacks : ces deux requêtes sont des erreurs de syntaxe dans SQLite",
+    "raison": "vérifié : aucune des deux ne s'exécute."
+   }
+  }
+ ]
+}

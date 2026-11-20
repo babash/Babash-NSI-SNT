@@ -56,7 +56,8 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
   - `introduction` : la première rencontre avec la notion. 15 minutes, 12 questions, dont 2 au plus de type relier, puzzle ou ligne fautive ; pas de nuage de mots ; 8 écrans de cours au plus, 25 mots par écran au plus ;
   - `revision` : un bilan avant un contrôle, sur une notion déjà travaillée. 20 questions à choix ; les autres types viennent en bonus.
 - La règle 22 vaut pour les questions à choix. Ce qui sort d'une introduction va dans une note, pour la fiche de révision et le TD.
-- Aucun classement, aucun rang, aucun score visible (`CLAUDE.md`, § 5).
+- Aucun classement, aucun rang, aucun score visible (`CLAUDE.md`, § 5). Exception assumée (20/11, 17:00) : le podium et les points du jeu en direct de QuizzNSI restent.
+- Code d'un cours-quiz (20/11) : 27 caractères au plus par ligne ; un message d'erreur est cité en entier (« Did you mean » compris) ; les cours-quiz sur les arbres gardent `Noeud`.
 
 ## Les règles de conception d'un quiz (règle 22)
 1. **QCU** : 4 options, une seule juste et trois distracteurs plausibles. Chaque distracteur vient d'une erreur typique des élèves : c'est l'ingénierie de l'erreur. Appuie-toi, quand c'est possible, sur les difficultés connues que liste le référentiel des notions.
@@ -77,7 +78,8 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
    - des phrases courtes et le vocabulaire expliqué, pour des élèves dont le français est une langue seconde ;
    - pas d'anglicisme dans le texte. Un terme technique anglais (`string`, `print`, un message d'erreur) est expliqué en français ;
    - le langage inclusif complet quand c'est pertinent (`CLAUDE.md`, § 4) ;
-   - des prénoms variés, d'ici et d'ailleurs, jamais de nom de famille ; aucune marque, aucun objet religieux, aucune arme.
+   - des prénoms variés, d'ici et d'ailleurs, jamais de nom de famille ; aucune marque, aucune arme ; « ylang-ylang, banane, coco » sont refusés partout (20/11) ;
+   - religions (20/11, 20:34) : « On ne promeut aucune religion, mais on ne fait pas comme si c'était problématique qu'elles existent ou d'en avoir une. » Un objet du quotidien des élèves n'est pas refusé au seul motif qu'il peut avoir un sens religieux ; aucun contenu qui promeut une religion ou qui en dénigre une.
 9. **Le niveau** : de la seconde à la terminale. En terminale, le format et le vocabulaire des sujets de bac (règle 16).
 10. **Les faits et le code sont vérifiés** : chaque extrait de code est exécuté, et sa sortie est celle qu'annonce la question (règle 13).
 
