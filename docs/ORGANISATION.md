@@ -40,9 +40,13 @@ calendrier/                 le Calendrier des vacances, en service depuis le 20/
 assets/                     mise en page et fonctionnement (ne pas toucher)
   td-en-ligne.js, .css      le moteur des TD en ligne auto-correctifs (Python, avec Pyodide, chargé
                             à la demande depuis jsDelivr, jamais copié dans le dépôt)
+  equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance) ; equipage/ : son contrat
+                            (LISEZMOI.md) et son catalogue (catalogue.json, généré depuis le module :
+                            ne pas le modifier à la main)
 charte/                     les pages de démonstration du Designer, sans lien depuis le site et non
                             indexées : le TD pilote du moteur des TD en ligne (td-pilote/, avec son
-                            PDF) et le vérificateur de ses réponses (verifier-td.py)
+                            PDF), le vérificateur de ses réponses (verifier-td.py) et la démonstration
+                            du moteur d'avatars (avatars.html)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
                             ses fichiers bibliotheque*.json sont construits à la publication
   annales/                  l'inventaire des sujets du bac de NSI, mis à jour chaque 1er janvier et
@@ -50,8 +54,9 @@ donnees/                    les fiches et les référentiels de la bibliothèque
                             chapitre (notions-par-exercice.json, construit par
                             scripts/annales_notions.py) ; la page bibliotheque/annales/ les lit
   compte-commun/            les apparences de l'avatar du compte commun (apparences.json, construit par
-                            scripts/apparences_compte_commun.py depuis le catalogue du moteur d'avatars)
-                            et les tableaux de bord des applications (tableaux-de-bord.json)
+                            scripts/apparences_compte_commun.py depuis assets/equipage/catalogue.json,
+                            à relancer quand le catalogue change) et les tableaux de bord des
+                            applications (tableaux-de-bord.json)
 .github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
 scripts/                    vérification automatique, validation des données, construction de la
                             bibliothèque, script complet de la base
