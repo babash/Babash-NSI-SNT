@@ -1,0 +1,722 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsi1-cout-2-ordres-de-grandeur",
+ "titre": "NSI 1re · Coût d'un algorithme 2 : ordres de grandeur",
+ "niveau": "nsi-premiere",
+ "justification_niveau": "le coût (constant, linéaire, quadratique, logarithmique) est au programme de première ; la notation O, non exigée par le BO, est employée comme écriture courte de ces familles. Sert aussi de rappel en terminale.",
+ "programme": [
+  "nsi-1re-2019.algorithmique.parcours-sequentiel : coût linéaire",
+  "nsi-1re-2019.algorithmique.tris : coût quadratique",
+  "nsi-1re-2019.algorithmique.dichotomie : coût logarithmique"
+ ],
+ "notions": [
+  "algo.complexite",
+  "algo.recherche.sequentielle",
+  "algo.recherche.dichotomique",
+  "donnees.dictionnaire"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Complexité Algorithmique - Terminale NSI (export `7cdfd910`, Q21 à Q40)",
+  "Complexité 3 Grand O (`bb7c417f`) : découpe exacte de Q25 à Q40, non reprise comme fichier"
+ ],
+ "contexte": "Du code Python court et des expressions de coût.",
+ "objectifs": [
+  "Reconnaître la famille de coût d'un code (constant, logarithmique, linéaire, quadratique).",
+  "Simplifier un coût T(n) en gardant le terme qui grandit le plus vite, sans son coefficient.",
+  "Classer les familles de coût, et relier la recherche séquentielle et la dichotomie à leur coût."
+ ],
+ "progression": "Q1 à Q4 : reconnaître le coût d'un code ; Q5 à Q11 : simplifier T(n) et classer ; Q12 à Q20 : coûts des algorithmes du programme et synthèse.",
+ "forme": [
+  "Noms « [Coût] … » et objectif affiché ; « n au carré » et « 2 puissance n » écrits n² et 2ⁿ.",
+  "Code coloré en bloc à chasse fixe.",
+  "Un feedback pour chaque option (aucun avant).",
+  "Positions rééquilibrées : dans l'original, les 11 dernières bonnes réponses étaient en A, et D ne l'était jamais.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q03, q12) : l'objectif dit la compétence, pas la réponse.",
+  "Bonne réponse raccourcie ou mise en parallèle avec les distracteurs, même contenu (q12, q03)."
+ ],
+ "retirees": [
+  {
+   "origine": "Complexité 3 Grand O (16 questions)",
+   "raison": "copie exacte des questions 25 à 40 du quiz de 40 : elles sont toutes dans ce quiz."
+  }
+ ],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "Complexité Q21",
+   "nom": "[Coût] Reconnaître un coût quadratique",
+   "objectif": "Associer deux boucles imbriquées à un coût en n².",
+   "question": [
+    "Quelle structure de code a un coût de l'ordre de n² ?"
+   ],
+   "options": [
+    {
+     "texte": "Une boucle de 1 à n",
+     "feedback": "Une seule boucle de n tours donne un coût linéaire, de l'ordre de n."
+    },
+    {
+     "texte": "Deux boucles de 1 à n, l'une après l'autre",
+     "feedback": "À la suite, les coûts s'additionnent : n + n = 2n, c'est encore linéaire."
+    },
+    {
+     "texte": "Une boucle de 1 à n dans une boucle de 1 à n",
+     "juste": true,
+     "feedback": "Oui : imbriquées, les boucles se multiplient : n × n = n². C'est le coût des tris par insertion et par sélection."
+    },
+    {
+     "texte": "Une instruction sans boucle",
+     "feedback": "Sans boucle, le nombre d'opérations ne dépend pas de n : le coût est constant."
+    }
+   ]
+  },
+  {
+   "id": "q02",
+   "origine": "Complexité Q22",
+   "nom": "[Coût] Un bloc if dans une boucle",
+   "objectif": "Voir que le contenu d'un if de taille fixe ne change pas l'ordre de grandeur.",
+   "enonce": [
+    "Dans une boucle de 1 à n, un bloc `if` contient 10 opérations."
+   ],
+   "question": [
+    "Le coût total est :"
+   ],
+   "options": [
+    {
+     "texte": "proportionnel à n",
+     "juste": true,
+     "feedback": "Oui : au plus 10 opérations par tour, et n tours, soit au plus 10n. Le 10 est un coefficient : le coût reste linéaire."
+    },
+    {
+     "texte": "proportionnel à 10",
+     "feedback": "10 opérations par tour, mais la boucle fait n tours : le total grandit avec n."
+    },
+    {
+     "texte": "proportionnel à n²",
+     "feedback": "Un if n'est pas une boucle : il ne répète rien. Il n'y a qu'une boucle, donc un coût de l'ordre de n."
+    },
+    {
+     "texte": "constant",
+     "feedback": "Le bloc est dans la boucle : il est exécuté jusqu'à n fois. Le coût dépend donc de n."
+    }
+   ]
+  },
+  {
+   "id": "q03",
+   "origine": "Complexité Q23",
+   "nom": "[Coût] Lire une valeur d'un dictionnaire",
+   "objectif": "Connaître le coût de l'accès à une valeur d'un dictionnaire par sa clé.",
+   "question": [
+    "Accéder à une valeur d'un dictionnaire à partir de sa clé, comme `d['Sada']`, est une opération :"
+   ],
+   "options": [
+    {
+     "texte": "linéaire (elle dépend du nombre de clés)",
+     "feedback": "Python ne parcourt pas les clés une à une : il calcule où se trouve la valeur. Ce n'est pas un parcours."
+    },
+    {
+     "texte": "quadratique",
+     "feedback": "Un coût quadratique vient de deux boucles imbriquées. Lire d['Sada'] n'en demande aucune."
+    },
+    {
+     "texte": "variable selon la valeur stockée",
+     "feedback": "Le coût ne dépend pas de ce qui est rangé : grand nombre ou longue chaîne, l'accès se fait de la même façon."
+    },
+    {
+     "texte": "constante (elle ne dépend pas du nombre de clés)",
+     "juste": true,
+     "feedback": "Oui : en moyenne, l'accès par clé ne dépend pas du nombre d'éléments. C'est un grand avantage du dictionnaire sur la recherche dans une liste."
+    }
+   ]
+  },
+  {
+   "id": "q04",
+   "origine": "Complexité Q24",
+   "nom": "[Coût] Additionner des termes de même degré",
+   "objectif": "Réduire une expression du coût avant de la simplifier.",
+   "question": [
+    "Si T(n) = 3n + 5n + 2, alors T(n) est égal à :"
+   ],
+   "options": [
+    {
+     "texte": "15n + 2",
+     "feedback": "3n + 5n s'additionnent : on ajoute les coefficients (3 + 5), on ne les multiplie pas."
+    },
+    {
+     "texte": "8n²",
+     "feedback": "Additionner deux termes en n donne encore un terme en n : 3n + 5n = 8n, pas 8n²."
+    },
+    {
+     "texte": "8n + 2",
+     "juste": true,
+     "feedback": "Oui : 3n + 5n = 8n, et le 2 reste à part. Le coût est linéaire."
+    },
+    {
+     "texte": "3n + 7",
+     "feedback": "5n et 2 ne s'additionnent pas : l'un dépend de n, l'autre non. On regroupe 3n + 5n = 8n."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "n = 37",
+      "print(3*n + 5*n + 2 == 8*n + 2)"
+     ],
+     "sortie": "True"
+    }
+   ]
+  },
+  {
+   "id": "q05",
+   "origine": "Complexité Q25",
+   "nom": "[Coût] La règle de simplification",
+   "objectif": "Énoncer la règle qui donne l'ordre de grandeur d'un coût.",
+   "question": [
+    "Pour donner l'ordre de grandeur d'un coût T(n), on ne garde que :"
+   ],
+   "options": [
+    {
+     "texte": "la somme de tous les coefficients",
+     "feedback": "Les coefficients ne disent pas comment le coût grandit avec n. On garde le terme qui grandit le plus vite."
+    },
+    {
+     "texte": "le terme le plus petit",
+     "feedback": "C'est l'inverse : quand n est grand, c'est le terme le plus grand qui l'emporte, les autres deviennent négligeables."
+    },
+    {
+     "texte": "le dernier nombre de l'expression",
+     "feedback": "L'ordre d'écriture ne compte pas. On cherche le terme qui grandit le plus vite avec n."
+    },
+    {
+     "texte": "le terme de plus haut degré, sans son coefficient",
+     "juste": true,
+     "feedback": "Oui : dans 15n² + 7n + 12, c'est n² qui domine quand n grandit. On écrit O(n²), sans le 15."
+    }
+   ]
+  },
+  {
+   "id": "q06",
+   "origine": "Complexité Q26",
+   "nom": "[Coût] Simplifier un coût quadratique",
+   "objectif": "Donner la forme simplifiée d'un coût polynomial.",
+   "question": [
+    "Quelle est la forme simplifiée du coût T(n) = 15n² + 7n + 12 ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n)",
+     "feedback": "7n est bien là, mais 15n² grandit beaucoup plus vite. On garde le terme de plus haut degré : n²."
+    },
+    {
+     "texte": "O(n²)",
+     "juste": true,
+     "feedback": "Oui : on garde le terme de plus haut degré, 15n², et on retire son coefficient. Le coût est quadratique."
+    },
+    {
+     "texte": "O(n³)",
+     "feedback": "Aucun terme en n³ dans l'expression : le plus haut degré est 2."
+    },
+    {
+     "texte": "O(1)",
+     "feedback": "12 est la partie constante, la plus petite quand n grandit. C'est le terme en n² qui l'emporte."
+    }
+   ],
+   "fond": {
+    "avant": "« Quelle est la classe de complexité de T(n) ? », distracteur « O(15n²) »",
+    "apres": "« Quelle est la forme simplifiée … ? », distracteur « O(n³) »",
+    "raison": "O(15n²) est égal à O(n²) (le quiz le dit lui-même, question « O(100n) est identique à O(n) ») : le distracteur n'était pas faux."
+   }
+  },
+  {
+   "id": "q07",
+   "origine": "Complexité Q27",
+   "nom": "[Coût] Simplifier un coût linéaire",
+   "objectif": "Voir qu'une grande constante ne change pas l'ordre de grandeur.",
+   "question": [
+    "Quelle est la forme simplifiée du coût T(n) = 100n + 5000 ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n)",
+     "juste": true,
+     "feedback": "Oui : 100n domine 5000 dès que n est assez grand, et le coefficient 100 disparaît. Le coût est linéaire."
+    },
+    {
+     "texte": "O(1)",
+     "feedback": "5000 est grand, mais il ne dépend pas de n. Le terme 100n, lui, grandit sans limite : le coût est linéaire."
+    },
+    {
+     "texte": "O(n²)",
+     "feedback": "Il n'y a pas de terme en n² dans l'expression : le plus haut degré est 1."
+    },
+    {
+     "texte": "O(100)",
+     "feedback": "100 est le coefficient de n : on le retire, mais on garde n. On écrit O(n)."
+    }
+   ]
+  },
+  {
+   "id": "q08",
+   "origine": "Complexité Q28",
+   "nom": "[Coût] Le pire des cas",
+   "objectif": "Expliquer ce que garantit le coût dans le pire des cas.",
+   "question": [
+    "Que représente le coût « dans le pire des cas » ?"
+   ],
+   "options": [
+    {
+     "texte": "Le temps moyen de toutes les exécutions",
+     "feedback": "C'est le coût en moyenne, une autre mesure. Le pire des cas prend les données les plus défavorables."
+    },
+    {
+     "texte": "Un maximum que l'algorithme ne dépassera jamais",
+     "juste": true,
+     "feedback": "Oui : quelles que soient les données de taille n, l'algorithme ne fera pas plus d'opérations. C'est une garantie."
+    },
+    {
+     "texte": "Le cas où l'ordinateur s'éteint",
+     "feedback": "Le pire des cas parle des données, pas d'une panne : ce sont les entrées qui demandent le plus d'opérations."
+    },
+    {
+     "texte": "Le temps le plus court possible",
+     "feedback": "C'est le meilleur des cas (par exemple, l'élément cherché est le premier). Le pire des cas est le plus long."
+    }
+   ]
+  },
+  {
+   "id": "q09",
+   "origine": "Complexité Q29",
+   "nom": "[Coût] Chercher dans une liste non triée",
+   "objectif": "Donner le coût de la recherche séquentielle dans le pire des cas.",
+   "question": [
+    "Pour chercher un élément dans une liste non triée de n éléments, le coût dans le pire des cas est :"
+   ],
+   "options": [
+    {
+     "texte": "O(1)",
+     "feedback": "O(1) serait le meilleur cas (l'élément est le premier). Dans le pire, il faut regarder toutes les cases."
+    },
+    {
+     "texte": "O(n²)",
+     "feedback": "Une seule boucle suffit : on compare chaque élément une fois à la valeur cherchée. Le coût est linéaire."
+    },
+    {
+     "texte": "O(log n)",
+     "feedback": "O(log n) est le coût de la dichotomie, qui demande une liste triée. Non triée, on doit tout parcourir."
+    },
+    {
+     "texte": "O(n)",
+     "juste": true,
+     "feedback": "Oui : si l'élément est le dernier ou absent, on compare les n éléments. La recherche séquentielle a un coût linéaire."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "def compter(liste, x):",
+      "    c = 0",
+      "    for v in liste:",
+      "        c += 1",
+      "        if v == x:",
+      "            return c",
+      "    return c",
+      "print(compter(list(range(1000)), -1))"
+     ],
+     "sortie": "1000"
+    }
+   ]
+  },
+  {
+   "id": "q10",
+   "origine": "Complexité Q30",
+   "nom": "[Coût] Le coût de la dichotomie",
+   "objectif": "Associer la recherche dichotomique à un coût logarithmique.",
+   "question": [
+    "La recherche dichotomique dans une liste triée (on divise la zone de recherche par 2 à chaque étape) a un coût :"
+   ],
+   "options": [
+    {
+     "texte": "O(n)",
+     "feedback": "O(n), c'est le parcours de toute la liste. La dichotomie élimine la moitié des éléments à chaque étape : bien moins d'étapes."
+    },
+    {
+     "texte": "O(log n)",
+     "juste": true,
+     "feedback": "Oui : en divisant par 2 à chaque étape, 20 étapes suffisent pour un million d'éléments. C'est un coût logarithmique."
+    },
+    {
+     "texte": "O(1)",
+     "feedback": "Le nombre d'étapes augmente avec la taille de la liste, même lentement : le coût n'est pas constant."
+    },
+    {
+     "texte": "O(n²)",
+     "feedback": "La dichotomie n'a qu'une boucle, et elle fait de moins en moins de tours : elle est bien plus rapide que n²."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "def etapes(n):",
+      "    g, d, e = 0, n - 1, 0",
+      "    while g <= d:",
+      "        m = (g + d) // 2",
+      "        e += 1",
+      "        g = m + 1",
+      "    return e",
+      "print(etapes(10**6))"
+     ],
+     "sortie": "20"
+    }
+   ]
+  },
+  {
+   "id": "q11",
+   "origine": "Complexité Q31",
+   "nom": "[Coût] Classer les familles de coût",
+   "objectif": "Ranger les coûts usuels du plus faible au plus élevé.",
+   "question": [
+    "Quel classement va du coût le plus faible au coût le plus élevé, pour n grand ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n²), O(n), O(log n), O(1)",
+     "feedback": "C'est l'ordre inverse : O(1) ne grandit pas du tout, O(n²) grandit le plus vite."
+    },
+    {
+     "texte": "O(1), O(n), O(log n), O(n²)",
+     "feedback": "log n grandit moins vite que n : pour n = 1 000 000, log₂ n vaut environ 20. O(log n) vient donc avant O(n)."
+    },
+    {
+     "texte": "O(log n), O(1), O(n), O(n²)",
+     "feedback": "O(1) ne dépend pas de n : c'est le plus faible. log n, lui, grandit, même lentement."
+    },
+    {
+     "texte": "O(1), O(log n), O(n), O(n²)",
+     "juste": true,
+     "feedback": "Oui : constant, logarithmique, linéaire, quadratique. Pour n = 1 000 000 : 1, environ 20, un million, mille milliards."
+    }
+   ],
+   "fond": {
+    "avant": "classements écrits avec le signe « < » (« O(1) < O(log n) < … »)",
+    "apres": "classements écrits avec des virgules, et la question précise « pour n grand »",
+    "raison": "le signe < entre des O est une notation non définie au lycée ; même contenu."
+   }
+  },
+  {
+   "id": "q12",
+   "origine": "Complexité Q32",
+   "nom": "[Coût] Un coût exponentiel",
+   "objectif": "Expliquer pourquoi un coût en 2ⁿ rend vite un algorithme impraticable.",
+   "question": [
+    "Pourquoi un algorithme de coût 2ⁿ est-il impraticable dès que n dépasse 50 environ ?"
+   ],
+   "options": [
+    {
+     "texte": "Python ne sait pas calculer les puissances de 2",
+     "feedback": "Python calcule très bien 2 ** 50. Le problème est le nombre d'opérations que l'algorithme doit faire, pas le calcul de 2ⁿ."
+    },
+    {
+     "texte": "Le nombre d'opérations devient beaucoup trop grand",
+     "juste": true,
+     "feedback": "Oui : 2⁵⁰ vaut plus d'un million de milliards. À un milliard d'opérations par seconde, il faudrait environ 13 jours, et le double pour n = 51."
+    },
+    {
+     "texte": "La mémoire vive est pleine dès le départ",
+     "feedback": "Le coût compté ici est un nombre d'opérations, donc du temps, pas de la mémoire. C'est le temps qui explose."
+    },
+    {
+     "texte": "Un tel algorithme est interdit par les normes",
+     "feedback": "Aucune norme n'interdit un algorithme. On l'évite parce qu'il est beaucoup trop long dès que n grandit."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "s = 2**50 / 10**9",
+      "print(round(s / 86400))"
+     ],
+     "sortie": "13"
+    }
+   ],
+   "fond": {
+    "avant": "bonne réponse « Car le nombre d'opérations dépasse les capacités de calcul humaines en temps raisonnable »",
+    "apres": "« Le nombre d'opérations dépasse ce qu'un ordinateur fait en un temps raisonnable »",
+    "raison": "il s'agit des capacités des ordinateurs, pas des humains."
+   }
+  },
+  {
+   "id": "q13",
+   "origine": "Complexité Q33",
+   "nom": "[Coût] Le coût d'un tri à deux boucles",
+   "objectif": "Associer un tri à deux boucles imbriquées à un coût quadratique.",
+   "question": [
+    "Un algorithme de tri contient deux boucles imbriquées, qui vont chacune jusqu'à n. Son coût est de l'ordre de :"
+   ],
+   "options": [
+    {
+     "texte": "O(n)",
+     "feedback": "O(n), ce serait une seule boucle. Deux boucles imbriquées se multiplient : n × n."
+    },
+    {
+     "texte": "O(log n)",
+     "feedback": "Aucun tri ne peut être aussi rapide : il faut au moins regarder chaque élément une fois."
+    },
+    {
+     "texte": "O(2ⁿ)",
+     "feedback": "2ⁿ est bien plus rapide à grandir que n². Deux boucles imbriquées de n tours donnent n²."
+    },
+    {
+     "texte": "O(n²)",
+     "juste": true,
+     "feedback": "Oui : c'est le coût des tris par sélection et par insertion du programme de première, dans le pire des cas."
+    }
+   ]
+  },
+  {
+   "id": "q14",
+   "origine": "Complexité Q34",
+   "nom": "[Coût] Choisir un algorithme pour un milliard de données",
+   "objectif": "Choisir le coût le plus faible pour un très grand n.",
+   "question": [
+    "Pour traiter un milliard de données, lequel de ces coûts est préférable ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n)",
+     "feedback": "Un milliard d'opérations, c'est faisable, mais O(log n) n'en demande qu'une trentaine : il est bien préférable."
+    },
+    {
+     "texte": "O(log n)",
+     "juste": true,
+     "feedback": "Oui : log₂ d'un milliard vaut environ 30. C'est le coût le plus faible des quatre."
+    },
+    {
+     "texte": "O(n²)",
+     "feedback": "n² ferait un milliard de milliards d'opérations : plusieurs dizaines d'années de calcul."
+    },
+    {
+     "texte": "O(n³)",
+     "feedback": "n³ est le plus élevé des quatre : c'est le pire choix pour un grand n."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "import math",
+      "print(math.ceil(math.log2(10**9)))"
+     ],
+     "sortie": "30"
+    }
+   ]
+  },
+  {
+   "id": "q15",
+   "origine": "Complexité Q35",
+   "nom": "[Coût] Simplifier une somme de termes",
+   "objectif": "Garder le terme dominant entre n² et n log n.",
+   "question": [
+    "Quelle est la forme simplifiée du coût T(n) = n² + n log n ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n log n)",
+     "feedback": "n log n grandit moins vite que n², car log n grandit moins vite que n. On garde le terme dominant : n²."
+    },
+    {
+     "texte": "O(n²)",
+     "juste": true,
+     "feedback": "Oui : n log n est négligeable devant n² quand n est grand. On ne garde que n²."
+    },
+    {
+     "texte": "O(n³)",
+     "feedback": "On ne multiplie pas les termes : on garde le plus grand. Aucun terme ici n'est en n³."
+    },
+    {
+     "texte": "O(log n)",
+     "feedback": "log n est le facteur qui grandit le moins vite : on garde au contraire le terme qui grandit le plus vite."
+    }
+   ]
+  },
+  {
+   "id": "q16",
+   "origine": "Complexité Q36",
+   "nom": "[Coût] Ce que dit la règle de simplification",
+   "objectif": "Appliquer la règle de simplification à des affirmations.",
+   "question": [
+    "Laquelle de ces affirmations est vraie ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n²) est plus efficace que O(n)",
+     "feedback": "C'est l'inverse : n² grandit plus vite que n. Un algorithme en O(n) est plus efficace pour n grand."
+    },
+    {
+     "texte": "O(1) signifie que l'algorithme fait 1 seule opération",
+     "feedback": "O(1) signifie que le nombre d'opérations ne dépend pas de n : il peut en faire 1, 50 ou 1000."
+    },
+    {
+     "texte": "O(100n) est identique à O(n)",
+     "juste": true,
+     "feedback": "Oui : on retire les coefficients. 100n et n sont tous les deux linéaires : doubler n double le coût."
+    },
+    {
+     "texte": "O(log n) est moins efficace que O(n)",
+     "feedback": "C'est l'inverse : log n grandit beaucoup moins vite que n. La dichotomie (O(log n)) est plus rapide qu'un parcours (O(n))."
+    }
+   ]
+  },
+  {
+   "id": "q17",
+   "origine": "Complexité Q37",
+   "nom": "[Coût] Une boucle intérieure de taille fixe",
+   "objectif": "Voir qu'une boucle de taille fixe ne change pas l'ordre de grandeur.",
+   "code": [
+    "for i in range(n):",
+    "    for j in range(5):",
+    "        x = 1"
+   ],
+   "question": [
+    "Quelle est la forme simplifiée du coût de ce code ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n²)",
+     "feedback": "Deux boucles imbriquées ne donnent n² que si les deux vont jusqu'à n. Ici, la boucle intérieure fait toujours 5 tours."
+    },
+    {
+     "texte": "O(1)",
+     "feedback": "La boucle extérieure fait n tours : le coût dépend de n, il n'est pas constant."
+    },
+    {
+     "texte": "O(log n)",
+     "feedback": "Rien n'est divisé par 2 ici : i avance de 1 en 1, et chaque tour fait 5 affectations."
+    },
+    {
+     "texte": "O(n)",
+     "juste": true,
+     "feedback": "Oui : 5 × n affectations, et on retire le coefficient 5. Le coût est linéaire."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "def T(n):",
+      "    c = 0",
+      "    for i in range(n):",
+      "        for j in range(5):",
+      "            x = 1; c += 1",
+      "    return c",
+      "print(T(10), T(20))"
+     ],
+     "sortie": "50 100"
+    }
+   ],
+   "fond": {
+    "avant": "« Quel est le coût de ce code ? », distracteur « O(5n) »",
+    "apres": "« Quelle est la forme simplifiée du coût … ? », distracteur « O(log n) »",
+    "raison": "O(5n) est égal à O(n) : le distracteur n'était pas faux."
+   }
+  },
+  {
+   "id": "q18",
+   "origine": "Complexité Q38",
+   "nom": "[Coût] Un code sans boucle",
+   "objectif": "Reconnaître un coût constant.",
+   "question": [
+    "Quel est le coût d'un code qui ne contient aucune boucle, seulement des `if` et des `print` ?"
+   ],
+   "options": [
+    {
+     "texte": "O(n)",
+     "feedback": "Sans boucle (ni appel de fonction qui boucle), aucune instruction n'est répétée : le nombre d'opérations ne dépend pas de n."
+    },
+    {
+     "texte": "O(1)",
+     "juste": true,
+     "feedback": "Oui : chaque instruction est exécutée au plus une fois. Le nombre d'opérations est borné : le coût est constant."
+    },
+    {
+     "texte": "O(0)",
+     "feedback": "Le code fait bien des opérations, mais leur nombre ne dépend pas de n. On écrit O(1) pour un coût constant."
+    },
+    {
+     "texte": "Il dépend des données",
+     "feedback": "Les if choisissent quelles lignes s'exécutent, mais il y en a toujours un nombre limité : le coût est constant."
+    }
+   ]
+  },
+  {
+   "id": "q19",
+   "origine": "Complexité Q39",
+   "nom": "[Coût] Nommer le coût n log n",
+   "objectif": "Nommer la famille de coût n log n.",
+   "question": [
+    "Un algorithme dont le coût est en O(n log n) est dit :"
+   ],
+   "options": [
+    {
+     "texte": "quadratique",
+     "feedback": "Quadratique, c'est n². n log n grandit beaucoup moins vite : c'est le coût du tri fusion, vu en terminale."
+    },
+    {
+     "texte": "logarithmique",
+     "feedback": "Logarithmique, c'est log n seul. Ici, log n est multiplié par n : c'est un peu plus que linéaire."
+    },
+    {
+     "texte": "quasi linéaire",
+     "juste": true,
+     "feedback": "Oui : n log n est à peine plus grand que n (pour un million d'éléments, log₂ n vaut environ 20). On le dit quasi linéaire."
+    },
+    {
+     "texte": "constant",
+     "feedback": "Le coût grandit avec n : il ne peut pas être constant."
+    }
+   ]
+  },
+  {
+   "id": "q20",
+   "origine": "Complexité Q40",
+   "nom": "[Coût] Chercher un doublon en comparant tout",
+   "objectif": "Évaluer le coût d'une comparaison de chaque élément à tous les autres.",
+   "question": [
+    "Pour chercher un doublon dans une liste de taille n, on compare chaque élément à tous les autres. Dans le pire des cas, le coût est :"
+   ],
+   "options": [
+    {
+     "texte": "O(n²)",
+     "juste": true,
+     "feedback": "Oui : pour chacun des n éléments, on fait jusqu'à n comparaisons. Deux boucles imbriquées : n × n."
+    },
+    {
+     "texte": "O(n)",
+     "feedback": "Une comparaison par élément ne suffit pas : chaque élément est comparé à tous les autres, soit n comparaisons pour chacun."
+    },
+    {
+     "texte": "O(1)",
+     "feedback": "Le nombre de comparaisons dépend de la taille de la liste : il ne peut pas être constant."
+    },
+    {
+     "texte": "O(log n)",
+     "feedback": "Rien ne divise la liste par 2 : on compare toutes les paires d'éléments, ce qui fait de l'ordre de n²."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "def comparaisons(liste):",
+      "    c = 0",
+      "    for i in range(len(liste)):",
+      "        for j in range(len(liste)):",
+      "            if i != j:",
+      "                c += 1",
+      "    return c",
+      "print(comparaisons(list(range(10))))"
+     ],
+     "sortie": "90"
+    }
+   ]
+  }
+ ]
+}

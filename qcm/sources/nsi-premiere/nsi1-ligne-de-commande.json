@@ -1,0 +1,741 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsi1-ligne-de-commande",
+ "titre": "NSI 1re · La ligne de commande (Linux)",
+ "niveau": "nsi-premiere",
+ "justification_niveau": "utiliser les commandes de base en ligne de commande et gérer les droits sur les fichiers : programme de première, rubrique Systèmes d'exploitation. Le QCM Bash d'origine était rangé en terminale.",
+ "programme": [
+  "nsi-1re-2019.architecture-os.systemes-exploitation : Utiliser les commandes de base en ligne de commande ; gérer les droits et permissions d'accès aux fichiers"
+ ],
+ "notions": [
+  "archi.os.ligne-commande",
+  "archi.os.fichiers"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Commandes linux flash (export `66d59116`, 9 questions) : toutes",
+  "QCM Bash (export `a7b74305`, 36 questions) : Q15, Q16, Q17, Q18, Q23, Q29, Q30, Q32 (avec Q14), Q34, Q35, Q36"
+ ],
+ "contexte": "Un terminal Linux, les dossiers d'un compte d'élève. Les commandes viennent de l'anglais : chaque nom est expliqué dans le feedback.",
+ "prelude_python": [
+  "import os, stat, tempfile",
+  "f = tempfile.NamedTemporaryFile(delete=False).name",
+  "def mode(octal):",
+  "    os.chmod(f, octal)",
+  "    return stat.filemode(os.stat(f).st_mode)"
+ ],
+ "objectifs": [
+  "Se repérer dans l'arborescence : répertoire courant, parent, chemin absolu ou relatif.",
+  "Créer, copier, déplacer, renommer, supprimer et afficher des fichiers et des dossiers.",
+  "Chercher un texte, lire l'aide d'une commande, agir en super-utilisateur.",
+  "Lire et modifier les droits d'un fichier (r, w, x ; propriétaire, groupe, autres ; notation octale)."
+ ],
+ "progression": "Q1 à Q9 : se déplacer et gérer ses fichiers ; Q10 à Q13 : chercher, s'aider, décompresser, agir en super-utilisateur ; Q14 à Q17 : les droits ; Q18 à Q20 : compléter des lignes de commande.",
+ "forme": [
+  "Questions 1 à 9 (« Commandes linux flash ») : énoncés impersonnels et feedbacks au tutoiement (ils étaient au vouvoiement) ; plus de « Grosse erreur ! » ni de « Faux : » ; l'objectif « Ingénierie de l'erreur / Gestion », écrit pour l'enseignant, devient un objectif pour l'élève ; l'utilisateur « ghost » devient « eleve ».",
+  "Questions du QCM Bash : QCU réduits de 5 à 4 options ; un feedback pour chaque option (aucun avant) ; « vu en cours », « ou l'on », « Associés » corrigés.",
+  "Noms « [Navigation] … », « [Fichiers] … », « [Droits] … » ; commandes colorées en bloc à chasse fixe.",
+  "Positions replacées : le QCM Bash suivait le motif A, B, C, D, E répété trois fois.",
+  "Relecture du Gardien (20/11) : 1 retour(s) réécrit(s) (q09), pour ne dire que l'erreur vérifiée par le calcul ou l'exécution, avec le message complet de Python 3.13, de SQLite ou de Bash.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q01, q09, q13) : l'objectif dit la compétence, pas la réponse.",
+  "q18 à q20 : les choix des listes déroulantes sont mélangés (ils suivaient l'ordre de la commande)."
+ ],
+ "retirees": [
+  {
+   "origine": "QCM Bash Q1 à Q13 (réponses courtes : nom de la commande touch, mkdir, rm, cd, pwd, ls, cat, grep, cp, mv, help, man, chmod)",
+   "raison": "les mêmes commandes sont demandées en QCU dans ce quiz (questions 1 à 13) : doublons."
+  },
+  {
+   "origine": "QCM Bash Q14 (rôle de sudo, « Passer outre certaines restrictions »)",
+   "raison": "fusionnée avec Q32, qui donne la définition exacte (question 13 de ce quiz)."
+  },
+  {
+   "origine": "QCM Bash Q19 à Q22, Q24 à Q28 (cd, pwd, ls, cat, touch, mkdir, cp, mv, rm en QCU à 5 options)",
+   "raison": "doublons des questions 1 à 9 de ce quiz (« Commandes linux flash »), qui posent les mêmes commandes avec des distracteurs commentés."
+  },
+  {
+   "origine": "QCM Bash Q31 (commande pour changer les droits : chmod)",
+   "raison": "doublon : chmod est au cœur des questions 14 à 17."
+  },
+  {
+   "origine": "QCM Bash Q33 (help « affiche les commandes basiques disponibles »)",
+   "raison": "notion inexacte : help n'affiche que l'aide des commandes internes de Bash ; help reste un distracteur commenté de la question 11."
+  }
+ ],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "Linux flash Q1",
+   "nom": "[Navigation] La commande pwd",
+   "objectif": "Savoir ce qu'affiche la commande pwd.",
+   "code": [
+    "pwd"
+   ],
+   "langage": "bash",
+   "question": [
+    "Que fait exactement cette commande ?"
+   ],
+   "options": [
+    {
+     "texte": "Elle change le mot de passe de l'utilisateur",
+     "feedback": "C'est une confusion fréquente : pour changer de mot de passe, la commande est passwd. pwd veut dire print working directory, « affiche le répertoire de travail »."
+    },
+    {
+     "texte": "Elle affiche le chemin absolu du répertoire de travail",
+     "juste": true,
+     "feedback": "Oui : pwd (print working directory) affiche où tu te trouves dans l'arborescence, depuis la racine /. Pratique avant un cd ou un rm."
+    },
+    {
+     "texte": "Elle affiche le contenu du dossier courant",
+     "feedback": "Pour lister les fichiers et sous-dossiers, la commande est ls (list). pwd affiche seulement le chemin du dossier où tu es."
+    },
+    {
+     "texte": "Elle fait remonter à la racine",
+     "feedback": "Pour changer de répertoire, on utilise cd (change directory), par exemple cd /. pwd ne déplace pas : il affiche."
+    }
+   ],
+   "note_verification": "comportement standard des commandes Linux (pwd, passwd, ls, cd), décrit dans leur page de manuel."
+  },
+  {
+   "id": "q02",
+   "origine": "Linux flash Q2",
+   "nom": "[Navigation] Remonter d'un niveau avec cd ..",
+   "objectif": "Prévoir le répertoire atteint avec un chemin relatif ..",
+   "enonce": [
+    "Le répertoire de travail est /home/eleve/sauvegardes. On saisit la commande suivante."
+   ],
+   "code": [
+    "cd .."
+   ],
+   "langage": "bash",
+   "question": [
+    "Quel est le nouveau répertoire de travail ?"
+   ],
+   "options": [
+    {
+     "texte": "/home",
+     "feedback": "Ce serait remonter de deux niveaux, avec cd ../.. ; .. ne fait monter que d'un niveau."
+    },
+    {
+     "texte": "/home/eleve/sauvegardes",
+     "feedback": "Le répertoire a changé : un seul point (.) désigne le dossier courant, mais deux points (..) désignent le dossier parent."
+    },
+    {
+     "texte": "/home/eleve",
+     "juste": true,
+     "feedback": "Oui : .. désigne le répertoire parent. Depuis /home/eleve/sauvegardes, on remonte d'un niveau, dans /home/eleve."
+    },
+    {
+     "texte": "/ (la racine)",
+     "feedback": "Pour aller directement à la racine, on écrit cd /. Avec .., on ne remonte que d'un niveau."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(os.path.normpath('/home/eleve/sauvegardes/..'))"
+     ],
+     "sortie": "/home/eleve"
+    }
+   ]
+  },
+  {
+   "id": "q03",
+   "origine": "Linux flash Q3",
+   "nom": "[Arborescence] Reconnaître un chemin absolu",
+   "objectif": "Distinguer un chemin absolu d'un chemin relatif.",
+   "question": [
+    "Parmi ces chemins, lequel est un chemin absolu ?"
+   ],
+   "options": [
+    {
+     "texte": "sauvegardes/note.txt",
+     "feedback": "Ce chemin ne commence pas par / : il est relatif, il part du répertoire de travail."
+    },
+    {
+     "texte": "../admin/config",
+     "feedback": ".. part du dossier parent du répertoire de travail : c'est un chemin relatif."
+    },
+    {
+     "texte": "sys.log",
+     "feedback": "Un simple nom de fichier est un chemin relatif : le fichier est cherché dans le répertoire de travail."
+    },
+    {
+     "texte": "/var/log/sys.log",
+     "juste": true,
+     "feedback": "Oui : un chemin absolu commence toujours par la racine /. Il désigne le même fichier, quel que soit le répertoire de travail."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print([os.path.isabs(c) for c in ['sauvegardes/note.txt', '../admin/config', 'sys.log', '/var/log/sys.log']])"
+     ],
+     "sortie": "[False, False, False, True]"
+    }
+   ]
+  },
+  {
+   "id": "q04",
+   "origine": "Linux flash Q4",
+   "nom": "[Fichiers] Afficher les fichiers cachés",
+   "objectif": "Lister aussi les fichiers dont le nom commence par un point.",
+   "enonce": [
+    "Un dossier de configuration au nom qui commence par un point (par exemple .secret) n'apparaît pas avec ls."
+   ],
+   "question": [
+    "Quelle commande l'affiche aussi ?"
+   ],
+   "options": [
+    {
+     "texte": "ls -a",
+     "juste": true,
+     "feedback": "Oui : l'option -a (all, « tout ») liste tous les éléments, y compris les fichiers et dossiers cachés, ceux dont le nom commence par un point."
+    },
+    {
+     "texte": "ls -l",
+     "feedback": "-l (long) affiche les détails : droits, taille, propriétaire. Mais les éléments cachés restent cachés sans -a."
+    },
+    {
+     "texte": "show .secret",
+     "feedback": "show n'est pas une commande standard de Linux : le terminal répondrait « command not found »."
+    },
+    {
+     "texte": "ls -R",
+     "feedback": "-R (récursif) liste aussi le contenu des sous-dossiers, mais pas les éléments cachés, sauf avec -a en plus."
+    }
+   ],
+   "note_verification": "options de ls décrites dans sa page de manuel (-a, -l, -R)."
+  },
+  {
+   "id": "q05",
+   "origine": "Linux flash Q5 (numérotée 06)",
+   "nom": "[Fichiers] Créer un fichier vide",
+   "objectif": "Créer un fichier vide sans ouvrir d'éditeur.",
+   "question": [
+    "Quelle commande crée un fichier texte vide nommé script.sh ?"
+   ],
+   "options": [
+    {
+     "texte": "mkdir script.sh",
+     "feedback": "mkdir (make directory) crée un dossier, pas un fichier : on aurait un dossier nommé script.sh."
+    },
+    {
+     "texte": "cat script.sh",
+     "feedback": "cat affiche le contenu d'un fichier qui existe. Ici, il répondrait « No such file or directory » (fichier ou dossier introuvable)."
+    },
+    {
+     "texte": "create script.sh",
+     "feedback": "create n'est pas une commande de Linux : le terminal répondrait « command not found »."
+    },
+    {
+     "texte": "touch script.sh",
+     "juste": true,
+     "feedback": "Oui : touch crée le fichier vide s'il n'existe pas (et sinon met à jour sa date de modification)."
+    }
+   ],
+   "note_verification": "comportement standard de touch, mkdir et cat."
+  },
+  {
+   "id": "q06",
+   "origine": "Linux flash Q6",
+   "nom": "[Fichiers] Copier un fichier dans un dossier",
+   "objectif": "Écrire une copie dans le bon ordre : source puis destination.",
+   "question": [
+    "Quelle commande copie le fichier note.txt dans le dossier sauvegardes/ du répertoire de travail ?"
+   ],
+   "options": [
+    {
+     "texte": "mv note.txt sauvegardes/",
+     "feedback": "mv (move) déplace le fichier : il n'y aurait plus de note.txt à sa place d'origine. Pour garder l'original, on copie avec cp."
+    },
+    {
+     "texte": "cp note.txt sauvegardes/",
+     "juste": true,
+     "feedback": "Oui : cp (copy) s'écrit cp source destination. note.txt reste en place, et une copie arrive dans sauvegardes/."
+    },
+    {
+     "texte": "cp sauvegardes/ note.txt",
+     "feedback": "L'ordre est inversé : on demanderait de copier le dossier sauvegardes/ vers note.txt, et cp refuse un dossier sans l'option -r."
+    },
+    {
+     "texte": "copy note.txt sauvegardes/",
+     "feedback": "copy est la commande de Windows (invite de commandes). Sous Linux, la copie s'écrit cp."
+    }
+   ],
+   "note_verification": "syntaxe cp source destination, décrite dans la page de manuel de cp."
+  },
+  {
+   "id": "q07",
+   "origine": "Linux flash Q7",
+   "nom": "[Fichiers] Renommer un fichier",
+   "objectif": "Renommer un fichier avec mv.",
+   "question": [
+    "Quelle commande renomme ancien.txt en nouveau.txt, dans le même répertoire ?"
+   ],
+   "options": [
+    {
+     "texte": "rename ancien.txt nouveau.txt",
+     "feedback": "rename existe sur certains systèmes, mais pour renommer beaucoup de fichiers à la fois, avec une autre syntaxe. Pour un seul fichier, on utilise mv."
+    },
+    {
+     "texte": "cp ancien.txt nouveau.txt",
+     "feedback": "cp fait une copie : ancien.txt existerait toujours, à côté de nouveau.txt."
+    },
+    {
+     "texte": "mv ancien.txt nouveau.txt",
+     "juste": true,
+     "feedback": "Oui : « déplacer » un fichier vers un autre nom, dans le même dossier, revient à le renommer."
+    },
+    {
+     "texte": "mv nouveau.txt ancien.txt",
+     "feedback": "L'ordre est inversé : la source (le fichier qui existe, ancien.txt) vient d'abord, puis la destination (nouveau.txt)."
+    }
+   ],
+   "note_verification": "comportement standard de mv et cp."
+  },
+  {
+   "id": "q08",
+   "origine": "Linux flash Q8",
+   "nom": "[Fichiers] Supprimer un dossier qui n'est pas vide",
+   "objectif": "Choisir la commande qui supprime un dossier et son contenu.",
+   "question": [
+    "Quelle commande supprime définitivement le dossier archives, qui contient déjà plusieurs fichiers ?"
+   ],
+   "options": [
+    {
+     "texte": "rm archives",
+     "feedback": "Sans option, rm refuse de supprimer un dossier : « cannot remove 'archives': Is a directory » (c'est un dossier)."
+    },
+    {
+     "texte": "rmdir archives",
+     "feedback": "rmdir (remove directory) ne supprime que les dossiers vides : ici, il répondrait « Directory not empty »."
+    },
+    {
+     "texte": "del archives",
+     "feedback": "del est une commande de Windows : sous Linux, le terminal répondrait « command not found »."
+    },
+    {
+     "texte": "rm -r archives",
+     "juste": true,
+     "feedback": "Oui : l'option -r (récursif) supprime le dossier et tout ce qu'il contient. Attention : sous Linux, il n'y a pas de corbeille."
+    }
+   ],
+   "note_verification": "comportement standard de rm, rm -r et rmdir (messages de GNU coreutils)."
+  },
+  {
+   "id": "q09",
+   "origine": "Linux flash Q9",
+   "nom": "[Lecture] Afficher le contenu d'un fichier",
+   "objectif": "Afficher tout le contenu d'un fichier dans le terminal.",
+   "question": [
+    "Quelle commande affiche tout le contenu du fichier sys.log dans le terminal ?"
+   ],
+   "options": [
+    {
+     "texte": "cat sys.log",
+     "juste": true,
+     "feedback": "Oui : cat (de concatenate, « mettre bout à bout ») affiche le contenu du fichier directement dans le terminal."
+    },
+    {
+     "texte": "read sys.log",
+     "feedback": "read lit ce qu'on tape au clavier et le range dans une variable. Ici, Bash refuse aussitôt le nom : « read: `sys.log': not a valid identifier ». Pour afficher un fichier, on utilise cat."
+    },
+    {
+     "texte": "ls sys.log",
+     "feedback": "ls confirme seulement que le fichier existe en affichant son nom, pas son contenu."
+    },
+    {
+     "texte": "echo sys.log",
+     "feedback": "echo affiche le texte qu'on lui donne : il écrirait le mot « sys.log », pas le contenu du fichier."
+    }
+   ],
+   "note_verification": "comportement standard de cat, read, ls et echo."
+  },
+  {
+   "id": "q10",
+   "origine": "QCM Bash Q23",
+   "nom": "[Recherche] Chercher un texte dans un fichier",
+   "objectif": "Savoir quelle commande cherche un texte dans un fichier.",
+   "question": [
+    "Quelle commande recherche un texte dans un fichier ?"
+   ],
+   "options": [
+    {
+     "texte": "ls",
+     "feedback": "ls liste les fichiers d'un dossier ; il ne regarde pas à l'intérieur des fichiers."
+    },
+    {
+     "texte": "cat",
+     "feedback": "cat affiche tout le fichier : on peut y chercher à l'œil, mais c'est grep qui trouve les lignes qui contiennent le texte."
+    },
+    {
+     "texte": "grep",
+     "juste": true,
+     "feedback": "Oui : grep motif fichier affiche les lignes du fichier qui contiennent le motif. Par exemple, grep erreur sys.log."
+    },
+    {
+     "texte": "pwd",
+     "feedback": "pwd affiche le répertoire de travail ; il ne cherche rien dans les fichiers."
+    }
+   ],
+   "fond": {
+    "avant": "5 options : cd, pwd, ls, cat, grep",
+    "apres": "4 options : ls, cat, grep, pwd",
+    "raison": "règle des 4 options ; cd, le distracteur le moins plausible, est retiré."
+   }
+  },
+  {
+   "id": "q11",
+   "origine": "QCM Bash Q30",
+   "nom": "[Aide] Lire le manuel d'une commande",
+   "objectif": "Savoir obtenir le mode d'emploi détaillé d'une commande.",
+   "question": [
+    "Quelle commande affiche le fonctionnement détaillé d'une autre commande ?"
+   ],
+   "options": [
+    {
+     "texte": "man",
+     "juste": true,
+     "feedback": "Oui : man (manual, « manuel ») affiche la page de manuel d'une commande : man chmod explique chmod et toutes ses options."
+    },
+    {
+     "texte": "help",
+     "feedback": "help n'explique que les commandes internes de Bash, comme cd. Pour une commande comme chmod, la page de manuel s'ouvre avec man."
+    },
+    {
+     "texte": "sudo",
+     "feedback": "sudo lance une commande avec les droits du super-utilisateur ; il n'explique rien."
+    },
+    {
+     "texte": "chmod",
+     "feedback": "chmod change les droits d'un fichier. C'est man chmod qui en affiche le mode d'emploi."
+    }
+   ],
+   "fond": {
+    "avant": "5 options : unzip, man, chmod, sudo, help",
+    "apres": "4 options : man, help, sudo, chmod",
+    "raison": "règle des 4 options ; unzip est retiré."
+   }
+  },
+  {
+   "id": "q12",
+   "origine": "QCM Bash Q29",
+   "nom": "[Archives] Décompresser une archive zip",
+   "objectif": "Savoir décompresser un fichier .zip.",
+   "question": [
+    "Quelle commande décompresse le fichier archive.zip ?"
+   ],
+   "options": [
+    {
+     "texte": "man archive.zip",
+     "feedback": "man affiche le manuel d'une commande ; avec un nom de fichier, il ne trouverait pas de page de manuel."
+    },
+    {
+     "texte": "chmod archive.zip",
+     "feedback": "chmod change les droits d'un fichier, et il attend des droits avant le nom. Il ne décompresse rien."
+    },
+    {
+     "texte": "unzip archive.zip",
+     "juste": true,
+     "feedback": "Oui : unzip (« dézipper ») extrait les fichiers d'une archive .zip dans le répertoire de travail."
+    },
+    {
+     "texte": "sudo archive.zip",
+     "feedback": "sudo lance une commande en super-utilisateur ; archive.zip n'est pas une commande, il n'y a rien à lancer."
+    }
+   ],
+   "fond": {
+    "avant": "« Sélectionnez la commande pour décompresser un dossier compressé » ; 5 options (unzip, man, chmod, sudo, help)",
+    "apres": "« Quelle commande décompresse le fichier archive.zip ? » ; 4 options",
+    "raison": "on décompresse une archive (un fichier), pas un dossier ; règle des 4 options."
+   }
+  },
+  {
+   "id": "q13",
+   "origine": "QCM Bash Q32 (et Q14)",
+   "nom": "[Administration] Le rôle de sudo",
+   "objectif": "Savoir ce que fait sudo.",
+   "code": [
+    "sudo apt update"
+   ],
+   "langage": "bash",
+   "question": [
+    "Quel est le rôle de `sudo` au début de cette ligne ?"
+   ],
+   "options": [
+    {
+     "texte": "Lancer la commande qui suit en tant que super-utilisateur",
+     "juste": true,
+     "feedback": "Oui : sudo (superuser do) lance la commande avec les droits d'un autre utilisateur, par défaut le super-utilisateur (root). Le mot de passe est demandé."
+    },
+    {
+     "texte": "Supprimer des fichiers",
+     "feedback": "La suppression se fait avec rm. sudo ne fait rien seul : il donne des droits à la commande qui le suit."
+    },
+    {
+     "texte": "Aller à la racine du système",
+     "feedback": "Pour aller à la racine, on écrit cd /. sudo ne change pas de répertoire."
+    },
+    {
+     "texte": "Changer de mot de passe",
+     "feedback": "On change de mot de passe avec passwd. sudo demande ton mot de passe, mais pour lancer une commande avec plus de droits."
+    }
+   ],
+   "note_verification": "rôle de sudo décrit dans sa page de manuel (exécuter une commande en tant qu'un autre utilisateur, root par défaut).",
+   "fond": {
+    "avant": "Q14 : bonne réponse « Passer outre certaines restrictions » ; Q32 : 5 options",
+    "apres": "une seule question : « Lancer la commande qui suit en tant que super-utilisateur » ; 4 options",
+    "raison": "la réponse de Q14 était vague ; Q32 donnait la définition exacte : les deux sont fusionnées."
+   }
+  },
+  {
+   "id": "q14",
+   "origine": "QCM Bash Q15",
+   "type": "appariement",
+   "nom": "[Droits] La valeur de chaque droit",
+   "objectif": "Associer chaque droit à sa valeur dans la notation octale de chmod.",
+   "enonce": [
+    "Dans la notation octale de chmod (comme chmod 754), chaque droit a une valeur."
+   ],
+   "question": [
+    "Associer chaque droit à sa valeur."
+   ],
+   "paires": [
+    [
+     "Lire (r)",
+     "4"
+    ],
+    [
+     "Écrire (w)",
+     "2"
+    ],
+    [
+     "Exécuter (x)",
+     "1"
+    ]
+   ],
+   "feedback": "r vaut 4, w vaut 2, x vaut 1 : on additionne les droits accordés. rwx = 4 + 2 + 1 = 7, r-x = 4 + 1 = 5, r-- = 4.",
+   "verifications": [
+    {
+     "code": [
+      "print(stat.S_IRUSR >> 6, stat.S_IWUSR >> 6, stat.S_IXUSR >> 6)"
+     ],
+     "sortie": "4 2 1"
+    }
+   ]
+  },
+  {
+   "id": "q15",
+   "origine": "QCM Bash Q35",
+   "nom": "[Droits] L'ordre des trois groupes de droits",
+   "objectif": "Savoir dans quel ordre s'écrivent les droits d'un fichier.",
+   "question": [
+    "Dans `-rwxr-x---`, dans quel ordre sont écrits les trois groupes de droits ?"
+   ],
+   "options": [
+    {
+     "texte": "Groupe, propriétaire, autres",
+     "feedback": "Le premier bloc rwx est celui du propriétaire, qui a en général le plus de droits. Le groupe vient ensuite."
+    },
+    {
+     "texte": "Propriétaire, groupe, autres",
+     "juste": true,
+     "feedback": "Oui : après le premier caractère (- pour un fichier, d pour un dossier), on lit les droits du propriétaire (u), du groupe (g), puis des autres (o)."
+    },
+    {
+     "texte": "Propriétaire, autres, groupe",
+     "feedback": "Le groupe passe avant les autres : on va du plus proche (le propriétaire) au plus éloigné (tous les autres utilisateurs)."
+    },
+    {
+     "texte": "Autres, groupe, propriétaire",
+     "feedback": "C'est l'ordre inverse. On lit de gauche à droite : propriétaire (u), groupe (g), autres (o), comme dans chmod u, g, o."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(mode(0o750))"
+     ],
+     "sortie": "-rwxr-x---"
+    }
+   ],
+   "fond": {
+    "avant": "3 options (« Groupe, Utilisateur, Les autres », « Utilisateur, Groupe, Les autres », « Utilisateur, Les autres, Groupe, ») ; « Comment sont classés les droits d'accès à un fichier ? »",
+    "apres": "4 options, avec « Autres, groupe, propriétaire » ; question posée sur une écriture -rwxr-x---",
+    "raison": "règle des 4 options ; « utilisateur » devient « propriétaire », le mot exact."
+   }
+  },
+  {
+   "id": "q16",
+   "origine": "QCM Bash Q36",
+   "nom": "[Droits] Lire les droits du groupe",
+   "objectif": "Lire les droits accordés au groupe dans une écriture -rwxr-xr--.",
+   "code": [
+    "$ ls -l rapport.sh",
+    "-rwxr-xr-- 1 eleve gp1 120 nov. 20 10:00 rapport.sh"
+   ],
+   "langage": "bash",
+   "question": [
+    "Quels droits a le groupe gp1 sur le fichier rapport.sh ?"
+   ],
+   "options": [
+    {
+     "texte": "L'exécution seulement",
+     "feedback": "Le bloc du groupe est r-x : il contient aussi r, la lecture. Découpe -rwxr-xr-- en rwx, r-x et r--."
+    },
+    {
+     "texte": "La lecture et l'exécution",
+     "juste": true,
+     "feedback": "Oui : après le -, rwx est au propriétaire (eleve), r-x au groupe (gp1), r-- aux autres. Le groupe peut lire et exécuter, pas modifier."
+    },
+    {
+     "texte": "La lecture seulement",
+     "feedback": "r-- est le bloc des autres utilisateurs. Le groupe, au milieu, a r-x : lecture et exécution."
+    },
+    {
+     "texte": "La lecture, l'écriture et l'exécution",
+     "feedback": "rwx, ce sont les droits du propriétaire, le premier bloc. Le groupe a le deuxième bloc, r-x."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(mode(0o754))"
+     ],
+     "sortie": "-rwxr-xr--"
+    }
+   ],
+   "fond": {
+    "avant": "« Si les permissions -rwxr-xr-- sont accordées au groupe gp1 pour un fichier celui-ci a les droits : »",
+    "apres": "affichage complet de ls -l, avec le propriétaire eleve et le groupe gp1",
+    "raison": "l'énoncé laissait croire que toute la chaîne concernait le groupe."
+   }
+  },
+  {
+   "id": "q17",
+   "origine": "QCM Bash Q18",
+   "nom": "[Droits] Donner seulement la lecture à tous",
+   "objectif": "Choisir la notation de chmod qui fixe exactement les droits voulus.",
+   "question": [
+    "Quelle commande donne à tous les utilisateurs le droit de lecture, et uniquement ce droit, sur le fichier UnFichier ?"
+   ],
+   "options": [
+    {
+     "texte": "chmod a+r UnFichier",
+     "feedback": "+r ajoute la lecture, mais garde les droits existants : un fichier en rw-r----- deviendrait rw-r--r--, avec encore l'écriture. Pour fixer exactement les droits, on utilise l'octal."
+    },
+    {
+     "texte": "chmod 777 UnFichier",
+     "feedback": "7 = 4 + 2 + 1 : 777 donne tous les droits (lecture, écriture, exécution) à tout le monde, bien plus que la lecture."
+    },
+    {
+     "texte": "chmod 111 UnFichier",
+     "feedback": "1 est la valeur de l'exécution : 111 donne seulement l'exécution, à tous. La lecture vaut 4."
+    },
+    {
+     "texte": "chmod 444 UnFichier",
+     "juste": true,
+     "feedback": "Oui : 4 est la lecture ; 444 donne r-- au propriétaire, au groupe et aux autres, et retire tous les autres droits : r--r--r--."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(mode(0o444))"
+     ],
+     "sortie": "-r--r--r--"
+    },
+    {
+     "option": "a+r garde l'écriture",
+     "code": [
+      "os.chmod(f, 0o640)",
+      "os.chmod(f, os.stat(f).st_mode | stat.S_IRUSR | stat.S_IRGRP | stat.S_IROTH)",
+      "print(stat.filemode(os.stat(f).st_mode))"
+     ],
+     "sortie": "-rw-r--r--"
+    },
+    {
+     "option": "111",
+     "code": [
+      "print(mode(0o111))"
+     ],
+     "sortie": "---x--x--x"
+    }
+   ],
+   "fond": {
+    "avant": "choix multiple « Sélectionnez toutes les commandes donnant uniquement le droit de lecture » ; justes : chmod a+r, chmod 444, chmod ugo+r (33 % chacune) ; 6 options avec chmod o+r",
+    "apres": "QCU à 4 options ; seule juste : chmod 444",
+    "raison": "a+r et ugo+r ajoutent la lecture sans retirer les autres droits : elles ne donnent pas « uniquement » la lecture. Barème faux ; o+r et ugo+r (identique à a+r) sont retirées."
+   }
+  },
+  {
+   "id": "q18",
+   "origine": "QCM Bash Q16",
+   "type": "trous",
+   "nom": "[Syntaxe] Déplacer un fichier en super-utilisateur",
+   "objectif": "Écrire dans l'ordre les éléments d'une commande sudo mv.",
+   "enonce": [
+    "On veut déplacer, avec les droits du super-utilisateur, le fichier MonFichier dans le dossier MonDossier/."
+   ],
+   "question": [
+    "Compléter la ligne de commande, élément par élément."
+   ],
+   "langage": "bash",
+   "lignes": [
+    "[[*sudo|mv|MonFichier|MonDossier/]] [[sudo|*mv|MonFichier|MonDossier/]] [[sudo|mv|*MonFichier|MonDossier/]] [[sudo|mv|MonFichier|*MonDossier/]]"
+   ],
+   "feedback": "sudo vient en premier, car il lance la commande qui le suit ; puis la commande mv, la source MonFichier, et la destination MonDossier/ : sudo mv MonFichier MonDossier/.",
+   "note_verification": "syntaxe sudo commande, et mv source destination (pages de manuel).",
+   "fond": {
+    "avant": "« Complétez la ligne de commande suivante » sans dire ce que la commande doit faire",
+    "apres": "l'énoncé décrit la tâche (déplacer MonFichier dans MonDossier/, en super-utilisateur)",
+    "raison": "sans la tâche, la réponse attendue ne pouvait pas se déduire."
+   }
+  },
+  {
+   "id": "q19",
+   "origine": "QCM Bash Q17",
+   "type": "trous",
+   "nom": "[Syntaxe] Chercher un mot avec grep",
+   "objectif": "Écrire dans l'ordre les éléments d'une commande grep.",
+   "enonce": [
+    "On veut afficher les lignes du fichier FichierAChercher qui contiennent le mot MotCherché."
+   ],
+   "question": [
+    "Compléter la ligne de commande, élément par élément."
+   ],
+   "langage": "bash",
+   "lignes": [
+    "[[sudo|mv|*grep|MotCherché|FichierAChercher]] [[sudo|mv|grep|*MotCherché|FichierAChercher]] [[sudo|mv|grep|MotCherché|*FichierAChercher]]"
+   ],
+   "feedback": "La commande vient d'abord (grep), puis le motif cherché, puis le fichier : grep MotCherché FichierAChercher. Pas besoin de sudo pour lire un fichier qui t'appartient.",
+   "note_verification": "syntaxe grep motif fichier (page de manuel de grep).",
+   "fond": {
+    "avant": "« Complétez la ligne de commande suivante » sans la tâche ; 7 choix par case (dont MonFichier et MonDossier/, venus d'une autre question)",
+    "apres": "l'énoncé décrit la tâche ; 5 choix par case",
+    "raison": "la tâche manquait ; les choix d'une autre question n'avaient pas de sens ici."
+   }
+  },
+  {
+   "id": "q20",
+   "origine": "QCM Bash Q34",
+   "type": "trous",
+   "nom": "[Syntaxe] Ouvrir le manuel de chmod",
+   "objectif": "Écrire la commande qui affiche le manuel d'une autre commande.",
+   "enonce": [
+    "On veut lire le mode d'emploi de la commande chmod."
+   ],
+   "question": [
+    "Compléter la ligne de commande."
+   ],
+   "langage": "bash",
+   "lignes": [
+    "[[chmod|*man]] [[*chmod|man]]"
+   ],
+   "feedback": "On écrit d'abord la commande qu'on lance, man, puis le nom de la commande dont on veut le manuel : man chmod. On quitte le manuel avec la touche q.",
+   "note_verification": "syntaxe man commande (page de manuel de man)."
+  }
+ ]
+}
