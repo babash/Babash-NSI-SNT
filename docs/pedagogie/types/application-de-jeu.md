@@ -55,8 +55,9 @@ Les explications des erreurs sont intégrées à l'application, sans service com
 
 ### La motivation
 
-- **Le classement est ponctuel et compte très peu** : on favorise l'entraide.
-- **Les progressions personnelles** (badges, étapes débloquées) comptent davantage.
+- **On ne se compare pas, mais on peut être fier ou fière de ce qu'on a appris** : on favorise l'entraide.
+- **L'élève peut gagner de l'XP.** Elle reste cachée, et se dépense en apparences d'avatar.
+- **Seuls les avatars et les hauts faits sont visibles**, jamais un score ni un classement.
 - **Quand un·e élève réussit, la classe le sait.**
 - **Une histoire seulement si elle sert** : l'habillage oui, le récit quand il est pertinent.
 
@@ -86,4 +87,4 @@ Les règles sont plus récentes que certaines applications. En novembre 2026 :
 - **Lagon Arena** fonctionne encore avec un code de salle et un pseudo ;
 - **Alien Python** donne encore un code personnel à quatre chiffres, et n'a pas d'éditeur de code complet.
 
-Un code, un compte et un avatar communs à toutes les applications sont en projet.
+Un code, un compte et un avatar communs à toutes les applications sont en projet, comme l'XP cachée et les apparences d'avatar, décidées le 20 novembre 2026 : les applications actuelles montrent encore, selon les cas, un score ou un classement.

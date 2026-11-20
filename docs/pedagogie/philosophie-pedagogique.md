@@ -100,7 +100,7 @@ Les formes soutenues : l'évaluation formative sans note, l'évaluation par comp
 
 ### 2.10 La motivation, sans mettre la classe en compétition
 
-Le classement est ponctuel et compte très peu : on favorise l'entraide. Les progressions personnelles (badges, compétences débloquées) sont intéressantes. Et quand un·e élève réussit, la classe le sait.
+On ne se compare pas, mais on peut être fier ou fière de ce qu'on a appris : on favorise l'entraide, pas le classement. Dans les applications de jeu, l'élève peut gagner de l'XP. Elle reste cachée et se dépense en apparences d'avatar : seuls les avatars et les hauts faits sont visibles, jamais un score ni un classement (décision de l'auteur du 20 novembre 2026). Et quand un·e élève réussit, la classe le sait.
 
 - **Les ressources.** Dans Expédition Gombessa, les élèves d'une classe voient l'avancement de leurs camarades. Dans le cours-quiz, le podium n'arrive qu'à la fin, et la place d'un·e élève hors du podium n'est pas montrée.
 
@@ -136,18 +136,12 @@ La curiosité, l'esprit « petit malin », toujours de façon légale et respons
 
 Ces valeurs sont **celles de l'auteur**. Elles sont dites ici parce qu'elles expliquent des choix visibles dans les ressources ; elles n'engagent ni son établissement ni l'institution.
 
-Celles qui guident les ressources :
-
-- **le partage, l'entraide, la tolérance**, et la priorité à la personne ;
-- **la bienveillance**, avant tout ;
-- **la connaissance comme plaisir et comme voie d'émancipation**, pas comme une aide à l'embauche ;
-- **l'égalité entre filles et garçons**, d'où le [langage inclusif](regles-universelles.md#24-le-langage-inclusif) ;
-- **l'esprit critique** face aux réseaux sociaux, aux algorithmes, à l'IA et aux données ;
-- **le logiciel libre et les communs** : toutes ses créations sont sous licence libre, et leur code est public ;
-- **la sobriété numérique** ;
-- **l'inclusion et l'accessibilité**, prévues même si aucun·e élève n'est concerné·e cette année.
-
-En novembre 2026, en cherchant le style graphique de ses documents, l'auteur a aussi dit l'esprit qu'il veut y voir : l'informatique comme un bidouillage créatif que l'on fait ensemble, dans un esprit de partage libertaire. Ce sont, pour lui, les valeurs des créateurs et créatrices du Web et de l'Internet libre : un réseau décentralisé, par tous et toutes et pour tous et toutes, où la connaissance est en libre accès et où les GAFAM (les géants du numérique) sont le danger. Il y joint, comme valeurs personnelles, l'antifascisme, l'antiracisme, la lutte contre les LGBTphobies et la mise en commun.
+- **Le savoir se partage.** L'auteur se reconnaît dans l'éducation populaire et dans le partage universel du savoir : la connaissance est un plaisir et une voie d'émancipation, et elle doit rester en libre accès.
+- **Le logiciel libre, l'Internet libre et les communs.** Toutes ses créations sont sous licence libre et leur code est public. Choisir le libre, c'est aussi garder la maîtrise de ses outils et de ses données.
+- **L'informatique se fait ensemble.** C'est un bidouillage créatif, où l'on essaie, où l'on s'entraide et où l'on met en commun ce qu'on a trouvé.
+- **La bienveillance, le respect et l'égalité.** L'égalité entre filles et garçons, d'où le [langage inclusif](regles-universelles.md#24-le-langage-inclusif) ; l'antiracisme, la lutte contre les LGBTphobies et l'antifascisme, comme des valeurs de respect et d'égalité.
+- **L'esprit critique** face aux réseaux sociaux, aux algorithmes, à l'IA et aux données.
+- **La sobriété numérique, l'inclusion et l'accessibilité**, prévues même si aucun·e élève n'est concerné·e cette année.
 
 Dans les ressources, cela se voit de trois façons : les licences libres et le code public, la diversité des figures citées, et l'absence de plateforme commerciale. Les contenus enseignés, eux, suivent les programmes officiels.
 
