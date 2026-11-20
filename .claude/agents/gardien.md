@@ -36,13 +36,23 @@ En plus :
 1. **Conformité** : au cahier des charges, au registre des décisions (le plus récent l'emporte) et aux règles de conception de la philosophie éducative (§ 14), en particulier les règles 19 (TD), 20 (éditeurs de code), 21 (applications de jeu) et 22 (quiz).
 2. **Données** : format valide ; identifiants uniques ; références aux référentiels existantes ; aucun lien principal vers une page GitHub (sauf le rôle « code source ») ; chaque ressource que la branche ajoute ou modifie, et qui a un dépôt, le donne en document « Code source » (décision du 10/11, 22:58) ; s'il manque, c'est une suite, pas un blocage. Tant que l'ancien format est en place : aucune erreur affichée par les listes `*/ressources.js`.
 3. **Visibilité** : aucun document caché n'apparaît dans les vues extérieur et élève.
-4. **Données sensibles** : recherche de motifs dans tout le diff (mots de passe, identifiants, `service_role`, `secret`, jetons, noms de famille d'élèves ; identifiants de démonstration de CyberCase).
+4. **Données sensibles** : recherche de motifs dans tout le diff (mots de passe, identifiants, `service_role`, `secret`, jetons, noms de famille d'élèves ; identifiants de démonstration de CyberCase ; codes de classe réels, clés d'enseignant·e, pseudos d'élèves, vrai nom de l'enseignant).
 5. **Liens et fichiers** : tous les liens internes pointent vers un fichier existant ; liens externes contrôlés (workflow `verifier.yml`) ; chaque page publiée touchée porte en pied de page le lien « Code source sur GitHub » vers son dépôt (décision du 10/11, 22:58) ; s'il manque, c'est une suite, pas un blocage.
 6. **Rendu** : 320, 768 et 1440 px, en clair et en obscur, aucune erreur JavaScript, aucun débordement horizontal ; impression A4 sans débordement pour les documents touchés.
 7. **Accessibilité** : les seuils de contraste de `CLAUDE.md` (§ 4, « Design ») et la navigation au clavier.
 8. **Chiffres** : le nombre de ressources affichées avant et après correspond à ce que la branche annonce.
 9. **README** : à jour.
-10. **Après publication** : le workflow de vérification en ligne est au vert pour le nouveau commit, les pages répondent, les chiffres en ligne sont les mêmes qu'en local.
+10. **Décisions du 20/11** (`CLAUDE.md`, § 4 à § 6) :
+    - aucun classement, rang, score visible ni « série de jours » ; l'XP reste cachée ; les avatars et les hauts faits ne sortent pas de la classe ;
+    - aucune question de genre, aucune personnalisation réservée à un type d'avatar ;
+    - « trouve l'erreur » : le message d'erreur réel est là, et coloré ; tu le compares à celui que donne l'exécution ;
+    - code affiché : indentation visible, coloration lisible en noir et blanc (essai en niveaux de gris), consoles compactes ;
+    - feuilles : ni personnage ni récit de l'univers ; le style « Signal pirate » n'est appliqué à aucun vrai document ;
+    - exemples : pas de marque, d'objet religieux, d'arme, de nom de famille, de cliché ;
+    - cours-quiz : le gabarit déclaré (`introduction` ou `revision`) passe le vérificateur du dépôt ;
+    - QCM Pronote : la note de cadrage et les corrections de fond sont validées par le chef d'orchestre ;
+    - bases : seul le SQL du Calendrier des vacances (`vacances`, `cv_`) s'applique par délégation ; la remise à zéro des comptes n'est pas appliquée.
+11. **Après publication** : le workflow de vérification en ligne est au vert pour le nouveau commit, les pages répondent, les chiffres en ligne sont les mêmes qu'en local.
 
 ## Tes verdicts
 - **conforme, publié** (avec le commit) ;
