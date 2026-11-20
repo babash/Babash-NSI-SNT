@@ -159,6 +159,7 @@ section.q h2{font-size:1.05rem;margin:0 0 .4em}.type{color:var(--doux);font-size
 section.q div[style]{overflow-x:auto}ol.opts{padding-left:1.4em}ol.opts li{margin:.5em 0;padding:4px 6px;border-radius:5px}
 ol.opts li.juste{background:var(--juste-fond)}.marque{font-weight:bold;color:var(--juste)}.fb{display:block;color:var(--doux);font-size:.92rem}
 .trou{border-bottom:2px solid #ce9178;padding:0 3px}a{color:var(--lien)}footer{color:var(--doux);font-size:.9rem;border-top:1px solid var(--bord);margin-top:24px;padding-top:10px}
+.pronote{background:#ffffff;color:#1b1b1b;border-radius:6px;padding:2px 10px;margin:6px 0}
 table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8px}
 """
 
@@ -173,7 +174,7 @@ def apercu_html(quiz, positions):
         bloc = [f'<section class="q" id="{e(q["id"])}"><h2>{i}. {e(q["nom"])}</h2>',
                 f'<p class="type">{e({"qcu": "QCU, une seule réponse", "qcm": "Choix multiple", "appariement": "Appariement", "numerique": "Réponse numérique", "reponse_courte": "Réponse courte", "trous": "Texte à trous"}[t])}'
                 + (f' · bonne réponse en {lettre}' if lettre else '') + '</p>',
-                texte_question(q, pour_apercu=True)]
+                '<div class="pronote">' + texte_question(q, pour_apercu=True) + '</div>']
         if t in ('qcu', 'qcm'):
             opts = C.ordonner_options(q, lettre) if t == 'qcu' else q['options']
             bloc.append('<ol class="opts" type="A">')

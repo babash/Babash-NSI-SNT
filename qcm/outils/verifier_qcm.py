@@ -56,7 +56,7 @@ def caracteres(quiz, chemin):
     for i, c in enumerate(t):
         if c in '\n\t':
             continue
-        if unicodedata.category(c) in ('Cc', 'Cf', 'Zl', 'Zp') or c in '­':
+        if unicodedata.category(c) in ('Cc', 'Cf', 'Zl', 'Zp') or c == chr(0xAD):
             err(quiz, None, f'caractère invisible U+{ord(c):04X} dans {os.path.basename(chemin)} (position {i})')
     if chr(92) + 'u' in t:
         err(quiz, None, f'séquence « barre oblique inverse + u » dans {os.path.basename(chemin)}')

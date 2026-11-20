@@ -15,6 +15,7 @@ section.q h2{font-size:1.05rem;margin:0 0 .4em}.type{color:var(--doux);font-size
 section.q div[style]{overflow-x:auto}ol.opts{padding-left:1.4em}ol.opts li{margin:.5em 0;padding:4px 6px;border-radius:5px}
 ol.opts li.juste{background:var(--juste-fond)}.marque{font-weight:bold;color:var(--juste)}.fb{display:block;color:var(--doux);font-size:.92rem}
 .trou{border-bottom:2px solid #ce9178;padding:0 3px}a{color:var(--lien)}footer{color:var(--doux);font-size:.9rem;border-top:1px solid var(--bord);margin-top:24px;padding-top:10px}
+.pronote{background:#ffffff;color:#1b1b1b;border-radius:6px;padding:2px 10px;margin:6px 0}
 table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8px}
 </style>
 </head>
@@ -25,7 +26,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 <p class="meta">20 questions · fichier à importer dans Pronote : <a href="nsit-sql-2-jointures-mises-a-jour.xml">nsit-sql-2-jointures-mises-a-jour.xml</a></p>
 <section class="q" id="q01"><h2>1. [Jointures] Écrire la condition de jointure</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en D</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Relier la clé étrangère d'une table à la clé primaire de l'autre.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle est la condition de jointure correcte entre ELEVE et CLASSE ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Relier la clé étrangère d'une table à la clé primaire de l'autre.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle est la condition de jointure correcte entre ELEVE et CLASSE ?</p></div></div>
 <ol class="opts" type="A">
 <li>ON ELEVE.id_e = CLASSE.id_classe<span class="fb">id_e identifie l&#x27;élève, pas sa classe : l&#x27;élève n° 2 serait relié à la classe n° 2 par hasard. On relie la clé étrangère à la clé primaire.</span></li>
 <li>WHERE ELEVE.nom = CLASSE.nom_c<span class="fb">Un nom d&#x27;élève n&#x27;est jamais égal à un nom de classe : on n&#x27;obtiendrait rien. La jointure se fait sur les identifiants.</span></li>
@@ -34,7 +35,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q02"><h2>2. [Jointures] Afficher des colonnes de deux tables</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en D</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une jointure complète, sans produit cartésien.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle requête affiche le nom de chaque élève et le nom de sa classe ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une jointure complète, sans produit cartésien.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle requête affiche le nom de chaque élève et le nom de sa classe ?</p></div></div>
 <ol class="opts" type="A">
 <li>SELECT nom, nom_c FROM ELEVE, CLASSE;<span class="fb">Sans condition, on obtient un produit cartésien : chaque élève associé à toutes les classes. 3 élèves et 2 classes donnent 6 lignes.</span></li>
 <li>SELECT nom, nom_c FROM ELEVE JOIN CLASSE;<span class="fb">SQLite accepte un JOIN sans ON, mais il fait alors un produit cartésien, comme une virgule : chaque élève avec chaque classe. La condition ON est indispensable.</span></li>
@@ -43,7 +44,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q03"><h2>3. [Jointures] Une jointure suivie d&#x27;un filtre</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en C</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer sur un attribut d'une autre table grâce à une jointure.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v).</p><p>Quelle requête affiche les noms des pirogues du village de Bouéni ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer sur un attribut d'une autre table grâce à une jointure.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v).</p><p>Quelle requête affiche les noms des pirogues du village de Bouéni ?</p></div></div>
 <ol class="opts" type="A">
 <li>SELECT nom_p FROM PIROGUE WHERE nom_v = &#x27;Bouéni&#x27;;<span class="fb">nom_v n&#x27;est pas un attribut de PIROGUE : SQLite répond « no such column: nom_v ». Il faut d&#x27;abord joindre VILLAGE.</span></li>
 <li>SELECT nom_p FROM PIROGUE JOIN VILLAGE WHERE nom_v = &#x27;Bouéni&#x27;;<span class="fb">Sans ON, SQLite associe chaque pirogue à chaque village : toutes les pirogues ressortent avec le village de Bouéni, même celles de Sada.</span></li>
@@ -52,7 +53,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q04"><h2>4. [Jointures] Joindre trois tables</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en B</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Enchaîner deux jointures en suivant les clés étrangères.</p><p>Schéma : ZONE (id_z, nom_z) ; RECIF (id_r, nom_r, #id_z) ; MESURE (id_m, valeur, #id_r).</p><p>Quelle clause FROM relie correctement les zones aux mesures ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Enchaîner deux jointures en suivant les clés étrangères.</p><p>Schéma : ZONE (id_z, nom_z) ; RECIF (id_r, nom_r, #id_z) ; MESURE (id_m, valeur, #id_r).</p><p>Quelle clause FROM relie correctement les zones aux mesures ?</p></div></div>
 <ol class="opts" type="A">
 <li>FROM ZONE JOIN MESURE ON ZONE.id_z = MESURE.id_r<span class="fb">MESURE n&#x27;a pas de lien direct avec ZONE : comparer un identifiant de zone à un identifiant de récif relie des lignes au hasard. Il faut passer par RECIF.</span></li>
 <li class="juste"><span class="marque">Juste · </span>FROM ZONE JOIN RECIF ON ZONE.id_z = RECIF.id_z JOIN MESURE ON RECIF.id_r = MESURE.id_r<span class="fb">Oui : on suit les clés étrangères, de MESURE vers RECIF, puis de RECIF vers ZONE. Une condition ON pour chaque JOIN.</span></li>
@@ -61,7 +62,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q05"><h2>5. [SQL] La profondeur maximale : MAX</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en B</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Obtenir la plus grande valeur d'une colonne avec MAX.</p><p>Schéma : PLONGEUR (id_plongeur, nom, #id_club) ; PLONGEE (id_plongee, lieu, profondeur, #id_plongeur), profondeur en mètres.</p><p>Quelle requête affiche la plus grande profondeur atteinte lors d'une plongée ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Obtenir la plus grande valeur d'une colonne avec MAX.</p><p>Schéma : PLONGEUR (id_plongeur, nom, #id_club) ; PLONGEE (id_plongee, lieu, profondeur, #id_plongeur), profondeur en mètres.</p><p>Quelle requête affiche la plus grande profondeur atteinte lors d'une plongée ?</p></div></div>
 <ol class="opts" type="A">
 <li>SELECT MAX(*) FROM PLONGEE;<span class="fb">MAX s&#x27;applique à une colonne précise, celle dont on veut la plus grande valeur : SQLite refuse MAX(*).</span></li>
 <li class="juste"><span class="marque">Juste · </span>SELECT MAX(profondeur) FROM PLONGEE;<span class="fb">Oui : MAX renvoie la plus grande valeur de la colonne (25 m ici). Pas besoin de jointure : on ne demande que la valeur. MIN donnerait la plus petite.</span></li>
@@ -70,7 +71,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q06"><h2>6. [Jointures] Deux colonnes de même nom</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en A</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Préfixer un attribut par le nom de sa table pour lever une ambiguïté.</p><p>Les tables PLONGEUR (id_plongeur, nom, #id_club) et CLUB (id_club, nom) ont toutes deux un attribut nom.</p><p>Dans une jointure de ces deux tables, comment désigner le nom du plongeur ou de la plongeuse ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Préfixer un attribut par le nom de sa table pour lever une ambiguïté.</p><p>Les tables PLONGEUR (id_plongeur, nom, #id_club) et CLUB (id_club, nom) ont toutes deux un attribut nom.</p><p>Dans une jointure de ces deux tables, comment désigner le nom du plongeur ou de la plongeuse ?</p></div></div>
 <ol class="opts" type="A">
 <li class="juste"><span class="marque">Juste · </span>PLONGEUR.nom<span class="fb">Oui : table.attribut lève l&#x27;ambiguïté. Sans préfixe, SQLite répondrait « ambiguous column name: nom ».</span></li>
 <li>nom.PLONGEUR<span class="fb">L&#x27;ordre est inversé : on écrit d&#x27;abord la table, puis l&#x27;attribut. SQLite chercherait une table nommée nom.</span></li>
@@ -79,7 +80,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q07"><h2>7. [Jointures] Oublier la condition : le produit cartésien</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en C</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Prévoir le résultat d'une requête sur deux tables sans condition de liaison.</p><p>La table PIROGUE a 4 lignes, la table VILLAGE en a 3. On exécute <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">SELECT * FROM PIROGUE, VILLAGE;</code>, sans condition.</p><p>Que se passe-t-il ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Prévoir le résultat d'une requête sur deux tables sans condition de liaison.</p><p>La table PIROGUE a 4 lignes, la table VILLAGE en a 3. On exécute <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">SELECT * FROM PIROGUE, VILLAGE;</code>, sans condition.</p><p>Que se passe-t-il ?</p></div></div>
 <ol class="opts" type="A">
 <li>Le SGBD choisit tout seul la bonne liaison<span class="fb">Le SGBD ne devine jamais la liaison : sans condition, il associe tout avec tout. C&#x27;est à la requête de dire quelles colonnes doivent être égales.</span></li>
 <li>La requête provoque une erreur de syntaxe<span class="fb">La requête est valide : elle s&#x27;exécute. Mais elle donne toutes les combinaisons, ce qui n&#x27;est en général pas le résultat voulu.</span></li>
@@ -88,7 +89,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q08"><h2>8. [Jointures] L&#x27;ordre des tables dans une jointure</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en D</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Savoir qu'une jointure ne dépend pas de l'ordre des tables.</p><p>Dans une jointure <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">A JOIN B ON …</code>, l'ordre des tables (A JOIN B ou B JOIN A) change-t-il les lignes obtenues ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Savoir qu'une jointure ne dépend pas de l'ordre des tables.</p><p>Dans une jointure <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">A JOIN B ON …</code>, l'ordre des tables (A JOIN B ou B JOIN A) change-t-il les lignes obtenues ?</p></div></div>
 <ol class="opts" type="A">
 <li>Oui, les données obtenues sont différentes<span class="fb">La condition est la même dans les deux cas : les mêmes paires de lignes sont gardées. Seul l&#x27;ordre des colonnes avec SELECT * peut changer.</span></li>
 <li>Oui, SQL refuse l&#x27;un des deux sens<span class="fb">Les deux sens sont acceptés : une jointure peut s&#x27;écrire à partir de n&#x27;importe laquelle des deux tables.</span></li>
@@ -97,7 +98,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q09"><h2>9. [Jointures] Un alias de table avec AS</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en C</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Comprendre le rôle d'un alias de table.</p><p>À quoi sert <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">AS</code> dans <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">FROM PIROGUE AS P JOIN VILLAGE AS V ON P.id_v = V.id_v</code> ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Comprendre le rôle d'un alias de table.</p><p>À quoi sert <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">AS</code> dans <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">FROM PIROGUE AS P JOIN VILLAGE AS V ON P.id_v = V.id_v</code> ?</p></div></div>
 <ol class="opts" type="A">
 <li>À trier les tables avant la jointure<span class="fb">Le tri s&#x27;écrit ORDER BY, à la fin de la requête. AS donne un autre nom, plus court, à une table.</span></li>
 <li>À créer une copie des tables<span class="fb">Aucune table n&#x27;est copiée : P et V sont d&#x27;autres noms pour PIROGUE et VILLAGE, le temps de la requête.</span></li>
@@ -106,7 +107,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q10"><h2>10. [SQL] Renommer une colonne du résultat : AS</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en A</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Donner un alias à une colonne affichée.</p><p>Table : VILLAGE (id_v, nom_v).</p><p>Quelle requête affiche la colonne nom_v sous le titre village, sans modifier la table ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Donner un alias à une colonne affichée.</p><p>Table : VILLAGE (id_v, nom_v).</p><p>Quelle requête affiche la colonne nom_v sous le titre village, sans modifier la table ?</p></div></div>
 <ol class="opts" type="A">
 <li class="juste"><span class="marque">Juste · </span>SELECT nom_v AS village FROM VILLAGE;<span class="fb">Oui : AS donne un alias à la colonne, le temps de la requête. La table, elle, n&#x27;est pas modifiée.</span></li>
 <li>SELECT nom_v RENAME village FROM VILLAGE;<span class="fb">RENAME sert à modifier la structure d&#x27;une table (ALTER TABLE … RENAME). Dans un SELECT, SQLite signale une erreur de syntaxe.</span></li>
@@ -115,7 +116,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q11"><h2>11. [SQL] Compter avec deux conditions</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en B</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer avec AND avant de compter.</p><p>Table : TORTUE (id_t, espece, poids), poids en kg.</p><p>Quelle requête donne le nombre de tortues vertes de plus de 100 kg ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer avec AND avant de compter.</p><p>Table : TORTUE (id_t, espece, poids), poids en kg.</p><p>Quelle requête donne le nombre de tortues vertes de plus de 100 kg ?</p></div></div>
 <ol class="opts" type="A">
 <li>SELECT COUNT(*) FROM TORTUE WHERE espece = &#x27;verte&#x27; OR poids &gt; 100;<span class="fb">OR compte aussi les tortues vertes légères et les grosses tortues d&#x27;autres espèces : le nombre est trop grand.</span></li>
 <li class="juste"><span class="marque">Juste · </span>SELECT COUNT(*) FROM TORTUE WHERE espece = &#x27;verte&#x27; AND poids &gt; 100;<span class="fb">Oui : WHERE garde les tortues vertes de plus de 100 kg, puis COUNT(*) compte ces lignes.</span></li>
@@ -124,7 +125,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q12"><h2>12. [SQL] Deux conditions sur les plongées</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en D</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Combiner une condition sur un texte et une condition sur un nombre.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle condition garde les plongées faites à Bandrélé à moins de 20 m de profondeur ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Combiner une condition sur un texte et une condition sur un nombre.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle condition garde les plongées faites à Bandrélé à moins de 20 m de profondeur ?</p></div></div>
 <ol class="opts" type="A">
 <li>WHERE lieu = &#x27;Bandrélé&#x27; OR profondeur &lt; 20<span class="fb">OR garderait aussi les plongées profondes de Bandrélé et les plongées peu profondes ailleurs. Les deux conditions doivent être vraies : AND.</span></li>
 <li>WHERE lieu = &#x27;Bandrélé&#x27;, profondeur &lt; 20<span class="fb">Les conditions ne se séparent pas par une virgule : SQLite signale une erreur de syntaxe.</span></li>
@@ -133,7 +134,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q13"><h2>13. [SQL] Trouver l&#x27;erreur dans une requête</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en B</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Repérer qu'une valeur texte s'écrit entre apostrophes.</p><div style="background-color: #1e1e1e; color: #d4d4d4; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; border-radius: 5px; line-height: 1.4;"><span style="color: #569cd6;">SELECT</span>&nbsp;nom&nbsp;<span style="color: #569cd6;">FROM</span>&nbsp;CLIENT&nbsp;<span style="color: #569cd6;">WHERE</span>&nbsp;ville&nbsp;=&nbsp;Mamoudzou;</div><p>Pourquoi cette requête provoque-t-elle une erreur ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Repérer qu'une valeur texte s'écrit entre apostrophes.</p><div style="background-color: #1e1e1e; color: #d4d4d4; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; border-radius: 5px; line-height: 1.4;"><span style="color: #569cd6;">SELECT</span>&nbsp;nom&nbsp;<span style="color: #569cd6;">FROM</span>&nbsp;CLIENT&nbsp;<span style="color: #569cd6;">WHERE</span>&nbsp;ville&nbsp;=&nbsp;Mamoudzou;</div><p>Pourquoi cette requête provoque-t-elle une erreur ?</p></div></div>
 <ol class="opts" type="A">
 <li>Mamoudzou doit être écrit en majuscules<span class="fb">Les majuscules ne changent rien ici : MAMOUDZOU serait aussi lu comme un nom de colonne. Ce qui manque, ce sont les apostrophes.</span></li>
 <li class="juste"><span class="marque">Juste · </span>Il manque des apostrophes autour de Mamoudzou<span class="fb">Oui : sans apostrophes, SQLite cherche une colonne nommée Mamoudzou et répond « no such column: Mamoudzou ». On écrit ville = &#x27;Mamoudzou&#x27;.</span></li>
@@ -142,7 +143,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q14"><h2>14. [SQL] Limiter le nombre de lignes : LIMIT</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en A</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Garder seulement les premières lignes d'un résultat.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle requête n'affiche que les 3 premières lignes du résultat ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Garder seulement les premières lignes d'un résultat.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle requête n'affiche que les 3 premières lignes du résultat ?</p></div></div>
 <ol class="opts" type="A">
 <li class="juste"><span class="marque">Juste · </span>SELECT * FROM PLONGEE LIMIT 3;<span class="fb">Oui : LIMIT, à la fin de la requête, garde les 3 premières lignes. Avec ORDER BY avant, on choisit lesquelles.</span></li>
 <li>SELECT TOP 3 * FROM PLONGEE;<span class="fb">TOP existe dans certains SGBD, mais pas dans SQLite, qui signale une erreur. SQLite (comme MySQL) utilise LIMIT.</span></li>
@@ -151,7 +152,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q15"><h2>15. [Mises à jour] Supprimer une ligne encore référencée</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en C</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Expliquer le rôle de l'intégrité référentielle lors d'une suppression.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v). Le contrôle des clés étrangères est activé (dans SQLite : <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">PRAGMA foreign_keys = ON</code>).</p><p>On tente de supprimer un village alors que des pirogues y sont encore reliées. Que se passe-t-il ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Expliquer le rôle de l'intégrité référentielle lors d'une suppression.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v). Le contrôle des clés étrangères est activé (dans SQLite : <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">PRAGMA foreign_keys = ON</code>).</p><p>On tente de supprimer un village alors que des pirogues y sont encore reliées. Que se passe-t-il ?</p></div></div>
 <ol class="opts" type="A">
 <li>Le village est supprimé, et ses pirogues aussi<span class="fb">Cela n&#x27;arrive que si la clé étrangère est déclarée avec ON DELETE CASCADE. Sans cette option, la suppression est refusée.</span></li>
 <li>Le village est supprimé, et la clé étrangère des pirogues passe à 0<span class="fb">Le SGBD ne choisit jamais une valeur de remplacement tout seul. Sans option particulière, il refuse la suppression.</span></li>
@@ -160,7 +161,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q16"><h2>16. [Mises à jour] Ajouter une ligne : INSERT</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en A</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une requête INSERT INTO … VALUES.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête ajoute un navire nommé « Mamoudzou Express », de 400 tonnes ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une requête INSERT INTO … VALUES.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête ajoute un navire nommé « Mamoudzou Express », de 400 tonnes ?</p></div></div>
 <ol class="opts" type="A">
 <li class="juste"><span class="marque">Juste · </span>INSERT INTO NAVIRE (nom, tonnage) VALUES (&#x27;Mamoudzou Express&#x27;, 400);<span class="fb">Oui : INSERT INTO table (colonnes) VALUES (valeurs) ajoute une ligne. Le port, non donné, reste vide (NULL).</span></li>
 <li>ADD INTO NAVIRE VALUES (&#x27;Mamoudzou Express&#x27;, 400);<span class="fb">Le mot-clé de l&#x27;ajout est INSERT INTO, pas ADD : SQLite signale une erreur de syntaxe.</span></li>
@@ -169,7 +170,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q17"><h2>17. [Mises à jour] Modifier une ligne : UPDATE</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en B</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un UPDATE … SET … WHERE qui ne modifie qu'une ligne.</p><p>Table : ECOLE (id_e, nom, ville).</p><p>Quelle requête change la ville de l'école n° 42 en « Mtsapéré » ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un UPDATE … SET … WHERE qui ne modifie qu'une ligne.</p><p>Table : ECOLE (id_e, nom, ville).</p><p>Quelle requête change la ville de l'école n° 42 en « Mtsapéré » ?</p></div></div>
 <ol class="opts" type="A">
 <li>UPDATE ECOLE WHERE id_e = 42 SET ville = &#x27;Mtsapéré&#x27;;<span class="fb">L&#x27;ordre est fixe : SET vient avant WHERE. Ici, SQLite signale une erreur de syntaxe.</span></li>
 <li class="juste"><span class="marque">Juste · </span>UPDATE ECOLE SET ville = &#x27;Mtsapéré&#x27; WHERE id_e = 42;<span class="fb">Oui : UPDATE table SET colonne = valeur WHERE condition. Seule la ligne n° 42 est modifiée.</span></li>
@@ -178,7 +179,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q18"><h2>18. [Mises à jour] Un UPDATE qui calcule</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en A</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Utiliser la valeur actuelle d'une colonne dans un UPDATE.</p><p>Table : RESERVOIR (id_r, nom, volume), volume en m³.</p><p>Quelle requête augmente de 10 m³ le volume de tous les réservoirs ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Utiliser la valeur actuelle d'une colonne dans un UPDATE.</p><p>Table : RESERVOIR (id_r, nom, volume), volume en m³.</p><p>Quelle requête augmente de 10 m³ le volume de tous les réservoirs ?</p></div></div>
 <ol class="opts" type="A">
 <li class="juste"><span class="marque">Juste · </span>UPDATE RESERVOIR SET volume = volume + 10;<span class="fb">Oui : pour chaque ligne, la nouvelle valeur est calculée à partir de l&#x27;ancienne. Sans WHERE, toutes les lignes sont concernées, comme demandé.</span></li>
 <li>SET volume = volume + 10 FROM RESERVOIR;<span class="fb">Une requête de modification commence par UPDATE : ici, SQLite signale une erreur de syntaxe.</span></li>
@@ -187,7 +188,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q19"><h2>19. [Mises à jour] Supprimer une ligne : DELETE</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en C</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un DELETE FROM … WHERE.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête supprime le navire nommé « Vieux Port » ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un DELETE FROM … WHERE.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête supprime le navire nommé « Vieux Port » ?</p></div></div>
 <ol class="opts" type="A">
 <li>REMOVE FROM NAVIRE WHERE nom = &#x27;Vieux Port&#x27;;<span class="fb">REMOVE n&#x27;est pas un mot-clé SQL : la suppression de lignes s&#x27;écrit DELETE FROM.</span></li>
 <li>DELETE nom = &#x27;Vieux Port&#x27; FROM NAVIRE;<span class="fb">La condition se place après FROM, dans un WHERE : DELETE FROM table WHERE condition. Ici, SQLite signale une erreur.</span></li>
@@ -196,7 +197,7 @@ table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8p
 </ol>
 </section><section class="q" id="q20"><h2>20. [Mises à jour] Supprimer une table : DROP TABLE</h2>
 <p class="type">QCU, une seule réponse · bonne réponse en D</p>
-<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Distinguer la suppression des lignes et la suppression de la table.</p><p>Quelle requête supprime définitivement la table NAVIRE, avec toutes ses données ?</p></div>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Distinguer la suppression des lignes et la suppression de la table.</p><p>Quelle requête supprime définitivement la table NAVIRE, avec toutes ses données ?</p></div></div>
 <ol class="opts" type="A">
 <li>DELETE TABLE NAVIRE;<span class="fb">SQLite signale une erreur de syntaxe : DELETE s&#x27;écrit DELETE FROM et supprime des lignes, jamais la table elle-même.</span></li>
 <li>REMOVE TABLE NAVIRE;<span class="fb">REMOVE n&#x27;est pas un mot-clé SQL. La suppression d&#x27;une table s&#x27;écrit DROP TABLE.</span></li>
