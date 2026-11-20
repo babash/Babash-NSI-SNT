@@ -1,0 +1,983 @@
+{
+ "chapitre": {
+  "id": "exemple-boucles",
+  "titre": "Les boucles (exemple du prototype)",
+  "niveau": "nsi-1re",
+  "langage": "python",
+  "programme": [
+   "nsi-1re-2019.langages.constructions-elementaires"
+  ],
+  "notions": [
+   "prog.boucle",
+   "prog.boucle.bornee",
+   "prog.boucle.non-bornee",
+   "prog.accumulateur",
+   "prog.trace"
+  ]
+ },
+ "exercices": [
+  {
+   "id": "exemple-boucles-001",
+   "type": "associer",
+   "titre": "Qui fait quoi ?",
+   "objectif": "Reconnaître les valeurs données par range().",
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque range à ses valeurs.",
+       "paires": [
+        [
+         "range(3)",
+         "0, 1, 2"
+        ],
+        [
+         "range(1, 4)",
+         "1, 2, 3"
+        ],
+        [
+         "range(5)",
+         "0, 1, 2, 3, 4"
+        ],
+        [
+         "range(2, 5)",
+         "2, 3, 4"
+        ]
+       ],
+       "aides": [
+        "range(n) commence à 0 et s'arrête juste avant n.",
+        "range(a, b) commence à a et s'arrête juste avant b."
+       ],
+       "explication": "range s'arrête toujours juste avant la borne de fin : range(1, 4) donne 1, 2, 3, et pas 4."
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "consigne": "Associe chaque range à ses valeurs (attention au pas).",
+       "paires": [
+        [
+         "range(0, 10, 2)",
+         "0, 2, 4, 6, 8"
+        ],
+        [
+         "range(1, 10, 3)",
+         "1, 4, 7"
+        ],
+        [
+         "range(5, 0, -1)",
+         "5, 4, 3, 2, 1"
+        ],
+        [
+         "range(3, 3)",
+         "aucune valeur"
+        ],
+        [
+         "range(10, 0, -3)",
+         "10, 7, 4, 1"
+        ]
+       ],
+       "aides": [
+        "Le troisième nombre est le pas : on ajoute ce nombre à chaque tour.",
+        "Avec un pas négatif, on descend, et on s'arrête juste avant la fin."
+       ],
+       "explication": "range(début, fin, pas) : on part du début, on ajoute le pas, et on s'arrête avant d'atteindre la fin. range(3, 3) est vide."
+      }
+     ]
+    },
+    {
+     "duree": 7,
+     "items": [
+      {
+       "consigne": "Associe chaque boucle à ce qu'elle affiche (une valeur par ligne).",
+       "paires": [
+        [
+         "for i in range(3):\n    print(i * 2)",
+         "0, 2, 4"
+        ],
+        [
+         "for i in range(1, 4):\n    print(i ** 2)",
+         "1, 4, 9"
+        ],
+        [
+         "for c in \"abc\":\n    print(c)",
+         "a, b, c"
+        ],
+        [
+         "for i in range(4, 0, -2):\n    print(i)",
+         "4, 2"
+        ],
+        [
+         "for i in range(2):\n    print(\"ok\")",
+         "ok, ok"
+        ]
+       ],
+       "aides": [
+        "Fais la liste des valeurs de i, puis calcule ce qui est affiché à chaque tour.",
+        "i ** 2 veut dire i au carré."
+       ],
+       "explication": "On écrit d'abord les valeurs prises par la variable de boucle, puis on applique le corps de la boucle à chacune.",
+       "executer": true
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "exemple-boucles-002",
+   "type": "erreur",
+   "titre": "Chasse au bug",
+   "objectif": "Repérer la ligne fausse d'une boucle, puis la corriger.",
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher 0, 1, 2, 3, 4.",
+       "lignes": [
+        "for i in range(5)",
+        "    print(i)"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "for i in range(5):",
+        "for i in range[5]",
+        "for (i in range(5))"
+       ],
+       "bonne": 0,
+       "explication": "La ligne for se termine toujours par deux-points ( : ).",
+       "aides": [
+        "Python signale une erreur de syntaxe (SyntaxError) : il manque un signe."
+       ],
+       "affiche": "0\n1\n2\n3\n4"
+      },
+      {
+       "but": "Afficher 0, 1, 2.",
+       "lignes": [
+        "for i in range(3):",
+        "print(i)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "    print(i)",
+        "print(i):",
+        "print i"
+       ],
+       "bonne": 0,
+       "explication": "Le corps de la boucle est décalé de 4 espaces : c'est ce décalage qui dit ce qui se répète.",
+       "aides": [
+        "Python signale IndentationError : regarde le début des lignes."
+       ],
+       "affiche": "0\n1\n2"
+      },
+      {
+       "but": "Afficher chaque lettre de « maison ».",
+       "lignes": [
+        "for lettre in \"maison\":",
+        "    print(Lettre)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "    print(lettre)",
+        "    print(\"lettre\")",
+        "    print(lettre[])"
+       ],
+       "bonne": 0,
+       "explication": "Python distingue majuscules et minuscules : Lettre et lettre sont deux noms différents (NameError).",
+       "aides": [
+        "Compare bien le nom de la variable sur les deux lignes."
+       ],
+       "affiche": "m\na\ni\ns\no\nn"
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "but": "Afficher les nombres de 1 à 10.",
+       "lignes": [
+        "for i in range(10):",
+        "    print(i)"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "for i in range(1, 11):",
+        "for i in range(1, 10):",
+        "for i in range(11):"
+       ],
+       "bonne": 0,
+       "explication": "range(10) donne 0 à 9. Pour 1 à 10, il faut commencer à 1 et s'arrêter avant 11.",
+       "aides": [
+        "Le programme marche, mais affiche-t-il bien 1 et 10 ?"
+       ],
+       "affiche": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10"
+      },
+      {
+       "but": "Calculer 1 + 2 + 3 + 4 + 5 et afficher 15.",
+       "lignes": [
+        "total = 0",
+        "for i in range(1, 6):",
+        "    total = i",
+        "print(total)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "    total = total + i",
+        "    total = total + 1",
+        "    i = total + i"
+       ],
+       "bonne": 0,
+       "explication": "Un accumulateur ajoute à ce qu'il contient déjà : total = total + i.",
+       "aides": [
+        "Que vaut total à la fin, avec ce programme ? Il garde seulement la dernière valeur."
+       ],
+       "affiche": "15"
+      },
+      {
+       "but": "Afficher 0, 1, 2.",
+       "lignes": [
+        "n = 0",
+        "while n < 3:",
+        "    print(n)",
+        "    n = n - 1"
+       ],
+       "ligne": 3,
+       "corrections": [
+        "    n = n + 1",
+        "    n = n * 1",
+        "    n == n + 1"
+       ],
+       "bonne": 0,
+       "explication": "Si n diminue, n < 3 reste toujours vrai : la boucle ne s'arrête jamais. Il faut faire avancer n vers la sortie.",
+       "aides": [
+        "Cette boucle tourne sans fin : quelle ligne devrait la faire avancer vers la sortie ?"
+       ],
+       "affiche": "0\n1\n2"
+      }
+     ]
+    },
+    {
+     "duree": 8,
+     "items": [
+      {
+       "but": "Compter les voyelles (a, e, i, o, u) de « mayotte » et afficher le nombre une seule fois.",
+       "lignes": [
+        "mot = \"mayotte\"",
+        "nb = 0",
+        "for c in mot:",
+        "    if c in \"aeiou\":",
+        "        nb = nb + 1",
+        "    print(nb)"
+       ],
+       "ligne": 5,
+       "corrections": [
+        "print(nb)",
+        "        print(nb)",
+        "    print(c)"
+       ],
+       "bonne": 0,
+       "explication": "print est dans la boucle : il s'exécute à chaque lettre. Sans décalage, il s'exécute une fois, après la boucle.",
+       "aides": [
+        "Combien de fois le programme affiche-t-il quelque chose ?"
+       ],
+       "affiche": "3"
+      },
+      {
+       "but": "Afficher la plus grande note de la liste (15).",
+       "lignes": [
+        "notes = [12, 8, 9, 15]",
+        "maxi = 0",
+        "for i in range(len(notes) - 1):",
+        "    if notes[i] > maxi:",
+        "        maxi = notes[i]",
+        "print(maxi)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "for i in range(len(notes)):",
+        "for i in range(len(notes) + 1):",
+        "for i in notes:"
+       ],
+       "bonne": 0,
+       "explication": "range(len(notes)) donne tous les indices, de 0 à len(notes) - 1. Avec - 1 en plus, la dernière note est oubliée.",
+       "aides": [
+        "Quels indices la boucle parcourt-elle ? La dernière note est-elle regardée ?"
+       ],
+       "affiche": "15"
+      },
+      {
+       "but": "Afficher la table de 7, de 7 x 1 = 7 à 7 x 10 = 70.",
+       "lignes": [
+        "for i in range(1, 11):",
+        "    print(\"7 x\", i, \"=\", 7 + i)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "    print(\"7 x\", i, \"=\", 7 * i)",
+        "    print(\"7 x\", i, \"=\", 7 ** i)",
+        "    print(\"7 x\", 7, \"=\", 7 * i)"
+       ],
+       "bonne": 0,
+       "explication": "La boucle est juste ; c'est le calcul qui est faux : il faut multiplier (*), pas additionner.",
+       "aides": [
+        "Que vaut la première ligne affichée ?"
+       ],
+       "affiche": "7 x 1 = 7\n7 x 2 = 14\n7 x 3 = 21\n7 x 4 = 28\n7 x 5 = 35\n7 x 6 = 42\n7 x 7 = 49\n7 x 8 = 56\n7 x 9 = 63\n7 x 10 = 70"
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "exemple-boucles-003",
+   "type": "vraifaux",
+   "titre": "Vrai ou faux éclair",
+   "objectif": "Lire une boucle d'un coup d'œil.",
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "for i in range(4) fait 4 tours.",
+       "reponse": true,
+       "explication": "range(4) donne 0, 1, 2, 3 : 4 valeurs, donc 4 tours."
+      },
+      {
+       "texte": "range(4) commence à 1.",
+       "reponse": false,
+       "explication": "range commence à 0 si on ne donne pas de début."
+      },
+      {
+       "texte": "Les lignes décalées sous for sont répétées.",
+       "reponse": true,
+       "explication": "Le décalage (l'indentation) marque le corps de la boucle."
+      },
+      {
+       "texte": "for i in range(2, 5) donne i = 2, 3, 4, 5.",
+       "reponse": false,
+       "explication": "range s'arrête juste avant la fin : 2, 3, 4."
+      },
+      {
+       "texte": "La ligne for se termine par deux-points ( : ).",
+       "reponse": true,
+       "explication": "Comme if et while : les deux-points ouvrent un bloc."
+      },
+      {
+       "texte": "while répète tant que sa condition est vraie.",
+       "reponse": true,
+       "explication": "while vérifie la condition avant chaque tour."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "for i in range(0, 10, 3) donne 0, 3, 6, 9.",
+       "reponse": true,
+       "explication": "On part de 0 et on ajoute 3 tant qu'on reste avant 10."
+      },
+      {
+       "texte": "Après cette boucle, i vaut 5.",
+       "reponse": false,
+       "explication": "Le dernier tour se fait avec i = 4 : i vaut 4 après la boucle.",
+       "code": "for i in range(5):\n    pass",
+       "verifier": "i == 5"
+      },
+      {
+       "texte": "range(5, 1) ne donne aucune valeur.",
+       "reponse": true,
+       "explication": "Avec le pas de 1, on ne peut pas aller de 5 à 1 : la boucle ne fait aucun tour."
+      },
+      {
+       "texte": "Une boucle while peut ne faire aucun tour.",
+       "reponse": true,
+       "explication": "Si la condition est fausse dès le départ, le corps n'est jamais exécuté."
+      },
+      {
+       "texte": "for c in \"NSI\" fait 3 tours.",
+       "reponse": true,
+       "explication": "Une boucle sur un texte fait un tour par caractère."
+      },
+      {
+       "texte": "while True s'arrête tout seul après 1 000 tours.",
+       "reponse": false,
+       "explication": "while True ne s'arrête jamais seul : il faut un break, ou c'est une boucle infinie."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "À la fin, s vaut 10.",
+       "reponse": false,
+       "explication": "i prend 0, 1, 2, 3 : s = 0 + 1 + 2 + 3 = 6.",
+       "code": "s = 0\nfor i in range(4):\n    s = s + i",
+       "verifier": "s == 10"
+      },
+      {
+       "texte": "for i in range(10, 0, -2) donne 10, 8, 6, 4, 2.",
+       "reponse": true,
+       "explication": "On descend de 2 en 2, et on s'arrête avant 0."
+      },
+      {
+       "texte": "Cette boucle fait 3 tours.",
+       "reponse": true,
+       "explication": "n vaut 10, puis 5, 2 et 1 : 3 tours, et 1 > 1 est faux.",
+       "code": "n = 10\nwhile n > 1:\n    n = n // 2"
+      },
+      {
+       "texte": "range(len(L)) donne les indices de la liste L.",
+       "reponse": true,
+       "explication": "Les indices vont de 0 à len(L) - 1 : c'est exactement range(len(L))."
+      },
+      {
+       "texte": "Ce code affiche 5 étoiles.",
+       "reponse": false,
+       "explication": "3 tours de la boucle extérieure, 2 tours à l'intérieur à chaque fois : 3 x 2 = 6 étoiles.",
+       "code": "for i in range(3):\n    for j in range(2):\n        print(\"*\")"
+      },
+      {
+       "texte": "Changer i dans le corps de for i in range(5) change le nombre de tours.",
+       "reponse": false,
+       "explication": "for reprend la valeur suivante de range à chaque tour : le nombre de tours ne change pas."
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "exemple-boucles-004",
+   "type": "sortie",
+   "titre": "Que va-t-il s'afficher ?",
+   "objectif": "Prévoir ce qu'affiche un programme, en suivant ses variables.",
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "for i in range(3):\n    print(i)",
+       "options": [
+        "0 / 1 / 2",
+        "1 / 2 / 3",
+        "0 / 1 / 2 / 3",
+        "3"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : range(3) donne 0, 1 et 2.",
+        "range commence à 0, pas à 1.",
+        "range(3) s'arrête juste avant 3.",
+        "print est dans la boucle : il affiche à chaque tour."
+       ],
+       "aides": [
+        "Écris les valeurs de i, une par tour."
+       ]
+      },
+      {
+       "code": "for i in range(1, 4):\n    print(i * 10)",
+       "options": [
+        "10 / 20 / 30",
+        "0 / 10 / 20",
+        "10 / 20 / 30 / 40",
+        "1 / 2 / 3"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste.",
+        "Ici range commence à 1.",
+        "range(1, 4) s'arrête avant 4.",
+        "On affiche i * 10, pas i."
+       ],
+       "aides": [
+        "i vaut 1, puis 2, puis 3."
+       ]
+      },
+      {
+       "code": "for c in \"oui\":\n    print(c)",
+       "options": [
+        "o / u / i",
+        "oui",
+        "c / c / c",
+        "o"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : un tour par lettre.",
+        "print est appelé à chaque tour : une lettre par ligne.",
+        "c est une variable : on affiche sa valeur, pas son nom.",
+        "La boucle passe par toutes les lettres."
+       ],
+       "aides": [
+        "c prend chaque lettre du mot, l'une après l'autre."
+       ]
+      },
+      {
+       "code": "x = 0\nfor i in range(5):\n    x = x + 1\nprint(x)",
+       "options": [
+        "5",
+        "4",
+        "0",
+        "1 / 2 / 3 / 4 / 5"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : 5 tours, et x augmente de 1 à chaque tour.",
+        "range(5) fait 5 tours, de 0 à 4.",
+        "x change dans la boucle.",
+        "print n'est pas décalé : il s'exécute une seule fois, après la boucle."
+       ],
+       "aides": [
+        "Compte les tours : de combien x augmente-t-il ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "code": "s = 0\nfor i in range(1, 5):\n    s = s + i\nprint(s)",
+       "options": [
+        "10",
+        "15",
+        "4",
+        "6"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : 1 + 2 + 3 + 4 = 10.",
+        "5 n'est pas compté : range s'arrête avant 5.",
+        "On additionne les valeurs de i, pas les tours.",
+        "i commence à 1 et va jusqu'à 4."
+       ],
+       "aides": [
+        "Fais un tableau : i, puis s après chaque tour."
+       ]
+      },
+      {
+       "code": "n = 1\nfor i in range(4):\n    n = n * 2\nprint(n)",
+       "options": [
+        "16",
+        "8",
+        "32",
+        "2"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : 1, 2, 4, 8, 16.",
+        "Il y a 4 tours, pas 3.",
+        "Il y a 4 tours, pas 5.",
+        "n est multiplié à chaque tour, pas une seule fois."
+       ],
+       "aides": [
+        "n double à chaque tour."
+       ]
+      },
+      {
+       "code": "i = 0\nwhile i < 10:\n    i = i + 3\nprint(i)",
+       "options": [
+        "12",
+        "9",
+        "10",
+        "3"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : 0, 3, 6, 9, puis 12 ; et 12 < 10 est faux.",
+        "Avec i = 9, la condition 9 < 10 est vraie : un tour de plus.",
+        "i avance de 3 en 3 : il ne passe pas par 10.",
+        "La boucle fait plusieurs tours avant d'afficher."
+       ],
+       "aides": [
+        "Note i après chaque tour, et vérifie la condition."
+       ]
+      },
+      {
+       "code": "mot = \"\"\nfor c in \"abc\":\n    mot = c + mot\nprint(mot)",
+       "options": [
+        "cba",
+        "abc",
+        "c",
+        "aabbcc"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : chaque lettre se place devant les autres.",
+        "c + mot met la lettre devant, pas derrière.",
+        "mot garde ce qu'il avait déjà.",
+        "Chaque lettre n'est ajoutée qu'une fois."
+       ],
+       "aides": [
+        "Après le premier tour, mot vaut \"a\". Et après le deuxième ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 8,
+     "items": [
+      {
+       "code": "n = 100\nt = 0\nwhile n > 1:\n    n = n // 3\n    t = t + 1\nprint(t)",
+       "reponse": "4",
+       "aides": [
+        "// est la division entière : 100 // 3 vaut 33.",
+        "n vaut 100, 33, 11, 3, puis 1."
+       ],
+       "explication": "n vaut 100, 33, 11, 3 puis 1 : 4 tours, donc t vaut 4."
+      },
+      {
+       "code": "total = 0\nfor i in range(10):\n    if i % 2 == 0:\n        total = total + i\nprint(total)",
+       "reponse": "20",
+       "aides": [
+        "i % 2 == 0 est vrai quand i est pair.",
+        "On additionne 0, 2, 4, 6 et 8."
+       ],
+       "explication": "Les valeurs paires de 0 à 9 sont 0, 2, 4, 6, 8 : leur somme est 20."
+      },
+      {
+       "code": "L = [3, 1, 4, 1, 5]\nc = 0\nfor x in L:\n    if x > 2:\n        c = c + 1\nprint(c)",
+       "reponse": "3",
+       "aides": [
+        "x prend chaque valeur de la liste.",
+        "Compte les valeurs plus grandes que 2."
+       ],
+       "explication": "3, 4 et 5 sont plus grands que 2 : c vaut 3."
+      },
+      {
+       "code": "a = 0\nb = 1\nfor i in range(5):\n    a, b = b, a + b\nprint(a)",
+       "reponse": "5",
+       "aides": [
+        "a, b = b, a + b calcule d'abord les deux valeurs de droite, puis les range.",
+        "(a, b) vaut (0, 1), (1, 1), (1, 2), (2, 3)…"
+       ],
+       "explication": "(a, b) passe par (1, 1), (1, 2), (2, 3), (3, 5), (5, 8) : a vaut 5. Ce sont les nombres de Fibonacci."
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "exemple-boucles-005",
+   "type": "ordre",
+   "titre": "Le puzzle de code",
+   "objectif": "Construire une boucle ligne par ligne : début, corps, fin.",
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher 1, 2, 3, 4, 5, puis « Fini ».",
+       "lignes": [
+        "for i in range(1, 6):",
+        "    print(i)",
+        "print(\"Fini\")"
+       ],
+       "affiche": "1\n2\n3\n4\n5\nFini",
+       "aides": [
+        "Une ligne décalée vient juste sous la ligne qui se termine par : ."
+       ]
+      },
+      {
+       "but": "Afficher 3 fois « Allez ! », puis « Partez ! ».",
+       "lignes": [
+        "n = 3",
+        "for i in range(n):",
+        "    print(\"Allez !\")",
+        "print(\"Partez !\")"
+       ],
+       "affiche": "Allez !\nAllez !\nAllez !\nPartez !",
+       "aides": [
+        "Une variable doit exister avant d'être utilisée."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "but": "Calculer et afficher 1 + 2 + … + 10.",
+       "lignes": [
+        "total = 0",
+        "for i in range(1, 11):",
+        "    total = total + i",
+        "print(total)"
+       ],
+       "affiche": "55",
+       "aides": [
+        "Le total commence à 0, avant la boucle.",
+        "On affiche le total une seule fois, à la fin."
+       ]
+      },
+      {
+       "but": "Compte à rebours : 5, 4, 3, 2, 1, puis « Décollage ».",
+       "lignes": [
+        "n = 5",
+        "while n > 0:",
+        "    print(n)",
+        "    n = n - 1",
+        "print(\"Décollage\")"
+       ],
+       "affiche": "5\n4\n3\n2\n1\nDécollage",
+       "aides": [
+        "Dans la boucle, on affiche d'abord, puis on diminue n.",
+        "Sinon, le premier nombre affiché serait 4."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 8,
+     "items": [
+      {
+       "but": "Compter les voyelles de « informatique » et afficher le nombre.",
+       "lignes": [
+        "mot = \"informatique\"",
+        "nb = 0",
+        "for c in mot:",
+        "    if c in \"aeiou\":",
+        "        nb = nb + 1",
+        "print(nb)"
+       ],
+       "affiche": "6",
+       "aides": [
+        "Les deux variables sont créées avant la boucle.",
+        "if est dans la boucle, et nb = nb + 1 est dans le if."
+       ]
+      },
+      {
+       "but": "Afficher la plus grande note de la liste.",
+       "lignes": [
+        "notes = [12, 8, 15, 9]",
+        "maxi = notes[0]",
+        "for n in notes:",
+        "    if n > maxi:",
+        "        maxi = n",
+        "print(maxi)"
+       ],
+       "affiche": "15",
+       "aides": [
+        "On part de la première note comme maximum provisoire.",
+        "On remplace le maximum seulement si la note est plus grande."
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "exemple-boucles-006",
+   "type": "completer",
+   "titre": "Les pièces manquantes",
+   "objectif": "Choisir le bon morceau pour que la boucle marche.",
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher 0, 1, 2, 3.",
+       "lignes": [
+        "for i in {0}(4){1}",
+        "    print(i)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "range",
+          "len",
+          "print"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          ":",
+          ";",
+          "."
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "0\n1\n2\n3",
+       "aides": [
+        "La fonction qui donne une suite de nombres est range."
+       ],
+       "explication": "for i in range(4): , avec les deux-points à la fin."
+      },
+      {
+       "but": "Afficher 1, 2, 3.",
+       "lignes": [
+        "for i in range(1, {0}):",
+        "    print(i)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "3",
+          "4",
+          "5"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "1\n2\n3",
+       "aides": [
+        "range s'arrête juste avant la fin."
+       ],
+       "explication": "range(1, 4) donne 1, 2, 3."
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "but": "Afficher la somme 1 + 2 + … + n pour n = 6 (21).",
+       "lignes": [
+        "n = 6",
+        "total = {0}",
+        "for i in range(1, n + 1):",
+        "    total = total {1} i",
+        "print(total)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "0",
+          "1",
+          "n"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "+",
+          "*",
+          "-"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "21",
+       "aides": [
+        "Pour une somme, on part de 0.",
+        "On ajoute i à chaque tour."
+       ],
+       "explication": "Un accumulateur de somme part de 0 et ajoute i à chaque tour."
+      },
+      {
+       "but": "Afficher 10, 7, 4, 1.",
+       "lignes": [
+        "n = 10",
+        "while n {0} 0:",
+        "    print(n)",
+        "    n = n - {1}"
+       ],
+       "trous": [
+        {
+         "options": [
+          ">",
+          "<",
+          "=="
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "3",
+          "1",
+          "10"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "10\n7\n4\n1",
+       "aides": [
+        "La boucle continue tant que n est positif.",
+        "Les nombres baissent de 3 en 3."
+       ],
+       "explication": "while n > 0 avec n = n - 3 : 10, 7, 4, 1, puis n vaut -2 et la boucle s'arrête."
+      }
+     ]
+    },
+    {
+     "duree": 7,
+     "items": [
+      {
+       "but": "Compter les nombres pairs de la liste (3).",
+       "lignes": [
+        "L = [4, 7, 10, 3, 8]",
+        "nb = 0",
+        "for x in L:",
+        "    if x {0} 2 == 0:",
+        "        nb = nb {1}",
+        "print(nb)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "%",
+          "//",
+          "/"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "+ 1",
+          "+ x",
+          "* 2"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "3",
+       "aides": [
+        "% donne le reste de la division.",
+        "On compte : on ajoute 1, pas la valeur."
+       ],
+       "explication": "x % 2 == 0 teste si x est pair ; nb = nb + 1 compte, il n'additionne pas."
+      },
+      {
+       "but": "Afficher le mot à l'envers (« reinrev »).",
+       "lignes": [
+        "mot = \"vernier\"",
+        "inv = \"\"",
+        "for c in mot:",
+        "    inv = {0}",
+        "print(inv)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "c + inv",
+          "inv + c",
+          "c"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "reinrev",
+       "aides": [
+        "Chaque nouvelle lettre doit passer devant les précédentes."
+       ],
+       "explication": "c + inv place la lettre devant : le mot se retourne."
+      }
+     ]
+    }
+   ],
+   "relu": false
+  }
+ ]
+}
