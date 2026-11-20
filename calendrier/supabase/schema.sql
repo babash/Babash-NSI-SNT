@@ -1,7 +1,7 @@
 begin;
 -- =============================================================================
---  Calendrier des vacances : script complet (règle M2), aujourd'hui le même
---  texte que la migration 0001 (comptes, calendriers, résultats)
+--  Calendrier des vacances : script complet (règle M2) : la migration 0001
+--  (comptes, calendriers, résultats) et l'index de la migration 0002
 --  Projet Supabase cukahpyqkljiddmimpyi (« Babash - applications »)
 --  Nom de migration : vacances_0001_calendrier
 --  T105, version de Noël 2026 (20/11/2026). L'enseignant a vu le fichier et
@@ -265,6 +265,9 @@ create table if not exists vacances.resultats (
   foreign key (calendrier_id, numero) references vacances.cases (calendrier_id, numero) on delete restrict
 );
 create index if not exists resultats_calendrier on vacances.resultats (calendrier_id, fait_le);
+create index if not exists resultats_case on vacances.resultats (calendrier_id, numero);  -- migration 0002
+comment on index vacances.resultats_case is
+  'Calendrier des vacances. Couvre la clé étrangère des résultats vers les cases (calendrier_id, numero).';
 alter table vacances.resultats enable row level security;
 revoke all on vacances.resultats from public, anon, authenticated;
 comment on table vacances.resultats is

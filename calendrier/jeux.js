@@ -11,6 +11,40 @@
   CV.NOMS_TYPES = { associer: "Associer", erreur: "Trouver l'erreur", vraifaux: "Vrai ou faux éclair",
     sortie: "Prévoir la sortie", ordre: "Remettre dans l'ordre", completer: "Compléter" };
 
+  // ce que montre le programme fautif d'une « erreur » : le message réel, sa sortie, ou une boucle sans fin
+  CV.console = function (q, langage) {
+    var sql = langage === "sql";
+    if (q.message != null) return '<div class="console" role="note"><span class="console-titre">' + (sql ? "SQLite répond" : "Python affiche") + ' :</span><pre class="console-erreur">' + CV.esc(q.message) + "</pre></div>";
+    if (q.boucle_infinie) return '<div class="console" role="note"><span class="console-titre">Le programme ne s\'arrête jamais :</span><pre>(boucle infinie)</pre></div>';
+    if (q.affiche_fautif != null) return '<div class="console" role="note"><span class="console-titre">' + (sql ? "La requête affiche" : "Le programme affiche") + ' :</span><pre>' + (q.affiche_fautif === "" ? (sql ? "(aucune ligne)" : "(rien)") : CV.esc(q.affiche_fautif)) + "</pre></div>";
+    return "";
+  };
+  // un arbre binaire { v, g, d }, dessiné en SVG (lisible à 320 px : 31 nœuds au plus)
+  CV.arbre = function (a) {
+    if (!a) return "";
+    var noeuds = [], aretes = [], rang = 0, prof = 0;
+    (function place(n, p) {
+      if (!n) return null;
+      var g = place(n.g, p + 1), x = rang++, d = place(n.d, p + 1), moi = { v: n.v, x: x, y: p };
+      prof = Math.max(prof, p); noeuds.push(moi);
+      if (g) aretes.push([moi, g]); if (d) aretes.push([moi, d]);
+      return moi;
+    })(a, 0);
+    var L = 40, H = 52, r = 15, W = rang * L, Ht = (prof + 1) * H;
+    var X = function (n) { return n.x * L + L / 2; }, Y = function (n) { return n.y * H + r + 4; };
+    return '<svg class="arbre" viewBox="0 0 ' + W + " " + Ht + '" role="img" aria-label="Arbre binaire de ' + noeuds.length + ' nœuds" style="max-width:' + Math.max(W, 120) + 'px">' +
+      aretes.map(function (e) { return '<line x1="' + X(e[0]) + '" y1="' + Y(e[0]) + '" x2="' + X(e[1]) + '" y2="' + Y(e[1]) + '"/>'; }).join("") +
+      noeuds.map(function (n) { return '<circle cx="' + X(n) + '" cy="' + Y(n) + '" r="' + r + '"/><text x="' + X(n) + '" y="' + (Y(n) + 4) + '">' + CV.esc(n.v) + "</text>"; }).join("") + "</svg>";
+  };
+  // les tables d'un thème SQL, repliables
+  CV.tablesSql = function (tables, ouvert) {
+    if (!tables || !tables.length) return "";
+    return '<details class="tables"' + (ouvert ? " open" : "") + "><summary>Les tables de la base (" + tables.length + ")</summary>" + tables.map(function (t) {
+      return '<div class="defile"><table class="table-sql"><caption>' + CV.esc(t.nom) + "</caption><thead><tr>" + t.colonnes.map(function (c) { return "<th scope=\"col\">" + CV.esc(c) + "</th>"; }).join("") +
+        "</tr></thead><tbody>" + t.lignes.map(function (l) { return "<tr>" + l.map(function (v) { return "<td>" + CV.esc(v) + "</td>"; }).join("") + "</tr>"; }).join("") + "</tbody></table></div>";
+    }).join("") + "</details>";
+  };
+
   CV.jouer = function (racine, o) {
     var ex = o.exercice, items = ex.niveaux[o.niveau - 1].items, type = ex.type;
     CV.langage = o.langage || "python";
@@ -31,7 +65,10 @@
       if (type === "associer") G.s.droite = CV.melange(q.paires.map(function (_, i) { return i; }));
       if (type === "sortie" && q.options) G.s.opts = CV.melange(q.options.map(function (_, i) { return i; }));
       if (type === "erreur") G.s.corr = CV.melange(q.corrections.map(function (_, i) { return i; }));
-      if (type === "completer") G.s.choisis = q.trous.map(function () { return null; });
+      if (type === "completer") {
+        G.s.choisis = q.trous.map(function () { return null; });
+        G.s.jet = q.trous.map(function (t) { return CV.melange(t.options.map(function (_, j) { return j; })); });
+      }
       dessiner();
     }
     function dessiner() {
@@ -41,6 +78,7 @@
       racine.innerHTML = '<div class="jeu-haut"><button class="btn" data-j="quitter">&#8592; Calendrier</button><span class="ou">' + esc(o.titreCase || "") + " · " + CV.etoiles(o.niveau, 3) + "</span></div>" +
         '<h1 tabindex="-1">' + esc(ex.titre) + '</h1><p class="objectif">Objectif : ' + esc(ex.objectif) + "</p>" +
         '<div class="points" role="img" aria-label="Question ' + Math.min(G.faits + 1, total) + " sur " + total + '">' + pts + "</div>" +
+        CV.tablesSql(o.tables) + (q.arbre ? CV.arbre(q.arbre) : "") +
         '<div id="zone">' + zone(q) + "</div>" +
         '<div class="message retour-jeu ' + (G.cls || "") + '" role="status" aria-live="polite">' + (G.msg || "") + "</div>" +
         aides.slice(0, G.aides).map(function (a) { return '<div class="aide">Coup de pouce : ' + esc(a) + "</div>"; }).join("") +
@@ -87,7 +125,7 @@
         if (s.fausse != null) classes[s.fausse] = "ko";
         var lignes = q.lignes.slice(); if (f) lignes[q.ligne] = q.corrections[q.bonne];
         var hh = '<p class="consigne">But : ' + esc(q.but) + "</p><p>" + (s.phase === 1 ? "Touche la ligne qui contient l'erreur." : f ? "Programme corrigé :" : "Choisis la bonne correction de la ligne " + (q.ligne + 1) + ".") + "</p>" +
-          CV.blocCode(lignes, { touchable: s.phase === 1 && !f, classes: classes });
+          CV.blocCode(lignes, { touchable: s.phase === 1 && !f, classes: classes }) + (f ? "" : CV.console(q, CV.langage));
         if (s.phase === 2 && !f) hh += '<div class="choix">' + s.corr.map(function (k) {
           return '<button class="option' + (s.desactives[k] ? " ko" : "") + '" data-j="corr" data-k="' + k + '"' + (s.desactives[k] ? " disabled" : "") + "><pre>" + CV.ligneCode(q.corrections[k]) + "</pre></button>";
         }).join("") + "</div>";
@@ -115,8 +153,8 @@
         var tr = q.trous[s.sel];
         return '<p class="consigne">But : ' + esc(q.but) + '</p><div class="code">' + lc + "</div>" +
           (f ? '<p class="doux">Il affiche :</p>' + affichage(q.affiche) :
-            '<p class="doux">Pièces pour le trou ' + (s.sel + 1) + ' :</p><div class="jetons">' + tr.options.map(function (op, j) {
-              return '<button class="jeton" data-j="jeton" data-k="' + j + '">' + esc(op) + "</button>";
+            '<p class="doux">Pièces pour le trou ' + (s.sel + 1) + ' :</p><div class="jetons">' + (s.jet ? s.jet[s.sel] : tr.options.map(function (_, j) { return j; })).map(function (j) {
+              return '<button class="jeton" data-j="jeton" data-k="' + j + '">' + esc(tr.options[j]) + "</button>";
             }).join("") + "</div>");
       }
       return '<div class="message ko">Type de mini-jeu inconnu : ' + esc(type) + "</div>";
@@ -219,11 +257,11 @@
   };
 
   // le corrigé d'un exercice (tous niveaux), montré à J + 3
-  CV.corrige = function (ex, langage) {
+  CV.corrige = function (ex, langage, tables) {
     CV.langage = langage || "python";
-    return ex.niveaux.map(function (nv, i) {
+    return CV.tablesSql(tables) + ex.niveaux.map(function (nv, i) {
       return '<section class="carte"><h2>' + CV.etoiles(i + 1, 3) + " " + NOMS_NIVEAUX[i] + "</h2>" + nv.items.map(function (q) {
-        return '<div class="corrige-item">' + corrigeItem(ex.type, q) + "</div>";
+        return '<div class="corrige-item">' + (q.arbre ? CV.arbre(q.arbre) : "") + corrigeItem(ex.type, q) + "</div>";
       }).join("") + "</section>";
     }).join("");
   };
@@ -234,7 +272,7 @@
     if (t === "associer") return "<p>" + esc2(q.consigne) + '</p><table class="paires">' + q.paires.map(function (p) { return "<tr><td><code class=\"mono\">" + (q.executer ? CV.colorer(p[0]) : esc2(p[0])) + "</code></td><td>" + esc2(p[1]) + "</td></tr>"; }).join("") + '</table><p class="doux">' + esc2(q.explication) + "</p>";
     if (t === "erreur") {
       var l2 = q.lignes.slice(); l2[q.ligne] = q.corrections[q.bonne]; var c1 = {}, c2 = {}; c1[q.ligne] = "ko"; c2[q.ligne] = "ok";
-      return "<p><b>But :</b> " + esc2(q.but) + '</p><p class="doux">Avec l\'erreur :</p>' + CV.blocCode(q.lignes, { classes: c1 }) + '<p class="doux">Corrigé :</p>' + CV.blocCode(l2, { classes: c2 }) + '<p class="doux">' + esc2(q.explication) + "</p>";
+      return "<p><b>But :</b> " + esc2(q.but) + '</p><p class="doux">Avec l\'erreur :</p>' + CV.blocCode(q.lignes, { classes: c1 }) + CV.console(q, CV.langage) + '<p class="doux">Corrigé :</p>' + CV.blocCode(l2, { classes: c2 }) + '<p class="doux">' + esc2(q.explication) + "</p>";
     }
     if (t === "ordre") return "<p><b>But :</b> " + esc2(q.but) + "</p>" + CV.blocCode(q.lignes) + '<p class="doux">Affiche :</p><div class="affiche">' + esc2(q.affiche) + "</div>";
     if (t === "completer") {

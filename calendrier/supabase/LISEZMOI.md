@@ -1,6 +1,6 @@
 # Calendrier des vacances : la base
 
-*T105, version de Noël 2026 (20/11/2026). **Rien n'est appliqué.** L'enseignant a vu le fichier et délégué (20/11, 14:55, au chef d'orchestre) ; le Gardien relit, puis le chef d'orchestre applique (`apply_migration`). Spécification : `architecture-calendrier-vacances.md` (livrable T105).*
+*T105, version de Noël 2026. **`vacances_0001_calendrier` et `base_unique_0009_registre_vacances` sont appliquées le 20/11 (15:31 et 15:33, version `0ecbb1d`) ; `vacances_0002_index_resultats` attend.** L'enseignant a vu le fichier et délégué (20/11, 14:55, au chef d'orchestre) ; le Gardien relit, puis le chef d'orchestre applique (`apply_migration`). Spécification : `architecture-calendrier-vacances.md` (livrable T105).*
 
 - **Projet :** `cukahpyqkljiddmimpyi` (« Babash - applications »), la base unique.
 - **Schéma :** `vacances`. Il n'est pas exposé à l'API, et `anon` comme `authenticated` n'y ont aucun droit.
@@ -16,6 +16,7 @@
 | `calendrier/supabase/0001-calendrier.sql` | `vacances_0001_calendrier` | Crée le schéma, 9 tables, 15 fonctions internes et les 22 fonctions d'entrée. |
 | `calendrier/supabase/0001-calendrier-inverse.sql` | — | Retire tout. **Efface les comptes et les résultats** : l'enseignant exporte d'abord les tables (M8). |
 | `calendrier/supabase/schema.sql` | — | Le script complet de l'application, pour installer une copie (après le `schema.sql` du socle) : aujourd'hui, le même texte que `0001`. |
+| `calendrier/supabase/0002-index-resultats.sql` (et son inverse) | `vacances_0002_index_resultats` | Ajoute l'index `vacances.resultats_case (calendrier_id, numero)`, qui couvre la clé étrangère des résultats vers les cases (conseiller de performance 0001, relevé après l'application du 20/11). **Pas encore appliqué.** L'inverse retire l'index sans rien effacer. |
 | `supabase/0009-registre-vacances.sql` | `base_unique_0009_registre_vacances` | Ajoute le schéma `vacances` et le préfixe `cv_` à la vue `commun.registre`. Il passe avant ou après `0001`, et avant ou après `0007` et `0008` du compte commun (T101), qu'il ne touche pas. |
 | `supabase/0009-registre-vacances-inverse.sql` | — | Remet la vue de `0006`, sans rien effacer. |
 

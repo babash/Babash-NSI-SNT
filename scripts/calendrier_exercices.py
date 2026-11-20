@@ -61,27 +61,118 @@ class Rapport:
 
 # ------------------------------------------------------------------ exécution
 
+SANS_FIN = "ne s'arrête pas (plus de 3 s)"
+ADRESSE = re.compile(r" at 0x[0-9a-f]+")
+
+
 def executer_python(code, suite=""):
     """(sortie, None) ou (None, raison) : erreur, délai dépassé."""
     try:
         r = subprocess.run([sys.executable, "-I", "-c", code + suite], capture_output=True, text=True, timeout=3)
     except subprocess.TimeoutExpired:
-        return None, "ne s'arrête pas (plus de 3 s)"
+        return None, SANS_FIN
     if r.returncode != 0:
         derniere = (r.stderr.strip().splitlines() or ["erreur"])[-1]
-        return None, derniere
-    return r.stdout.rstrip("\n"), None
+        return None, ADRESSE.sub(" at 0x…", derniere)
+    # une adresse mémoire change à chaque exécution : on la remplace par « 0x… »
+    return ADRESSE.sub(" at 0x…", r.stdout.rstrip("\n")), None
 
 
-def executer_sql(base, requete):
+def instructions_sql(code):
+    """Découpe un programme SQL en instructions complètes (sqlite3.complete_statement)."""
+    out, cour = [], ""
+    for morceau in code.split(";"):
+        cour += morceau + ";"
+        if sqlite3.complete_statement(cour):
+            if cour.strip(" \n;"):
+                out.append(cour.strip())
+            cour = ""
+    if cour.strip(" \n;"):
+        out.append(cour.strip())
+    return out
+
+
+def connexion_sql(base):
+    """Une base neuve, comme à chaque connexion : PRAGMA foreign_keys = ON, puis base_sql en entier."""
+    cx = sqlite3.connect(":memory:")
+    cx.execute("PRAGMA foreign_keys = ON")
+    cx.executescript(base)
+    cx.execute("PRAGMA foreign_keys = ON")
+    return cx
+
+
+def executer_sql(base, code, verifier=None):
+    """Toutes les instructions du programme (mises à jour comprises), puis l'affichage de la
+    dernière (un SELECT). Avec verifier : la valeur de cette requête-là, après le programme.
+    Une erreur renvoie le message de SQLite, comme la console sqlite3 : « Error: … »."""
     try:
-        cx = sqlite3.connect(":memory:")
-        cx.executescript(base)
-        lignes = cx.execute(requete).fetchall()
+        cx = connexion_sql(base)
+    except sqlite3.Error as e:
+        return None, f"base_sql illisible : {e}"
+    try:
+        lignes = []
+        for instr in instructions_sql(code):
+            lignes = cx.execute(instr).fetchall()
+        if verifier:
+            lignes = cx.execute(verifier).fetchall()
         cx.close()
     except sqlite3.Error as e:
-        return None, f"SQLite : {e}"
+        return None, f"Error: {e}"
     return "\n".join(" | ".join("NULL" if v is None else str(v) for v in l) for l in lignes), None
+
+
+MAX_PERMUTATIONS = 8
+HARNAIS = r"""
+import contextlib, io, itertools, json, signal, sys
+d = json.load(sys.stdin)
+lignes, cible = d["lignes"], d["cible"]
+def fin(*a):
+    raise TimeoutError
+signal.signal(signal.SIGALRM, fin)
+trouves = []
+for p in itertools.permutations(range(len(lignes))):
+    if list(p) == list(range(len(lignes))):
+        continue
+    try:
+        code = compile("\n".join(lignes[i] for i in p), "<p>", "exec")
+    except (SyntaxError, ValueError):
+        continue
+    f = io.StringIO()
+    try:
+        signal.setitimer(signal.ITIMER_REAL, 0.2)
+        with contextlib.redirect_stdout(f):
+            exec(code, {"__name__": "__main__"})
+    except BaseException:
+        continue
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+    if f.getvalue().rstrip("\n") == cible:
+        trouves.append([i + 1 for i in p])
+        if len(trouves) >= 3:
+            break
+print(json.dumps(trouves))
+"""
+
+
+def autres_dispositions(chap, lignes, cible):
+    """Les autres ordres des lignes qui affichent aussi la cible (la page n'accepte que le bon)."""
+    if chap["langage"] == "sql":
+        import itertools
+        trouves = []
+        for p in itertools.permutations(range(len(lignes))):
+            if list(p) == list(range(len(lignes))):
+                continue
+            s, err = executer_sql(chap.get("_base", ""), "\n".join(lignes[i] for i in p))
+            if not err and s == cible:
+                trouves.append([i + 1 for i in p])
+                break
+        return trouves
+    try:
+        r = subprocess.run([sys.executable, "-I", "-c", HARNAIS], input=json.dumps({"lignes": lignes, "cible": cible}),
+                           capture_output=True, text=True, timeout=120)
+        return json.loads(r.stdout or "[]")
+    except (subprocess.TimeoutExpired, ValueError):
+        return []
 
 
 INTERDITS_PY = re.compile(r"\b(input|open|exec|eval|__import__)\s*\(|\bimport\s+(random|os|sys|time|subprocess|socket)\b|\bfrom\s+(random|os|sys|time)\b")
@@ -89,7 +180,8 @@ INTERDITS_PY = re.compile(r"\b(input|open|exec|eval|__import__)\s*\(|\bimport\s+
 
 def executer(chap, code):
     if chap["langage"] == "sql":
-        if re.match(r"\s*select\b", code, re.I) and not re.search(r"\border\s+by\b", code, re.I):
+        derniere = (instructions_sql(code) or [""])[-1]
+        if re.match(r"\s*select\b", derniere, re.I) and not re.search(r"\border\s+by\b", derniere, re.I):
             s, err = executer_sql(chap.get("_base", ""), code)
             if not err and "\n" in s:
                 return None, "plusieurs lignes sans ORDER BY : leur ordre n'est pas garanti"
@@ -144,6 +236,9 @@ def forme(chap, ex, ou, rp):
                     rp.erreur(o2, "« ligne » hors du programme")
                 if not 0 <= it.get("bonne", -1) < 3:
                     rp.erreur(o2, "« bonne » entre 0 et 2")
+                montre = [k for k in ("message", "affiche_fautif", "boucle_infinie") if k in it]
+                if len(montre) != 1:
+                    rp.erreur(o2, "une « erreur » dit ce que montre le programme fautif : un seul champ parmi message, affiche_fautif, boucle_infinie (trouvé : " + (", ".join(montre) or "aucun") + ")")
                 if it.get("lignes") and 0 <= it.get("ligne", -1) < len(it["lignes"]) and it["lignes"][it["ligne"]] in it.get("corrections", []):
                     rp.erreur(o2, "une « correction » est identique à la ligne fautive")
             elif t == "associer":
@@ -163,8 +258,8 @@ def forme(chap, ex, ou, rp):
                     if not 0 <= tr.get("bonne", -1) < len(tr.get("options", [])):
                         rp.erreur(o2, f"trou {k} : « bonne » hors des options")
             elif t == "vraifaux":
-                if "verifier" in it and chap["langage"] != "python":
-                    rp.erreur(o2, "« verifier » n'existe qu'en Python")
+                if "verifier" in it and "code" not in it:
+                    rp.erreur(o2, "« verifier » demande un « code »")
             if chap["langage"] == "python":
                 for champ in ("code", "lignes"):
                     v = it.get(champ)
@@ -201,6 +296,22 @@ def fond(chap, ex, ou, rp):
                 s, err = executer(chap, "\n".join(lignes))
                 if not err and s == it["affiche"]:
                     rp.erreur(o2, "le programme fautif affiche déjà le bon résultat : l'erreur ne se voit pas")
+                # ce que montre le programme fautif : le message d'erreur, sa sortie, ou une boucle sans fin
+                if err == SANS_FIN:
+                    if not it.get("boucle_infinie"):
+                        rp.erreur(o2, "le programme fautif ne s'arrête pas : écrire \"boucle_infinie\": true")
+                elif err:
+                    m = it.get("message")
+                    if m is None:
+                        rp.erreur(o2, f"le programme fautif s'arrête sur une erreur : écrire \"message\": {err!r}")
+                    elif m.split(":")[0] != err.split(":")[0]:
+                        rp.erreur(o2, f"« message » annonce {m!r}, le programme donne {err!r}")
+                    elif m != err:
+                        rp.avert(o2, f"« message » diffère un peu du message réel ({err!r}) : version de Python ou de SQLite ?")
+                elif "affiche_fautif" not in it:
+                    rp.erreur(o2, f"erreur de logique : écrire \"affiche_fautif\": {s!r}")
+                elif it["affiche_fautif"] != s:
+                    rp.erreur(o2, f"« affiche_fautif » vaut {it['affiche_fautif']!r}, le programme fautif affiche {s!r}")
                 for k, c in enumerate(it["corrections"]):
                     l2 = list(lignes)
                     l2[it["ligne"]] = c
@@ -214,6 +325,12 @@ def fond(chap, ex, ou, rp):
                 s, err = executer(chap, "\n".join(it["lignes"]))
                 if err or s != it["affiche"]:
                     rp.erreur(o2, f"les lignes dans l'ordre n'affichent pas « affiche » : {err or repr(s)}")
+                elif len(it["lignes"]) > MAX_PERMUTATIONS:
+                    rp.avert(o2, f"{len(it['lignes'])} lignes : les autres dispositions ne sont pas toutes essayées (au plus {MAX_PERMUTATIONS} lignes)")
+                else:
+                    autres = autres_dispositions(chap, it["lignes"], it["affiche"])
+                    if autres:
+                        rp.erreur(o2, f"une autre disposition donne aussi le bon résultat (ordre {autres[0]}) : réunir les lignes indépendantes (a, b = 1, 2)")
             elif t == "completer":
                 def rempli(choix):
                     texte = "\n".join(it["lignes"])
@@ -239,7 +356,13 @@ def fond(chap, ex, ou, rp):
                     if err or s.replace("\n", ", ") != d:
                         rp.erreur(o2, f"« {g[:30]}… » affiche {err or repr(s)}, pas « {d} »")
             elif t == "vraifaux" and "code" in it:
-                if "verifier" in it:
+                if "verifier" in it and chap["langage"] == "sql":
+                    s, err = executer_sql(chap.get("_base", ""), it["code"], it["verifier"])
+                    if err:
+                        rp.erreur(o2, f"code ou « verifier » en erreur : {err}")
+                    elif (s not in ("0", "", "NULL")) != it["reponse"]:
+                        rp.erreur(o2, f"« {it['verifier']} » donne {s!r}, la réponse annoncée est {it['reponse']}")
+                elif "verifier" in it:
                     s, err = executer_python(it["code"], "\nprint(bool(" + it["verifier"] + "))")
                     if err:
                         rp.erreur(o2, f"code ou « verifier » en erreur : {err}")
@@ -250,6 +373,59 @@ def fond(chap, ex, ou, rp):
                     if err:
                         rp.erreur(o2, f"le code de l'affirmation ne marche pas : {err}")
                     rp.avert(o2, "affirmation sur un code sans « verifier » : à relire à la main")
+
+
+# ------------------------------------------------------------------ places des bonnes réponses
+
+def places(cid, exercices, rp):
+    """Un avertissement quand la bonne réponse est toujours à la même place dans un thème."""
+    lignes_fautives, bonnes = [], {"sortie": [], "erreur": [], "completer": []}
+    for ex in exercices:
+        for n, niv in enumerate(ex.get("niveaux", []), 1):
+            reps = [it.get("reponse") for it in niv.get("items", []) if ex.get("type") == "vraifaux"]
+            if len(reps) >= 4 and len(set(reps)) == 1:
+                rp.avert(f"{cid} {ex.get('id')} niveau {n}", f"toutes les affirmations sont {'vraies' if reps[0] else 'fausses'}")
+            for it in niv.get("items", []):
+                t = ex.get("type")
+                if t == "erreur" and it.get("lignes"):
+                    lignes_fautives.append("dernière" if it.get("ligne") == len(it["lignes"]) - 1 else "première" if it.get("ligne") == 0 else "milieu")
+                if t in ("sortie", "erreur") and "bonne" in it:
+                    bonnes[t].append(it["bonne"])
+                if t == "completer":
+                    bonnes[t].extend(tr.get("bonne") for tr in it.get("trous", []))
+    if len(lignes_fautives) >= 6 and len(set(lignes_fautives)) == 1:
+        rp.avert(cid, f"dans toutes les « erreur », la ligne fausse est la {lignes_fautives[0]} : varier sa place")
+    for t, l in bonnes.items():
+        if len(l) >= 6 and len(set(l)) == 1:
+            rp.avert(cid, f"dans les « {t} », la bonne proposition est toujours la n° {l[0] + 1} du fichier (la page les mélange, mais le corrigé imprimé les montre dans l'ordre)")
+
+
+# ------------------------------------------------------------------ les tables d'un thème SQL, pour la page
+
+def tables_sql(base):
+    cx = connexion_sql(base)
+    noms = [r[0] for r in cx.execute("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%' ORDER BY rowid")]
+    out = []
+    for nom in noms:
+        cur = cx.execute(f'SELECT * FROM "{nom}"')
+        out.append({"nom": nom, "colonnes": [c[0] for c in cur.description],
+                    "lignes": [["NULL" if v is None else v for v in l] for l in cur.fetchall()]})
+    cx.close()
+    return out
+
+
+def fichier_tables(info, ecrire, rp):
+    """calendrier/exercices/<id>.tables.json : les tables de base_sql, que la page montre (repliables)."""
+    if info["donnees"].get("theme", info["donnees"].get("chapitre", {})).get("langage") != "sql":
+        return
+    chemin = os.path.join(DOSSIER, info["id"] + ".tables.json")
+    attendu = {"explication": "Fabriqué par scripts/calendrier_exercices.py --tables à partir de base_sql : ne pas modifier à la main.",
+               "tables": tables_sql(info["donnees"].get("base_sql", ""))}
+    texte = json.dumps(attendu, ensure_ascii=False, indent=1) + "\n"
+    if ecrire:
+        open(chemin, "w", encoding="utf-8").write(texte)
+    elif not os.path.exists(chemin) or open(chemin, encoding="utf-8").read() != texte:
+        rp.erreur(os.path.relpath(chemin, RACINE), "absent ou pas à jour : relancer avec --tables")
 
 
 # ------------------------------------------------------------------ un chapitre
@@ -296,6 +472,7 @@ def controler(chemin, rp, attendu=None, avec_execution=True, schema=None):
         forme(chap, ex, ou, rp)
         if avec_execution and not any(e.startswith(f"ERREUR  {ou}") for e in rp.erreurs):
             fond(chap, ex, ou, rp)
+    places(cid, exercices, rp)
     relus = sum(1 for e in exercices if e.get("relu"))
     return {"id": cid, "exercices": len(exercices), "relus": relus,
             "questions": sum(len(n["items"]) for e in exercices for n in e.get("niveaux", [])),
@@ -317,6 +494,7 @@ def main():
     ap.add_argument("--fichier")
     ap.add_argument("--sans-execution", action="store_true")
     ap.add_argument("--bundle", action="store_true")
+    ap.add_argument("--tables", action="store_true", help="écrit <id>.tables.json pour les thèmes SQL")
     a = ap.parse_args()
     rp = Rapport()
     schema = json.load(open(SCHEMA, encoding="utf-8"))
@@ -351,6 +529,8 @@ def main():
             rp.avert(i["id"], f"{i['exercices'] - i['relus']} exercices à relire (« relu »: false)")
         if a.bundle and not rp.erreurs:
             bundle(i)
+        if not a.fichier:
+            fichier_tables(i, a.tables, rp)
     for m in rp.avertissements[:40]:
         print(m)
     if len(rp.avertissements) > 40:

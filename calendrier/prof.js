@@ -73,29 +73,37 @@
   }
 
   // ------------------------------------------------------------ créer un calendrier
-  function nouveau(msg) {
+  // cal : le calendrier à modifier (sinon, un nouveau). Après le premier jour, le premier jour ne change plus,
+  // et seules les cases de demain et des jours suivants sont refaites (la base y veille).
+  function nouveau(msg, cal) {
     var auj = CV.aujourdhuiMayotte();
     var vac = (C.VACANCES || []).filter(function (v) { return v.fin >= auj; });
     var debut = vac[0] ? (vac[0].debut < auj ? auj : vac[0].debut) : auj, fin = vac[0] ? vac[0].fin : CV.ajouter(auj, 13);
-    afficher('<div class="jeu-haut"><button class="btn" data-act="liste">&#8592; Mes calendriers</button></div><h2>Nouveau calendrier</h2>' + message(msg) +
-      '<section class="carte"><label for="nomc">Nom (vu par les élèves)</label><input type="text" id="nomc" maxlength="60" placeholder="1NSI : vacances de Noël">' +
-      '<div class="dates"><label>Premier jour <input type="date" id="debut" value="' + debut + '" min="' + auj + '"></label><label>Dernier jour <input type="date" id="fin" value="' + fin + '"></label></div>' +
+    var commence = cal && cal.debut <= auj;
+    if (cal) { debut = cal.debut; fin = cal.fin; vac = commence ? [] : vac; }
+    afficher('<div class="jeu-haut"><button class="btn" data-act="' + (cal ? "voir\" data-id=\"" + esc(cal.id) : "liste") + '">&#8592; ' + (cal ? "Le calendrier" : "Mes calendriers") + "</button></div><h2>" + (cal ? "Modifier « " + esc(cal.nom) + " »" : "Nouveau calendrier") + "</h2>" + message(msg) +
+      (commence ? '<p class="message info">Le calendrier a commencé : son premier jour ne change plus. Les cases déjà ouvertes et les résultats ne bougent jamais ; seules les cases de demain et des jours suivants sont refaites.</p>' : "") +
+      '<section class="carte"><label for="nomc">Nom (vu par les élèves)</label><input type="text" id="nomc" maxlength="60" placeholder="1NSI : vacances de Noël" value="' + esc(cal ? cal.nom : "") + '">' +
+      '<div class="dates"><label>Premier jour <input type="date" id="debut" value="' + debut + '"' + (commence ? " disabled" : ' min="' + auj + '"') + '></label><label>Dernier jour <input type="date" id="fin" value="' + fin + '"></label></div>' +
       (vac.length ? '<p class="doux">Raccourcis : ' + vac.map(function (v, i) { return '<button class="lien" data-act="vac" data-i="' + i + '">' + esc(v.nom) + "</button>"; }).join(" · ") + "</p>" : "") +
       '<p class="doux" id="duree"></p></section>' +
       '<section class="carte"><h3>Les thèmes</h3><p class="doux">Cochez librement, quel que soit le niveau de la classe. Les cases alternent entre les thèmes, dans l\'ordre où vous les cochez.</p><div id="themes">Chargement du catalogue…</div><p id="besoin" class="doux"></p></section>' +
-      '<section class="carte"><label class="case-a-cocher"><input type="checkbox" id="jauge" checked> Montrer aux élèves la jauge de toute la classe (des nombres, aucun nom). Décochez pour une très petite classe.</label></section>' +
-      '<div class="pile"><button class="btn plein large" data-act="creer-cal">Créer le calendrier</button></div>');
-    nouveau.ordre = []; nouveau.vac = vac;
+      '<section class="carte"><label class="case-a-cocher"><input type="checkbox" id="jauge"' + (!cal || cal.affichage_classe === "jauge" ? " checked" : "") + '> Montrer aux élèves la jauge de toute la classe (des nombres, aucun nom). Décochez pour une très petite classe.</label></section>' +
+      '<div class="pile"><button class="btn plein large" data-act="' + (cal ? "modifier-cal" : "creer-cal") + '">' + (cal ? "Enregistrer les changements" : "Créer le calendrier") + "</button></div>");
+    nouveau.ordre = cal ? (cal.themes || []).slice() : []; nouveau.vac = vac; nouveau.cal = cal || null;
     CV.catalogue().then(function (cat) {
-      var prets = cat.themes.filter(function (t) { return t.statut === "pret"; });
+      // « pret » : relu ; « en_cours » : écrit et contrôlé, pas encore relu (proposé avec la mention « à relire »)
+      var prets = cat.themes.filter(function (t) { return t.statut === "pret" || t.statut === "en_cours"; });
       return Promise.all(prets.map(function (t) { return CV.banque(t.id).then(function (b) { t.n = b.exercices.length; t.relus = b.exercices.filter(function (e) { return e.relu; }).length; }, function () { t.n = 0; }); }))
         .then(function () {
+          prets = prets.filter(function (t) { return t.n >= 8; });
           nouveau.themes = prets;
           document.getElementById("themes").innerHTML = prets.map(function (t) {
             return '<label class="case-a-cocher"><input type="checkbox" data-theme="' + esc(t.id) + '"> <span><b>' + esc(t.titre) + "</b> <small class=\"etiquette\">" + esc(t.nature === "notion" ? "notion" : "chapitre") +
               "</small> " + (t.niveaux || []).map(function (n) { return '<small class="etiquette">' + esc({ snt: "SNT", "nsi-1re": "1re", "nsi-tle": "Tle" }[n] || n) + "</small>"; }).join(" ") +
               ' <small class="doux">' + t.n + " exercices" + (t.relus < t.n ? ", " + (t.n - t.relus) + " à relire" : "") + "</small></span></label>";
           }).join("") || '<p class="message ko">Aucun thème prêt dans le catalogue.</p>';
+          nouveau.ordre.forEach(function (id) { var c = document.querySelector('input[data-theme="' + id + '"]'); if (c) c.checked = true; });
           majBesoin();
         });
     }, function () { document.getElementById("themes").innerHTML = message("Le catalogue des thèmes est illisible : rechargez la page."); });
@@ -132,14 +140,26 @@
     });
   }
 
+  function modifierCalendrier() {
+    var c = nouveau.cal, o = nouveau.ordre || [];
+    if (!o.length) return nouveau("Cochez au moins un thème.", c);
+    CV.rpc("cv_prof_modifier_calendrier", { p_code: code, p_calendrier: c.id, p_nom: document.getElementById("nomc").value.trim(),
+      p_debut: document.getElementById("debut").value, p_fin: document.getElementById("fin").value, p_themes: o, p_mode: c.mode || "alternance",
+      p_affichage_classe: document.getElementById("jauge").checked ? "jauge" : "aucun" }).then(function (r) {
+      if (!r.ok) return nouveau(r.message, c);
+      racine.removeEventListener("change", majBesoin);
+      CV.rpc("cv_prof_ouvrir", { p_code: code }).then(function (e) { if (e.ok) espace = e; voir(c.id, "Calendrier modifié : " + r.cases + " cases."); });
+    });
+  }
+
   // ------------------------------------------------------------ un calendrier : inviter et suivre
   function lienEleves(c) { return new URL("./?c=" + c.code, location.href).href; }
-  function voir(id) {
+  function voir(id, msg) {
     calCourant = (espace.calendriers || []).filter(function (c) { return c.id === id; })[0];
     if (!calCourant) return listeCalendriers();
     racine.removeEventListener("change", majBesoin);
     var c = calCourant, lien = lienEleves(c);
-    afficher('<div class="jeu-haut"><button class="btn" data-act="liste">&#8592; Mes calendriers</button></div><h2>' + esc(c.nom) + "</h2>" +
+    afficher('<div class="jeu-haut"><button class="btn" data-act="liste">&#8592; Mes calendriers</button></div>' + (msg ? message(msg, "ok") : "") + '<div class="entre"><h2>' + esc(c.nom) + '</h2><button class="btn" data-act="modifier">Modifier</button></div>' +
       '<p class="doux">Du ' + esc(CV.dateLongue(c.debut)) + " au " + esc(CV.dateLongue(c.fin)) + ".</p>" +
       '<section class="carte invite"><h3>Inviter les élèves</h3><div class="invite-grille"><div><p class="doux">Code du calendrier</p><div class="grand-code">' + esc(c.code) + "</div>" +
       '<p class="mono petit-texte">' + esc(lien) + '</p><div class="actions"><button class="btn" data-act="copier">Copier le lien</button><button class="btn" data-act="message">Message pour Pronote</button><button class="btn" data-act="projeter">Projeter</button></div></div>' +
@@ -258,6 +278,8 @@
     if (a === "nouveau") return nouveau();
     if (a === "vac") { var v = nouveau.vac[+el.getAttribute("data-i")], auj = CV.aujourdhuiMayotte(); document.getElementById("debut").value = v.debut < auj ? auj : v.debut; document.getElementById("fin").value = v.fin; return majBesoin(); }
     if (a === "creer-cal") return creerCalendrier();
+    if (a === "modifier") { clearInterval(minuterie); return nouveau("", calCourant); }
+    if (a === "modifier-cal") return modifierCalendrier();
     if (a === "voir") return voir(el.getAttribute("data-id"));
     if (a === "copier") { var l = lienEleves(calCourant); (navigator.clipboard ? navigator.clipboard.writeText(l) : Promise.reject()).then(function () { document.getElementById("msg-invite").innerHTML = message("Lien copié.", "ok"); }, function () { window.prompt("Copiez le lien :", l); }); return; }
     if (a === "message") {

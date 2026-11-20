@@ -87,5 +87,40 @@ class Controle(unittest.TestCase):
         self.assertTrue(erreurs(d))
 
 
+    def test_message_obligatoire(self):
+        d = un_exercice(2)  # erreur
+        it = d["exercices"][0]["niveaux"][0]["items"][0]
+        it.pop("message", None)
+        self.assertTrue(any("un seul champ" in e for e in erreurs(d)))
+        it["message"] = "NameError: name 'x' is not defined"
+        self.assertTrue(any("annonce" in e for e in erreurs(d)))
+
+    def test_affiche_fautif(self):
+        d = un_exercice(2)
+        it = d["exercices"][0]["niveaux"][1]["items"][0]  # range(10) au lieu de 1 à 10 : erreur de logique
+        it["affiche_fautif"] = "faux"
+        self.assertTrue(any("affiche_fautif" in e for e in erreurs(d)))
+
+    def test_ordre_ambigu(self):
+        d = un_exercice(5)  # ordre
+        it = d["exercices"][0]["niveaux"][0]["items"][1]
+        it["lignes"] = ["a = 1", "b = 2", "print(a + b)"]
+        it["affiche"] = "3"
+        self.assertTrue(any("autre disposition" in e for e in erreurs(d)))
+
+    def test_sql_mise_a_jour_et_verifier(self):
+        base = "CREATE TABLE t (n INT); INSERT INTO t VALUES (1), (2);"
+        d = {"theme": {"id": "essai-sql", "titre": "Essai", "nature": "notion", "niveaux": ["nsi-tle"], "langage": "sql"}, "base_sql": base,
+             "exercices": [{"id": "essai-sql-001", "type": "vraifaux", "titre": "Vrai ou faux", "objectif": "Lire une mise à jour.", "relu": False,
+                            "niveaux": [{"duree": 2, "items": [{"texte": "Après ce code, t a 3 lignes.", "reponse": True, "explication": "Une ligne ajoutée.",
+                                                                "code": "INSERT INTO t VALUES (5);", "verifier": "SELECT COUNT(*) = 3 FROM t;"}]}] * 3}]}
+        self.assertEqual(erreurs(d), [])
+        d["exercices"][0]["niveaux"] = copy.deepcopy(d["exercices"][0]["niveaux"])
+        d["exercices"][0]["niveaux"][0]["items"][0]["reponse"] = False
+        self.assertTrue(any("réponse annoncée" in e for e in erreurs(d)))
+        out, err = ce.executer_sql(base, "UPDATE t SET n = n * 10; SELECT n FROM t ORDER BY n;")
+        self.assertEqual((out, err), ("10\n20", None))
+
+
 if __name__ == "__main__":
     unittest.main()

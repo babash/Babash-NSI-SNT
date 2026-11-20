@@ -166,15 +166,22 @@
   }
 
   // ------------------------------------------------------------ le calendrier
+  var tables = {};
   function chargerBanques(themes) {
     return Promise.all(themes.map(function (t) {
-      return CV.banque(t).then(function (b) { banques[t] = b; }, function () { banques[t] = null; });
+      return CV.banque(t).then(function (b) {
+        banques[t] = b;
+        // un thème SQL : ses tables, montrées (repliables) à côté de chaque question
+        if (CV.themeDe(b).langage === "sql" && !tables[t]) {
+          return fetch("exercices/" + t + ".tables.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (j) { tables[t] = j && j.tables; }, function () { tables[t] = null; });
+        }
+      }, function () { banques[t] = null; });
     }));
   }
   function exercice(c) {
     var b = banques[c.theme]; if (!b || !c.rang) return null;
     var n = b.exercices.length; if (!n) return null;
-    return { ex: b.exercices[(c.rang - 1) % n], revision: c.rang > n, langage: CV.themeDe(b).langage, titreTheme: CV.themeDe(b).titre || c.theme };
+    return { ex: b.exercices[(c.rang - 1) % n], revision: c.rang > n, langage: CV.themeDe(b).langage, titreTheme: CV.themeDe(b).titre || c.theme, tables: tables[c.theme] };
   }
   function calendrier() {
     if (!session) return demarrer();
@@ -293,7 +300,7 @@
     var c = trouverCase(n), x = exercice(c); if (!x) return;
     vue = "jeu"; racine.innerHTML = '<div id="jeu"></div>' + CV.pied();
     jeu = CV.jouer(document.getElementById("jeu"), {
-      exercice: x.ex, niveau: niv, langage: x.langage, titreCase: CV.dateCourte(c.jour),
+      exercice: x.ex, niveau: niv, langage: x.langage, tables: x.tables, titreCase: CV.dateCourte(c.jour),
       sauvegarde: CV.lire(clePartie(n, niv), null),
       surSauver: function (g) { CV.ecrire(clePartie(n, niv), g); },
       surQuitter: function () { jeu = null; calendrier(); },
@@ -328,7 +335,7 @@
     var c = trouverCase(n), x = exercice(c);
     if (!x || c.etat !== "corrigee") return calendrier();
     afficher("corrige", bandeau() + '<div class="jeu-haut"><button class="btn" data-act="calendrier">&#8592; Calendrier</button><span class="ou">' + esc(CV.dateCourte(c.jour)) + "</span></div>" +
-      "<h1>Corrigé : " + esc(x.ex.titre) + '</h1><p class="objectif">Objectif : ' + esc(x.ex.objectif) + "</p>" + CV.corrige(x.ex, x.langage));
+      "<h1>Corrigé : " + esc(x.ex.titre) + '</h1><p class="objectif">Objectif : ' + esc(x.ex.objectif) + "</p>" + CV.corrige(x.ex, x.langage, x.tables));
   }
 
   // ------------------------------------------------------------ mon compte

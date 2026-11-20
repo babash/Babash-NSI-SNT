@@ -84,12 +84,19 @@ L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place 
 
 | Type | Champs d'une question | Ce que le contrôle vérifie |
 |---|---|---|
-| `vraifaux` | `texte`, `reponse` (true ou false), `explication`, et au besoin `code` et `verifier` (expression Python qui doit valoir `reponse`, par exemple `s == 10`) | `verifier` après le code |
+| `vraifaux` | `texte`, `reponse` (true ou false), `explication`, et au besoin `code` et `verifier` : en Python, une expression qui doit valoir `reponse` (`s == 10`) ; en SQL, une requête d'une seule valeur, vraie si elle ne vaut ni 0 ni NULL (`SELECT COUNT(*) = 3 FROM tortue`) | `verifier` après le code |
 | `sortie` | `code`, puis soit `options` (4, « / » sépare les lignes), `bonne` et `retours` (4), soit `reponse` (à taper) et `explication` ; `aides` | une seule option juste, ou la réponse exacte |
 | `associer` | `consigne`, `paires` [[gauche, droite]…], `explication`, `executer: true` si la gauche est un programme | avec `executer`, ce que chaque programme affiche (lignes jointes par « , ») |
-| `erreur` | `but`, `lignes`, `ligne` (indice de la ligne fausse, à partir de 0), `corrections` (3), `bonne`, `affiche` (sortie du programme corrigé), `explication`, `aides` | la correction juste donne `affiche` ; les autres et le programme fautif, non |
-| `ordre` | `but`, `lignes` dans le bon ordre (toutes différentes), `affiche`, `aides` | le programme dans l'ordre donne `affiche` |
+| `erreur` | `but` (sans le message), `lignes`, `ligne` (indice de la ligne fausse, à partir de 0), `corrections` (3), `bonne`, `affiche` (sortie du programme corrigé), `explication`, `aides`, et **un seul** champ pour ce que montre le programme fautif : `message` (le message réel : « IndexError: list index out of range », « Error: near "plage": syntax error »), `affiche_fautif` (sa sortie, pour une erreur de logique ; vide s'il n'affiche rien) ou `boucle_infinie: true` | la correction juste donne `affiche` ; les autres et le programme fautif, non ; le programme fautif donne bien `message`, `affiche_fautif` ou ne s'arrête pas |
+| `ordre` | `but`, `lignes` dans le bon ordre (toutes différentes), `affiche`, `aides` | le programme dans l'ordre donne `affiche`, et **aucune autre disposition** ne le donne (toutes les permutations sont essayées jusqu'à 8 lignes) |
 | `completer` | `but`, `lignes` avec `{0}`, `{1}`…, `trous` [{`options`, `bonne`}], `affiche`, `explication`, `aides` | les bonnes pièces donnent `affiche` ; chaque mauvaise le change |
+
+## Les compléments
+
+- **Le message, toujours.** Une « trouver l'erreur » montre sous le code ce que fait le programme fautif (règle de l'enseignant du 20/11) : le message réel, sa sortie, ou « ne s'arrête jamais ». Le `but` dit seulement ce que doit faire le programme. `scripts/calendrier_migrer_erreurs.py --ecrire` range ces champs à partir de l'exécution.
+- **SQL.** Chaque programme s'exécute sur une base neuve : `PRAGMA foreign_keys = ON`, puis `base_sql` en entier. Un programme peut enchaîner des mises à jour (`INSERT`, `UPDATE`, `DELETE`) puis un `SELECT` : on affiche le résultat de la dernière instruction. La page montre les tables de `base_sql`, repliables, au-dessus de chaque question : après toute modification de `base_sql`, relancer `python3 scripts/calendrier_exercices.py --tables` (le contrôle refuse un fichier `<thème>.tables.json` pas à jour).
+- **Un arbre binaire.** Une question (sauf « associer ») peut porter un champ `arbre` : `{"v": 8, "g": {"v": 3}, "d": {"v": 10, "d": {"v": 14}}}` (`v` : étiquette de 6 caractères au plus ; `g` et `d` : sous-arbres). La page le dessine au-dessus de la question, lisible à 320 px jusqu'à 31 nœuds.
+- **Les places.** Le contrôle avertit quand la bonne réponse est toujours au même endroit : la ligne fausse toujours la dernière, la bonne proposition toujours la première, toutes les affirmations vraies. La page mélange les propositions, mais le corrigé et la relecture les lisent dans l'ordre.
 
 ## La méthode conseillée
 

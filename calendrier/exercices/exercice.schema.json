@@ -344,7 +344,8 @@
       ],
       "properties": {
         "but": {
-          "$ref": "#/$defs/texte"
+          "$ref": "#/$defs/texte",
+          "description": "Ce que doit faire le programme, sans le message d'erreur (il va dans « message » ou « affiche_fautif »)."
         },
         "lignes": {
           "type": "array",
@@ -385,6 +386,24 @@
         },
         "explication": {
           "$ref": "#/$defs/texte"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
+        },
+        "message": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 300,
+          "description": "Le message réel du programme fautif, tel que Python 3.13 (dernière ligne : « IndexError: list index out of range ») ou SQLite (« Error: near \"plage\": syntax error ») le donne. La page l'affiche sous le code, en console. Un seul champ parmi message, affiche_fautif, boucle_infinie."
+        },
+        "affiche_fautif": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Pour une erreur de logique : ce qu'affiche le programme fautif (vide s'il n'affiche rien). La page l'affiche sous le code."
+        },
+        "boucle_infinie": {
+          "const": true,
+          "description": "Le programme fautif ne s'arrête pas : la page le dit sous le code."
         }
       }
     },
@@ -410,11 +429,14 @@
         },
         "verifier": {
           "type": "string",
-          "maxLength": 200,
-          "description": "Python seulement : une expression évaluée après le code ; elle doit valoir « reponse ». Exemple : s == 10."
+          "maxLength": 300,
+          "description": "Python : une expression évaluée après le code, qui doit valoir « reponse » (s == 10). SQL : une requête SELECT d'une seule valeur, exécutée après le code ; vraie si elle ne vaut ni 0 ni NULL."
         },
         "explication": {
           "$ref": "#/$defs/texte"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
         }
       }
     },
@@ -466,6 +488,9 @@
         },
         "aides": {
           "$ref": "#/$defs/aides"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
         }
       },
       "oneOf": [
@@ -523,6 +548,9 @@
         },
         "aides": {
           "$ref": "#/$defs/aides"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
         }
       }
     },
@@ -591,6 +619,9 @@
         },
         "explication": {
           "$ref": "#/$defs/texte"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
         }
       }
     },
@@ -665,6 +696,43 @@
             "maxLength": 60
           },
           "description": "Identifiants de donnees/referentiels/notions.json."
+        }
+      }
+    },
+    "arbre": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "v"
+      ],
+      "description": "Un arbre binaire, dessiné par la page sous la question : v est l'étiquette du nœud, g et d ses sous-arbres gauche et droit (absents ou null pour un arbre vide). 31 nœuds au plus, pour rester lisible à 320 px.",
+      "properties": {
+        "v": {
+          "type": [
+            "string",
+            "number"
+          ],
+          "maxLength": 6
+        },
+        "g": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/arbre"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "d": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/arbre"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     }
