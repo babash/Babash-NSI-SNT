@@ -1,0 +1,384 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Avatars de l'équipage</title>
+  <meta name="description" content="Démonstration du moteur d'avatars des runners : éditeur, sept états, sept lignées, compagnons, margouillat, salon d'attente et podium sans classement.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@600;700&family=JetBrains+Mono:wght@500&display=swap">
+  <style>
+    :root {
+      --bg: #EDF1F7; --panel: #FFFFFF; --panel-2: #F5F7FB; --ink: #0D1530; --ink-soft: #46536E;
+      --line: #CDD6E6; --accent: #0E6F8A; --focus: #0A64E8; --scene: #F5F7FB; --sol: #CDD6E6;
+      --display: "Chakra Petch", "Bahnschrift", "Arial Narrow", system-ui, sans-serif;
+      --text: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+      color-scheme: light;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #060A13; --panel: #0B1222; --panel-2: #0F182C; --ink: #E3EDFF; --ink-soft: #9DABC6;
+        --line: #1C2944; --accent: #5EEAFF; --focus: #5EEAFF; --scene: #0F182C; --sol: #24345A;
+        color-scheme: dark;
+      }
+    }
+    :root[data-theme="dark"] {
+      --bg: #060A13; --panel: #0B1222; --panel-2: #0F182C; --ink: #E3EDFF; --ink-soft: #9DABC6;
+      --line: #1C2944; --accent: #5EEAFF; --focus: #5EEAFF; --scene: #0F182C; --sol: #24345A;
+      color-scheme: dark;
+    }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--ink); font: 17px/1.5 var(--text); }
+    a { color: var(--accent); }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .page { max-width: 1180px; margin: 0 auto; padding: 0 16px 48px; }
+    header.haut { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; padding: 20px 0 8px; }
+    h1, h2, h3 { font-family: var(--display); line-height: 1.15; margin: 0; }
+    h1 { font-size: clamp(1.7rem, 4vw, 2.4rem); }
+    h2 { font-size: 1.45rem; margin-bottom: 4px; }
+    h3 { font-size: 1.05rem; }
+    .sous { color: var(--ink-soft); margin: 0 0 14px; }
+    .petit { font-size: .9rem; color: var(--ink-soft); }
+    .theme { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
+    .theme button { font: inherit; font-size: .9rem; border: 0; padding: 6px 12px; background: none; color: var(--ink); cursor: pointer; }
+    .theme button[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 700; }
+    section { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin-top: 18px; position: relative; }
+    .note { border-left: 4px solid var(--accent); padding: 8px 12px; background: var(--panel-2); margin: 10px 0 0; }
+
+    /* éditeur */
+    .editeur { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 20px; align-items: start; }
+    .apercu { position: sticky; top: 10px; display: grid; gap: 10px; justify-items: center; background: var(--scene); border: 1px solid var(--line); border-radius: 10px; padding: 14px 10px; }
+    .apercu .scene { min-height: 250px; display: grid; place-items: end center; }
+    .boutons { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+    button.b { font: inherit; font-size: .92rem; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--ink); background: var(--panel); color: var(--ink); cursor: pointer; }
+    button.b[aria-pressed="true"] { background: var(--ink); color: var(--bg); font-weight: 700; }
+    .champs { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px 14px; }
+    label.ch { display: grid; gap: 3px; font-size: .92rem; font-weight: 700; }
+    select { font: inherit; font-weight: 400; font-size: .95rem; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--ink-soft); background: var(--panel); color: var(--ink); max-width: 100%; }
+    fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+    legend { font-size: .92rem; font-weight: 700; padding: 0; margin-bottom: 4px; }
+    .nuancier { display: flex; flex-wrap: wrap; gap: 4px; }
+    .nuancier label { position: relative; cursor: pointer; }
+    .nuancier input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .nuancier span { display: block; width: 28px; height: 28px; border-radius: 6px; border: 2px solid var(--line); }
+    .nuancier input:checked + span { border-color: var(--ink); box-shadow: 0 0 0 2px var(--panel), 0 0 0 4px var(--ink); }
+    .nuancier input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 3px; }
+    .nuancier input:checked + span::after { content: "✓"; display: grid; place-items: center; height: 100%; font-weight: 700; color: #fff; text-shadow: 0 0 2px #000, 0 0 2px #000; font-size: 15px; }
+    .couleurs { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px 16px; margin-top: 14px; }
+    details { margin-top: 14px; }
+    summary { cursor: pointer; font-weight: 700; }
+    pre { font: 13px/1.45 var(--mono); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+    .tailles { display: flex; flex-wrap: wrap; gap: 14px; align-items: end; margin-top: 16px; }
+    .tailles figure, .scene { max-width: 100%; }
+    .tailles .eq, .scene .eq { max-width: 100%; }
+    .tailles svg, .scene svg { max-width: 100%; height: auto; }
+    .tailles figure { margin: 0; display: grid; justify-items: center; gap: 4px; }
+    figcaption { font-size: .85rem; color: var(--ink-soft); text-align: center; }
+    .modeles { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 14px; }
+
+    /* grilles */
+    .grille { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
+    .carte { display: grid; justify-items: center; gap: 6px; background: var(--scene); border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px; text-align: center; }
+    .carte p { margin: 0; font-size: .85rem; color: var(--ink-soft); line-height: 1.35; }
+    .carte strong { font-family: var(--display); font-size: 1rem; }
+    .grille-objets { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
+    .comp { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
+    .comp .rang { display: flex; gap: 2px; justify-content: center; }
+
+    /* margouillat */
+    .encadres { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 40px 34px; padding: 30px 16px 26px; }
+    .encadre { position: relative; border: 2px solid var(--ink); border-radius: 4px; padding: 14px; min-height: 96px; background: var(--panel); font-size: .95rem; }
+    .marg-tailles { display: flex; flex-wrap: wrap; gap: 18px; align-items: end; }
+
+    /* salon et podium */
+    .salon { background: var(--scene); border: 2px dashed var(--line); border-radius: 12px; padding: 16px 10px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; justify-items: center; position: relative; }
+    .podium { display: flex; justify-content: center; align-items: flex-end; gap: clamp(4px, 3vw, 28px); flex-wrap: nowrap; padding-top: 10px; }
+    .podium .eq svg { width: min(144px, 27vw); height: auto; }
+    .estrade { margin: 0 auto; max-width: 560px; height: 26px; border-radius: 6px; background: var(--sol); display: grid; place-items: center; font-family: var(--display); font-weight: 700; font-size: .95rem; }
+    footer { margin-top: 30px; padding-top: 14px; border-top: 1px solid var(--line); font-size: .9rem; color: var(--ink-soft); display: flex; flex-wrap: wrap; gap: 6px 18px; }
+
+    @media (max-width: 720px) {
+      .editeur { grid-template-columns: minmax(0, 1fr); }
+      .apercu { position: static; }
+      section { padding: 14px 12px; }
+    }
+    @media print {
+      body { background: #fff; color: #000; }
+      .theme, .boutons, details { display: none; }
+      section { break-inside: avoid; border-color: #999; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="haut">
+    <div>
+      <h1>Les avatars de l'équipage</h1>
+      <p class="sous">Démonstration du moteur <code>assets/equipage.js</code> · recherche de style T112, version 3</p>
+    </div>
+    <div class="theme" role="group" aria-label="Affichage">
+      <button type="button" data-t="" aria-pressed="true">Appareil</button>
+      <button type="button" data-t="light" aria-pressed="false">Clair</button>
+      <button type="button" data-t="dark" aria-pressed="false">Obscur</button>
+    </div>
+  </header>
+  <p class="note">Rien n'est envoyé, rien n'est gardé : quand tu fermes la page, ton avatar disparaît. Toute pièce va sur tout avatar ; aucune n'est réservée à un genre.</p>
+
+  <section id="editeur" aria-labelledby="t-editeur">
+    <h2 id="t-editeur">Compose ton avatar</h2>
+    <p class="sous">Toutes les coiffures, tenues et objets vont sur toutes les lignées et tous les corps. Un objet par emplacement (tête, visage, dos, main, épaules, autour), et les six se cumulent.</p>
+    <div class="modeles" id="modeles" role="group" aria-label="Partir d'un modèle"></div>
+    <div class="editeur">
+      <div class="apercu">
+        <div class="scene" id="grand" aria-live="polite"></div>
+        <div class="boutons" id="etats" role="group" aria-label="État de l'avatar"></div>
+        <div class="boutons"><button type="button" class="b" id="hasard">Au hasard</button></div>
+      </div>
+      <form id="formulaire" onsubmit="return false">
+        <div class="champs" id="champs"></div>
+        <div class="couleurs" id="couleurs"></div>
+        <details>
+          <summary>La description JSON (ce que l'application garde)</summary>
+          <pre id="json"></pre>
+        </details>
+      </form>
+    </div>
+    <h3 style="margin-top:18px">De 24 à 240 px</h3>
+    <p class="sous petit">Sous 32 px, une pastille (le visage) ; de 32 à 63 px, un buste ; à partir de 64 px, le personnage entier avec son compagnon.</p>
+    <div class="tailles" id="tailles"></div>
+  </section>
+
+  <section aria-labelledby="t-objets">
+    <h2 id="t-objets">Les objets, par emplacements</h2>
+    <p class="sous">Trente-neuf objets de départ, dessinés pour ce site. Chacun va sur tous les avatars.</p>
+    <div id="objets"></div>
+  </section>
+
+  <section aria-labelledby="t-etats">
+    <h2 id="t-etats">Les sept états</h2>
+    <p class="sous">Chaque état a une petite animation, coupée si l'appareil demande moins de mouvement.</p>
+    <div class="grille" id="sept-etats"></div>
+  </section>
+
+  <section aria-labelledby="t-lignees">
+    <h2 id="t-lignees">Les sept lignées</h2>
+    <p class="sous">Aucune n'est plus forte qu'une autre. Chacune se combine avec toutes les pièces.</p>
+    <div class="grille" id="lignees"></div>
+  </section>
+
+  <section aria-labelledby="t-comp">
+    <h2 id="t-comp">Les compagnons</h2>
+    <p class="sous">Le margouillat accompagne tout le monde dès le départ ; les autres se gagnent. Un seul à la fois ; il suit l'humeur de son runner : neutre, content, triste, endormi.</p>
+    <div class="comp" id="compagnons"></div>
+  </section>
+
+  <section aria-labelledby="t-marg" id="section-marg">
+    <h2 id="t-marg">Le margouillat vert, partout</h2>
+    <p class="sous">Il se pose sur un bord d'encadré, dans les quatre sens, de 9 mm à grand. À l'impression, il peut passer à l'encre noire.</p>
+    <div class="encadres" id="encadres">
+      <div class="encadre" data-bord="haut">Sur le bord du haut, il marche.</div>
+      <div class="encadre" data-bord="droite">Sur le bord de droite, il descend.</div>
+      <div class="encadre" data-bord="bas">Sous le bord du bas, il est au plafond.</div>
+      <div class="encadre" data-bord="gauche">Sur le bord de gauche, il monte.</div>
+    </div>
+    <div class="marg-tailles" id="marg-tailles"></div>
+  </section>
+
+  <section aria-labelledby="t-salon">
+    <h2 id="t-salon">Le salon d'attente</h2>
+    <p class="sous">Douze runners attendent le début de la séance : certain·e·s saluent, d'autres révisent ou font une sieste.</p>
+    <div class="salon" id="salon"></div>
+  </section>
+
+  <section aria-labelledby="t-podium">
+    <h2 id="t-podium">Bravo à toute l'équipe</h2>
+    <p class="sous">Un podium sans classement : trois runners content·e·s, côte à côte, à la même hauteur. Aucun rang, aucun score.</p>
+    <div class="podium" id="podium"></div>
+    <div class="estrade">Défi relevé !</div>
+  </section>
+
+  <footer>
+    <span>Babash - NSI Tani Malandi</span>
+    <span>Dessins originaux, CC BY-SA 4.0 ; code sous licence MIT</span>
+    <a href="https://github.com/babash/Babash-NSI-SNT">Code source sur GitHub</a>
+  </footer>
+</div>
+
+<script src="../assets/equipage.js"></script>
+<script>
+(function () {
+  'use strict';
+  var E = window.Equipage;
+  var $ = function (id) { return document.getElementById(id); };
+  function el(tag, attrs, txt) { var e = document.createElement(tag); for (var k in attrs || {}) e.setAttribute(k, attrs[k]); if (txt) e.textContent = txt; return e; }
+
+  /* thème : choix de la séance, rien n'est gardé */
+  document.querySelectorAll('.theme button').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.getAttribute('data-t');
+      if (t) document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
+      document.querySelectorAll('.theme button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    });
+  });
+
+  /* ── éditeur ── */
+  var desc = JSON.parse(JSON.stringify(E.modeles.fibre.description)), etat = 'salue';
+  var grand = E.creer($('grand'), desc, { taille: 240, etat: etat });
+  var tailles = [24, 32, 48, 64, 96, 160, 240].map(function (t) {
+    var f = el('figure'), s = el('span');
+    f.appendChild(s); f.appendChild(el('figcaption', null, t + ' px'));
+    $('tailles').appendChild(f);
+    return E.creer(s, desc, { taille: t, etat: 'repos' });
+  });
+  var sept = E.ETATS.map(function (e) {
+    var c = el('div', { 'class': 'carte' }), s = el('span');
+    c.appendChild(s); c.appendChild(el('strong', null, e.nom.charAt(0).toUpperCase() + e.nom.slice(1)));
+    $('sept-etats').appendChild(c);
+    return E.creer(s, desc, { taille: 112, etat: e.id });
+  });
+
+  var CHAMPS = [['lignee', 'Lignée'], ['corps', 'Corps'], ['coiffure', 'Coiffure'], ['haut', 'Haut'], ['bas', 'Bas'], ['chaussures', 'Chaussures'], ['compagnon', 'Compagnon']];
+  CHAMPS.forEach(function (c) {
+    var l = el('label', { 'class': 'ch' }), s = el('select', { name: c[0] });
+    l.appendChild(document.createTextNode(c[1]));
+    E.catalogue[c[0]].forEach(function (o) { s.appendChild(el('option', { value: o.id }, o.nom + (o.gagne ? ' (à gagner)' : ''))); });
+    s.addEventListener('change', function () { desc[c[0]] = s.value; maj(); });
+    l.appendChild(s); $('champs').appendChild(l);
+  });
+  E.catalogue.emplacements.forEach(function (e) {
+    var l = el('label', { 'class': 'ch' }), s = el('select', { name: 'objet-' + e.id });
+    l.appendChild(document.createTextNode('Objet : ' + e.nom.toLowerCase()));
+    E.catalogue.objets[e.id].forEach(function (o) { s.appendChild(el('option', { value: o.id }, o.nom)); });
+    s.addEventListener('change', function () { desc.objets[e.id] = s.value; maj(); });
+    l.appendChild(s); $('champs').appendChild(l);
+  });
+  var lf = el('label', { 'class': 'ch' }), fa = el('select', { name: 'fauteuil' });
+  lf.appendChild(document.createTextNode('Fauteuil de course'));
+  fa.appendChild(el('option', { value: 'non' }, 'Non')); fa.appendChild(el('option', { value: 'oui' }, 'Oui'));
+  fa.addEventListener('change', function () { desc.fauteuil = fa.value === 'oui'; maj(); });
+  lf.appendChild(fa); $('champs').appendChild(lf);
+
+  var NOMS_COUL = { canard: 'bleu canard', marine: 'bleu marine', nuit: 'bleu nuit', jean: 'bleu jean', chatains: 'châtains' };
+  function nuancier(titre, liste, lire, ecrire, nom) {
+    var fs = el('fieldset'); fs.appendChild(el('legend', null, titre));
+    var n = el('div', { 'class': 'nuancier' });
+    liste.forEach(function (o) {
+      var l = el('label', { title: o.nomLisible }), i = el('input', { type: 'radio', name: nom, value: String(o.id), 'aria-label': o.nomLisible }), sp = el('span');
+      sp.style.background = o.couleur;
+      i.addEventListener('change', function () { ecrire(o.id); maj(); });
+      l.appendChild(i); l.appendChild(sp); n.appendChild(l);
+    });
+    fs.appendChild(n); $('couleurs').appendChild(fs);
+    return function () { var v = String(lire()); n.querySelectorAll('input').forEach(function (i) { i.checked = i.value === v; }); };
+  }
+  function lisible(id) { return (NOMS_COUL[id] || id).replace(/_/g, ' '); }
+  var synchro = [];
+  synchro.push(nuancier('Teint', E.catalogue.teint.map(function (t) { return { id: t.id, couleur: t.couleur, nomLisible: t.nom }; }), function () { return desc.teint; }, function (v) { desc.teint = v; }, 'teint'));
+  synchro.push(nuancier('Cheveux', E.catalogue.couleurs.cheveux.map(function (c) { return { id: c.id, couleur: c.couleur, nomLisible: 'cheveux ' + lisible(c.id) }; }), function () { return desc.cheveux; }, function (v) { desc.cheveux = v; }, 'cheveux'));
+  [['haut', 'tissu', 'Couleur du haut'], ['bas', 'tissu', 'Couleur du bas'], ['accent', 'neon', 'Néon'], ['chaussures', 'chaussures', 'Chaussures'], ['yeux', 'yeux', 'Yeux']].forEach(function (c) {
+    synchro.push(nuancier(c[2], E.catalogue.couleurs[c[1]].map(function (x) { return { id: x.id, couleur: x.couleur, nomLisible: c[2].toLowerCase() + ' : ' + lisible(x.id) }; }), function () { return desc.couleurs[c[0]]; }, function (v) { desc.couleurs[c[0]] = v; }, 'c-' + c[0]));
+  });
+
+  E.ETATS.forEach(function (e) {
+    var b = el('button', { type: 'button', 'class': 'b', 'aria-pressed': String(e.id === etat), 'data-e': e.id }, e.nom.charAt(0).toUpperCase() + e.nom.slice(1));
+    b.addEventListener('click', function () {
+      etat = e.id; grand.etat(etat);
+      $('etats').querySelectorAll('button').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    });
+    $('etats').appendChild(b);
+  });
+  Object.keys(E.modeles).forEach(function (k) {
+    var m = E.modeles[k]; if (m.lignee) return;
+    var b = el('button', { type: 'button', 'class': 'b' }, m.nom);
+    b.addEventListener('click', function () { desc = JSON.parse(JSON.stringify(m.description)); maj(); });
+    $('modeles').appendChild(b);
+  });
+  $('hasard').addEventListener('click', function () { desc = E.aleatoire(); maj(); });
+
+  function maj() {
+    desc = E.normaliser(desc);
+    grand.maj(desc);
+    tailles.forEach(function (t) { t.maj(desc); });
+    sept.forEach(function (t) { t.maj(desc); });
+    CHAMPS.forEach(function (c) { document.querySelector('select[name="' + c[0] + '"]').value = desc[c[0]]; });
+    E.catalogue.emplacements.forEach(function (e) { document.querySelector('select[name="objet-' + e.id + '"]').value = desc.objets[e.id]; });
+    fa.value = desc.fauteuil ? 'oui' : 'non';
+    synchro.forEach(function (f) { f(); });
+    $('json').textContent = JSON.stringify(desc, null, 2);
+  }
+  maj();
+
+  /* ── objets ── */
+  E.catalogue.emplacements.forEach(function (e) {
+    $('objets').appendChild(el('h3', { style: 'margin:14px 0 6px' }, e.nom));
+    var g = el('div', { 'class': 'grille grille-objets' });
+    E.catalogue.objets[e.id].forEach(function (o, i) {
+      if (o.id === 'aucun') return;
+      var d = E.normaliser(E.aleatoire(400 + i * 7 + e.id.length * 31));
+      d.objets = { tete: 'aucun', visage: 'aucun', dos: 'aucun', main: 'aucun', epaule: 'aucun', autour: 'aucun' };
+      d.objets[e.id] = o.id; d.compagnon = 'aucun'; d.fauteuil = false;
+      var c = el('div', { 'class': 'carte' }), s = el('span');
+      c.appendChild(s); c.appendChild(el('strong', null, o.nom)); g.appendChild(c);
+      E.creer(s, d, { taille: 104, etat: e.id === 'main' ? 'content' : 'repos' });
+    });
+    $('objets').appendChild(g);
+  });
+
+  /* ── lignées ── */
+  var SIGNES = { humain: 'Aucun implant ; une lampe frontale tenue au scotch.', cyber: 'Un bras mécanique, un œil cerclé, une piste de circuit.', nuee: 'Un corps de gros pixels qui se défont vers le bas.',
+    mutant: 'Des taches qui luisent, un œil d’une autre couleur, une main plus grande.', lagon: 'Crête et oreilles-nageoires, ouïes, pieds palmés.',
+    esprit: 'Une brume colorée, un visage doux, une volute.', greffe: 'Une couronne de feuilles, des racines-câbles aux pieds.' };
+  E.catalogue.lignee.forEach(function (l) {
+    var c = el('div', { 'class': 'carte' }), s = el('span');
+    c.appendChild(s); c.appendChild(el('strong', null, l.nom)); c.appendChild(el('p', null, SIGNES[l.id]));
+    $('lignees').appendChild(c);
+    E.creer(s, E.modeles[l.id].description, { taille: 128, etat: 'repos', compagnon: false });
+  });
+
+  /* ── compagnons ── */
+  var COMP_TXT = { margouillat: 'Gecko vert à taches rouges, turbine au bout de la queue.', maki: 'Le lémurien brun de l’île : masque sombre, yeux ambre, écharpe à circuit.',
+    robot: 'Le petit robot des fiches du site : tête carrée bleu nuit, antenne à boule rouge.', tortue: 'Sa carapace est une baie de serveur ; ses voyants s’éteignent quand elle est triste.', roussette: 'La grande chauve-souris de l’île ; elle ouvre les ailes quand elle est contente.' };
+  E.catalogue.compagnon.forEach(function (c) {
+    if (c.id === 'aucun') return;
+    var d = el('div', { 'class': 'carte' }), r = el('div', { 'class': 'rang' });
+    ['neutre', 'content', 'triste', 'dort'].forEach(function (e) {
+      var s = el('span', { 'class': 'eq' }); s.innerHTML = E.compagnonSVG(c.id, { etat: e, taille: 40, alt: c.nom + ', ' + (e === 'dort' ? 'endormi' : e) }); r.appendChild(s);
+    });
+    d.appendChild(r); d.appendChild(el('strong', null, c.nom)); d.appendChild(el('p', null, COMP_TXT[c.id]));
+    $('compagnons').appendChild(d);
+  });
+
+  /* ── margouillat ── */
+  document.querySelectorAll('#encadres .encadre').forEach(function (b, i) {
+    E.margouillat(b, { bord: b.getAttribute('data-bord'), taille: 40, etat: ['neutre', 'content', 'neutre', 'content'][i], position: i % 2 ? '50%' : '78%' });
+  });
+  [['9mm', 'neutre', 'auto', '9 mm (impression : encre noire)'], [16, 'neutre', 'couleur', '16 px'], [24, 'content', 'couleur', '24 px, content'], [32, 'triste', 'couleur', '32 px, triste'], [64, 'neutre', 'couleur', '64 px'], [128, 'content', 'couleur', '128 px'], [48, 'neutre', 'noir', 'encre noire']].forEach(function (m) {
+    var f = el('figure', { style: 'margin:0;display:grid;justify-items:center;gap:4px' }), s = el('span');
+    f.appendChild(s); f.appendChild(el('figcaption', null, m[3]));
+    $('marg-tailles').appendChild(f);
+    E.margouillat(s, { taille: m[0], etat: m[1], encre: m[2], sens: 'sol', alt: 'Margouillat vert à turbine' });
+  });
+  E.margouillat($('section-marg'), { bord: 'haut', taille: 24, position: '92%' });
+
+  /* ── salon d'attente ── */
+  var ETATS_SALON = ['repos', 'salue', 'dort', 'concentre', 'repos', 'content', 'salue', 'repos', 'concentre', 'dort', 'repos', 'salue'];
+  [11, 23, 37, 41, 58, 64, 72, 89, 93, 105, 117, 128].forEach(function (g, i) {
+    var s = el('span'); $('salon').appendChild(s);
+    E.creer(s, E.aleatoire(g), { taille: 112, etat: ETATS_SALON[i] });
+  });
+  E.margouillat($('salon'), { bord: 'bas', taille: 32, position: '20%' });
+
+  /* ── podium sans classement ── */
+  [E.modeles.battle.description, E.modeles.fauteuil.description, E.modeles.fleurs.description].forEach(function (d) {
+    var s = el('span'); $('podium').appendChild(s);
+    E.creer(s, d, { taille: 168, etat: 'tres_content', compagnon: false });
+  });
+})();
+</script>
+</body>
+</html>
