@@ -16,7 +16,7 @@ Quatre ressources passent par **Supabase** :
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « Babash - applications », la base commune des applications (nommée « SNT-1er Jour » jusqu'au 20 novembre 2026) | `alien_classes`, `alien_students`, `alien_progress` |
 | Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | le schéma `court_circuit` du code élève, depuis le 13 novembre 2026 : `eleves` (avec, depuis le 19 novembre 2026, la liste des challenges réussis) et `programmes` (données d'élèves), `mots` et `menage` ; les duels passent par les canaux temps réel (diffusion et présence), sans table |
-| QuizzNSI (NSI Terminale, Structures de données : le cours-quiz « Piles et files ») | le dépôt [babash/QuizzNSI](https://github.com/babash/QuizzNSI) (l'ancien dossier `nsi-terminale/fichiers/quizz-nsi/` redirige vers [babash.github.io/QuizzNSI](https://babash.github.io/QuizzNSI/)) | la même base commune | aucune : les séances passent par les canaux temps réel (diffusion et présence), sans table ni fonction |
+| QuizzNSI (NSI Première et Terminale : 22 cours-quiz d'introduction et 2 quiz de révision, depuis le 20 novembre 2026) | le dépôt [babash/QuizzNSI](https://github.com/babash/QuizzNSI) (l'ancien dossier `nsi-terminale/fichiers/quizz-nsi/` redirige vers [babash.github.io/QuizzNSI](https://babash.github.io/QuizzNSI/)) | la même base commune | aucune : les séances passent par les canaux temps réel (diffusion et présence), sans table ni fonction |
 | Calendrier des vacances (NSI et SNT : des thèmes cochés par l'enseignant·e) | `calendrier/` | la même base commune | le schéma `vacances` depuis le 20 novembre 2026 : `eleves`, `inscriptions`, `resultats` et `sessions` (données d'élèves), `enseignants`, `calendriers`, `cases`, `mots` et `menage` |
 
 **Alien Python**
@@ -124,6 +124,10 @@ Quatre ressources passent par **Supabase** :
 - **Sur l'appareil de l'élève** : le code de séance, le pseudo, l'identifiant et l'historique de la
   séance, pour revenir après une coupure. Ils sont effacés à la fin de la séance, au départ, au
   retrait du pseudo, et sinon au premier chargement d'une page de QuizzNSI après 12 heures.
+- **En mode autonome**, rien n'est envoyé. Depuis le 20 novembre 2026, la progression de l'élève
+  (ses réponses et la diapositive où il ou elle en est) reste sur l'appareil. Elle est effacée au
+  premier chargement d'une page de QuizzNSI plus d'un jour après sa dernière réponse ou son
+  dernier changement de diapositive, ou par « Recommencer à zéro » ([les données de QuizzNSI](https://github.com/babash/QuizzNSI/blob/main/docs/DONNEES.md)).
 - Un navigateur qui ne sait pas chiffrer les réponses (page en http, navigateur trop ancien) le
   dit dès l'entrée, et propose le mode autonome, qui marche sans réseau, comme la version
   imprimable.
