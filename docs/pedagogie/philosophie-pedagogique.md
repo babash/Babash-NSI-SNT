@@ -100,7 +100,7 @@ Les formes soutenues : l'évaluation formative sans note, l'évaluation par comp
 
 ### 2.10 La motivation, sans mettre la classe en compétition
 
-On ne se compare pas, mais on peut être fier ou fière de ce qu'on a appris : on favorise l'entraide, pas le classement. Dans les applications de jeu, l'élève peut gagner de l'XP. Elle reste cachée et se dépense en apparences d'avatar : seuls les avatars et les hauts faits sont visibles, jamais un score ni un classement (décision de l'auteur du 20 novembre 2026). Et quand un·e élève réussit, la classe le sait.
+On ne se compare pas, mais on peut être fier ou fière de ce qu'on a appris : on favorise l'entraide, pas le classement. Dans les applications de jeu, l'élève peut gagner de l'XP. Elle reste cachée et se dépense en apparences d'avatar : seuls les avatars et les hauts faits sont visibles, des camarades de la classe seulement ; jamais un score ni un classement ; l'enseignant·e voit tout pour ses classes et peut attribuer de l'XP (décision de l'auteur du 20 novembre 2026). Et quand un·e élève réussit, la classe le sait.
 
 - **Les ressources.** Dans Expédition Gombessa, les élèves d'une classe voient l'avancement de leurs camarades. Dans le cours-quiz, le podium n'arrive qu'à la fin, et la place d'un·e élève hors du podium n'est pas montrée.
 
@@ -134,12 +134,13 @@ La curiosité, l'esprit « petit malin », toujours de façon légale et respons
 
 ## 3. Les valeurs de l'auteur
 
-Ces valeurs sont **celles de l'auteur**. Elles sont dites ici parce qu'elles expliquent des choix visibles dans les ressources ; elles n'engagent ni son établissement ni l'institution.
+Ces valeurs sont **celles de l'auteur**. Elles sont dites ici parce qu'elles expliquent des choix visibles dans les ressources.
 
-- **Le savoir se partage.** L'auteur se reconnaît dans l'éducation populaire et dans le partage universel du savoir : la connaissance est un plaisir et une voie d'émancipation, et elle doit rester en libre accès.
-- **Le logiciel libre, l'Internet libre et les communs.** Toutes ses créations sont sous licence libre et leur code est public. Choisir le libre, c'est aussi garder la maîtrise de ses outils et de ses données.
-- **L'informatique se fait ensemble.** C'est un bidouillage créatif, où l'on essaie, où l'on s'entraide et où l'on met en commun ce qu'on a trouvé.
-- **La bienveillance, le respect et l'égalité.** L'égalité entre filles et garçons, d'où le [langage inclusif](regles-universelles.md#24-le-langage-inclusif) ; l'antiracisme, la lutte contre les LGBTphobies et l'antifascisme, comme des valeurs de respect et d'égalité.
+- **Le partage universel du savoir et l'éducation populaire.** La connaissance est un plaisir et une voie d'émancipation.
+- **Le logiciel libre et les communs.** Toutes ses créations sont sous licence libre, et leur code est public.
+- **L'informatique se fait ensemble** : un bidouillage créatif, où l'on s'entraide et où l'on met en commun.
+- **La bienveillance, avant tout**, avec le partage, l'entraide et la tolérance.
+- **L'égalité entre filles et garçons**, d'où le [langage inclusif](regles-universelles.md#24-le-langage-inclusif) ; l'antiracisme, la lutte contre les LGBTphobies et l'antifascisme.
 - **L'esprit critique** face aux réseaux sociaux, aux algorithmes, à l'IA et aux données.
 - **La sobriété numérique, l'inclusion et l'accessibilité**, prévues même si aucun·e élève n'est concerné·e cette année.
 

@@ -26,7 +26,7 @@ Une séquence, pour l'auteur, c'est : un cours bref, beaucoup de pratique, une t
 
 ### Le cours-quiz
 - **Son rôle.** Le cours, en diapositives courtes, avec des questions au milieu : on explique, puis on vérifie tout de suite.
-- **Quand.** Pour introduire une notion, ou pour une séance de révision. En classe sur les téléphones, ou seul·e.
+- **Quand.** En tête de séquence, pour introduire une notion (15 minutes, 12 questions), ou pour une séance de révision. En classe sur les téléphones, ou seul·e.
 - **Exemple.** [QuizzNSI : « Piles et files »](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=quizznsi-piles-files). → [Le document](types/cours-quiz.md)
 
 ### Le TD

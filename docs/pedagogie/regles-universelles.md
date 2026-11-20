@@ -113,7 +113,7 @@ Les règles propres à un type (TD, quiz, application de jeu…) sont dans [le d
 
 ### 3.2 L'erreur : affichée, expliquée, sans limite d'essais
 
-- **La règle.** Les essais sont illimités. Les coups de pouce sont gradués. La correction est accessible. Un message d'erreur s'affiche tel quel, puis s'explique en français. On fait travailler le raisonnement, pas seulement le résultat.
+- **La règle.** Les essais sont illimités. Les coups de pouce sont gradués. La correction est accessible. Un message d'erreur s'affiche tel quel, puis s'explique en français. Dans un exercice « trouve l'erreur », on donne toujours le message d'erreur réel (celui de Python, ou de SQLite pour le SQL), avec la coloration syntaxique. On fait travailler le raisonnement, pas seulement le résultat.
 - **La raison.** Lire une erreur s'apprend. Et les élèves ont peu confiance en elles et en eux face à l'informatique : se tromper ne doit rien coûter.
 - **Un exemple.** Dans [Court-circuit](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=court-circuit), l'erreur s'affiche comme en Python, puis un bouton l'explique en français.
 
@@ -183,7 +183,7 @@ Les règles propres à un type (TD, quiz, application de jeu…) sont dans [le d
 
 ### 4.7 Les données des élèves : le moins possible, et c'est écrit
 
-- **La règle.** Par défaut, une ressource n'enregistre rien. Si elle enregistre quelque chose, c'est un pseudo ou un prénom, au choix de l'élève, jamais un nom de famille, et sa fiche dit exactement quoi, où, et qui le voit. Toute nouvelle collecte est décidée par l'enseignant.
+- **La règle.** Par défaut, une ressource n'enregistre rien. Si elle enregistre quelque chose, c'est un pseudo ou un prénom, au choix de l'élève, jamais un nom de famille, et sa fiche dit exactement quoi, où, et qui le voit. Aucune question de genre n'est posée. Toute nouvelle collecte est décidée par l'enseignant.
 - **La raison.** Ce sont des élèves : on n'enregistre que ce qui sert à l'activité, et chacun·e doit pouvoir savoir ce qui est gardé.
 - **Un exemple.** La fiche de Court-circuit détaille ce qui est gardé avec le code élève facultatif, et ce qui est effacé au bout de 12 mois. Les exceptions décidées par l'auteur sont signalées de la même façon : la fiche de [SNT 1er jour](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=snt-1er-jour) dit que le nom de famille y est demandé.
 

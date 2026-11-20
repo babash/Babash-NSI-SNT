@@ -30,11 +30,13 @@ Une note de cadrage décrit le quiz : ses objectifs d'apprentissage, son découp
 | **Des questions à choix unique, à 4 options** : une juste, trois fausses | C'est le format de base retenu par l'auteur ; les autres types servent à varier |
 | **Chaque mauvaise réponse vient d'une erreur typique** des élèves | C'est « l'ingénierie de l'erreur » : la réponse choisie révèle le raisonnement |
 | **De l'analyse de code** (Python, SQL) **et de la recherche d'erreur**, de préférence | On fait travailler le raisonnement, pas la mémoire seule |
+| **« Trouve l'erreur » : toujours le message d'erreur réel** (celui de Python, ou de SQLite pour le SQL), avec la coloration syntaxique | Lire une erreur s'apprend |
 | **Un feedback pour chaque option** : bienveillant, il explique l'erreur, ou consolide l'automatisme pour la bonne réponse | Un retour sur la démarche vaut mieux qu'un simple « faux » |
 | **L'objectif affiché au début de chaque question**, et un nom de question choisi avec soin | L'élève sait ce qu'on vérifie |
 | **Un peu de variété, avec mesure** : association par paires, réponse numérique simple, réponse courte de 1 à 3 mots avec ses variantes d'orthographe | Varier sans piéger sur la saisie |
 | **Des contextes d'aujourd'hui et de Mayotte**, sans cliché ; des illustrations dessinées dans le fichier (SVG) | [Règles universelles](../regles-universelles.md#25-des-exemples-connus-à-mayotte-sans-cliché) |
 | **Un français sans anglicisme** ; le terme technique anglais est expliqué | Le français est une langue seconde pour beaucoup |
+| **Aucune question de genre**, aucune étiquette ni norme de genre | Décision de l'auteur du 20 novembre 2026 |
 | **Des énoncés impersonnels, des feedbacks au tutoiement** | [Le ton](../regles-universelles.md#22-le-ton--consignes-impersonnelles-tutoiement-ailleurs) |
 
 ### La bonne réponse ne se devine pas

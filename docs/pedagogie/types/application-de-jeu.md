@@ -57,7 +57,8 @@ Les explications des erreurs sont intégrées à l'application, sans service com
 
 - **On ne se compare pas, mais on peut être fier ou fière de ce qu'on a appris** : on favorise l'entraide.
 - **L'élève peut gagner de l'XP.** Elle reste cachée, et se dépense en apparences d'avatar.
-- **Seuls les avatars et les hauts faits sont visibles**, jamais un score ni un classement.
+- **Seuls les avatars et les hauts faits sont visibles, des camarades de la classe seulement** ; jamais un score ni un classement ; l'enseignant·e voit tout pour ses classes et peut attribuer de l'XP.
+- **Aucune question de genre**, aucune étiquette ni norme de genre : toute personnalisation va sur tout avatar.
 - **Quand un·e élève réussit, la classe le sait.**
 - **Une histoire seulement si elle sert** : l'habillage oui, le récit quand il est pertinent.
 
