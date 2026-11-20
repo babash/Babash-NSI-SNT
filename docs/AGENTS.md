@@ -76,7 +76,9 @@ Les décisions de l'enseignant du 20 novembre 2026 s'y ajoutent (`CLAUDE.md`, §
   ou SQLite pour le SQL), avec la coloration syntaxique ; le code affiché a une indentation très
   visible et une coloration qui se lit aussi en noir et blanc, et les consoles sont compactes ;
 - les exemples viennent du quotidien des élèves à Mayotte (la barge, le taxi, le marché, le
-  lagon…), avec des prénoms variés, sans nom de famille, ni marque, ni cliché ;
+  lagon…), et aussi d'ailleurs, avec des prénoms variés, sans nom de famille ni marque ; aucun
+  mot n'est interdit, mais une ressource ou une série ne ramène pas toujours Mayotte aux mêmes
+  images (précision du 21 novembre : la présence d'un mot n'est pas un motif de refus) ;
 - l'univers « Mamoudzou 2046 » ne sert qu'aux jeux et aux avatars ; le nouveau style des
   feuilles, « Signal pirate », n'est pas encore appliqué ;
 - le cours-quiz (dépôt QuizzNSI) vient en tête de séquence, avant le cours ou le TD ;

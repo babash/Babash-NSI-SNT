@@ -91,7 +91,7 @@ Les règles propres à un type (TD, quiz, application de jeu…) sont dans [le d
 
 ### 2.5 Des exemples connus à Mayotte, sans cliché
 
-- **La règle.** Une notion s'ancre dans le quotidien réel des élèves, quand c'est naturel. Aucun cliché (ylang-ylang, banane, coco), aucun regard exotique sur l'île.
+- **La règle.** Une notion s'ancre dans le quotidien réel des élèves, quand c'est naturel, avec des exemples qui varient, et aussi des exemples d'ailleurs. Aucun regard exotique sur l'île. Aucun mot n'est interdit : ce qu'on évite, c'est que les exemples d'une ressource ou d'une série ramènent toujours Mayotte aux mêmes images (ylang-ylang, banane, coco, lagon de carte postale). Une banane ou une noix de coco dans un exercice parmi d'autres ne pose aucun problème (précision de l'auteur du 21 novembre 2026).
 - **La raison.** On comprend mieux ce qu'on a déjà vu. Et les élèves n'ont pas à se reconnaître dans une carte postale.
 - **Un exemple.** Dans le cours-quiz « Piles et files », la pile est la boîte de chips en tube, et la file est la queue au doukabé ou le bouchon jusqu'à Mamoudzou. Le [voyageur de commerce à Mayotte](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=voyageur-de-commerce-mayotte) fait chercher un circuit entre les villages de l'île.
 
