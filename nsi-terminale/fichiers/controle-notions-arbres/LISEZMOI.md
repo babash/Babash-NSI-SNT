@@ -15,7 +15,8 @@ Premier « contrôle de notions » du site (T108) : un contrôle formatif court,
 | `controle.js` | Énoncés, arbres, dessin SVG, codage des copies (sans les réponses). |
 | `cle.js` | Clé de correction et diagnostics des erreurs fréquentes (chargée par `prof.html` et `corrige.html` seulement). |
 | `sujet.html` → `sujet.pdf` | Version papier : une page A4 par sujet, noir et blanc. |
-| `corrige.html` → `corrige.pdf` | Corrigé : une page A4 par sujet, avec une erreur fréquente par question. |
+| `corrige.html` → `corrige.pdf` | Corrigé, texte à 11 pt (convention des corrigés de terminale) : deux pages A4 par sujet, avec une erreur fréquente par question. |
+| `zone-code.js` | Zone de code de la question « Compléter une ligne » (T108b) : plusieurs lignes, police à chasse fixe, Tab qui indente, Maj + Tab, Entrée qui garde l'indentation ; Échap puis Tab pour sortir. Il manque encore, par rapport à la règle 20 : la coloration et les guides d'indentation dans la zone, et l'autocomplétion. |
 | `verification/verifier.py` | Recalcule toute la clé par exécution (classe `Noeud`, `print`, ligne complétée, insertion dans un ABR). |
 | `verification/generer-pdf.py`, `verification/essai-navigateur.py`, `verification/essai-horloge.py` | Régénèrent les PDF, rejouent un essai complet (élèves, puis page prof) et l'effacement à un jour, avec Playwright. |
 | `vendor/` | Bibliothèques QR hébergées ici (MIT et Apache 2.0). |
@@ -35,7 +36,7 @@ Rien n'est envoyé sur Internet, mais des copies nominatives sont réunies (fich
 ```
 python3 -I verification/verifier.py
 python3 -m http.server 8765   # à la racine du dépôt
-python3 -I verification/generer-pdf.py nsi-terminale/fichiers/controle-notions-arbres
+python3 -I nsi-terminale/fichiers/controle-notions-arbres/verification/generer-pdf.py nsi-terminale/fichiers/controle-notions-arbres
 ```
 Changer une question ou un arbre : incrémenter `version` dans `controle.js` (les anciens codes sont alors refusés avec un message clair).
 

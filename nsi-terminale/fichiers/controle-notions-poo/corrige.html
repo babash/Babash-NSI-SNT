@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrôle de notions : programmation orientée objet : corrigé</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="papier.css">
+<style>
+  .corr { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; align-content: start; margin-top: 2mm; }
+  .r { margin: 0 0 2mm; break-inside: avoid; font-size: 11pt; line-height: 1.25; }
+  .r code { font-size: 10.5pt; }
+  .r .rep { border: 1.2pt solid #000; padding: .5mm 2mm; margin: .5mm 0; background: #fff; font-weight: 700; }
+  .r .rep code { font-weight: 700; }
+  .r .exp { margin: .4mm 0 0; }
+  .r .err { margin: .4mm 0 0; padding-left: 2mm; border-left: 2.5pt solid #000; }
+  .r .err b { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="outils"><a href="prof.html">Page de correction</a> · <button type="button" onclick="window.print()">Imprimer</button> · pages A4, noir et blanc</div>
+<div id="feuilles"></div>
+<script src="controle.js"></script>
+<script src="moteur.js"></script>
+<script src="cle.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CN = window.CN, D = CN.DONNEES, K = window.CLE.donnees, e = CN.echapper, t = CN.texte;
+  var GITHUB = 'https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/controle-notions-poo';
+  var NOTE = { liste: '', ensemble: ' <span style="font-weight:400">(dans n\'importe quel ordre)</span>',
+    ligne: ' <span style="font-weight:400">(ou une écriture équivalente : voir la liste de la page prof)</span>' };
+
+  function reponse(q, s) {
+    var k = K[s][q.id], x = CN.qs(s, q);
+    if (q.type === 'qcu') return k.attendu + '. ' + t(x.options.filter(function (o) { return o[0] === k.attendu; })[0][1]);
+    if (q.type === 'ligne') return '<code>' + e(k.affiche) + '</code>' + (k.attendu.length > 1 ? NOTE.ligne : '');
+    var v = String(k.attendu).split(' ');
+    return (q.type === 'sortie' ? '<code>' + e(k.attendu) + '</code>' : e(v.join(', '))) + (NOTE[q.type] || '');
+  }
+  /* Mise en pages : on remplit la colonne de gauche, puis celle de droite,
+     puis une nouvelle page, tant que la feuille ne déborde pas. */
+  var conteneur = document.getElementById('feuilles');
+  /* Mesure faite dans la mise en page d'impression (verification/generer-pdf.py
+     émule l'impression avant le chargement), ou à l'écran sur une page assez large. */
+  var mesurer = window.matchMedia('print').matches || window.innerWidth > 820;
+  function feuille(s, n) {
+    var f = document.createElement('section');
+    f.className = 'feuille';
+    f.setAttribute('aria-label', 'Corrigé du sujet ' + s + (n ? ', suite' : ''));
+    f.innerHTML = (n === 0
+      ? '<div class="entete"><div><h1>Corrigé · ' + e(D.titre) + '</h1><div class="info">' + e(D.niveau) + ' · 1 point par question, tout ou rien · note sur 20 = points × 20 / ' + D.questions.length +
+        ' · une liste dans le désordre est fausse, sauf mention contraire</div></div><div class="sujet">Sujet ' + s + '</div></div>'
+      : '<div class="suite"><span><strong>Corrigé · ' + e(D.titre) + '</strong> · Sujet ' + s + ' (suite)</span></div>') +
+      '<div class="corr"><div></div><div></div></div>' +
+      '<div class="pied-feuille"><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · réponses et messages d\'erreur vérifiés par exécution (Python 3.13)</span><a href="' + GITHUB + '">Code source sur GitHub</a></div>';
+    conteneur.appendChild(f);
+    return f;
+  }
+  function deborde(f) {
+    var pied = f.querySelector('.pied-feuille').getBoundingClientRect().top;
+    return [].some.call(f.querySelectorAll('.corr .r'), function (r) { return r.getBoundingClientRect().bottom > pied - 16; }) || f.scrollHeight > f.clientHeight + 1;
+  }
+  Object.keys(D.sujets).forEach(function (s) {
+    var n = 0, f = feuille(s, n), col = 0;
+    D.questions.forEach(function (q, i) {
+      var k = K[s][q.id], d = (k.diag || [])[0];
+      var div = document.createElement('div');
+      div.className = 'r';
+      div.innerHTML = '<strong>' + (i + 1) + '. ' + e(q.nom) + '</strong><div class="rep">' + reponse(q, s) + '</div>' +
+        '<p class="exp">' + t(k.explication) + '</p>' + (d ? '<p class="err"><b>Erreur fréquente :</b> ' + t(d.texte) + '</p>' : '');
+      f.querySelectorAll('.corr > div')[col].appendChild(div);
+      if (mesurer && deborde(f)) {
+        div.remove();
+        if (col === 0) col = 1; else { n++; f = feuille(s, n); col = 0; }
+        f.querySelectorAll('.corr > div')[col].appendChild(div);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

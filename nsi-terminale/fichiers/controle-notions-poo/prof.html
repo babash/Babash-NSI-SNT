@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Correction : programmation orientée objet</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Page enseignant·e : lire les codes ou les QR codes des copies, corriger, exporter en CSV.">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="commun.css">
+<style>
+  .grille { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+  @media (min-width: 900px) { .grille { grid-template-columns: 1fr 1fr; } }
+  .liens { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); }
+  .lien-sujet { text-align: center; }
+  .lien-sujet .qr svg { width: min(60vw, 220px); }
+  .lien-sujet a { overflow-wrap: anywhere; font-size: .9rem; }
+  .table-cadre { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  th, td { padding: .4rem .5rem; border-bottom: 1px solid var(--line); text-align: left; white-space: nowrap; }
+  th { background: var(--panel-2); font-family: var(--display); position: sticky; top: 0; }
+  td.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .ok { color: var(--ok); font-weight: 700; }
+  .ko { color: var(--ko); font-weight: 700; }
+  .vide { color: var(--ink-soft); }
+  .stat-barre { height: .6rem; background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; min-width: 6rem; }
+  .stat-barre span { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+  details.copie { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .8rem; margin: .5rem 0; background: var(--panel); }
+  details.copie summary { cursor: pointer; font-weight: 700; }
+  .rep { border-top: 1px solid var(--line); padding: .5rem 0; }
+  .rep:first-of-type { border-top: 0; }
+  .rep .etiquette { font-weight: 700; }
+  .rep .texte { color: var(--ink-soft); font-size: .92rem; margin: .2rem 0 0; }
+  video { width: 100%; max-width: 28rem; border-radius: 8px; background: #000; }
+  #messages { margin-top: .6rem; }
+  #messages li { margin: .2rem 0; }
+  @media (min-width: 900px) { main.large { padding-top: 1.5rem; } }
+  @media print {
+    .haut, .pied, .ne-pas-imprimer { display: none !important; }
+    body { background: #fff; color: #000; font-size: 11pt; }
+    .carte, details.copie { border-color: #000; break-inside: avoid; }
+    details.copie { display: block; }
+  }
+</style>
+</head>
+<body>
+<div class="haut"><a href="../../index.html">Ressources NSI et SNT · NSI terminale</a> · page enseignant·e</div>
+<main class="large">
+  <h1>Correction du contrôle de notions : programmation orientée objet</h1>
+  <p class="sous-titre">Page enseignant·e · la correction se fait dans ce navigateur, rien n'est envoyé.</p>
+
+  <section class="carte ne-pas-imprimer" aria-labelledby="t-liens">
+    <h2 id="t-liens">1. Donner le sujet</h2>
+    <p class="note">À projeter : chaque élève ouvre le lien de son sujet (par exemple, sujet 1 à gauche de l'îlot, sujet 2 à droite). Version papier : <a href="sujet.pdf">sujets (PDF)</a> · <a href="corrige.pdf">corrigé (PDF)</a>.</p>
+    <div class="liens" id="liens"></div>
+  </section>
+
+  <div class="grille ne-pas-imprimer">
+    <section class="carte" aria-labelledby="t-coller">
+      <h2 id="t-coller">2. Coller des codes</h2>
+      <label for="codes">Codes reçus (un ou plusieurs, dans n'importe quel ordre)</label>
+      <textarea id="codes" class="code" rows="6" spellcheck="false" placeholder="POO1-…"></textarea>
+      <div class="boutons"><button class="bouton" type="button" id="lire-codes">Lire les codes</button></div>
+    </section>
+    <section class="carte" aria-labelledby="t-scanner">
+      <h2 id="t-scanner">2 bis. Scanner les QR codes</h2>
+      <p class="note">La caméra de l'ordinateur ou du téléphone lit les QR codes les uns après les autres.</p>
+      <div class="boutons">
+        <button class="bouton" type="button" id="camera">Allumer la caméra</button>
+        <label class="bouton second" for="photo" style="margin:0">Lire une photo</label>
+        <input type="file" id="photo" accept="image/*" hidden>
+      </div>
+      <video id="video" playsinline muted hidden></video>
+      <canvas id="toile" hidden></canvas>
+    </section>
+  </div>
+  <ul id="messages" class="note ne-pas-imprimer" aria-live="polite"></ul>
+
+  <section aria-labelledby="t-resultats">
+    <h2 id="t-resultats">3. Résultats</h2>
+    <p id="resume"></p>
+    <p id="expiration" class="alerte" hidden></p>
+    <div id="alertes"></div>
+    <div class="boutons ne-pas-imprimer">
+      <button class="bouton" type="button" id="csv" disabled>Exporter en CSV</button>
+      <button class="bouton second" type="button" id="imprimer" disabled>Imprimer les résultats</button>
+      <button class="bouton second" type="button" id="vider" disabled>Tout effacer</button>
+    </div>
+    <div class="table-cadre" style="margin-top:1rem" id="cadre-table" hidden>
+      <table id="table"></table>
+    </div>
+    <h3 id="t-stats" hidden>Réussite par question</h3>
+    <div class="table-cadre" id="cadre-stats" hidden><table id="stats"></table></div>
+    <h3 id="t-details" hidden>Détail des copies</h3>
+    <div id="details"></div>
+  </section>
+</main>
+<footer class="pied">
+  Babash - NSI Tani Malandi · contenus CC BY-SA 4.0, code MIT ·
+  QR codes : qrcode-generator de Kazuhiko Arase (MIT) et jsQR de Cosmo Wolfe, github.com/cozmo/jsQR (Apache 2.0) ·
+  <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/controle-notions-poo">Code source sur GitHub</a>
+</footer>
+<script src="controle.js"></script>
+<script src="moteur.js"></script>
+<script src="cle.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="vendor/jsQR.js"></script>
+<script src="prof.js"></script>
+</body>
+</html>

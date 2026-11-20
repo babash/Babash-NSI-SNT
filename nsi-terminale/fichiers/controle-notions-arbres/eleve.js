@@ -104,9 +104,12 @@
         liste: 'Les valeurs dans l\'ordre du parcours, séparées par des espaces.', ligne: 'Écrire ce qui remplace les points, après return.' }[q.type];
       var mode = q.type === 'valeur' ? ' inputmode="numeric"' : '';
       var classe = q.type === 'ligne' ? ' class="code"' : '';
-      h += (q.type === 'ligne' ? '<div style="display:flex;gap:.4rem;align-items:center"><code style="flex:none">return</code>' : '') +
-        '<input type="text" id="' + id + '" name="' + id + '"' + mode + classe + ' autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="80" aria-describedby="a-' + q.id + '">' +
-        (q.type === 'ligne' ? '</div>' : '');
+      if (q.type === 'ligne') {
+        /* Réponse en code : zone de plusieurs lignes, chasse fixe, Tab et indentation automatique (zone-code.js) */
+        h += '<div class="ligne-code"><code aria-hidden="true">return</code>' +
+          '<textarea id="' + id + '" name="' + id + '" class="zone-code" rows="2" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="300" aria-describedby="a-' + q.id + '"></textarea></div>';
+        aide += ' Tab indente ; Échap puis Tab pour sortir de la zone.';
+      } else h += '<input type="text" id="' + id + '" name="' + id + '"' + mode + classe + ' autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="80" aria-describedby="a-' + q.id + '">';
       h += '<p class="aide" id="a-' + q.id + '">' + aide + '</p>';
     }
     sec.innerHTML = h;
@@ -135,7 +138,7 @@
         var t = [];
         document.querySelectorAll('select[name="' + id + '"]').forEach(function (sel) { t[Number(sel.dataset.case)] = sel.value; });
         etat.reponses[i] = t.every(function (v) { return v === ''; }) ? [] : t;
-      } else etat.reponses[i] = $(id).value.trim().slice(0, 80);
+      } else etat.reponses[i] = $(id).value.trim().slice(0, q.type === 'ligne' ? 300 : 80);
     });
   }
 

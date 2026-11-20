@@ -18,6 +18,16 @@ reglages({
   // Une invitation, pas une obligation : la licence CC BY-SA 4.0 ne permet pas d'ajouter de condition.
   invitation_ia: "Si tu utilises l'IA pour les modifier, merci de le préciser.",
 
+  // Le compte commun (pages eleve/ et enseignant/, T101b). Tant que COMPTE_COMMUN_EN_LIGNE vaut false,
+  // les deux pages sont en démonstration : données fictives en mémoire, rien n'est envoyé ni gardé.
+  // Pour la mise en service (après l'application des SQL 0007 et 0008, validée par l'enseignant) :
+  // true, l'adresse du projet Supabase et sa clé publique (« anon » ou « publishable », jamais une autre).
+  COMPTE_COMMUN_EN_LIGNE: false,
+  compte_commun: {
+    url: "",
+    cle_publique: "",
+  },
+
   // Les rubriques. Depuis T51b, le site prend la liste et l'ordre des rubriques dans la vitrine
   // (donnees/vitrine.json, réglée dans l'admin) : cette liste n'est plus lue par les pages.
   // Elle reste pour les outils qui la citent encore ; à garder identique à la vitrine.
