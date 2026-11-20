@@ -20,21 +20,7 @@
   var classeLien = null;             // le code de classe de l'adresse (?classe=…)
   var tabs = null;
 
-  var GROUPES = [
-    ['Identité', ['lignee', 'corps', 'visage', 'coiffure', 'marque']],
-    ['Tenue', ['haut', 'bas', 'pieds', 'dos', 'yeux', 'tete', 'main']],
-    ['Compagnon et décor', ['familier', 'fond', 'effet']],
-    ['Gestes', ['attitude', 'succes', 'erreur']]
-  ];
-  var TEINTES = {
-    corps: ['peau-1', 'peau-2', 'peau-3', 'peau-4', 'peau-5', 'peau-6'],
-    autre: ['neon-cyan', 'neon-magenta', 'neon-vert', 'neon-jaune', 'neon-violet', 'neon-orange', 'gris', 'noir', 'blanc']
-  };
-  var NOMS_TEINTES = {
-    'peau-1': 'Peau 1', 'peau-2': 'Peau 2', 'peau-3': 'Peau 3', 'peau-4': 'Peau 4', 'peau-5': 'Peau 5', 'peau-6': 'Peau 6',
-    'neon-cyan': 'Néon cyan', 'neon-magenta': 'Néon magenta', 'neon-vert': 'Néon vert', 'neon-jaune': 'Néon jaune',
-    'neon-violet': 'Néon violet', 'neon-orange': 'Néon orange', 'gris': 'Gris', 'noir': 'Noir', 'blanc': 'Blanc'
-  };
+  var A = null;                      // les apparences (identité, objets, familles)
 
   function lireClasseDeLAdresse() {
     try {
@@ -67,7 +53,7 @@
           el('p', { class: 'petit' }, (rep && rep.message) || 'Recharge la page dans un moment.')]));
         return;
       }
-      cat = rep; K = P.outilsCatalogue(cat);
+      cat = rep; K = P.outilsCatalogue(cat); A = rep.apparences;
       if (CC.connecte()) recharger(); else accueil();
     });
   };
@@ -83,14 +69,14 @@
     /* J'ai déjà un code */
     var code = P.champ({ etiquette: 'Ton code', aide: 'Par exemple CLAVIER-FRESQUE-482. Majuscules, espaces et tirets : comme tu veux.',
       exemple: 'MOT-MOT-123', capitales: true, max: 80, classe: 'cc-code-saisie' });
-    var appareil1 = P.caseACocher('C\'est mon appareil', '(rester connecté·e 30 jours ; sinon, 1 jour)');
+    var appareil1 = caseAppareil();
     var m1 = P.zoneMessage();
     var b1 = P.bouton('Entrer', { type: 'submit', classe: 'cc-principal' });
     var f1 = P.formulaire([code, appareil1, b1, m1], function () {
       var v = code.input.value;
       if (!CC.normaliserCode(v)) { P.message(m1, 'Écris ton code.', 'erreur'); code.input.focus(); return; }
       P.occupe(b1, true);
-      CC.entrer(v, { appareil: appareil1.input.checked }).then(function (rep) {
+      CC.entrer(v, { appareil: appareil1 && appareil1.input.checked }).then(function (rep) {
         P.occupe(b1, false);
         if (!rep.ok) { P.message(m1, rep.message, 'erreur'); code.input.focus(); return; }
         apresEntree(rep.fiche);
@@ -100,14 +86,14 @@
 
     /* Je suis nouveau ou nouvelle */
     var pseudo = P.champ({ etiquette: 'Ton prénom ou un pseudo', aide: 'De 2 à 24 caractères. Jamais ton nom de famille.', max: 24, autocomplete: 'nickname' });
-    var appareil2 = P.caseACocher('C\'est mon appareil', '(rester connecté·e 30 jours ; sinon, 1 jour)');
+    var appareil2 = caseAppareil();
     var m2 = P.zoneMessage();
     var b2 = P.bouton('Créer mon code', { type: 'submit', classe: 'cc-principal' });
     var f2 = P.formulaire([pseudo, appareil2, b2, m2], function () {
       var v = CC.nettoyerPseudo(pseudo.input.value);
       if (!v) { P.message(m2, 'Choisis un prénom ou un pseudo de 2 à 24 caractères (jamais ton nom de famille).', 'erreur'); pseudo.input.focus(); return; }
       P.occupe(b2, true);
-      CC.creer(v, { appareil: appareil2.input.checked }).then(function (rep) {
+      CC.creer(v, { appareil: appareil2 && appareil2.input.checked }).then(function (rep) {
         P.occupe(b2, false);
         if (!rep.ok) { P.message(m2, rep.message, 'erreur'); return; }
         montrerCode(rep.code_affiche, rep.fiche);
@@ -120,6 +106,11 @@
     if (messageDepart) main.insertBefore(el('p', { class: 'cc-message cc-info', role: 'status' }, messageDepart), main.firstChild);
     var d = CC.demo();
     if (d) main.appendChild(blocEssaiDemo(d, code.input));
+  }
+
+  /* « C'est mon appareil » : sans objet en démonstration, où rien n'est gardé */
+  function caseAppareil() {
+    return CC.mode() === 'demo' ? null : P.caseACocher('C\'est mon appareil', '(rester connecté·e 30 jours ; sinon, 1 jour)');
   }
 
   function blocClasseDuLien() {
@@ -205,11 +196,10 @@
 
   function planque(alerte) {
     O.vider(main);
-    essai = JSON.parse(JSON.stringify(fiche.avatar || { v: 1, porte: {}, teintes: {} }));
-    completerObligatoires(essai);
+    essai = copieAvatar(fiche.avatar);
 
     var avatar = el('div', { class: 'cc-avatar-cadre' });
-    CC.dessinerAvatar(avatar, fiche.avatar, { etat: 'lobby', taille: 'grand', catalogue: cat, pseudo: fiche.pseudo });
+    CC.dessinerAvatar(avatar, fiche.avatar, { etat: 'salue', taille: 'grand', pseudo: fiche.pseudo });
     var titre = el('h2', { class: 'cc-salut', tabindex: '-1' }, 'Salut, ' + fiche.pseudo);
     var sortir = P.bouton('Me déconnecter', { classe: 'cc-discret' });
     sortir.addEventListener('click', function () {
@@ -256,28 +246,30 @@
     ], { classe: 'cc-important' });
   }
 
-  /* ── 2a. La loge : porter ce qu'on a ───────────────────────────── */
+  function possede(e) { return e.acces === 'libre' ? e.actif !== false : fiche.elements.indexOf(e.id) >= 0; }
+  function nomEmplacement(id) { var m = (A.emplacements || []).filter(function (x) { return x.id === id; })[0]; return m ? m.nom : id; }
+  function copieAvatar(a) { return JSON.parse(JSON.stringify(a || A.defaut)); }
 
-  function possede(e) { return e.acces === 'libre' ? e.actif : fiche.elements.indexOf(e.id) >= 0; }
-  function compatible(e, avatar) { return !e.lignees || e.lignees.indexOf(avatar.porte.lignee) >= 0; }
-  function emplacement(id) { return cat.emplacements.filter(function (m) { return m.id === id; })[0]; }
-  function elementsDe(empl) { return cat.elements.filter(function (e) { return e.emplacement === empl; }); }
-
-  function completerObligatoires(a) {
-    a.porte = a.porte || {};
-    a.teintes = a.teintes || {};
-    cat.emplacements.forEach(function (m) {
-      if (m.obligatoire && !a.porte[m.id]) {
-        var e = elementsDe(m.id).filter(function (x) { return x.acces === 'libre' && x.actif; })[0];
-        if (e) a.porte[m.id] = e.id;
-      }
-    });
+  /* Une liste déroulante de la loge */
+  function choix(etiquette, options, valeur, quandChange) {
+    var id = P.idUnique('loge');
+    var sel = el('select', { id: id, class: 'cc-select' }, options.map(function (o) {
+      return el('option', { value: String(o.id), selected: String(o.id) === String(valeur) ? true : null }, o.nom);
+    }));
+    sel.addEventListener('change', function () { quandChange(sel.value); });
+    return el('div', { class: 'cc-ligne-loge' }, [el('label', { for: id }, etiquette), sel]);
   }
+  function couleurs(groupe) {
+    return (A.identite.couleurs[groupe] || []).map(function (c) { return { id: c.id, nom: c.id.charAt(0).toUpperCase() + c.id.slice(1) }; });
+  }
+
+  /* ── 2a. La loge : porter ce qu'on a ───────────────────────────── */
 
   function remplirLoge(panneau) {
     O.vider(panneau);
+    var I = A.identite;
     var apercu = el('div', { class: 'cc-avatar-cadre cc-apercu' });
-    function redessiner() { CC.dessinerAvatar(apercu, essai, { etat: 'repos', taille: 'grand', catalogue: cat, pseudo: fiche.pseudo }); }
+    function redessiner() { CC.dessinerAvatar(apercu, essai, { etat: 'repos', taille: 'grand', pseudo: fiche.pseudo }); }
     redessiner();
     var m = P.zoneMessage();
     var enregistrer = P.bouton('Porter cet avatar', { classe: 'cc-principal' });
@@ -290,87 +282,70 @@
         fiche.avatar = rep.avatar;
         P.message(m, 'C\'est porté.', 'ok');
         var grand = main.querySelector('.cc-tete .cc-avatar-cadre');
-        if (grand) CC.dessinerAvatar(grand, fiche.avatar, { etat: 'lobby', taille: 'grand', catalogue: cat, pseudo: fiche.pseudo });
+        if (grand) CC.dessinerAvatar(grand, fiche.avatar, { etat: 'content', taille: 'grand', pseudo: fiche.pseudo });
       });
     });
-    annuler.addEventListener('click', function () {
-      essai = JSON.parse(JSON.stringify(fiche.avatar));
-      completerObligatoires(essai);
-      remplirLoge(panneau);
-    });
+    annuler.addEventListener('click', function () { essai = copieAvatar(fiche.avatar); remplirLoge(panneau); });
+    function champ(cle) { return function (v) { essai[cle] = cle === 'teint' ? Number(v) : v; redessiner(); }; }
+    function couleur(cle) { return function (v) { essai.couleurs = essai.couleurs || {}; essai.couleurs[cle] = v; redessiner(); }; }
+    var c = essai.couleurs || {};
 
-    var choix = el('div', { class: 'cc-loge-choix' });
-    GROUPES.forEach(function (g) {
-      var fs = el('fieldset', { class: 'cc-groupe' }, el('legend', null, g[0]));
-      g[1].forEach(function (eid) {
-        var m2 = emplacement(eid);
-        if (!m2) return;
-        var dispo = elementsDe(eid).filter(function (e) { return possede(e) && compatible(e, essai); });
-        if (!dispo.length && !m2.obligatoire) return;
-        var id = P.idUnique('loge');
-        var sel = el('select', { id: id, class: 'cc-select' });
-        if (!m2.obligatoire) sel.appendChild(el('option', { value: '' }, 'Rien'));
-        dispo.forEach(function (e) {
-          sel.appendChild(el('option', { value: e.id, selected: essai.porte[eid] === e.id ? true : null }, e.nom));
-        });
-        sel.addEventListener('change', function () {
-          if (sel.value) essai.porte[eid] = sel.value; else delete essai.porte[eid];
-          if (eid === 'lignee') {
-            /* Une autre lignée : on retire ce qui ne va pas avec elle */
-            Object.keys(essai.porte).forEach(function (k) {
-              var e = K.elt(essai.porte[k]);
-              if (e && !compatible(e, essai)) delete essai.porte[k];
-            });
-            completerObligatoires(essai);
-            remplirLoge(panneau);
-            return;
-          }
-          majTeinte();
-          redessiner();
-        });
-        var ligne = el('div', { class: 'cc-ligne-loge' }, [el('label', { for: id }, m2.nom), sel]);
-        var zoneTeinte = el('span', { class: 'cc-teinte' });
-        ligne.appendChild(zoneTeinte);
-        function majTeinte() {
-          O.vider(zoneTeinte);
-          var e = K.elt(essai.porte[eid]);
-          if (!e || !e.teintable) { delete essai.teintes[eid]; return; }
-          var tid = P.idUnique('teinte');
-          var ts = el('select', { id: tid, class: 'cc-select cc-select-teinte' }, [el('option', { value: '' }, 'Teinte d\'origine')]
-            .concat((eid === 'corps' ? TEINTES.corps : TEINTES.autre).map(function (t) {
-              return el('option', { value: t, selected: essai.teintes[eid] === t ? true : null }, NOMS_TEINTES[t]);
-            })));
-          ts.addEventListener('change', function () {
-            if (ts.value) essai.teintes[eid] = ts.value; else delete essai.teintes[eid];
-            redessiner();
-          });
-          zoneTeinte.appendChild(el('label', { for: tid, class: 'invisible' }, 'Teinte : ' + m2.nom));
-          zoneTeinte.appendChild(ts);
-        }
-        majTeinte();
-        fs.appendChild(ligne);
-      });
-      if (fs.children.length > 1) choix.appendChild(fs);
+    var identite = el('fieldset', { class: 'cc-groupe' }, [el('legend', null, 'Ton allure'),
+      choix('Lignée', I.lignee, essai.lignee, champ('lignee')),
+      choix('Teint', I.teint, essai.teint, champ('teint')),
+      choix('Corps', I.corps, essai.corps, champ('corps')),
+      choix('Coiffure', I.coiffure, essai.coiffure, champ('coiffure')),
+      choix('Cheveux', couleurs('cheveux'), essai.cheveux, champ('cheveux')),
+      choix('Yeux', couleurs('yeux'), c.yeux, couleur('yeux'))
+    ]);
+    var fauteuil = P.caseACocher('Fauteuil roulant', '(une aide technique, toujours disponible)');
+    fauteuil.input.checked = !!essai.fauteuil;
+    fauteuil.input.addEventListener('change', function () { essai.fauteuil = fauteuil.input.checked; redessiner(); });
+    identite.appendChild(fauteuil);
+
+    var tenue = el('fieldset', { class: 'cc-groupe' }, [el('legend', null, 'Ta tenue'),
+      choix('Haut', I.haut, essai.haut, champ('haut')),
+      choix('Couleur du haut', couleurs('tissu'), c.haut, couleur('haut')),
+      choix('Bas', I.bas, essai.bas, champ('bas')),
+      choix('Couleur du bas', couleurs('tissu'), c.bas, couleur('bas')),
+      choix('Chaussures', I.chaussures, essai.chaussures, champ('chaussures')),
+      choix('Couleur des chaussures', couleurs('chaussures'), c.chaussures, couleur('chaussures')),
+      choix('Néon', couleurs('neon'), c.accent, couleur('accent'))
+    ]);
+
+    var objets = el('fieldset', { class: 'cc-groupe' }, el('legend', null, 'Tes objets et ton compagnon'));
+    (A.emplacements || []).forEach(function (empl) {
+      var mien = cat.elements.filter(function (e) { return e.emplacement === empl.id && possede(e); })
+        .map(function (e) { return { id: e.id.split(':')[1], nom: e.nom }; });
+      if (empl.id === 'compagnon') {
+        objets.appendChild(choix('Compagnon', [{ id: 'aucun', nom: 'Aucun' }].concat(mien), essai.compagnon, champ('compagnon')));
+        return;
+      }
+      if (!mien.length) return;
+      objets.appendChild(choix(empl.nom, [{ id: 'aucun', nom: 'Rien' }].concat(mien), (essai.objets || {})[empl.id] || 'aucun', function (v) {
+        essai.objets = essai.objets || {};
+        essai.objets[empl.id] = v;
+        redessiner();
+      }));
     });
+    objets.appendChild(el('p', { class: 'petit' }, 'D\'autres objets t\'attendent dans la boutique.'));
 
     panneau.appendChild(el('div', { class: 'cc-loge' }, [
       el('div', { class: 'cc-loge-apercu' }, [apercu, el('div', { class: 'cc-actions' }, [enregistrer, annuler]), m]),
       el('div', null, [
-        el('p', { class: 'petit' }, 'Tout ce qui sert à te reconnaître (lignée, corps, visage, coiffure, marques) est gratuit. Le reste se gagne avec un haut fait ou se prend dans la boutique.'),
-        choix
+        el('p', { class: 'petit' }, 'Ton allure et ta tenue sont gratuites et vont sur tout avatar. Les objets se prennent dans la boutique ; les compagnons se gagnent avec un haut fait.'),
+        el('div', { class: 'cc-loge-choix' }, [identite, tenue, objets])
       ])
     ]));
   }
 
-  /* ── 2b. La boutique : ce qui se prend avec des crédits ─────────── */
+  /* ── 2b. La boutique : les objets, rangés par famille ───────────── */
 
   function remplirBoutique(panneau) {
     O.vider(panneau);
-    var ordre = cat.emplacements.map(function (m) { return m.id; });
-    var aPrendre = cat.elements.filter(function (e) { return e.acces === 'credits' && e.actif && !possede(e); });
+    var aPrendre = cat.elements.filter(function (e) { return e.acces === 'credits' && e.actif !== false && !possede(e); });
     var aGagner = cat.elements.filter(function (e) { return e.acces === 'haut_fait' && !possede(e); });
     var pris = cat.elements.filter(function (e) { return e.acces !== 'libre' && possede(e); });
-    function trier(a, b) { return (ordre.indexOf(a.emplacement) - ordre.indexOf(b.emplacement)) || (a.ordre || 0) - (b.ordre || 0); }
 
     panneau.appendChild(el('p', { class: 'cc-intro' }, [
       'Tu as ', el('strong', null, fiche.credits + ' crédits'), '. Tu les gagnes en travaillant : une feuille de TD validée, un cours-quiz suivi jusqu\'au bout, une mission… ',
@@ -379,44 +354,53 @@
     var m = P.zoneMessage();
     panneau.appendChild(m);
 
-    var grille = el('ul', { class: 'cc-vitrine' });
-    aPrendre.sort(trier).forEach(function (e) { grille.appendChild(articleBoutique(e, m)); });
-    panneau.appendChild(el('h3', null, 'À prendre avec tes crédits'));
-    panneau.appendChild(aPrendre.length ? grille : el('p', { class: 'vide' }, 'Tu as déjà tout ce qui se prend avec des crédits.'));
+    (A.familles || []).forEach(function (f) {
+      var dans = aPrendre.filter(function (e) { return e.famille === f.id; });
+      if (!dans.length) return;
+      var liste = el('ul', { class: 'cc-vitrine' });
+      var det = el('details', { class: 'cc-famille' }, [el('summary', null, f.nom), liste]);
+      det.addEventListener('toggle', function () {
+        if (det.open && !liste.children.length) dans.forEach(function (e) { liste.appendChild(articleBoutique(e, m)); });
+      });
+      panneau.appendChild(det);
+    });
+    if (!aPrendre.length) panneau.appendChild(el('p', { class: 'vide' }, 'Tu as déjà tous les objets.'));
 
     if (aGagner.length) {
-      panneau.appendChild(el('h3', null, 'À gagner avec un haut fait'));
-      panneau.appendChild(el('p', { class: 'petit' }, 'Ces apparences ne s\'achètent pas : elles racontent ce que tu as fait.'));
-      panneau.appendChild(el('ul', { class: 'cc-vitrine' }, aGagner.sort(trier).map(function (e) {
+      panneau.appendChild(el('h3', null, 'Les compagnons, à gagner avec un haut fait'));
+      panneau.appendChild(el('p', { class: 'petit' }, 'Ils ne s\'achètent pas : ils racontent ce que tu as fait. Le margouillat est là dès le départ.'));
+      panneau.appendChild(el('ul', { class: 'cc-vitrine' }, aGagner.map(function (e) {
         var source = (cat.hauts_faits || []).filter(function (h) { return (h.recompenses || []).indexOf(e.id) >= 0; })[0];
         return el('li', { class: 'cc-article cc-a-gagner' }, [
           miniature(e),
           el('p', { class: 'cc-article-nom' }, e.nom),
-          el('p', { class: 'cc-article-empl' }, (emplacement(e.emplacement) || {}).nom),
           el('p', { class: 'petit' }, source ? 'Se gagne avec : ' + source.nom + ' (' + K.app(source.application).nom + ')' : 'Se gagne avec un haut fait.')
         ]);
       })));
     }
     if (pris.length) {
       panneau.appendChild(el('h3', null, 'Déjà dans ta loge'));
-      panneau.appendChild(el('ul', { class: 'cc-puces' }, pris.sort(trier).map(function (e) { return el('li', null, e.nom); })));
+      panneau.appendChild(el('ul', { class: 'cc-puces' }, pris.map(function (e) { return el('li', null, e.nom); })));
     }
   }
 
+  function avecElement(e) {
+    var a = copieAvatar(fiche.avatar);
+    if (e.emplacement === 'compagnon') a.compagnon = e.id.split(':')[1];
+    else { a.objets = a.objets || {}; a.objets[e.emplacement] = e.id.split(':')[1]; }
+    return a;
+  }
+
   function miniature(e) {
-    var a = JSON.parse(JSON.stringify(fiche.avatar));
-    a.porte = a.porte || {};
-    a.porte[e.emplacement] = e.id;
     var d = el('div', { class: 'cc-avatar-cadre cc-mini' });
-    CC.dessinerAvatar(d, a, { etat: 'repos', taille: 'petit', catalogue: cat, pseudo: fiche.pseudo });
-    d.setAttribute('aria-label', 'Essai : ' + e.nom);
+    CC.dessinerAvatar(d, avecElement(e), { etat: 'repos', taille: 'petit', alt: 'Essai : ' + e.nom });
     return d;
   }
 
   function articleBoutique(e, m) {
     var ok = fiche.credits >= e.prix;
-    var compat = compatible(e, fiche.avatar);
-    var bouton = P.bouton('Prendre pour ' + e.prix + ' crédits', { inactif: !ok, classe: 'cc-principal' });
+    var bouton = P.bouton(ok ? 'Prendre pour ' + e.prix + ' crédits' : e.prix + ' crédits : encore ' + (e.prix - fiche.credits) + ' à gagner',
+      { inactif: !ok, classe: ok ? 'cc-principal' : 'cc-inactif' });
     var zone = el('div', { class: 'cc-confirmer' });
     bouton.addEventListener('click', function () {
       O.vider(zone);
@@ -440,9 +424,7 @@
     return el('li', { class: 'cc-article' }, [
       miniature(e),
       el('p', { class: 'cc-article-nom' }, e.nom),
-      el('p', { class: 'cc-article-empl' }, (emplacement(e.emplacement) || {}).nom),
-      !compat ? el('p', { class: 'petit' }, 'Ne va qu\'avec certaines lignées.') : null,
-      ok ? null : el('p', { class: 'petit' }, 'Encore ' + (e.prix - fiche.credits) + ' crédits à gagner.'),
+      el('p', { class: 'cc-article-empl' }, nomEmplacement(e.emplacement)),
       bouton, zone
     ]);
   }
@@ -504,7 +486,7 @@
       var sec = el('section', { class: 'cc-classe' }, [el('h3', null, c.nom), el('p', { class: 'petit' }, 'Avec ' + c.enseignant)]);
       sec.appendChild(el('ul', { class: 'cc-camarades' }, (c.camarades || []).map(function (k) {
         var av = el('div', { class: 'cc-avatar-cadre cc-moyen' });
-        CC.dessinerAvatar(av, k.avatar, { etat: 'repos', taille: 'moyen', catalogue: cat, pseudo: k.pseudo });
+        CC.dessinerAvatar(av, k.avatar, { etat: 'repos', taille: 'moyen', pseudo: k.pseudo });
         var hfs = (k.hauts_faits || []).map(function (h) { return K.nomHf(h.application, h.id); });
         return el('li', { class: 'cc-camarade' + (k.moi ? ' cc-moi' : '') }, [
           av,

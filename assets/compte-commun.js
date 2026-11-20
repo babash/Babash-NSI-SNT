@@ -89,8 +89,7 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            apikey: cfg.cle_publique,
-            Authorization: 'Bearer ' + cfg.cle_publique
+            apikey: cfg.cle_publique
           },
           body: JSON.stringify(params || {})
         }).then(function (r) {
@@ -127,74 +126,20 @@
       ['alien', 'Alien Python', 'https://babash.github.io/Babash-NSI-SNT/snt/fichiers/alien-python/']
     ].map(function (a) { return { id: a[0], nom: a[1], adresse: a[2] }; });
 
-    var emplacements = [
-      ['lignee', 'Lignée', 'identite', null, true], ['fond', 'Décor', 'decor', 0, false],
-      ['dos', 'Dos', 'tenue', 10, false], ['corps', 'Corps', 'identite', 30, true],
-      ['marque', 'Marques et implants', 'identite', 32, false], ['bas', 'Bas', 'tenue', 40, false],
-      ['pieds', 'Chaussures', 'tenue', 42, false], ['haut', 'Haut', 'tenue', 50, false],
-      ['visage', 'Visage', 'identite', 60, true], ['coiffure', 'Coiffure', 'identite', 65, false],
-      ['yeux', 'Lunettes et masques', 'tenue', 70, false], ['tete', 'Tête', 'tenue', 75, false],
-      ['main', 'Dans la main', 'tenue', 80, false], ['familier', 'Familier', 'compagnon', 90, false],
-      ['effet', 'Effet', 'decor', 95, false], ['attitude', 'Attitude', 'geste', null, false],
-      ['succes', 'Réussite', 'geste', null, false], ['erreur', 'Erreur', 'geste', null, false]
-    ].map(function (m) { return { id: m[0], nom: m[1], genre: m[2], plan: m[3], obligatoire: m[4] }; });
-
-    /* [id, nom, accès, prix, lignées, teintable] : un catalogue d'essai, pas celui de T102 */
-    var elements = [
-      ['lignee:humain', 'Humain·e', 'libre'], ['lignee:cyber', 'Cyber', 'libre'], ['lignee:nuee', 'Nuée', 'libre'],
-      ['lignee:mutant', 'Mutant·e', 'libre'], ['lignee:peuple-lagon', 'Peuple du lagon', 'libre'],
-      ['lignee:esprit', 'Esprit', 'libre'], ['lignee:greffe', 'Greffé·e', 'libre'],
-      ['corps:silhouette-a', 'Silhouette A', 'libre', null, null, true],
-      ['corps:silhouette-b', 'Silhouette B', 'libre', null, null, true],
-      ['corps:silhouette-c', 'Silhouette C', 'libre', null, null, true],
-      ['visage:calme', 'Calme', 'libre'], ['visage:sourire-en-coin', 'Sourire en coin', 'libre'],
-      ['visage:regard-concentre', 'Regard concentré', 'libre'],
-      ['coiffure:rase', 'Rasé', 'libre', null, null, true], ['coiffure:tresses', 'Tresses', 'libre', null, null, true],
-      ['coiffure:afro', 'Afro', 'libre', null, null, true], ['coiffure:chignon', 'Chignon', 'libre', null, null, true],
-      ['coiffure:mi-longs', 'Mi-longs', 'libre', null, null, true],
-      ['marque:pixels-qui-se-defont', 'Pixels qui se défont', 'libre'],
-      ['marque:circuits-tempe', 'Circuits sur la tempe', 'libre', null, ['lignee:cyber', 'lignee:greffe']],
-      ['marque:ouies-lumineuses', 'Ouïes lumineuses', 'libre', null, ['lignee:peuple-lagon']],
-      ['fond:ciel-de-nuit', 'Ciel de nuit', 'libre'], ['fond:quai-de-la-barge', 'Quai de la barge', 'credits', 250],
-      ['fond:ruelle-au-neon', 'Ruelle au néon', 'credits', 250],
-      ['dos:sac-a-cables', 'Sac à câbles', 'credits', 100],
-      ['haut:t-shirt-uni', 'T-shirt uni', 'libre', null, null, true],
-      ['haut:veste-patchs', 'Veste à patchs', 'credits', 100, null, true],
-      ['haut:sweat-circuits', 'Sweat à circuits imprimés', 'credits', 100, null, true],
-      ['haut:gilet-reflechissant', 'Gilet réfléchissant', 'haut_fait'],
-      ['bas:pantalon-cargo', 'Pantalon cargo', 'libre', null, null, true], ['bas:short', 'Short', 'libre', null, null, true],
-      ['bas:jogging-neon', 'Jogging à liseré néon', 'credits', 40, null, true],
-      ['pieds:baskets', 'Baskets', 'libre', null, null, true], ['pieds:claquettes', 'Claquettes', 'libre'],
-      ['pieds:baskets-led', 'Baskets à LED', 'credits', 40],
-      ['yeux:lunettes-rondes', 'Lunettes rondes', 'credits', 40], ['yeux:visiere-hud', 'Visière à affichage', 'credits', 100],
-      ['tete:casquette', 'Casquette', 'credits', 40, null, true], ['tete:casque-led', 'Casque à LED', 'haut_fait'],
-      ['main:clavier-pliable', 'Clavier pliable', 'credits', 40], ['main:fer-a-souder', 'Fer à souder', 'haut_fait'],
-      ['familier:margouillat-turbines', 'Margouillat à turbines', 'credits', 250],
-      ['familier:drone-de-poche', 'Drone de poche', 'credits', 250],
-      ['familier:tortue-serveur', 'Tortue-serveur', 'haut_fait'],
-      ['effet:pluie-de-donnees', 'Pluie de données', 'credits', 100],
-      ['attitude:salut-deux-doigts', 'Salut à deux doigts', 'libre'], ['attitude:pouce-leve', 'Pouce levé', 'credits', 100],
-      ['succes:glitch', 'Glitch', 'libre'], ['succes:petit-saut', 'Petit saut', 'credits', 100],
-      ['erreur:fumee', 'Petite fumée', 'libre'], ['erreur:haussement-epaules', 'Haussement d\'épaules', 'libre']
-    ].map(function (e, i) {
-      return { id: e[0], emplacement: e[0].split(':')[0], nom: e[1], description: '', acces: e[2],
-        prix: e[3] || null, lignees: e[4] || null, teintable: !!e[5], actif: true, ordre: i };
-    });
-
     /* [application, id, nom, description, catégorie, accord, récompenses, indice si secret] */
     var hauts = [
       ['commun', 'premiere-planque', 'Première planque', 'Entrer dans sa planque avec son code.', 'premiers_pas', 'serveur', []],
       ['commun', 'coup-de-main', 'Coup de main', 'Aider un·e camarade à comprendre, sans faire à sa place.', 'entraide', 'enseignant', []],
       ['commun', 'explication-claire', 'Explication claire', 'Expliquer une notion à la classe.', 'entraide', 'enseignant', []],
       ['td', 'premiere-feuille', 'Première feuille', 'Valider en ligne sa première feuille de TD.', 'premiers_pas', 'page', []],
-      ['td', 'erreur-surmontee', 'Erreur surmontée', 'Valider un exercice après au moins un essai raté.', 'perseverance', 'page', ['haut:gilet-reflechissant']],
+      ['td', 'erreur-surmontee', 'Erreur surmontée', 'Valider un exercice après au moins un essai raté.', 'perseverance', 'page', ['compagnon:robot']],
       ['td', 'lecteur-de-traces', 'Lecteur de traces', 'Lire jusqu\'au bout le message d\'erreur de Python.', 'maitrise', 'page', [], 'Il paraît que certains messages d\'erreur cachent un indice.'],
       ['quizz_nsi', 'jusqu-au-bout', 'Jusqu\'au bout', 'Suivre un cours-quiz jusqu\'à la dernière question.', 'perseverance', 'page', []],
       ['calendrier', 'dix-jours-differents', 'Dix jours différents', 'Faire un mini-jeu dix jours différents, dans l\'ordre que tu veux.', 'perseverance', 'page', []],
       ['court_circuit', 'premier-circuit', 'Premier circuit', 'Faire avancer son robot jusqu\'au bout d\'un circuit.', 'premiers_pas', 'serveur', []],
-      ['court_circuit', 'sortie-de-la-grotte', 'Sortie de la grotte', 'Trouver la sortie de la grotte avec une boucle.', 'exploration', 'serveur', ['main:fer-a-souder']],
-      ['gombessa', 'premiere-plongee', 'Première plongée', 'Réussir sa première mission.', 'premiers_pas', 'serveur', ['familier:tortue-serveur']],
-      ['lagon', 'premiere-manche', 'Première manche', 'Jouer une manche jusqu\'au bout.', 'premiers_pas', 'serveur', ['tete:casque-led']],
+      ['court_circuit', 'sortie-de-la-grotte', 'Sortie de la grotte', 'Trouver la sortie de la grotte avec une boucle.', 'exploration', 'serveur', ['compagnon:roussette']],
+      ['gombessa', 'premiere-plongee', 'Première plongée', 'Réussir sa première mission.', 'premiers_pas', 'serveur', ['compagnon:tortue']],
+      ['lagon', 'premiere-manche', 'Première manche', 'Jouer une manche jusqu\'au bout.', 'premiers_pas', 'serveur', ['compagnon:maki']],
       ['alien', 'sur-la-piste', 'Sur la piste', 'Suivre l\'alien sur cinq programmes.', 'exploration', 'serveur', []],
       ['grand_oral', 'ma-question', 'Ma question', 'Écrire la question de son Grand oral.', 'creation', 'serveur', []]
     ].map(function (h, i) {
@@ -229,12 +174,15 @@
       lagon: 'https://babash.github.io/lagon-arena/prof.html?demo',
       court_circuit: 'https://babash.github.io/court-circuit/prof.html?demo'
     };
-    return { applications: apps, emplacements: emplacements, elements: elements, hauts_faits: hauts,
+    return { applications: apps, hauts_faits: hauts,
       bareme: bareme, activites: activites, adresses_prof: adressesProf };
   })();
 
-  function implementationDemo() {
+  function construireDemo(A) {
     var C = CATALOGUE_DEMO;
+    /* Les apparences : celles du moteur d'avatars (donnees/compte-commun/apparences.json) */
+    C.elements = (A.elements || []).map(function (e, i) { var x = copie(e); x.actif = true; x.ordre = i; return x; });
+    C.emplacements = A.emplacements || [];
     var D = { comptes: {}, codes: [], sessions: {}, gagnes: [], debloques: [], journal: [],
       enseignants: {}, classes: {}, inscriptions: [], classes_liens: [], echecs: 0 };
     var compteur = 0;
@@ -270,10 +218,7 @@
         xp: 0, credits: 0, cree_le: quand || maintenant(), vu_le: quand || maintenant() };
       return cid;
     }
-    function avatarDeDepart() {
-      return { v: 1, porte: { lignee: 'lignee:humain', corps: 'corps:silhouette-a', visage: 'visage:calme', haut: 'haut:t-shirt-uni',
-        bas: 'bas:pantalon-cargo', pieds: 'pieds:baskets' }, teintes: {} };
-    }
+    function avatarDeDepart() { return copie(A.defaut); }
     function donnerCode(cid, affiche) {
       var principal = !D.codes.some(function (x) { return x.compte_id === cid && x.principal; });
       D.codes.push({ code: normaliserCode(affiche), code_affiche: affiche, compte_id: cid, application: 'commun', principal: principal, cree_le: maintenant() });
@@ -347,23 +292,32 @@
       return { ok: true, element: eid, credits: k.credits };
     }
 
-    /* Comme commun.verifier_avatar */
+    /* Comme commun.verifier_avatar, pour la description du moteur d'avatars (600 octets au plus) :
+       l'identité et les tenues sont libres pour tout avatar ; un objet ou un compagnon doit être
+       libre, gagné ou acheté. Aucune pièce n'est réservée à une lignée. */
     function verifierAvatar(cid, a) {
-      if (!a || typeof a !== 'object' || Array.isArray(a) || a.v !== 1 || JSON.stringify(a).length > 4000) return null;
-      if (Object.keys(a).some(function (k) { return ['v', 'porte', 'teintes'].indexOf(k) < 0; })) return null;
-      var porte = {}, teintes = {}, lig = a.porte && a.porte.lignee, ok = true;
-      Object.keys(a.porte || {}).forEach(function (k) {
-        var e = element(a.porte[k]);
-        if (!e || e.emplacement !== k || (e.lignees && e.lignees.indexOf(lig) < 0) ||
-            !((e.acces === 'libre' && e.actif) || D.debloques.some(function (d) { return d.compte_id === cid && d.element_id === e.id; }))) ok = false;
-        else porte[k] = e.id;
+      if (!a || typeof a !== 'object' || Array.isArray(a) || a.v !== 1 || JSON.stringify(a).length > (A.taille_max_description || 600)) return null;
+      var permis = Object.keys(A.defaut);
+      if (Object.keys(a).some(function (k) { return permis.indexOf(k) < 0; })) return null;
+      var I = A.identite, ok = true;
+      function dans(liste, v) { return (liste || []).some(function (x) { return x.id === v; }); }
+      function couleur(liste, v) { return typeof v === 'string' && (/^#[0-9a-f]{6}$/i.test(v) || dans(liste, v)); }
+      ['lignee', 'corps', 'coiffure', 'haut', 'bas', 'chaussures'].forEach(function (k) { if (a[k] != null && !dans(I[k], a[k])) ok = false; });
+      if (a.teint != null && !dans(I.teint, a.teint)) ok = false;
+      if (a.cheveux != null && !couleur(I.couleurs.cheveux, a.cheveux)) ok = false;
+      if (a.fauteuil != null && typeof a.fauteuil !== 'boolean') ok = false;
+      var tous = [].concat(I.couleurs.tissu || [], I.couleurs.neon || [], I.couleurs.chaussures || [], I.couleurs.yeux || []);
+      Object.keys(a.couleurs || {}).forEach(function (k) { if (!couleur(tous, a.couleurs[k])) ok = false; });
+      function possede(eid) {
+        var e = element(eid);
+        return e && ((e.acces === 'libre' && e.actif) || D.debloques.some(function (d) { return d.compte_id === cid && d.element_id === eid; }));
+      }
+      Object.keys(a.objets || {}).forEach(function (k) {
+        var v = a.objets[k];
+        if (!C.emplacements.some(function (m) { return m.id === k; }) || (v !== 'aucun' && !possede(k + ':' + v))) ok = false;
       });
-      Object.keys(a.teintes || {}).forEach(function (k) {
-        var v = a.teintes[k];
-        if (typeof v !== 'string' || !/^[a-z0-9-]{1,24}$/.test(v) || !C.emplacements.some(function (m) { return m.id === k; })) ok = false;
-        else teintes[k] = v;
-      });
-      return ok ? { v: 1, porte: porte, teintes: teintes } : null;
+      if (a.compagnon != null && a.compagnon !== 'aucun' && !possede('compagnon:' + a.compagnon)) ok = false;
+      return ok ? copie(a) : null;
     }
 
     function fiche(cid) {
@@ -424,7 +378,7 @@
         return cid ? { ok: true, fiche: fiche(cid) } : EXPIRE;
       },
       commun_catalogue: function () {
-        return { version: 1, applications: C.applications, emplacements: C.emplacements, elements: C.elements,
+        return { version: 1, applications: C.applications, emplacements: C.emplacements, elements: C.elements, familles: A.familles,
           hauts_faits: C.hauts_faits.map(function (h) {
             return { application: h.application, id: h.id, nom: h.secret ? null : h.nom, description: h.secret ? null : h.description,
               indice: h.indice, categorie: h.categorie, secret: h.secret, actif: h.actif, accord: h.accord,
@@ -738,27 +692,26 @@
       D.classes_liens.push({ classe_id: 'demo-classe-a', application: 'court_circuit', reference: 'DEMO' });
       D.classes_liens.push({ classe_id: 'demo-classe-b', application: 'lagon', reference: 'DEMO' });
 
-      function av(lignee, corps, visage, coiffure, haut, bas, pieds, extra, teintes) {
-        var porte = { lignee: 'lignee:' + lignee, corps: 'corps:' + corps, visage: 'visage:' + visage, coiffure: 'coiffure:' + coiffure,
-          haut: 'haut:' + haut, bas: 'bas:' + bas, pieds: 'pieds:' + pieds };
-        Object.keys(extra || {}).forEach(function (k) { porte[k] = extra[k]; });
-        return { v: 1, porte: porte, teintes: teintes || {} };
+      function av(lignee, teint, corps, coiffure, cheveux, haut, bas, chaussures, couleurs, objets, compagnon, fauteuil) {
+        var d = copie(A.defaut);
+        d.lignee = lignee; d.teint = teint; d.corps = corps; d.coiffure = coiffure; d.cheveux = cheveux;
+        d.haut = haut; d.bas = bas; d.chaussures = chaussures;
+        Object.keys(couleurs || {}).forEach(function (k) { d.couleurs[k] = couleurs[k]; });
+        Object.keys(objets || {}).forEach(function (k) { d.objets[k] = objets[k]; });
+        if (compagnon) d.compagnon = compagnon;
+        if (fauteuil) d.fauteuil = true;
+        return d;
       }
       /* [pseudo, n° du code, classe, avatar, jours depuis l'arrivée] : prénoms et pseudos inventés */
       var eleves = [
-        ['Nour', 101, 'a', av('nuee', 'silhouette-b', 'sourire-en-coin', 'tresses', 'veste-patchs', 'pantalon-cargo', 'baskets',
-          { marque: 'marque:pixels-qui-se-defont', attitude: 'attitude:salut-deux-doigts', fond: 'fond:ciel-de-nuit' }, { corps: 'peau-5', haut: 'neon-cyan' }), 40],
-        ['Anli', 102, 'a', av('peuple-lagon', 'silhouette-a', 'calme', 'rase', 't-shirt-uni', 'short', 'claquettes',
-          { marque: 'marque:ouies-lumineuses' }, { corps: 'peau-6', haut: 'neon-vert' }), 38],
-        ['Zoé', 103, 'a', av('cyber', 'silhouette-c', 'regard-concentre', 'mi-longs', 'gilet-reflechissant', 'pantalon-cargo', 'baskets',
-          { marque: 'marque:circuits-tempe', main: 'main:fer-a-souder' }, { corps: 'peau-2' }), 37],
-        ['Kenji', 104, 'a', av('esprit', 'silhouette-a', 'calme', 'chignon', 't-shirt-uni', 'pantalon-cargo', 'baskets', null, { corps: 'peau-3', haut: 'neon-magenta' }), 35],
-        ['Faïza', 105, 'a', av('mutant', 'silhouette-b', 'sourire-en-coin', 'afro', 't-shirt-uni', 'short', 'baskets', null, { corps: 'peau-4', haut: 'neon-jaune' }), 30],
-        ['Maëlys', 106, 'b', av('greffe', 'silhouette-c', 'calme', 'tresses', 't-shirt-uni', 'pantalon-cargo', 'baskets-led',
-          { familier: 'familier:margouillat-turbines' }, { corps: 'peau-5', haut: 'neon-violet' }), 50],
-        ['Ibrahim', 107, 'b', av('humain', 'silhouette-a', 'sourire-en-coin', 'rase', 't-shirt-uni', 'pantalon-cargo', 'baskets',
-          { tete: 'tete:casque-led' }, { corps: 'peau-6', haut: 'neon-cyan' }), 49],
-        ['Sam', 108, 'b', av('nuee', 'silhouette-b', 'regard-concentre', 'mi-longs', 't-shirt-uni', 'short', 'claquettes', null, { corps: 'peau-1' }), 45]
+        ['Nour', 101, 'a', av('nuee', 5, 'moyenne', 'tresses', 'noirs', 'veste', 'cargo', 'baskets', { haut: 'canard', accent: 'cyan' }, { dos: 'turbine_dos' }), 40],
+        ['Anli', 102, 'a', av('lagon', 7, 'ronde', 'rase', 'noirs', 'maillot', 'short', 'savates', { haut: 'vert', accent: 'jaune' }), 38],
+        ['Zoé', 103, 'a', av('cyber', 2, 'fine', 'lisses', 'roux', 'gilet', 'pantalon', 'montantes', { haut: 'orange', accent: 'violet' }, null, 'roussette'), 37],
+        ['Kenji', 104, 'a', av('esprit', 3, 'moyenne', 'chignon_antenne', 'bleus', 'sweat', 'jogging', 'baskets', { haut: 'prune', accent: 'rose' }, null, null, true), 35],
+        ['Faïza', 105, 'a', av('mutant', 4, 'ronde', 'afro_pixel', 'noirs', 'tunique', 'salouva', 'savates', { haut: 'jaune', accent: 'orange' }), 30],
+        ['Maëlys', 106, 'b', av('greffe', 6, 'fine', 'puffs', 'violets', 'chemise', 'jupe_longue', 'baskets', { haut: 'sarcelle', accent: 'vert' }, { epaule: 'kishali', autour: 'lucioles' }), 50],
+        ['Ibrahim', 107, 'b', av('humain', 8, 'moyenne', 'degrade_circuit', 'noirs', 'tshirt', 'cargo', 'bottes', { haut: 'marine', accent: 'cyan' }, null, 'maki'), 49],
+        ['Sam', 108, 'b', av('nuee', 1, 'ronde', 'boucles', 'blonds', 'debardeur', 'sarouel', 'pieds_nus', { haut: 'rouge', accent: 'jaune' }), 45]
       ];
       var ids = {};
       eleves.forEach(function (e) {
@@ -779,7 +732,7 @@
       }
       fait('Nour', 30, [['xp', 'td', 'feuille_validee', 'td:poo-td1'], ['hf', 'td', 'premiere-feuille', 'page'], ['hf', 'commun', 'premiere-planque']]);
       fait('Nour', 20, [['xp', 'quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files'], ['hf', 'quizz_nsi', 'jusqu-au-bout', 'page']]);
-      fait('Nour', 12, [['xp', 'court_circuit', 'challenge_reussi', 'cc:defi-1'], ['hf', 'court_circuit', 'premier-circuit'], ['achat', 'haut:veste-patchs']]);
+      fait('Nour', 12, [['xp', 'court_circuit', 'challenge_reussi', 'cc:defi-1'], ['hf', 'court_circuit', 'premier-circuit'], ['achat', 'dos:turbine_dos']]);
       fait('Nour', 4, [['prof', 20, 'Aide à un camarade sur les boucles'], ['hf', 'commun', 'coup-de-main', 'enseignant'], ['xp', 'td', 'feuille_validee', 'td:boucles-td2']]);
       fait('Anli', 25, [['xp', 'td', 'feuille_validee', 'td:poo-td1'], ['hf', 'td', 'premiere-feuille', 'page'], ['hf', 'td', 'erreur-surmontee', 'page']]);
       fait('Anli', 8, [['xp', 'court_circuit', 'challenge_reussi', 'cc:defi-1'], ['xp', 'court_circuit', 'challenge_reussi', 'cc:defi-2'], ['hf', 'court_circuit', 'premier-circuit']]);
@@ -789,8 +742,8 @@
       fait('Faïza', 9, [['xp', 'quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files'], ['hf', 'quizz_nsi', 'jusqu-au-bout', 'page']]);
       fait('Maëlys', 40, [['prof', 50, 'Exposé sur le chiffrement'], ['xp', 'td', 'feuille_validee', 'td:poo-td1'], ['xp', 'quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files']]);
       fait('Maëlys', 30, [['prof', 50, 'Exposé sur les arbres binaires'], ['xp', 'td', 'feuille_validee', 'td:boucles-td2'], ['prof', 50, 'Préparation du Grand oral'],
-        ['xp', 'td', 'exercice_valide', 'td:boucles-td2/ex3'], ['hf', 'commun', 'coup-de-main', 'enseignant'], ['achat', 'familier:margouillat-turbines']]);
-      fait('Maëlys', 10, [['hf', 'grand_oral', 'ma-question'], ['prof', 50, 'Aide en salle informatique'], ['achat', 'pieds:baskets-led']]);
+        ['xp', 'td', 'exercice_valide', 'td:boucles-td2/ex3'], ['hf', 'commun', 'coup-de-main', 'enseignant'], ['achat', 'autour:lucioles']]);
+      fait('Maëlys', 10, [['hf', 'grand_oral', 'ma-question'], ['prof', 50, 'Aide en salle informatique'], ['achat', 'epaule:kishali']]);
       fait('Ibrahim', 20, [['xp', 'lagon', 'manche_jouee', 'lagon:m1'], ['hf', 'lagon', 'premiere-manche'], ['hf', 'commun', 'explication-claire', 'enseignant']]);
       fait('Sam', 3, [['hf', 'commun', 'premiere-planque']]);
       eleves.forEach(function (e) { D.comptes[ids[e[0]]].vu_le = ilYa(Math.floor(e[4] / 10), e[1] % 7); });
@@ -818,6 +771,22 @@
   }
 
   var DEMO_PROF = 'DEMO-ESSAI-PROF-2046';
+
+  /* La démonstration attend ses apparences avant de répondre */
+  function implementationDemo() {
+    var interne = null;
+    var pret = chargerApparences().then(function (A) { if (A) interne = construireDemo(A); });
+    return {
+      nom: 'demo',
+      appeler: function (fonction, params) {
+        return pret.then(function () {
+          return interne ? interne.appeler(fonction, params)
+            : { ok: false, message: 'La démonstration n\'a pas pu se préparer : donnees/compte-commun/apparences.json est illisible.' };
+        });
+      },
+      codesDemo: function () { return interne ? interne.codesDemo() : null; }
+    };
+  }
 
   /* ═════════════════════════════════════════════════════════════
      L'interface publique
@@ -980,135 +949,188 @@
      L'avatar : le texte de remplacement, et le dessin
      ═════════════════════════════════════════════════════════════ */
 
-  var PALETTE = {
-    'peau-1': '#F3D5B5', 'peau-2': '#E0B48C', 'peau-3': '#C68B5E', 'peau-4': '#A86B43', 'peau-5': '#8A5236', 'peau-6': '#5E3523',
-    'neon-cyan': '#16F0FF', 'neon-magenta': '#FF2BD6', 'neon-vert': '#39FF88', 'neon-jaune': '#FFE14D', 'neon-violet': '#A67CFF',
-    'neon-orange': '#FF9A3D', 'gris': '#8D9CBA', 'noir': '#1B2236', 'blanc': '#F2F6FF'
-  };
-  var TEINTES_LIGNEES = {
-    'lignee:humain': '#C68B5E', 'lignee:cyber': '#9FB4D6', 'lignee:nuee': '#B59CFF', 'lignee:mutant': '#7FD66B',
-    'lignee:peuple-lagon': '#4FC3C9', 'lignee:esprit': '#E8F0FF', 'lignee:greffe': '#D49A7A'
-  };
-  var TONS = ['#22D3EE', '#FF3D9A', '#A78BFA', '#34D399', '#FB923C', '#60A5FA', '#FACC15', '#F472B6', '#2DD4BF', '#E879F9'];
+  /* Les apparences (donnees/compte-commun/apparences.json, tirées du catalogue du moteur
+     d'avatars par scripts/apparences_compte_commun.py) : chargées une fois. */
+  var APP = null, apparencesPromesse = null;
+  function chargerApparences() {
+    if (apparencesPromesse) return apparencesPromesse;
+    apparencesPromesse = (typeof fetch === 'function' && RACINE
+      ? fetch(RACINE + 'donnees/compte-commun/apparences.json').then(function (r) {
+        if (!r.ok) throw new Error('code ' + r.status);
+        return r.json();
+      }).then(function (a) {
+        if (!a || !a.defaut || !a.identite || !Array.isArray(a.elements)) throw new Error('contenu inattendu');
+        APP = a;
+        return a;
+      })
+      : Promise.reject(new Error('lecture impossible'))
+    ).catch(function (e) {
+      if (window.console) console.warn('[compte commun] apparences.json illisible : ' + (e && e.message || e));
+      return null;
+    });
+    return apparencesPromesse;
+  }
 
+  function nomDans(liste, id) {
+    var x = (liste || []).filter(function (e) { return e.id === id; })[0];
+    return x ? x.nom : null;
+  }
+  function couleurDe(groupe, v, defaut) {
+    if (typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v)) return v;
+    var l = APP && APP.identite.couleurs[groupe];
+    var x = (l || []).filter(function (e) { return e.id === v; })[0];
+    return x && x.couleur ? x.couleur : defaut;
+  }
+
+  /* « Avatar de Nour : Nuée, tresses, veste runner, cargo à câble, turbine… » (le module, s'il est là, fait mieux) */
+  function texteAvatar(d, catalogue, pseudo) {
+    var debut = pseudo ? 'Avatar de ' + pseudo : 'Avatar';
+    if (!d) return debut;
+    if (window.Equipage && typeof window.Equipage.texte === 'function') {
+      try {
+        var t = String(window.Equipage.texte(d, 'repos'));
+        return /^Avatar\b/.test(t) ? t.replace(/^Avatar/, debut) : debut + ' : ' + t;
+      } catch (e) { /* le texte simple ci-dessous */ }
+    }
+    if (!APP) return debut;
+    var I = APP.identite, mots = [];
+    [['lignee', d.lignee], ['coiffure', d.coiffure], ['haut', d.haut], ['bas', d.bas], ['chaussures', d.chaussures]].forEach(function (x) {
+      var n = nomDans(I[x[0]], x[1]);
+      if (n) mots.push(mots.length ? n.charAt(0).toLowerCase() + n.slice(1) : n);
+    });
+    Object.keys(d.objets || {}).forEach(function (k) {
+      if (d.objets[k] && d.objets[k] !== 'aucun') {
+        var n = nomDans(APP.elements, k + ':' + d.objets[k]);
+        if (n) mots.push(n.charAt(0).toLowerCase() + n.slice(1));
+      }
+    });
+    if (d.compagnon && d.compagnon !== 'aucun') { var c = nomDans(APP.elements, 'compagnon:' + d.compagnon); if (c) mots.push('avec ' + c.toLowerCase()); }
+    if (d.fauteuil) mots.push('en fauteuil roulant');
+    return debut + (mots.length ? ' : ' + mots.join(', ') : '');
+  }
+
+  var TONS = ['#22D3EE', '#FF3D9A', '#A78BFA', '#34D399', '#FB923C', '#60A5FA', '#FACC15', '#F472B6', '#2DD4BF', '#E879F9'];
   function ton(id) {
     var h = 0;
     for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 9973;
     return TONS[h % TONS.length];
   }
+  var PEAU_LIGNEE = { nuee: '#B59CFF', esprit: '#DDE7FF' };
 
-  function nomElement(catalogue, eid) {
-    var e = catalogue && (catalogue.elements || []).filter(function (x) { return x.id === eid; })[0];
-    return e ? e.nom : null;
-  }
-
-  /* « Avatar : Nuée, veste à patchs, margouillat à turbines » */
-  function texteAvatar(avatar, catalogue, pseudo) {
-    var p = (avatar && avatar.porte) || {};
-    var ordre = ['lignee', 'coiffure', 'marque', 'haut', 'bas', 'pieds', 'dos', 'yeux', 'tete', 'main', 'familier', 'fond', 'effet'];
-    var mots = [];
-    ordre.forEach(function (k) {
-      if (!p[k]) return;
-      var n = nomElement(catalogue, p[k]);
-      if (!n) return;
-      mots.push(mots.length ? n.charAt(0).toLowerCase() + n.slice(1) : n);
-    });
-    return (pseudo ? 'Avatar de ' + pseudo : 'Avatar') + (mots.length ? ' : ' + mots.join(', ') : '');
-  }
-
-  /* Le dessin de remplacement : une silhouette en gros pixels, aux couleurs de ce qui est porté */
-  function svgRemplacement(avatar) {
-    var p = (avatar && avatar.porte) || {}, t = (avatar && avatar.teintes) || {};
-    function teinte(k, defaut) { return PALETTE[t[k]] || defaut; }
-    var peau = teinte('corps', TEINTES_LIGNEES[p.lignee] || '#C68B5E');
+  /* Le dessin de remplacement : une silhouette en gros pixels, aux couleurs de la description,
+     tant que le moteur d'avatars du Designer n'est pas publié. */
+  function svgRemplacement(d) {
+    d = d || {};
+    var c = d.couleurs || {}, o = d.objets || {};
+    var teint = APP ? (APP.identite.teint.filter(function (t) { return t.id === d.teint; })[0] || {}).couleur : null;
+    var peau = PEAU_LIGNEE[d.lignee] || teint || '#8A5236';
+    var haut = couleurDe('tissu', c.haut, '#0E7490'), bas = couleurDe('tissu', c.bas, '#334155');
+    var acc = couleurDe('neon', c.accent, '#22D3EE'), pieds = couleurDe('chaussures', c.chaussures, '#E5E7EB');
+    var ch = couleurDe('cheveux', d.cheveux, '#1F1A24');
+    var large = d.corps === 'ronde' ? 2 : d.corps === 'fine' ? -1 : 0;
     var s = ['<svg viewBox="0 0 48 64" width="100%" height="100%" shape-rendering="crispEdges" aria-hidden="true" focusable="false">'];
-    function r(x, y, w, h, c, extra) { s.push('<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + c + '"' + (extra || '') + '/>'); }
-    if (p.fond) { r(0, 0, 48, 64, '#0B1330'); for (var i = 0; i < 6; i++) r(4 + i * 7, 6 + (i * 13) % 20, 2, 2, ton(p.fond + i), ' opacity=".8"'); }
-    else r(0, 0, 48, 64, '#101830');
+    function r(x, y, w, h, col, extra) { s.push('<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + col + '"' + (extra || '') + '/>'); }
+    r(0, 0, 48, 64, '#101830');
     r(0, 56, 48, 8, '#1A2440');
-    if (p.effet) for (var k = 0; k < 8; k++) r(3 + k * 6, (k * 17) % 40, 1, 5, ton(p.effet), ' opacity=".7"');
-    if (p.dos) r(9, 26, 30, 18, ton(p.dos));
-    /* jambes, pieds */
-    r(16, 44, 7, 12, p.bas ? teinte('bas', ton(p.bas)) : peau);
-    r(25, 44, 7, 12, p.bas ? teinte('bas', ton(p.bas)) : peau);
-    r(14, 55, 9, 3, p.pieds ? teinte('pieds', ton(p.pieds)) : '#2B3350');
-    r(25, 55, 9, 3, p.pieds ? teinte('pieds', ton(p.pieds)) : '#2B3350');
-    /* buste, bras */
-    r(13, 26, 22, 19, p.haut ? teinte('haut', ton(p.haut)) : peau);
-    r(9, 27, 4, 15, peau); r(35, 27, 4, 15, peau);
-    /* tête */
-    r(16, 8, 16, 17, peau);
-    r(21, 24, 6, 3, peau);
-    if (p.coiffure) {
-      var ch = teinte('coiffure', '#2A1A12');
-      if (/afro/.test(p.coiffure)) { r(12, 3, 24, 9, ch); r(12, 9, 4, 8, ch); r(32, 9, 4, 8, ch); }
-      else if (/tresses|mi-longs/.test(p.coiffure)) { r(15, 6, 18, 5, ch); r(14, 9, 3, 16, ch); r(31, 9, 3, 16, ch); }
-      else if (/chignon/.test(p.coiffure)) { r(15, 6, 18, 5, ch); r(20, 2, 8, 5, ch); }
-      else r(16, 7, 16, 3, ch);
+    if (o.autour && o.autour !== 'aucun') for (var k = 0; k < 8; k++) r(3 + k * 6, (k * 17) % 40, 2, 2, acc, ' opacity=".8"');
+    if (o.dos && o.dos !== 'aucun') r(10 - large, 26, 28 + 2 * large, 16, ton(o.dos));
+    if (d.bas === 'salouva' || d.bas === 'jupe_longue') r(14 - large, 42, 20 + 2 * large, 13, bas);
+    else { r(16 - large, 44, 7, 11, bas); r(25 + large, 44, 7, 11, bas); }
+    if (d.chaussures !== 'pieds_nus') { r(14 - large, 55, 9, 3, pieds); r(25 + large, 55, 9, 3, pieds); } else { r(15 - large, 55, 7, 2, peau); r(26 + large, 55, 7, 2, peau); }
+    r(13 - large, 26, 22 + 2 * large, 18, d.haut === 'aucun' ? peau : haut);
+    r(13 - large, 26, 22 + 2 * large, 2, acc);
+    r(9 - large, 27, 4, 15, peau); r(35 + large, 27, 4, 15, peau);
+    r(16, 8, 16, 17, peau); r(21, 24, 6, 3, peau);
+    if (d.coiffure && d.coiffure !== 'rase') {
+      if (/afro|puffs/.test(d.coiffure)) { r(12, 3, 24, 9, ch); r(12, 9, 4, 8, ch); r(32, 9, 4, 8, ch); }
+      else if (/tresses|locks|lisses/.test(d.coiffure)) { r(15, 6, 18, 5, ch); r(14, 9, 3, 16, ch); r(31, 9, 3, 16, ch); }
+      else if (/chignon/.test(d.coiffure)) { r(15, 6, 18, 5, ch); r(20, 2, 8, 5, ch); }
+      else if (/crete/.test(d.coiffure)) r(22, 2, 4, 7, acc);
+      else r(16, 6, 16, 4, ch);
     }
-    /* visage */
-    r(20, 14, 2, 3, '#0B0F1E'); r(26, 14, 2, 3, '#0B0F1E');
-    if (/sourire/.test(p.visage || '')) { r(21, 20, 6, 1, '#0B0F1E'); r(27, 19, 1, 1, '#0B0F1E'); }
-    else r(22, 20, 4, 1, '#0B0F1E');
-    if (p.marque) { r(17, 18, 1, 1, ton(p.marque)); r(18, 20, 1, 1, ton(p.marque)); r(30, 17, 1, 1, ton(p.marque)); }
-    if (p.yeux) { r(18, 13, 12, 4, ton(p.yeux), ' opacity=".85"'); }
-    if (p.tete) r(15, 4, 18, 5, teinte('tete', ton(p.tete)));
-    if (p.main) r(38, 36, 5, 4, ton(p.main));
-    if (p.familier) {
-      var f = ton(p.familier);
-      if (/margouillat/.test(p.familier)) { f = '#39C46A'; r(36, 52, 9, 3, f); r(44, 51, 2, 2, f); r(32, 53, 4, 1, f); r(30, 52, 2, 3, '#FF9A3D'); }
-      else { r(37, 49, 8, 6, f); r(39, 51, 1, 1, '#0B0F1E'); r(42, 51, 1, 1, '#0B0F1E'); }
-    }
+    r(20, 14, 2, 3, '#0B0F1E'); r(26, 14, 2, 3, '#0B0F1E'); r(22, 20, 4, 1, '#0B0F1E');
+    if (o.visage && o.visage !== 'aucun') r(18, 13, 12, 4, ton(o.visage), ' opacity=".85"');
+    if (o.tete && o.tete !== 'aucun') r(15, 3, 18, 5, ton(o.tete));
+    if (o.cou && o.cou !== 'aucun') r(20, 27, 8, 2, ton(o.cou));
+    if (o.epaule && o.epaule !== 'aucun') r(32 + large, 23, 6, 4, ton(o.epaule));
+    if (o.main && o.main !== 'aucun') r(38 + large, 36, 5, 5, ton(o.main));
+    if (d.fauteuil) { r(8, 46, 32, 2, '#94A3B8'); s.push('<circle cx="14" cy="54" r="6" fill="none" stroke="#94A3B8" stroke-width="2"/><circle cx="34" cy="54" r="6" fill="none" stroke="#94A3B8" stroke-width="2"/>'); }
+    if (d.compagnon === 'margouillat') { r(36, 59, 9, 2, '#39C46A'); r(44, 58, 2, 2, '#39C46A'); r(32, 60, 4, 1, '#39C46A'); r(30, 59, 2, 2, '#FF9A3D'); }
+    else if (d.compagnon && d.compagnon !== 'aucun') { var f = ton(d.compagnon); r(38, 55, 7, 5, f); r(40, 56, 1, 1, '#0B0F1E'); r(43, 56, 1, 1, '#0B0F1E'); }
     s.push('</svg>');
     return s.join('');
   }
 
-  /* Le module du Designer, chargé une fois. Sans lui, le dessin de remplacement. */
+  /* Le moteur d'avatars du Designer (assets/equipage.js) : chargé seulement si apparences.json dit
+     qu'il est publié (« module »), pour ne jamais demander un fichier absent. Sinon, le remplacement. */
   var equipagePromesse = null;
   function chargerEquipage() {
     if (window.Equipage && typeof window.Equipage.creer === 'function') return Promise.resolve(true);
     if (equipagePromesse) return equipagePromesse;
-    equipagePromesse = new Promise(function (resoudre) {
-      if (!RACINE || location.protocol === 'file:') return resoudre(false);
-      var s = document.createElement('script');
-      s.src = RACINE + 'assets/equipage.js';
-      s.async = true;
-      s.onload = function () { resoudre(!!(window.Equipage && typeof window.Equipage.creer === 'function')); };
-      s.onerror = function () { resoudre(false); };
-      document.head.appendChild(s);
+    equipagePromesse = chargerApparences().then(function (a) {
+      if (!a || a.module !== true || !RACINE || location.protocol === 'file:') return false;
+      return new Promise(function (resoudre) {
+        var s = document.createElement('script');
+        s.src = RACINE + 'assets/equipage.js';
+        s.async = true;
+        s.onload = function () { resoudre(!!(window.Equipage && typeof window.Equipage.creer === 'function')); };
+        s.onerror = function () { resoudre(false); };
+        document.head.appendChild(s);
+      });
     });
     return equipagePromesse;
   }
 
-  /* Dessine un avatar dans element. options : { etat: 'lobby'…, taille: 'grand'|'moyen'|'petit',
-     catalogue, pseudo }. Le conteneur porte le texte de remplacement ; le dessin est décoratif. */
+  /* Les tailles des cadres : des hauteurs nettes pour la grille de 48 × 64 du moteur */
+  var TAILLES = { grand: 224, moyen: 112, petit: 112 };
+
+  /* Dessine un avatar dans element. options : { etat ('repos', 'content', 'tres_content', 'triste',
+     'concentre', 'salue', 'dort'), taille ('grand' | 'moyen' | 'petit'), pseudo }.
+     Le conteneur porte le texte de remplacement ; le dessin est décoratif. */
   function dessinerAvatar(element, avatar, options) {
     options = options || {};
     element.classList.add('avatar', 'avatar-' + (options.taille || 'moyen'));
     element.setAttribute('role', 'img');
-    element.setAttribute('aria-label', texteAvatar(avatar, options.catalogue, options.pseudo));
+    function etiquette() { element.setAttribute('aria-label', options.alt || texteAvatar(avatar, null, options.pseudo)); }
     function remplacement() {
       element.innerHTML = svgRemplacement(avatar);
       element.setAttribute('data-dessin', 'remplacement');
     }
+    etiquette();
     remplacement();
+    chargerApparences().then(function () { etiquette(); if (element.getAttribute('data-dessin') === 'remplacement') remplacement(); });
     chargerEquipage().then(function (present) {
       if (!present) return;
       try {
         var zone = document.createElement('div');
         zone.className = 'avatar-dessin';
-        zone.setAttribute('aria-hidden', 'true');
         var reduit = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        window.Equipage.creer(zone, copie(avatar), { etat: options.etat || 'repos', taille: options.taille || 'moyen', animation: !reduit });
+        window.Equipage.creer(zone, copie(avatar), { etat: options.etat || 'repos', taille: TAILLES[options.taille] || 112,
+          anime: !reduit, alt: '', net: true });
         element.innerHTML = '';
         element.appendChild(zone);
         element.setAttribute('data-dessin', 'equipage');
+        etiquette();
       } catch (e) {
         if (window.console) console.warn('[compte commun] Equipage.creer a échoué, dessin de remplacement : ' + (e && e.message || e));
         remplacement();
       }
     });
     return element;
+  }
+
+  /* Les feuilles de TD en ligne (assets/td-en-ligne.js, T115) annoncent « td:feuille-validee »
+     avec l'identifiant de la feuille, jamais les réponses. Décision de l'enseignant du 20/11 :
+     si l'élève est connecté·e, ses crédits sont gardés automatiquement (une fois par feuille).
+     La page reçoit la réponse par l'événement « compte-commun:credits ». */
+  if (typeof document !== 'undefined' && document.addEventListener) {
+    document.addEventListener('td:feuille-validee', function (e) {
+      var f = e && e.detail && e.detail.feuille;
+      if (!jeton() || typeof f !== 'string' || !/^[a-z0-9][a-z0-9:/_.-]{0,76}$/.test(f)) return;
+      window.CompteCommun.evenementPage('td', 'feuille_validee', 'td:' + f).then(function (rep) {
+        try { document.dispatchEvent(new CustomEvent('compte-commun:credits', { detail: rep })); } catch (x) { /* ancien navigateur */ }
+      });
+    });
   }
 
   window.CompteCommun = {
@@ -1123,7 +1145,14 @@
     /* L'élève */
     connecte: function () { return !!jeton(); },
     pseudoMemorise: function () { var s = lireSession(); return s ? s.pseudo : null; },
-    catalogue: function () { return appeler('commun_catalogue', {}); },
+    catalogue: function () {
+      return Promise.all([appeler('commun_catalogue', {}), chargerApparences()]).then(function (r) {
+        var rep = r[0];
+        if (rep && typeof rep === 'object') rep.apparences = r[1];
+        if (!r[1] && rep) { rep.ok = false; rep.message = 'Les apparences de l\'avatar (donnees/compte-commun/apparences.json) n\'ont pas pu être lues.'; }
+        return rep;
+      });
+    },
     creer: function (pseudo, options) {
       return appeler('commun_creer', { p_pseudo: pseudo, p_garde_jours: jours(options) }).then(apresEntree(jours(options)));
     },
@@ -1161,7 +1190,7 @@
     texteAvatar: texteAvatar,
     dessinerAvatar: dessinerAvatar,
     chargerEquipage: chargerEquipage,
-    palette: function () { return copie(PALETTE); },
+    apparences: chargerApparences,
 
     /* La démonstration : les codes fictifs à essayer (null en mode en ligne) */
     demo: function () {

@@ -40,12 +40,13 @@
   ];
 
   /* Le bandeau de démonstration, ou celui d'un réglage incomplet */
-  function bandeauMode() {
+  function bandeauMode(vous) {
     var probleme = window.CompteCommun.probleme();
     if (window.CompteCommun.mode() !== 'demo') return null;
     return el('div', { class: 'cc-demo', role: 'note', 'aria-label': 'Démonstration' }, [
       el('p', null, [el('strong', null, 'Démonstration : rien n\'est enregistré.'),
-        ' Les comptes, les codes et les classes de cette page sont fictifs ; ils disparaissent quand tu recharges ou fermes la page.']),
+        vous ? ' Les comptes, les codes et les classes de cette page sont fictifs ; ils disparaissent quand vous rechargez ou fermez la page.'
+          : ' Les comptes, les codes et les classes de cette page sont fictifs ; ils disparaissent quand tu recharges ou fermes la page.']),
       probleme ? el('p', { class: 'petit' }, probleme) : null
     ]);
   }
@@ -53,7 +54,7 @@
   /* Le haut de page : barre, bandeau de démonstration, titre sur le décor */
   function entete(racine, options) {
     racine.appendChild(O.barreHaut(options.page));
-    var b = bandeauMode();
+    var b = bandeauMode(options.vous);
     var page = el('div', { class: 'page cc-page' });
     if (b) page.appendChild(b);
     var hero = el('section', { class: 'hero hero-rubrique cc-hero', style: '--hl:' + options.couleur }, [
