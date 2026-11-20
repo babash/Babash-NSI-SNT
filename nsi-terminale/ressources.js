@@ -164,16 +164,6 @@ ressource({
   tags: ["En ligne", "Python"],
 });
 
-ressource({
-  titre: "Quiz piles et files (lyceum.fr)",
-  lien: "https://www.lyceum.fr/tg/nsi/1-structures-de-donnees/3-structures-lineaires-piles-files/quiz/",
-  texte: "Un QCM en ligne pour vérifier les notions de pile et de file.",
-  tags: ["En ligne"],
-  annexes: {
-    "Version Quizizz (compte enseignant)": "https://quizizz.com/admin/quiz/6383e4a28ed520001dba57a9/pile-et-file",
-  },
-});
-
 groupe("Arbres");
 
 ressource({
