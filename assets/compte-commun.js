@@ -588,7 +588,10 @@
             .sort(trierPseudo).map(function (k) {
               return { compte: k.id, pseudo: k.pseudo, avatar: copie(k.avatar), xp: k.xp, credits: k.credits, vu_le: k.vu_le,
                 codes: D.codes.filter(function (x) { return x.compte_id === k.id; }).map(function (x) { return x.code_affiche; }),
-                trophees: D.debloques.filter(function (d) { return d.compte_id === k.id && d.origine !== 'achat'; }).map(function (d) { return d.element_id; }),
+                /* Proposition T101b (à ajouter à commun_prof_classe) : les trophées, avec leur motif */
+                trophees: D.debloques.filter(function (d) { return d.compte_id === k.id && d.origine !== 'achat'; }).map(function (d) {
+                  return { element: d.element_id, nom: (element(d.element_id) || {}).nom || d.element_id, origine: d.origine, motif: d.motif || null };
+                }),
                 hauts_faits: D.gagnes.filter(function (g) { return g.compte_id === k.id; })
                   .map(function (g) { return { application: g.application, id: g.haut_fait, gagne_le: g.gagne_le }; }) };
             }) };
@@ -625,7 +628,8 @@
         var pid = prof(p.p_code);
         if (!pid) return MAUVAIS_PROF;
         var e = element(p.p_element);
-        if (!e || e.acces !== 'haut_fait') return { ok: false, message: 'Seul un trophée (un objet qui ne s\'achète pas) peut être offert.' };
+        /* Décision de l'enseignant (20/11) : seulement des objets de trophée, jamais un compagnon */
+        if (!e || e.acces !== 'haut_fait' || e.emplacement === 'compagnon') return { ok: false, message: 'Seul un objet de trophée (qui ne s\'achète pas) peut être offert ; un compagnon se gagne.' };
         var m = nettoyerTexte(p.p_motif, 3, 80);
         if (!m) return { ok: false, message: 'Donne un motif de 3 à 80 caractères.' };
         if (!eleveVisible(pid, p.p_compte)) return { ok: false, message: 'Cet·te élève n\'est dans aucune de tes classes.' };

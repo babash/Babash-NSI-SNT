@@ -19,6 +19,7 @@
   var espace = null;                 // ce que rend commun_prof_ouvrir
   var tableauxDeBord = null;         // les applications et l'adresse de leur tableau de bord
   var modeTableau = false;           // masque codes, XP et crédits (écran projeté)
+  var messageClasse = null;          // le message d'une action, montré une fois après le rechargement de la classe
 
   window.pageEnseignant = function (racine, outils) {
     O = outils; el = O.el; P = window.PagesCompte; CC = window.CompteCommun;
@@ -312,6 +313,7 @@
       var c = rep.classe;
       var titre = el('h2', { class: 'cc-titre-section', tabindex: '-1' }, c.nom);
       main.appendChild(titre);
+      if (messageClasse) { main.appendChild(el('p', { class: 'cc-message cc-ok', role: 'status' }, messageClasse)); messageClasse = null; }
       main.appendChild(blocLienClasse(c));
       main.appendChild(blocTableauxClasse(c));
       main.appendChild(blocEleves(c, rep.eleves, journal));
@@ -423,6 +425,7 @@
     CC.dessinerAvatar(av, e.avatar, { etat: 'repos', taille: 'moyen', catalogue: cat, pseudo: e.pseudo });
     var hfs = (e.hauts_faits || []).map(function (h) { return K.nomHf(h.application, h.id) + ' (' + (h.application === 'commun' ? 'site et enseignant·e' : K.app(h.application).nom) + ')'; });
     var av2 = avancement(e, journal);
+    var trophees = (e.trophees || []).filter(function (t) { return typeof t === 'object'; });
     var actions = el('div', { class: 'cc-eleve-actions' });
 
     /* Attribuer de l'XP avec un motif */
@@ -456,14 +459,17 @@
 
     /* Offrir un trophée (un objet qui ne s'achète pas), avec un motif que l'élève lit */
     var m4 = P.zoneMessage();
-    var aOffrir = (cat.elements || []).filter(function (x) { return x.acces === 'haut_fait' && (e.trophees || []).indexOf(x.id) < 0; });
+    var dejaTr = (e.trophees || []).map(function (t) { return typeof t === 'string' ? t : t.element; });
+    var aOffrir = (cat.elements || []).filter(function (x) { return x.acces === 'haut_fait' && x.emplacement !== 'compagnon' && dejaTr.indexOf(x.id) < 0; });
     var selTr = el('select', { id: P.idUnique('trophee'), class: 'cc-select' }, aOffrir.map(function (x) { return el('option', { value: x.id }, x.nom); }));
     var motifTr = P.champ({ etiquette: 'Motif', aide: 'De 3 à 80 caractères ; l\'élève le lit dans ses trophées.', max: 80, exemple: 'A rangé la salle informatique' });
     var fTr = aOffrir.length ? P.formulaire([el('div', { class: 'cc-champ' }, [el('label', { for: selTr.id }, 'Trophée'), selTr]), motifTr,
       P.bouton('Offrir', { type: 'submit' }), m4], function () {
       Prof.offrir(e.compte, selTr.value, motifTr.input.value).then(function (rep) {
         if (!rep.ok) { P.message(m4, rep.message, 'erreur'); return; }
-        P.annoncer(e.pseudo + ' : trophée offert (' + rep.nom + ').', 'ok');
+        var texte = e.pseudo + ' : trophée offert (' + rep.nom + ', « ' + CC.nettoyerTexte(motifTr.input.value, 3, 80) + ' »).';
+        P.annoncer(texte, 'ok');
+        messageClasse = texte;
         router();
       });
     }) : el('p', { class: 'petit' }, 'Cet·te élève a déjà tous les trophées.');
@@ -513,7 +519,11 @@
         av2.length ? el('ul', { class: 'cc-puces' }, av2.map(function (x) { return el('li', null, [el('strong', null, x.nom), ' : ' + x.texte]); }))
           : el('p', { class: 'petit' }, 'Rien encore.'),
         el('p', { class: 'cc-petit-titre' }, 'Hauts faits'),
-        hfs.length ? el('ul', { class: 'cc-puces' }, hfs.map(function (n) { return el('li', null, n); })) : el('p', { class: 'petit' }, 'Pas encore.')
+        hfs.length ? el('ul', { class: 'cc-puces' }, hfs.map(function (n) { return el('li', null, n); })) : el('p', { class: 'petit' }, 'Pas encore.'),
+        el('p', { class: 'cc-petit-titre' }, 'Trophées'),
+        trophees.length ? el('ul', { class: 'cc-puces cc-trophees' }, trophees.map(function (t) {
+          return el('li', null, [el('strong', null, t.nom), t.motif ? ' : « ' + t.motif + ' »' : (t.origine === 'haut_fait' ? ' (haut fait)' : '')]);
+        })) : el('p', { class: 'petit' }, 'Pas encore.')
       ]),
       actions
     ]);
