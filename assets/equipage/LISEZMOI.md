@@ -41,19 +41,19 @@ Un objet JSON d’environ 450 octets (600 au plus, avec les huit emplacements re
 | `corps` | `fine`, `moyenne`, `ronde` |
 | `coiffure` | 16 coiffures (`court`, `rase`, `lisses`, `boucles`, `tresses`, `afro_pixel`, `capuche`…) |
 | `cheveux` | un nom de la palette `cheveux`, ou `#rrggbb` |
-| `haut`, `bas`, `chaussures` | 10, 8 (dont le salouva) et 6 pièces ; `haut: "aucun"` n'existe que pour Nuée et Esprit |
-| `objets` | un objet par emplacement, cumulables : 22 pour la tête, 13 pour le visage, 15 au cou et à la taille, 13 dans le dos, 35 dans la main, 10 sur les épaules, 10 aux pieds, 11 autour (129 en tout), rangés en 9 familles (`Equipage.catalogue.familles`) |
+| `haut`, `bas`, `chaussures` | 11 (dont le maillot de foot sans écusson), 8 (dont le salouva) et 6 pièces ; `haut: "aucun"` n'existe que pour Nuée et Esprit |
+| `objets` | un objet par emplacement, cumulables : 28 pour la tête, 14 pour le visage, 16 au cou et à la taille, 13 dans le dos, 31 dans la main, 9 sur les épaules, 11 aux pieds, 10 autour (132 en tout), rangés en 9 familles (`Equipage.catalogue.familles`) |
 | `fauteuil` | `true` ou `false` : une aide technique, jamais à gagner |
 | `compagnon` | `aucun`, `margouillat` (de départ), `maki`, `robot`, `tortue`, `roussette` (marqués `gagne: true` dans le catalogue) |
 | `couleurs.*` | un nom de palette (`tissu`, `neon`, `chaussures`, `yeux`) ou `#rrggbb` |
 
 Les listes exactes, avec les noms à afficher : `Equipage.catalogue`, recopié dans `assets/equipage/catalogue.json` (à régénérer quand le module change). Une base de données peut s'en servir pour vérifier une description, mais le plus simple est de garder le JSON tel quel (`jsonb`) et de le normaliser à l'affichage.
 
-Aucune pièce n'est liée à un genre. Les anciennes clés `accessoire`, `tete` et `visage` (version d'essai) sont reprises dans leur emplacement par `normaliser`. Version 2 : les identifiants retirés de la v1 sont repris (`masque` devient `loup`, `chale` devient `kishali`, `ballon` passe aux pieds en `ballon_foot`). Une description v1 reste valide : les emplacements `cou` et `pieds` prennent `aucun`.
+Aucune pièce n'est liée à un genre. Les anciennes clés `accessoire`, `tete` et `visage` (version d'essai) sont reprises dans leur emplacement par `normaliser`. Version 2 : les identifiants retirés de la v1 sont repris (`masque` devient `loup`, `chale` devient `kishali`, `ballon` passe aux pieds en `ballon_foot`, `monocle_visee` devient `monocle_pixels`). Les objets de carte postale de l'ancienne famille « Mayotte » (T112d) sont retirés sans reprise : un identifiant inconnu devient `aucun`. Une description v1 reste valide : les emplacements `cou` et `pieds` prennent `aucun`.
 
 ### Les familles d'objets
 
-`clin` (clins d'œil), `classe` (les gimmicks de la classe), `heros`, `pirate`, `mayotte`, `punk`, `cyber`, `nature`, `classique`. Chaque objet du catalogue a son champ `famille`.
+`clin` (clins d'œil), `classe` (les gimmicks de la classe), `heros`, `pirate`, `lycee` (le style du lycée : ce que portent vraiment les élèves, sans marque ni logo), `punk`, `cyber`, `nature`, `classique`. Chaque objet du catalogue a son champ `famille`. Une casquette à slogan a aussi un champ `texte` (le slogan en capitales) : il est illisible sur l'avatar et s'affiche en grand à côté (l'éditeur le montre sous l'aperçu).
 
 Règle de dessin : on reprend les **codes d'un genre** (cape, tricorne, crête…), jamais un objet reconnaissable d'une œuvre. Pour les clins d'œil, **le nom porte la référence, la forme est inventée** (une moufle, un ustensile de cuisine, un objet de la Flottille). Ni arme, ni crâne, ni objet religieux, ni nom d'œuvre ou de personnage, y compris dans les identifiants.
 

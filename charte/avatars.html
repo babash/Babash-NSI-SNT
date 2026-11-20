@@ -86,6 +86,10 @@
     .carte { display: grid; justify-items: center; gap: 6px; background: var(--scene); border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px; text-align: center; }
     .carte p { margin: 0; font-size: .85rem; color: var(--ink-soft); line-height: 1.35; }
     .carte strong { font-family: var(--display); font-size: 1rem; }
+    /* le slogan d'une casquette : illisible à 9 mm, il se lit ici en grand (lettres blanches sur noir, 17:1) */
+    .slogan { display: block; width: fit-content; max-width: 100%; margin: 8px auto 0; padding: 6px 16px 7px; border-radius: 999px 999px 6px 6px; background: #1f1a24; color: #ffffff; font-family: var(--display); font-weight: 800; font-size: 1.15rem; letter-spacing: .08em; text-align: center; overflow-wrap: anywhere; }
+    .slogan small { display: block; font-weight: 400; font-size: .72rem; letter-spacing: .02em; color: #d8dce8; }
+    .carte .slogan { font-size: .9rem; padding: 4px 10px 5px; }
     .grille-objets { grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); }
     .comp { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
     .comp .rang { display: flex; gap: 2px; justify-content: center; }
@@ -136,6 +140,7 @@
     <div class="editeur">
       <div class="apercu">
         <div class="scene" id="grand" aria-live="polite"></div>
+        <p class="slogan" id="slogan" hidden></p>
         <div class="boutons" id="etats" role="group" aria-label="État de l'avatar"></div>
         <div class="boutons"><button type="button" class="b" id="hasard">Au hasard</button></div>
       </div>
@@ -315,6 +320,9 @@
     fa.value = desc.fauteuil ? 'oui' : 'non';
     synchro.forEach(function (f) { f(); });
     $('json').textContent = JSON.stringify(desc, null, 2);
+    var cq = E.catalogue.objets.tete.filter(function (o) { return o.id === desc.objets.tete; })[0], sl = $('slogan');
+    sl.hidden = !(cq && cq.texte); sl.textContent = '';
+    if (cq && cq.texte) { sl.appendChild(el('small', null, 'Sur la casquette')); sl.appendChild(document.createTextNode(cq.texte)); }
   }
   maj();
 
@@ -332,7 +340,7 @@
         d.couleurs.haut = TISSUS[ni % 6]; d.couleurs.accent = NEONS[(ni + 2) % 6]; d.compagnon = 'aucun'; ni++;
         d.objets[e.id] = o.id;
         var c = el('div', { 'class': 'carte' }), s = el('span');
-        c.appendChild(s); c.appendChild(el('strong', null, o.nom)); g.appendChild(c);
+        c.appendChild(s); c.appendChild(el('strong', null, o.nom)); if (o.texte) c.appendChild(el('span', { 'class': 'slogan', 'aria-hidden': 'true' }, o.texte)); g.appendChild(c);
         E.creer(s, d, { taille: 112, etat: e.id === 'main' ? 'salue' : 'repos' });
       });
     });

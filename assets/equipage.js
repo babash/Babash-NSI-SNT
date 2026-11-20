@@ -201,11 +201,11 @@
     lignee: liste([['humain', 'Humain·e'], ['cyber', 'Cyber'], ['nuee', 'Nuée'], ['mutant', 'Mutant·e'], ['lagon', 'Peuple du lagon'], ['esprit', 'Esprit'], ['greffe', 'Greffé·e']]),
     corps: liste([['fine', 'Fin'], ['moyenne', 'Moyen'], ['ronde', 'Rond']]),
     coiffure: liste([['court', 'Courts'], ['rase', 'Rasés'], ['lisses', 'Lisses mi-longs'], ['boucles', 'Boucles'], ['degrade_circuit', 'Dégradé circuit'], ['tresses', 'Tresses'], ['tresses_fibre', 'Tresses fibre optique'], ['locks_cables', 'Locks câblées'], ['afro_pixel', 'Afro pixel'], ['puffs', 'Deux puffs'], ['chignon_antenne', 'Chignon antenne'], ['crete_graffiti', 'Crête graffiti'], ['capuche', 'Capuche réseau'], ['feuilles', 'Couronne de feuilles'], ['volute', 'Volute'], ['glitch', 'Pixels flottants']]),
-    haut: liste([['tshirt', 'Tee-shirt'], ['veste', 'Veste runner'], ['maillot', 'Maillot de quartier libre'], ['tunique', 'Tunique fleurs-circuits'], ['sweat', 'Sweat'], ['gilet', 'Gilet de bricole'], ['debardeur', 'Débardeur de battle'], ['chemise', 'Chemise à bugs'], ['combinaison', 'Combinaison de course'], ['aucun', 'Sans haut (Nuée, Esprit)']]),
+    haut: liste([['tshirt', 'Tee-shirt'], ['veste', 'Veste runner'], ['maillot', 'Maillot de quartier libre'], ['maillot_foot', 'Maillot de foot sans écusson'], ['tunique', 'Tunique fleurs-circuits'], ['sweat', 'Sweat'], ['gilet', 'Gilet de bricole'], ['debardeur', 'Débardeur de battle'], ['chemise', 'Chemise à bugs'], ['combinaison', 'Combinaison de course'], ['aucun', 'Sans haut (Nuée, Esprit)']]),
     bas: liste([['pantalon', 'Pantalon'], ['cargo', 'Cargo à câble'], ['short', 'Short de terrain'], ['jogging', 'Jogging fluo'], ['jupe_longue', 'Jupe longue fleurs-circuits'], ['sarouel', 'Sarouel de danse'], ['patchwork', 'Pantalon rapiécé'], ['salouva', 'Salouva']]),
     chaussures: liste([['baskets', 'Baskets'], ['montantes', 'Baskets montantes'], ['savates', 'Savates néon'], ['bottes', 'Bottes de pont'], ['crampons', 'Crampons de sable'], ['pieds_nus', 'Pieds nus et chevillère']]),
     emplacements: liste([['tete', 'Sur la tête'], ['visage', 'Sur le visage'], ['cou', 'Au cou et à la taille'], ['dos', 'Dans le dos'], ['main', 'Dans la main'], ['epaule', 'Sur les épaules'], ['pieds', 'Aux pieds'], ['autour', 'Autour']]),
-    familles: liste([['clin', 'Clins d\'œil'], ['classe', 'Les gimmicks de la classe'], ['heros', 'Héros et héroïnes de BD'], ['pirate', 'Pirates et aventure'], ['mayotte', 'Mayotte'], ['punk', 'Punk et rue'], ['cyber', 'Cyber et Flottille'], ['nature', 'Fées, esprits, nature'], ['classique', 'Classiques']]),
+    familles: liste([['clin', 'Clins d\'œil'], ['classe', 'Les gimmicks de la classe'], ['heros', 'Héros et héroïnes de BD'], ['pirate', 'Pirates et aventure'], ['lycee', 'Le style du lycée'], ['punk', 'Punk et rue'], ['cyber', 'Cyber et Flottille'], ['nature', 'Fées, esprits, nature'], ['classique', 'Classiques']]),
     objets: {},
     compagnon: [{ id: 'aucun', nom: 'Aucun' }, { id: 'margouillat', nom: 'Margouillat vert', depart: true }, { id: 'maki', nom: 'Maki', gagne: true }, { id: 'robot', nom: 'Petit robot', gagne: true }, { id: 'tortue', nom: 'Tortue serveur', gagne: true }, { id: 'roussette', nom: 'Roussette', gagne: true }],
     teint: TEINTS.map(function (c, i) { return { id: i + 1, nom: 'Teint ' + (i + 1), couleur: c }; }),
@@ -238,7 +238,7 @@
     ['telecommande', 'La télécommande du projecteur', 'main', 'classe'],
 
     ['meches_vives', 'Mèches électriques', 'tete', 'heros'], ['bandeau_noue', 'Bandeau noué au vent', 'tete', 'heros'],
-    ['loup', 'Loup de justicier·e', 'visage', 'heros'], ['monocle_visee', 'Lunette de visée à un œil', 'visage', 'heros'],
+    ['loup', 'Loup de justicier·e', 'visage', 'heros'], ['monocle_pixels', 'Le monocle à pixels', 'visage', 'heros'],
     ['ceinture_boucle', 'Ceinture à grosse boucle', 'cou', 'heros'], ['cape', 'Cape au vent', 'dos', 'heros'],
     ['gants_geants', 'Gants géants', 'main', 'heros'], ['bottes_heros', 'Bottes à revers', 'pieds', 'heros'],
     ['aura_energie', 'Aura d\'énergie', 'autour', 'heros'], ['eclairs', 'Éclairs', 'autour', 'heros'], ['onomatopee', 'Étoile « ! » de BD', 'autour', 'heros'],
@@ -248,12 +248,14 @@
     ['longue_vue', 'Longue-vue', 'main', 'pirate'], ['carte_tresor', 'Carte au trésor', 'main', 'pirate'], ['bouteille_message', 'Bouteille à la mer', 'main', 'pirate'],
     ['perroquet_robot', 'Perroquet-robot', 'epaule', 'pirate'], ['bottes_pirate', 'Bottes à boucle', 'pieds', 'pirate'], ['pieces_or', 'Pièces d\'or qui tournent', 'autour', 'pirate'],
 
-    ['tortue_tete', 'Tortue sur la tête', 'tete', 'mayotte'], ['masque_beaute', 'Masque de beauté au santal', 'visage', 'mayotte'],
-    ['collier_jasmin', 'Collier de jasmin', 'cou', 'mayotte'], ['pirogue', 'Pirogue à balancier (jouet)', 'main', 'mayotte'],
-    ['baobab_pot', 'Baobab en pot', 'main', 'mayotte'], ['brochette', 'Brochette', 'main', 'mayotte'], ['porte_cles_taxi', 'Porte-clés moto-taxi', 'main', 'mayotte'],
-    ['tam_tam', 'Tam-tam', 'main', 'mayotte'], ['parapluie', 'Parapluie de saison des pluies', 'main', 'mayotte'], ['pneu', 'Pneu et bâton', 'main', 'mayotte'],
-    ['mangue', 'Mangue', 'main', 'mayotte'], ['kishali', 'Kishali sur les épaules', 'epaule', 'mayotte'], ['maki_epaule', 'Maki sur l\'épaule', 'epaule', 'mayotte'],
-    ['ballon_foot', 'Ballon de foot', 'pieds', 'mayotte'], ['petales', 'Pétales de frangipanier', 'autour', 'mayotte'],
+    ['casquette_mabawa', 'Casquette « PLATA O MABAWA »', 'tete', 'lycee', 'PLATA O MABAWA'], ['casquette_barge', 'Casquette « BARGE O BOUCHON »', 'tete', 'lycee', 'BARGE O BOUCHON'],
+    ['casquette_pilaou', 'Casquette « PLATA O PILAOU »', 'tete', 'lycee', 'PLATA O PILAOU'], ['ski_front', 'Lunettes de ski sur le front', 'tete', 'lycee'],
+    ['peigne', 'Peigne planté dans les cheveux', 'tete', 'lycee'], ['bob', 'Bob', 'tete', 'lycee'], ['perles', 'Perles au bout des tresses', 'tete', 'lycee'],
+    ['ski_yeux', 'Lunettes de ski sur les yeux', 'visage', 'lycee'], ['ecouteurs', 'Écouteurs sans fil', 'visage', 'lycee'],
+    ['sacoche', 'Sacoche en bandoulière', 'cou', 'lycee'], ['sac_devant', 'Sac à dos porté devant', 'cou', 'lycee'],
+    ['telephone', 'Téléphone à coque brillante', 'main', 'lycee'], ['bouteille_glacee', 'Bouteille d\'eau glacée', 'main', 'lycee'],
+    ['bracelet', 'Bracelet brésilien', 'main', 'lycee'], ['parapluie', 'Parapluie de la saison des pluies', 'main', 'lycee'],
+    ['kishali', 'Kishali sur les épaules', 'epaule', 'lycee'], ['claquettes', 'Claquettes-chaussettes', 'pieds', 'lycee'], ['ballon_foot', 'Ballon de foot', 'pieds', 'lycee'],
 
     ['crete_pics', 'Crête à pics', 'tete', 'punk'], ['casque_audio', 'Casque audio', 'tete', 'punk'], ['epingles', 'Épingles à nourrice', 'visage', 'punk'],
     ['badges', 'Badges', 'cou', 'punk'], ['guitare', 'Guitare bricolée', 'dos', 'punk'], ['megaphone', 'Mégaphone', 'main', 'punk'],
@@ -277,16 +279,16 @@
     ['peinture', 'Peinture néon', 'visage', 'classique'], ['echarpe', 'Écharpe', 'epaule', 'classique']
   ];
   /* anciens identifiants (v3) : repris dans leur nouvel emplacement */
-  var COMPAT = { masque: ['visage', 'loup'], chale: ['epaule', 'kishali'], ballon: ['pieds', 'ballon_foot'] };
+  var COMPAT = { masque: ['visage', 'loup'], chale: ['epaule', 'kishali'], ballon: ['pieds', 'ballon_foot'], monocle_visee: ['visage', 'monocle_pixels'] };
   CATALOGUE.emplacements.forEach(function (e) { CATALOGUE.objets[e.id] = [{ id: 'aucun', nom: 'Rien' }]; });
-  OBJETS.forEach(function (o) { CATALOGUE.objets[o[2]].push({ id: o[0], nom: o[1], famille: o[3] }); });
+  OBJETS.forEach(function (o) { var e = { id: o[0], nom: o[1], famille: o[3] }; if (o[4]) e.texte = o[4]; CATALOGUE.objets[o[2]].push(e); });
   Object.keys(PALETTES).forEach(function (k) {
     CATALOGUE.couleurs[k] = Object.keys(PALETTES[k]).map(function (id) { return { id: id, couleur: PALETTES[k][id] }; });
   });
   /* palette de chaque champ de couleur de la description */
   var CHAMP_PALETTE = { cheveux: 'cheveux', haut: 'tissu', bas: 'tissu', accent: 'neon', chaussures: 'chaussures', yeux: 'yeux' };
 
-  var MANCHES = { veste: 'longues', maillot: 'courtes', tunique: 'courtes', sweat: 'longues', gilet: 'aucune', debardeur: 'aucune', chemise: 'longues', combinaison: 'longues', tshirt: 'courtes', aucun: 'aucune' };
+  var MANCHES = { veste: 'longues', maillot: 'courtes', maillot_foot: 'courtes', tunique: 'courtes', sweat: 'longues', gilet: 'aucune', debardeur: 'aucune', chemise: 'longues', combinaison: 'longues', tshirt: 'courtes', aucun: 'aucune' };
   var SANS_CORPS = { nuee: 1, esprit: 1 };
 
   var DEFAUT = {
@@ -533,15 +535,22 @@
       return;
     }
     if (style === 'salouva') {
+      /* salouva noué à la taille, imprimé d'aujourd'hui : bandes de losanges et de chevrons, ourlet à liseré */
+      var s1 = cfg.accent, s2 = clair(bas, 0.55);
       for (y = TY + 6; y < SY0 + 1; y++) {
+        k = y - TY - 6;
         for (x = c.tx0 - 1; x <= c.tx1 + 1; x++) {
-          var bord = y >= SY0 - 1, fl = !bord && mod(x * 2 + y * 3, 7) === 0;
-          c.px(x, y, bord ? cfg.accent : (fl ? '#ffffff' : (mod(x + y, 7) === 3 ? NJ : bas)));
+          var co = bas, u = mod(x - c.tx0 + 1, 6), r5 = mod(k, 6);
+          if (y >= SY0 - 1) co = mod(x, 3) ? s1 : '#ffffff';
+          else if (r5 === 0) co = mod(x + k, 2) ? s2 : bas;
+          else if (r5 === 2 || r5 === 4) co = (u === 2 || u === 3) ? '#ffffff' : bas;
+          else if (r5 === 3) co = (u === 1 || u === 4) ? '#ffffff' : (u === 2 || u === 3 ? s1 : bas);
+          c.px(x, y, co);
         }
         c.px(c.tx1 + 1, y, fonce(bas, 0.25));
       }
       c.L.hline(c.tx0 - 1, c.tx1 + 1, TY + 6, fonce(bas, 0.3));
-      c.px(c.tx1, TY + 7, fonce(bas, 0.35)); c.px(c.tx1 - 1, TY + 8, fonce(bas, 0.35));
+      c.px(c.tx1 - 1, TY + 6, s1); c.px(c.tx1, TY + 7, s1); c.px(c.tx1 - 1, TY + 8, fonce(bas, 0.35)); c.px(c.tx1, TY + 9, fonce(bas, 0.35));
       [c.lx0, c.rx0].forEach(function (lx) { c.L.rect(lx + 1, SY0 + 1, c.legW - 1, 1, c.sk); });
     } else if (style === 'jupe_longue') {
       for (y = TY + 6; y < SY0; y++) {
@@ -654,6 +663,12 @@
       c.px(CX - 2, TY, acc); c.px(CX + 1, TY, acc); c.px(CX - 1, TY + 1, acc); c.px(CX, TY + 1, acc);
       L.carte(tx0 + 2, TY + 3, ['x.x', '.x.', 'x.x'], { x: cfg.embleme });
       for (y = TY + 1; y < TY + 8; y++) { c.px(tx0, y, acc); c.px(tx1, y, acc); }
+    } else if (st === 'maillot_foot') {
+      /* maillot de foot : col et bandes de côté, un numéro, ni écusson ni marque */
+      var clairT = rgb(top)[0] + rgb(top)[1] + rgb(top)[2] > 480, num = clairT ? NOIR : '#ffffff';
+      L.hline(CX - 2, CX + 1, TY, acc); c.px(CX - 1, TY + 1, acc); c.px(CX, TY + 1, acc);
+      for (y = TY + 1; y < TY + 8; y++) { c.px(tx0, y, acc); c.px(tx0 + 1, y, fonce(acc, 0.2)); c.px(tx1, y, acc); c.px(tx1 - 1, y, fonce(acc, 0.2)); }
+      L.carte(CX - 3, TY + 2, ['.x.xxx', 'xx.x.x', '.x.x.x', '.x.xxx'], { x: num });
     } else if (st === 'tunique') {
       L.rect(CX - 2, TY, 4, 1, c.sk); L.rect(CX - 1, TY + 1, 2, 1, c.sk);
       L.hline(CX - 2, CX + 1, TY + 2, cfg.motif_c);
@@ -1096,6 +1111,14 @@
      f : plusieurs images (animation) ; clair : le chapeau remplace le haut du crâne ;
      chaine : couleur du cordon qui monte au cou ; lueur : [col, rang, couleur]. */
   var OR = '#c8902a', OR2 = '#f2c14e', MET = '#9aa3b8', MET2 = '#d8dce8', BOIS = '#a8784a', BOIS2 = '#6b4a2e', BLANC = '#f8f6f0';
+  /* une manique matelassée : « m » devient des carreaux de 2 px, puis les coquillages cousus en désordre */
+  function damier(rows, coquillages) {
+    var r = rows.map(function (l, y) { return l.replace(/m/g, function (ch, x) { return (fdiv(x, 2) + fdiv(y, 2)) % 2 ? 'w' : 'r'; }); });
+    coquillages.forEach(function (q) {
+      [q[2], q[3]].forEach(function (motif, j) { var l = r[q[1] + j]; r[q[1] + j] = l.slice(0, q[0]) + motif + l.slice(q[0] + motif.length); });
+    });
+    return r;
+  }
   var SPR = {
     /* ─ héros ─ */
     bottes_heros: { ou: 'pieds', a: [1, 5], r: ['BBBBB.', '.AAAA.', '.AAAA.', '.AAAAA', '.AAAAAA', '.kkkkkk'], p: { A: 'A', B: 'B', k: '#2a2a35' } },
@@ -1118,26 +1141,16 @@
       ['.r..r...', '..rr....', '..tttt..', '.ttwcmm.', '.tttt..m', '.tttMmm.', '.tTTTtt.', '.tTTTt..', '..tTTt..', '..tttV..', '..gg.VV.', '......V.']],
       p: { r: '#ff4fb8', t: '#3fb8a0', w: BLANC, c: '#2a8ad8', m: MET2, M: MET, T: '#ffd23a', V: '#8a5bff', g: '#5a5f7a' } },
     bottes_pirate: { ou: 'pieds', a: [1, 5], r: ['bBBBBb', '.bbbb.', '.bgbb.', '.bbbbb', '.bbbbbb', '.kkkkkk'], p: { b: '#6b4a2e', B: '#9a7a52', g: OR2, k: '#2a1a10' } },
-    /* ─ Mayotte ─ */
-    tortue_tete: { ou: 'tete', a: [7, 5], f: [
-      ['.....sssss.....', '...ssPssPss....', '..sPssPssPss.hh', '..ssPssPssPshhk', 'f.RRRRRRRRRR.hh', 'ff..........ff.'],
-      ['.....sssss.....', '...ssPssPss....', '..sPssPssPss.hh', '..ssPssPssPshhk', '..RRRRRRRRRR.hh', '.f..........f..']],
-      p: { s: '#3f9a5f', P: '#7fd08a', R: '#2a6a3a', h: '#8ad08a', k: '#1b1530', f: '#6ac07a' } },
-    pirogue: { ou: 'main', a: [3, 5], r: ['..ffffff..', '..s....s..', '..s....s..', 'hhhhhhhhhh', '.HHHHHHHH.'], p: { f: '#d8b078', s: BOIS2, h: '#a8683a', H: '#7a4a2a' } },
-    baobab_pot: { ou: 'main', gros: 1, a: [3, 9], r: ['.g.g.g.', 'gGgGgGg', '.bb.bb.', '..bbb..', '..bbb..', '.bbbbb.', '.bbbbb.', 'ttttttt', '.TTTTT.', '.TTTTT.', '..TTT..'],
-      p: { g: '#5fbf5a', G: '#2f7a3a', b: '#9a7a62', t: '#d8703a', T: '#b8582a' } },
-    brochette: { ou: 'main', a: [1, 12], f: [
-      ['.w.', '..w', '.g.', 'ggg', 'mmm', 'MMM', 'ooo', 'mmm', 'MMM', 'rrr', '.s.', '.s.', '.s.'],
-      ['w..', '.w.', '.g.', 'ggg', 'mmm', 'MMM', 'ooo', 'mmm', 'MMM', 'rrr', '.s.', '.s.', '.s.']],
-      p: { w: ['#c8d0e0', 0.9], g: '#4fae5a', m: '#8a4a2a', M: '#b8662a', o: '#f2e8d8', r: '#d8403a', s: '#c8a070' } },
-    porte_cles_taxi: { ou: 'main', a: [2, 0], f: [
-      ['..o....', '..o....', '..c....', '..c....', '.....h.', '..sssh.', '.yyyyyy', 'kk...kk', 'kk...kk'],
-      ['..o.....', '..o.....', '...c....', '...c....', '......h.', '...sssh.', '..yyyyyy', '.kk...kk', '.kk...kk']],
-      p: { o: MET2, c: MET, h: '#5a5f7a', s: '#2a2a35', y: '#f2c14e', k: '#2a2a35' } },
-    tam_tam: { ou: 'main', gros: 1, a: [1, 0], f: [
-      ['.wwwww.', 'wWWWWWw', 'bybybyb', 'bbybybb', '.bybyb.', '.bbybb.', '..bbb..', '..BBB..'],
-      ['.wwwww.', 'wwWWWww', 'bybybyb', 'bbybybb', '.bybyb.', '.bbybb.', '..bbb..', '..BBB..']],
-      p: { w: '#f2e2c0', W: '#e0c898', b: '#8a4a2a', y: '#f2d14b', B: '#5a2a1a' } },
+    /* ─ le style du lycée : ce que portent les élèves, sans marque ni logo ─ */
+    telephone: { ou: 'main', a: [1, 7], lueur: [2, 3, '#ffffff'], f: [
+      ['.kkkk.', 'kKwGgk', 'kKKgGk', 'kGgwgk', 'kgGgGk', 'kGgGgk', 'kgGgwk', 'kGgGgk', '.kkkk.'],
+      ['.kkkk.', 'kKKGgk', 'kKKgGk', 'kGgGgk', 'kgwgGk', 'kGgGgk', 'kgGgGk', 'kGwGgk', '.kkkk.']],
+      p: { k: '#2a2f44', K: '#5a5f7a', g: 'A', G: '#ffffff', w: '#fff6c8' } },
+    bouteille_glacee: { ou: 'main', a: [2, 9], f: [
+      ['.bbb.', '.bbb.', '.lll.', 'llwll', 'lwiil', 'lliwl', 'lwiil', 'llill', 'lwlll', 'lllll', '.lll.'],
+      ['.bbb.', '.bbb.', '.lll.', 'llwll', 'lwiil', 'lliwl', 'lwiil', 'llill', 'lwlll', 'lllll', '.lll.']],
+      p: { b: '#3f6ad8', l: '#9ad8f0', w: '#e8f8ff', i: '#ffffff' } },
+    claquettes: { ou: 'pieds', a: [1, 5], r: ['.wwww.', '.AAAA.', '.wwww.', '.wwwww.', 'kkkkkkk', 'sssssss'], p: { w: BLANC, A: 'A', k: '#2a2f44', s: '#c8ccd8' } },
     /* ─ punk ─ */
     badges: { ou: 'cou', a: [4, -1], r: ['.y......', 'yky..r..', '.y..rwr.', '.....r..', '...c....', '..ckc...', '...c....'],
       p: { y: '#f2d14b', r: '#ff4fb8', c: '#3ff0ff', k: '#1b1530', w: '#ffffff' } },
@@ -1157,10 +1170,6 @@
       p: { c: '#2a2f44', o: '#f08a2a', K: '#2a2a35', p: '#e8e0d0', y: OR2, z: ['#e8ff3a', 0.95] } },
     ressorts: { ou: 'pieds', a: [1, -1], f: [['.sss.', 's...s', '.sss.', 's...s'], ['sssss', '.sss.']], p: { s: '#c8ccd8' } },
     /* ─ nature ─ */
-    maki_epaule: { ou: 'epg', a: [10, 8], f: [
-      ['.b....b.', '.bbbbbb.', 'blkkkklb', 'blokkolb', 'blkkkklb', '.llddll.', '..bbbb.t', '.bbbbbbt', '.bb..bbt', '.......t', '......t.', '......t.', '.......t'],
-      ['.b....b.', '.bbbbbb.', 'blkkkklb', 'blkkkklb', 'blkkkklb', '.llddll.', '..bbbb.t', '.bbbbbbt', '.bb..bbt', '.......t', '.......t', '......t.', '......t.']],
-      p: { b: '#8a6a4a', l: '#c8b090', k: '#3a2a2a', o: '#f0a030', d: '#1b1530', t: '#6b4a2e' } },
     souimanga: { ou: 'epg', a: [9, 6], f: [
       ['...gg..', '..gGgg.', 'bbgkgg.', 'b.gggg.', '..rrrgg', '..yyyyt', '...ff.t'],
       ['..gg...', '.gGgg..', 'bgkgg..', '.bgggg.', '..rrrgg', '..yyyyt', '...ff.t']],
@@ -1186,16 +1195,18 @@
     feutre: { ou: 'main', gros: 1, a: [1, 6], lueur: [1, 0, '#3ff0ff'], f: [['.A.', 'www', 'www', 'www', 'www', 'AAA', 'AAA'], ['vA.', 'www', 'www', 'www', 'www', 'AAA', 'AAA']], p: { A: 'A', w: BLANC, v: ['A', 0.8] } },
     telecommande: { ou: 'main', gros: 1, a: [1, 6], f: [['.r.', 'kkk', 'kwk', 'kAk', 'kkk', 'kAk', 'kkk'], ['...', 'kkk', 'kwk', 'kAk', 'kkk', 'kAk', 'kkk']], p: { r: '#ff3a3a', k: '#2a2f44', w: '#c8ccd8', A: 'A' } },
     /* ─ clins d'œil : le nom fait le clin d'œil, la forme est à nous ─ */
-    manique_infini: { ou: 'main', a: [6, 10], lueur: [6, 3, '#fff6c8'], f: [
-      ['...ggggggg..', '..gGGGGGGGg.', '.gGw1Gw2Gw3g', '.gG11G22G33g', 'ttgGGGGGGGGg', 'tTtGGGGGGGGg', 'tTTgGGGGGGGg', '.ttgGGGGGGg.', '...gGGGGGg..', '...sssssss..', '...spspsps..', '....sssss...'],
-      ['...ggggggg..', '..gGGGGGGGg.', '.gG1wG2wG3wg', '.gG11G22G33g', 'ttgGGGGGGGGg', 'tTtGGGGGGGGg', 'tTTgGGGGGGGg', '.ttgGGGGGGg.', '...gGGGGGg..', '...sssssss..', '...spspsps..', '....sssss...']],
-      p: { g: OR, G: OR2, t: '#e8b040', T: '#fff0a0', w: '#ffffff', 1: '#3ff0ff', 2: '#ff4fb8', 3: '#5dff8a', s: '#f4e2c8', p: '#f2a8b8' } },
+    manique_infini: { ou: 'main', a: [6, 10], r: damier([
+      '.....ll.....', '....l..l....', '...mmmmmm...', '..mmmmmmmm..', '..mmmmmmmmm.', 'mm.mmmmmmmm.',
+      'mmm.mmmmmmm.', 'mmmmmmmmmmm.', '.mmmmmmmmmm.', '..mmmmmmmm..', '..dddddddd..', '..dddddddd..'],
+      [[5, 4, 'sS', 'Ss'], [8, 7, 'sS', 'SS'], [3, 8, 'Ss', 'ss']]),
+      p: { r: '#d8503a', w: '#f8f0e0', l: '#a8382a', d: '#a8382a', s: '#f4e2c8', S: '#c8a078' } },
     louche_tonnerre: { ou: 'main', a: [4, 11], f: [
       ['..cccc...', '.cccccc..', '.CCCCCC..', '..y..y...', '..bbbb...', '.bBBBBb..', '..bBBb...', '....h....', '....h....', '....h....', '....h....', '....h....'],
       ['..cccc...', '.cccccc..', '.CCCCCC..', '...y..y..', '..bbbb...', '.bBBBBb..', '..bBBb...', '....h....', '....h....', '....h....', '....h....', '....h....']],
       p: { c: '#eef2fa', C: '#b8c4d8', y: '#e8ff3a', b: '#c8ccd8', B: '#8a92a8', h: MET } },
-    couvercle_liberte: { ou: 'main', a: [3, 5], r: ['...kkk...', '..lllll..', '.lLLLLLl.', 'lLLLgLLLl', 'lLLgggLLl', 'lLLLgLLLl', 'lLLgLgLLl', '.lLLLLLl.', '..lllll..'],
-      p: { k: '#3a3f58', l: '#e4e8f0', L: '#b8c0d4', g: '#3fbf4a' } },
+    couvercle_liberte: { ou: 'main', a: [5, 6], r: [
+      '....kk.....', '...kkkk....', '..llwllll..', '.lDLLLLgLl.', 'lLLLLLLLgLl', 'llllllllll.', '.tTtT......', '.TtTt......', '..tTt......', '..T.t......'],
+      p: { k: '#3a3f58', l: '#c8ccd8', L: '#a8b0c4', w: '#f4f6fa', D: '#7a8298', g: '#3fbf4a', t: '#f2f0ea', T: '#3f6ad8' } },
     passoire_pensee: { ou: 'tete', clair: 1, a: [9, 4], r: [
       '...A..........A...', '....m........m....', '.....m......m.....', '......llllll......', '....llLoLLoLll....',
       '...lLLLLoLLLLLl...', '..lLoLLLLLLoLLLl..', '..lLLLLoLLLLLLLl..', 'hRRRRRRRRRRRRRRRRh'],
@@ -1216,8 +1227,9 @@
     eclairs_chocolat: { ou: 'pieds', a: [2, 2], r: ['.cwcwcc', 'ppppppp', '.PPPPP.'], p: { c: '#5a3420', w: '#f8f0e0', p: '#d8a058', P: '#b07838' } },
     cornes_zebu: { ou: 'tete', a: [10, 6], r: ['k..................k', 'c..................c', 'c..................c', '.c................c.', '..cc............cc..', '...cc..........cc...', '....rAAAAAAAAAAr....'],
       p: { k: '#4a3a2a', c: '#f2e6c8', r: '#ff7fa0', A: 'A' } },
-    mangue_etoiles: { ou: 'main', gros: 1, a: [2, 8], lueur: [2, 4, '#ffb23a'], r: ['....G.', '...G..', '.oooo.', 'oOwOOo', 'orOrOo', 'oOOrOo', 'orOOOo', '.oooo.'],
-      p: { G: '#3fae4a', o: '#f08a2a', O: '#ffb23a', w: '#ffffff', r: '#e8303a' } },
+    mangue_etoiles: { ou: 'main', a: [3, 9], r: [
+      '...ncwwwwwww', '...n.ywywywy', '..ggg.wwwwwww', '.gggGG', 'ggggGGG', 'gggGGYY', 'ggGGYYY', '.gGYYYY', '..GYYYo', '...YYo.'],
+      p: { n: '#6b4a2e', c: '#c8ccd8', w: '#ffffff', y: '#c87a10', g: '#4fae4a', G: '#a8d040', Y: '#f2c83a', o: '#f08a2a' } },
     calculette_9000: { ou: 'cou', a: [3, -3], chaine: '#3a3f58', r: ['kkkkkkk', 'ksdsdsk', 'ksdsdsk', 'kkkkkkk', 'kbAbAbk', 'kbbbbbk', 'kkkkkkk'],
       p: { k: '#2a2f44', s: '#b8f8a0', d: '#1f5a2a', b: '#c8ccd8', A: 'A' } },
     grenouille_porte_monnaie: { ou: 'cou', a: [7, -4], chaine: '#c8453d', r: ['....gg..gg', '....gwkggwk', '....gggggggg', '....ggrrrrgg', '....gGGyGGGg', '.....gggggg.'],
@@ -1246,9 +1258,9 @@
     bottes_conserve: { ou: 'pieds', a: [1, 5], r: ['lllll', 'sSsSs', 'AAAAA', 'AwAwA', 'sSsSs', 'lllll'], p: { l: '#eef0f6', s: '#b8c0d4', S: MET, A: 'A', w: '#ffffff' } }
   };
   /* objets tenus : le bras se lève pour les porter */
-  var TIENT = { pneu: 1, bombe: 1, cle: 1, mangue: 1, baton_lumineux: 1, lanterne: 1, parapluie: 1, style_trois_baguettes: 1, perche_extensible: 1 };
-  Object.keys(SPR).forEach(function (k) { if (SPR[k].ou === 'main' && k !== 'tam_tam' && k !== 'porte_cles_taxi') TIENT[k] = 1; });
-  var CHAPEAUX = { chapeau_paille: 1, bonnet: 1, casquette: 1, bandana: 1, casque_mabawa: 1 };
+  var TIENT = { bombe: 1, cle: 1, baton_lumineux: 1, lanterne: 1, parapluie: 1, style_trois_baguettes: 1, perche_extensible: 1 };
+  Object.keys(SPR).forEach(function (k) { if (SPR[k].ou === 'main') TIENT[k] = 1; });
+  var CHAPEAUX = { chapeau_paille: 1, bonnet: 1, casquette: 1, bandana: 1, casque_mabawa: 1, casquette_mabawa: 1, casquette_barge: 1, casquette_pilaou: 1, bob: 1 };
   var CRETES = { meches_vives: 1, crete_pics: 1, crete_recurer: 1 };
 
   /* agrandit une carte par deux (algorithme Scale2x) : contours arrondis, même taille de pixel */
@@ -1478,7 +1490,20 @@
     if (o.dos === 'cape' || o.dos === 'cape_serviette') { var cc = o.dos === 'cape' ? mix(c.cfg.accent2, '#c8203a', 0.4) : c.cfg.accent; c.px(CX - 2, TY, cc); c.px(CX + 1, TY, cc); c.px(CX - 1, TY + 1, OR2); c.px(CX, TY + 1, OR2); }
     var v = o.cou;
     if (v === 'aucun' || sprite(c, v)) return;
-    if (v === 'collier_jasmin') collier(c, '#ffffff', '#5fae5a');
+    if (v === 'sacoche') {
+      ligne(c, c.tx1 - 1, TY - 1, c.tx0 + 1, TY + 6, '#2a2f44');
+      var sx = c.tx0 - 3, sy = TY + 5;
+      c.L.rect(sx, sy, 6, 4, '#2a2f44'); c.L.hline(sx, sx + 5, sy, '#3a3f58'); c.L.hline(sx + 1, sx + 4, sy + 1, c.cfg.accent);
+      c.px(sx + 4, sy + 2, MET2);
+    }
+    if (v === 'sac_devant') {
+      var sc = mix(c.cfg.accent2, '#2a2f4a', 0.45), sp = clair(sc, 0.25);
+      c.L.rect(c.tx0 + 1, TY + 1, c.tw - 2, 8, sc);
+      c.L.rect(c.tx0 + 2, TY + 5, c.tw - 4, 4, sp); c.L.hline(c.tx0 + 2, c.tx1 - 2, TY + 5, c.cfg.accent);
+      c.L.hline(c.tx0 + 2, c.tx1 - 2, TY + 1, fonce(sc, 0.3));
+      [c.tx0 + 1, c.tx1 - 1].forEach(function (x) { c.px(x, TY - 1, fonce(sc, 0.2)); c.px(x, TY, fonce(sc, 0.2)); });
+      c.px(c.tx1 - 3, TY + 6, MET2);
+    }
     if (v === 'collier_coquillages') collier(c, '#f4e2c8', '#f2a8b8', { a: [1, 0], r: ['.c.', 'cdc', 'cdc', '.c.'], p: { c: '#f4e2c8', d: '#c8a078' } });
     if (v === 'ceinture_boucle') {
       c.L.hline(c.tx0, c.tx1, TY + 6, '#2a2f44'); c.L.hline(c.tx0, c.tx1, TY + 7, '#3a3f58');
@@ -1528,6 +1553,17 @@
     sprite(c, v);
   }
 
+  /* lunettes de ski : grand écran irisé, cadre sombre (sur les yeux, ou relevées sur le front) */
+  function skiMasque(c, y0, yeux) {
+    var cfg = c.cfg, n = c.pose.n || 0, x, y, a = X0 + (yeux ? 0 : 1), b = X1 - (yeux ? 0 : 1);
+    if (yeux) { c.L.hline(X0 - 2, X0 - 1, y0 + 2, cfg.accent2); c.L.hline(X1 + 1, X1 + 2, y0 + 2, cfg.accent2); }
+    for (y = y0; y < y0 + 5; y++) for (x = a; x <= b; x++) {
+      var bord = y === y0 || y === y0 + 4 || x === a || x === b, nez = yeux && y === y0 + 4 && x >= CX - 2 && x <= CX + 1;
+      if (nez) continue;
+      c.px(x, y, bord ? '#2a2f44' : mix(cfg.accent, cfg.accent2, (x - a) / (b - a)));
+    }
+    c.px(a + 2 + (n % 2), y0 + 1, '#ffffff'); c.px(a + 3 + (n % 2), y0 + 1, '#ffffff'); c.px(a + 2 + (n % 2), y0 + 2, '#ffffff');
+  }
   /* ── sur la tête (après les cheveux) ── */
   function objetsTete(c) {
     var o = c.cfg.o, cfg = c.cfg, hy = HY + c.hdy, n = c.pose.n || 0, x, y, k, v = o.tete;
@@ -1560,6 +1596,42 @@
       c.L.hline(X0 - 1, X1 + 1, hy + 3, fonce(cq, 0.35));
       c.L.hline(X0 - 2, X1 + 2, hy + 4, fonce(cq, 0.5));
       c.L.carte(CX - 2, hy - 1, ['x.x', '.x.', 'x.x'], { x: cfg.accent });
+    }
+    if (v === 'casquette_mabawa' || v === 'casquette_barge' || v === 'casquette_pilaou') {
+      /* casquette noire à visière plate, slogan en lettres blanches (lisible en grand dans l'éditeur), pastille dorée laissée sur la visière */
+      var cn = '#1f1a24', cl = '#3a3448';
+      [[X0 + 3, X1 - 3], [X0 + 1, X1 - 1], [X0, X1], [X0, X1], [X0, X1]].forEach(function (r, k) { c.L.hline(r[0], r[1], hy - 2 + k, k === 0 ? cl : cn); });
+      var LET = { casquette_mabawa: 'x.xx.x.x.xx.x', casquette_barge: 'xx.x.xx..x.xx', casquette_pilaou: 'x.xx.x..xx.xx' }[v];
+      for (k = 0; k < LET.length; k++) if (LET.charAt(k) === 'x') { c.px(CX - 6 + k, hy, '#ffffff'); if (k % 3 !== 1) c.px(CX - 6 + k, hy + 1, '#ffffff'); }
+      c.L.hline(X0 - 3, X1 + 3, hy + 3, cn); c.L.hline(X0 - 3, X1 + 3, hy + 4, cl);
+      c.L.rect(X1 - 2, hy + 3, 2, 1, n % 2 ? '#fff0a0' : OR2);
+    }
+    if (v === 'bob') {
+      var bb = mix(cfg.accent2, '#2a2f4a', 0.35), bc = clair(bb, 0.3);
+      [[X0 + 3, X1 - 3], [X0 + 1, X1 - 1], [X0 + 1, X1 - 1], [X0, X1], [X0, X1]].forEach(function (r, k) { c.L.hline(r[0], r[1], hy - 3 + k, k === 0 ? bc : bb); });
+      c.L.hline(X0, X1, hy, fonce(bb, 0.3));
+      c.L.hline(X0 - 2, X1 + 2, hy + 2, bb); c.L.hline(X0 - 3, X1 + 3, hy + 3, fonce(bb, 0.2));
+      for (x = X0 - 2; x <= X1 + 2; x += 2) c.px(x, hy + 2, bc);
+    }
+    if (v === 'ski_front') {
+      c.L.hline(X0 - 1, X1 + 1, hy + 2, cfg.accent2); c.L.hline(X0 - 1, X1 + 1, hy + 3, fonce(cfg.accent2, 0.3));
+      skiMasque(c, hy, false);
+    }
+    if (v === 'peigne') {
+      /* peigne à longues dents planté dans les cheveux : on cherche le haut de la coiffure */
+      var px0 = X1 - 5, haut = hy + 2;
+      for (y = 0; y < hy + 3; y++) if (c.L.plein(px0, y) || c.L.plein(px0 + 2, y)) { haut = y; break; }
+      var pc = cfg.accent, pf = fonce(pc, 0.35);
+      c.L.rect(px0 - 1, haut - 4, 5, 2, pc); c.L.hline(px0 - 1, px0 + 3, haut - 4, clair(pc, 0.4));
+      c.px(px0 + 1, haut - 6, pc); c.px(px0 + 1, haut - 5, pc); c.px(px0, haut - 7, pc); c.px(px0 + 1, haut - 7, pc); c.px(px0 + 2, haut - 7, pc);
+      [px0 - 1, px0 + 1, px0 + 3].forEach(function (tx) { c.px(tx, haut - 2, pf); c.px(tx, haut - 1, pf); });
+    }
+    if (v === 'perles') {
+      var PC = [cfg.accent, '#ffffff', '#f2c14e', cfg.accent2];
+      [X0 - 2, X0 - 1, X1 + 1, X1 + 2].forEach(function (tx, j) {
+        var y0 = hy + 9 + (j % 2) * 2;
+        for (y = y0; y < y0 + 6; y++) c.px(tx, y, (y - y0) % 2 ? PC[(j + y) % 4] : c.hc);
+      });
     }
     if (v === 'bandana') {
       var bd = '#d8403a';
@@ -1644,23 +1716,20 @@
       [CX - 6, CX - 5, CX - 4, CX + 3, CX + 4, CX + 5].forEach(function (xx) { c.px(xx, ey - 2, mc); });
       c.px(X0, ey, mc); c.px(X0 - 1, ey + (n % 2), mc); c.px(X0 - 2, ey + 1, mc); c.px(X1, ey, mc); c.px(X1 + 1, ey + 1 - (n % 2), mc);
     }
-    if (v === 'monocle_visee') {
-      var mx = CX + 4, my = ey + 1.5;
-      for (y = ey - 3; y <= ey + 5; y++) for (x = mx - 4; x <= mx + 4; x++) {
-        var d = Math.hypot(x + 0.5 - mx, y + 0.5 - my);
-        if (d > 2.3 && d <= 3.5) c.px(x, y, (x + y) % 4 === 0 ? '#ffffff' : '#ff4fb8');
-        else if (d <= 2.3) c.fx(x, y, '#ff4fb8', 0.25);
-      }
-      ligne(c, mx + 3, ey, X1 + 1, ey - 2, '#3a3f58'); ligne(c, X1 + 1, ey - 2, X1, hy + 3, '#3a3f58');
-      c.L.rect(mx + 2, ey - 6, 4, 2, '#2a2f44'); c.px(mx + 3 + (n % 2), ey - 6, NG); c.px(mx + 4 - (n % 2), ey - 5, NJ);
+    if (v === 'monocle_pixels') {
+      /* un monocle carré à verre en damier de pixels, pendu à une chaînette : rien d'un viseur */
+      var mx = CX + 1, my = ey - 2;
+      c.L.hline(mx, mx + 5, my, OR2); c.L.hline(mx, mx + 5, my + 5, OR); for (y = my + 1; y < my + 5; y++) { c.px(mx, y, OR2); c.px(mx + 5, y, OR); }
+      for (y = my + 1; y < my + 5; y++) for (x = mx + 1; x < mx + 5; x++) c.fx(x, y, mod(fdiv(x - mx - 1 + (n % 2), 2) + fdiv(y - my - 1, 2), 2) ? NC : NR, 0.45);
+      for (y = my + 6; y < TY; y++) c.px(mx + 5 + (y % 2), y, y % 2 ? OR : OR2);
     }
     if (v === 'cache_oeil') { ligne(c, CX - 7, ey - 1, X0 - 1, ey - 1, '#1f1a24'); ligne(c, CX - 2, ey - 1, X1, hy + 4, '#1f1a24'); }
-    if (v === 'masque_beaute') {
-      var pate = '#f8e6a8', pt = '#c8a040';
-      c.L.hline(CX - 4, CX + 3, ey - 4, pate); [CX - 3, CX, CX + 3].forEach(function (xx) { c.px(xx, ey - 4, pt); });
-      [X0 + 2, X1 - 2].forEach(function (cx) { c.L.carte(cx - 1, ey + 2, ['.p.', 'pdp', '.p.'], { p: pate, d: pt }); c.px(cx, ey + 5, pate); });
-      c.px(CX - 1, ey + 2, pate); c.px(CX, ey + 2, pate);
-      c.px(CX - 1, ey + 7, pate); c.px(CX, ey + 7, pt);
+    if (v === 'ski_yeux') skiMasque(c, ey - 2, true);
+    if (v === 'ecouteurs') {
+      [[X0 - 2, 1], [X1 + 1, -1]].forEach(function (p) {
+        c.L.rect(p[0], ey + 1, 2, 2, BLANC); c.px(p[0] + (p[1] > 0 ? 1 : 0), ey + 3, BLANC); c.px(p[0] + (p[1] > 0 ? 1 : 0), ey + 4, '#d8dce8');
+      });
+      if (n % 2) c.fx(X1 + 4, ey - 1, cfg.accent, 0.8); else c.fx(X0 - 4, ey, cfg.accent, 0.8);
     }
     if (v === 'epingles') {
       [[X0 - 1, ey + 2], [X1 + 1, ey + 2]].forEach(function (p) { c.px(p[0], p[1], MET2); c.px(p[0], p[1] + 1, MET2); c.px(p[0], p[1] + 2, '#5a5f7a'); });
@@ -1712,19 +1781,14 @@
       (ferme ? [[-1, 1], [0, 1], [-1, 2], [0, 2]] : [[-2, 1], [-2, 2], [1, 1], [1, 2], [-1, 1], [0, 1]]).forEach(function (p) { c.px(hx + p[0], hy + p[1], MET2); });
       c.px(c.tx1 + 1, TY, '#5a5f7a');
     }
+    if (acc === 'bracelet') {
+      [c.BR, c.BL].forEach(function (b, j) {
+        var cols = [c.cfg.accent, '#f2c14e', '#e8403a', c.cfg.accent2];
+        [2, 3].forEach(function (r) { var p = b[b.length - r]; for (var i = -1; i <= 1; i++) if (c.L.plein(p[0] + i, p[1])) c.px(p[0] + i, p[1], cols[(j + r + i + 3) % 4]); });
+      });
+    }
     if (c.pose.tablette && acc !== 'gants_geants' && acc !== 'bras_meca' && acc !== 'parapluie') { tablette(c); return; }
     if (acc === 'parapluie') parapluie(c, hx, hy);
-    if (acc === 'pneu') {
-      var cx = CX + 15.5, cy = G - 5, r = 5.8, rot = (c.pose.roue || 0) * 0.5;
-      for (y = Math.trunc(cy - r) - 1; y < Math.trunc(cy + r) + 2; y++) for (x = Math.trunc(cx - r) - 1; x < Math.trunc(cx + r) + 2; x++) {
-        var d = Math.hypot(x + 0.5 - cx, y + 0.5 - cy);
-        if (d > 3.0 && d <= r) c.px(x, y, mod(Math.trunc(Math.atan2(y - cy, x - cx) * 4 + rot * 4), 2) ? '#2a2a35' : '#3a3a48');
-        else if (d > 2.2 && d <= 3.0) c.px(x, y, cfg.accent);
-      }
-      c.glow(Math.trunc(cx), Math.trunc(cy), cfg.accent, 5, 0.15);
-      if (pose === 'tenir') for (k = 0; k < 7; k++) c.px(hx + 1 + k * 0.55, hy - 1 + k * 0.25, '#c89a5a');
-      else for (k = 0; k < 8; k++) c.px(cx - 4 + k * 0.2, cy - 4 - k, '#c89a5a');
-    }
     if (acc === 'style_trois_baguettes') {
       [[-2, -10], [2, -11], [6, -9]].forEach(function (b) { ligne(c, hx, hy, hx + b[0], hy + b[1], function (k) { return k % 3 === 1 ? '#f2d090' : '#d89a48'; }, 2); });
     }
@@ -1744,10 +1808,6 @@
     var levee = pose === 'tenir' || pose === 'haut' || pose === 'salut' || pose === 'salut2' || pose === 'ouvert';
     if (sprite(c, acc)) return;
     if (!levee) return;
-    if (acc === 'mangue') {
-      c.L.ellipse(hx + 1.5, hy - 2, 2.2, 2.8, null, true, function (x, y) { return y < hy - 3 ? '#e8503a' : (y < hy - 1 ? '#f2802a' : '#f2b02a'); });
-      c.px(hx + 2, hy - 5, '#3fae4a'); c.px(hx + 3, hy - 6, '#3fae4a');
-    }
     if (acc === 'baton_lumineux') { c.L.rect(hx, hy - 7, 2, 7, cfg.accent); c.L.rect(hx, hy - 6, 1, 5, clair(cfg.accent, 0.6)); c.glow(hx, hy - 4, cfg.accent, 3, n % 2 ? 0.5 : 0.3); }
     if (acc === 'lanterne') {
       c.px(hx + 1, hy + 1, MET);
@@ -1789,12 +1849,6 @@
         var y = 56 - mod(n * 4 + b[1], 40);
         [[1, 0], [0, 1], [2, 1], [1, 2]].forEach(function (d) { c.px(b[0] + d[0], y + d[1], '#7ad8ff'); });
         c.fx(b[0] + 1, y + 1, '#e8f8ff', 0.8);
-      });
-    }
-    if (v === 'petales') {
-      [[6, 0], [40, 9], [12, 18], [35, 27], [3, 35], [43, 4]].forEach(function (p, k) {
-        var y = 12 + mod(n * 5 + p[1], 46), x = p[0] + (mod(fdiv(y, 4), 2) ? 1 : 0);
-        c.px(x, y, '#ffffff'); c.px(x + 1, y, k % 2 ? '#f8e08a' : '#ffffff');
       });
     }
     if (v === 'notes') {
@@ -2262,7 +2316,7 @@
     EMPLACEMENTS.forEach(function (e) {
       var v = d.objets[e]; if (v === 'aucun') return;
       var x = CATALOGUE.objets[e].filter(function (y) { return y.id === v; })[0];
-      morceaux.push(x.nom.toLowerCase());
+      morceaux.push(x.nom.charAt(0).toLowerCase() + x.nom.slice(1));
     });
     if (d.fauteuil) morceaux.push('en fauteuil de course');
     if (d.compagnon !== 'aucun') morceaux.push('avec ' + (d.compagnon === 'robot' ? 'un petit robot' : d.compagnon === 'tortue' ? 'une tortue serveur' : d.compagnon === 'roussette' ? 'une roussette' : 'un ' + nom('compagnon', d.compagnon)));
@@ -2416,7 +2470,7 @@
       v: 1, lignee: lig, teint: 1 + Math.floor(r() * 8), corps: un('corps'),
       coiffure: lig === 'esprit' && r() < 0.6 ? 'volute' : lig === 'nuee' && r() < 0.6 ? 'glitch' : lig === 'greffe' && r() < 0.6 ? 'feuilles' : coifs[Math.floor(r() * coifs.length)],
       cheveux: r() < 0.75 ? ['noirs', 'bruns', 'chatains', 'auburn'][Math.floor(r() * 4)] : cle('cheveux'),
-      haut: SANS_CORPS[lig] && r() < 0.6 ? 'aucun' : CATALOGUE.haut.filter(function (e) { return e.id !== 'aucun'; })[Math.floor(r() * 9)].id,
+      haut: SANS_CORPS[lig] && r() < 0.6 ? 'aucun' : (function (l) { return l[Math.floor(r() * l.length)].id; })(CATALOGUE.haut.filter(function (e) { return e.id !== 'aucun'; })),
       bas: un('bas'), chaussures: un('chaussures'),
       objets: {}, fauteuil: r() < 0.08, compagnon: r() < 0.5 ? 'margouillat' : un('compagnon'),
       couleurs: { haut: cle('tissu'), bas: cle('tissu'), accent: cle('neon'), chaussures: cle('chaussures'), yeux: cle('yeux') }
@@ -2431,8 +2485,8 @@
   function M(o) { var d = copie(DEFAUT); for (var k in o) if (k === 'couleurs' || k === 'objets') { for (var c in o[k]) d[k][c] = o[k][c]; } else d[k] = o[k]; return normaliser(d); }
   var MODELES = {
     fibre: { nom: 'Fibre optique', etat: 'salue', description: M({ teint: 8, coiffure: 'tresses_fibre', haut: 'veste', bas: 'cargo', chaussures: 'montantes', objets: { dos: 'sac_antenne' }, couleurs: { haut: 'violet', bas: 'anthracite', accent: 'cyan', chaussures: 'blanches' } }) },
-    pneu: { nom: 'Course de pneus', etat: 'content', description: M({ teint: 5, corps: 'fine', coiffure: 'degrade_circuit', haut: 'maillot', bas: 'short', chaussures: 'crampons', objets: { main: 'pneu' }, compagnon: 'robot', couleurs: { haut: 'vert', bas: 'nuit', accent: 'jaune', chaussures: 'noires' } }) },
-    fleurs: { nom: 'Fleurs-circuits', etat: 'repos', description: M({ teint: 6, corps: 'ronde', coiffure: 'chignon_antenne', cheveux: 'bruns', haut: 'tunique', bas: 'jupe_longue', chaussures: 'savates', objets: { epaule: 'kishali', cou: 'collier_jasmin', autour: 'petales' }, compagnon: 'roussette', couleurs: { haut: 'sarcelle', bas: 'rose', accent: 'jaune', chaussures: 'noires', yeux: 'noirs' } }) },
+    lycee: { nom: 'Sortie du lycée', etat: 'content', description: M({ teint: 5, corps: 'fine', coiffure: 'degrade_circuit', haut: 'maillot_foot', bas: 'short', chaussures: 'baskets', objets: { tete: 'casquette_mabawa', cou: 'sacoche', main: 'telephone', pieds: 'claquettes' }, compagnon: 'robot', couleurs: { haut: 'vert', bas: 'nuit', accent: 'jaune', chaussures: 'blanches' } }) },
+    fleurs: { nom: 'Fleurs-circuits', etat: 'repos', description: M({ teint: 6, corps: 'ronde', coiffure: 'chignon_antenne', cheveux: 'bruns', haut: 'tunique', bas: 'jupe_longue', chaussures: 'savates', objets: { epaule: 'kishali', cou: 'collier_coquillages', autour: 'papillons' }, compagnon: 'roussette', couleurs: { haut: 'sarcelle', bas: 'rose', accent: 'jaune', chaussures: 'noires', yeux: 'noirs' } }) },
     capuche: { nom: 'Capuche réseau', etat: 'concentre', description: M({ teint: 3, coiffure: 'capuche', cheveux: 'chatains', haut: 'sweat', bas: 'patchwork', chaussures: 'baskets', objets: { tete: 'casque_audio', autour: 'notes' }, couleurs: { haut: 'marine', bas: 'gris', accent: 'cyan', chaussures: 'rouges', yeux: 'verts' } }) },
     fauteuil: { nom: 'Fauteuil de course', etat: 'tres_content', description: M({ teint: 2, coiffure: 'court', cheveux: 'auburn', haut: 'combinaison', bas: 'pantalon', objets: { tete: 'bandeau' }, fauteuil: true, couleurs: { haut: 'nuit', bas: 'nuit', accent: 'rose', chaussures: 'blanches', yeux: 'bleus' } }) },
     mecano: { nom: 'Mécano de la Flottille', etat: 'repos', description: M({ teint: 4, corps: 'ronde', coiffure: 'boucles', cheveux: 'bruns', haut: 'gilet', bas: 'patchwork', chaussures: 'bottes', objets: { dos: 'turbine_dos', tete: 'soudure', main: 'cle' }, compagnon: 'tortue', couleurs: { haut: 'kaki', bas: 'jean', accent: 'orange', chaussures: 'jaunes' } }) },
@@ -2443,7 +2497,7 @@
     reseau: { nom: 'Implant et visière', etat: 'concentre', description: M({ lignee: 'cyber', teint: 3, coiffure: 'rase', haut: 'combinaison', bas: 'jogging', objets: { visage: 'visiere', epaule: 'drone', dos: 'jetpack' }, couleurs: { haut: 'marine', bas: 'nuit', accent: 'rose' } }) },
     infini: { nom: 'Manique de l\'infini', etat: 'tres_content', description: M({ teint: 7, corps: 'ronde', coiffure: 'puffs', cheveux: 'noirs', haut: 'combinaison', bas: 'jogging', chaussures: 'montantes', objets: { tete: 'bandeau_noue', main: 'manique_infini', dos: 'cape', cou: 'ceinture_boucle', autour: 'aura_energie' }, couleurs: { haut: 'violet', bas: 'nuit', accent: 'jaune', chaussures: 'blanches' } }) },
     capitaine: { nom: 'Capitaine du lagon', etat: 'salue', description: M({ teint: 5, coiffure: 'tresses', haut: 'chemise', bas: 'cargo', chaussures: 'baskets', objets: { tete: 'tricorne', visage: 'cache_oeil', epaule: 'perroquet_robot', main: 'longue_vue', pieds: 'bottes_pirate', autour: 'pieces_or' }, couleurs: { haut: 'marine', bas: 'beige', accent: 'cyan' } }) },
-    shingo: { nom: 'Retour du marché', etat: 'content', description: M({ teint: 6, coiffure: 'chignon_antenne', cheveux: 'noirs', haut: 'tshirt', bas: 'salouva', chaussures: 'savates', objets: { visage: 'masque_beaute', cou: 'collier_jasmin', epaule: 'kishali', main: 'parapluie' }, compagnon: 'maki', couleurs: { haut: 'jaune', bas: 'canard', accent: 'rose', chaussures: 'noires' } }) },
+    shingo: { nom: 'Pause de midi', etat: 'content', description: M({ teint: 6, coiffure: 'tresses', cheveux: 'noirs', haut: 'tshirt', bas: 'salouva', chaussures: 'savates', objets: { tete: 'perles', visage: 'ecouteurs', cou: 'sac_devant', epaule: 'kishali', main: 'bouteille_glacee' }, compagnon: 'maki', couleurs: { haut: 'jaune', bas: 'canard', accent: 'rose', chaussures: 'noires' } }) },
     punk: { nom: 'Punk du quai', etat: 'tres_content', description: M({ teint: 2, corps: 'fine', coiffure: 'rase', cheveux: 'violets', haut: 'debardeur', bas: 'patchwork', chaussures: 'montantes', objets: { tete: 'crete_pics', cou: 'badges', epaule: 'veste_ecussons', main: 'megaphone', pieds: 'skate', autour: 'notes' }, couleurs: { haut: 'blanc', bas: 'jean', accent: 'vert' } }) },
     salle: { nom: 'Chaise à accoudoirs', etat: 'content', description: M({ teint: 4, coiffure: 'boucles', cheveux: 'bruns', haut: 'sweat', bas: 'pantalon', objets: { dos: 'chaise_accoudoirs', main: 'feutre', cou: 'cle_usb', epaule: 'souris_marche' }, couleurs: { haut: 'canard', bas: 'anthracite', accent: 'cyan' } }) },
     humain: { nom: 'Humain·e', lignee: 1, description: M({ lignee: 'humain', teint: 2, coiffure: 'court', cheveux: 'chatains', haut: 'tshirt', objets: { tete: 'frontale' }, couleurs: { haut: 'jaune', bas: 'jean', accent: 'cyan', chaussures: 'rouges', yeux: 'verts' } }) },
