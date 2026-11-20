@@ -860,15 +860,15 @@
     var q = this, ol = this.s.querySelector('.td-lignes');
     this.lignesJustes = Array.prototype.slice.call(ol.children).map(function (li) { return li.textContent.replace(/\s+$/, ''); });
     ol.parentNode.removeChild(ol);
-    var n = this.lignesJustes.length, ordre = this.etat.valeur;
-    if (!ordre || ordre.length !== n) {
-      var r = hasard(this.f.id + this.id), essai = 0;
-      do {
-        ordre = this.lignesJustes.map(function (_, i) { return i; });
-        for (var i = n - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = ordre[i]; ordre[i] = ordre[j]; ordre[j] = t; }
-      } while (this.estDansOrdre(ordre) && ++essai < 20);
-    }
-    this.ordre = ordre;
+    var n = this.lignesJustes.length, ordre, r = hasard(this.f.id + this.id), essai = 0;
+    // l'ordre mélangé de départ (toujours le même) : c'est lui qui s'imprime
+    do {
+      ordre = this.lignesJustes.map(function (_, i) { return i; });
+      for (var i = n - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = ordre[i]; ordre[i] = ordre[j]; ordre[j] = t; }
+    } while (this.estDansOrdre(ordre) && ++essai < 20);
+    this.ordreDepart = ordre.slice();
+    var garde = this.etat.valeur;
+    this.ordre = garde && garde.length === n ? garde.slice() : ordre;
     this.liste = el('ol', { class: 'td-ordre', 'aria-label': 'Lignes à remettre dans l\'ordre' });
     this.annonce = el('p', { class: 'td-invisible', 'aria-live': 'assertive' });
     this.zone.appendChild(el('p', { class: 'td-indic', text: 'Utilise les flèches ▲ ▼ (ou Alt + flèche haut ou bas) pour déplacer une ligne.' }));
@@ -1064,7 +1064,7 @@
     var bEff = el('button', { type: 'button', class: 'td-bouton td-petit', text: 'Effacer mes réponses', onclick: function () { bEff.hidden = true; confirmer.hidden = false; confirmer.querySelector('button').focus(); } });
     var bTheme = el('button', { type: 'button', class: 'td-bouton td-petit td-theme', onclick: function () { f.basculerTheme(bTheme); } });
     this.majTheme(bTheme);
-    var bImp = el('button', { type: 'button', class: 'td-bouton td-petit', text: 'Imprimer la feuille', onclick: function () { window.print(); } });
+    var bImp = el('button', { type: 'button', class: 'td-bouton td-petit', text: 'Imprimer la feuille', onclick: function () { window.print(); } });   // beforeprint vide la feuille
     // la barre collée en haut ne garde que la jauge (une ligne) ; les outils restent dans la page
     var barre = el('div', { class: 'td-barre', role: 'region', 'aria-label': 'Avancement' }, [
       el('div', { class: 'td-barre-jauge' }, [this.texteJauge, this.jauge])
@@ -1111,6 +1111,30 @@
     this.expire.textContent = 'Gardées jusqu\'au ' + d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' ; ensuite, elles sont effacées (aussitôt si la page est ouverte, sinon à la prochaine ouverture d\'un TD en ligne).';
     this.programmerEffacement();
   };
+  // impression : la feuille vierge. Les réponses sont vraiment retirées de la page
+  // (elles ne sont pas dans le PDF), puis remises après l'impression, sans toucher au stockage.
+  Feuille.prototype.viderPourImpression = function () {
+    if (this.sauvegarde) return;
+    var s = this.sauvegarde = { champs: [], editeurs: [] };
+    this.r.querySelectorAll('input, textarea').forEach(function (c) {
+      if (c.classList.contains('td-ed-texte')) return;
+      s.champs.push([c, c.value, c.checked]);
+      if (c.type === 'radio' || c.type === 'checkbox') c.checked = false; else c.value = '';
+    });
+    this.questions.forEach(function (q) { if (q.ed) { s.editeurs.push([q.ed, q.ed.valeur()]); q.ed.valeur(''); } });
+    // un état qui n'est pas un champ : l'ordre des lignes reprend l'ordre mélangé de départ
+    s.ordres = [];
+    this.questions.forEach(function (q) {
+      if (q.ordreDepart) { s.ordres.push([q, q.ordre]); q.ordre = q.ordreDepart.slice(); q.dessinerOrdre(); }
+    });
+  };
+  Feuille.prototype.restaurerApresImpression = function () {
+    var s = this.sauvegarde; if (!s) return;
+    s.champs.forEach(function (x) { if (x[0].type === 'radio' || x[0].type === 'checkbox') x[0].checked = x[2]; else x[0].value = x[1]; });
+    s.editeurs.forEach(function (x) { x[0].valeur(x[1]); });
+    s.ordres.forEach(function (x) { x[0].ordre = x[1]; x[0].dessinerOrdre(); });
+    this.sauvegarde = null;
+  };
   // échéance atteinte, page ouverte : on efface vraiment (et on recharge la feuille vide)
   Feuille.prototype.programmerEffacement = function () {
     var f = this;
@@ -1121,6 +1145,7 @@
     if (!this.surVisible) {
       this.surVisible = function () { if (!document.hidden) f.echeance(); };
       document.addEventListener('visibilitychange', this.surVisible);    // minuteurs ralentis en arrière-plan
+      setInterval(function () { f.echeance(); }, 60000);                // et après une mise en veille : l'heure est vérifiée chaque minute
     }
   };
   Feuille.prototype.echeance = function () {
@@ -1171,7 +1196,10 @@
   appliquerTheme();
   function demarrer() {
     stock.purger();
-    document.querySelectorAll('[data-td]').forEach(function (r) { var f = new Feuille(r); f.monter(); r.tdFeuille = f; });
+    var feuilles = [];
+    document.querySelectorAll('[data-td]').forEach(function (r) { var f = new Feuille(r); f.monter(); r.tdFeuille = f; feuilles.push(f); });
+    window.addEventListener('beforeprint', function () { feuilles.forEach(function (f) { f.viderPourImpression(); }); });
+    window.addEventListener('afterprint', function () { feuilles.forEach(function (f) { f.restaurerApresImpression(); }); });
   }
   window.TDenLigne = { version: VERSION, colorer: colorer, expliquerErreur: expliquerErreur, egal: egal, normSortie: normSortie };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer); else demarrer();

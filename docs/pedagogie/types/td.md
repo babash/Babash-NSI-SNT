@@ -25,7 +25,7 @@
 
 | La version | Ce qu'elle doit être |
 |---|---|
-| **Le PDF** | A4, en noir et blanc, téléchargeable en ligne |
+| **Le PDF** | A4, en noir et blanc, téléchargeable en ligne ; c'est la feuille vierge : « Imprimer la feuille », sur la page en ligne, n'imprime aucune réponse (décision du 20 novembre 2026) |
 | **La page en ligne** | Utilisable du téléphone au grand écran ; **auto-corrective** : l'élève répond dans un formulaire et la correction s'affiche aussitôt |
 
 La correction se fait **dans le navigateur**. Rien n'est envoyé ailleurs : pas de compte, pas de collecte. Envoyer les réponses quelque part serait une collecte de données, que seul l'enseignant peut décider.
