@@ -41,11 +41,11 @@ theme("Première séance", { couleur: "gris" });
 
 ressource({
   titre: "SNT 1er jour : brise-glace et découverte",
-  lien: "https://babash.github.io/SNT-1er-Jour/",
+  lien: "https://babash.github.io/snt-premier-jour/",
   texte: "Formulaire de première séance : les élèves se présentent (mots-clés, goûts culturels, citation d'informaticien·ne, question à l'enseignant·e) et voient le nuage de mots de leur classe se construire. Jeu de frappe au clavier en bonus pour les élèves qui finissent en avance.\n**À adapter** : la page est réglée pour les classes 209 à 212 et envoie les réponses dans la base de données de son auteur·rice. La dupliquer et la brancher sur sa propre base avant de l'utiliser.",
   tags: ["En ligne", "À adapter"],
   annexes: {
-    "Code source, à dupliquer": "https://github.com/babash/SNT-1er-Jour",
+    "Code source, à dupliquer": "https://github.com/babash/snt-premier-jour",
   },
 });
 
