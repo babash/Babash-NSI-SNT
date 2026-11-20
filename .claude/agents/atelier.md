@@ -14,11 +14,14 @@ Créer ou retravailler **une** ressource, celle que le chef d'orchestre t'a conf
 
 ## Les décisions du 20/11 pour une ressource
 Le détail est dans `CLAUDE.md` (§ 4 et § 5).
-- **TD en ligne** (règle 19) : le PDF imprimable et la page HTML auto-corrective, faisable sur téléphone. La page reste sans compte et n'envoie rien : tu n'y branches pas le compte commun tant que le chef d'orchestre ne te le demande pas.
+- **TD en ligne** (règle 19) : le PDF imprimable et la page HTML auto-corrective, faisable sur téléphone. La page reste sans compte et n'envoie rien : tu n'y branches pas le compte commun tant que le chef d'orchestre ne te le demande pas. « Imprimer la feuille » imprime la feuille vierge ; aucune réponse ne reste dans un PDF, même invisible.
 - **« Trouve l'erreur »** : toujours le message d'erreur réel (Python 3.13, ou SQLite pour le SQL), que tu obtiens en exécutant le code, et coloré.
-- **Code affiché** : indentation très visible (filet et bande grise), coloration lisible en noir et blanc, consoles compactes.
-- **Mayotte** : des exemples connus des élèves (la barge, le bouchon jusqu'à Mamoudzou, le taxi, le marché, le doukabé, le lagon, les marées…). Prénoms variés, jamais de nom de famille ; aucune marque, aucun objet religieux, aucune arme, aucun cliché.
-- **Ni classement, ni rang, ni score visible, ni « série de jours »**, et aucune question de genre.
+- **Code affiché** : indentation très visible (filet et bande grise), coloration lisible en noir et blanc, consoles compactes ; code à 7:1 au moins sur tous les fonds ; le soulignement ne cache pas le tiret bas ; 27 caractères au plus par ligne de code dans un cours-quiz ; un message d'erreur est cité en entier (« Did you mean » compris).
+- **Arbres** : dans le Calendrier, les élèves voient les deux écritures, `Noeud` et `ArbreBinaire` du cours ; les cours-quiz gardent `Noeud`.
+- **Mayotte** : des exemples connus des élèves (la barge, le bouchon jusqu'à Mamoudzou, le taxi, le marché, le doukabé, le lagon, les marées…). Prénoms variés, jamais de nom de famille ; aucune marque, aucune arme, aucun cliché : ce que vivent et portent vraiment les élèves, pas des objets de carte postale (19:00). « Ylang-ylang, banane, coco » sont refusés partout.
+- **Religions** (20:34) : « On ne promeut aucune religion, mais on ne fait pas comme si c'était problématique qu'elles existent ou d'en avoir une. » Un vêtement ou un objet du quotidien des élèves n'est pas refusé au seul motif qu'il peut avoir un sens religieux ; un emblème national qui porte un symbole est admis. Aucun contenu qui promeut une religion ou qui en dénigre une.
+- **Clins d'œil aux œuvres connues** : par le nom et l'idée, avec un jeu de mots, jamais par la forme ; aucun nom d'œuvre ni de personnage (`CLAUDE.md`, § 4).
+- **Ni classement, ni rang, ni score visible, ni « série de jours »**, et aucune question de genre. Seule exception : le podium et les points du jeu en direct de QuizzNSI restent (17:00).
 - **Style** : celui du site aujourd'hui. Le style « Signal pirate » n'est pas encore appliqué ; une feuille n'a ni personnage ni récit de l'univers.
 - **Cours-quiz** (dépôt `babash/QuizzNSI`) : en tête de séquence ; gabarits `introduction` et `revision` (`cours/FORMAT.md` du dépôt).
 - **Calendrier des vacances** : si ta tâche est un thème d'exercices, tes fichiers sont `calendrier/exercices/<thème>.json` ; le reste de `calendrier/` est à l'Architecte.

@@ -1,0 +1,950 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsi1-cout-1-compter",
+ "titre": "NSI 1re · Coût d'un algorithme 1 : compter les opérations",
+ "niveau": "nsi-premiere",
+ "justification_niveau": "le coût d'un algorithme est au programme de première (parcours séquentiel : coût linéaire ; tris : coût quadratique ; dichotomie). Le quiz d'origine était rangé en terminale ; il sert aussi de rappel en terminale.",
+ "programme": [
+  "nsi-1re-2019.algorithmique.parcours-sequentiel : Parcours séquentiel d'un tableau (coût linéaire)",
+  "nsi-1re-2019.algorithmique.tris : Tris par insertion, par sélection (coût quadratique)"
+ ],
+ "notions": [
+  "algo.complexite",
+  "prog.boucle.bornee",
+  "prog.boucle.non-bornee"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Complexité Algorithmique - Terminale NSI (export `7cdfd910`, Q1 à Q20)",
+  "Complexité 1 OEs (`44930e34`) et Complexité 2 T(n) (`b11a0a36`) : découpes exactes du précédent, non reprises comme fichiers"
+ ],
+ "contexte": "Du code Python court, sans contexte : la question porte sur le comptage.",
+ "objectifs": [
+  "Compter les opérations élémentaires d'un programme court, avec une convention de comptage annoncée.",
+  "Compter les tours d'une boucle simple, de deux boucles à la suite et de deux boucles imbriquées.",
+  "Écrire le coût T(n) et prévoir son évolution quand n est multiplié par 2 ou par 10."
+ ],
+ "progression": "Q1 : pourquoi compter ; Q2 à Q8 : compter sur du code ; Q9 à Q14 : écrire et calculer T(n) ; Q15 à Q20 : comment le coût évolue quand n grandit.",
+ "forme": [
+  "Noms « [Coût] … » et objectif affiché pour chaque question ; « n au carré » et « n² » unifiés en « n² ».",
+  "Code coloré, en bloc à chasse fixe (il était indenté par des tabulations).",
+  "Un feedback pour chaque option (aucun avant).",
+  "Positions de la bonne réponse rééquilibrées : l'original avait A 24 fois sur 40 et jamais D.",
+  "Relecture du Gardien (20/11) : 1 retour(s) réécrit(s) (q02), pour ne dire que l'erreur vérifiée par le calcul ou l'exécution, avec le message complet de Python 3.13, de SQLite ou de Bash.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q10, q16) : l'objectif dit la compétence, pas la réponse."
+ ],
+ "retirees": [
+  {
+   "origine": "Complexité 1 OEs (13 questions) et Complexité 2 T(n) (10 questions)",
+   "raison": "copies exactes des questions 1 à 13 et 15 à 24 du quiz de 40 : elles sont dans ce quiz et dans le suivant, sans fichier séparé."
+  }
+ ],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "Complexité Q1",
+   "nom": "[Coût] Pourquoi compter des opérations",
+   "objectif": "Expliquer pourquoi on compare des algorithmes par leur nombre d'opérations.",
+   "question": [
+    "Pourquoi compare-t-on deux algorithmes par leur nombre d'opérations plutôt que par leur temps en secondes ?"
+   ],
+   "options": [
+    {
+     "texte": "Le temps dépend de la machine, pas seulement de l'algorithme",
+     "juste": true,
+     "feedback": "Oui : le même programme est plus rapide sur un ordinateur récent. Le nombre d'opérations, lui, ne dépend que de l'algorithme et de la taille des données."
+    },
+    {
+     "texte": "Python ne permet pas de mesurer le temps",
+     "feedback": "Python sait mesurer le temps (module time). Le problème est ailleurs : ce temps change d'une machine à l'autre."
+    },
+    {
+     "texte": "Une opération dure toujours plus d'une seconde",
+     "feedback": "Un ordinateur fait des millions d'opérations par seconde. On compte les opérations parce que ce nombre ne dépend pas de la machine."
+    },
+    {
+     "texte": "Un nombre d'opérations est toujours entier",
+     "feedback": "C'est vrai, mais ce n'est pas la raison. On compte les opérations car ce nombre caractérise l'algorithme, quelle que soit la machine."
+    }
+   ]
+  },
+  {
+   "id": "q02",
+   "origine": "Complexité Q2",
+   "nom": "[Coût] Compter les opérations de deux lignes",
+   "objectif": "Compter les opérations élémentaires avec une convention donnée.",
+   "enonce": [
+    "Convention : on compte chaque affectation et chaque opération arithmétique (+, -, *, /) pour 1."
+   ],
+   "code": [
+    "a = 10",
+    "b = a * 2 + 5"
+   ],
+   "question": [
+    "Combien d'opérations élémentaires ce code effectue-t-il ?"
+   ],
+   "options": [
+    {
+     "texte": "2",
+     "feedback": "2, ce sont les deux affectations. Avec la convention de l'énoncé, il faut aussi compter la multiplication et l'addition de la deuxième ligne."
+    },
+    {
+     "texte": "4",
+     "juste": true,
+     "feedback": "Oui : l'affectation de a (1), puis dans la ligne 2 une multiplication, une addition et une affectation (3). Total : 4."
+    },
+    {
+     "texte": "1",
+     "feedback": "Chaque ligne contient au moins une opération : ici, deux affectations, plus deux calculs dans la ligne 2."
+    },
+    {
+     "texte": "5",
+     "feedback": "Il y a une opération de trop. Avec la convention de l'énoncé : l'affectation de a (1), puis, ligne 2, une multiplication, une addition et une affectation (3). Total : 4."
+    }
+   ],
+   "note_verification": "comptage à la main avec la convention de l'énoncé : a = 10 (1 affectation) ; a * 2 (1), + 5 (1), b = … (1).",
+   "fond": {
+    "avant": "« Combien d'opérations élémentaires (affectations, calculs) ce code effectue-t-il ? »",
+    "apres": "convention de comptage écrite avant le code",
+    "raison": "sans convention, la réponse 4 était discutable (d'autres conventions comptent la lecture de a)."
+   }
+  },
+  {
+   "id": "q03",
+   "origine": "Complexité Q3",
+   "nom": "[Coût] Compter les tours d'une boucle for",
+   "objectif": "Compter les exécutions du corps d'une boucle for i in range(n).",
+   "code": [
+    "for i in range(n):",
+    "    print('Bonjour')"
+   ],
+   "question": [
+    "Avec `n = 100`, combien de fois `print` est-elle exécutée ?"
+   ],
+   "options": [
+    {
+     "texte": "1 fois",
+     "feedback": "Le corps de la boucle est répété à chaque tour, pas une seule fois. range(100) donne 100 valeurs de i, donc 100 tours."
+    },
+    {
+     "texte": "n × n fois",
+     "feedback": "n × n, c'est pour deux boucles imbriquées. Ici, une seule boucle : 100 tours."
+    },
+    {
+     "texte": "100 fois",
+     "juste": true,
+     "feedback": "Oui : range(n) donne les valeurs 0 à n - 1, soit n valeurs. Le corps est exécuté une fois pour chacune : 100 fois."
+    },
+    {
+     "texte": "101 fois",
+     "feedback": "range(100) s'arrête avant 100 : il donne 0, 1, …, 99. Cela fait 100 valeurs, pas 101."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "n = 100",
+      "c = 0",
+      "for i in range(n):",
+      "    c = c + 1",
+      "print(c)"
+     ],
+     "sortie": "100"
+    }
+   ]
+  },
+  {
+   "id": "q04",
+   "origine": "Complexité Q4",
+   "nom": "[Coût] Deux boucles l'une après l'autre",
+   "objectif": "Additionner le coût de deux boucles écrites à la suite.",
+   "enonce": [
+    "On compte les affectations `x = 1` et `y = 2`."
+   ],
+   "code": [
+    "for i in range(n):",
+    "    x = 1",
+    "for j in range(n):",
+    "    y = 2"
+   ],
+   "question": [
+    "Quel est le coût T(n) ?"
+   ],
+   "options": [
+    {
+     "texte": "T(n) = n²",
+     "feedback": "n², c'est quand une boucle est dans l'autre. Ici, la seconde boucle commence après la première : on additionne n + n."
+    },
+    {
+     "texte": "T(n) = 2n",
+     "juste": true,
+     "feedback": "Oui : la première boucle fait n affectations, la seconde aussi. Deux boucles à la suite s'additionnent : n + n = 2n."
+    },
+    {
+     "texte": "T(n) = n + 2",
+     "feedback": "Chaque boucle répète son affectation n fois : on compte n + n, pas n + 2."
+    },
+    {
+     "texte": "T(n) = 2",
+     "feedback": "2, c'est le nombre de lignes d'affectation écrites. Mais chacune est répétée n fois par sa boucle."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "def T(n):",
+      "    c = 0",
+      "    for i in range(n):",
+      "        x = 1; c += 1",
+      "    for j in range(n):",
+      "        y = 2; c += 1",
+      "    return c",
+      "print(T(7), T(50))"
+     ],
+     "sortie": "14 100"
+    }
+   ],
+   "fond": {
+    "avant": "« Quelle est la forme de l'expression du coût T(n) ? »",
+    "apres": "on précise ce qu'on compte (les affectations x = 1 et y = 2)",
+    "raison": "sans convention, le coût pouvait inclure les tours de boucle ; la réponse 2n est conservée."
+   }
+  },
+  {
+   "id": "q05",
+   "origine": "Complexité Q5",
+   "nom": "[Coût] Une fonction appelée dans une boucle",
+   "objectif": "Multiplier le coût d'un appel par le nombre de tours.",
+   "enonce": [
+    "La fonction `f` effectue 3 opérations à chaque appel."
+   ],
+   "code": [
+    "for i in range(n):",
+    "    f(i)"
+   ],
+   "question": [
+    "Quel est le coût de ce code ?"
+   ],
+   "options": [
+    {
+     "texte": "T(n) = 3",
+     "feedback": "3, c'est le coût d'un seul appel. La boucle appelle f n fois : 3 opérations à chaque fois."
+    },
+    {
+     "texte": "T(n) = 3n",
+     "juste": true,
+     "feedback": "Oui : n tours, et 3 opérations par tour. Le coût d'un corps de boucle se multiplie par le nombre de tours."
+    },
+    {
+     "texte": "T(n) = n + 3",
+     "feedback": "On n'ajoute pas 3 une seule fois : les 3 opérations reviennent à chaque tour. On multiplie : 3 × n."
+    },
+    {
+     "texte": "T(n) = 3ⁿ",
+     "feedback": "3ⁿ voudrait dire que le coût triple à chaque tour. Ici, chaque tour coûte toujours 3 : le total est 3n."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "c = 0",
+      "def f(i):",
+      "    global c",
+      "    c += 3",
+      "n = 20",
+      "for i in range(n):",
+      "    f(i)",
+      "print(c)"
+     ],
+     "sortie": "60"
+    }
+   ]
+  },
+  {
+   "id": "q06",
+   "origine": "Complexité Q6",
+   "nom": "[Coût] Deux boucles imbriquées",
+   "objectif": "Compter les exécutions dans deux boucles imbriquées.",
+   "code": [
+    "for i in range(n):",
+    "    for j in range(n):",
+    "        k = i + j"
+   ],
+   "question": [
+    "Combien de fois l'addition `i + j` est-elle effectuée ?"
+   ],
+   "options": [
+    {
+     "texte": "2n fois",
+     "feedback": "2n, ce serait deux boucles l'une après l'autre. Ici, la boucle sur j est dans la boucle sur i : elle repart à zéro à chaque tour de i."
+    },
+    {
+     "texte": "n × n fois",
+     "juste": true,
+     "feedback": "Oui : pour chacun des n tours de i, la boucle sur j fait n tours. Total : n × n = n²."
+    },
+    {
+     "texte": "n fois",
+     "feedback": "n, c'est le nombre de tours d'une seule boucle. La boucle intérieure se répète entièrement pour chaque valeur de i."
+    },
+    {
+     "texte": "n + 1 fois",
+     "feedback": "Les boucles imbriquées se multiplient : n tours de i, et n tours de j à chaque fois, soit n² additions."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "n = 9",
+      "c = 0",
+      "for i in range(n):",
+      "    for j in range(n):",
+      "        k = i + j; c += 1",
+      "print(c)"
+     ],
+     "sortie": "81"
+    }
+   ],
+   "fond": {
+    "avant": "distracteur « n + n fois »",
+    "apres": "distracteur « n + 1 fois »",
+    "raison": "« n + n fois » et « 2n fois » étaient la même réponse écrite deux fois."
+   }
+  },
+  {
+   "id": "q07",
+   "origine": "Complexité Q7",
+   "nom": "[Coût] Appliquer n² pour n = 10",
+   "objectif": "Calculer un nombre d'opérations quadratique pour une valeur de n.",
+   "code": [
+    "for i in range(n):",
+    "    for j in range(n):",
+    "        k = i + j"
+   ],
+   "question": [
+    "Avec `n = 10`, combien d'additions sont faites ?"
+   ],
+   "options": [
+    {
+     "texte": "10",
+     "feedback": "10 est le nombre de tours d'une seule boucle. Les deux boucles sont imbriquées : 10 × 10."
+    },
+    {
+     "texte": "20",
+     "feedback": "20 = 10 + 10 : c'est le calcul pour deux boucles à la suite. Imbriquées, elles se multiplient."
+    },
+    {
+     "texte": "100",
+     "juste": true,
+     "feedback": "Oui : 10 tours de i, et pour chacun 10 tours de j : 10 × 10 = 100 additions."
+    },
+    {
+     "texte": "1000",
+     "feedback": "1000 = 10³, c'est le cas de trois boucles imbriquées. Ici, il y en a deux : 10² = 100."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "n = 10",
+      "c = 0",
+      "for i in range(n):",
+      "    for j in range(n):",
+      "        k = i + j; c += 1",
+      "print(c)"
+     ],
+     "sortie": "100"
+    }
+   ]
+  },
+  {
+   "id": "q08",
+   "origine": "Complexité Q8",
+   "nom": "[Coût] Une affectation dans chaque boucle imbriquée",
+   "objectif": "Compter des affectations placées à deux niveaux d'imbrication.",
+   "code": [
+    "for i in range(n):",
+    "    x = 1",
+    "    for j in range(n):",
+    "        y = 2"
+   ],
+   "question": [
+    "Quel est le nombre total d'affectations `x = 1` et `y = 2` ?"
+   ],
+   "options": [
+    {
+     "texte": "2n",
+     "feedback": "x = 1 est bien exécutée n fois, mais y = 2 est dans la boucle intérieure : elle l'est n fois par tour de i, soit n²."
+    },
+    {
+     "texte": "n²",
+     "feedback": "n², ce sont les affectations y = 2 seulement. Il faut ajouter les n affectations x = 1 de la boucle extérieure."
+    },
+    {
+     "texte": "n + n²",
+     "juste": true,
+     "feedback": "Oui : x = 1 est exécutée une fois par tour de i (n fois), y = 2 une fois par tour de j, pour chaque i (n² fois). Total : n + n²."
+    },
+    {
+     "texte": "2n²",
+     "feedback": "x = 1 n'est pas dans la boucle sur j : elle n'est pas répétée n² fois, mais n fois seulement."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "def T(n):",
+      "    c = 0",
+      "    for i in range(n):",
+      "        x = 1; c += 1",
+      "        for j in range(n):",
+      "            y = 2; c += 1",
+      "    return c",
+      "print(T(7), 7 + 7**2)"
+     ],
+     "sortie": "56 56"
+    }
+   ],
+   "fond": {
+    "avant": "options B et C identiques : « n + n au carré » (C juste, B fausse)",
+    "apres": "distracteur B remplacé par « n² » (oubli des affectations x = 1)",
+    "raison": "deux options identiques, l'une juste et l'autre fausse."
+   }
+  },
+  {
+   "id": "q09",
+   "origine": "Complexité Q9",
+   "nom": "[Coût] Calculer T(n) pour une valeur de n",
+   "objectif": "Remplacer n par sa valeur dans une expression du coût.",
+   "enonce": [
+    "Un algorithme effectue T(n) = 5n + 2 opérations."
+   ],
+   "question": [
+    "Avec `n = 1000`, combien d'opérations effectue-t-il ?"
+   ],
+   "options": [
+    {
+     "texte": "5002",
+     "juste": true,
+     "feedback": "Oui : 5 × 1000 + 2 = 5000 + 2 = 5002. On fait d'abord la multiplication, puis l'addition."
+    },
+    {
+     "texte": "1007",
+     "feedback": "1007 = 1000 + 5 + 2 : tu as additionné 5 au lieu de le multiplier. 5n veut dire 5 × n."
+    },
+    {
+     "texte": "5000",
+     "feedback": "5000 est bien 5 × 1000, mais il reste le + 2 : T(1000) = 5002."
+    },
+    {
+     "texte": "7000",
+     "feedback": "7000 = (5 + 2) × 1000 : le 2 n'est pas multiplié par n. On calcule 5 × 1000, puis on ajoute 2."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "n = 1000",
+      "print(5 * n + 2)"
+     ],
+     "sortie": "5002"
+    }
+   ]
+  },
+  {
+   "id": "q10",
+   "origine": "Complexité Q10",
+   "nom": "[Coût] Appeler une fonction linéaire dans une boucle",
+   "objectif": "Calculer le coût d'une boucle qui appelle une fonction de coût linéaire.",
+   "enonce": [
+    "Le coût de la fonction `somme(liste)` est proportionnel à la taille n de la liste. On l'appelle dans une boucle."
+   ],
+   "code": [
+    "for i in range(n):",
+    "    somme(ma_liste)"
+   ],
+   "question": [
+    "Quel est le coût de ce code ?"
+   ],
+   "options": [
+    {
+     "texte": "Linéaire (en n)",
+     "feedback": "Un seul appel est linéaire. Mais il est répété n fois : n appels de coût n, soit n × n."
+    },
+    {
+     "texte": "Quadratique (en n²)",
+     "juste": true,
+     "feedback": "Oui : n tours, et à chaque tour un appel de coût n. Total : n × n = n². Un appel de fonction n'est pas forcément une opération élémentaire."
+    },
+    {
+     "texte": "Constant",
+     "feedback": "Le coût dépend de n deux fois : par le nombre de tours et par le coût de somme. Il ne peut pas être constant."
+    },
+    {
+     "texte": "Cubique (en n³)",
+     "feedback": "n³ demanderait trois facteurs n. Ici, il y en a deux : les tours de boucle et le coût de somme."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "c = 0",
+      "def somme(liste):",
+      "    global c",
+      "    s = 0",
+      "    for x in liste:",
+      "        s = s + x; c += 1",
+      "    return s",
+      "n = 30",
+      "ma_liste = list(range(n))",
+      "for i in range(n):",
+      "    somme(ma_liste)",
+      "print(c == n * n)"
+     ],
+     "sortie": "True"
+    }
+   ]
+  },
+  {
+   "id": "q11",
+   "origine": "Complexité Q11",
+   "nom": "[Coût] Une boucle de taille fixe et une boucle de taille n",
+   "objectif": "Compter les tours de deux boucles imbriquées de tailles différentes.",
+   "code": [
+    "for i in range(10):",
+    "    for j in range(n):",
+    "        x = 1"
+   ],
+   "question": [
+    "Combien de fois l'affectation `x = 1` est-elle exécutée ?"
+   ],
+   "options": [
+    {
+     "texte": "10n",
+     "juste": true,
+     "feedback": "Oui : 10 tours de i, et pour chacun n tours de j. Total : 10 × n. Le coût reste linéaire en n."
+    },
+    {
+     "texte": "n²",
+     "feedback": "La boucle extérieure ne dépend pas de n : elle fait toujours 10 tours. Le total est 10 × n, pas n × n."
+    },
+    {
+     "texte": "10 + n",
+     "feedback": "Les boucles sont imbriquées : on multiplie les nombres de tours, 10 × n, on ne les additionne pas."
+    },
+    {
+     "texte": "10",
+     "feedback": "10 est le nombre de tours de la boucle sur i. Pour chacun, la boucle sur j en fait n."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "n = 7",
+      "c = 0",
+      "for i in range(10):",
+      "    for j in range(n):",
+      "        x = 1; c += 1",
+      "print(c)"
+     ],
+     "sortie": "70"
+    }
+   ],
+   "fond": {
+    "avant": "code « for i in range(10): / for j in range(n): » sans corps (IndentationError) ; « Combien d'itérations au total ? »",
+    "apres": "boucle intérieure avec un corps (x = 1) ; on compte ses exécutions",
+    "raison": "le code ne s'exécutait pas ; la réponse 10n est conservée."
+   }
+  },
+  {
+   "id": "q12",
+   "origine": "Complexité Q12",
+   "nom": "[Coût] Accéder à un élément par son indice",
+   "objectif": "Savoir que lire liste[i] a un coût constant.",
+   "question": [
+    "Lire la valeur de `liste[0]` est une opération dont le coût :"
+   ],
+   "options": [
+    {
+     "texte": "ne dépend pas de la taille de la liste",
+     "juste": true,
+     "feedback": "Oui : Python va directement à la case demandée, sans parcourir la liste. Le coût est constant, que la liste ait 10 ou 10 millions d'éléments."
+    },
+    {
+     "texte": "est proportionnel à la taille de la liste",
+     "feedback": "C'est le coût d'un parcours (chercher une valeur, faire une somme). Un accès par indice va directement à la case."
+    },
+    {
+     "texte": "est quadratique",
+     "feedback": "Un coût quadratique vient de deux boucles imbriquées. Lire une case par son indice ne demande aucune boucle."
+    },
+    {
+     "texte": "double quand la liste double",
+     "feedback": "Ce serait un coût linéaire. Pour lire liste[0], Python n'a pas besoin de regarder les autres éléments."
+    }
+   ]
+  },
+  {
+   "id": "q13",
+   "origine": "Complexité Q13",
+   "nom": "[Coût] Les tours d'une boucle while qui avance de 2",
+   "objectif": "Compter les tours d'une boucle while dont le pas est 2.",
+   "enonce": [
+    "On suppose que `n` est un entier pair."
+   ],
+   "code": [
+    "i = 0",
+    "while i < n:",
+    "    i = i + 2"
+   ],
+   "question": [
+    "Combien de tours de boucle sont effectués ?"
+   ],
+   "options": [
+    {
+     "texte": "n tours",
+     "feedback": "i n'avance pas de 1 mais de 2 à chaque tour : il atteint n deux fois plus vite. Essaie avec n = 6 : i vaut 0, 2, 4, puis 6."
+    },
+    {
+     "texte": "n / 2 tours",
+     "juste": true,
+     "feedback": "Oui : i prend les valeurs 0, 2, 4, …, n - 2, soit n / 2 valeurs. Pour n = 6 : 3 tours. Le coût reste linéaire."
+    },
+    {
+     "texte": "2n tours",
+     "feedback": "Avancer de 2 fait moins de tours, pas plus : il faut n / 2 pas de 2 pour aller de 0 à n."
+    },
+    {
+     "texte": "n² tours",
+     "feedback": "Il n'y a qu'une boucle, sans boucle intérieure : le nombre de tours ne peut pas être n²."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "def tours(n):",
+      "    i = 0; t = 0",
+      "    while i < n:",
+      "        i = i + 2; t += 1",
+      "    return t",
+      "print(tours(6), tours(10), tours(100))"
+     ],
+     "sortie": "3 5 50"
+    }
+   ],
+   "fond": {
+    "avant": "« Combien de tours de boucle sont effectués ? » sans hypothèse sur n",
+    "apres": "on précise que n est pair",
+    "raison": "pour n impair, la boucle fait (n + 1) / 2 tours (6 tours pour n = 11), pas n / 2."
+   }
+  },
+  {
+   "id": "q14",
+   "origine": "Complexité Q14",
+   "nom": "[Coût] Écrire T(n) avec une instruction avant la boucle",
+   "objectif": "Écrire le coût exact d'une boucle précédée d'une instruction.",
+   "enonce": [
+    "Une opération élémentaire est faite avant une boucle de n tours. Chaque tour de la boucle contient 3 opérations élémentaires."
+   ],
+   "question": [
+    "Quel est le coût exact T(n) ?"
+   ],
+   "options": [
+    {
+     "texte": "T(n) = 3n + 1",
+     "juste": true,
+     "feedback": "Oui : 3 opérations par tour, n tours, donc 3n, plus l'opération faite une seule fois avant la boucle : 3n + 1."
+    },
+    {
+     "texte": "T(n) = n + 3",
+     "feedback": "Les 3 opérations reviennent à chaque tour : on les multiplie par n. L'opération d'avant la boucle s'ajoute une fois."
+    },
+    {
+     "texte": "T(n) = 3(n + 1)",
+     "feedback": "3(n + 1) = 3n + 3 : cela compterait 3 opérations avant la boucle. Il n'y en a qu'une : 3n + 1."
+    },
+    {
+     "texte": "T(n) = 4n",
+     "feedback": "L'opération d'avant la boucle n'est faite qu'une fois, pas à chaque tour : on l'ajoute, on ne la multiplie pas par n."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "def T(n):",
+      "    c = 1",
+      "    for i in range(n):",
+      "        c += 3",
+      "    return c",
+      "print(T(10), 3 * 10 + 1)"
+     ],
+     "sortie": "31 31"
+    }
+   ]
+  },
+  {
+   "id": "q15",
+   "origine": "Complexité Q15",
+   "nom": "[Coût] Trois boucles imbriquées",
+   "objectif": "Compter les tours de trois boucles imbriquées de taille n.",
+   "question": [
+    "Combien de tours fait le corps de 3 boucles imbriquées, chacune de taille n ?"
+   ],
+   "options": [
+    {
+     "texte": "3n",
+     "feedback": "3n, ce serait trois boucles à la suite. Imbriquées, elles se multiplient : n × n × n."
+    },
+    {
+     "texte": "n²",
+     "feedback": "n², c'est pour deux boucles imbriquées. Avec une troisième à l'intérieur, on multiplie encore par n."
+    },
+    {
+     "texte": "n³",
+     "juste": true,
+     "feedback": "Oui : n × n × n = n³. Pour n = 100, cela fait déjà un million de tours : ce coût cubique grandit très vite."
+    },
+    {
+     "texte": "3ⁿ",
+     "feedback": "3ⁿ est une croissance exponentielle, bien plus rapide. Trois boucles imbriquées donnent n × n × n = n³."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "n = 6",
+      "c = 0",
+      "for i in range(n):",
+      "    for j in range(n):",
+      "        for k in range(n):",
+      "            c += 1",
+      "print(c == n**3)"
+     ],
+     "sortie": "True"
+    }
+   ]
+  },
+  {
+   "id": "q16",
+   "origine": "Complexité Q16",
+   "nom": "[Coût] Un coût linéaire quand n grandit",
+   "objectif": "Prévoir l'évolution d'un coût linéaire.",
+   "enonce": [
+    "Un algorithme a un coût T(n) = 10n. On passe de n = 100 à n = 1000."
+   ],
+   "question": [
+    "Le nombre d'opérations est :"
+   ],
+   "options": [
+    {
+     "texte": "multiplié par 2",
+     "feedback": "n est multiplié par 10, pas par 2. Pour un coût linéaire, les opérations sont multipliées comme n : par 10."
+    },
+    {
+     "texte": "multiplié par 10",
+     "juste": true,
+     "feedback": "Oui : T(100) = 1000 et T(1000) = 10 000. Un coût linéaire est multiplié par le même facteur que n."
+    },
+    {
+     "texte": "multiplié par 100",
+     "feedback": "Multiplier par 100 quand n est multiplié par 10, c'est le comportement d'un coût quadratique (10²). Ici, le coût est linéaire."
+    },
+    {
+     "texte": "inchangé",
+     "feedback": "Un coût constant ne changerait pas. T(n) = 10n dépend de n : il grandit avec lui."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "T = lambda n: 10 * n",
+      "print(T(1000) // T(100))"
+     ],
+     "sortie": "10"
+    }
+   ]
+  },
+  {
+   "id": "q17",
+   "origine": "Complexité Q17",
+   "nom": "[Coût] Un coût quadratique quand n double",
+   "objectif": "Prévoir l'évolution d'un coût quadratique quand n double.",
+   "enonce": [
+    "Un algorithme a un coût T(n) = n². La taille des données double : n devient 2n."
+   ],
+   "question": [
+    "Le nombre d'opérations est :"
+   ],
+   "options": [
+    {
+     "texte": "doublé",
+     "feedback": "Doublé, c'est le cas d'un coût linéaire. Ici, (2n)² = 4n² : le coût est multiplié par 4."
+    },
+    {
+     "texte": "triplé",
+     "feedback": "Aucun calcul ne donne 3 ici : (2n)² = 2² × n² = 4n²."
+    },
+    {
+     "texte": "multiplié par 8",
+     "feedback": "8 = 2³ correspondrait à un coût cubique (n³). Pour n², c'est 2² = 4."
+    },
+    {
+     "texte": "quadruplé",
+     "juste": true,
+     "feedback": "Oui : (2n)² = 4n². Doubler n multiplie un coût quadratique par 4 : c'est pourquoi ces algorithmes ralentissent vite."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "T = lambda n: n**2",
+      "print(T(200) // T(100))"
+     ],
+     "sortie": "4"
+    }
+   ]
+  },
+  {
+   "id": "q18",
+   "origine": "Complexité Q18",
+   "nom": "[Coût] Le coût qui grandit le plus vite",
+   "objectif": "Comparer des coûts pour de grandes valeurs de n.",
+   "question": [
+    "Lequel de ces algorithmes devient le plus vite inutilisable quand n augmente ?"
+   ],
+   "options": [
+    {
+     "texte": "T(n) = 1000n",
+     "feedback": "1000n est grand pour de petits n, mais il reste linéaire. Dès n = 1000, n² le rattrape, puis le dépasse toujours."
+    },
+    {
+     "texte": "T(n) = 10n + 500",
+     "feedback": "10n + 500 est linéaire : les constantes 10 et 500 comptent peu quand n devient très grand."
+    },
+    {
+     "texte": "T(n) = n²",
+     "juste": true,
+     "feedback": "Oui : pour n = 1 000 000, n² vaut mille milliards, quand 1000n vaut un milliard. C'est le terme de plus haut degré qui décide."
+    },
+    {
+     "texte": "T(n) = 50",
+     "feedback": "50 est un coût constant : il ne change pas quand n augmente. C'est le meilleur cas possible."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "n = 10**6",
+      "print(n**2 > 1000 * n > 10 * n + 500 > 50)"
+     ],
+     "sortie": "True"
+    }
+   ]
+  },
+  {
+   "id": "q19",
+   "origine": "Complexité Q19",
+   "nom": "[Coût] Un test dans une boucle",
+   "objectif": "Voir qu'un test exécuté à chaque tour garde un coût linéaire.",
+   "code": [
+    "for i in range(n):",
+    "    if i % 2 == 0:",
+    "        x = 1"
+   ],
+   "question": [
+    "Le nombre total d'opérations (tests et affectations) est de l'ordre de :"
+   ],
+   "options": [
+    {
+     "texte": "n",
+     "juste": true,
+     "feedback": "Oui : n tests, plus une affectation un tour sur deux (n / 2). Total : environ 1,5 × n, donc de l'ordre de n."
+    },
+    {
+     "texte": "n²",
+     "feedback": "Il n'y a qu'une boucle : le if n'est pas une boucle, il ne répète rien. Le coût reste de l'ordre de n."
+    },
+    {
+     "texte": "1",
+     "feedback": "Le test est refait à chaque tour de boucle : le nombre d'opérations grandit avec n."
+    },
+    {
+     "texte": "log(n)",
+     "feedback": "Un coût logarithmique vient d'une taille divisée par 2 à chaque étape (dichotomie). Ici, i avance de 1 en 1."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "def T(n):",
+      "    c = 0",
+      "    for i in range(n):",
+      "        c += 1",
+      "        if i % 2 == 0:",
+      "            x = 1; c += 1",
+      "    return c",
+      "print(T(1000), T(2000))"
+     ],
+     "sortie": "1500 3000"
+    }
+   ]
+  },
+  {
+   "id": "q20",
+   "origine": "Complexité Q20",
+   "nom": "[Coût] Prévoir une durée pour un coût quadratique",
+   "objectif": "Utiliser le facteur de croissance d'un coût quadratique pour prévoir une durée.",
+   "enonce": [
+    "Un algorithme met 2 ms pour n = 10. Son coût est quadratique."
+   ],
+   "question": [
+    "Combien de temps mettra-t-il pour n = 100 ?"
+   ],
+   "options": [
+    {
+     "texte": "20 ms",
+     "feedback": "20 ms, c'est multiplier par 10 comme n : ce serait un coût linéaire. Quadratique, le temps est multiplié par 10² = 100."
+    },
+    {
+     "texte": "4 ms",
+     "feedback": "4 ms, c'est doubler le temps. Mais n est multiplié par 10, et le temps d'un coût quadratique par 10² = 100."
+    },
+    {
+     "texte": "2 secondes",
+     "feedback": "2 s = 2000 ms, soit un facteur 1000 = 10³ : ce serait un coût cubique. Pour n², le facteur est 100."
+    },
+    {
+     "texte": "200 ms",
+     "juste": true,
+     "feedback": "Oui : n est multiplié par 10, donc le temps par 10² = 100 : 2 ms × 100 = 200 ms."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(2 * (100 // 10) ** 2)"
+     ],
+     "sortie": "200"
+    }
+   ]
+  }
+ ]
+}

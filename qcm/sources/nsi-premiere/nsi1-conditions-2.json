@@ -1,0 +1,928 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsi1-conditions-2",
+ "titre": "NSI 1re · Conditions 2 : blocs imbriqués et erreurs",
+ "niveau": "nsi-premiere",
+ "justification_niveau": "constructions élémentaires et mise au point des programmes (première NSI) ; suite de « Conditions 1 ».",
+ "programme": [
+  "nsi-1re-2019.langages.constructions-elementaires : Constructions élémentaires",
+  "nsi-1re-2019.langages.mise-au-point : Mise au point des programmes"
+ ],
+ "notions": [
+  "prog.condition",
+  "prog.comparaison",
+  "donnees.booleen",
+  "prog.trace",
+  "prog.debogage"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Conditons_Python_50Q (export `88dc1551`, questions de niveau 3 : Q22 à Q28)",
+  "10 questions nouvelles (Q8 à Q17)"
+ ],
+ "contexte": "La marée et la barge, le bouchon du matin jusqu'à Mamoudzou, le poids des mangues, le tarif d'un taxi ; les messages d'erreur réels de Python 3.13.",
+ "objectifs": [
+  "Suivre l'exécution de blocs imbriqués (un if dans un if, dans un elif ou dans un else).",
+  "Savoir qu'une condition est une valeur booléenne, que l'ordre des tests compte, qu'un if sans else ne bloque rien.",
+  "Repérer une condition mal construite (or au lieu de and, majuscules).",
+  "Lire le message d'erreur réel et corriger : = au lieu de ==, deux-points oubliés, bloc non indenté, else avec une condition, texte comparé à un nombre."
+ ],
+ "progression": "Q1 à Q7 : traces de blocs imbriqués (niveau 3 de l'original) ; Q8 à Q12 : conditions et erreurs de logique ; Q13 à Q17 : « trouve l'erreur », avec le vrai message.",
+ "forme": [
+  "Noms « [Conditions] … » et « [Erreurs] … » (ils étaient « Question 3.1 (Niveau 3) ») ; objectif affiché.",
+  "Code détaché de la phrase, coloré, indenté par 4 espaces au lieu de tabulations, sans espace avant les deux-points.",
+  "Sorties sur plusieurs lignes écrites « 5 / 30 », avec la consigne de lecture.",
+  "Feedbacks réécrits au tutoiement : ce qui a trompé d'abord, puis la trace juste.",
+  "Positions replacées : B était juste 6 fois sur 7.",
+  "Relecture du Gardien (20/11) : 3 retour(s) réécrit(s) (q01, q14, q16), pour ne dire que l'erreur vérifiée par le calcul ou l'exécution, avec le message complet de Python 3.13, de SQLite ou de Bash.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q13, q16) : l'objectif dit la compétence, pas la réponse."
+ ],
+ "retirees": [],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "Conditions Q22",
+   "nom": "[Conditions] Un if … else dans un if",
+   "objectif": "Suivre deux niveaux de blocs et l'instruction qui les suit.",
+   "code": [
+    "a = 10",
+    "b = 1",
+    "if a > 5:",
+    "    a = a - 5",
+    "    if a < b:",
+    "        b = 100",
+    "    else:",
+    "        b = 20",
+    "    a = a + 1",
+    "else:",
+    "    a = 0",
+    "    b = 0",
+    "print(a + b)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "101",
+     "feedback": "101 ne correspond à aucun chemin du programme. Quand on teste a < b, a vaut 5 et b vaut 1 : 5 < 1 est faux, c'est le else intérieur qui donne b = 20."
+    },
+    {
+     "texte": "25",
+     "feedback": "Tu as oublié a = a + 1. Cette ligne est indentée au niveau du premier if : elle s'exécute après le if … else intérieur. a vaut 6."
+    },
+    {
+     "texte": "26",
+     "feedback": "Oui. 10 > 5 : a devient 5. 5 < 1 est faux : b devient 20. Puis a = a + 1 : a vaut 6. Le print affiche 6 + 20 = 26.",
+     "juste": true
+    },
+    {
+     "texte": "7",
+     "feedback": "b change bien : le if intérieur est faux, donc son else s'exécute et b reçoit 20. Puis 6 + 20 = 26."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "26"
+    }
+   ],
+   "fond": [
+    {
+     "avant": "distracteur « 21 », avec le feedback « a = a + 1 est exécutée après le bloc conditionnel interne »",
+     "apres": "distracteur « 25 »",
+     "raison": "oublier a = a + 1 donne 5 + 20 = 25, pas 21 : le distracteur ne correspondait à aucune erreur, ni à son feedback."
+    },
+    {
+     "avant": "3 options",
+     "apres": "4 options, avec « 7 »",
+     "raison": "règle des 4 options ; nouveau distracteur : croire que le else intérieur n'est pas exécuté (b garde sa valeur)"
+    }
+   ]
+  },
+  {
+   "id": "q02",
+   "origine": "Conditions Q23",
+   "nom": "[Conditions] Le test in sur un texte",
+   "objectif": "Suivre un test in, puis un if … elif … else intérieur.",
+   "code": [
+    "c = \"rouge\"",
+    "x = 0",
+    "if \"r\" in c:",
+    "    x = 1",
+    "    if c == \"vert\":",
+    "        x = x + 10",
+    "    elif c == \"rouge\":",
+    "        x = x * 2",
+    "    else:",
+    "        x = x + 100",
+    "else:",
+    "    x = 5",
+    "print(x)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "1",
+     "feedback": "Après x = 1, le bloc intérieur s'exécute encore : c == \"rouge\" est vrai, et x = x * 2 change x."
+    },
+    {
+     "texte": "2",
+     "feedback": "Oui. \"r\" est dans \"rouge\" : x devient 1. Puis c == \"vert\" est faux, c == \"rouge\" est vrai : x = 1 × 2 = 2.",
+     "juste": true
+    },
+    {
+     "texte": "101",
+     "feedback": "Le else intérieur n'est pas atteint : le elif c == \"rouge\" est vrai, la suite est ignorée."
+    },
+    {
+     "texte": "5",
+     "feedback": "\"r\" in c ne demande pas si c vaut \"r\" : il demande si la lettre r apparaît dans le texte. Elle y est : on n'entre pas dans le else."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "2"
+    }
+   ],
+   "fond": {
+    "avant": "3 options",
+    "apres": "4 options, avec « 5 »",
+    "raison": "règle des 4 options ; nouveau distracteur : lire « \"r\" in c » comme une égalité"
+   }
+  },
+  {
+   "id": "q03",
+   "origine": "Conditions Q24",
+   "nom": "[Conditions] Un print dans le bloc, un autre après",
+   "objectif": "Suivre une variable modifiée dans un bloc et après lui.",
+   "enonce": [
+    "Dans les réponses, le signe « / » sépare deux lignes affichées."
+   ],
+   "code": [
+    "s = 10",
+    "if s > 5:",
+    "    s = s + 5",
+    "    if s > 15:",
+    "        print(s)",
+    "    else:",
+    "        print(s - 10)",
+    "s = s * 2",
+    "print(s)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "15 / 30",
+     "feedback": "s vaut 15, et 15 > 15 est faux : c'est le else intérieur qui s'exécute. Il affiche s - 10, soit 5."
+    },
+    {
+     "texte": "5 / 30",
+     "feedback": "Oui. s devient 15 ; 15 > 15 est faux : le else affiche 15 - 10 = 5. Puis s = s * 2 (hors du bloc) : 30 s'affiche.",
+     "juste": true
+    },
+    {
+     "texte": "30",
+     "feedback": "Le bloc intérieur affiche déjà une ligne avant le dernier print : 5, puis 30."
+    },
+    {
+     "texte": "5 / 10",
+     "feedback": "print(s - 10) affiche un calcul mais ne change pas s : s vaut toujours 15. Puis s * 2 donne 30."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "5\n30"
+    }
+   ],
+   "fond": {
+    "avant": "3 options",
+    "apres": "4 options, avec « 5 / 10 »",
+    "raison": "règle des 4 options ; nouveau distracteur : croire que print(s - 10) change la valeur de s"
+   }
+  },
+  {
+   "id": "q04",
+   "origine": "Conditions Q25",
+   "nom": "[Conditions] Un if … else dans un elif",
+   "objectif": "Suivre un bloc imbriqué dans une branche elif.",
+   "enonce": [
+    "Dans les réponses, le signe « / » sépare deux lignes affichées."
+   ],
+   "code": [
+    "h = 14",
+    "if h < 10:",
+    "    print(\"Matin\")",
+    "elif h < 18:",
+    "    print(\"Jour\")",
+    "    if h > 15:",
+    "        print(\"Fin\")",
+    "    else:",
+    "        print(\"Milieu\")",
+    "else:",
+    "    print(\"Soir\")"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "Jour / Fin",
+     "feedback": "14 > 15 est faux : le if intérieur est sauté et son else affiche Milieu."
+    },
+    {
+     "texte": "Jour / Milieu",
+     "feedback": "Oui. 14 < 10 est faux, 14 < 18 est vrai : Jour s'affiche. Puis 14 > 15 est faux : le else intérieur affiche Milieu.",
+     "juste": true
+    },
+    {
+     "texte": "Soir",
+     "feedback": "Le else extérieur n'est pas atteint : le elif (14 < 18) est vrai."
+    },
+    {
+     "texte": "Milieu",
+     "feedback": "Dans le bloc du elif, print(\"Jour\") vient avant le if intérieur : il s'affiche d'abord."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "Jour\nMilieu"
+    }
+   ],
+   "fond": {
+    "avant": "3 options",
+    "apres": "4 options, avec « Milieu »",
+    "raison": "règle des 4 options ; nouveau distracteur : oublier l'instruction placée avant le if intérieur"
+   }
+  },
+  {
+   "id": "q05",
+   "origine": "Conditions Q26",
+   "nom": "[Conditions] Des conditions avec and et or",
+   "objectif": "Évaluer une condition avec or, puis une avec and.",
+   "code": [
+    "a = 15",
+    "b = 5",
+    "if a % 2 == 0 or b > 10:",
+    "    a = 1",
+    "    b = 1",
+    "elif a > 10 and b < 10:",
+    "    a = 2",
+    "    b = 2",
+    "else:",
+    "    a = 3",
+    "    b = 3",
+    "print(a * b)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "1",
+     "feedback": "15 % 2 vaut 1 et 5 > 10 est faux : faux or faux donne faux. Le premier bloc est sauté."
+    },
+    {
+     "texte": "4",
+     "feedback": "Oui. Le if est faux (faux or faux). Le elif est vrai : 15 > 10 et 5 < 10. a et b valent 2 : 2 × 2 = 4.",
+     "juste": true
+    },
+    {
+     "texte": "9",
+     "feedback": "Le else n'est pas atteint : 15 > 10 et 5 < 10 sont vrais tous les deux, donc le elif s'exécute."
+    },
+    {
+     "texte": "2",
+     "feedback": "Le programme affiche a * b, le produit, pas a seul. a et b valent 2 : 2 × 2 = 4."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "4"
+    }
+   ],
+   "fond": {
+    "avant": "3 options",
+    "apres": "4 options, avec « 2 »",
+    "raison": "règle des 4 options ; nouveau distracteur : confondre a * b et a"
+   }
+  },
+  {
+   "id": "q06",
+   "origine": "Conditions Q27",
+   "nom": "[Conditions] Construire un texte morceau par morceau",
+   "objectif": "Suivre une chaîne modifiée dans plusieurs blocs.",
+   "code": [
+    "resultat = \"\"",
+    "x = 10",
+    "if x > 20:",
+    "    resultat = \"A\"",
+    "else:",
+    "    resultat = \"B\"",
+    "    if x > 5:",
+    "        resultat = resultat + \"C\"",
+    "    else:",
+    "        resultat = resultat + \"D\"",
+    "resultat = resultat + \"E\"",
+    "print(resultat)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "BDE",
+     "feedback": "10 > 5 est vrai : c'est \"C\" qui est ajouté, pas \"D\"."
+    },
+    {
+     "texte": "BCE",
+     "feedback": "Oui. 10 > 20 est faux : resultat vaut \"B\". 10 > 5 est vrai : \"BC\". La ligne suivante, hors des blocs, ajoute \"E\".",
+     "juste": true
+    },
+    {
+     "texte": "A",
+     "feedback": "10 > 20 est faux : on passe dans le else, où resultat reçoit \"B\"."
+    },
+    {
+     "texte": "BC",
+     "feedback": "resultat = resultat + \"E\" n'est pas indentée : elle s'exécute après les blocs, dans tous les cas."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "BCE"
+    }
+   ],
+   "fond": {
+    "avant": "3 options",
+    "apres": "4 options, avec « BC »",
+    "raison": "règle des 4 options ; nouveau distracteur : croire que la ligne non indentée fait partie du else"
+   }
+  },
+  {
+   "id": "q07",
+   "origine": "Conditions Q28",
+   "nom": "[Conditions] Un test de divisibilité dans un if",
+   "objectif": "Suivre un if imbriqué qui teste un reste.",
+   "code": [
+    "val = 15",
+    "res = 0",
+    "if val < 20:",
+    "    res = 1",
+    "    if val % 3 == 0:",
+    "        res = res + 2",
+    "    else:",
+    "        res = res + 5",
+    "elif val < 30:",
+    "    res = 10",
+    "",
+    "print(res)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "10",
+     "feedback": "Le elif n'est pas testé : le premier if (15 < 20) est vrai."
+    },
+    {
+     "texte": "3",
+     "feedback": "Oui. 15 < 20 : res vaut 1. 15 % 3 vaut 0 (15 = 3 × 5) : res = 1 + 2 = 3.",
+     "juste": true
+    },
+    {
+     "texte": "6",
+     "feedback": "15 est divisible par 3 : 15 % 3 vaut 0, la condition est vraie. C'est + 2, pas + 5."
+    },
+    {
+     "texte": "1",
+     "feedback": "Après res = 1, le if intérieur s'exécute aussi : 15 % 3 == 0 est vrai, et res devient 3."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "3"
+    }
+   ],
+   "fond": {
+    "avant": "3 options",
+    "apres": "4 options, avec « 1 »",
+    "raison": "règle des 4 options ; nouveau distracteur : oublier le bloc intérieur"
+   }
+  },
+  {
+   "id": "q08",
+   "nom": "[Conditions] Une condition est une valeur",
+   "objectif": "Savoir qu'une comparaison donne un booléen, qu'on peut ranger dans une variable.",
+   "enonce": [
+    "Le matin, il y a souvent un bouchon jusqu'à Mamoudzou."
+   ],
+   "code": [
+    "heure = 7",
+    "bouchon = heure >= 6 and heure <= 9",
+    "print(bouchon)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "True",
+     "feedback": "Oui. 7 >= 6 est vrai, 7 <= 9 est vrai : vrai and vrai donne True. Une comparaison donne une valeur, rangée ici dans bouchon.",
+     "juste": true
+    },
+    {
+     "texte": "False",
+     "feedback": "Les deux comparaisons sont vraies pour heure = 7 : avec and, le résultat est True."
+    },
+    {
+     "texte": "Une erreur : il manque if",
+     "feedback": "Une comparaison peut s'écrire sans if : elle donne True ou False, qu'on range dans une variable."
+    },
+    {
+     "texte": "7",
+     "feedback": "bouchon ne reçoit pas heure : il reçoit le résultat de la condition, True ou False."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "True"
+    }
+   ]
+  },
+  {
+   "id": "q09",
+   "nom": "[Conditions] L'ordre des tests",
+   "objectif": "Comprendre pourquoi l'ordre des elif compte.",
+   "enonce": [
+    "Ce programme doit classer une mangue selon son poids, en grammes : « grosse » au-dessus de 400 g, « moyenne » au-dessus de 200 g, « petite » sinon."
+   ],
+   "code": [
+    "poids = 450",
+    "if poids > 200:",
+    "    print(\"moyenne\")",
+    "elif poids > 400:",
+    "    print(\"grosse\")",
+    "else:",
+    "    print(\"petite\")"
+   ],
+   "question": [
+    "Qu'affiche-t-il pour une mangue de 450 g ?"
+   ],
+   "options": [
+    {
+     "texte": "grosse",
+     "feedback": "C'est ce qu'on voudrait, mais Python teste dans l'ordre : 450 > 200 est vrai d'abord, il affiche moyenne et s'arrête."
+    },
+    {
+     "texte": "moyenne",
+     "feedback": "Oui, et c'est une erreur du programme : 450 > 200 est vrai, le elif n'est jamais testé. Il faut tester poids > 400 en premier.",
+     "juste": true
+    },
+    {
+     "texte": "moyenne / grosse",
+     "feedback": "Une seule branche s'exécute : la première vraie. Python ne teste pas le elif après le if vrai."
+    },
+    {
+     "texte": "petite",
+     "feedback": "Le else ne s'exécute que si toutes les conditions sont fausses. Ici, 450 > 200 est vrai."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "moyenne"
+    }
+   ]
+  },
+  {
+   "id": "q10",
+   "nom": "[Conditions] Un if sans else",
+   "objectif": "Savoir qu'une condition fausse sans else ne bloque pas le programme.",
+   "enonce": [
+    "Dans les réponses, le signe « / » sépare deux lignes affichées."
+   ],
+   "code": [
+    "maree = \"basse\"",
+    "if maree == \"haute\":",
+    "    print(\"Départ en pirogue\")",
+    "print(\"Fin\")"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "Rien ne s'affiche",
+     "feedback": "Une condition fausse n'arrête pas le programme : Python saute le bloc et continue à la ligne suivante."
+    },
+    {
+     "texte": "Fin",
+     "feedback": "Oui. \"basse\" == \"haute\" est faux : le bloc est sauté. print(\"Fin\") n'est pas indenté : il s'exécute toujours.",
+     "juste": true
+    },
+    {
+     "texte": "Départ en pirogue / Fin",
+     "feedback": "La condition est fausse : maree vaut \"basse\". Le print indenté sous le if est sauté."
+    },
+    {
+     "texte": "Une erreur : il manque else",
+     "feedback": "Le else n'est pas obligatoire. Sans else, si la condition est fausse, Python ne fait rien de plus et continue."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "Fin"
+    }
+   ]
+  },
+  {
+   "id": "q11",
+   "nom": "[Conditions] or au lieu de and",
+   "objectif": "Repérer une condition toujours vraie, écrite avec or au lieu de and.",
+   "enonce": [
+    "Dans cet exercice, le tarif de jour d'un taxi s'applique de 6 h à 20 h ; sinon, c'est le tarif de nuit."
+   ],
+   "code": [
+    "heure = 22",
+    "if heure >= 6 or heure < 20:",
+    "    print(\"tarif de jour\")",
+    "else:",
+    "    print(\"tarif de nuit\")"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "tarif de nuit",
+     "feedback": "C'est le bon tarif, mais pas ce qu'affiche ce programme : avec or, 22 >= 6 suffit à rendre la condition vraie."
+    },
+    {
+     "texte": "tarif de jour / tarif de nuit",
+     "feedback": "Une seule branche s'exécute. Ici, la condition est vraie : c'est le if."
+    },
+    {
+     "texte": "Rien ne s'affiche",
+     "feedback": "Chaque branche a un print : le programme affiche forcément un tarif."
+    },
+    {
+     "texte": "tarif de jour",
+     "feedback": "Oui, et c'est une erreur : avec or, 22 >= 6 suffit, la condition est toujours vraie. Il faut and : heure >= 6 and heure < 20.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "tarif de jour"
+    }
+   ]
+  },
+  {
+   "id": "q12",
+   "nom": "[Conditions] Majuscules et minuscules",
+   "objectif": "Savoir que == distingue les majuscules des minuscules.",
+   "code": [
+    "reponse = \"Oui\"",
+    "if reponse == \"oui\":",
+    "    print(\"On y va\")",
+    "else:",
+    "    print(\"On attend\")"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "On y va",
+     "feedback": "Pour Python, \"Oui\" et \"oui\" sont deux textes différents : le O majuscule n'est pas le o minuscule. Le test est faux."
+    },
+    {
+     "texte": "Une erreur",
+     "feedback": "Le programme est bien écrit. Comparer deux textes avec == est permis ; le résultat est simplement faux ici."
+    },
+    {
+     "texte": "Oui",
+     "feedback": "Le programme n'affiche pas reponse : il affiche On y va ou On attend."
+    },
+    {
+     "texte": "On attend",
+     "feedback": "Oui. \"Oui\" == \"oui\" est faux : Python distingue les majuscules. Le else affiche On attend.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "On attend"
+    }
+   ]
+  },
+  {
+   "id": "q13",
+   "nom": "[Erreurs] Corriger la condition d'un if",
+   "objectif": "Lire le message d'une SyntaxError et corriger une condition.",
+   "enonce": [
+    "Le programme suivant est exécuté. Python s'arrête sur l'erreur affichée dans la console."
+   ],
+   "code": [
+    "maree = \"haute\"",
+    "if maree = \"haute\":",
+    "    print(\"La barge accoste\")"
+   ],
+   "console": [
+    "SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?"
+   ],
+   "question": [
+    "Quelle correction faut-il faire ?"
+   ],
+   "options": [
+    {
+     "texte": "Écrire == au lieu de = dans la condition",
+     "feedback": "Oui. = range une valeur dans une variable (affectation) ; == compare deux valeurs. Le message le propose : « Maybe you meant '==' » (« voulais-tu dire == ? »).",
+     "juste": true
+    },
+    {
+     "texte": "Mettre la condition entre parenthèses",
+     "feedback": "Les parenthèses ne changent rien : Python affiche la même erreur. Le problème est le signe =, qui n'est pas une comparaison."
+    },
+    {
+     "texte": "Retirer les guillemets autour de haute",
+     "feedback": "Sans guillemets, haute serait un nom de variable inconnu. Les guillemets sont justes : \"haute\" est un texte."
+    },
+    {
+     "texte": "Ajouter un else à la fin",
+     "feedback": "Le else n'est pas obligatoire. Le message « invalid syntax » (« syntaxe invalide ») vise le signe = de la ligne 2."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?"
+    },
+    {
+     "option": "correction",
+     "reprendre_code": false,
+     "code": [
+      "maree = \"haute\"",
+      "if maree == \"haute\":",
+      "    print(\"La barge accoste\")"
+     ],
+     "sortie": "La barge accoste"
+    },
+    {
+     "option": "parenthèses",
+     "reprendre_code": false,
+     "code": [
+      "maree = \"haute\"",
+      "if (maree = \"haute\"):",
+      "    print(\"La barge accoste\")"
+     ],
+     "message": "SyntaxError: invalid syntax. Maybe you meant '==' or ':=' instead of '='?"
+    }
+   ]
+  },
+  {
+   "id": "q14",
+   "nom": "[Erreurs] Les deux-points oubliés",
+   "objectif": "Lire le message « expected ':' » et le corriger.",
+   "enonce": [
+    "Le programme suivant est exécuté. Python s'arrête sur l'erreur affichée dans la console."
+   ],
+   "code": [
+    "note = 12",
+    "if note >= 10",
+    "    print(\"Admis·e\")"
+   ],
+   "console": [
+    "SyntaxError: expected ':'"
+   ],
+   "question": [
+    "Quelle correction faut-il faire ?"
+   ],
+   "options": [
+    {
+     "texte": "Écrire => au lieu de >=",
+     "feedback": "=> n'existe pas en Python : « supérieur ou égal » s'écrit bien >=. Le message parle d'autre chose."
+    },
+    {
+     "texte": "Ajouter un else après le print",
+     "feedback": "Le else n'est pas obligatoire, et il lui faudrait aussi ses deux-points. Lis le message : il manque « : »."
+    },
+    {
+     "texte": "Ajouter : à la fin de la ligne if",
+     "feedback": "Oui. « expected ':' » veut dire « deux-points attendus ». Une ligne if se termine toujours par deux-points, avant le bloc indenté.",
+     "juste": true
+    },
+    {
+     "texte": "Retirer l'indentation du print",
+     "feedback": "Le print sortirait du bloc du if, et Python afficherait la même erreur, « expected ':' » : les deux-points manquent toujours."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "SyntaxError: expected ':'"
+    },
+    {
+     "option": "correction",
+     "reprendre_code": false,
+     "code": [
+      "note = 12",
+      "if note >= 10:",
+      "    print(\"Admis·e\")"
+     ],
+     "sortie": "Admis·e"
+    }
+   ]
+  },
+  {
+   "id": "q15",
+   "nom": "[Erreurs] Le bloc non indenté",
+   "objectif": "Lire une IndentationError et indenter le bloc d'un if.",
+   "enonce": [
+    "Le programme suivant est exécuté. Python s'arrête sur l'erreur affichée dans la console."
+   ],
+   "code": [
+    "n = 3",
+    "if n > 0:",
+    "print(\"positif\")"
+   ],
+   "console": [
+    "IndentationError: expected an indented block after 'if' statement on line 2"
+   ],
+   "question": [
+    "Quelle correction faut-il faire ?"
+   ],
+   "options": [
+    {
+     "texte": "Décaler le print de 4 espaces vers la droite",
+     "feedback": "Oui. Le message dit « bloc indenté attendu après le if de la ligne 2 ». Le bloc d'un if se décale de 4 espaces.",
+     "juste": true
+    },
+    {
+     "texte": "Retirer les deux-points de la ligne 2",
+     "feedback": "Les deux-points sont obligatoires après un if : sans eux, Python signalerait « expected ':' »."
+    },
+    {
+     "texte": "Ajouter ; à la fin de la ligne 2",
+     "feedback": "Python n'utilise pas de point-virgule pour finir une ligne if : il afficherait une autre erreur de syntaxe."
+    },
+    {
+     "texte": "Écrire Print avec une majuscule",
+     "feedback": "Python distingue les majuscules : Print n'existe pas. La fonction s'écrit print ; le problème est l'indentation."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "IndentationError: expected an indented block after 'if' statement on line 2"
+    },
+    {
+     "option": "correction",
+     "reprendre_code": false,
+     "code": [
+      "n = 3",
+      "if n > 0:",
+      "    print(\"positif\")"
+     ],
+     "sortie": "positif"
+    }
+   ]
+  },
+  {
+   "id": "q16",
+   "nom": "[Erreurs] Un else avec une condition",
+   "objectif": "Savoir qu'un else ne porte pas de condition, et écrire une deuxième condition.",
+   "enonce": [
+    "Le programme suivant est exécuté. Python s'arrête sur l'erreur affichée dans la console."
+   ],
+   "code": [
+    "x = -2",
+    "if x > 0:",
+    "    print(\"positif\")",
+    "else x < 0:",
+    "    print(\"négatif\")"
+   ],
+   "console": [
+    "SyntaxError: expected ':'"
+   ],
+   "question": [
+    "Quelle correction faut-il faire ?"
+   ],
+   "options": [
+    {
+     "texte": "Écrire else if x < 0:",
+     "feedback": "else if existe dans d'autres langages, pas en Python : Python affiche la même erreur. Il attend « : » juste après else."
+    },
+    {
+     "texte": "Écrire elif x < 0:",
+     "feedback": "Oui. Un else ne porte jamais de condition : Python attend « : » juste après else. Pour une deuxième condition, on écrit elif.",
+     "juste": true
+    },
+    {
+     "texte": "Retirer les deux-points après x < 0",
+     "feedback": "Python affiche la même erreur, « expected ':' » : il attend « : » juste après else. Le problème n'est pas la fin de la ligne : un else ne porte pas de condition."
+    },
+    {
+     "texte": "Écrire else (x < 0):",
+     "feedback": "Les parenthèses ne changent rien : un else n'a pas de condition. Il faut un elif."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "SyntaxError: expected ':'"
+    },
+    {
+     "option": "correction",
+     "reprendre_code": false,
+     "code": [
+      "x = -2",
+      "if x > 0:",
+      "    print(\"positif\")",
+      "elif x < 0:",
+      "    print(\"négatif\")"
+     ],
+     "sortie": "négatif"
+    },
+    {
+     "option": "else if",
+     "reprendre_code": false,
+     "code": [
+      "x = -2",
+      "if x > 0:",
+      "    print(\"positif\")",
+      "else if x < 0:",
+      "    print(\"négatif\")"
+     ],
+     "message": "SyntaxError: expected ':'"
+    }
+   ]
+  },
+  {
+   "id": "q17",
+   "nom": "[Erreurs] Comparer un texte et un nombre",
+   "objectif": "Lire une TypeError dans une condition et convertir le texte en nombre.",
+   "enonce": [
+    "La variable age contient un texte, comme ce que renvoie input(). Le programme suivant est exécuté."
+   ],
+   "code": [
+    "age = \"16\"",
+    "if age >= 18:",
+    "    print(\"majeur·e\")",
+    "else:",
+    "    print(\"mineur·e\")"
+   ],
+   "console": [
+    "TypeError: '>=' not supported between instances of 'str' and 'int'"
+   ],
+   "question": [
+    "Quelle correction faut-il faire ?"
+   ],
+   "options": [
+    {
+     "texte": "Écrire elif au lieu de else",
+     "feedback": "Le else est bien écrit. Le message parle de types : >= ne compare pas un texte (str) et un nombre entier (int)."
+    },
+    {
+     "texte": "Écrire \"18\" entre guillemets",
+     "feedback": "Le programme ne s'arrêterait plus, mais il comparerait deux textes, lettre par lettre : \"9\" >= \"18\" serait vrai ! Il faut comparer des nombres."
+    },
+    {
+     "texte": "Écrire if int(age) >= 18:",
+     "feedback": "Oui. Le message dit « >= impossible entre un str (texte) et un int (entier) ». int(age) transforme \"16\" en 16 : la comparaison marche.",
+     "juste": true
+    },
+    {
+     "texte": "Écrire => au lieu de >=",
+     "feedback": "=> n'existe pas en Python. Le message vise les types : \"16\" est un texte, 18 est un nombre."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "TypeError: '>=' not supported between instances of 'str' and 'int'"
+    },
+    {
+     "option": "correction",
+     "reprendre_code": false,
+     "code": [
+      "age = \"16\"",
+      "if int(age) >= 18:",
+      "    print(\"majeur·e\")",
+      "else:",
+      "    print(\"mineur·e\")"
+     ],
+     "sortie": "mineur·e"
+    },
+    {
+     "option": "guillemets",
+     "reprendre_code": false,
+     "code": [
+      "print(\"16\" >= \"18\", \"9\" >= \"18\")"
+     ],
+     "sortie": "False True"
+    }
+   ]
+  }
+ ]
+}
