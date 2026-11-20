@@ -32,6 +32,11 @@ calendrier/                 le Calendrier des vacances, en service depuis le 20/
                             (exercices/, contrôlées à chaque publication) et les migrations de sa base
                             (supabase/, voir SUPABASE.md)
 assets/                     mise en page et fonctionnement (ne pas toucher)
+  td-en-ligne.js, .css      le moteur des TD en ligne auto-correctifs (Python, avec Pyodide, chargé
+                            à la demande depuis jsDelivr, jamais copié dans le dépôt)
+charte/                     les pages de démonstration du Designer, sans lien depuis le site et non
+                            indexées : le TD pilote du moteur des TD en ligne (td-pilote/, avec son
+                            PDF) et le vérificateur de ses réponses (verifier-td.py)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
                             ses fichiers bibliotheque*.json sont construits à la publication
   annales/                  l'inventaire des sujets du bac de NSI, mis à jour chaque 1er janvier et
