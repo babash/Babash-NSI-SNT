@@ -27,6 +27,8 @@ admin/                      l'espace administrateur (ADMIN.md ; ne pas toucher)
 assets/                     mise en page et fonctionnement (ne pas toucher)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
                             ses fichiers bibliotheque*.json sont construits à la publication
+  annales/                  l'inventaire des sujets du bac de NSI, mis à jour chaque 1er janvier et
+                            1er août (annales/LISEZMOI.md) ; aucun script du site ne le lit
 .github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
 scripts/                    vérification automatique, validation des données, construction de la
                             bibliothèque, script complet de la base
