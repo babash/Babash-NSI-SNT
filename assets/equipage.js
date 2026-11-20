@@ -201,7 +201,7 @@
     lignee: liste([['humain', 'Humain·e'], ['cyber', 'Cyber'], ['nuee', 'Nuée'], ['mutant', 'Mutant·e'], ['lagon', 'Peuple du lagon'], ['esprit', 'Esprit'], ['greffe', 'Greffé·e']]),
     corps: liste([['fine', 'Fin'], ['moyenne', 'Moyen'], ['ronde', 'Rond']]),
     coiffure: liste([['court', 'Courts'], ['rase', 'Rasés'], ['lisses', 'Lisses mi-longs'], ['boucles', 'Boucles'], ['degrade_circuit', 'Dégradé circuit'], ['tresses', 'Tresses'], ['tresses_fibre', 'Tresses fibre optique'], ['locks_cables', 'Locks câblées'], ['afro_pixel', 'Afro pixel'], ['puffs', 'Deux puffs'], ['chignon_antenne', 'Chignon antenne'], ['crete_graffiti', 'Crête graffiti'], ['capuche', 'Capuche réseau'], ['feuilles', 'Couronne de feuilles'], ['volute', 'Volute'], ['glitch', 'Pixels flottants']]),
-    haut: liste([['tshirt', 'Tee-shirt'], ['veste', 'Veste runner'], ['maillot', 'Maillot de quartier libre'], ['maillot_foot', 'Maillot de foot sans écusson'], ['tunique', 'Tunique fleurs-circuits'], ['sweat', 'Sweat'], ['gilet', 'Gilet de bricole'], ['debardeur', 'Débardeur de battle'], ['chemise', 'Chemise à bugs'], ['combinaison', 'Combinaison de course'], ['aucun', 'Sans haut (Nuée, Esprit)']]),
+    haut: liste([['tshirt', 'Tee-shirt'], ['veste', 'Veste runner'], ['maillot', 'Maillot de quartier libre'], ['maillot_mada', 'Maillot aux couleurs de Madagascar'], ['maillot_comores', 'Maillot des Comores (croissant et quatre étoiles)'], ['tunique', 'Tunique fleurs-circuits'], ['sweat', 'Sweat'], ['gilet', 'Gilet de bricole'], ['debardeur', 'Débardeur de battle'], ['chemise', 'Chemise à bugs'], ['combinaison', 'Combinaison de course'], ['aucun', 'Sans haut (Nuée, Esprit)']]),
     bas: liste([['pantalon', 'Pantalon'], ['cargo', 'Cargo à câble'], ['short', 'Short de terrain'], ['jogging', 'Jogging fluo'], ['jupe_longue', 'Jupe longue fleurs-circuits'], ['sarouel', 'Sarouel de danse'], ['patchwork', 'Pantalon rapiécé'], ['salouva', 'Salouva']]),
     chaussures: liste([['baskets', 'Baskets'], ['montantes', 'Baskets montantes'], ['savates', 'Savates néon'], ['bottes', 'Bottes de pont'], ['crampons', 'Crampons de sable'], ['pieds_nus', 'Pieds nus et chevillère']]),
     emplacements: liste([['tete', 'Sur la tête'], ['visage', 'Sur le visage'], ['cou', 'Au cou et à la taille'], ['dos', 'Dans le dos'], ['main', 'Dans la main'], ['epaule', 'Sur les épaules'], ['pieds', 'Aux pieds'], ['autour', 'Autour']]),
@@ -248,14 +248,11 @@
     ['longue_vue', 'Longue-vue', 'main', 'pirate'], ['carte_tresor', 'Carte au trésor', 'main', 'pirate'], ['bouteille_message', 'Bouteille à la mer', 'main', 'pirate'],
     ['perroquet_robot', 'Perroquet-robot', 'epaule', 'pirate'], ['bottes_pirate', 'Bottes à boucle', 'pieds', 'pirate'], ['pieces_or', 'Pièces d\'or qui tournent', 'autour', 'pirate'],
 
-    ['casquette_mabawa', 'Casquette « PLATA O MABAWA »', 'tete', 'lycee', 'PLATA O MABAWA'], ['casquette_barge', 'Casquette « BARGE O BOUCHON »', 'tete', 'lycee', 'BARGE O BOUCHON'],
-    ['casquette_pilaou', 'Casquette « PLATA O PILAOU »', 'tete', 'lycee', 'PLATA O PILAOU'], ['ski_front', 'Lunettes de ski sur le front', 'tete', 'lycee'],
-    ['peigne', 'Peigne planté dans les cheveux', 'tete', 'lycee'], ['bob', 'Bob', 'tete', 'lycee'], ['perles', 'Perles au bout des tresses', 'tete', 'lycee'],
-    ['ski_yeux', 'Lunettes de ski sur les yeux', 'visage', 'lycee'], ['ecouteurs', 'Écouteurs sans fil', 'visage', 'lycee'],
-    ['sacoche', 'Sacoche en bandoulière', 'cou', 'lycee'], ['sac_devant', 'Sac à dos porté devant', 'cou', 'lycee'],
-    ['telephone', 'Téléphone à coque brillante', 'main', 'lycee'], ['bouteille_glacee', 'Bouteille d\'eau glacée', 'main', 'lycee'],
-    ['bracelet', 'Bracelet brésilien', 'main', 'lycee'], ['parapluie', 'Parapluie de la saison des pluies', 'main', 'lycee'],
-    ['kishali', 'Kishali sur les épaules', 'epaule', 'lycee'], ['claquettes', 'Claquettes-chaussettes', 'pieds', 'lycee'], ['ballon_foot', 'Ballon de foot', 'pieds', 'lycee'],
+    ['casquette_mabawa', 'Casquette « PLATA O MABAWA »', 'tete', 'lycee', 'PLATA O MABAWA'], ['ski_front', 'Lunettes de ski sur le front', 'tete', 'lycee'],
+    ['peigne', 'Peigne planté dans les cheveux', 'tete', 'lycee'], ['ski_yeux', 'Lunettes de ski sur les yeux', 'visage', 'lycee'],
+    ['coelacanthe', 'Cœlacanthe en peluche', 'epaule', 'lycee'],
+    /* dessinés mais hors catalogue pour l'instant (T112d) : casquette_barge, casquette_pilaou, bob, perles, ecouteurs, sacoche,
+       sac_devant, telephone, bouteille_glacee, bracelet, claquettes, et le haut maillot_foot */
 
     ['crete_pics', 'Crête à pics', 'tete', 'punk'], ['casque_audio', 'Casque audio', 'tete', 'punk'], ['epingles', 'Épingles à nourrice', 'visage', 'punk'],
     ['badges', 'Badges', 'cou', 'punk'], ['guitare', 'Guitare bricolée', 'dos', 'punk'], ['megaphone', 'Mégaphone', 'main', 'punk'],
@@ -276,7 +273,8 @@
 
     ['bonnet', 'Bonnet à pompon', 'tete', 'classique'], ['casquette', 'Casquette sans marque', 'tete', 'classique'], ['frontale', 'Lampe frontale', 'tete', 'classique'],
     ['bandeau', 'Bandeau de sport', 'tete', 'classique'], ['lunettes', 'Lunettes de vue', 'visage', 'classique'], ['pansement', 'Pansement', 'visage', 'classique'],
-    ['peinture', 'Peinture néon', 'visage', 'classique'], ['echarpe', 'Écharpe', 'epaule', 'classique']
+    ['peinture', 'Peinture néon', 'visage', 'classique'], ['echarpe', 'Écharpe', 'epaule', 'classique'],
+    ['kishali', 'Kishali sur les épaules', 'epaule', 'classique'], ['parapluie', 'Parapluie de la saison des pluies', 'main', 'classique'], ['ballon_foot', 'Ballon de foot', 'pieds', 'classique']
   ];
   /* anciens identifiants (v3) : repris dans leur nouvel emplacement */
   var COMPAT = { masque: ['visage', 'loup'], chale: ['epaule', 'kishali'], ballon: ['pieds', 'ballon_foot'], monocle_visee: ['visage', 'monocle_pixels'] };
@@ -288,8 +286,9 @@
   /* palette de chaque champ de couleur de la description */
   var CHAMP_PALETTE = { cheveux: 'cheveux', haut: 'tissu', bas: 'tissu', accent: 'neon', chaussures: 'chaussures', yeux: 'yeux' };
 
-  var MANCHES = { veste: 'longues', maillot: 'courtes', maillot_foot: 'courtes', tunique: 'courtes', sweat: 'longues', gilet: 'aucune', debardeur: 'aucune', chemise: 'longues', combinaison: 'longues', tshirt: 'courtes', aucun: 'aucune' };
+  var MANCHES = { veste: 'longues', maillot: 'courtes', maillot_foot: 'courtes', maillot_mada: 'courtes', maillot_comores: 'courtes', tunique: 'courtes', sweat: 'longues', gilet: 'aucune', debardeur: 'aucune', chemise: 'longues', combinaison: 'longues', tshirt: 'courtes', aucun: 'aucune' };
   var SANS_CORPS = { nuee: 1, esprit: 1 };
+  var MAILLOT_PAYS = { maillot_mada: '#d8303a', maillot_comores: '#2f9a4a' };
 
   var DEFAUT = {
     v: 1, lignee: 'humain', teint: 5, corps: 'moyenne', coiffure: 'court', cheveux: 'noirs',
@@ -336,7 +335,8 @@
     var acc = couleur('accent', d.couleurs.accent);
     var autres = [NC, NR, NJ, NV, NO, NG].filter(function (x) { return x !== acc; });
     var acc2 = autres[(d.teint + d.coiffure.length) % autres.length];
-    var haut = couleur('haut', d.couleurs.haut), bas = couleur('bas', d.couleurs.bas);
+    /* les maillots aux couleurs d'un pays : le drapeau, sans écusson de fédération, sans marque, sans numéro */
+    var haut = MAILLOT_PAYS[d.haut] || couleur('haut', d.couleurs.haut), bas = couleur('bas', d.couleurs.bas);
     return {
       lignee: d.lignee, corps: d.corps, peau: TEINTS[d.teint - 1], cheveux: couleur('cheveux', d.cheveux),
       coiffure: d.coiffure, tenue: d.haut, haut: haut, accent: acc, accent2: acc2, manches: MANCHES[d.haut],
@@ -669,6 +669,20 @@
       L.hline(CX - 2, CX + 1, TY, acc); c.px(CX - 1, TY + 1, acc); c.px(CX, TY + 1, acc);
       for (y = TY + 1; y < TY + 8; y++) { c.px(tx0, y, acc); c.px(tx0 + 1, y, fonce(acc, 0.2)); c.px(tx1, y, acc); c.px(tx1 - 1, y, fonce(acc, 0.2)); }
       L.carte(CX - 3, TY + 2, ['.x.xxx', 'xx.x.x', '.x.x.x', '.x.xxx'], { x: num });
+    } else if (st === 'maillot_mada') {
+      /* Madagascar : blanc, rouge, vert, en bandes ; ni écusson, ni marque, ni numéro */
+      for (y = TY + 4; y < TY + 8; y++) for (x = tx0; x <= tx1; x++) c.px(x, y, x === tx1 ? '#1f6a3a' : '#2f9a4a');
+      L.hline(tx0, tx1, TY + 4, '#ffffff');
+      for (y = TY; y < TY + 8; y++) { c.px(tx0, y, '#ffffff'); c.px(tx0 + 1, y, '#ffffff'); }
+      L.hline(CX - 2, CX + 1, TY, '#ffffff'); c.px(CX - 1, TY + 1, '#ffffff'); c.px(CX, TY + 1, '#ffffff');
+    } else if (st === 'maillot_comores') {
+      /* Comores : vert, croissant blanc et quatre étoiles sur la poitrine (emblème du drapeau), liserés jaune, blanc, rouge, bleu ;
+         ni écusson de fédération, ni marque, ni numéro */
+      L.hline(CX - 2, CX + 1, TY, '#ffffff'); c.px(CX - 1, TY + 1, '#ffffff'); c.px(CX, TY + 1, '#ffffff');
+      L.carte(CX - 4, TY + 2, ['.ww..x.', 'w......', 'w...x.x', 'w......', '.ww..x.'], { w: '#ffffff', x: '#ffffff' });
+      var LIS = ['#f2c83a', '#ffffff', '#d8303a', '#2a5ad8'];
+      for (x = tx0; x <= tx1; x++) c.px(x, TY + 7, LIS[mod(fdiv(x - tx0, 3), 4)]);
+      for (y = TY + 1; y < TY + 7; y++) { c.px(tx0, y, LIS[mod(y, 4)]); c.px(tx1, y, LIS[mod(y + 2, 4)]); }
     } else if (st === 'tunique') {
       L.rect(CX - 2, TY, 4, 1, c.sk); L.rect(CX - 1, TY + 1, 2, 1, c.sk);
       L.hline(CX - 2, CX + 1, TY + 2, cfg.motif_c);
@@ -1150,6 +1164,10 @@
       ['.bbb.', '.bbb.', '.lll.', 'llwll', 'lwiil', 'lliwl', 'lwiil', 'llill', 'lwlll', 'lllll', '.lll.'],
       ['.bbb.', '.bbb.', '.lll.', 'llwll', 'lwiil', 'lliwl', 'lwiil', 'llill', 'lwlll', 'lllll', '.lll.']],
       p: { b: '#3f6ad8', l: '#9ad8f0', w: '#e8f8ff', i: '#ffffff' } },
+    coelacanthe: { ou: 'epg', a: [10, 7], f: [
+      ['.....bb.....', '..bbbbbb..bb', '.bwwbbsbbbbb', 'bbwkbbbbsbb.', 'bbbbbsbbbbbb', '.brbbbbsbb.b', '..bbfb.fb...', '...f....f...'],
+      ['.....bb.....', '..bbbbbb...b', '.bwwbbsbbbbb', 'bbwkbbbbsbbb', 'bbbbbsbbbbb.', '.brbbbbsbbbb', '..bbfb.fb...', '..f......f..']],
+      p: { b: '#3a5ab8', s: '#c8dcf8', w: '#ffffff', k: '#1b1530', r: '#ff9ab8', f: '#2a3a8a' } },
     claquettes: { ou: 'pieds', a: [1, 5], r: ['.wwww.', '.AAAA.', '.wwww.', '.wwwww.', 'kkkkkkk', 'sssssss'], p: { w: BLANC, A: 'A', k: '#2a2f44', s: '#c8ccd8' } },
     /* ─ punk ─ */
     badges: { ou: 'cou', a: [4, -1], r: ['.y......', 'yky..r..', '.y..rwr.', '.....r..', '...c....', '..ckc...', '...c....'],
@@ -2307,7 +2325,7 @@
 
   function texte(d, etat) {
     d = normaliser(d);
-    function nom(champ, v) { var e = CATALOGUE[champ].filter(function (x) { return x.id === v; })[0]; return e ? e.nom.toLowerCase() : v; }
+    function nom(champ, v) { var e = CATALOGUE[champ].filter(function (x) { return x.id === v; })[0]; return e ? e.nom.charAt(0).toLowerCase() + e.nom.slice(1) : v; }
     var morceaux = ['Avatar, lignée ' + nom('lignee', d.lignee).replace(/^./, function (c) { return c.toUpperCase(); })];
     if (!SANS_CORPS[d.lignee]) morceaux.push('teint ' + d.teint);
     morceaux.push('coiffure ' + nom('coiffure', d.coiffure));
@@ -2485,7 +2503,7 @@
   function M(o) { var d = copie(DEFAUT); for (var k in o) if (k === 'couleurs' || k === 'objets') { for (var c in o[k]) d[k][c] = o[k][c]; } else d[k] = o[k]; return normaliser(d); }
   var MODELES = {
     fibre: { nom: 'Fibre optique', etat: 'salue', description: M({ teint: 8, coiffure: 'tresses_fibre', haut: 'veste', bas: 'cargo', chaussures: 'montantes', objets: { dos: 'sac_antenne' }, couleurs: { haut: 'violet', bas: 'anthracite', accent: 'cyan', chaussures: 'blanches' } }) },
-    lycee: { nom: 'Sortie du lycée', etat: 'content', description: M({ teint: 5, corps: 'fine', coiffure: 'degrade_circuit', haut: 'maillot_foot', bas: 'short', chaussures: 'baskets', objets: { tete: 'casquette_mabawa', cou: 'sacoche', main: 'telephone', pieds: 'claquettes' }, compagnon: 'robot', couleurs: { haut: 'vert', bas: 'nuit', accent: 'jaune', chaussures: 'blanches' } }) },
+    lycee: { nom: 'Sortie du lycée', etat: 'content', description: M({ teint: 5, corps: 'fine', coiffure: 'degrade_circuit', haut: 'maillot_comores', bas: 'short', chaussures: 'baskets', objets: { tete: 'casquette_mabawa', epaule: 'coelacanthe' }, compagnon: 'robot', couleurs: { bas: 'nuit', accent: 'jaune', chaussures: 'blanches' } }) },
     fleurs: { nom: 'Fleurs-circuits', etat: 'repos', description: M({ teint: 6, corps: 'ronde', coiffure: 'chignon_antenne', cheveux: 'bruns', haut: 'tunique', bas: 'jupe_longue', chaussures: 'savates', objets: { epaule: 'kishali', cou: 'collier_coquillages', autour: 'papillons' }, compagnon: 'roussette', couleurs: { haut: 'sarcelle', bas: 'rose', accent: 'jaune', chaussures: 'noires', yeux: 'noirs' } }) },
     capuche: { nom: 'Capuche réseau', etat: 'concentre', description: M({ teint: 3, coiffure: 'capuche', cheveux: 'chatains', haut: 'sweat', bas: 'patchwork', chaussures: 'baskets', objets: { tete: 'casque_audio', autour: 'notes' }, couleurs: { haut: 'marine', bas: 'gris', accent: 'cyan', chaussures: 'rouges', yeux: 'verts' } }) },
     fauteuil: { nom: 'Fauteuil de course', etat: 'tres_content', description: M({ teint: 2, coiffure: 'court', cheveux: 'auburn', haut: 'combinaison', bas: 'pantalon', objets: { tete: 'bandeau' }, fauteuil: true, couleurs: { haut: 'nuit', bas: 'nuit', accent: 'rose', chaussures: 'blanches', yeux: 'bleus' } }) },
@@ -2497,7 +2515,7 @@
     reseau: { nom: 'Implant et visière', etat: 'concentre', description: M({ lignee: 'cyber', teint: 3, coiffure: 'rase', haut: 'combinaison', bas: 'jogging', objets: { visage: 'visiere', epaule: 'drone', dos: 'jetpack' }, couleurs: { haut: 'marine', bas: 'nuit', accent: 'rose' } }) },
     infini: { nom: 'Manique de l\'infini', etat: 'tres_content', description: M({ teint: 7, corps: 'ronde', coiffure: 'puffs', cheveux: 'noirs', haut: 'combinaison', bas: 'jogging', chaussures: 'montantes', objets: { tete: 'bandeau_noue', main: 'manique_infini', dos: 'cape', cou: 'ceinture_boucle', autour: 'aura_energie' }, couleurs: { haut: 'violet', bas: 'nuit', accent: 'jaune', chaussures: 'blanches' } }) },
     capitaine: { nom: 'Capitaine du lagon', etat: 'salue', description: M({ teint: 5, coiffure: 'tresses', haut: 'chemise', bas: 'cargo', chaussures: 'baskets', objets: { tete: 'tricorne', visage: 'cache_oeil', epaule: 'perroquet_robot', main: 'longue_vue', pieds: 'bottes_pirate', autour: 'pieces_or' }, couleurs: { haut: 'marine', bas: 'beige', accent: 'cyan' } }) },
-    shingo: { nom: 'Pause de midi', etat: 'content', description: M({ teint: 6, coiffure: 'tresses', cheveux: 'noirs', haut: 'tshirt', bas: 'salouva', chaussures: 'savates', objets: { tete: 'perles', visage: 'ecouteurs', cou: 'sac_devant', epaule: 'kishali', main: 'bouteille_glacee' }, compagnon: 'maki', couleurs: { haut: 'jaune', bas: 'canard', accent: 'rose', chaussures: 'noires' } }) },
+    shingo: { nom: 'Pause de midi', etat: 'content', description: M({ teint: 6, coiffure: 'afro_pixel', cheveux: 'noirs', haut: 'maillot_mada', bas: 'salouva', chaussures: 'savates', objets: { tete: 'peigne', visage: 'ski_yeux' }, compagnon: 'maki', couleurs: { bas: 'canard', accent: 'rose', chaussures: 'noires' } }) },
     punk: { nom: 'Punk du quai', etat: 'tres_content', description: M({ teint: 2, corps: 'fine', coiffure: 'rase', cheveux: 'violets', haut: 'debardeur', bas: 'patchwork', chaussures: 'montantes', objets: { tete: 'crete_pics', cou: 'badges', epaule: 'veste_ecussons', main: 'megaphone', pieds: 'skate', autour: 'notes' }, couleurs: { haut: 'blanc', bas: 'jean', accent: 'vert' } }) },
     salle: { nom: 'Chaise à accoudoirs', etat: 'content', description: M({ teint: 4, coiffure: 'boucles', cheveux: 'bruns', haut: 'sweat', bas: 'pantalon', objets: { dos: 'chaise_accoudoirs', main: 'feutre', cou: 'cle_usb', epaule: 'souris_marche' }, couleurs: { haut: 'canard', bas: 'anthracite', accent: 'cyan' } }) },
     humain: { nom: 'Humain·e', lignee: 1, description: M({ lignee: 'humain', teint: 2, coiffure: 'court', cheveux: 'chatains', haut: 'tshirt', objets: { tete: 'frontale' }, couleurs: { haut: 'jaune', bas: 'jean', accent: 'cyan', chaussures: 'rouges', yeux: 'verts' } }) },
