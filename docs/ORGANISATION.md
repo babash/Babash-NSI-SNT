@@ -25,6 +25,10 @@ pp/             …
 autres/         …
 bibliotheque/               l'onglet Bibliothèque (ne pas toucher)
 admin/                      l'espace administrateur (ADMIN.md ; ne pas toucher)
+calendrier/                 le Calendrier des vacances, pas encore en service : la page des élèves
+                            (index.html), l'espace enseignant·e (prof.html), les banques d'exercices
+                            (exercices/, contrôlées à chaque publication) et les migrations de sa base
+                            (supabase/, voir SUPABASE.md)
 assets/                     mise en page et fonctionnement (ne pas toucher)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
                             ses fichiers bibliotheque*.json sont construits à la publication

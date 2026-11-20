@@ -11,9 +11,12 @@ Depuis le 17 novembre 2026, le site est mis en ligne par le workflow **« Publie
 « Construire le site » :
 
 1. valide les données de la bibliothèque (`scripts/valider_donnees.py`) ;
-2. construit les fichiers de la bibliothèque à partir des fiches (`scripts/construire_bibliotheque.py`,
+2. contrôle les banques d'exercices du Calendrier des vacances (`scripts/calendrier_exercices.py`,
+   depuis le 20 novembre 2026) : leur forme, puis chaque programme, exécuté avec Python ou SQLite,
+   doit afficher ce que l'exercice annonce ; une erreur arrête aussi la publication ;
+3. construit les fichiers de la bibliothèque à partir des fiches (`scripts/construire_bibliotheque.py`,
    voir [l'onglet Bibliothèque](BIBLIOTHEQUE.md#longlet-bibliothèque)) ;
-3. prépare le site à publier : tout le dépôt, sauf les fichiers et dossiers cachés (`.github/`,
+4. prépare le site à publier : tout le dépôt, sauf les fichiers et dossiers cachés (`.github/`,
    `.gitignore`…), avec les fichiers construits.
 
 Puis, sur `main` seulement, le job « Mettre en ligne » le publie (environnement `github-pages`),

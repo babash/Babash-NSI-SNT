@@ -10,6 +10,16 @@ Trois ressources passent par **Supabase** :
 - QuizzNSI, dans son propre dépôt depuis le 19 novembre 2026, ne passe que par son temps réel,
   pour les séances en classe, qui ne sont pas enregistrées.
 
+Une quatrième s'y prépare : **le Calendrier des vacances** (dossier `calendrier/`). Sa base est
+prête depuis le 20 novembre 2026 : le schéma `vacances`, avec 9 tables et 22 fonctions d'entrée
+`cv_`, créé par la migration `vacances_0001_calendrier` (15:31), puis inscrit au registre des
+tables par `base_unique_0009_registre_vacances` (15:33), toutes deux appliquées sur délégation de
+l'enseignant, limitée au Calendrier. **Ses pages ne sont pas encore en service** : elles le disent,
+n'appellent aucune fonction de la base et n'enregistrent rien sur les élèves. Une migration
+`vacances_0002_index_resultats` (un index, sans effacer aucune donnée) est écrite, et pas
+appliquée. Ce que la base gardera, et combien de temps : `calendrier/supabase/LISEZMOI.md` ; ce
+texte sera repris ici à la mise en service.
+
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
@@ -151,7 +161,12 @@ Trois ressources passent par **Supabase** :
   - `0004` retire à `anon` ses droits sur la séquence du Panthéon, dans l'ancien projet de
     Lagon Arena ;
   - `0005` ajoute Court-circuit au registre des tables : son schéma, `court_circuit`, et son
-    préfixe, `cc_`, pour une table qui serait dans `public`.
+    préfixe, `cc_`, pour une table qui serait dans `public` ;
+  - `0009` (le 20 novembre 2026, sur la délégation de l'enseignant pour le Calendrier) ajoute au
+    registre le Calendrier des vacances : son schéma, `vacances`, et son préfixe, `cv_`. Sa vue
+    reprend celle de `0006` (Hello GO, appliquée le 17 novembre 2026), dont les fichiers ne sont
+    pas encore sur `main` ; les numéros `0007` et `0008` sont réservés au compte commun, pas
+    appliqué.
 - Chaque migration a son fichier inverse. [`supabase/LISEZMOI.md`](../supabase/LISEZMOI.md) donne l'ordre, les contrôles
   et le retour en arrière. Les migrations d'une application restent dans son propre dépôt.
 - Pour ta propre copie : lance `supabase/schema.sql` dans *SQL Editor* d'un projet neuf, avant le
@@ -163,7 +178,8 @@ Les règles communes des bases sont dans `CLAUDE.md`, § 6, « Les bases Supabas
 base pour toutes les applications, un schéma par application, l'accès par des fonctions, des
 migrations avec leur fichier inverse. Aucune base n'est modifiée sans que l'enseignant ait vu le
 SQL exact, sauf quand il en donne lui-même la permission pour une migration précise (comme pour
-la progression de Court-circuit, le 19 novembre 2026), et les agents n'en lisent que les
+la progression de Court-circuit, le 19 novembre 2026, et pour le Calendrier des vacances, le
+20 novembre 2026), et les agents n'en lisent que les
 métadonnées, jamais les données des élèves. Ils ne font aucun essai sur une table d'élèves de la
 base en ligne : les essais d'écriture se font sur une reproduction locale, avec des données
 inventées.
