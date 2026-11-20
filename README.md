@@ -57,6 +57,8 @@ Tu peux copier le site pour tes classes, avec tes rubriques et tes ressources : 
 
 | Document | Contenu |
 |---|---|
+| [La pédagogie du site](docs/pedagogie/README.md) | pourquoi les ressources sont faites ainsi : la philosophie pédagogique, les règles universelles, et un document par type de ressource (fiche de révision, cours-quiz, TD, notebook, application de jeu, quiz Pronote, contrôle, exercices de bac, frise) |
+| [Le sommaire de la documentation](docs/README.md) | tous les documents du dossier `docs/`, de la pédagogie au fonctionnement du site |
 | [Les rubriques et les réglages](docs/LISTES.md) | ce que montre une rubrique, ajouter une ressource ou un fichier, ranger une rubrique, les réglages et le pied de page, les erreurs |
 | [Réutiliser le site](docs/REUTILISER.md) | ta copie du site, GitHub Pages (source « GitHub Actions »), l'essai sur ton ordinateur, ce qui vient d'ailleurs |
 | [L'organisation du dépôt](docs/ORGANISATION.md) | les dossiers et les fichiers, les activités Capytale, le décor |

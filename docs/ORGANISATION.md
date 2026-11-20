@@ -7,7 +7,8 @@ Le site est publié par GitHub Pages à partir de la branche `main`, par le work
 ```
 README.md                   la présentation du site
 CONTRIBUTING.md             les règles du travail sur GitHub
-docs/                       la documentation : ce fichier et les autres
+docs/                       la documentation : ce fichier et les autres (sommaire : docs/README.md)
+  pedagogie/                la pédagogie : philosophie, règles universelles, types de ressources
 LICENSE                     la licence MIT du code
 CLAUDE.md                   les règles communes de l'équipe d'agents
 .claude/agents/             la fiche de chaque rôle

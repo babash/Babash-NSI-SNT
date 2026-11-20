@@ -71,4 +71,6 @@ des fonctions et point médian, comme « enseignant·e·s »), selon la décisio
 
 Les documents de coordination (cahier des charges, philosophie éducative, registre des
 décisions, organisation des agents, tableau des tâches, journal des publications, rapport du
-Gardien) sont dans le projet claude.ai « Site SNT-NSI ».
+Gardien) sont dans le projet claude.ai « Site SNT-NSI ». Leur partie pédagogique, la
+philosophie, les règles universelles et les types de ressources, est publiée dans
+[La pédagogie du site](pedagogie/README.md).
