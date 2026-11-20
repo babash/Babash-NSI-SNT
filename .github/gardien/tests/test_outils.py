@@ -20,7 +20,8 @@ dossier de travail :
     (T51b) : rubriques et compte, fichier manquant, lien principal et document GitHub, dépôt sans
     document « Code source » ;
   - sensibles.py : des textes ordinaires avec « (sur) », « [point] », « (dot) », « [at] », puis deux
-    adresses électroniques masquées pour les robots (T65), dans un petit dépôt git.
+    adresses électroniques masquées pour les robots (T65), dans un petit dépôt git ; un code de classe
+    (trois caractères, tiret, trois caractères), signalé et masqué, mais pas « sud-est » (alerte du 20/11).
 """
 import json
 import os
@@ -300,5 +301,21 @@ attendre("sensibles.py : deux adresses masquées ([point] et [sur], (at) et (dot
     r"^\[à examiner\] adresse électronique masquée \| corrige\.html:2 \|",
     r"2 occurrence\(s\) à examiner",
 ])
+
+# ── sensibles.py : code de classe (alerte du 20/11) ─────────────────────────
+# Le code est assemblé à l'exécution, comme les adresses : aucun code de classe, même inventé, dans le dépôt.
+CODE = "Q" + "X7-" + "4P" + "B"
+depot_classe = os.path.join(travail, "depot-classe")
+ecrire(os.path.join(depot_classe, "propre.html"), "<p>Le vent du sud-est ; UTF-8 ; un code de jeu CORAIL-MANTA-482.</p>\n")
+subprocess.run(["git", "-C", depot_classe, "init", "-q"], check=True)
+subprocess.run(["git", "-C", depot_classe, "add", "-A"], check=True)
+code, sortie = outil("sensibles.py", depot_classe)
+attendre("sensibles.py : sud-est, UTF-8, code de jeu en mots : pas un code de classe", code, sortie, 0,
+         presents=[r"0 occurrence\(s\) à examiner"], absents=[r"code de classe"])
+ecrire(os.path.join(depot_classe, "commentaire.js"), "// la classe de démonstration : " + CODE + "\n")
+subprocess.run(["git", "-C", depot_classe, "add", "-A"], check=True)
+code, sortie = outil("sensibles.py", depot_classe)
+attendre("sensibles.py : un code de classe en commentaire, signalé et masqué, code 1", code, sortie, 1,
+         presents=[r"^\[à examiner\] code de classe \| commentaire\.js:1 \|", r"Q…\(code masqué\)"], absents=[re.escape(CODE)])
 
 bilan.terminer()

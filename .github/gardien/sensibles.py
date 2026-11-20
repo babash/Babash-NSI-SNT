@@ -12,7 +12,10 @@ masquée pour les robots, le point et l'arobase en toutes lettres entre crochets
 (« [point] », « (dot) », « [at] », « [sur] »…, T65), clés et jetons (service_role, secret,
 sb_secret_, ghp_, github_pat_, sk_live_, AKIA…, clés privées), jetons JWT (le rôle est décodé :
 « anon » est public par conception, « service_role » jamais), et le contexte de CyberCase
-(identifiants de démonstration). Les valeurs trouvées sont masquées.
+(identifiants de démonstration), et les codes de classe : trois capitales ou chiffres, un tiret, trois
+autres (alerte du 20/11), cherchés sans ignorer la casse ; les noms d'algorithmes ou de codages qui ont
+cette forme (SHA, UTF, AES) n'en sont pas.
+Les valeurs trouvées sont masquées.
 Les noms d'élèves ne se détectent pas par motif : relecture des listes et des applications.
 Code de sortie 1 si un motif « à examiner » est trouvé.
 """
@@ -38,7 +41,11 @@ MOTIFS = [
                      r"\b(?:api[_-]?key|apikey|access[_-]?token|bearer)\b|\bjetons?\b|\btoken\b"),
     ("JWT", r"eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}"),
     ("CyberCase", r"cybercase"),
+    ("code de classe", r"(?<![\w-])(?!SHA-|UTF-|AES-)[A-Z0-9]{3}-[A-Z0-9]{3}(?![\w-])"),
 ]
+# Motifs cherchés en respectant la casse (sinon, « sud-est » ressemblerait à un code de classe)
+SENSIBLES_A_LA_CASSE = {"code de classe"}
+CODE_CLASSE = re.compile(r"(?<![\w-])(?!SHA-|UTF-|AES-)([A-Z0-9])[A-Z0-9]{2}-[A-Z0-9]{3}(?![\w-])")
 # Adresses publiques attendues (commits, licences, exemples) : signalées à part
 ADRESSES_ATTENDUES = re.compile(r"noreply@anthropic\.com|users\.noreply\.github\.com|@example\.|git@github\.com")
 CONTEXTE_CYBERCASE = re.compile(r"d[ée]mo|identifiant|login|mot de passe|password|code|compte", re.I)
@@ -56,6 +63,7 @@ def role_jwt(jeton):
 def masquer(texte):
     texte = re.sub(r"eyJ[A-Za-z0-9_-]{6}[A-Za-z0-9_.-]+", lambda m: m.group(0)[:9] + "…(masqué)", texte)
     texte = re.sub(r"(sb_\w{3}|ghp_|github_pat_|sk_\w{4})[A-Za-z0-9_]{4,}", r"\1…(masqué)", texte)
+    texte = CODE_CLASSE.sub(r"\1…(code masqué)", texte)
     return texte.strip()[:220]
 
 
@@ -63,7 +71,7 @@ def analyser(lignes, source):
     trouves = []
     for nom, ligne in lignes:
         for cat, motif in MOTIFS:
-            for m in re.finditer(motif, ligne, re.I):
+            for m in re.finditer(motif, ligne, 0 if cat in SENSIBLES_A_LA_CASSE else re.I):
                 gravite = "à examiner"
                 detail = ""
                 if cat == "JWT":
