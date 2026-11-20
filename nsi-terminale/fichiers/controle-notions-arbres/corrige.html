@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrôle de notions : corrigé</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="papier.css">
+<style>
+  .corr { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; flex: 1; align-content: start; }
+  .r { margin: 0 0 1.3mm; break-inside: avoid; font-size: 9.4pt; line-height: 1.24; }
+  .r .rep { border: 1.2pt solid #000; padding: .6mm 2mm; margin: .6mm 0; background: #fff; font-weight: 700; }
+  .r .exp { margin: .4mm 0 0; }
+  .r .err { margin: .4mm 0 0; padding-left: 2mm; border-left: 2.5pt solid #000; }
+  .r .err b { font-weight: 700; }
+  .tete-corr { display: grid; grid-template-columns: 1fr auto; gap: 4mm; align-items: center; margin: 2mm 0; }
+  .tete-corr .convention, .tete-corr .figure { margin: 0; }
+</style>
+</head>
+<body>
+<div class="outils"><a href="prof.html">Page de correction</a> · <button type="button" onclick="window.print()">Imprimer</button> · une page A4 par sujet</div>
+<div id="feuilles"></div>
+<script src="controle.js"></script>
+<script src="cle.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CN = window.CN, D = CN.DONNEES, K = window.CLE.donnees, e = CN.echapper;
+  var GITHUB = 'https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/controle-notions-arbres';
+
+  function remplirSquelette(sq, lettres, valeurs) {
+    if (!sq) return null;
+    return [valeurs[lettres.indexOf(sq[0])], remplirSquelette(sq[1], lettres, valeurs), remplirSquelette(sq[2], lettres, valeurs)];
+  }
+  function reponse(q, s) {
+    var k = K[s][q.id], S = D.sujets[s];
+    if (q.type === 'qcu') return k.attendu + '. ' + e(S.abr_options.filter(function (o) { return o[0] === k.attendu; })[0][1]);
+    if (q.type === 'ligne') return '<code>' + e(k.affiche) + '</code> <span style="font-weight:400">(dans n\'importe quel ordre)</span>';
+    if (q.type === 'schema') {
+      var l = CN.lettresSquelette(S.squelette);
+      return l.map(function (x, i) { return x + ' = ' + k.attendu[i]; }).join(' · ');
+    }
+    if (q.type === 'ensemble') return k.attendu.join(', ') + ' <span style="font-weight:400">(dans n\'importe quel ordre)</span>';
+    return Array.isArray(k.attendu) ? k.attendu.join(', ') : String(k.attendu);
+  }
+  var pages = Object.keys(D.sujets).map(function (s) {
+    var S = D.sujets[s], Q = D.questions;
+    var blocs = Q.map(function (q, i) {
+      var k = K[s][q.id], d = (k.diag || [])[0];
+      var h = '<div class="r"><strong>' + (i + 1) + '. ' + e(q.nom) + '</strong><div class="rep">' + reponse(q, s) + '</div>';
+      if (q.type === 'schema') {
+        var l = CN.lettresSquelette(S.squelette);
+        h += '<div class="figure">' + CN.svgArbre(remplirSquelette(S.squelette, l, k.attendu), { dx: 32, dy: 30, r: 12, titre: 'ABR obtenu' }) + '</div>';
+      }
+      h += '<p class="exp">' + e(k.explication) + '</p>';
+      if (d) h += '<p class="err"><b>Erreur fréquente :</b> ' + e(d.texte) + '</p>';
+      return h + '</div>';
+    });
+    return '<section class="feuille" aria-label="Corrigé du sujet ' + s + '">' +
+      '<div class="entete"><div><h1>Corrigé · ' + e(D.titre) + '</h1><div class="info">' + e(D.niveau) + ' · 1 point par question, tout ou rien · note sur 20 = points × 20 / 12</div></div><div class="sujet">Sujet ' + s + '</div></div>' +
+      '<div class="tete-corr"><div class="convention"><strong>Rappel de convention :</strong> ' + e(D.convention.replace(/^Rappel de convention : /, '')) +
+      '<br>Une liste dans le désordre est fausse, sauf pour les feuilles.</div>' +
+      '<div class="figure">' + CN.svgArbre(S.arbre, { dx: 32, dy: 29, r: 12, titre: 'Arbre du sujet ' + s }) + '</div></div>' +
+      '<div class="corr"><div>' + blocs.slice(0, 7).join('') + '</div><div>' + blocs.slice(7).join('') + '</div></div>' +
+      '<div class="pied-feuille"><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · réponses vérifiées par exécution</span><a href="' + GITHUB + '">Code source sur GitHub</a></div></section>';
+  });
+  document.getElementById('feuilles').innerHTML = pages.join('');
+})();
+</script>
+</body>
+</html>

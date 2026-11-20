@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrôle de notions : sujets à imprimer</title>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="papier.css">
+</head>
+<body>
+<div class="outils"><a href="index.html">Version en ligne</a> · <button type="button" onclick="window.print()">Imprimer</button> · une page A4 par sujet, en noir et blanc</div>
+<div id="feuilles"></div>
+<script src="controle.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CN = window.CN, D = CN.DONNEES, e = CN.echapper;
+  var URL_EN_LIGNE = 'babash.github.io/Babash-NSI-SNT/nsi-terminale/fichiers/controle-notions-arbres/';
+  var URL_GITHUB = 'github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/controle-notions-arbres';
+
+  function code(t) { return e(t).replace(/\b(class|def|if|is|None|return)\b/g, '<span class="kw">$1</span>'); }
+  function texte(q, s) {
+    return e(CN.enonce(q, s)).replace(/print\(([^)]*)\)/, '<code>print($1)</code>')
+      .replace(/\bclasse Noeud\b/, 'classe <code>Noeud</code>').replace(/\bfonction taille\b/, 'fonction <code>taille</code>')
+      .replace(/^La variable a /, 'La variable <code>a</code> ');
+  }
+  function question(q, i, s) {
+    var S = D.sujets[s], h = '<div class="q"><div class="titre"><span class="num">' + (i + 1) + '.</span>' + texte(q, s);
+    if (q.type === 'valeur' && q.id !== 'q10') return h + ' <span class="ligne courte"></span></div></div>';
+    h += '</div>';
+    if (q.type === 'qcu') {
+      h += S.abr_options.map(function (o) { return '<div class="option"><span class="boite"></span><span>' + e(o[1]) + '</span></div>'; }).join('');
+    } else if (q.type === 'schema') {
+      h += '<div class="figure">' + CN.svgArbre(S.squelette, { cases: true, dx: 48, dy: 52, r: 17, titre: 'Schéma à compléter' }) + '</div>';
+    } else if (q.type === 'ligne') {
+      h += '<div class="ligne" style="display:flex;align-items:flex-end"><code>return&nbsp;</code></div>';
+    } else if (q.id === 'q10') {
+      h += '<div><span class="ligne courte" style="width:30%;margin-left:0"></span></div>';
+    } else {
+      h += '<div class="ligne"></div>';
+    }
+    return h + '</div>';
+  }
+  var pages = Object.keys(D.sujets).map(function (s) {
+    var S = D.sujets[s], Q = D.questions;
+    var gauche = Q.slice(0, 6).map(function (q, i) { return question(q, i, s); }).join('');
+    var droite = Q.slice(6, 9).map(function (q, i) { return question(q, i + 6, s); }).join('') +
+      '<p class="legende">Pour les questions 10 et 11 :</p><pre>' + code(D.code_noeud) + '</pre>' +
+      Q.slice(9).map(function (q, i) { return question(q, i + 9, s); }).join('');
+    return '<section class="feuille" aria-label="Sujet ' + s + '">' +
+      '<div class="entete"><div><h1>' + e(D.titre) + '</h1><div class="info">' + e(D.niveau) + ' · ' + D.duree + ' minutes · ' + Q.length + ' questions, 1 point chacune</div></div><div class="sujet">Sujet ' + s + '</div></div>' +
+      '<div class="identite"><span>Prénom :</span><span class="court">Classe :</span><span class="court">Note : &nbsp;&nbsp;&nbsp;&nbsp;/ 12</span></div>' +
+      '<div class="convention"><strong>Rappel de convention :</strong> ' + e(D.convention.replace(/^Rappel de convention : /, '')) + '</div>' +
+      '<p class="consigne">Répondre sur le sujet. ' + e(D.consigne) + '</p>' +
+      '<div class="colonnes"><div><div class="figure">' + CN.svgArbre(S.arbre, { dx: 46, dy: 56, r: 18, titre: 'Arbre du sujet ' + s + '. ' + CN.texteArbre(S.arbre) }) + '</div>' + gauche + '</div><div>' + droite + '</div></div>' +
+      '<div class="pied-feuille"><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://' + URL_GITHUB + '">Code source sur GitHub</a></span><span>En ligne : ' + URL_EN_LIGNE + '</span></div></section>';
+  });
+  document.getElementById('feuilles').innerHTML = pages.join('');
+})();
+</script>
+</body>
+</html>
