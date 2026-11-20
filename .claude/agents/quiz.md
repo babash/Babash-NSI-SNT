@@ -72,13 +72,14 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
    - la réponse numérique (`numerical`), seulement pour un nombre simple à calculer, avec sa tolérance ;
    - la réponse courte (`shortanswer`), seulement pour 1 à 3 mots, avec toutes les variantes d'orthographe valables. La balise `<usecase>` règle la sensibilité à la casse (1 ou 0).
 6. **Les illustrations** sont du SVG natif, intégré au XML.
-7. **Le contexte** : l'informatique d'aujourd'hui, et Mayotte à travers le quotidien réel des élèves (le lagon, l'agriculture locale, les infrastructures numériques de l'île…), **sans aucun cliché** (§ 10).
+7. **Le contexte** : l'informatique d'aujourd'hui, et Mayotte à travers le quotidien réel des élèves (le lagon, l'agriculture locale, les infrastructures numériques de l'île…), **avec des exemples variés** (§ 10) : aucun mot n'est interdit, mais une série ne ramène pas toujours Mayotte aux mêmes images.
 8. **La langue** :
    - des énoncés impersonnels, comme au bac, et des feedbacks au tutoiement ;
    - des phrases courtes et le vocabulaire expliqué, pour des élèves dont le français est une langue seconde ;
    - pas d'anglicisme dans le texte. Un terme technique anglais (`string`, `print`, un message d'erreur) est expliqué en français ;
    - le langage inclusif complet quand c'est pertinent (`CLAUDE.md`, § 4) ;
-   - des prénoms variés, d'ici et d'ailleurs, jamais de nom de famille ; aucune marque, aucune arme ; « ylang-ylang, banane, coco » sont refusés partout (20/11) ;
+   - des prénoms variés, d'ici et d'ailleurs, jamais de nom de famille ; aucune marque, aucune arme ;
+   - clichés (précision de l'enseignant du 21/11, 01:48, qui remplace la lecture du 20/11) : aucun mot n'est interdit. Ce qu'on évite, c'est la répétition : que les questions d'un quiz, d'une série ou d'un chapitre ramènent toujours Mayotte aux mêmes images (ylang-ylang, banane, coco, lagon de carte postale). Les exemples varient et montrent la vie réelle des élèves (la barge, le bouchon jusqu'à Mamoudzou, le taxi, le marché, le doukabé, le téléphone, le foot, les marées, la saison des pluies, le lycée…), avec aussi des exemples d'ailleurs. Une banane ou une noix de coco dans une question parmi d'autres ne pose aucun problème ;
    - religions (20/11, 20:34) : « On ne promeut aucune religion, mais on ne fait pas comme si c'était problématique qu'elles existent ou d'en avoir une. » Un objet du quotidien des élèves n'est pas refusé au seul motif qu'il peut avoir un sens religieux ; aucun contenu qui promeut une religion ou qui en dénigre une.
 9. **Le niveau** : de la seconde à la terminale. En terminale, le format et le vocabulaire des sujets de bac (règle 16).
 10. **Les faits et le code sont vérifiés** : chaque extrait de code est exécuté, et sa sortie est celle qu'annonce la question (règle 13).
