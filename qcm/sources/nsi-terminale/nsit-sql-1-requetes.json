@@ -1,0 +1,405 @@
+{
+  "format": "qcm-pronote/1",
+  "id": "nsit-sql-1-requetes",
+  "titre": "NSI Tle · SQL 1 : modèle relationnel et requêtes",
+  "niveau": "nsi-terminale",
+  "justification_niveau": "modèle relationnel et langage SQL : programme de terminale, rubrique Bases de données.",
+  "programme": ["nsi-tle-2019.bases-de-donnees.modele-relationnel : Modèle relationnel (relation, attribut, domaine, clé primaire, clé étrangère, schéma relationnel)", "nsi-tle-2019.bases-de-donnees.sql : Langage SQL : requêtes d'interrogation (SELECT, FROM, WHERE)"],
+  "notions": ["donnees.bdd.relationnel", "donnees.bdd.sql", "donnees.bdd.sql.interrogation"],
+  "auteur": "Babash - NSI Tani Malandi",
+  "licence": "CC BY-SA 4.0",
+  "sources": ["SQL (export `0fe685bf`, 35 questions) : Q1, Q2, Q4 à Q13, Q15 à Q19, Q29, Q30", "SQL et Modèle Relationnel - 40 Questions Fondamentales (export `194a9996`) : Q4"],
+  "contexte": "Mayotte : montagnes, tortues, lycées, plantations de vanille, réservoirs d'eau, récifs, écoles, parcelles agricoles, navires de Longoni. SGBD de référence : SQLite ; chaque requête est exécutée.",
+  "cles_etrangeres": false,
+  "schema_sql": [
+    "CREATE TABLE MONTAGNE(nom TEXT, altitude INTEGER, type_roche TEXT);",
+    "INSERT INTO MONTAGNE VALUES ('Mont Bénara', 660, 'basalte'), ('Mont Choungui', 594, 'basalte'), ('Mont Mtsapéré', 572, 'basalte');",
+    "CREATE TABLE TORTUE(id_t INTEGER PRIMARY KEY, espece TEXT, poids REAL);",
+    "INSERT INTO TORTUE VALUES (1, 'verte', 120), (2, 'verte', 95), (3, 'imbriquée', 70), (4, 'verte', 140);",
+    "CREATE TABLE LYCEE(nom TEXT, ville TEXT);",
+    "INSERT INTO LYCEE VALUES ('Lycée de Sada', 'Sada'), ('Lycée de Dembéni', 'Dembéni'), ('Lycée Younoussa Bamana', 'Mamoudzou');",
+    "CREATE TABLE PLANTATION(id_p INTEGER PRIMARY KEY, type TEXT, age INTEGER);",
+    "INSERT INTO PLANTATION VALUES (1, 'vanille', 3), (2, 'vanille', 1), (3, 'ylang-ylang', 5), (4, 'vanille', 4);",
+    "CREATE TABLE RESERVOIR(id_r INTEGER PRIMARY KEY, nom TEXT, volume INTEGER);",
+    "INSERT INTO RESERVOIR VALUES (1, 'R1', 400), (2, 'R2', 500), (3, 'R3', 750), (4, 'R4', 1000), (5, 'R5', 1200);",
+    "CREATE TABLE RECIF(id_r INTEGER PRIMARY KEY, nom TEXT, id_zone INTEGER);",
+    "INSERT INTO RECIF VALUES (1, 'Grand Corail', 1), (2, 'Récif du Corail Nord', 2), (3, 'Banc sud', 2);",
+    "CREATE TABLE ECOLE(id_e INTEGER PRIMARY KEY, nom TEXT, ville TEXT);",
+    "INSERT INTO ECOLE VALUES (1, 'École A', 'Sada'), (2, 'École B', 'Chiconi'), (3, 'École C', 'Mamoudzou');",
+    "CREATE TABLE PARCELLE(id_parcelle INTEGER PRIMARY KEY, id_proprio TEXT);",
+    "INSERT INTO PARCELLE VALUES (1, 'P5'), (2, NULL), (3, '');",
+    "CREATE TABLE POISSON(id INTEGER PRIMARY KEY, espece TEXT);",
+    "INSERT INTO POISSON VALUES (1, 'perroquet'), (2, 'mérou'), (3, 'perroquet'), (4, 'chirurgien');",
+    "CREATE TABLE VILLAGE(nom TEXT, commune TEXT, pop INTEGER);",
+    "INSERT INTO VILLAGE VALUES ('Hamouro', 'Bandrélé', 3000), ('Bandrélé', 'Bandrélé', 7000), ('Chembenyoumba', 'Mtsangamouji', 2500), ('Mtsangamouji', 'Mtsangamouji', 4000);",
+    "CREATE TABLE RECOLTE(poids REAL, annee INTEGER);",
+    "INSERT INTO RECOLTE VALUES (12.5, 2023), (8, 2023), (20, 2022);",
+    "CREATE TABLE NAVIRE(nom TEXT, tonnage INTEGER, port TEXT);",
+    "INSERT INTO NAVIRE VALUES ('Atlas', 300, 'Longoni'), ('Orion', 500, 'Longoni'), ('Vega', 80, 'Dzaoudzi');"
+  ],
+  "objectifs": [
+    "Employer le vocabulaire du modèle relationnel : relation, attribut, domaine, clé primaire, clé étrangère.",
+    "Lire un schéma relationnel.",
+    "Écrire une requête d'interrogation : SELECT, FROM, WHERE, avec AND, IN, BETWEEN, LIKE, IS NULL, DISTINCT et ORDER BY.",
+    "Utiliser les fonctions d'agrégation COUNT, SUM et AVG."
+  ],
+  "progression": "Q1 à Q6 : le modèle relationnel ; Q7 à Q17 : sélectionner, filtrer, trier ; Q18 à Q20 : compter, additionner, faire une moyenne.",
+  "forme": [
+    "Noms « [Modèle relationnel] … » ou « [SQL] … » ; objectif affiché ; feedbacks au tutoiement, sans « Faux. » ni « Syntaxe incorrecte. » seuls.",
+    "Chaque requête est exécutée dans SQLite sur une petite base de test (schéma dans la source) ; les feedbacks disent ce que fait vraiment SQLite.",
+    "Clé primaire soulignée par le mot « clé primaire » dans les schémas.",
+    "Positions rééquilibrées (D n'était juste que 2 fois sur 35)."
+  ],
+  "retirees": [],
+  "questions": [
+    {
+      "id": "q01", "origine": "SQL Q1",
+      "nom": "[Modèle relationnel] Ce que garantit une clé primaire",
+      "objectif": "Savoir qu'une clé primaire identifie chaque ligne de façon unique.",
+      "enonce": ["On considère la relation BATEAU (nom_navire, tonnage, #id_proprietaire), de clé primaire nom_navire."],
+      "question": ["Que garantit la contrainte de clé primaire sur l'attribut nom_navire ?"],
+      "options": [
+        {"texte": "Que le nom du navire est écrit en majuscules", "feedback": "Une clé primaire ne contrôle pas l'écriture des valeurs. Elle garantit que deux lignes n'ont jamais la même valeur de clé."},
+        {"texte": "Que deux navires de la table n'ont jamais le même nom", "juste": true, "feedback": "Oui : la clé primaire identifie chaque ligne. Le SGBD refuse d'insérer un second navire avec un nom déjà présent."},
+        {"texte": "Que le nom du navire est lié à une autre table", "feedback": "Faire le lien avec une autre table, c'est le rôle d'une clé étrangère, comme #id_proprietaire ici."},
+        {"texte": "Que le nom du navire n'est pas une chaîne de caractères", "feedback": "Une clé primaire peut être de n'importe quel type : texte, entier… Ce qui compte, c'est l'unicité de ses valeurs."}
+      ],
+      "verifications": [{"schema_sql": [], "sql": "INSERT INTO BATEAU VALUES ('Atlas', 10, 1)", "avant": ["CREATE TABLE BATEAU(nom_navire TEXT PRIMARY KEY, tonnage INTEGER, id_proprietaire INTEGER)", "INSERT INTO BATEAU VALUES ('Atlas', 300, 2)"], "erreur_sql": "UNIQUE constraint failed"}]
+    },
+    {
+      "id": "q02", "origine": "SQL Q2",
+      "nom": "[Modèle relationnel] Reconnaître une clé étrangère",
+      "objectif": "Nommer l'attribut qui fait référence à la clé primaire d'une autre relation.",
+      "enonce": ["Schéma : VILLAGE (id_v, nom_v), de clé primaire id_v ; PIROGUE (id_p, couleur, #id_v), de clé primaire id_p."],
+      "question": ["Comment s'appelle l'attribut #id_v dans la relation PIROGUE ?"],
+      "options": [
+        {"texte": "Une clé primaire", "feedback": "La clé primaire de PIROGUE est id_p. Le # devant id_v signale autre chose : une référence vers VILLAGE."},
+        {"texte": "Un attribut calculé", "feedback": "id_v n'est pas calculé : il contient l'identifiant d'un village existant. C'est une référence."},
+        {"texte": "Une clé étrangère", "juste": true, "feedback": "Oui : #id_v fait référence à la clé primaire id_v de VILLAGE. Elle relie chaque pirogue à son village."},
+        {"texte": "Une contrainte de domaine", "feedback": "Une contrainte de domaine fixe les valeurs permises d'un attribut (par exemple un entier positif). Le # marque une clé étrangère."}
+      ]
+    },
+    {
+      "id": "q03", "origine": "SQL Q4",
+      "nom": "[Modèle relationnel] Relation, attribut, ligne",
+      "objectif": "Associer le mot « relation » à une table.",
+      "question": ["Dans le modèle relationnel, à quoi correspond concrètement une relation ?"],
+      "options": [
+        {"texte": "À une colonne de données", "feedback": "Une colonne correspond à un attribut. La relation est l'ensemble : toutes les colonnes et toutes les lignes."},
+        {"texte": "À une ligne de données", "feedback": "Une ligne est un enregistrement, ou n-uplet. La relation regroupe toutes les lignes d'un même schéma."},
+        {"texte": "À un logiciel de base de données", "feedback": "Le logiciel est le SGBD (système de gestion de bases de données), comme SQLite. Une relation est une des tables qu'il gère."},
+        {"texte": "À une table de données", "juste": true, "feedback": "Oui : une relation se représente par une table. Ses colonnes sont les attributs, ses lignes les enregistrements."}
+      ],
+      "fond": {"avant": "« Dans le langage SQL, à quoi correspond concrètement une relation ? »", "apres": "« Dans le modèle relationnel, … »", "raison": "« relation » est un mot du modèle relationnel ; en SQL, on parle de table."}
+    },
+    {
+      "id": "q04", "origine": "SQL Q5",
+      "nom": "[Modèle relationnel] Compter les attributs d'un schéma",
+      "objectif": "Lire un schéma relationnel et compter ses attributs.",
+      "enonce": ["Schéma : RECIF (id_r, nom, #id_zone), de clé primaire id_r."],
+      "question": ["Combien d'attributs la relation RECIF possède-t-elle ?"],
+      "options": [
+        {"texte": "1 (id_r)", "feedback": "id_r est la clé primaire, mais tous les champs sont des attributs, clés ou non : il faut compter les trois."},
+        {"texte": "2 (id_r et nom)", "feedback": "#id_zone est une clé étrangère, et c'est aussi un attribut de RECIF : il compte."},
+        {"texte": "3 (id_r, nom et id_zone)", "juste": true, "feedback": "Oui : un attribut par colonne, que ce soit une clé primaire, une clé étrangère ou un champ ordinaire."},
+        {"texte": "Autant qu'il y a de lignes", "feedback": "Les lignes changent quand on ajoute des récifs ; le nombre d'attributs, lui, est fixé par le schéma : 3."}
+      ]
+    },
+    {
+      "id": "q05", "origine": "SQL 40 Q4",
+      "nom": "[Modèle relationnel] La contrainte de domaine",
+      "objectif": "Définir une contrainte de domaine.",
+      "question": ["Qu'est-ce qu'une contrainte de domaine ?"],
+      "options": [
+        {"texte": "L'obligation d'avoir au moins 100 lignes", "feedback": "Le nombre de lignes n'est jamais imposé par le schéma. Le domaine concerne les valeurs d'un attribut."},
+        {"texte": "Le nom du serveur où la base est rangée", "feedback": "Le domaine n'a rien à voir avec un nom de domaine Internet. Il décrit les valeurs qu'un attribut peut prendre."},
+        {"texte": "L'interdiction de supprimer des données", "feedback": "Ce n'est pas une contrainte du modèle relationnel. Le domaine fixe les valeurs permises d'un attribut."},
+        {"texte": "L'ensemble des valeurs permises pour un attribut (par exemple, un entier positif)", "juste": true, "feedback": "Oui : le domaine d'un attribut, c'est son type et ses limites. Une altitude, par exemple, est un entier positif."}
+      ],
+      "fond": {"avant": "bonne réponse « L'ensemble des valeurs possibles pour un attribut (ex: entier, texte). »", "apres": "« L'ensemble des valeurs permises pour un attribut (par exemple, un entier positif) »", "raison": "forme surtout ; l'exemple « entier positif » montre qu'un domaine va au-delà du seul type."}
+    },
+    {
+      "id": "q06", "origine": "SQL Q30",
+      "nom": "[Modèle relationnel] La contrainte NOT NULL",
+      "objectif": "Savoir ce qu'impose NOT NULL sur un attribut.",
+      "question": ["Que signifie la contrainte NOT NULL sur un attribut ?"],
+      "options": [
+        {"texte": "Que sa valeur doit être égale à zéro", "feedback": "Zéro est une valeur. NULL, c'est l'absence de valeur : NOT NULL interdit de laisser le champ vide."},
+        {"texte": "Que le champ doit toujours être renseigné", "juste": true, "feedback": "Oui : chaque ligne doit avoir une valeur pour cet attribut. Une insertion qui le laisse vide est refusée."},
+        {"texte": "Que sa valeur doit être unique", "feedback": "L'unicité, c'est la contrainte UNIQUE (ou la clé primaire). NOT NULL interdit seulement l'absence de valeur."},
+        {"texte": "Que sa valeur doit être un nombre positif", "feedback": "Ce serait une contrainte de domaine, écrite avec CHECK. NOT NULL interdit seulement le vide."}
+      ],
+      "verifications": [{"sql": "INSERT INTO T(x) VALUES (NULL)", "avant": ["CREATE TABLE T(x INTEGER NOT NULL)"], "erreur_sql": "NOT NULL constraint failed"}]
+    },
+    {
+      "id": "q07", "origine": "SQL Q6",
+      "nom": "[SQL] Choisir les colonnes affichées",
+      "objectif": "Écrire un SELECT qui ne garde que certaines colonnes.",
+      "enonce": ["Table : MONTAGNE (nom, altitude, type_roche)."],
+      "question": ["Quelle requête affiche seulement le nom et l'altitude des montagnes de Mayotte ?"],
+      "options": [
+        {"texte": "SELECT nom, altitude FROM MONTAGNE;", "juste": true, "feedback": "Oui : on liste après SELECT les colonnes voulues, séparées par des virgules, puis la table après FROM."},
+        {"texte": "SELECT * FROM MONTAGNE;", "feedback": "L'étoile garde toutes les colonnes, y compris type_roche. Pour n'en garder que deux, on les nomme."},
+        {"texte": "GET nom, altitude FROM MONTAGNE;", "feedback": "GET n'est pas un mot-clé SQL : une requête d'interrogation commence toujours par SELECT."},
+        {"texte": "SELECT nom AND altitude FROM MONTAGNE;", "feedback": "SQLite accepte cette requête, mais AND calcule un « et » logique entre nom et altitude : on obtient une seule colonne de 0 et de 1. Les colonnes se séparent par des virgules."}
+      ],
+      "verifications": [
+        {"sql": "SELECT nom, altitude FROM MONTAGNE", "resultat": [["Mont Bénara", 660], ["Mont Choungui", 594], ["Mont Mtsapéré", 572]]},
+        {"option": "GET", "sql": "GET nom, altitude FROM MONTAGNE", "erreur_sql": "syntax error"},
+        {"option": "AND", "sql": "SELECT nom AND altitude FROM MONTAGNE", "resultat": [[0], [0], [0]]}
+      ],
+      "fond": {"avant": "feedback de « SELECT nom AND altitude » : « Erreur de syntaxe »", "apres": "feedback : SQLite l'accepte et calcule un « et » logique", "raison": "vérifié dans SQLite (référence choisie) : ce n'est pas une erreur de syntaxe."}
+    },
+    {
+      "id": "q08", "origine": "SQL Q7",
+      "nom": "[SQL] Filtrer les lignes avec WHERE",
+      "objectif": "Placer une condition de filtre avec WHERE, après FROM.",
+      "enonce": ["Table : TORTUE (id_t, espece, poids)."],
+      "question": ["Quelle requête donne les tortues de plus de 100 kg ?"],
+      "options": [
+        {"texte": "SELECT * FROM TORTUE HAVING poids > 100;", "feedback": "HAVING filtre des groupes, après un GROUP BY. SQLite refuse ici : « HAVING clause on a non-aggregate query ». Pour filtrer des lignes, on écrit WHERE."},
+        {"texte": "SELECT * WHERE poids > 100 FROM TORTUE;", "feedback": "L'ordre des clauses est fixe : SELECT, puis FROM, puis WHERE. Ici, SQLite signale une erreur de syntaxe."},
+        {"texte": "SELECT * FROM TORTUE WHERE poids > 100;", "juste": true, "feedback": "Oui : SELECT … FROM … WHERE condition. Seules les lignes où la condition est vraie sont gardées."},
+        {"texte": "SELECT * FROM TORTUE IF poids > 100;", "feedback": "IF n'est pas un mot-clé de requête SQL. Le filtre des lignes s'écrit avec WHERE."}
+      ],
+      "verifications": [
+        {"sql": "SELECT id_t FROM TORTUE WHERE poids > 100", "resultat": [[1], [4]]},
+        {"option": "HAVING", "sql": "SELECT * FROM TORTUE HAVING poids > 100", "erreur_sql": "HAVING clause on a non-aggregate query"},
+        {"option": "ordre", "sql": "SELECT * WHERE poids > 100 FROM TORTUE", "erreur_sql": "syntax error"},
+        {"option": "IF", "sql": "SELECT * FROM TORTUE IF poids > 100", "erreur_sql": "syntax error"}
+      ]
+    },
+    {
+      "id": "q09", "origine": "SQL Q8",
+      "nom": "[SQL] Un texte qui commence par… : LIKE",
+      "objectif": "Utiliser LIKE et % pour chercher un début de texte.",
+      "enonce": ["Table : LYCEE (nom, ville)."],
+      "question": ["Quelle requête affiche les lycées dont le nom commence par « Lycée de » ?"],
+      "options": [
+        {"texte": "SELECT * FROM LYCEE WHERE nom = 'Lycée de%';", "feedback": "Avec =, le % est un caractère ordinaire : on cherche un nom égal à « Lycée de% », qui n'existe pas. Les jokers demandent LIKE."},
+        {"texte": "SELECT * FROM LYCEE WHERE nom LIKE 'Lycée de%';", "juste": true, "feedback": "Oui : avec LIKE, % remplace n'importe quelle suite de caractères. 'Lycée de%' veut dire « commence par Lycée de »."},
+        {"texte": "SELECT * FROM LYCEE WHERE nom LIKE '%Lycée de';", "feedback": "Le % placé au début veut dire « n'importe quoi avant » : on chercherait les noms qui finissent par « Lycée de »."},
+        {"texte": "SELECT * FROM LYCEE WHERE nom CONTAINS 'Lycée de';", "feedback": "CONTAINS n'existe pas en SQL standard ni dans SQLite. Pour chercher un morceau de texte, on utilise LIKE avec %."}
+      ],
+      "verifications": [
+        {"sql": "SELECT nom FROM LYCEE WHERE nom LIKE 'Lycée de%'", "resultat": [["Lycée de Sada"], ["Lycée de Dembéni"]]},
+        {"option": "=", "sql": "SELECT nom FROM LYCEE WHERE nom = 'Lycée de%'", "resultat": []},
+        {"option": "fin", "sql": "SELECT nom FROM LYCEE WHERE nom LIKE '%Lycée de'", "resultat": []},
+        {"option": "CONTAINS", "sql": "SELECT * FROM LYCEE WHERE nom CONTAINS 'Lycée de'", "erreur_sql": "syntax error"}
+      ],
+      "fond": {"avant": "« les lycées dont le nom commence par 'Dzaoudzi' »", "apres": "« les lycées dont le nom commence par « Lycée de » »", "raison": "aucun lycée de Mayotte ne porte un nom commençant par Dzaoudzi ; même requête, avec des données réalistes."}
+    },
+    {
+      "id": "q10", "origine": "SQL Q18",
+      "nom": "[SQL] Un texte qui contient… : LIKE '%…%'",
+      "objectif": "Chercher un mot n'importe où dans un texte.",
+      "enonce": ["Table : RECIF (id_r, nom, id_zone)."],
+      "question": ["Quelle condition garde les récifs dont le nom contient le mot « Corail », n'importe où ?"],
+      "options": [
+        {"texte": "WHERE nom LIKE 'Corail%'", "feedback": "Sans % au début, on ne garde que les noms qui commencent par Corail : « Grand Corail » serait oublié."},
+        {"texte": "WHERE nom = '%Corail%'", "feedback": "Avec =, les % sont des caractères ordinaires : aucun nom n'est égal à « %Corail% ». Il faut LIKE."},
+        {"texte": "WHERE nom LIKE '%Corail%'", "juste": true, "feedback": "Oui : un % de chaque côté veut dire « n'importe quoi avant, n'importe quoi après ». Le mot peut être au début, au milieu ou à la fin."},
+        {"texte": "WHERE nom MATCH '*Corail*'", "feedback": "MATCH sert à la recherche plein texte de certains SGBD ; SQLite le refuse sur une table ordinaire. La recherche simple s'écrit avec LIKE et %."}
+      ],
+      "verifications": [
+        {"sql": "SELECT id_r FROM RECIF WHERE nom LIKE '%Corail%'", "resultat": [[1], [2]]},
+        {"option": "début", "sql": "SELECT id_r FROM RECIF WHERE nom LIKE 'Corail%'", "resultat": []},
+        {"option": "=", "sql": "SELECT id_r FROM RECIF WHERE nom = '%Corail%'", "resultat": []},
+        {"option": "MATCH", "sql": "SELECT id_r FROM RECIF WHERE nom MATCH '*Corail*'", "erreur_sql": "MATCH"}
+      ]
+    },
+    {
+      "id": "q11", "origine": "SQL Q9",
+      "nom": "[SQL] Deux conditions avec AND",
+      "objectif": "Combiner deux conditions qui doivent être vraies ensemble.",
+      "enonce": ["Table : PLANTATION (id_p, type, age)."],
+      "question": ["Quelle requête donne les plants de vanille de plus de 2 ans ?"],
+      "options": [
+        {"texte": "SELECT * FROM PLANTATION WHERE type = 'vanille' AND age > 2;", "juste": true, "feedback": "Oui : AND garde les lignes où les deux conditions sont vraies à la fois : c'est de la vanille, et elle a plus de 2 ans."},
+        {"texte": "SELECT * FROM PLANTATION WHERE type = 'vanille' OR age > 2;", "feedback": "OR garde une ligne dès qu'une seule condition est vraie : l'ylang-ylang de 5 ans serait aussi affiché."},
+        {"texte": "SELECT * FROM PLANTATION WHERE type = 'vanille', age > 2;", "feedback": "Les conditions ne se séparent pas par une virgule : SQLite signale une erreur de syntaxe. On les relie par AND ou OR."},
+        {"texte": "SELECT * FROM PLANTATION WHERE type = vanille AND age > 2;", "feedback": "Sans apostrophes, vanille est lu comme un nom de colonne : SQLite répond « no such column: vanille ». Un texte s'écrit entre apostrophes."}
+      ],
+      "verifications": [
+        {"sql": "SELECT id_p FROM PLANTATION WHERE type = 'vanille' AND age > 2", "resultat": [[1], [4]]},
+        {"option": "OR", "sql": "SELECT id_p FROM PLANTATION WHERE type = 'vanille' OR age > 2", "resultat": [[1], [2], [3], [4]]},
+        {"option": "virgule", "sql": "SELECT * FROM PLANTATION WHERE type = 'vanille', age > 2", "erreur_sql": "syntax error"},
+        {"option": "sans apostrophes", "sql": "SELECT * FROM PLANTATION WHERE type = vanille AND age > 2", "erreur_sql": "no such column: vanille"}
+      ],
+      "fond": {"avant": "distracteur « … WHERE type IS 'vanille' AND age > 2; »", "apres": "distracteur « … WHERE type = vanille AND age > 2; » (apostrophes oubliées)", "raison": "dans SQLite, IS donne ici le même résultat que = : le distracteur était une deuxième bonne réponse."}
+    },
+    {
+      "id": "q12", "origine": "SQL Q13",
+      "nom": "[SQL] Une valeur parmi une liste : IN",
+      "objectif": "Tester l'appartenance à une liste de valeurs avec IN.",
+      "enonce": ["Table : ECOLE (id_e, nom, ville)."],
+      "question": ["Quelle requête sélectionne les écoles situées à Sada ou à Chiconi ?"],
+      "options": [
+        {"texte": "SELECT * FROM ECOLE WHERE ville = ('Sada', 'Chiconi');", "feedback": "= compare à une seule valeur ; SQLite refuse une liste ici (« row value misused »). Pour une liste de valeurs, on utilise IN."},
+        {"texte": "SELECT * FROM ECOLE WHERE ville IN ('Sada', 'Chiconi');", "juste": true, "feedback": "Oui : IN teste si la valeur est dans la liste. C'est plus court que ville = 'Sada' OR ville = 'Chiconi', et équivalent."},
+        {"texte": "SELECT * FROM ECOLE WHERE ville = 'Sada' OR 'Chiconi';", "feedback": "SQLite l'accepte, mais lit « ville = 'Sada' » OR « 'Chiconi' », et un texte seul vaut faux : seules les écoles de Sada sortent. Il faut répéter ville = devant chaque valeur."},
+        {"texte": "SELECT * FROM ECOLE WHERE ville BETWEEN 'Sada' AND 'Chiconi';", "feedback": "BETWEEN cherche un intervalle, ici dans l'ordre alphabétique (et 'Sada' vient après 'Chiconi') : aucune école ne sort. Pour une liste de valeurs, on utilise IN."}
+      ],
+      "verifications": [
+        {"sql": "SELECT id_e FROM ECOLE WHERE ville IN ('Sada', 'Chiconi')", "resultat": [[1], [2]]},
+        {"option": "= liste", "sql": "SELECT * FROM ECOLE WHERE ville = ('Sada', 'Chiconi')", "erreur_sql": "row value misused"},
+        {"option": "OR", "sql": "SELECT id_e FROM ECOLE WHERE ville = 'Sada' OR 'Chiconi'", "resultat": [[1]]},
+        {"option": "BETWEEN", "sql": "SELECT id_e FROM ECOLE WHERE ville BETWEEN 'Sada' AND 'Chiconi'", "resultat": []}
+      ],
+      "fond": {"avant": "distracteur « WHERE ville IS 'Sada' OR 'Chiconi' » ; feedback de BETWEEN : « utilisé pour des plages de valeurs (nombres ou dates) »", "apres": "distracteur « WHERE ville = 'Sada' OR 'Chiconi' » ; feedback de BETWEEN : il compare aussi les textes, dans l'ordre alphabétique", "raison": "l'erreur visée (oublier de répéter la condition) est gardée, sans IS ; BETWEEN fonctionne aussi sur les textes dans SQLite."}
+    },
+    {
+      "id": "q13", "origine": "SQL Q19",
+      "nom": "[SQL] Un intervalle avec BETWEEN",
+      "objectif": "Utiliser BETWEEN et savoir qu'il inclut les bornes.",
+      "enonce": ["Table : RESERVOIR (id_r, nom, volume), volume en m³."],
+      "question": ["Quelle requête donne les réservoirs dont le volume est compris entre 500 et 1000 m³, bornes incluses ?"],
+      "options": [
+        {"texte": "SELECT * FROM RESERVOIR WHERE volume > 500 AND volume < 1000;", "feedback": "Presque : les signes stricts excluent les réservoirs de 500 et de 1000 m³. Il faudrait >= et <=, ou BETWEEN."},
+        {"texte": "SELECT * FROM RESERVOIR WHERE volume FROM 500 TO 1000;", "feedback": "FROM … TO n'existe pas dans une condition SQL : SQLite signale une erreur de syntaxe."},
+        {"texte": "SELECT * FROM RESERVOIR WHERE volume IN (500, 1000);", "feedback": "IN ne garde que les valeurs exactes 500 et 1000, pas celles qui sont entre les deux, comme 750."},
+        {"texte": "SELECT * FROM RESERVOIR WHERE volume BETWEEN 500 AND 1000;", "juste": true, "feedback": "Oui : BETWEEN a AND b garde les valeurs de a à b, bornes comprises. C'est l'écriture courte de volume >= 500 AND volume <= 1000."}
+      ],
+      "verifications": [
+        {"sql": "SELECT volume FROM RESERVOIR WHERE volume BETWEEN 500 AND 1000", "resultat": [[500], [750], [1000]]},
+        {"option": "stricts", "sql": "SELECT volume FROM RESERVOIR WHERE volume > 500 AND volume < 1000", "resultat": [[750]]},
+        {"option": "FROM TO", "sql": "SELECT * FROM RESERVOIR WHERE volume FROM 500 TO 1000", "erreur_sql": "syntax error"},
+        {"option": "IN", "sql": "SELECT volume FROM RESERVOIR WHERE volume IN (500, 1000)", "resultat": [[500], [1000]]}
+      ]
+    },
+    {
+      "id": "q14", "origine": "SQL Q16",
+      "nom": "[SQL] Tester l'absence de valeur : IS NULL",
+      "objectif": "Tester une valeur absente avec IS NULL, et non avec =.",
+      "enonce": ["Table : PARCELLE (id_parcelle, id_proprio)."],
+      "question": ["Quelle requête donne les parcelles agricoles qui n'ont pas encore de propriétaire (valeur absente) ?"],
+      "options": [
+        {"texte": "SELECT * FROM PARCELLE WHERE id_proprio = NULL;", "feedback": "C'est le piège classique : une comparaison avec NULL par = n'est jamais vraie, et la requête ne renvoie rien. On écrit IS NULL."},
+        {"texte": "SELECT * FROM PARCELLE WHERE id_proprio IS NULL;", "juste": true, "feedback": "Oui : IS NULL teste l'absence de valeur. C'est la seule façon fiable de trouver les cases vides au sens de SQL."},
+        {"texte": "SELECT * FROM PARCELLE WHERE id_proprio = '';", "feedback": "La chaîne vide '' est une valeur (un texte sans caractère), pas l'absence de valeur NULL : ce ne sont pas les mêmes lignes."},
+        {"texte": "SELECT * FROM PARCELLE WHERE id_proprio EMPTY;", "feedback": "EMPTY n'est pas un mot-clé SQL : SQLite signale une erreur de syntaxe. L'absence de valeur se teste avec IS NULL."}
+      ],
+      "verifications": [
+        {"sql": "SELECT id_parcelle FROM PARCELLE WHERE id_proprio IS NULL", "resultat": [[2]]},
+        {"option": "= NULL", "sql": "SELECT id_parcelle FROM PARCELLE WHERE id_proprio = NULL", "resultat": []},
+        {"option": "= ''", "sql": "SELECT id_parcelle FROM PARCELLE WHERE id_proprio = ''", "resultat": [[3]]},
+        {"option": "EMPTY", "sql": "SELECT * FROM PARCELLE WHERE id_proprio EMPTY", "erreur_sql": "syntax error"}
+      ]
+    },
+    {
+      "id": "q15", "origine": "SQL Q15",
+      "nom": "[SQL] Supprimer les doublons : DISTINCT",
+      "objectif": "Afficher chaque valeur une seule fois avec DISTINCT.",
+      "enonce": ["Table : POISSON (id, espece)."],
+      "question": ["Quelle requête affiche la liste des espèces présentes dans la table, sans doublons ?"],
+      "options": [
+        {"texte": "SELECT UNIQUE espece FROM POISSON;", "feedback": "UNIQUE est une contrainte qu'on pose sur une colonne à la création d'une table. Dans un SELECT, SQLite le refuse : on écrit DISTINCT."},
+        {"texte": "SELECT DIFFERENT espece FROM POISSON;", "feedback": "DIFFERENT n'est pas un mot-clé : SQLite croit que c'est une colonne et répond « no such column: DIFFERENT »."},
+        {"texte": "SELECT DISTINCT espece FROM POISSON;", "juste": true, "feedback": "Oui : DISTINCT, placé juste après SELECT, supprime les lignes en double du résultat : « perroquet » n'apparaît qu'une fois."},
+        {"texte": "SELECT espece FROM POISSON ORDER BY espece;", "feedback": "Le tri range les doublons côte à côte, mais il les garde : « perroquet » apparaîtrait deux fois."}
+      ],
+      "verifications": [
+        {"sql": "SELECT DISTINCT espece FROM POISSON ORDER BY espece", "resultat": [["chirurgien"], ["mérou"], ["perroquet"]]},
+        {"option": "UNIQUE", "sql": "SELECT UNIQUE espece FROM POISSON", "erreur_sql": "syntax error"},
+        {"option": "DIFFERENT", "sql": "SELECT DIFFERENT espece FROM POISSON", "erreur_sql": "no such column: DIFFERENT"},
+        {"option": "ORDER BY", "sql": "SELECT espece FROM POISSON ORDER BY espece", "resultat": [["chirurgien"], ["mérou"], ["perroquet"], ["perroquet"]]}
+      ]
+    },
+    {
+      "id": "q16", "origine": "SQL Q10",
+      "nom": "[SQL] Trier dans l'ordre décroissant",
+      "objectif": "Trier les lignes avec ORDER BY … DESC.",
+      "enonce": ["Table : RESERVOIR (id_r, nom, volume)."],
+      "question": ["Quelle requête affiche les réservoirs d'eau du plus grand au plus petit volume ?"],
+      "options": [
+        {"texte": "SELECT * FROM RESERVOIR ORDER BY volume;", "feedback": "Sans précision, le tri est croissant (ASC) : on irait du plus petit au plus grand volume."},
+        {"texte": "SELECT * FROM RESERVOIR SORT BY volume DESC;", "feedback": "SORT BY n'existe pas en SQL : le tri s'écrit ORDER BY. SQLite signale une erreur de syntaxe."},
+        {"texte": "SELECT * FROM RESERVOIR ORDER BY volume DESC;", "juste": true, "feedback": "Oui : ORDER BY trie, et DESC (pour descending, « décroissant ») commence par la plus grande valeur."},
+        {"texte": "SELECT * FROM RESERVOIR WHERE volume DESC;", "feedback": "DESC précise le sens d'un tri : il ne s'écrit qu'après ORDER BY. Après WHERE, SQLite signale une erreur."}
+      ],
+      "verifications": [
+        {"sql": "SELECT volume FROM RESERVOIR ORDER BY volume DESC", "resultat": [[1200], [1000], [750], [500], [400]]},
+        {"option": "SORT", "sql": "SELECT * FROM RESERVOIR SORT BY volume DESC", "erreur_sql": "syntax error"},
+        {"option": "WHERE DESC", "sql": "SELECT * FROM RESERVOIR WHERE volume DESC", "erreur_sql": "syntax error"}
+      ]
+    },
+    {
+      "id": "q17", "origine": "SQL Q29",
+      "nom": "[SQL] Trier selon deux critères",
+      "objectif": "Écrire un tri sur deux colonnes, dans deux sens différents.",
+      "enonce": ["Table : VILLAGE (nom, commune, pop)."],
+      "question": ["Quelle fin de requête range les villages par commune (de A à Z), puis, dans une même commune, par population décroissante ?"],
+      "options": [
+        {"texte": "ORDER BY commune ASC AND pop DESC", "feedback": "Les critères de tri se séparent par une virgule, pas par AND : SQLite signale une erreur de syntaxe."},
+        {"texte": "ORDER BY commune ASC, pop DESC", "juste": true, "feedback": "Oui : SQL trie d'abord par commune ; pour deux villages de la même commune, il trie par population, ici décroissante."},
+        {"texte": "SORT BY commune, pop DESC", "feedback": "Le mot-clé est ORDER BY, pas SORT BY : SQLite signale une erreur de syntaxe."},
+        {"texte": "ORDER BY commune, pop", "feedback": "Le premier critère est bon, mais sans DESC la population serait triée dans l'ordre croissant."}
+      ],
+      "verifications": [
+        {"sql": "SELECT nom FROM VILLAGE ORDER BY commune ASC, pop DESC", "resultat": [["Bandrélé"], ["Hamouro"], ["Mtsangamouji"], ["Chembenyoumba"]]},
+        {"option": "AND", "sql": "SELECT nom FROM VILLAGE ORDER BY commune ASC AND pop DESC", "erreur_sql": "syntax error"},
+        {"option": "croissant", "sql": "SELECT nom FROM VILLAGE ORDER BY commune, pop", "resultat": [["Hamouro"], ["Bandrélé"], ["Chembenyoumba"], ["Mtsangamouji"]]}
+      ],
+      "fond": {"avant": "« Afficher les villages par nom (A-Z) puis par population décroissante » (ORDER BY nom, pop)", "apres": "« par commune (de A à Z), puis par population décroissante » (ORDER BY commune, pop)", "raison": "deux villages ont rarement le même nom : le second critère ne servait à rien. Même notion (tri sur deux critères), même forme de bonne réponse."}
+    },
+    {
+      "id": "q18", "origine": "SQL Q11",
+      "nom": "[SQL] Compter les lignes : COUNT",
+      "objectif": "Compter les lignes d'une table avec COUNT(*).",
+      "enonce": ["Table : RECIF (id_r, nom, id_zone)."],
+      "question": ["Quelle requête compte le nombre de récifs enregistrés ?"],
+      "options": [
+        {"texte": "SELECT SUM(*) FROM RECIF;", "feedback": "SUM additionne les valeurs d'une colonne de nombres ; il ne compte pas les lignes, et SQLite refuse SUM(*)."},
+        {"texte": "SELECT COUNT(*) FROM RECIF;", "juste": true, "feedback": "Oui : COUNT(*) compte les lignes du résultat. Ici, il y a 3 récifs."},
+        {"texte": "SELECT TOTAL(*) FROM RECIF;", "feedback": "TOTAL existe dans SQLite, mais il additionne une colonne, comme SUM : il ne compte pas les lignes, et TOTAL(*) est refusé."},
+        {"texte": "SELECT COUNT(id_r) WHERE RECIF;", "feedback": "Il manque FROM : sans lui, SQLite ne sait pas quelle table lire, et cherche une colonne nommée RECIF."}
+      ],
+      "verifications": [
+        {"sql": "SELECT COUNT(*) FROM RECIF", "resultat": [[3]]},
+        {"option": "SUM", "sql": "SELECT SUM(*) FROM RECIF", "erreur_sql": "wrong number of arguments"},
+        {"option": "TOTAL", "sql": "SELECT TOTAL(*) FROM RECIF", "erreur_sql": "wrong number of arguments"},
+        {"option": "sans FROM", "sql": "SELECT COUNT(id_r) WHERE RECIF", "erreur_sql": "no such column"}
+      ],
+      "fond": {"avant": "feedback de TOTAL : « La fonction TOTAL n'existe pas en SQL standard »", "apres": "feedback : TOTAL existe dans SQLite, mais additionne comme SUM", "raison": "SQLite est la référence choisie : TOTAL y existe."}
+    },
+    {
+      "id": "q19", "origine": "SQL Q17",
+      "nom": "[SQL] Additionner une colonne : SUM",
+      "objectif": "Additionner les valeurs d'une colonne avec SUM.",
+      "enonce": ["La table RECOLTE (poids, annee) enregistre les récoltes de vanille, poids en kg."],
+      "question": ["Quelle requête donne la masse totale de vanille récoltée en 2023 ?"],
+      "options": [
+        {"texte": "SELECT COUNT(poids) FROM RECOLTE WHERE annee = 2023;", "feedback": "COUNT compte les récoltes (ici 2), il n'additionne pas leurs poids."},
+        {"texte": "SELECT SUM(poids) FROM RECOLTE WHERE annee = 2023;", "juste": true, "feedback": "Oui : WHERE garde les récoltes de 2023, puis SUM additionne leurs poids : 12,5 + 8 = 20,5 kg."},
+        {"texte": "SELECT ADD(poids) FROM RECOLTE WHERE annee = 2023;", "feedback": "ADD n'est pas une fonction d'agrégation : c'est un mot réservé de SQL (il sert à modifier une table), et SQLite signale une erreur de syntaxe. On additionne une colonne avec SUM."},
+        {"texte": "SELECT poids + poids FROM RECOLTE;", "feedback": "Ce calcul se fait ligne par ligne : chaque poids est doublé. Il n'y a ni total, ni filtre sur l'année."}
+      ],
+      "verifications": [
+        {"sql": "SELECT SUM(poids) FROM RECOLTE WHERE annee = 2023", "resultat": [[20.5]]},
+        {"option": "COUNT", "sql": "SELECT COUNT(poids) FROM RECOLTE WHERE annee = 2023", "resultat": [[2]]},
+        {"option": "ADD", "sql": "SELECT ADD(poids) FROM RECOLTE WHERE annee = 2023", "erreur_sql": "syntax error"}
+      ],
+      "fond": {"avant": "« Obtenir la masse totale de vanille récoltée en 2023. Table : RECOLTE (poids, annee) »", "apres": "on précise que la table ne contient que des récoltes de vanille", "raison": "la table n'avait pas de colonne produit : la question était ambiguë."}
+    },
+    {
+      "id": "q20", "origine": "SQL Q12",
+      "nom": "[SQL] Calculer une moyenne : AVG",
+      "objectif": "Calculer une moyenne sur des lignes filtrées.",
+      "enonce": ["Table : NAVIRE (nom, tonnage, port)."],
+      "question": ["Quelle requête calcule le tonnage moyen des navires du port de Longoni ?"],
+      "options": [
+        {"texte": "SELECT MEAN(tonnage) FROM NAVIRE WHERE port = 'Longoni';", "feedback": "MEAN est le mot anglais pour « moyenne », mais ce n'est pas une fonction SQL. La moyenne s'écrit AVG (de average)."},
+        {"texte": "SELECT AVG(tonnage) WHERE port = 'Longoni';", "feedback": "Il manque FROM NAVIRE : sans lui, SQLite ne sait pas où trouver les colonnes tonnage et port."},
+        {"texte": "SELECT AVG(*) FROM NAVIRE WHERE port = 'Longoni';", "feedback": "Une moyenne se calcule sur une colonne de nombres précise ; AVG(*) est refusé par SQLite."},
+        {"texte": "SELECT AVG(tonnage) FROM NAVIRE WHERE port = 'Longoni';", "juste": true, "feedback": "Oui : WHERE garde les navires de Longoni, puis AVG fait la moyenne de leur tonnage : (300 + 500) / 2 = 400."}
+      ],
+      "verifications": [
+        {"sql": "SELECT AVG(tonnage) FROM NAVIRE WHERE port = 'Longoni'", "resultat": [[400.0]]},
+        {"option": "MEAN", "sql": "SELECT MEAN(tonnage) FROM NAVIRE WHERE port = 'Longoni'", "erreur_sql": "no such function: MEAN"},
+        {"option": "sans FROM", "sql": "SELECT AVG(tonnage) WHERE port = 'Longoni'", "erreur_sql": "no such column"},
+        {"option": "AVG(*)", "sql": "SELECT AVG(*) FROM NAVIRE WHERE port = 'Longoni'", "erreur_sql": "wrong number of arguments"}
+      ],
+      "fond": {"avant": "distracteur « SELECT MEAN(tonnage) FROM NAVIRE; »", "apres": "« SELECT MEAN(tonnage) FROM NAVIRE WHERE port = 'Longoni'; »", "raison": "sans WHERE, l'option se repérait par sa longueur ; même erreur visée (MEAN au lieu de AVG)."}
+    }
+  ]
+}

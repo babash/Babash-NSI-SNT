@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+	<!--NSI Tle · SQL 2 : jointures et mises à jour : Babash - NSI Tani Malandi, CC BY-SA 4.0-->
+	<question type="category">
+		<category>
+			<text><![CDATA[<infos><name>NSI Tle · SQL 2 : jointures et mises à jour</name><answernumbering>123</answernumbering><niveau>TERMINALE</niveau><matiere>NUMERIQUE SC.INFORM.</matiere></infos>]]></text>
+		</category>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] Écrire la condition de jointure]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Relier la clé étrangère d'une table à la clé primaire de l'autre.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle est la condition de jointure correcte entre ELEVE et CLASSE ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[ON ELEVE.id_e = CLASSE.id_classe]]></text>
+			<feedback>
+				<text><![CDATA[id_e identifie l'élève, pas sa classe : l'élève n° 2 serait relié à la classe n° 2 par hasard. On relie la clé étrangère à la clé primaire.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[WHERE ELEVE.nom = CLASSE.nom_c]]></text>
+			<feedback>
+				<text><![CDATA[Un nom d'élève n'est jamais égal à un nom de classe : on n'obtiendrait rien. La jointure se fait sur les identifiants.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[JOIN ON ELEVE = CLASSE]]></text>
+			<feedback>
+				<text><![CDATA[On ne compare pas deux tables entières : il faut dire quels attributs doivent être égaux, ici les id_classe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[ON ELEVE.id_classe = CLASSE.id_classe]]></text>
+			<feedback>
+				<text><![CDATA[Oui : la clé étrangère #id_classe de ELEVE est égale à la clé primaire id_classe de CLASSE. Chaque élève est relié à sa classe.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] Afficher des colonnes de deux tables]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une jointure complète, sans produit cartésien.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle requête affiche le nom de chaque élève et le nom de sa classe ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom, nom_c FROM ELEVE, CLASSE;]]></text>
+			<feedback>
+				<text><![CDATA[Sans condition, on obtient un produit cartésien : chaque élève associé à toutes les classes. 3 élèves et 2 classes donnent 6 lignes.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom, nom_c FROM ELEVE JOIN CLASSE;]]></text>
+			<feedback>
+				<text><![CDATA[SQLite accepte un JOIN sans ON, mais il fait alors un produit cartésien, comme une virgule : chaque élève avec chaque classe. La condition ON est indispensable.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom, nom_c WHERE ELEVE JOIN CLASSE;]]></text>
+			<feedback>
+				<text><![CDATA[L'ordre des clauses est fixe : SELECT, FROM (avec les tables et le JOIN), puis WHERE. Ici, SQLite signale une erreur de syntaxe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[SELECT nom, nom_c FROM ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : JOIN … ON garde seulement les paires où la classe de l'élève est bien cette classe. On obtient une ligne par élève.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] Une jointure suivie d'un filtre]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer sur un attribut d'une autre table grâce à une jointure.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v).</p><p>Quelle requête affiche les noms des pirogues du village de Bouéni ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom_p FROM PIROGUE WHERE nom_v = 'Bouéni';]]></text>
+			<feedback>
+				<text><![CDATA[nom_v n'est pas un attribut de PIROGUE : SQLite répond « no such column: nom_v ». Il faut d'abord joindre VILLAGE.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom_p FROM PIROGUE JOIN VILLAGE WHERE nom_v = 'Bouéni';]]></text>
+			<feedback>
+				<text><![CDATA[Sans ON, SQLite associe chaque pirogue à chaque village : toutes les pirogues ressortent avec le village de Bouéni, même celles de Sada.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[SELECT nom_p FROM PIROGUE JOIN VILLAGE ON PIROGUE.id_v = VILLAGE.id_v WHERE nom_v = 'Bouéni';]]></text>
+			<feedback>
+				<text><![CDATA[Oui : la jointure relie chaque pirogue à son village, puis WHERE garde celles de Bouéni.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom_p FROM PIROGUE, VILLAGE WHERE nom_v = 'Bouéni';]]></text>
+			<feedback>
+				<text><![CDATA[C'est un produit cartésien : la condition de jointure manque. Toutes les pirogues seraient affichées, pas seulement celles de Bouéni.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] Joindre trois tables]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Enchaîner deux jointures en suivant les clés étrangères.</p><p>Schéma : ZONE (id_z, nom_z) ; RECIF (id_r, nom_r, #id_z) ; MESURE (id_m, valeur, #id_r).</p><p>Quelle clause FROM relie correctement les zones aux mesures ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[FROM ZONE JOIN MESURE ON ZONE.id_z = MESURE.id_r]]></text>
+			<feedback>
+				<text><![CDATA[MESURE n'a pas de lien direct avec ZONE : comparer un identifiant de zone à un identifiant de récif relie des lignes au hasard. Il faut passer par RECIF.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[FROM ZONE JOIN RECIF ON ZONE.id_z = RECIF.id_z JOIN MESURE ON RECIF.id_r = MESURE.id_r]]></text>
+			<feedback>
+				<text><![CDATA[Oui : on suit les clés étrangères, de MESURE vers RECIF, puis de RECIF vers ZONE. Une condition ON pour chaque JOIN.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[FROM ZONE, RECIF, MESURE]]></text>
+			<feedback>
+				<text><![CDATA[Sans condition, c'est un produit cartésien de trois tables : chaque zone avec chaque récif et chaque mesure. Le résultat est faux et très long.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[FROM ZONE JOIN RECIF JOIN MESURE ON id_z = id_r]]></text>
+			<feedback>
+				<text><![CDATA[id_z existe dans ZONE et dans RECIF : SQLite répond « ambiguous column name ». Chaque jointure a besoin de sa propre condition, avec le nom de la table devant.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[SQL] La profondeur maximale : MAX]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Obtenir la plus grande valeur d'une colonne avec MAX.</p><p>Schéma : PLONGEUR (id_plongeur, nom, #id_club) ; PLONGEE (id_plongee, lieu, profondeur, #id_plongeur), profondeur en mètres.</p><p>Quelle requête affiche la plus grande profondeur atteinte lors d'une plongée ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT MAX(*) FROM PLONGEE;]]></text>
+			<feedback>
+				<text><![CDATA[MAX s'applique à une colonne précise, celle dont on veut la plus grande valeur : SQLite refuse MAX(*).]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[SELECT MAX(profondeur) FROM PLONGEE;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : MAX renvoie la plus grande valeur de la colonne (25 m ici). Pas besoin de jointure : on ne demande que la valeur. MIN donnerait la plus petite.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT profondeur FROM PLONGEE ORDER BY profondeur;]]></text>
+			<feedback>
+				<text><![CDATA[Ce tri est croissant : la première ligne est la profondeur la plus faible, et toutes les plongées sont affichées. Il faudrait DESC, ou plus simplement MAX.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT AVG(profondeur) FROM PLONGEE;]]></text>
+			<feedback>
+				<text><![CDATA[AVG calcule la moyenne des profondeurs, pas la plus grande.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] Deux colonnes de même nom]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Préfixer un attribut par le nom de sa table pour lever une ambiguïté.</p><p>Les tables PLONGEUR (id_plongeur, nom, #id_club) et CLUB (id_club, nom) ont toutes deux un attribut nom.</p><p>Dans une jointure de ces deux tables, comment désigner le nom du plongeur ou de la plongeuse ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[PLONGEUR.nom]]></text>
+			<feedback>
+				<text><![CDATA[Oui : table.attribut lève l'ambiguïté. Sans préfixe, SQLite répondrait « ambiguous column name: nom ».]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[nom.PLONGEUR]]></text>
+			<feedback>
+				<text><![CDATA[L'ordre est inversé : on écrit d'abord la table, puis l'attribut. SQLite chercherait une table nommée nom.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[PLONGEUR->nom]]></text>
+			<feedback>
+				<text><![CDATA[La flèche n'est pas la notation d'un attribut de table en SQL. On écrit la table, un point, puis l'attribut.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[PLONGEUR(nom)]]></text>
+			<feedback>
+				<text><![CDATA[Les parenthèses servent aux fonctions. Ici, SQLite lit d'abord nom, qu'il trouve dans les deux tables, et répond « ambiguous column name ». On écrit PLONGEUR.nom.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] Oublier la condition : le produit cartésien]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Prévoir le résultat d'une requête sur deux tables sans condition de liaison.</p><p>La table PIROGUE a 4 lignes, la table VILLAGE en a 3. On exécute <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">SELECT * FROM PIROGUE, VILLAGE;</code>, sans condition.</p><p>Que se passe-t-il ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Le SGBD choisit tout seul la bonne liaison]]></text>
+			<feedback>
+				<text><![CDATA[Le SGBD ne devine jamais la liaison : sans condition, il associe tout avec tout. C'est à la requête de dire quelles colonnes doivent être égales.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[La requête provoque une erreur de syntaxe]]></text>
+			<feedback>
+				<text><![CDATA[La requête est valide : elle s'exécute. Mais elle donne toutes les combinaisons, ce qui n'est en général pas le résultat voulu.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[On obtient les 12 combinaisons possibles : c'est un produit cartésien]]></text>
+			<feedback>
+				<text><![CDATA[Oui : chaque pirogue est associée à chaque village, 4 × 3 = 12 lignes. Il faut une condition de jointure pour ne garder que les bonnes paires.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[La requête ne renvoie aucune ligne]]></text>
+			<feedback>
+				<text><![CDATA[C'est l'inverse : sans condition, aucune ligne n'est écartée. On obtient 4 × 3 = 12 lignes.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] L'ordre des tables dans une jointure]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Savoir qu'une jointure ne dépend pas de l'ordre des tables.</p><p>Dans une jointure <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">A JOIN B ON …</code>, l'ordre des tables (A JOIN B ou B JOIN A) change-t-il les lignes obtenues ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Oui, les données obtenues sont différentes]]></text>
+			<feedback>
+				<text><![CDATA[La condition est la même dans les deux cas : les mêmes paires de lignes sont gardées. Seul l'ordre des colonnes avec SELECT * peut changer.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Oui, SQL refuse l'un des deux sens]]></text>
+			<feedback>
+				<text><![CDATA[Les deux sens sont acceptés : une jointure peut s'écrire à partir de n'importe laquelle des deux tables.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Seulement si les tables ont plus de 100 lignes]]></text>
+			<feedback>
+				<text><![CDATA[La taille des tables ne change pas le résultat d'une jointure : les paires gardées sont les mêmes dans les deux sens.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Non, les lignes obtenues sont les mêmes]]></text>
+			<feedback>
+				<text><![CDATA[Oui : la jointure garde les paires où la condition est vraie, dans un sens comme dans l'autre. Avec SELECT *, seules les colonnes changent de place.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Jointures] Un alias de table avec AS]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Comprendre le rôle d'un alias de table.</p><p>À quoi sert <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">AS</code> dans <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">FROM PIROGUE AS P JOIN VILLAGE AS V ON P.id_v = V.id_v</code> ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[À trier les tables avant la jointure]]></text>
+			<feedback>
+				<text><![CDATA[Le tri s'écrit ORDER BY, à la fin de la requête. AS donne un autre nom, plus court, à une table.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[À créer une copie des tables]]></text>
+			<feedback>
+				<text><![CDATA[Aucune table n'est copiée : P et V sont d'autres noms pour PIROGUE et VILLAGE, le temps de la requête.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[À donner un nom court aux tables, pour écrire la requête plus simplement]]></text>
+			<feedback>
+				<text><![CDATA[Oui : P et V sont des alias. On écrit P.id_v au lieu de PIROGUE.id_v ; ils n'existent que dans cette requête.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[À protéger l'accès aux données]]></text>
+			<feedback>
+				<text><![CDATA[Les droits d'accès se gèrent ailleurs, dans le SGBD. AS ne fait que renommer une table dans la requête.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[SQL] Renommer une colonne du résultat : AS]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Donner un alias à une colonne affichée.</p><p>Table : VILLAGE (id_v, nom_v).</p><p>Quelle requête affiche la colonne nom_v sous le titre village, sans modifier la table ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[SELECT nom_v AS village FROM VILLAGE;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : AS donne un alias à la colonne, le temps de la requête. La table, elle, n'est pas modifiée.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom_v RENAME village FROM VILLAGE;]]></text>
+			<feedback>
+				<text><![CDATA[RENAME sert à modifier la structure d'une table (ALTER TABLE … RENAME). Dans un SELECT, SQLite signale une erreur de syntaxe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom_v IS village FROM VILLAGE;]]></text>
+			<feedback>
+				<text><![CDATA[IS compare deux valeurs : SQLite cherche une colonne village pour la comparer à nom_v, et répond « no such column: village ».]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT nom_v -> village FROM VILLAGE;]]></text>
+			<feedback>
+				<text><![CDATA[La flèche ne renomme pas une colonne (dans SQLite, elle sert à lire du JSON) : SQLite cherche une colonne village et ne la trouve pas.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[SQL] Compter avec deux conditions]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer avec AND avant de compter.</p><p>Table : TORTUE (id_t, espece, poids), poids en kg.</p><p>Quelle requête donne le nombre de tortues vertes de plus de 100 kg ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT COUNT(*) FROM TORTUE WHERE espece = 'verte' OR poids > 100;]]></text>
+			<feedback>
+				<text><![CDATA[OR compte aussi les tortues vertes légères et les grosses tortues d'autres espèces : le nombre est trop grand.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[SELECT COUNT(*) FROM TORTUE WHERE espece = 'verte' AND poids > 100;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : WHERE garde les tortues vertes de plus de 100 kg, puis COUNT(*) compte ces lignes.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT SUM(*) FROM TORTUE WHERE espece = 'verte' AND poids > 100;]]></text>
+			<feedback>
+				<text><![CDATA[SUM additionne des valeurs, il ne compte pas des lignes, et SQLite refuse SUM(*).]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT * FROM TORTUE WHERE espece = 'verte' AND poids > 100;]]></text>
+			<feedback>
+				<text><![CDATA[Le filtre est bon, mais cette requête affiche les tortues une à une ; elle ne donne pas leur nombre. Il faut COUNT(*).]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[SQL] Deux conditions sur les plongées]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Combiner une condition sur un texte et une condition sur un nombre.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle condition garde les plongées faites à Bandrélé à moins de 20 m de profondeur ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[WHERE lieu = 'Bandrélé' OR profondeur < 20]]></text>
+			<feedback>
+				<text><![CDATA[OR garderait aussi les plongées profondes de Bandrélé et les plongées peu profondes ailleurs. Les deux conditions doivent être vraies : AND.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[WHERE lieu = 'Bandrélé', profondeur < 20]]></text>
+			<feedback>
+				<text><![CDATA[Les conditions ne se séparent pas par une virgule : SQLite signale une erreur de syntaxe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[WHERE lieu = Bandrélé AND profondeur < 20]]></text>
+			<feedback>
+				<text><![CDATA[Sans apostrophes, Bandrélé est lu comme un nom de colonne : SQLite répond « no such column ». Un texte s'écrit entre apostrophes.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[WHERE lieu = 'Bandrélé' AND profondeur < 20]]></text>
+			<feedback>
+				<text><![CDATA[Oui : AND garde les plongées qui remplissent les deux conditions à la fois.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[SQL] Trouver l'erreur dans une requête]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Repérer qu'une valeur texte s'écrit entre apostrophes.</p><div style="background-color: #1e1e1e; color: #d4d4d4; padding: 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; border-radius: 5px; line-height: 1.4;"><span style="color: #569cd6;">SELECT</span>&nbsp;nom&nbsp;<span style="color: #569cd6;">FROM</span>&nbsp;CLIENT&nbsp;<span style="color: #569cd6;">WHERE</span>&nbsp;ville&nbsp;=&nbsp;Mamoudzou;</div><p>Pourquoi cette requête provoque-t-elle une erreur ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Mamoudzou doit être écrit en majuscules]]></text>
+			<feedback>
+				<text><![CDATA[Les majuscules ne changent rien ici : MAMOUDZOU serait aussi lu comme un nom de colonne. Ce qui manque, ce sont les apostrophes.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Il manque des apostrophes autour de Mamoudzou]]></text>
+			<feedback>
+				<text><![CDATA[Oui : sans apostrophes, SQLite cherche une colonne nommée Mamoudzou et répond « no such column: Mamoudzou ». On écrit ville = 'Mamoudzou'.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[On ne peut pas filtrer sur une ville]]></text>
+			<feedback>
+				<text><![CDATA[On peut filtrer sur n'importe quel attribut. Le problème est l'écriture de la valeur.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Il manque un point-virgule après SELECT nom]]></text>
+			<feedback>
+				<text><![CDATA[Le point-virgule ne se met qu'à la fin de la requête complète, et il y est déjà.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[SQL] Limiter le nombre de lignes : LIMIT]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Garder seulement les premières lignes d'un résultat.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle requête n'affiche que les 3 premières lignes du résultat ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[SELECT * FROM PLONGEE LIMIT 3;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : LIMIT, à la fin de la requête, garde les 3 premières lignes. Avec ORDER BY avant, on choisit lesquelles.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT TOP 3 * FROM PLONGEE;]]></text>
+			<feedback>
+				<text><![CDATA[TOP existe dans certains SGBD, mais pas dans SQLite, qui signale une erreur. SQLite (comme MySQL) utilise LIMIT.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT * FROM PLONGEE STOP 3;]]></text>
+			<feedback>
+				<text><![CDATA[STOP n'est pas un mot-clé SQL : SQLite signale une erreur de syntaxe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT * FROM PLONGEE WHERE row < 3;]]></text>
+			<feedback>
+				<text><![CDATA[row n'est pas une colonne de la table : SQLite répond « no such column: row ». Le nombre de lignes se limite avec LIMIT.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Mises à jour] Supprimer une ligne encore référencée]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Expliquer le rôle de l'intégrité référentielle lors d'une suppression.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v). Le contrôle des clés étrangères est activé (dans SQLite : <code style="font-family: 'Courier New', Courier, monospace; background-color: #f3f3f3; color: #a31515; padding: 1px 4px; border-radius: 3px;">PRAGMA foreign_keys = ON</code>).</p><p>On tente de supprimer un village alors que des pirogues y sont encore reliées. Que se passe-t-il ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Le village est supprimé, et ses pirogues aussi]]></text>
+			<feedback>
+				<text><![CDATA[Cela n'arrive que si la clé étrangère est déclarée avec ON DELETE CASCADE. Sans cette option, la suppression est refusée.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Le village est supprimé, et la clé étrangère des pirogues passe à 0]]></text>
+			<feedback>
+				<text><![CDATA[Le SGBD ne choisit jamais une valeur de remplacement tout seul. Sans option particulière, il refuse la suppression.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[Le SGBD refuse la suppression, pour préserver l'intégrité référentielle]]></text>
+			<feedback>
+				<text><![CDATA[Oui : supprimer le village laisserait des pirogues qui pointent vers un village inexistant. SQLite répond « FOREIGN KEY constraint failed ».]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[Rien de spécial : la contrainte est ignorée]]></text>
+			<feedback>
+				<text><![CDATA[Le contrôle est activé : la contrainte est vérifiée à chaque modification. C'est son rôle.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Mises à jour] Ajouter une ligne : INSERT]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une requête INSERT INTO … VALUES.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête ajoute un navire nommé « Mamoudzou Express », de 400 tonnes ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[INSERT INTO NAVIRE (nom, tonnage) VALUES ('Mamoudzou Express', 400);]]></text>
+			<feedback>
+				<text><![CDATA[Oui : INSERT INTO table (colonnes) VALUES (valeurs) ajoute une ligne. Le port, non donné, reste vide (NULL).]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[ADD INTO NAVIRE VALUES ('Mamoudzou Express', 400);]]></text>
+			<feedback>
+				<text><![CDATA[Le mot-clé de l'ajout est INSERT INTO, pas ADD : SQLite signale une erreur de syntaxe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[UPDATE NAVIRE SET nom = 'Mamoudzou Express';]]></text>
+			<feedback>
+				<text><![CDATA[UPDATE modifie des lignes qui existent déjà : ici, il renommerait tous les navires ! Pour ajouter une ligne, on utilise INSERT.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[INSERT INTO NAVIRE ('Mamoudzou Express', 400);]]></text>
+			<feedback>
+				<text><![CDATA[Il manque le mot-clé VALUES devant les valeurs : SQLite les lit comme des noms de colonnes et signale une erreur.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Mises à jour] Modifier une ligne : UPDATE]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un UPDATE … SET … WHERE qui ne modifie qu'une ligne.</p><p>Table : ECOLE (id_e, nom, ville).</p><p>Quelle requête change la ville de l'école n° 42 en « Mtsapéré » ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[UPDATE ECOLE WHERE id_e = 42 SET ville = 'Mtsapéré';]]></text>
+			<feedback>
+				<text><![CDATA[L'ordre est fixe : SET vient avant WHERE. Ici, SQLite signale une erreur de syntaxe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[UPDATE ECOLE SET ville = 'Mtsapéré' WHERE id_e = 42;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : UPDATE table SET colonne = valeur WHERE condition. Seule la ligne n° 42 est modifiée.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[MODIFY ECOLE SET ville = 'Mtsapéré' WHERE id_e = 42;]]></text>
+			<feedback>
+				<text><![CDATA[MODIFY n'est pas un mot-clé SQL : une modification de lignes s'écrit avec UPDATE.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[UPDATE ECOLE SET ville = 'Mtsapéré';]]></text>
+			<feedback>
+				<text><![CDATA[Attention : sans WHERE, toutes les écoles de la table seraient placées à Mtsapéré. Le WHERE choisit les lignes à modifier.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Mises à jour] Un UPDATE qui calcule]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Utiliser la valeur actuelle d'une colonne dans un UPDATE.</p><p>Table : RESERVOIR (id_r, nom, volume), volume en m³.</p><p>Quelle requête augmente de 10 m³ le volume de tous les réservoirs ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[UPDATE RESERVOIR SET volume = volume + 10;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : pour chaque ligne, la nouvelle valeur est calculée à partir de l'ancienne. Sans WHERE, toutes les lignes sont concernées, comme demandé.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SET volume = volume + 10 FROM RESERVOIR;]]></text>
+			<feedback>
+				<text><![CDATA[Une requête de modification commence par UPDATE : ici, SQLite signale une erreur de syntaxe.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[UPDATE RESERVOIR volume + 10;]]></text>
+			<feedback>
+				<text><![CDATA[Il manque SET et le signe = : on doit dire quelle colonne reçoit quelle valeur.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[SELECT volume + 10 FROM RESERVOIR;]]></text>
+			<feedback>
+				<text><![CDATA[SELECT affiche les volumes augmentés, mais n'enregistre rien : la table n'est pas modifiée.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Mises à jour] Supprimer une ligne : DELETE]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un DELETE FROM … WHERE.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête supprime le navire nommé « Vieux Port » ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[REMOVE FROM NAVIRE WHERE nom = 'Vieux Port';]]></text>
+			<feedback>
+				<text><![CDATA[REMOVE n'est pas un mot-clé SQL : la suppression de lignes s'écrit DELETE FROM.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[DELETE nom = 'Vieux Port' FROM NAVIRE;]]></text>
+			<feedback>
+				<text><![CDATA[La condition se place après FROM, dans un WHERE : DELETE FROM table WHERE condition. Ici, SQLite signale une erreur.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[DELETE FROM NAVIRE WHERE nom = 'Vieux Port';]]></text>
+			<feedback>
+				<text><![CDATA[Oui : DELETE FROM, suivi d'un WHERE, supprime seulement les lignes qui vérifient la condition.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[DROP FROM NAVIRE WHERE nom = 'Vieux Port';]]></text>
+			<feedback>
+				<text><![CDATA[DROP supprime une table entière (DROP TABLE), pas une ligne. Il ne s'écrit pas avec FROM et WHERE.]]></text>
+			</feedback>
+		</answer>
+	</question>
+	<question type="multichoice">
+		<name>
+			<text><![CDATA[[Mises à jour] Supprimer une table : DROP TABLE]]></text>
+		</name>
+		<questiontext format="html">
+			<text><![CDATA[<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Distinguer la suppression des lignes et la suppression de la table.</p><p>Quelle requête supprime définitivement la table NAVIRE, avec toutes ses données ?</p></div>]]></text>
+		</questiontext>
+		<externallink/>
+		<usecase>1</usecase>
+		<defaultgrade>1</defaultgrade>
+		<single>true</single>
+		<shuffleanswers>false</shuffleanswers>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[DELETE TABLE NAVIRE;]]></text>
+			<feedback>
+				<text><![CDATA[SQLite signale une erreur de syntaxe : DELETE s'écrit DELETE FROM et supprime des lignes, jamais la table elle-même.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[REMOVE TABLE NAVIRE;]]></text>
+			<feedback>
+				<text><![CDATA[REMOVE n'est pas un mot-clé SQL. La suppression d'une table s'écrit DROP TABLE.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="0" format="plain_text">
+			<text><![CDATA[DELETE * FROM NAVIRE;]]></text>
+			<feedback>
+				<text><![CDATA[L'étoile n'a pas sa place dans un DELETE : SQLite signale une erreur. DELETE FROM NAVIRE; viderait la table, mais la garderait.]]></text>
+			</feedback>
+		</answer>
+		<answer fraction="100" format="plain_text">
+			<text><![CDATA[DROP TABLE NAVIRE;]]></text>
+			<feedback>
+				<text><![CDATA[Oui : DROP TABLE détruit la table, sa structure et son contenu. Après, toute requête sur NAVIRE échoue : « no such table ».]]></text>
+			</feedback>
+		</answer>
+	</question>
+</quiz>

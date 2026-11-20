@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NSI Tle · SQL 1 : modèle relationnel et requêtes</title>
+<style>
+:root{--fond:#ffffff;--texte:#1b1b1b;--doux:#4a4a4a;--carte:#f5f6f8;--bord:#d5d8de;--juste:#1d6b35;--juste-fond:#e3f3e7;--lien:#0b57a4}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--fond:#14161a;--texte:#e8e8e8;--doux:#b8bcc4;--carte:#1f2329;--bord:#3a3f48;--juste:#8ee0a6;--juste-fond:#183322;--lien:#8ab8ff}}
+:root[data-theme="dark"]{--fond:#14161a;--texte:#e8e8e8;--doux:#b8bcc4;--carte:#1f2329;--bord:#3a3f48;--juste:#8ee0a6;--juste-fond:#183322;--lien:#8ab8ff}
+*{box-sizing:border-box}body{margin:0;background:var(--fond);color:var(--texte);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+main{max-width:860px;margin:0 auto;padding:16px}h1{font-size:1.5rem;margin:.2em 0}.meta{color:var(--doux);font-size:.95rem}
+section.q{background:var(--carte);border:1px solid var(--bord);border-radius:8px;padding:12px 14px;margin:16px 0;overflow-wrap:anywhere}
+section.q h2{font-size:1.05rem;margin:0 0 .4em}.type{color:var(--doux);font-size:.85rem}
+section.q div[style]{overflow-x:auto}ol.opts{padding-left:1.4em}ol.opts li{margin:.5em 0;padding:4px 6px;border-radius:5px}
+ol.opts li.juste{background:var(--juste-fond)}.marque{font-weight:bold;color:var(--juste)}.fb{display:block;color:var(--doux);font-size:.92rem}
+.trou{border-bottom:2px solid #ce9178;padding:0 3px}a{color:var(--lien)}footer{color:var(--doux);font-size:.9rem;border-top:1px solid var(--bord);margin-top:24px;padding-top:10px}
+table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8px}
+</style>
+</head>
+<body>
+<main>
+<p class="meta">Aperçu de relecture d'un QCM Pronote · Terminale NSI</p>
+<h1>NSI Tle · SQL 1 : modèle relationnel et requêtes</h1>
+<p class="meta">20 questions · fichier à importer dans Pronote : <a href="nsit-sql-1-requetes.xml">nsit-sql-1-requetes.xml</a></p>
+<section class="q" id="q01"><h2>1. [Modèle relationnel] Ce que garantit une clé primaire</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en D</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Savoir qu'une clé primaire identifie chaque ligne de façon unique.</p><p>On considère la relation BATEAU (nom_navire, tonnage, #id_proprietaire), de clé primaire nom_navire.</p><p>Que garantit la contrainte de clé primaire sur l'attribut nom_navire ?</p></div>
+<ol class="opts" type="A">
+<li>Que le nom du navire est écrit en majuscules<span class="fb">Une clé primaire ne contrôle pas l&#x27;écriture des valeurs. Elle garantit que deux lignes n&#x27;ont jamais la même valeur de clé.</span></li>
+<li>Que le nom du navire est lié à une autre table<span class="fb">Faire le lien avec une autre table, c&#x27;est le rôle d&#x27;une clé étrangère, comme #id_proprietaire ici.</span></li>
+<li>Que le nom du navire n&#x27;est pas une chaîne de caractères<span class="fb">Une clé primaire peut être de n&#x27;importe quel type : texte, entier… Ce qui compte, c&#x27;est l&#x27;unicité de ses valeurs.</span></li>
+<li class="juste"><span class="marque">Juste · </span>Que deux navires de la table n&#x27;ont jamais le même nom<span class="fb">Oui : la clé primaire identifie chaque ligne. Le SGBD refuse d&#x27;insérer un second navire avec un nom déjà présent.</span></li>
+</ol>
+</section><section class="q" id="q02"><h2>2. [Modèle relationnel] Reconnaître une clé étrangère</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en A</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Nommer l'attribut qui fait référence à la clé primaire d'une autre relation.</p><p>Schéma : VILLAGE (id_v, nom_v), de clé primaire id_v ; PIROGUE (id_p, couleur, #id_v), de clé primaire id_p.</p><p>Comment s'appelle l'attribut #id_v dans la relation PIROGUE ?</p></div>
+<ol class="opts" type="A">
+<li class="juste"><span class="marque">Juste · </span>Une clé étrangère<span class="fb">Oui : #id_v fait référence à la clé primaire id_v de VILLAGE. Elle relie chaque pirogue à son village.</span></li>
+<li>Une clé primaire<span class="fb">La clé primaire de PIROGUE est id_p. Le # devant id_v signale autre chose : une référence vers VILLAGE.</span></li>
+<li>Un attribut calculé<span class="fb">id_v n&#x27;est pas calculé : il contient l&#x27;identifiant d&#x27;un village existant. C&#x27;est une référence.</span></li>
+<li>Une contrainte de domaine<span class="fb">Une contrainte de domaine fixe les valeurs permises d&#x27;un attribut (par exemple un entier positif). Le # marque une clé étrangère.</span></li>
+</ol>
+</section><section class="q" id="q03"><h2>3. [Modèle relationnel] Relation, attribut, ligne</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en C</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Associer le mot « relation » à une table.</p><p>Dans le modèle relationnel, à quoi correspond concrètement une relation ?</p></div>
+<ol class="opts" type="A">
+<li>À une colonne de données<span class="fb">Une colonne correspond à un attribut. La relation est l&#x27;ensemble : toutes les colonnes et toutes les lignes.</span></li>
+<li>À une ligne de données<span class="fb">Une ligne est un enregistrement, ou n-uplet. La relation regroupe toutes les lignes d&#x27;un même schéma.</span></li>
+<li class="juste"><span class="marque">Juste · </span>À une table de données<span class="fb">Oui : une relation se représente par une table. Ses colonnes sont les attributs, ses lignes les enregistrements.</span></li>
+<li>À un logiciel de base de données<span class="fb">Le logiciel est le SGBD (système de gestion de bases de données), comme SQLite. Une relation est une des tables qu&#x27;il gère.</span></li>
+</ol>
+</section><section class="q" id="q04"><h2>4. [Modèle relationnel] Compter les attributs d&#x27;un schéma</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en B</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Lire un schéma relationnel et compter ses attributs.</p><p>Schéma : RECIF (id_r, nom, #id_zone), de clé primaire id_r.</p><p>Combien d'attributs la relation RECIF possède-t-elle ?</p></div>
+<ol class="opts" type="A">
+<li>1 (id_r)<span class="fb">id_r est la clé primaire, mais tous les champs sont des attributs, clés ou non : il faut compter les trois.</span></li>
+<li class="juste"><span class="marque">Juste · </span>3 (id_r, nom et id_zone)<span class="fb">Oui : un attribut par colonne, que ce soit une clé primaire, une clé étrangère ou un champ ordinaire.</span></li>
+<li>2 (id_r et nom)<span class="fb">#id_zone est une clé étrangère, et c&#x27;est aussi un attribut de RECIF : il compte.</span></li>
+<li>Autant qu&#x27;il y a de lignes<span class="fb">Les lignes changent quand on ajoute des récifs ; le nombre d&#x27;attributs, lui, est fixé par le schéma : 3.</span></li>
+</ol>
+</section><section class="q" id="q05"><h2>5. [Modèle relationnel] La contrainte de domaine</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en B</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Définir une contrainte de domaine.</p><p>Qu'est-ce qu'une contrainte de domaine ?</p></div>
+<ol class="opts" type="A">
+<li>L&#x27;obligation d&#x27;avoir au moins 100 lignes<span class="fb">Le nombre de lignes n&#x27;est jamais imposé par le schéma. Le domaine concerne les valeurs d&#x27;un attribut.</span></li>
+<li class="juste"><span class="marque">Juste · </span>L&#x27;ensemble des valeurs permises pour un attribut (par exemple, un entier positif)<span class="fb">Oui : le domaine d&#x27;un attribut, c&#x27;est son type et ses limites. Une altitude, par exemple, est un entier positif.</span></li>
+<li>Le nom du serveur où la base est rangée<span class="fb">Le domaine n&#x27;a rien à voir avec un nom de domaine Internet. Il décrit les valeurs qu&#x27;un attribut peut prendre.</span></li>
+<li>L&#x27;interdiction de supprimer des données<span class="fb">Ce n&#x27;est pas une contrainte du modèle relationnel. Le domaine fixe les valeurs permises d&#x27;un attribut.</span></li>
+</ol>
+</section><section class="q" id="q06"><h2>6. [Modèle relationnel] La contrainte NOT NULL</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en A</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Savoir ce qu'impose NOT NULL sur un attribut.</p><p>Que signifie la contrainte NOT NULL sur un attribut ?</p></div>
+<ol class="opts" type="A">
+<li class="juste"><span class="marque">Juste · </span>Que le champ doit toujours être renseigné<span class="fb">Oui : chaque ligne doit avoir une valeur pour cet attribut. Une insertion qui le laisse vide est refusée.</span></li>
+<li>Que sa valeur doit être égale à zéro<span class="fb">Zéro est une valeur. NULL, c&#x27;est l&#x27;absence de valeur : NOT NULL interdit de laisser le champ vide.</span></li>
+<li>Que sa valeur doit être unique<span class="fb">L&#x27;unicité, c&#x27;est la contrainte UNIQUE (ou la clé primaire). NOT NULL interdit seulement l&#x27;absence de valeur.</span></li>
+<li>Que sa valeur doit être un nombre positif<span class="fb">Ce serait une contrainte de domaine, écrite avec CHECK. NOT NULL interdit seulement le vide.</span></li>
+</ol>
+</section><section class="q" id="q07"><h2>7. [SQL] Choisir les colonnes affichées</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en B</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un SELECT qui ne garde que certaines colonnes.</p><p>Table : MONTAGNE (nom, altitude, type_roche).</p><p>Quelle requête affiche seulement le nom et l'altitude des montagnes de Mayotte ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM MONTAGNE;<span class="fb">L&#x27;étoile garde toutes les colonnes, y compris type_roche. Pour n&#x27;en garder que deux, on les nomme.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT nom, altitude FROM MONTAGNE;<span class="fb">Oui : on liste après SELECT les colonnes voulues, séparées par des virgules, puis la table après FROM.</span></li>
+<li>GET nom, altitude FROM MONTAGNE;<span class="fb">GET n&#x27;est pas un mot-clé SQL : une requête d&#x27;interrogation commence toujours par SELECT.</span></li>
+<li>SELECT nom AND altitude FROM MONTAGNE;<span class="fb">SQLite accepte cette requête, mais AND calcule un « et » logique entre nom et altitude : on obtient une seule colonne de 0 et de 1. Les colonnes se séparent par des virgules.</span></li>
+</ol>
+</section><section class="q" id="q08"><h2>8. [SQL] Filtrer les lignes avec WHERE</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en B</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Placer une condition de filtre avec WHERE, après FROM.</p><p>Table : TORTUE (id_t, espece, poids).</p><p>Quelle requête donne les tortues de plus de 100 kg ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM TORTUE HAVING poids &gt; 100;<span class="fb">HAVING filtre des groupes, après un GROUP BY. SQLite refuse ici : « HAVING clause on a non-aggregate query ». Pour filtrer des lignes, on écrit WHERE.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT * FROM TORTUE WHERE poids &gt; 100;<span class="fb">Oui : SELECT … FROM … WHERE condition. Seules les lignes où la condition est vraie sont gardées.</span></li>
+<li>SELECT * WHERE poids &gt; 100 FROM TORTUE;<span class="fb">L&#x27;ordre des clauses est fixe : SELECT, puis FROM, puis WHERE. Ici, SQLite signale une erreur de syntaxe.</span></li>
+<li>SELECT * FROM TORTUE IF poids &gt; 100;<span class="fb">IF n&#x27;est pas un mot-clé de requête SQL. Le filtre des lignes s&#x27;écrit avec WHERE.</span></li>
+</ol>
+</section><section class="q" id="q09"><h2>9. [SQL] Un texte qui commence par… : LIKE</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en D</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Utiliser LIKE et % pour chercher un début de texte.</p><p>Table : LYCEE (nom, ville).</p><p>Quelle requête affiche les lycées dont le nom commence par « Lycée de » ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM LYCEE WHERE nom = &#x27;Lycée de%&#x27;;<span class="fb">Avec =, le % est un caractère ordinaire : on cherche un nom égal à « Lycée de% », qui n&#x27;existe pas. Les jokers demandent LIKE.</span></li>
+<li>SELECT * FROM LYCEE WHERE nom LIKE &#x27;%Lycée de&#x27;;<span class="fb">Le % placé au début veut dire « n&#x27;importe quoi avant » : on chercherait les noms qui finissent par « Lycée de ».</span></li>
+<li>SELECT * FROM LYCEE WHERE nom CONTAINS &#x27;Lycée de&#x27;;<span class="fb">CONTAINS n&#x27;existe pas en SQL standard ni dans SQLite. Pour chercher un morceau de texte, on utilise LIKE avec %.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT * FROM LYCEE WHERE nom LIKE &#x27;Lycée de%&#x27;;<span class="fb">Oui : avec LIKE, % remplace n&#x27;importe quelle suite de caractères. &#x27;Lycée de%&#x27; veut dire « commence par Lycée de ».</span></li>
+</ol>
+</section><section class="q" id="q10"><h2>10. [SQL] Un texte qui contient… : LIKE &#x27;%…%&#x27;</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en D</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Chercher un mot n'importe où dans un texte.</p><p>Table : RECIF (id_r, nom, id_zone).</p><p>Quelle condition garde les récifs dont le nom contient le mot « Corail », n'importe où ?</p></div>
+<ol class="opts" type="A">
+<li>WHERE nom LIKE &#x27;Corail%&#x27;<span class="fb">Sans % au début, on ne garde que les noms qui commencent par Corail : « Grand Corail » serait oublié.</span></li>
+<li>WHERE nom = &#x27;%Corail%&#x27;<span class="fb">Avec =, les % sont des caractères ordinaires : aucun nom n&#x27;est égal à « %Corail% ». Il faut LIKE.</span></li>
+<li>WHERE nom MATCH &#x27;*Corail*&#x27;<span class="fb">MATCH sert à la recherche plein texte de certains SGBD ; SQLite le refuse sur une table ordinaire. La recherche simple s&#x27;écrit avec LIKE et %.</span></li>
+<li class="juste"><span class="marque">Juste · </span>WHERE nom LIKE &#x27;%Corail%&#x27;<span class="fb">Oui : un % de chaque côté veut dire « n&#x27;importe quoi avant, n&#x27;importe quoi après ». Le mot peut être au début, au milieu ou à la fin.</span></li>
+</ol>
+</section><section class="q" id="q11"><h2>11. [SQL] Deux conditions avec AND</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en C</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Combiner deux conditions qui doivent être vraies ensemble.</p><p>Table : PLANTATION (id_p, type, age).</p><p>Quelle requête donne les plants de vanille de plus de 2 ans ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM PLANTATION WHERE type = &#x27;vanille&#x27; OR age &gt; 2;<span class="fb">OR garde une ligne dès qu&#x27;une seule condition est vraie : l&#x27;ylang-ylang de 5 ans serait aussi affiché.</span></li>
+<li>SELECT * FROM PLANTATION WHERE type = &#x27;vanille&#x27;, age &gt; 2;<span class="fb">Les conditions ne se séparent pas par une virgule : SQLite signale une erreur de syntaxe. On les relie par AND ou OR.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT * FROM PLANTATION WHERE type = &#x27;vanille&#x27; AND age &gt; 2;<span class="fb">Oui : AND garde les lignes où les deux conditions sont vraies à la fois : c&#x27;est de la vanille, et elle a plus de 2 ans.</span></li>
+<li>SELECT * FROM PLANTATION WHERE type = vanille AND age &gt; 2;<span class="fb">Sans apostrophes, vanille est lu comme un nom de colonne : SQLite répond « no such column: vanille ». Un texte s&#x27;écrit entre apostrophes.</span></li>
+</ol>
+</section><section class="q" id="q12"><h2>12. [SQL] Une valeur parmi une liste : IN</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en A</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Tester l'appartenance à une liste de valeurs avec IN.</p><p>Table : ECOLE (id_e, nom, ville).</p><p>Quelle requête sélectionne les écoles situées à Sada ou à Chiconi ?</p></div>
+<ol class="opts" type="A">
+<li class="juste"><span class="marque">Juste · </span>SELECT * FROM ECOLE WHERE ville IN (&#x27;Sada&#x27;, &#x27;Chiconi&#x27;);<span class="fb">Oui : IN teste si la valeur est dans la liste. C&#x27;est plus court que ville = &#x27;Sada&#x27; OR ville = &#x27;Chiconi&#x27;, et équivalent.</span></li>
+<li>SELECT * FROM ECOLE WHERE ville = (&#x27;Sada&#x27;, &#x27;Chiconi&#x27;);<span class="fb">= compare à une seule valeur ; SQLite refuse une liste ici (« row value misused »). Pour une liste de valeurs, on utilise IN.</span></li>
+<li>SELECT * FROM ECOLE WHERE ville = &#x27;Sada&#x27; OR &#x27;Chiconi&#x27;;<span class="fb">SQLite l&#x27;accepte, mais lit « ville = &#x27;Sada&#x27; » OR « &#x27;Chiconi&#x27; », et un texte seul vaut faux : seules les écoles de Sada sortent. Il faut répéter ville = devant chaque valeur.</span></li>
+<li>SELECT * FROM ECOLE WHERE ville BETWEEN &#x27;Sada&#x27; AND &#x27;Chiconi&#x27;;<span class="fb">BETWEEN cherche un intervalle, ici dans l&#x27;ordre alphabétique (et &#x27;Sada&#x27; vient après &#x27;Chiconi&#x27;) : aucune école ne sort. Pour une liste de valeurs, on utilise IN.</span></li>
+</ol>
+</section><section class="q" id="q13"><h2>13. [SQL] Un intervalle avec BETWEEN</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en C</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Utiliser BETWEEN et savoir qu'il inclut les bornes.</p><p>Table : RESERVOIR (id_r, nom, volume), volume en m³.</p><p>Quelle requête donne les réservoirs dont le volume est compris entre 500 et 1000 m³, bornes incluses ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM RESERVOIR WHERE volume &gt; 500 AND volume &lt; 1000;<span class="fb">Presque : les signes stricts excluent les réservoirs de 500 et de 1000 m³. Il faudrait &gt;= et &lt;=, ou BETWEEN.</span></li>
+<li>SELECT * FROM RESERVOIR WHERE volume FROM 500 TO 1000;<span class="fb">FROM … TO n&#x27;existe pas dans une condition SQL : SQLite signale une erreur de syntaxe.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT * FROM RESERVOIR WHERE volume BETWEEN 500 AND 1000;<span class="fb">Oui : BETWEEN a AND b garde les valeurs de a à b, bornes comprises. C&#x27;est l&#x27;écriture courte de volume &gt;= 500 AND volume &lt;= 1000.</span></li>
+<li>SELECT * FROM RESERVOIR WHERE volume IN (500, 1000);<span class="fb">IN ne garde que les valeurs exactes 500 et 1000, pas celles qui sont entre les deux, comme 750.</span></li>
+</ol>
+</section><section class="q" id="q14"><h2>14. [SQL] Tester l&#x27;absence de valeur : IS NULL</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en D</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Tester une valeur absente avec IS NULL, et non avec =.</p><p>Table : PARCELLE (id_parcelle, id_proprio).</p><p>Quelle requête donne les parcelles agricoles qui n'ont pas encore de propriétaire (valeur absente) ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM PARCELLE WHERE id_proprio = NULL;<span class="fb">C&#x27;est le piège classique : une comparaison avec NULL par = n&#x27;est jamais vraie, et la requête ne renvoie rien. On écrit IS NULL.</span></li>
+<li>SELECT * FROM PARCELLE WHERE id_proprio = &#x27;&#x27;;<span class="fb">La chaîne vide &#x27;&#x27; est une valeur (un texte sans caractère), pas l&#x27;absence de valeur NULL : ce ne sont pas les mêmes lignes.</span></li>
+<li>SELECT * FROM PARCELLE WHERE id_proprio EMPTY;<span class="fb">EMPTY n&#x27;est pas un mot-clé SQL : SQLite signale une erreur de syntaxe. L&#x27;absence de valeur se teste avec IS NULL.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT * FROM PARCELLE WHERE id_proprio IS NULL;<span class="fb">Oui : IS NULL teste l&#x27;absence de valeur. C&#x27;est la seule façon fiable de trouver les cases vides au sens de SQL.</span></li>
+</ol>
+</section><section class="q" id="q15"><h2>15. [SQL] Supprimer les doublons : DISTINCT</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en C</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Afficher chaque valeur une seule fois avec DISTINCT.</p><p>Table : POISSON (id, espece).</p><p>Quelle requête affiche la liste des espèces présentes dans la table, sans doublons ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT UNIQUE espece FROM POISSON;<span class="fb">UNIQUE est une contrainte qu&#x27;on pose sur une colonne à la création d&#x27;une table. Dans un SELECT, SQLite le refuse : on écrit DISTINCT.</span></li>
+<li>SELECT DIFFERENT espece FROM POISSON;<span class="fb">DIFFERENT n&#x27;est pas un mot-clé : SQLite croit que c&#x27;est une colonne et répond « no such column: DIFFERENT ».</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT DISTINCT espece FROM POISSON;<span class="fb">Oui : DISTINCT, placé juste après SELECT, supprime les lignes en double du résultat : « perroquet » n&#x27;apparaît qu&#x27;une fois.</span></li>
+<li>SELECT espece FROM POISSON ORDER BY espece;<span class="fb">Le tri range les doublons côte à côte, mais il les garde : « perroquet » apparaîtrait deux fois.</span></li>
+</ol>
+</section><section class="q" id="q16"><h2>16. [SQL] Trier dans l&#x27;ordre décroissant</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en B</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Trier les lignes avec ORDER BY … DESC.</p><p>Table : RESERVOIR (id_r, nom, volume).</p><p>Quelle requête affiche les réservoirs d'eau du plus grand au plus petit volume ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM RESERVOIR ORDER BY volume;<span class="fb">Sans précision, le tri est croissant (ASC) : on irait du plus petit au plus grand volume.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT * FROM RESERVOIR ORDER BY volume DESC;<span class="fb">Oui : ORDER BY trie, et DESC (pour descending, « décroissant ») commence par la plus grande valeur.</span></li>
+<li>SELECT * FROM RESERVOIR SORT BY volume DESC;<span class="fb">SORT BY n&#x27;existe pas en SQL : le tri s&#x27;écrit ORDER BY. SQLite signale une erreur de syntaxe.</span></li>
+<li>SELECT * FROM RESERVOIR WHERE volume DESC;<span class="fb">DESC précise le sens d&#x27;un tri : il ne s&#x27;écrit qu&#x27;après ORDER BY. Après WHERE, SQLite signale une erreur.</span></li>
+</ol>
+</section><section class="q" id="q17"><h2>17. [SQL] Trier selon deux critères</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en A</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un tri sur deux colonnes, dans deux sens différents.</p><p>Table : VILLAGE (nom, commune, pop).</p><p>Quelle fin de requête range les villages par commune (de A à Z), puis, dans une même commune, par population décroissante ?</p></div>
+<ol class="opts" type="A">
+<li class="juste"><span class="marque">Juste · </span>ORDER BY commune ASC, pop DESC<span class="fb">Oui : SQL trie d&#x27;abord par commune ; pour deux villages de la même commune, il trie par population, ici décroissante.</span></li>
+<li>ORDER BY commune ASC AND pop DESC<span class="fb">Les critères de tri se séparent par une virgule, pas par AND : SQLite signale une erreur de syntaxe.</span></li>
+<li>SORT BY commune, pop DESC<span class="fb">Le mot-clé est ORDER BY, pas SORT BY : SQLite signale une erreur de syntaxe.</span></li>
+<li>ORDER BY commune, pop<span class="fb">Le premier critère est bon, mais sans DESC la population serait triée dans l&#x27;ordre croissant.</span></li>
+</ol>
+</section><section class="q" id="q18"><h2>18. [SQL] Compter les lignes : COUNT</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en C</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Compter les lignes d'une table avec COUNT(*).</p><p>Table : RECIF (id_r, nom, id_zone).</p><p>Quelle requête compte le nombre de récifs enregistrés ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT SUM(*) FROM RECIF;<span class="fb">SUM additionne les valeurs d&#x27;une colonne de nombres ; il ne compte pas les lignes, et SQLite refuse SUM(*).</span></li>
+<li>SELECT TOTAL(*) FROM RECIF;<span class="fb">TOTAL existe dans SQLite, mais il additionne une colonne, comme SUM : il ne compte pas les lignes, et TOTAL(*) est refusé.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT COUNT(*) FROM RECIF;<span class="fb">Oui : COUNT(*) compte les lignes du résultat. Ici, il y a 3 récifs.</span></li>
+<li>SELECT COUNT(id_r) WHERE RECIF;<span class="fb">Il manque FROM : sans lui, SQLite ne sait pas quelle table lire, et cherche une colonne nommée RECIF.</span></li>
+</ol>
+</section><section class="q" id="q19"><h2>19. [SQL] Additionner une colonne : SUM</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en D</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Additionner les valeurs d'une colonne avec SUM.</p><p>La table RECOLTE (poids, annee) enregistre les récoltes de vanille, poids en kg.</p><p>Quelle requête donne la masse totale de vanille récoltée en 2023 ?</p></div>
+<ol class="opts" type="A">
+<li>SELECT COUNT(poids) FROM RECOLTE WHERE annee = 2023;<span class="fb">COUNT compte les récoltes (ici 2), il n&#x27;additionne pas leurs poids.</span></li>
+<li>SELECT ADD(poids) FROM RECOLTE WHERE annee = 2023;<span class="fb">ADD n&#x27;est pas une fonction d&#x27;agrégation : c&#x27;est un mot réservé de SQL (il sert à modifier une table), et SQLite signale une erreur de syntaxe. On additionne une colonne avec SUM.</span></li>
+<li>SELECT poids + poids FROM RECOLTE;<span class="fb">Ce calcul se fait ligne par ligne : chaque poids est doublé. Il n&#x27;y a ni total, ni filtre sur l&#x27;année.</span></li>
+<li class="juste"><span class="marque">Juste · </span>SELECT SUM(poids) FROM RECOLTE WHERE annee = 2023;<span class="fb">Oui : WHERE garde les récoltes de 2023, puis SUM additionne leurs poids : 12,5 + 8 = 20,5 kg.</span></li>
+</ol>
+</section><section class="q" id="q20"><h2>20. [SQL] Calculer une moyenne : AVG</h2>
+<p class="type">QCU, une seule réponse · bonne réponse en A</p>
+<div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Calculer une moyenne sur des lignes filtrées.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête calcule le tonnage moyen des navires du port de Longoni ?</p></div>
+<ol class="opts" type="A">
+<li class="juste"><span class="marque">Juste · </span>SELECT AVG(tonnage) FROM NAVIRE WHERE port = &#x27;Longoni&#x27;;<span class="fb">Oui : WHERE garde les navires de Longoni, puis AVG fait la moyenne de leur tonnage : (300 + 500) / 2 = 400.</span></li>
+<li>SELECT MEAN(tonnage) FROM NAVIRE WHERE port = &#x27;Longoni&#x27;;<span class="fb">MEAN est le mot anglais pour « moyenne », mais ce n&#x27;est pas une fonction SQL. La moyenne s&#x27;écrit AVG (de average).</span></li>
+<li>SELECT AVG(tonnage) WHERE port = &#x27;Longoni&#x27;;<span class="fb">Il manque FROM NAVIRE : sans lui, SQLite ne sait pas où trouver les colonnes tonnage et port.</span></li>
+<li>SELECT AVG(*) FROM NAVIRE WHERE port = &#x27;Longoni&#x27;;<span class="fb">Une moyenne se calcule sur une colonne de nombres précise ; AVG(*) est refusé par SQLite.</span></li>
+</ol>
+</section>
+<footer>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://github.com/babash/Babash-NSI-SNT">Code source sur GitHub</a></footer>
+</main>
+</body>
+</html>
