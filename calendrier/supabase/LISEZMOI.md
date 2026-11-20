@@ -6,6 +6,7 @@
 - **Schéma :** `vacances`. Il n'est pas exposé à l'API, et `anon` comme `authenticated` n'y ont aucun droit.
 - **Préfixe des fonctions d'entrée :** `cv_`.
 - **Liste de mots :** « les jeux et les loisirs », 64 mots. Elle a été contrôlée contre les cinq listes en service et contre celle du compte commun (T101, « la ville et le réseau ») : aucun recouvrement, aucun mot qui soit le début d'un autre. SKATE, ROLLER, VELO et MANETTE, déjà pris par T101, ont été remplacés par TAQUIN, RALLYE, HOCKEY et SQUASH.
+- **Les thèmes (précision de l'enseignant, 20/11, 15:20) :** un calendrier se compose de 1 à 20 thèmes (chapitres ou notions), cochés librement, sans lien avec le niveau de la classe ; les cases alternent entre eux (`mode = 'alternance'`, par défaut), ou une case par thème et par jour (`chaque_theme`). Colonnes `calendriers.themes` et `cases.theme`.
 - **Le score :** les étoiles, les cases faites, les rattrapages et les **jours différents** où l'élève a réussi au moins une case. Il n'y a ni série, ni classement, ni rang.
 
 ## Les fichiers, dans l'ordre
@@ -99,7 +100,7 @@ Les essais ont été faits le 20/11, et rejoués après les corrections de l'apr
 - au jour 5, les cases sont dans le bon état : deux corrigées, trois ouvertes, les autres à venir ;
 - un rattrapage est compté à part, et un moins bon résultat ne remplace pas le meilleur ;
 - une modification après le début ne touche pas aux cases déjà ouvertes ;
-- en mode « chaque chapitre », trois cases au plus sont à faire, et les autres attendent ;
+- en mode « chaque thème », trois cases au plus sont à faire, et les autres attendent ;
 - un nouveau code ferme les anciennes sessions ;
 - la suppression demande une confirmation ;
 - le compteur bloque après 20 échecs ;

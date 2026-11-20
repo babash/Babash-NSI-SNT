@@ -1,15 +1,15 @@
 # Les banques d'exercices du Calendrier des vacances
 
-Cette page est pour l'Atelier qui écrit la banque d'un chapitre. Une case du calendrier est un exercice : un mini-jeu de **10 minutes au plus**, en **3 niveaux** (Facile, Moyen, Costaud). L'élève choisit son niveau, et un niveau suffit pour valider la case.
+Cette page est pour l'Atelier qui écrit la banque d'un **thème**. Un thème est un chapitre (« Listes et dictionnaires ») ou une notion plus fine (« Les boucles », « Le binaire »). L'enseignant·e coche librement plusieurs thèmes pour un calendrier, quel que soit le niveau de sa classe (une terminale peut recevoir des thèmes de première), et les cases alternent entre eux, tour à tour. Une case du calendrier est un exercice : un mini-jeu de **10 minutes au plus**, en **3 niveaux** (Facile, Moyen, Costaud). L'élève choisit son niveau, et un niveau suffit pour valider la case.
 
 ## Les fichiers
 
 | Fichier | Rôle | Qui le modifie |
 |---|---|---|
 | `exercice.schema.json` | Le format (JSON Schema) | Architecte |
-| `catalogue.json` | La liste des chapitres et leur statut (`prevu`, `en_cours`, `pret`) | Architecte |
-| `<chapitre>.json` | La banque d'un chapitre | l'Atelier de ce chapitre, sur sa branche `atelier/t105-<chapitre>` |
-| `<chapitre>.js` | La même banque, fabriquée par `--bundle` | personne à la main |
+| `catalogue.json` | La liste des thèmes, leur nature (chapitre ou notion), leurs niveaux indicatifs et leur statut (`prevu`, `en_cours`, `pret`) | Architecte |
+| `<thème>.json` | La banque d'un thème | l'Atelier de ce thème, sur sa branche `atelier/t105-<thème>` |
+| `<thème>.js` | La même banque, fabriquée par `--bundle` | personne à la main |
 | `../../scripts/tests/calendrier/exemple-boucles.json` | **Le gabarit** : 6 exercices justes, un de chaque type | Architecte |
 
 Un Atelier ne touche **qu'à son fichier**. Il ne modifie ni `catalogue.json` ni le schéma : il demande dans son rapport.
@@ -17,7 +17,7 @@ Un Atelier ne touche **qu'à son fichier**. Il ne modifie ni `catalogue.json` ni
 ## Le contrôle, à lancer avant chaque envoi
 
 ```sh
-python3 scripts/calendrier_exercices.py --fichier calendrier/exercices/<chapitre>.json
+python3 scripts/calendrier_exercices.py --fichier calendrier/exercices/<thème>.json
 ```
 
 - **Il exécute chaque programme** et compare ce qu'il affiche à ce que l'exercice annonce :
@@ -30,13 +30,26 @@ python3 scripts/calendrier_exercices.py --fichier calendrier/exercices/<chapitre
   - en SQL, une requête qui renvoie plusieurs lignes sans `ORDER BY`.
 - **Zéro erreur avant d'envoyer.** Un avertissement se relit, mais ne bloque pas.
 
-## Les règles d'un chapitre
+## L'en-tête du fichier
 
-1. **30 exercices au moins**, numérotés `<chapitre>-001`, `-002`… dans l'ordre. C'est l'ordre des cases : l'exercice 1 sert le premier jour.
+```json
+{
+  "$schema": "./exercice.schema.json",
+  "theme": { "id": "py-boucles", "titre": "Les boucles", "nature": "notion", "niveaux": ["nsi-1re"],
+             "langage": "python", "programme": ["nsi-1re-2019.langages.constructions-elementaires"], "notions": ["prog.boucle"] },
+  "exercices": [ … ]
+}
+```
+
+L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place de `"niveaux"`) est encore acceptée, avec un avertissement : il suffit de renommer les deux clés et d'ajouter `"nature"`.
+
+## Les règles d'un thème
+
+1. **De 8 à 30 exercices**, numérotés `<thème>-001`, `-002`… dans l'ordre : une notion en a de 8 à 12, un chapitre de 15 à 30. Les thèmes alternent : un calendrier de 30 jours avec 3 thèmes demande 10 exercices à chacun. C'est l'ordre des cases : l'exercice 1 sert à la première case du thème. Si un calendrier demande plus d'exercices que la banque n'en a, la page enseignant·e le signale avant la création.
    - Un exercice publié ne change jamais de rang ni d'identifiant.
    - On peut corriger un exercice, et on ajoute toujours à la fin.
-2. **Les types tournent.** Six exercices de suite couvrent les 6 types, et deux jours de suite n'ont jamais le même type. Ordre conseillé, répété : vraifaux, sortie, associer, erreur, completer, ordre.
-3. **La difficulté monte doucement.** Les exercices 1 à 10 portent sur le cœur du chapitre, 11 à 20 sur les combinaisons, 21 à 30 sur les révisions mélangées. L'exercice 1 se réussit au niveau Facile en 2 minutes.
+2. **Les types tournent.** Six exercices de suite couvrent les 6 types. Ordre conseillé, répété : vraifaux, sortie, associer, erreur, completer, ordre.
+3. **La difficulté monte doucement** : le cœur du thème d'abord, puis les combinaisons et les révisions. L'exercice 1 se réussit au niveau Facile en 2 minutes.
 4. **Les trois niveaux d'un exercice portent sur la même notion :**
 
    | Niveau | Durée | Questions | Forme |
@@ -63,7 +76,8 @@ python3 scripts/calendrier_exercices.py --fichier calendrier/exercices/<chapitre
 9. **Le code.**
    - Python 3, indentation de 4 espaces, des noms de variables en français sans accent.
    - Des programmes courts : 12 lignes au plus, 50 caractères par ligne de préférence, car la page sert au téléphone.
-   - SQL : SQLite, avec la base d'exemple du chapitre (`base_sql`, 3 tables, 30 lignes au plus), des mots-clés en majuscules et `ORDER BY` dès qu'il peut y avoir plusieurs lignes.
+   - SQL : SQLite, avec la base d'exemple du thème (`base_sql`, 3 tables, 30 lignes au plus), des mots-clés en majuscules et `ORDER BY` dès qu'il peut y avoir plusieurs lignes.
+   - En « ordre », une seule disposition doit être juste : deux lignes indépendantes (`a = 5` et `b = 8`) se réunissent sur une seule (`a, b = 5, 8`).
 10. **`relu`** reste `false`. L'enseignant·e passe à `true` après relecture, et la page enseignant·e signale un calendrier qui contient des exercices non relus.
 
 ## Les six types (voir le gabarit pour un exemple juste de chacun)
@@ -79,8 +93,8 @@ python3 scripts/calendrier_exercices.py --fichier calendrier/exercices/<chapitre
 
 ## La méthode conseillée
 
-1. **Écrire d'abord le plan des 30 exercices**, dans le rapport ou en tête du travail. Pour chacun : le rang, le type, la notion, et l'idée des trois niveaux.
+1. **Écrire d'abord le plan des exercices**, dans le rapport ou en tête du travail. Pour chacun : le rang, le type, la notion, et l'idée des trois niveaux.
 2. **Écrire la banque en Python**, avec de petites fonctions qui fabriquent les questions. On peut faire exécuter un programme pour obtenir sa sortie exacte, mais **on écrit les distracteurs et les retours à la main**. Puis on écrit le JSON. Le script de fabrication reste dans le dossier temporaire de l'Atelier : seul le JSON va dans le dépôt.
 3. **Lancer le contrôle** jusqu'à zéro erreur.
 4. **Relire à voix haute trois exercices au hasard**, comme un·e élève de seconde dont le français est une langue seconde.
-5. **Pousser `atelier/t105-<chapitre>`.** Le rapport donne le nombre d'exercices et de questions, la sortie du contrôle, et les points à relire par l'enseignant·e.
+5. **Pousser `atelier/t105-<thème>`.** Le rapport donne le nombre d'exercices et de questions, la sortie du contrôle, et les points à relire par l'enseignant·e.

@@ -29,7 +29,7 @@ def erreurs(donnees):
 def un_exercice(n):
     d = copy.deepcopy(EXEMPLE)
     d["exercices"] = [d["exercices"][n - 1]]
-    d["exercices"][0]["id"] = d["chapitre"]["id"] + "-001"
+    d["exercices"][0]["id"] = d["theme"]["id"] + "-001"
     return d
 
 
@@ -75,7 +75,7 @@ class Controle(unittest.TestCase):
         self.assertTrue(any("réponse annoncée" in e for e in erreurs(d)))
 
     def test_sql(self):
-        d = {"chapitre": {"id": "essai-sql", "titre": "Essai SQL", "niveau": "nsi-tle", "langage": "sql"},
+        d = {"theme": {"id": "essai-sql", "titre": "Essai SQL", "nature": "notion", "niveaux": ["nsi-tle"], "langage": "sql"},
              "base_sql": "CREATE TABLE livre (titre TEXT, annee INT); INSERT INTO livre VALUES ('A', 1990), ('B', 2005), ('C', 2010);",
              "exercices": [{"id": "essai-sql-001", "type": "sortie", "titre": "Requête", "objectif": "Lire une requête simple.", "relu": False,
                             "niveaux": [{"duree": 2, "items": [{"code": "SELECT titre FROM livre WHERE annee > 2000 ORDER BY titre;",

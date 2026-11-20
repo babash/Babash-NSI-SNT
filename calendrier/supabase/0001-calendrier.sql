@@ -9,7 +9,7 @@ begin;
 --  Fichier : calendrier/supabase/0001-calendrier.sql du dépôt du site.
 -- =============================================================================
 --  Pourquoi : pendant les vacances, chaque élève ouvre une case par jour :
---  un mini-jeu de 10 minutes au plus, sur un chapitre choisi par son
+--  un mini-jeu de 10 minutes au plus, sur un des thèmes choisis par son
 --  enseignant·e (demande de l'enseignant du 19/11). La règle 21 s'applique :
 --  un code en mots et chiffres, qui suffit pour revenir ; un prénom ou un
 --  pseudo, jamais le nom de famille ; aucun plafond du nombre d'élèves.
@@ -20,8 +20,8 @@ begin;
 --   - neuf tables, toutes avec la RLS, sans règle et sans droit :
 --       vacances.mots          les 64 mots des codes (thème : les jeux et les loisirs) ;
 --       vacances.enseignants   un espace par enseignant·e (empreinte du code) ;
---       vacances.calendriers   les calendriers : dates, chapitres, réglages, code du lien ;
---       vacances.cases         les cases de chaque calendrier : jour, chapitre, rang de l'exercice ;
+--       vacances.calendriers   les calendriers : dates, thèmes, réglages, code du lien ;
+--       vacances.cases         les cases de chaque calendrier : jour, thème, rang de l'exercice ;
 --       vacances.eleves        un compte par élève : prénom ou pseudo, code ;
 --       vacances.sessions      les jetons de session (5 appareils au plus) ;
 --       vacances.inscriptions  qui est dans quel calendrier ;
@@ -145,8 +145,8 @@ create table if not exists vacances.calendriers (
   code                  text not null unique check (code ~ '^[A-HJ-NP-Z]{4}$'),
   debut                 date not null,
   fin                   date not null,
-  chapitres             text[] not null check (cardinality(chapitres) between 1 and 10),
-  mode                  text not null default 'alternance' check (mode in ('alternance', 'chaque_chapitre')),
+  themes                text[] not null check (cardinality(themes) between 1 and 20),
+  mode                  text not null default 'alternance' check (mode in ('alternance', 'chaque_theme')),
   ouvertes_max          smallint not null default 3 check (ouvertes_max between 1 and 10),
   delai_correction      smallint not null default 3 check (delai_correction between 0 and 7),
   affichage_classe      text not null default 'jauge' check (affichage_classe in ('jauge', 'aucun')),
@@ -159,15 +159,15 @@ create index if not exists calendriers_fin on vacances.calendriers (fin);
 alter table vacances.calendriers enable row level security;
 revoke all on vacances.calendriers from public, anon, authenticated;
 comment on table vacances.calendriers is
-  'Calendrier des vacances. Les calendriers des enseignant·e·s : nom, dates (30 jours au plus), chapitres, réglages et code public du lien d''inscription. Effacé, avec ses cases et ses résultats, 12 mois après sa date de fin. Données d''élèves : non.';
+  'Calendrier des vacances. Les calendriers des enseignant·e·s : nom, dates (30 jours au plus), thèmes, réglages et code public du lien d''inscription. Effacé, avec ses cases et ses résultats, 12 mois après sa date de fin. Données d''élèves : non.';
 comment on column vacances.calendriers.id is 'L''identifiant du calendrier.';
 comment on column vacances.calendriers.enseignant_id is 'L''espace de l''enseignant·e (vacances.enseignants).';
 comment on column vacances.calendriers.nom is 'Le nom montré aux élèves (« 1NSI : vacances de décembre »), de 2 à 60 caractères.';
 comment on column vacances.calendriers.code is 'Le code public du lien et du QR code : 4 lettres sans I ni O.';
 comment on column vacances.calendriers.debut is 'Le premier jour, à l''heure de Mayotte.';
 comment on column vacances.calendriers.fin is 'Le dernier jour, à l''heure de Mayotte : 30 jours au plus, début compris.';
-comment on column vacances.calendriers.chapitres is 'Les identifiants des chapitres, dans l''ordre choisi (catalogue exercices/catalogue.json de l''application), de 1 à 10.';
-comment on column vacances.calendriers.mode is 'alternance : une case par jour, les chapitres à tour de rôle ; chaque_chapitre : une case par jour et par chapitre.';
+comment on column vacances.calendriers.themes is 'Les identifiants des thèmes (un chapitre ou une notion : boucles, binaire…), dans l''ordre choisi, de 1 à 20 (catalogue calendrier/exercices/catalogue.json). Aucun lien avec le niveau de la classe : une terminale peut recevoir des thèmes de première.';
+comment on column vacances.calendriers.mode is 'alternance : une case par jour, les thèmes à tour de rôle (le réglage par défaut) ; chaque_theme : une case par jour et par thème.';
 comment on column vacances.calendriers.ouvertes_max is 'Le nombre de cases à faire montrées à la fois (3) : les plus récentes attendent leur tour.';
 comment on column vacances.calendriers.delai_correction is 'Le nombre de jours avant que le corrigé d''une case soit visible (3) : il s''ouvre à J + 3.';
 comment on column vacances.calendriers.affichage_classe is 'Ce que voient les élèves de leur classe : jauge (des nombres de toute la classe, sans aucun nom) ou aucun.';
@@ -176,9 +176,9 @@ comment on column vacances.calendriers.cree_le is 'La date de création du calen
 
 create table if not exists vacances.cases (
   calendrier_id uuid not null references vacances.calendriers (id) on delete cascade,
-  numero        smallint not null check (numero between 1 and 300),
+  numero        smallint not null check (numero between 1 and 600),
   jour          date not null,
-  chapitre      text not null check (chapitre ~ '^[a-z0-9]+(-[a-z0-9]+)*$' and char_length(chapitre) <= 60),
+  theme         text not null check (theme ~ '^[a-z0-9]+(-[a-z0-9]+)*$' and char_length(theme) <= 60),
   rang          smallint not null check (rang between 1 and 99),
   primary key (calendrier_id, numero)
 );
@@ -186,12 +186,12 @@ create index if not exists cases_jour on vacances.cases (calendrier_id, jour);
 alter table vacances.cases enable row level security;
 revoke all on vacances.cases from public, anon, authenticated;
 comment on table vacances.cases is
-  'Calendrier des vacances. Les cases de chaque calendrier : le jour d''ouverture, le chapitre et le rang de l''exercice dans la banque du chapitre. Une case qui a des résultats ne peut pas être effacée, sauf avec son calendrier. Données d''élèves : non.';
+  'Calendrier des vacances. Les cases de chaque calendrier : le jour d''ouverture, le thème et le rang de l''exercice dans la banque du thème. Une case qui a des résultats ne peut pas être effacée, sauf avec son calendrier. Données d''élèves : non.';
 comment on column vacances.cases.calendrier_id is 'Le calendrier (vacances.calendriers).';
 comment on column vacances.cases.numero is 'Le numéro de la case dans le calendrier ; il ne change jamais.';
 comment on column vacances.cases.jour is 'Le jour où la case s''ouvre, à 0 h à l''heure de Mayotte.';
-comment on column vacances.cases.chapitre is 'L''identifiant du chapitre.';
-comment on column vacances.cases.rang is 'Le rang de l''exercice dans la banque du chapitre (1 pour le premier).';
+comment on column vacances.cases.theme is 'L''identifiant du thème.';
+comment on column vacances.cases.rang is 'Le rang de l''exercice dans la banque du thème (1 pour le premier).';
 
 create table if not exists vacances.eleves (
   id             uuid primary key default gen_random_uuid(),
@@ -433,7 +433,7 @@ end $$;
 
 -- (Re)fabrique les cases d'un calendrier à partir du jour p_depuis : efface
 -- les cases de ce jour et des suivants, puis les recrée jusqu'à la fin, en
--- continuant la rotation des chapitres et le rang des exercices. Une case qui
+-- continuant la rotation des thèmes et le rang des exercices. Une case qui
 -- a des résultats ne peut pas être effacée (clé étrangère « restrict ») : les
 -- appelants ne touchent jamais à une case déjà ouverte.
 create or replace function vacances.generer_cases(p_cal uuid, p_depuis date)
@@ -443,20 +443,20 @@ begin
   select * into c from vacances.calendriers x where x.id = p_cal;
   delete from vacances.cases x where x.calendrier_id = p_cal and x.jour >= p_depuis;
   select count(*), coalesce(max(x.numero), 0) into k, num from vacances.cases x where x.calendrier_id = p_cal;
-  n := cardinality(c.chapitres);
+  n := cardinality(c.themes);
   for d in select g::date from generate_series(greatest(p_depuis, c.debut), c.fin, interval '1 day') g loop
     if c.mode = 'alternance' then
-      ch := c.chapitres[(k % n) + 1];
+      ch := c.themes[(k % n) + 1];
       num := num + 1; k := k + 1;
-      insert into vacances.cases (calendrier_id, numero, jour, chapitre, rang)
+      insert into vacances.cases (calendrier_id, numero, jour, theme, rang)
       values (p_cal, num, d, ch,
-              1 + coalesce((select max(x.rang) from vacances.cases x where x.calendrier_id = p_cal and x.chapitre = ch), 0));
+              1 + coalesce((select max(x.rang) from vacances.cases x where x.calendrier_id = p_cal and x.theme = ch), 0));
     else
-      foreach ch in array c.chapitres loop
+      foreach ch in array c.themes loop
         num := num + 1; k := k + 1;
-        insert into vacances.cases (calendrier_id, numero, jour, chapitre, rang)
+        insert into vacances.cases (calendrier_id, numero, jour, theme, rang)
         values (p_cal, num, d, ch,
-                1 + coalesce((select max(x.rang) from vacances.cases x where x.calendrier_id = p_cal and x.chapitre = ch), 0));
+                1 + coalesce((select max(x.rang) from vacances.cases x where x.calendrier_id = p_cal and x.theme = ch), 0));
       end loop;
     end if;
   end loop;
@@ -509,12 +509,12 @@ returns json language sql stable set search_path = '' as $$
   o as (select k.numero, row_number() over (order by k.jour, k.numero) as place from k where k.base = 'ouverte')
   select json_build_object(
     'aujourdhui', vacances.jour(),
-    'calendrier', (select json_build_object('id', c.id, 'nom', c.nom, 'debut', c.debut, 'fin', c.fin, 'chapitres', c.chapitres,
+    'calendrier', (select json_build_object('id', c.id, 'nom', c.nom, 'debut', c.debut, 'fin', c.fin, 'themes', c.themes,
                    'mode', c.mode, 'ouvertes_max', c.ouvertes_max, 'delai_correction', c.delai_correction,
                    'enseignant', (select e.nom from vacances.enseignants e where e.id = c.enseignant_id)) from c),
     'cases', coalesce((select json_agg(json_build_object(
                  'numero', k.numero, 'jour', k.jour,
-                 'chapitre', case when k.base = 'a_venir' then null else k.chapitre end,
+                 'theme', case when k.base = 'a_venir' then null else k.theme end,
                  'rang', case when k.base = 'a_venir' then null else k.rang end,
                  'etat', case when k.base = 'ouverte' and o.place > (select c.ouvertes_max from c) then 'en_attente' else k.base end,
                  'corrige_le', k.jour + (select c.delai_correction from c),
@@ -827,16 +827,16 @@ begin
   return json_build_object('ok', true, 'aujourdhui', vacances.jour(),
     'nom', (select e.nom from vacances.enseignants e where e.id = p.prof),
     'calendriers', coalesce((select json_agg(json_build_object('id', c.id, 'nom', c.nom, 'code', c.code, 'debut', c.debut, 'fin', c.fin,
-                    'chapitres', c.chapitres, 'mode', c.mode, 'affichage_classe', c.affichage_classe,
+                    'themes', c.themes, 'mode', c.mode, 'affichage_classe', c.affichage_classe,
                     'inscriptions_ouvertes', c.inscriptions_ouvertes,
                     'eleves', (select count(*) from vacances.inscriptions i where i.calendrier_id = c.id)) order by c.debut desc)
                    from vacances.calendriers c where c.enseignant_id = p.prof), '[]'::json));
 end $$;
 
 -- Créer un calendrier : dates (30 jours au plus, à partir d'aujourd'hui),
--- chapitres dans l'ordre, mode et affichage de la classe.
+-- thèmes dans l'ordre (chapitres ou notions, de tout niveau), mode et affichage de la classe.
 create or replace function public.cv_prof_creer_calendrier(p_code text, p_nom text, p_debut date, p_fin date,
-  p_chapitres text[], p_mode text default 'alternance', p_affichage_classe text default 'jauge')
+  p_themes text[], p_mode text default 'alternance', p_affichage_classe text default 'jauge')
 returns json language plpgsql volatile security definer set search_path = '' as $$
 declare p record; nm text := vacances.nettoyer(p_nom, 2, 60); cal uuid; ch text;
 begin
@@ -849,22 +849,22 @@ begin
   if p_debut < vacances.jour() or p_debut > vacances.jour() + 366 then
     return json_build_object('ok', false, 'message', 'Le premier jour est aujourd''hui au plus tôt, et dans un an au plus tard.');
   end if;
-  if p_chapitres is null or cardinality(p_chapitres) not between 1 and 10 then
-    return json_build_object('ok', false, 'message', 'Choisis de 1 à 10 chapitres.');
+  if p_themes is null or cardinality(p_themes) not between 1 and 20 then
+    return json_build_object('ok', false, 'message', 'Choisis de 1 à 20 thèmes.');
   end if;
-  foreach ch in array p_chapitres loop
+  foreach ch in array p_themes loop
     if ch is null or ch !~ '^[a-z0-9]+(-[a-z0-9]+)*$' or char_length(ch) > 60 then
-      return json_build_object('ok', false, 'message', 'Un identifiant de chapitre est illisible.');
+      return json_build_object('ok', false, 'message', 'Un identifiant de thème est illisible.');
     end if;
   end loop;
-  if (select count(distinct x) from unnest(p_chapitres) x) <> cardinality(p_chapitres) then
-    return json_build_object('ok', false, 'message', 'Un chapitre est choisi deux fois.');
+  if (select count(distinct x) from unnest(p_themes) x) <> cardinality(p_themes) then
+    return json_build_object('ok', false, 'message', 'Un thème est choisi deux fois.');
   end if;
-  if coalesce(p_mode, '') not in ('alternance', 'chaque_chapitre') or coalesce(p_affichage_classe, '') not in ('jauge', 'aucun') then
+  if coalesce(p_mode, '') not in ('alternance', 'chaque_theme') or coalesce(p_affichage_classe, '') not in ('jauge', 'aucun') then
     return json_build_object('ok', false, 'message', 'Réglage illisible.');
   end if;
-  insert into vacances.calendriers (enseignant_id, nom, code, debut, fin, chapitres, mode, affichage_classe)
-  values (p.prof, nm, vacances.nouveau_code_calendrier(), p_debut, p_fin, p_chapitres, p_mode, p_affichage_classe)
+  insert into vacances.calendriers (enseignant_id, nom, code, debut, fin, themes, mode, affichage_classe)
+  values (p.prof, nm, vacances.nouveau_code_calendrier(), p_debut, p_fin, p_themes, p_mode, p_affichage_classe)
   returning id into cal;
   perform vacances.generer_cases(cal, p_debut);
   return json_build_object('ok', true, 'id', cal, 'code', (select c.code from vacances.calendriers c where c.id = cal),
@@ -875,7 +875,7 @@ end $$;
 -- premier jour reste, et seules les cases de demain et des jours suivants sont
 -- refaites ; une case déjà ouverte, et ses résultats, ne bougent jamais.
 create or replace function public.cv_prof_modifier_calendrier(p_code text, p_calendrier uuid, p_nom text, p_debut date, p_fin date,
-  p_chapitres text[], p_mode text, p_affichage_classe text)
+  p_themes text[], p_mode text, p_affichage_classe text)
 returns json language plpgsql volatile security definer set search_path = '' as $$
 declare p record; c vacances.calendriers; nm text := vacances.nettoyer(p_nom, 2, 60); ch text; commence boolean;
 begin
@@ -897,19 +897,19 @@ begin
   if commence and p_fin < vacances.jour() and p_fin <> c.fin then
     return json_build_object('ok', false, 'message', 'La fin ne peut pas être avant aujourd''hui : les cases déjà ouvertes restent.');
   end if;
-  if p_chapitres is null or cardinality(p_chapitres) not between 1 and 10
-     or (select count(distinct x) from unnest(p_chapitres) x) <> cardinality(p_chapitres) then
-    return json_build_object('ok', false, 'message', 'Choisis de 1 à 10 chapitres, chacun une fois.');
+  if p_themes is null or cardinality(p_themes) not between 1 and 20
+     or (select count(distinct x) from unnest(p_themes) x) <> cardinality(p_themes) then
+    return json_build_object('ok', false, 'message', 'Choisis de 1 à 20 thèmes, chacun une fois.');
   end if;
-  foreach ch in array p_chapitres loop
+  foreach ch in array p_themes loop
     if ch is null or ch !~ '^[a-z0-9]+(-[a-z0-9]+)*$' or char_length(ch) > 60 then
-      return json_build_object('ok', false, 'message', 'Un identifiant de chapitre est illisible.');
+      return json_build_object('ok', false, 'message', 'Un identifiant de thème est illisible.');
     end if;
   end loop;
-  if coalesce(p_mode, '') not in ('alternance', 'chaque_chapitre') or coalesce(p_affichage_classe, '') not in ('jauge', 'aucun') then
+  if coalesce(p_mode, '') not in ('alternance', 'chaque_theme') or coalesce(p_affichage_classe, '') not in ('jauge', 'aucun') then
     return json_build_object('ok', false, 'message', 'Réglage illisible.');
   end if;
-  update vacances.calendriers x set nom = nm, debut = p_debut, fin = p_fin, chapitres = p_chapitres,
+  update vacances.calendriers x set nom = nm, debut = p_debut, fin = p_fin, themes = p_themes,
     mode = p_mode, affichage_classe = p_affichage_classe where x.id = c.id;
   perform vacances.generer_cases(c.id, case when commence then vacances.jour() + 1 else least(c.debut, p_debut) end);
   return json_build_object('ok', true, 'cases', (select count(*) from vacances.cases x where x.calendrier_id = c.id));
@@ -927,7 +927,7 @@ begin
     return json_build_object('ok', false, 'message', 'Ce calendrier n''est pas dans ton espace.');
   end if;
   return json_build_object('ok', true, 'aujourdhui', vacances.jour(),
-    'cases', coalesce((select json_agg(json_build_object('numero', x.numero, 'jour', x.jour, 'chapitre', x.chapitre, 'rang', x.rang)
+    'cases', coalesce((select json_agg(json_build_object('numero', x.numero, 'jour', x.jour, 'theme', x.theme, 'rang', x.rang)
                         order by x.jour, x.numero) from vacances.cases x where x.calendrier_id = p_calendrier), '[]'::json),
     'eleves', coalesce((select json_agg(json_build_object('id', e.id, 'pseudo', e.pseudo, 'code_affiche', e.code_affiche,
                          'vu_le', e.vu_le, 'depuis', i.depuis,

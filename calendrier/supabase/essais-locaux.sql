@@ -36,7 +36,7 @@ update vacances.cases set jour = jour - 4;
 update vacances.calendriers set debut = debut - 4, fin = fin - 4;
 
 set role anon;
-select x->>'numero' n, x->>'jour' jour, x->>'chapitre' chapitre, x->>'rang' rang, x->>'etat' etat
+select x->>'numero' n, x->>'jour' jour, x->>'theme' theme, x->>'rang' rang, x->>'etat' etat
 from t, json_array_elements((public.cv_calendrier((t.v->>'jeton')::uuid, (select (v->>'id')::uuid from t where k='cal'))->'etat'->'cases')) x
 where t.k='cx' and (x->>'numero')::int <= 7;
 -- 4. résultats : case 3 (ouverte), case 1 (corrigée : rattrapage), case 7 (à venir : refus)
@@ -50,7 +50,7 @@ select public.cv_classe((select (v->>'jeton')::uuid from t where k='cx'), (selec
 -- 5. le tableau de l'enseignant·e
 select json_array_length(v->'eleves') eleves, v->'eleves'->0->>'pseudo' pseudo, json_array_length(v->'eleves'->0->'resultats') resultats
 from (select public.cv_prof_tableau((select v->>'code_affiche' from t where k='prof'), (select (v->>'id')::uuid from t where k='cal')) v) z;
--- 6. modifier après le début : la fin raccourcit, un chapitre s'ajoute ; les cases ouvertes restent
+-- 6. modifier après le début : la fin raccourcit, un thème s'ajoute ; les cases ouvertes restent
 select public.cv_prof_modifier_calendrier((select v->>'code_affiche' from t where k='prof'), (select (v->>'id')::uuid from t where k='cal'),
   '1NSI vacances', (now() at time zone 'Indian/Mayotte')::date - 4, (now() at time zone 'Indian/Mayotte')::date + 3,
   array['nsi1-boucles', 'nsi1-conditions', 'nsi1-fonctions'], 'alternance', 'jauge') as modif;
@@ -58,14 +58,14 @@ select public.cv_prof_modifier_calendrier((select v->>'code_affiche' from t wher
   '1NSI vacances', (now() at time zone 'Indian/Mayotte')::date - 3, (now() at time zone 'Indian/Mayotte')::date + 3,
   array['nsi1-boucles'], 'alternance', 'jauge')->>'message' as debut_bouge;
 reset role;
-select numero, jour - (now() at time zone 'Indian/Mayotte')::date as decalage, chapitre, rang from vacances.cases order by numero;
+select numero, jour - (now() at time zone 'Indian/Mayotte')::date as decalage, theme, rang from vacances.cases order by numero;
 select count(*) as resultats_gardes from vacances.resultats;
 
--- 7. mode chaque_chapitre : 3 chapitres par jour, 3 cases à faire montrées au plus
+-- 7. mode chaque_theme : 3 thèmes par jour, 3 cases à faire montrées au plus
 set role anon;
 insert into t select 'cal2', public.cv_prof_creer_calendrier((select v->>'code_affiche' from t where k='prof'), 'SNT tous',
   (now() at time zone 'Indian/Mayotte')::date, (now() at time zone 'Indian/Mayotte')::date + 5,
-  array['snt-internet', 'snt-web', 'snt-photo'], 'chaque_chapitre', 'aucun');
+  array['snt-internet', 'snt-web', 'snt-photo'], 'chaque_theme', 'aucun');
 select public.cv_rejoindre((select (v->>'jeton')::uuid from t where k='cx'), (select v->>'code' from t where k='cal2'))->>'ok' as rejoint;
 reset role;
 update vacances.cases set jour = jour - 1 where calendrier_id = (select (v->>'id')::uuid from t where k='cal2');

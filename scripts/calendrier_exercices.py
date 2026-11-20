@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Contrôle les banques d'exercices du Calendrier des vacances (T105).
 
-Pour chaque chapitre du catalogue (calendrier/exercices/catalogue.json) :
+Pour chaque thème du catalogue (calendrier/exercices/catalogue.json) :
   1. la forme : le schéma exercice.schema.json (avec jsonschema s'il est installé),
      plus des contrôles écrits ici, qui marchent sans dépendance : identifiants
      <chapitre>-NNN qui se suivent, 3 niveaux, réponses dans les bornes, pas de
@@ -24,7 +24,7 @@ Pour chaque chapitre du catalogue (calendrier/exercices/catalogue.json) :
 
 Usage :
   python3 scripts/calendrier_exercices.py                 tout le catalogue
-  python3 scripts/calendrier_exercices.py --chapitre nsi1-bases-python
+  python3 scripts/calendrier_exercices.py --theme py-boucles
   python3 scripts/calendrier_exercices.py --fichier chemin/vers/brouillon.json
   python3 scripts/calendrier_exercices.py --sans-execution
   python3 scripts/calendrier_exercices.py --bundle        écrit aussi calendrier/exercices/<id>.js
@@ -268,10 +268,16 @@ def controler(chemin, rp, attendu=None, avec_execution=True, schema=None):
                 rp.erreur(nom, f"schéma : {'/'.join(str(p) for p in e.path)} : {e.message[:160]}")
         except ImportError:
             pass
-    chap = donnees.get("chapitre", {})
+    if "theme" in donnees:
+        chap = donnees["theme"]
+    else:
+        chap = donnees.get("chapitre", {})
+        rp.avert(nom, "« chapitre » est l'ancien nom : renommer la clé en « theme »")
+    if "niveau" in chap and "niveaux" not in chap:
+        rp.avert(nom, "« niveau » est l'ancienne forme : écrire « niveaux » (une liste, indicative)")
     cid = chap.get("id", "?")
     if attendu and cid != attendu:
-        rp.erreur(nom, f"le chapitre s'appelle {cid}, le catalogue attend {attendu}")
+        rp.erreur(nom, f"le thème s'appelle {cid}, le catalogue attend {attendu}")
     if chap.get("langage") not in ("python", "sql", "aucun"):
         rp.erreur(nom, "langage inconnu")
         return None
@@ -307,7 +313,7 @@ def bundle(info):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("--chapitre")
+    ap.add_argument("--theme", "--chapitre", dest="chapitre")
     ap.add_argument("--fichier")
     ap.add_argument("--sans-execution", action="store_true")
     ap.add_argument("--bundle", action="store_true")
@@ -324,23 +330,23 @@ def main():
         infos.append(controler(a.fichier, rp, None, not a.sans_execution, schema))
     else:
         cat = json.load(open(CATALOGUE, encoding="utf-8"))
-        for c in cat["chapitres"]:
+        for c in cat["themes"]:
             if a.chapitre and c["id"] != a.chapitre:
                 continue
             chemin = os.path.join(DOSSIER, c["fichier"])
             if not os.path.exists(chemin):
                 if c.get("statut") == "pret":
-                    rp.erreur(c["fichier"], "chapitre « pret » au catalogue, mais le fichier manque")
+                    rp.erreur(c["fichier"], "thème « pret » au catalogue, mais le fichier manque")
                 else:
                     print(f"{c['id']} : pas encore de fichier (statut {c.get('statut')})")
                 continue
             info = controler(chemin, rp, c["id"], not a.sans_execution, schema)
-            if info and c.get("statut") == "pret" and info["exercices"] < 30:
-                rp.erreur(c["fichier"], f"« pret » demande 30 exercices au moins ({info['exercices']})")
+            if info and c.get("statut") == "pret" and info["exercices"] < 8:
+                rp.erreur(c["fichier"], f"« pret » demande 8 exercices au moins ({info['exercices']})")
             infos.append(info)
     for i in filter(None, infos):
         print(f"{i['id']} : {i['exercices']} exercices ({i['relus']} relus), {i['questions']} questions, types {', '.join(i['types'])} ; "
-              f"remplit {min(i['exercices'], 30)} cases sur 30 d'un calendrier d'un seul chapitre")
+              f"assez pour {i['exercices']} cases ; un calendrier de 30 jours en alternance demande {-(-30 // 1)} exercices pour 1 thème, 15 pour 2, 10 pour 3, 8 pour 4")
         if i["relus"] < i["exercices"]:
             rp.avert(i["id"], f"{i['exercices'] - i['relus']} exercices à relire (« relu »: false)")
         if a.bundle and not rp.erreurs:

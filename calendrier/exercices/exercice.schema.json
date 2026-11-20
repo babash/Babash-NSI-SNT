@@ -1,142 +1,684 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://babash.github.io/Babash-NSI-SNT/calendrier/exercices/exercice.schema.json",
-  "title": "Calendrier des vacances : la banque d'exercices d'un chapitre",
-  "description": "Un fichier par chapitre (calendrier/exercices/<chapitre>.json). L'exercice de rang r (1, 2, 3…) est le r-ième de la liste : on ajoute toujours à la fin, on ne réordonne jamais un exercice publié, et son id ne change jamais. Chaque exercice a 3 niveaux (Facile, Moyen, Costaud). Le contrôle (scripts/calendrier_exercices.py) vérifie ce schéma, puis exécute chaque programme et compare ce qu'il affiche à ce que l'exercice annonce. Jamais de nom d'élève ; des prénoms variés et épicènes dans les énoncés.",
+  "title": "Calendrier des vacances : la banque d'exercices d'un thème",
+  "description": "Un fichier par thème (calendrier/exercices/<thème>.json). Un thème est un chapitre (« Listes et dictionnaires ») ou une notion plus fine (« Les boucles », « Le binaire ») ; ses niveaux sont indicatifs : l'enseignant·e coche librement les thèmes d'un calendrier, quel que soit le niveau de la classe, et les cases alternent entre eux. L'exercice de rang r (1, 2, 3…) est le r-ième de la liste : on ajoute toujours à la fin, on ne réordonne jamais un exercice publié, et son id ne change jamais. Chaque exercice a 3 niveaux (Facile, Moyen, Costaud). Le contrôle (scripts/calendrier_exercices.py) vérifie ce schéma, puis exécute chaque programme et compare ce qu'il affiche à ce que l'exercice annonce. Jamais de nom d'élève ; des prénoms variés et épicènes dans les énoncés.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["chapitre", "exercices"],
+  "required": [
+    "exercices"
+  ],
   "properties": {
-    "$schema": { "type": "string" },
+    "$schema": {
+      "type": "string"
+    },
+    "theme": {
+      "$ref": "#/$defs/theme"
+    },
     "chapitre": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["id", "titre", "niveau", "langage"],
-      "properties": {
-        "id": { "$ref": "#/$defs/identifiant", "description": "Par exemple nsi1-bases-python. C'est la valeur gardée dans vacances.cases.chapitre." },
-        "titre": { "type": "string", "minLength": 3, "maxLength": 60 },
-        "niveau": { "enum": ["snt", "nsi-1re", "nsi-tle"] },
-        "langage": { "enum": ["python", "sql", "aucun"], "description": "Le langage des programmes : python (exécuté par python3), sql (exécuté par SQLite sur base_sql), aucun (pas de programme à exécuter)." },
-        "programme": { "type": "array", "uniqueItems": true, "items": { "type": "string", "maxLength": 120 }, "description": "Nœuds de donnees/referentiels/programmes.json." },
-        "notions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "maxLength": 60 }, "description": "Identifiants de donnees/referentiels/notions.json." }
-      }
+      "$ref": "#/$defs/theme",
+      "description": "Ancien nom de « theme » : accepté (avertissement du contrôle), à renommer."
     },
     "base_sql": {
-      "type": "string", "maxLength": 20000,
-      "description": "Obligatoire si langage = sql : le script CREATE TABLE et INSERT de la base d'exemple, commun à tous les exercices du chapitre. Les requêtes s'exécutent dessus (SQLite)."
+      "type": "string",
+      "maxLength": 20000,
+      "description": "Obligatoire si langage = sql : le script CREATE TABLE et INSERT de la base d'exemple, commun à tous les exercices du thème. Les requêtes s'exécutent dessus (SQLite)."
     },
-    "exercices": { "type": "array", "minItems": 1, "maxItems": 99, "items": { "$ref": "#/$defs/exercice" } }
+    "exercices": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 99,
+      "items": {
+        "$ref": "#/$defs/exercice"
+      }
+    }
   },
   "$defs": {
-    "identifiant": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "minLength": 2, "maxLength": 60 },
-    "texte": { "type": "string", "minLength": 1, "maxLength": 300 },
-    "code": { "type": "string", "minLength": 1, "maxLength": 1200, "description": "Un programme : lignes séparées par \\n, indentation de 4 espaces, jamais de tabulation." },
-    "aides": { "type": "array", "maxItems": 2, "items": { "type": "string", "minLength": 3, "maxLength": 200 }, "description": "Les coups de pouce, du plus léger au plus fort ; jamais la réponse." },
+    "identifiant": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "minLength": 2,
+      "maxLength": 60
+    },
+    "texte": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1200,
+      "description": "Un programme : lignes séparées par \\n, indentation de 4 espaces, jamais de tabulation."
+    },
+    "aides": {
+      "type": "array",
+      "maxItems": 2,
+      "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 200
+      },
+      "description": "Les coups de pouce, du plus léger au plus fort ; jamais la réponse."
+    },
     "exercice": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "type", "titre", "objectif", "niveaux", "relu"],
+      "required": [
+        "id",
+        "type",
+        "titre",
+        "objectif",
+        "niveaux",
+        "relu"
+      ],
       "properties": {
-        "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*-[0-9]{3}$", "description": "<id du chapitre>-<rang sur 3 chiffres>, par exemple nsi1-bases-python-007." },
-        "type": { "enum": ["associer", "erreur", "vraifaux", "sortie", "ordre", "completer"] },
-        "titre": { "type": "string", "minLength": 3, "maxLength": 40, "description": "Un titre qui donne envie (« Chasse au bug »)." },
-        "objectif": { "type": "string", "minLength": 10, "maxLength": 140, "description": "Affiché au début du jeu : ce que l'on entraîne." },
-        "notions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "maxLength": 60 } },
-        "auteur": { "type": "string", "maxLength": 120 },
-        "relu": { "type": "boolean", "description": "Vrai quand l'enseignant·e (ou un·e relecteur·rice) a relu l'exercice. Un calendrier réel ne prend que des exercices relus (avertissement sinon)." },
-        "niveaux": {
-          "type": "array", "minItems": 3, "maxItems": 3,
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*-[0-9]{3}$",
+          "description": "<id du thème>-<rang sur 3 chiffres>, par exemple py-boucles-007."
+        },
+        "type": {
+          "enum": [
+            "associer",
+            "erreur",
+            "vraifaux",
+            "sortie",
+            "ordre",
+            "completer"
+          ]
+        },
+        "titre": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40,
+          "description": "Un titre qui donne envie (« Chasse au bug »)."
+        },
+        "objectif": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 140,
+          "description": "Affiché au début du jeu : ce que l'on entraîne."
+        },
+        "notions": {
+          "type": "array",
+          "uniqueItems": true,
           "items": {
-            "type": "object", "additionalProperties": false, "required": ["duree", "items"],
+            "type": "string",
+            "maxLength": 60
+          }
+        },
+        "auteur": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "relu": {
+          "type": "boolean",
+          "description": "Vrai quand l'enseignant·e (ou un·e relecteur·rice) a relu l'exercice. Un calendrier réel ne prend que des exercices relus (avertissement sinon)."
+        },
+        "niveaux": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "duree",
+              "items"
+            ],
             "properties": {
-              "duree": { "type": "integer", "minimum": 1, "maximum": 8, "description": "Minutes, environ : Facile 2-3, Moyen 3-5, Costaud 4-8." },
-              "items": { "type": "array", "minItems": 1, "maxItems": 8 }
+              "duree": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 8,
+                "description": "Minutes, environ : Facile 2-3, Moyen 3-5, Costaud 4-8."
+              },
+              "items": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 8
+              }
             }
           }
         }
       },
       "allOf": [
-        { "if": { "properties": { "type": { "const": "associer" } } }, "then": { "properties": { "niveaux": { "items": { "properties": { "items": { "items": { "$ref": "#/$defs/associer" } } } } } } } },
-        { "if": { "properties": { "type": { "const": "erreur" } } }, "then": { "properties": { "niveaux": { "items": { "properties": { "items": { "items": { "$ref": "#/$defs/erreur" } } } } } } } },
-        { "if": { "properties": { "type": { "const": "vraifaux" } } }, "then": { "properties": { "niveaux": { "items": { "properties": { "items": { "items": { "$ref": "#/$defs/vraifaux" } } } } } } } },
-        { "if": { "properties": { "type": { "const": "sortie" } } }, "then": { "properties": { "niveaux": { "items": { "properties": { "items": { "items": { "$ref": "#/$defs/sortie" } } } } } } } },
-        { "if": { "properties": { "type": { "const": "ordre" } } }, "then": { "properties": { "niveaux": { "items": { "properties": { "items": { "items": { "$ref": "#/$defs/ordre" } } } } } } } },
-        { "if": { "properties": { "type": { "const": "completer" } } }, "then": { "properties": { "niveaux": { "items": { "properties": { "items": { "items": { "$ref": "#/$defs/completer" } } } } } } } }
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "associer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/associer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "erreur"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/erreur"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "vraifaux"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/vraifaux"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "sortie"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/sortie"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "ordre"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/ordre"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "completer"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/completer"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "associer": {
-      "type": "object", "additionalProperties": false, "required": ["consigne", "paires", "explication"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consigne",
+        "paires",
+        "explication"
+      ],
       "properties": {
-        "consigne": { "$ref": "#/$defs/texte" },
-        "paires": { "type": "array", "minItems": 3, "maxItems": 6, "items": { "type": "array", "minItems": 2, "maxItems": 2, "items": { "type": "string", "minLength": 1, "maxLength": 200 } }, "description": "[à gauche, à droite]. Les deux côtés sont tous différents." },
-        "executer": { "type": "boolean", "description": "Vrai : chaque élément de gauche est un programme, et ce qu'il affiche (lignes jointes par « , ») doit être l'élément de droite." },
-        "aides": { "$ref": "#/$defs/aides" },
-        "explication": { "$ref": "#/$defs/texte" }
+        "consigne": {
+          "$ref": "#/$defs/texte"
+        },
+        "paires": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 200
+            }
+          },
+          "description": "[à gauche, à droite]. Les deux côtés sont tous différents."
+        },
+        "executer": {
+          "type": "boolean",
+          "description": "Vrai : chaque élément de gauche est un programme, et ce qu'il affiche (lignes jointes par « , ») doit être l'élément de droite."
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        }
       }
     },
     "erreur": {
-      "type": "object", "additionalProperties": false, "required": ["but", "lignes", "ligne", "corrections", "bonne", "affiche", "explication"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "but",
+        "lignes",
+        "ligne",
+        "corrections",
+        "bonne",
+        "affiche",
+        "explication"
+      ],
       "properties": {
-        "but": { "$ref": "#/$defs/texte" },
-        "lignes": { "type": "array", "minItems": 2, "maxItems": 12, "items": { "type": "string", "maxLength": 120 } },
-        "ligne": { "type": "integer", "minimum": 0, "description": "Indice (à partir de 0) de la ligne fausse." },
-        "corrections": { "type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": { "type": "string", "maxLength": 120 } },
-        "bonne": { "type": "integer", "minimum": 0, "maximum": 2 },
-        "affiche": { "type": "string", "maxLength": 1000, "description": "Ce qu'affiche le programme corrigé. Le contrôle vérifie aussi que le programme fautif et les deux mauvaises corrections n'affichent pas cela." },
-        "aides": { "$ref": "#/$defs/aides" },
-        "explication": { "$ref": "#/$defs/texte" }
+        "but": {
+          "$ref": "#/$defs/texte"
+        },
+        "lignes": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "ligne": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Indice (à partir de 0) de la ligne fausse."
+        },
+        "corrections": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          }
+        },
+        "bonne": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "affiche": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Ce qu'affiche le programme corrigé. Le contrôle vérifie aussi que le programme fautif et les deux mauvaises corrections n'affichent pas cela."
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        }
       }
     },
     "vraifaux": {
-      "type": "object", "additionalProperties": false, "required": ["texte", "reponse", "explication"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "texte",
+        "reponse",
+        "explication"
+      ],
       "properties": {
-        "texte": { "type": "string", "minLength": 5, "maxLength": 200 },
-        "reponse": { "type": "boolean" },
-        "code": { "$ref": "#/$defs/code" },
-        "verifier": { "type": "string", "maxLength": 200, "description": "Python seulement : une expression évaluée après le code ; elle doit valoir « reponse ». Exemple : s == 10." },
-        "explication": { "$ref": "#/$defs/texte" }
+        "texte": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 200
+        },
+        "reponse": {
+          "type": "boolean"
+        },
+        "code": {
+          "$ref": "#/$defs/code"
+        },
+        "verifier": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Python seulement : une expression évaluée après le code ; elle doit valoir « reponse ». Exemple : s == 10."
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        }
       }
     },
     "sortie": {
-      "type": "object", "additionalProperties": false, "required": ["code"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code"
+      ],
       "properties": {
-        "code": { "$ref": "#/$defs/code" },
-        "options": { "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": { "type": "string", "maxLength": 200 }, "description": "Quatre sorties possibles ; « / » sépare les lignes affichées (« 0 / 1 / 2 »)." },
-        "bonne": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "retours": { "type": "array", "minItems": 4, "maxItems": 4, "items": { "type": "string", "minLength": 3, "maxLength": 200 }, "description": "Un retour par option : pour une mauvaise, l'erreur de raisonnement qu'elle trahit, sans donner la réponse." },
-        "reponse": { "type": "string", "minLength": 1, "maxLength": 60, "description": "Réponse à taper (niveau Costaud) : la sortie exacte, sur une ligne." },
-        "explication": { "$ref": "#/$defs/texte" },
-        "aides": { "$ref": "#/$defs/aides" }
+        "code": {
+          "$ref": "#/$defs/code"
+        },
+        "options": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "description": "Quatre sorties possibles ; « / » sépare les lignes affichées (« 0 / 1 / 2 »)."
+        },
+        "bonne": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "retours": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 200
+          },
+          "description": "Un retour par option : pour une mauvaise, l'erreur de raisonnement qu'elle trahit, sans donner la réponse."
+        },
+        "reponse": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60,
+          "description": "Réponse à taper (niveau Costaud) : la sortie exacte, sur une ligne."
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        }
       },
       "oneOf": [
-        { "required": ["options", "bonne", "retours"], "not": { "required": ["reponse"] } },
-        { "required": ["reponse", "explication"], "not": { "required": ["options"] } }
+        {
+          "required": [
+            "options",
+            "bonne",
+            "retours"
+          ],
+          "not": {
+            "required": [
+              "reponse"
+            ]
+          }
+        },
+        {
+          "required": [
+            "reponse",
+            "explication"
+          ],
+          "not": {
+            "required": [
+              "options"
+            ]
+          }
+        }
       ]
     },
     "ordre": {
-      "type": "object", "additionalProperties": false, "required": ["but", "lignes", "affiche"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "but",
+        "lignes",
+        "affiche"
+      ],
       "properties": {
-        "but": { "$ref": "#/$defs/texte" },
-        "lignes": { "type": "array", "minItems": 3, "maxItems": 10, "uniqueItems": true, "items": { "type": "string", "maxLength": 120 }, "description": "Les lignes dans le bon ordre (la page les mélange). Une seule disposition doit être juste." },
-        "affiche": { "type": "string", "maxLength": 1000 },
-        "aides": { "$ref": "#/$defs/aides" }
+        "but": {
+          "$ref": "#/$defs/texte"
+        },
+        "lignes": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 10,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": "Les lignes dans le bon ordre (la page les mélange). Une seule disposition doit être juste."
+        },
+        "affiche": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        }
       }
     },
     "completer": {
-      "type": "object", "additionalProperties": false, "required": ["but", "lignes", "trous", "affiche", "explication"],
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "but",
+        "lignes",
+        "trous",
+        "affiche",
+        "explication"
+      ],
       "properties": {
-        "but": { "$ref": "#/$defs/texte" },
-        "lignes": { "type": "array", "minItems": 1, "maxItems": 10, "items": { "type": "string", "maxLength": 120 }, "description": "Les trous s'écrivent {0}, {1}… dans les lignes." },
-        "trous": { "type": "array", "minItems": 1, "maxItems": 4, "items": {
-          "type": "object", "additionalProperties": false, "required": ["options", "bonne"],
-          "properties": {
-            "options": { "type": "array", "minItems": 2, "maxItems": 4, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 40 } },
-            "bonne": { "type": "integer", "minimum": 0, "maximum": 3 }
-          } } },
-        "affiche": { "type": "string", "maxLength": 1000, "description": "Ce qu'affiche le programme complété. Le contrôle vérifie que chaque mauvaise pièce change le résultat." },
-        "aides": { "$ref": "#/$defs/aides" },
-        "explication": { "$ref": "#/$defs/texte" }
+        "but": {
+          "$ref": "#/$defs/texte"
+        },
+        "lignes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 10,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": "Les trous s'écrivent {0}, {1}… dans les lignes."
+        },
+        "trous": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 4,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "options",
+              "bonne"
+            ],
+            "properties": {
+              "options": {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 4,
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 40
+                }
+              },
+              "bonne": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3
+              }
+            }
+          }
+        },
+        "affiche": {
+          "type": "string",
+          "maxLength": 1000,
+          "description": "Ce qu'affiche le programme complété. Le contrôle vérifie que chaque mauvaise pièce change le résultat."
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        }
+      }
+    },
+    "theme": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "titre",
+        "langage"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifiant",
+          "description": "Par exemple py-boucles, binaire, nsi1-listes-dictionnaires. C'est la valeur gardée dans vacances.cases.theme ; elle ne change jamais."
+        },
+        "titre": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 60
+        },
+        "nature": {
+          "enum": [
+            "chapitre",
+            "notion"
+          ],
+          "description": "Un chapitre du programme, ou une notion plus fine qu'on peut cocher seule."
+        },
+        "niveaux": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "snt",
+              "nsi-1re",
+              "nsi-tle"
+            ]
+          },
+          "description": "Indicatif : les niveaux pour lesquels le thème est d'abord écrit. Aucune classe n'est imposée."
+        },
+        "niveau": {
+          "enum": [
+            "snt",
+            "nsi-1re",
+            "nsi-tle"
+          ],
+          "description": "Ancienne forme (un seul niveau) : acceptée, à remplacer par « niveaux »."
+        },
+        "langage": {
+          "enum": [
+            "python",
+            "sql",
+            "aucun"
+          ],
+          "description": "Le langage des programmes : python (exécuté par python3), sql (exécuté par SQLite sur base_sql), aucun (pas de programme à exécuter)."
+        },
+        "programme": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 120
+          },
+          "description": "Nœuds de donnees/referentiels/programmes.json."
+        },
+        "notions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "description": "Identifiants de donnees/referentiels/notions.json."
+        }
       }
     }
-  }
+  },
+  "oneOf": [
+    {
+      "required": [
+        "theme"
+      ]
+    },
+    {
+      "required": [
+        "chapitre"
+      ]
+    }
+  ]
 }
