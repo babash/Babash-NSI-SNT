@@ -7,7 +7,8 @@ Le site est publié par GitHub Pages à partir de la branche `main`, par le work
 ```
 README.md                   la présentation du site
 CONTRIBUTING.md             les règles du travail sur GitHub
-docs/                       la documentation : ce fichier et les autres
+docs/                       la documentation : ce fichier et les autres (sommaire : docs/README.md)
+  pedagogie/                la pédagogie : philosophie, règles universelles, types de ressources
 LICENSE                     la licence MIT du code
 CLAUDE.md                   les règles communes de l'équipe d'agents
 .claude/agents/             la fiche de chaque rôle
@@ -23,12 +24,20 @@ nsi-terminale/  …
 pp/             …
 autres/         …
 bibliotheque/               l'onglet Bibliothèque (ne pas toucher)
+  annales/                  la page des annales du bac NSI par notion (assets/annales.js), liée
+                            depuis la bibliothèque
 admin/                      l'espace administrateur (ADMIN.md ; ne pas toucher)
+calendrier/                 le Calendrier des vacances, pas encore en service : la page des élèves
+                            (index.html), l'espace enseignant·e (prof.html), les banques d'exercices
+                            (exercices/, contrôlées à chaque publication) et les migrations de sa base
+                            (supabase/, voir SUPABASE.md)
 assets/                     mise en page et fonctionnement (ne pas toucher)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
                             ses fichiers bibliotheque*.json sont construits à la publication
   annales/                  l'inventaire des sujets du bac de NSI, mis à jour chaque 1er janvier et
-                            1er août (annales/LISEZMOI.md) ; aucun script du site ne le lit
+                            1er août (annales/LISEZMOI.md), et le classement de leurs exercices par
+                            chapitre (notions-par-exercice.json, construit par
+                            scripts/annales_notions.py) ; la page bibliotheque/annales/ les lit
 .github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
 scripts/                    vérification automatique, validation des données, construction de la
                             bibliothèque, script complet de la base

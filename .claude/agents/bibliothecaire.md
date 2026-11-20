@@ -29,3 +29,4 @@ Ceux de ta ligne dans « Qui possède quoi » (`CLAUDE.md`, § 7). En plus, dans
 - Pour chaque ressource, note sa **source** (fichier, dépôt, conversation et date) et son **état** : en ligne, vérifiée, à vérifier, cassée, obsolète.
 - **Cas douteux** (classement incertain, hors programme, données d'élèves) : propose une destination, mais signale le cas pour l'enseignant.
 - Écris les descriptions du point de vue de l'enseignante ou de l'enseignant qui cherche une ressource : ce que font les élèves, la durée, ce qu'il faut pour la lancer.
+- Le renommage des dépôts publiés est décidé (20/11), mais pas encore fait : tes fiches gardent les adresses actuelles, vérifiées, jusqu'à ce que le chef d'orchestre t'annonce les nouvelles.

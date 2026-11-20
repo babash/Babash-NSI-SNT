@@ -283,6 +283,16 @@ Ce qui est vérifié :
 - motifs interdits : mots de passe, identifiants, identifiants de démonstration, clés secrètes (Supabase `service_role`
   ou `sb_secret_`, GitHub, AWS, Google…), jetons, paramètres secrets dans les adresses, adresses électroniques.
 
+### Les annales du bac NSI (T104, T116)
+- `annales/annales-bac-nsi.json` (le Bibliothécaire) : les sujets de l'écrit depuis 2021, leurs exercices et leurs liens.
+  Procédure de mise à jour : `annales/MISE-A-JOUR.md`.
+- `annales/notions-par-exercice.json` (l'Architecte) : le classement de chaque exercice dans les 22 chapitres des
+  fiches de révision, **construit** par `python3 scripts/annales_notions.py` à partir des notions et de l'en-tête de
+  chaque exercice. On ne le modifie pas à la main, sauf `"verifie": true` sur un exercice relu (le script le garde
+  alors tel quel). À relancer après chaque mise à jour des annales : le workflow « Vérifier le site » échoue sinon.
+- La page `bibliotheque/annales/` les affiche : filtres par chapitre, année, centre et corrigé, version imprimable
+  avec un QR code par sujet (`?chapitre=tris&vue=imprimer`).
+
 ### Sources des programmes
 Elles sont citées dans `referentiels/programmes.json` (champ `sources`). En résumé :
 - SNT 2019 : annexe de l'arrêté du 17 janvier 2019, BO spécial n° 1 du 22 janvier 2019 ; intitulés relevés dans

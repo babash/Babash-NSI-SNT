@@ -1,0 +1,1283 @@
+{
+ "$schema": "./exercice.schema.json",
+ "theme": {
+  "id": "py-fonctions",
+  "titre": "Les fonctions",
+  "nature": "notion",
+  "niveaux": [
+   "nsi-1re"
+  ],
+  "langage": "python",
+  "programme": [
+   "nsi-1re-2019.langages.constructions-elementaires"
+  ],
+  "notions": [
+   "prog.fonction",
+   "prog.fonction.parametre",
+   "prog.fonction.retour"
+  ]
+ },
+ "exercices": [
+  {
+   "id": "py-fonctions-001",
+   "type": "vraifaux",
+   "titre": "Vrai ou faux : les fonctions",
+   "objectif": "Savoir ce que font def, les paramètres et return.",
+   "notions": [
+    "prog.fonction",
+    "prog.fonction.parametre",
+    "prog.fonction.retour"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "def sert à définir une fonction.",
+       "reponse": true,
+       "explication": "def nom(paramètres): commence une fonction ; son bloc est décalé."
+      },
+      {
+       "texte": "Une fonction s'exécute dès qu'on la définit.",
+       "reponse": false,
+       "explication": "La définir ne l'exécute pas : il faut l'appeler, par exemple double(4)."
+      },
+      {
+       "texte": "return renvoie une valeur à celui qui appelle la fonction.",
+       "reponse": true,
+       "explication": "Le résultat de l'appel est la valeur après return."
+      },
+      {
+       "texte": "Après ce code, r vaut 8.",
+       "reponse": true,
+       "explication": "double(4) renvoie 4 * 2.",
+       "code": "def double(x):\n    return x * 2\nr = double(4)",
+       "verifier": "r == 8"
+      },
+      {
+       "texte": "Les parenthèses sont obligatoires pour appeler une fonction, même sans paramètre.",
+       "reponse": true,
+       "explication": "On écrit saluer(), pas saluer."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "Après ce code, r vaut 7.",
+       "reponse": true,
+       "explication": "f(3, 4) renvoie 3 + 4.",
+       "code": "def f(a, b):\n    return a + b\nr = f(3, 4)",
+       "verifier": "r == 7"
+      },
+      {
+       "texte": "Après ce code, r vaut 10.",
+       "reponse": false,
+       "explication": "La fonction affiche 10, mais ne renvoie rien : r vaut None.",
+       "code": "def f(x):\n    print(x * 2)\nr = f(5)",
+       "verifier": "r == 10"
+      },
+      {
+       "texte": "Les lignes après un return ne sont pas exécutées.",
+       "reponse": true,
+       "explication": "return termine la fonction tout de suite.",
+       "code": "def f():\n    return 1\n    return 2\nr = f()",
+       "verifier": "r == 1"
+      },
+      {
+       "texte": "Une fonction peut appeler une autre fonction.",
+       "reponse": true,
+       "explication": "C'est même le principe pour découper un problème.",
+       "code": "def carre(x):\n    return x * x\ndef somme_carres(a, b):\n    return carre(a) + carre(b)\nr = somme_carres(2, 3)",
+       "verifier": "r == 13"
+      },
+      {
+       "texte": "Le paramètre x et la variable x du programme sont toujours la même variable.",
+       "reponse": false,
+       "explication": "Le paramètre est une variable locale : il n'existe que pendant l'appel.",
+       "code": "x = 1\ndef f(x):\n    x = x + 10\n    return x\nr = f(5)",
+       "verifier": "x != 1"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "Après ce code, r vaut 6.",
+       "reponse": false,
+       "explication": "La fonction s'arrête au premier return, dans le premier tour : r vaut 0.",
+       "code": "def somme(n):\n    s = 0\n    for i in range(n):\n        s = s + i\n        return s\nr = somme(4)",
+       "verifier": "r == 6"
+      },
+      {
+       "texte": "Après ce code, r vaut \"pair\".",
+       "reponse": true,
+       "explication": "10 % 2 vaut 0 : le premier return s'exécute.",
+       "code": "def parite(n):\n    if n % 2 == 0:\n        return \"pair\"\n    return \"impair\"\nr = parite(10)",
+       "verifier": "r == \"pair\""
+      },
+      {
+       "texte": "Après ce code, r vaut 9.",
+       "reponse": true,
+       "explication": "f(f(1)) : f(1) = 3, puis f(3) = 9.",
+       "code": "def f(x):\n    return 3 * x\nr = f(f(1))",
+       "verifier": "r == 9"
+      },
+      {
+       "texte": "Après ce code, r vaut 25.",
+       "reponse": false,
+       "explication": "carre(2) + 3 vaut 7 : l'appel est calculé avant l'addition. carre(2 + 3) vaudrait 25.",
+       "code": "def carre(x):\n    return x * x\nr = carre(2) + 3",
+       "verifier": "r == 25"
+      },
+      {
+       "texte": "Une fonction sans return renvoie None.",
+       "reponse": true,
+       "explication": "None est la valeur « rien » de Python.",
+       "code": "def f():\n    a = 1\nr = f()",
+       "verifier": "r is None"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-fonctions-002",
+   "type": "sortie",
+   "titre": "Appels de fonctions",
+   "objectif": "Prévoir le résultat d'un appel de fonction.",
+   "notions": [
+    "prog.fonction",
+    "prog.fonction.retour",
+    "prog.trace"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "def double(x):\n    return 2 * x\nprint(double(6))",
+       "options": [
+        "6",
+        "double(6)",
+        "12",
+        "26"
+       ],
+       "bonne": 2,
+       "retours": [
+        "La fonction renvoie le double, pas x.",
+        "L'appel est calculé avant d'être affiché.",
+        "Juste : 2 x 6.",
+        "2 * x est une multiplication."
+       ],
+       "aides": [
+        "Remplace x par 6 dans le return."
+       ]
+      },
+      {
+       "code": "def bonjour(nom):\n    return \"Bonjour \" + nom\nprint(bonjour(\"Lou\"))",
+       "options": [
+        "Bonjour nom",
+        "Bonjour Lou",
+        "Lou",
+        "BonjourLou"
+       ],
+       "bonne": 1,
+       "retours": [
+        "nom est une variable : on utilise sa valeur.",
+        "Juste : le paramètre nom vaut \"Lou\".",
+        "On colle les deux textes.",
+        "L'espace est dans \"Bonjour \"."
+       ],
+       "aides": [
+        "nom reçoit \"Lou\"."
+       ]
+      },
+      {
+       "code": "def f(a, b):\n    return a - b\nprint(f(10, 4))",
+       "options": [
+        "10",
+        "-6",
+        "14",
+        "6"
+       ],
+       "bonne": 3,
+       "retours": [
+        "La fonction calcule a - b.",
+        "Le premier argument va dans le premier paramètre : a = 10.",
+        "C'est une soustraction.",
+        "Juste : a = 10, b = 4."
+       ],
+       "aides": [
+        "Dans l'ordre : a reçoit 10, b reçoit 4."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "def f(x):\n    return x + 1\nprint(f(f(f(0))))",
+       "options": [
+        "0",
+        "3",
+        "1",
+        "2"
+       ],
+       "bonne": 1,
+       "retours": [
+        "Chaque appel ajoute 1.",
+        "Juste : 0, puis 1, 2, 3.",
+        "Il y a trois appels emboîtés.",
+        "Compte les f : il y en a trois."
+       ],
+       "aides": [
+        "On calcule l'appel le plus intérieur d'abord."
+       ]
+      },
+      {
+       "code": "def aire(l, h):\n    return l * h\na = aire(3, 4)\nprint(a + 1)",
+       "options": [
+        "12",
+        "8",
+        "13",
+        "aire + 1"
+       ],
+       "bonne": 2,
+       "retours": [
+        "On affiche a + 1.",
+        "aire multiplie l et h.",
+        "Juste : 3 x 4 = 12, plus 1.",
+        "a contient la valeur renvoyée : 12."
+       ],
+       "aides": [
+        "a vaut d'abord 12."
+       ]
+      },
+      {
+       "code": "def signe(n):\n    if n < 0:\n        return \"-\"\n    return \"+\"\nprint(signe(-2) + signe(5))",
+       "options": [
+        "++",
+        "--",
+        "+-",
+        "-+"
+       ],
+       "bonne": 3,
+       "retours": [
+        "-2 est négatif.",
+        "5 n'est pas négatif.",
+        "Les appels sont dans l'ordre : -2 d'abord.",
+        "Juste : - pour -2, + pour 5."
+       ],
+       "aides": [
+        "Calcule chaque appel séparément."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "def mystere(n):\n    s = 0\n    for i in range(1, n + 1):\n        s = s + i\n    return s\nprint(mystere(6))",
+       "reponse": "21",
+       "explication": "mystere(n) calcule 1 + 2 + … + n : 21 pour 6.",
+       "aides": [
+        "range(1, n + 1) va de 1 à n.",
+        "Additionne de 1 à 6."
+       ]
+      },
+      {
+       "code": "def f(x):\n    if x > 10:\n        return x - 10\n    return x * 2\nprint(f(4) + f(15))",
+       "reponse": "13",
+       "explication": "f(4) = 8 (4 n'est pas > 10) et f(15) = 5 : 13.",
+       "aides": [
+        "Calcule f(4), puis f(15)."
+       ]
+      },
+      {
+       "code": "def compte(mot, lettre):\n    n = 0\n    for c in mot:\n        if c == lettre:\n            n = n + 1\n    return n\nprint(compte(\"bananier\", \"a\") * 10)",
+       "reponse": "20",
+       "explication": "bananier contient 2 a : 2 x 10 = 20.",
+       "aides": [
+        "La fonction compte les a.",
+        "N'oublie pas le * 10."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-fonctions-003",
+   "type": "associer",
+   "titre": "Qui renvoie quoi ?",
+   "objectif": "Associer un appel de fonction à son résultat.",
+   "notions": [
+    "prog.fonction",
+    "prog.fonction.retour"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "def f(x):\n    return x + 2\nprint(f(3))",
+         "5"
+        ],
+        [
+         "def f(x):\n    return x * 2\nprint(f(3))",
+         "6"
+        ],
+        [
+         "def f(x):\n    return x ** 2\nprint(f(3))",
+         "9"
+        ],
+        [
+         "def f(x):\n    return x - 2\nprint(f(3))",
+         "1"
+        ]
+       ],
+       "explication": "Remplace x par 3 dans chaque return.",
+       "executer": true,
+       "aides": [
+        "x vaut 3 à chaque fois."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "def f(a, b):\n    return a * 10 + b\nprint(f(1, 2))",
+         "12"
+        ],
+        [
+         "def f(a, b):\n    return a * 10 + b\nprint(f(3, 1))",
+         "31"
+        ],
+        [
+         "def f(a, b):\n    return a + b * 10\nprint(f(1, 2))",
+         "21"
+        ],
+        [
+         "def f(a, b):\n    return (a + b) * 10\nprint(f(1, 2))",
+         "30"
+        ]
+       ],
+       "explication": "L'ordre des arguments compte : le premier va dans a, le second dans b. Les priorités de calcul aussi.",
+       "executer": true,
+       "aides": [
+        "f(1, 2) : a = 1, b = 2."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "def f(x):\n    print(x + 1)\nf(4)",
+         "5"
+        ],
+        [
+         "def f(x):\n    return x\nprint(f(4))",
+         "4"
+        ],
+        [
+         "def f(x):\n    print(x)\nprint(f(4))",
+         "4, None"
+        ],
+        [
+         "def f(x):\n    return x * 2\nf(4)\nprint(\"ok\")",
+         "ok"
+        ]
+       ],
+       "explication": "print affiche, return renvoie. Une fonction qui affiche sans return renvoie None, et print(f(4)) affiche alors aussi None. Un résultat renvoyé et pas utilisé ne s'affiche pas.",
+       "executer": true,
+       "aides": [
+        "print affiche ; return renvoie une valeur, sans rien afficher.",
+        "Une fonction sans return renvoie None."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-fonctions-004",
+   "type": "erreur",
+   "titre": "Bug dans la fonction",
+   "objectif": "Corriger une fonction : def, paramètres, return.",
+   "notions": [
+    "prog.fonction",
+    "prog.debogage"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le triple de 5 (15).",
+       "lignes": [
+        "def triple(x)",
+        "    return 3 * x",
+        "print(triple(5))"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "def triple x:",
+        "def triple[x]:",
+        "def triple(x):"
+       ],
+       "bonne": 2,
+       "affiche": "15",
+       "explication": "La ligne def se termine par deux-points.",
+       "aides": [
+        "Python signale SyntaxError."
+       ],
+       "message": "SyntaxError: expected ':'"
+      },
+      {
+       "but": "Afficher 14.",
+       "lignes": [
+        "def double(x):",
+        "    return 2 * x",
+        "print(double)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "print(double(7))",
+        "print(\"double(7)\")",
+        "print(double 7)"
+       ],
+       "bonne": 0,
+       "affiche": "14",
+       "explication": "Pour appeler une fonction, on écrit des parenthèses avec l'argument.",
+       "aides": [
+        "Le programme affiche quelque chose comme <function double…>."
+       ],
+       "affiche_fautif": "<function double at 0x…>"
+      },
+      {
+       "but": "Afficher la somme de 2 et 3 (5).",
+       "lignes": [
+        "def somme(a, b):",
+        "    return a + b",
+        "print(somme(2))"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "print(somme(2, 3))",
+        "print(somme(2 + 3))",
+        "print(somme(2), 3)"
+       ],
+       "bonne": 0,
+       "affiche": "5",
+       "explication": "La fonction attend deux arguments.",
+       "aides": [
+        "TypeError : il manque un argument."
+       ],
+       "message": "TypeError: somme() missing 1 required positional argument: 'b'"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le carré de 9 (81).",
+       "lignes": [
+        "def carre(x):",
+        "    print(x * x)",
+        "resultat = carre(9)",
+        "print(resultat)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "    return x * x",
+        "    x * x",
+        "    print(x ** 2)"
+       ],
+       "bonne": 0,
+       "affiche": "81",
+       "explication": "La fonction affiche mais ne renvoie rien : resultat vaut None. Il faut return.",
+       "aides": [
+        "Que vaut resultat ?"
+       ],
+       "affiche_fautif": "81\nNone"
+      },
+      {
+       "but": "Afficher Ado pour 15 ans.",
+       "lignes": [
+        "def categorie(age):",
+        "    if age < 12:",
+        "        return \"Enfant\"",
+        "    return \"Ado\"",
+        "print(categorie(age))"
+       ],
+       "ligne": 4,
+       "corrections": [
+        "print(categorie(\"15\"))",
+        "print(categorie(15))",
+        "print(categorie)"
+       ],
+       "bonne": 1,
+       "affiche": "Ado",
+       "explication": "age n'existe pas dans le programme : on donne la valeur 15 à l'appel.",
+       "aides": [
+        "NameError : age n'existe que dans la fonction."
+       ],
+       "message": "NameError: name 'age' is not defined"
+      },
+      {
+       "but": "Afficher le prix TTC de 50 euros avec 20 % de taxe (60.0).",
+       "lignes": [
+        "def ttc(prix):",
+        "    return prix * 0.2",
+        "print(ttc(50))"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "    return prix * 1.2",
+        "    return prix * 20",
+        "    return prix + 0.2"
+       ],
+       "bonne": 0,
+       "affiche": "60.0",
+       "explication": "Le TTC est le prix plus 20 % : prix x 1,2.",
+       "aides": [
+        "prix * 0.2 donne seulement la taxe."
+       ],
+       "affiche_fautif": "10.0"
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "La somme de 1 à n : afficher 10 pour n = 4.",
+       "lignes": [
+        "def somme(n):",
+        "    s = 0",
+        "    for i in range(1, n + 1):",
+        "        s = s + i",
+        "        return s",
+        "print(somme(4))"
+       ],
+       "ligne": 4,
+       "corrections": [
+        "        return i",
+        "    return s",
+        "    return n"
+       ],
+       "bonne": 1,
+       "affiche": "10",
+       "explication": "return est dans la boucle : la fonction s'arrête au premier tour. Il doit venir après la boucle.",
+       "aides": [
+        "Combien de tours fait la boucle avant le return ?"
+       ],
+       "affiche_fautif": "1"
+      },
+      {
+       "but": "Dire si un nombre est pair : afficher True puis False.",
+       "lignes": [
+        "def est_pair(n):",
+        "    return n % 2 == 1",
+        "print(est_pair(8))",
+        "print(est_pair(7))"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "    return n % 2",
+        "    return n % 2 == 0",
+        "    return n // 2 == 0"
+       ],
+       "bonne": 1,
+       "affiche": "True\nFalse",
+       "explication": "Un nombre est pair quand le reste par 2 vaut 0.",
+       "aides": [
+        "Que vaut 8 % 2 ?"
+       ],
+       "affiche_fautif": "False\nTrue"
+      },
+      {
+       "but": "Afficher le plus grand de 3 et 8 (8).",
+       "lignes": [
+        "def maxi(a, b):",
+        "    if a > b:",
+        "        return a",
+        "    return a",
+        "print(maxi(3, 8))"
+       ],
+       "ligne": 3,
+       "corrections": [
+        "return b",
+        "    return a + b",
+        "    return b"
+       ],
+       "bonne": 2,
+       "affiche": "8",
+       "explication": "Quand a n'est pas le plus grand, c'est b qu'il faut renvoyer.",
+       "aides": [
+        "Le programme renvoie toujours a."
+       ],
+       "affiche_fautif": "3"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-fonctions-005",
+   "type": "completer",
+   "titre": "Les pièces de la fonction",
+   "objectif": "Compléter une fonction et son appel.",
+   "notions": [
+    "prog.fonction",
+    "prog.fonction.parametre",
+    "prog.fonction.retour"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le double de 4 (8).",
+       "lignes": [
+        "{0} double(x):",
+        "    return 2 * x",
+        "print(double(4))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "function",
+          "fonction",
+          "def"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "8",
+       "explication": "Une fonction Python commence par def.",
+       "aides": [
+        "Le mot-clé vient de « define »."
+       ]
+      },
+      {
+       "but": "Afficher Salut Sam.",
+       "lignes": [
+        "def salut(nom):",
+        "    {0} \"Salut \" + nom",
+        "print(salut(\"Sam\"))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "return",
+          "print",
+          "renvoie"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Salut Sam",
+       "explication": "La fonction doit renvoyer le texte pour que print(salut(…)) l'affiche. Avec print dedans, on afficherait aussi None.",
+       "aides": [
+        "print(salut(\"Sam\")) affiche ce que la fonction renvoie."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher l'aire d'un rectangle 5 x 3 (15).",
+       "lignes": [
+        "def aire(longueur, largeur):",
+        "    return longueur {0} largeur",
+        "print(aire({1}))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "*",
+          "+",
+          "**"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "5, 3",
+          "8",
+          "5 3"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "15",
+       "explication": "L'aire est longueur x largeur ; les arguments se séparent par une virgule.",
+       "aides": [
+        "Les arguments sont séparés par une virgule."
+       ]
+      },
+      {
+       "but": "Afficher le plus petit de 6 et 2, puis de 2 et 6 (2 2).",
+       "lignes": [
+        "def mini(a, b):",
+        "    if a {0} b:",
+        "        return a",
+        "    return {1}",
+        "print(mini(6, 2), mini(2, 6))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "==",
+          ">",
+          "<"
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "a",
+          "0",
+          "b"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "2 2",
+       "explication": "On renvoie a s'il est plus petit, sinon b.",
+       "aides": [
+        "Si a n'est pas le plus petit, lequel l'est ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Compter les nombres plus grands que 10 dans la suite 4, 15, 10, 12, 21, 9 (3).",
+       "lignes": [
+        "def compte_grands(suite):",
+        "    n = 0",
+        "    for x in suite:",
+        "        if x {0} 10:",
+        "            n = n + 1",
+        "    return {1}",
+        "print(compte_grands((4, 15, 10, 12, 21, 9)))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "<",
+          ">",
+          ">="
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "x",
+          "suite",
+          "n"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "3",
+       "explication": "On compte avec n les x plus grands que 10, puis on renvoie n.",
+       "aides": [
+        "La fonction renvoie le compteur."
+       ]
+      },
+      {
+       "but": "Afficher la moyenne de 12 et 15 (13.5).",
+       "lignes": [
+        "def moyenne(a, b):",
+        "    return ({0}) / 2",
+        "print(moyenne(12, 15))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "a * b",
+          "a + b",
+          "a - b"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "13.5",
+       "explication": "La moyenne de deux nombres : leur somme divisée par 2, avec des parenthèses.",
+       "aides": [
+        "Sans parenthèses, la division passerait avant l'addition."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-fonctions-006",
+   "type": "ordre",
+   "titre": "Le puzzle de la fonction",
+   "objectif": "Construire une fonction, puis l'appeler.",
+   "notions": [
+    "prog.fonction",
+    "prog.blocs"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Définir carre, puis afficher carre(7).",
+       "lignes": [
+        "def carre(x):",
+        "    return x * x",
+        "print(carre(7))"
+       ],
+       "affiche": "49",
+       "aides": [
+        "La définition vient avant l'appel."
+       ]
+      },
+      {
+       "but": "Définir saluer, qui affiche un message, puis l'appeler.",
+       "lignes": [
+        "def saluer(prenom):",
+        "    print(\"Salut\", prenom)",
+        "saluer(\"Ibrahim\")"
+       ],
+       "affiche": "Salut Ibrahim",
+       "aides": [
+        "Le bloc de la fonction est décalé."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Une fonction qui renvoie le plus grand de deux nombres, puis deux appels : avec 4 et 11, puis avec 11 et 4.",
+       "lignes": [
+        "def maxi(a, b):",
+        "    if a > b:",
+        "        return a",
+        "    return b",
+        "print(maxi(4, 11), maxi(11, 4))"
+       ],
+       "affiche": "11 11",
+       "aides": [
+        "Le deuxième return est décalé une seule fois : il est dans la fonction, pas dans le if."
+       ]
+      },
+      {
+       "but": "Une fonction qui calcule un prix avec remise, puis l'appel.",
+       "lignes": [
+        "def prix_remise(prix, taux):",
+        "    remise = prix * taux / 100",
+        "    return prix - remise",
+        "print(prix_remise(80, 25))"
+       ],
+       "affiche": "60.0",
+       "aides": [
+        "On calcule la remise avant de la retirer."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "La somme des entiers de 1 à n, puis l'appel avec 5.",
+       "lignes": [
+        "def somme(n):",
+        "    s = 0",
+        "    for i in range(1, n + 1):",
+        "        s = s + i",
+        "    return s",
+        "print(somme(5))"
+       ],
+       "affiche": "15",
+       "aides": [
+        "s commence à 0, avant la boucle.",
+        "return vient après la boucle."
+       ]
+      },
+      {
+       "but": "Compter les a d'un mot, puis l'appel avec « Mamoudzou ».",
+       "lignes": [
+        "def compte_a(mot):",
+        "    n = 0",
+        "    for c in mot:",
+        "        if c == \"a\":",
+        "            n = n + 1",
+        "    return n",
+        "print(compte_a(\"Mamoudzou\"))"
+       ],
+       "affiche": "1",
+       "aides": [
+        "Le compteur commence à 0.",
+        "return est au niveau de la boucle, pas dedans."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-fonctions-007",
+   "type": "completer",
+   "titre": "Les pièces finales",
+   "objectif": "Compléter un programme qui mélange les notions du chapitre.",
+   "notions": [
+    "prog.fonction",
+    "prog.boucle",
+    "prog.condition"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher les nombres pairs de 0 à 8.",
+       "lignes": [
+        "for i in range(0, 10, {0}):",
+        "    print(i)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "3",
+          "1",
+          "2"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "0\n2\n4\n6\n8",
+       "explication": "Avec un pas de 2, on part de 0 : 0, 2, 4, 6, 8.",
+       "aides": [
+        "Le troisième nombre est le pas."
+       ]
+      },
+      {
+       "but": "Afficher Majeur pour 18.",
+       "lignes": [
+        "age = 18",
+        "if age {0} 18:",
+        "    print(\"Majeur\")"
+       ],
+       "trous": [
+        {
+         "options": [
+          "<",
+          ">",
+          ">="
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Majeur",
+       "explication": "18 compte : >=.",
+       "aides": [
+        "18 ans est majeur."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Compter les jours de pluie (plus de 5 mm) : 2.",
+       "lignes": [
+        "pluie = (0, 12, 3, 8, 1)",
+        "n = 0",
+        "for p in pluie:",
+        "    if p {0} 5:",
+        "        n = n {1}",
+        "print(n)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "==",
+          ">",
+          "<"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "+ 1",
+          "+ p",
+          "* 2"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "2",
+       "explication": "12 et 8 dépassent 5 : on compte 2 jours.",
+       "aides": [
+        "On compte : + 1."
+       ]
+      },
+      {
+       "but": "Une fonction qui dit si n est multiple de 3 ; afficher True pour 12.",
+       "lignes": [
+        "def multiple3(n):",
+        "    return n {0} 3 == {1}",
+        "print(multiple3(12))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "%",
+          "//",
+          "/"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "3",
+          "1",
+          "0"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "True",
+       "explication": "n est multiple de 3 si le reste par 3 vaut 0.",
+       "aides": [
+        "Le reste de la division par 3."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher la plus grande valeur de la suite 7, 3, 12, 5 (12).",
+       "lignes": [
+        "def plus_grand(suite):",
+        "    m = suite[0]",
+        "    for x in suite:",
+        "        if x {0} m:",
+        "            m = {1}",
+        "    return m",
+        "print(plus_grand((7, 3, 12, 5)))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "<",
+          ">",
+          "=="
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "m",
+          "suite",
+          "x"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "12",
+       "explication": "On remplace le maximum provisoire par x quand x est plus grand.",
+       "aides": [
+        "m garde le plus grand vu jusque-là."
+       ]
+      },
+      {
+       "but": "Afficher combien de nombres de 1 à 20 sont multiples de 3 ou de 5 (9).",
+       "lignes": [
+        "n = 0",
+        "for i in range(1, 21):",
+        "    if i % 3 == 0 {0} i % 5 == 0:",
+        "        n = n + 1",
+        "print(n)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "not",
+          "and",
+          "or"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "9",
+       "explication": "3, 5, 6, 9, 10, 12, 15, 18, 20 : 9 nombres. Avec and, on ne garderait que 15.",
+       "aides": [
+        "Multiple de 3 OU de 5."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "py-fonctions-008",
+   "type": "ordre",
+   "titre": "Le grand puzzle",
+   "objectif": "Assembler un programme complet : fonction, boucle et condition.",
+   "notions": [
+    "prog.fonction",
+    "prog.boucle",
+    "prog.condition"
+   ],
+   "auteur": "Babash - NSI Tani Malandi",
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher Pair ou Impair pour 0, 1 et 2.",
+       "lignes": [
+        "for n in range(3):",
+        "    if n % 2 == 0:",
+        "        print(n, \"Pair\")",
+        "    else:",
+        "        print(n, \"Impair\")"
+       ],
+       "affiche": "0 Pair\n1 Impair\n2 Pair",
+       "aides": [
+        "if et else sont au même niveau, dans la boucle."
+       ]
+      },
+      {
+       "but": "Afficher 3 fois la table de 2.",
+       "lignes": [
+        "for i in range(1, 4):",
+        "    r = 2 * i",
+        "    print(\"2 x\", i, \"=\", r)"
+       ],
+       "affiche": "2 x 1 = 2\n2 x 2 = 4\n2 x 3 = 6",
+       "aides": [
+        "On calcule r avant de l'afficher."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Une fonction est_pair, puis l'affichage des nombres pairs de 1 à 6.",
+       "lignes": [
+        "def est_pair(n):",
+        "    return n % 2 == 0",
+        "for i in range(1, 7):",
+        "    if est_pair(i):",
+        "        print(i)"
+       ],
+       "affiche": "2\n4\n6",
+       "aides": [
+        "La fonction est définie en premier.",
+        "print est dans le if, lui-même dans la boucle."
+       ]
+      },
+      {
+       "but": "Compter à rebours de 3 et afficher Partez ! à la fin.",
+       "lignes": [
+        "n = 3",
+        "while n >= 1:",
+        "    print(n)",
+        "    n = n - 1",
+        "print(\"Partez !\")"
+       ],
+       "affiche": "3\n2\n1\nPartez !",
+       "aides": [
+        "print(n) puis n = n - 1, dans la boucle."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Une fonction qui compte les voyelles, puis l'appel avec « taxi-brousse ».",
+       "lignes": [
+        "def voyelles(mot):",
+        "    n = 0",
+        "    for c in mot:",
+        "        if c in \"aeiouy\":",
+        "            n = n + 1",
+        "    return n",
+        "print(voyelles(\"taxi-brousse\"))"
+       ],
+       "affiche": "5",
+       "aides": [
+        "return vient après la boucle.",
+        "n = n + 1 est dans le if."
+       ]
+      },
+      {
+       "but": "Une fonction qui renvoie la mention, puis les appels avec 17, 14 et 9.",
+       "lignes": [
+        "def mention(note):",
+        "    if note >= 16:",
+        "        return \"TB\"",
+        "    if note >= 14:",
+        "        return \"B\"",
+        "    return \"rien\"",
+        "print(mention(17), mention(14), mention(9))"
+       ],
+       "affiche": "TB B rien",
+       "aides": [
+        "On teste d'abord la mention la plus haute."
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
