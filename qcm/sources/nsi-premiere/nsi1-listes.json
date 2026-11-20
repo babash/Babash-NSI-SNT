@@ -1,0 +1,296 @@
+{
+  "format": "qcm-pronote/1",
+  "id": "nsi1-listes",
+  "titre": "NSI 1re · Les listes Python",
+  "niveau": "nsi-premiere",
+  "justification_niveau": "tableaux indexés (les listes de Python), accès par indice, tableaux de tableaux : programme de première, Types construits.",
+  "programme": ["nsi-1re-2019.types-construits.tableaux : Tableau indexé, tableau donné en compréhension"],
+  "notions": ["donnees.tableau", "prog.boucle.bornee", "prog.accumulateur"],
+  "auteur": "Babash - NSI Tani Malandi",
+  "licence": "CC BY-SA 4.0",
+  "sources": ["Liste (export `fc180059`, 17 questions)"],
+  "contexte": "Des listes de nombres et de lettres, une grille de 3 × 3.",
+  "objectifs": [
+    "Reconnaître une liste et lire un élément par son indice (à partir de 0).",
+    "Prévoir le résultat d'une tranche liste[a:b] (b exclu) et de range.",
+    "Modifier une liste : affectation d'un élément, append, insert, del, sort.",
+    "Tester l'appartenance avec in, parcourir avec enumerate, lire une liste de listes."
+  ],
+  "progression": "Q1 à Q4 : créer et remplir ; Q5 à Q8 : indices et tranches ; Q9 à Q13 : modifier, tester, parcourir ; Q14 à Q16 : listes de listes et accumulation.",
+  "forme": [
+    "Noms « [Listes] … » (15 questions s'appelaient « Les listes ») ; objectif affiché.",
+    "Code coloré en bloc à chasse fixe ; noms anglais du code (lst, add, number) remplacés par des noms français (liste, total, nombre).",
+    "Un feedback pour chaque option (2 questions sur 17 en avaient) ; énoncés impersonnels (« Que puis-je écrire » devient « Quelle instruction »).",
+    "Positions replacées : D n'était jamais la bonne réponse."
+  ],
+  "retirees": [
+    {"origine": "Liste Q2 (« Comment appelle-t-on l'ensemble ci-dessous ? » avec des mots italiens)", "raison": "même question que Q1 sur une autre liste : fusionnée dans la question 1."}
+  ],
+  "questions": [
+    {
+      "id": "q01", "origine": "Liste Q1 (et Q2)",
+      "nom": "[Listes] Reconnaître une liste",
+      "objectif": "Reconnaître une liste Python à ses crochets.",
+      "code": ["valeurs = [2, 4, 7, 34, 23]"],
+      "question": ["Quel est le type de la valeur rangée dans `valeurs` ?"],
+      "options": [
+        {"texte": "Une liste (list)", "juste": true, "feedback": "Oui : des crochets [ ] et des éléments séparés par des virgules forment une liste. type(valeurs) affiche <class 'list'>."},
+        {"texte": "Un dictionnaire (dict)", "feedback": "Un dictionnaire s'écrit entre accolades { }, avec des couples clé : valeur, comme {'a': 1}."},
+        {"texte": "Un tuple", "feedback": "Un tuple s'écrit entre parenthèses, comme (2, 4, 7). Les crochets désignent une liste."},
+        {"texte": "Un ensemble (set)", "feedback": "Un ensemble s'écrit entre accolades, sans clés : {2, 4, 7}. Ici, ce sont des crochets : c'est une liste."}
+      ],
+      "verifications": [{"code": ["print(type(valeurs).__name__)"], "sortie": "list"}],
+      "fond": {"avant": "« Comment appelle-t-on l'ensemble ci-dessous ? » ; 3 options (liste, dictionnaire, tuple)", "apres": "« Quel est le type de la valeur rangée dans valeurs ? » ; 4 options, avec l'ensemble (set)", "raison": "en Python, un ensemble (set) est un autre type : le mot de l'énoncé induisait en erreur ; règle des 4 options."}
+    },
+    {
+      "id": "q02", "origine": "Liste Q3",
+      "nom": "[Listes] Ajouter un élément à la fin",
+      "objectif": "Ajouter un élément à la fin d'une liste avec append.",
+      "question": ["Quelle instruction ajoute le nombre 3 à la fin d'une liste nommée `L` ?"],
+      "options": [
+        {"texte": "L.add(3)", "feedback": "add est la méthode des ensembles (set). Une liste n'en a pas : Python répond AttributeError."},
+        {"texte": "L + 3", "feedback": "On ne peut pas additionner une liste et un entier (TypeError). Et même L + [3] ne modifierait pas L : il fabrique une nouvelle liste."},
+        {"texte": "L[3]", "feedback": "L[3] lit l'élément d'indice 3 ; il n'ajoute rien à la liste."},
+        {"texte": "L.append(3)", "juste": true, "feedback": "Oui : append (« ajouter à la fin ») modifie la liste elle-même et place 3 en dernière position."}
+      ],
+      "verifications": [
+        {"code": ["L = [1, 2]", "L.append(3)", "print(L)"], "sortie": "[1, 2, 3]"},
+        {"option": "add", "code": ["L = [1, 2]", "L.add(3)"], "erreur": "AttributeError"},
+        {"option": "+", "code": ["L = [1, 2]", "L + 3"], "erreur": "TypeError"}
+      ]
+    },
+    {
+      "id": "q03", "origine": "Liste Q4",
+      "nom": "[Listes] Multiplier une liste par un entier",
+      "objectif": "Prévoir l'effet de l'opérateur * sur une liste.",
+      "code": ["liste = [1, 3]", "print(liste * 2)"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "[2, 6]", "feedback": "C'est l'erreur la plus fréquente : * ne multiplie pas chaque élément. Sur une liste, il la répète."},
+        {"texte": "[1, 3, 1, 3]", "juste": true, "feedback": "Oui : liste * 2 fabrique une liste qui répète deux fois le contenu, à la suite : [1, 3, 1, 3]."},
+        {"texte": "[1, 1, 3, 3]", "feedback": "Les éléments ne sont pas doublés un à un : la liste entière est recopiée à la suite d'elle-même."},
+        {"texte": "[[1, 3], [1, 3]]", "feedback": "On n'obtient pas une liste de listes : les éléments sont mis bout à bout dans une seule liste."}
+      ],
+      "verifications": [{"sortie": "[1, 3, 1, 3]"}],
+      "fond": {"avant": "5 options, dont « [1, 3, 2] »", "apres": "4 options", "raison": "règle des 4 options ; « [1, 3, 2] », le distracteur le moins plausible, est retiré."}
+    },
+    {
+      "id": "q04", "origine": "Liste Q5",
+      "nom": "[Listes] Les entiers de 4 à 100 avec range",
+      "objectif": "Écrire un range qui inclut la borne voulue.",
+      "question": ["Quelle instruction affiche la liste de tous les entiers de 4 à 100 inclus, dans l'ordre croissant ?"],
+      "options": [
+        {"texte": "print(list(range(4, 101)))", "juste": true, "feedback": "Oui : range(4, 101) va de 4 à 100, car la borne de fin est exclue. list(...) en fait une liste qu'on peut afficher."},
+        {"texte": "print(list(range(4, 100)))", "feedback": "La borne de fin de range est exclue : cette liste s'arrête à 99. Pour inclure 100, on écrit range(4, 101)."},
+        {"texte": "print(range(4, 100))", "feedback": "Deux problèmes : 100 est exclu, et print(range(...)) affiche seulement range(4, 100), pas les nombres. Il faut list(...)."},
+        {"texte": "print(list(range4, 100))", "feedback": "Il manque la parenthèse après range : Python cherche une variable range4 et répond NameError."}
+      ],
+      "verifications": [
+        {"code": ["r = list(range(4, 101))", "print(r[0], r[-1], len(r))"], "sortie": "4 100 97"},
+        {"option": "range(4, 100)", "code": ["print(list(range(4, 100))[-1])"], "sortie": "99"},
+        {"option": "sans list", "code": ["print(range(4, 100))"], "sortie": "range(4, 100)"},
+        {"option": "range4", "code": ["print(list(range4, 100))"], "erreur": "NameError"}
+      ],
+      "fond": [
+        {"avant": "3 options", "apres": "4 options, avec « print(list(range(4, 100))) » (borne exclue oubliée)", "raison": "règle des 4 options."},
+        {"avant": "feedback de « print(list(range4, 100)) » : « manque une parenthèse à la fin et 100 n'est pas inclus »", "apres": "feedback : il manque la parenthèse après range, Python cherche range4 (NameError)", "raison": "l'explication ne correspondait pas à l'erreur réelle (vérifiée)."}
+      ]
+    },
+    {
+      "id": "q05", "origine": "Liste Q6",
+      "nom": "[Listes] Lire un élément par son indice",
+      "objectif": "Lire un élément en comptant les indices à partir de 0.",
+      "code": ["liste = [1, 5, 4, 12, 7, 9, 10, 2]", "print(liste[4])"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "12", "feedback": "12 est le 4e élément, mais à l'indice 3 : les indices commencent à 0. liste[4] est le 5e élément."},
+        {"texte": "9", "feedback": "9 est à l'indice 5. Compte depuis 0 : 1 (indice 0), 5 (1), 4 (2), 12 (3), 7 (4)."},
+        {"texte": "7", "juste": true, "feedback": "Oui : les indices commencent à 0, donc liste[4] est le 5e élément, 7."},
+        {"texte": "1", "feedback": "1 est le premier élément, d'indice 0. liste[4] désigne l'élément d'indice 4."}
+      ],
+      "verifications": [{"sortie": "7"}],
+      "fond": {"avant": "6 options (2, 3, 7, 12, 9, 1)", "apres": "4 options (12, 9, 7, 1)", "raison": "règle des 4 options ; 2 et 3 sont retirés."}
+    },
+    {
+      "id": "q06", "origine": "Liste Q7",
+      "nom": "[Listes] Lire une tranche liste[3:5]",
+      "objectif": "Prévoir une tranche, dont l'indice de fin est exclu.",
+      "code": ["liste = [1, 5, 4, 12, 7, 9, 10, 2]", "print(liste[3:5])"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "[3, 5]", "feedback": "3 et 5 sont les indices de la tranche, pas des éléments de la liste. On affiche les éléments des indices 3 et 4."},
+        {"texte": "[12, 7]", "juste": true, "feedback": "Oui : liste[3:5] va de l'indice 3 inclus à l'indice 5 exclu, soit les indices 3 et 4 : [12, 7]."},
+        {"texte": "[12, 7, 9]", "feedback": "L'indice de fin est exclu : l'élément d'indice 5 (9) n'est pas dans la tranche."},
+        {"texte": "[4, 12, 7]", "feedback": "Les indices commencent à 0 : l'indice 3 est 12, pas 4. Et l'indice de fin, 5, est exclu."}
+      ],
+      "verifications": [{"sortie": "[12, 7]"}],
+      "fond": {"avant": "5 options, dont « [12, 9] »", "apres": "4 options", "raison": "règle des 4 options ; « [12, 9] » est retiré."}
+    },
+    {
+      "id": "q07", "origine": "Liste Q8",
+      "nom": "[Listes] Écrire une tranche",
+      "objectif": "Choisir les bornes d'une tranche pour obtenir des éléments donnés.",
+      "code": ["liste = [1, 5, 4, 12, 7, 9, 10, 2]", "print(...)"],
+      "question": ["Que faut-il écrire à la place des points pour afficher `[7, 9, 10]` ?"],
+      "options": [
+        {"texte": "liste[4:7]", "juste": true, "feedback": "Oui : 7, 9 et 10 sont aux indices 4, 5 et 6 ; la tranche s'arrête juste avant l'indice 7."},
+        {"texte": "liste[5:7]", "feedback": "L'indice 5 est 9 : on oublierait 7, qui est à l'indice 4."},
+        {"texte": "liste[5:8]", "feedback": "Ces bornes comptent à partir de 1 : on obtiendrait [9, 10, 2]. Les indices commencent à 0."},
+        {"texte": "liste[4:6]", "feedback": "L'indice de fin est exclu : liste[4:6] donne seulement [7, 9]."}
+      ],
+      "verifications": [
+        {"reprendre_code": false, "code": ["liste = [1, 5, 4, 12, 7, 9, 10, 2]", "print(liste[4:7], liste[5:7], liste[5:8], liste[4:6])"], "sortie": "[7, 9, 10] [9, 10] [9, 10, 2] [7, 9]"}
+      ]
+    },
+    {
+      "id": "q08", "origine": "Liste Q9",
+      "nom": "[Listes] Modifier un élément",
+      "objectif": "Prévoir l'effet de l'affectation d'un élément par son indice.",
+      "code": ["liste = [1, 5, 4, 12, 7, 9, 10, 2]", "liste[5] = 6", "print(liste)"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "[1, 5, 4, 12, 7, 9, 10, 2]", "feedback": "La liste a bien changé : liste[5] = 6 remplace l'élément d'indice 5. Les listes sont modifiables."},
+        {"texte": "[1, 6, 4, 12, 7, 9, 10, 2]", "feedback": "6 n'est pas inséré à la place de 5 : c'est l'élément d'indice 5 (le 6e, ici 9) qui est remplacé."},
+        {"texte": "[1, 5, 4, 12, 7, 6, 10, 2]", "juste": true, "feedback": "Oui : l'élément d'indice 5 (9) est remplacé par 6. Les autres éléments ne bougent pas."},
+        {"texte": "[1, 5, 4, 12, 7, 9, 5, 2]", "feedback": "L'indice et la valeur sont inversés : liste[5] = 6 met la valeur 6 à l'indice 5."}
+      ],
+      "verifications": [{"sortie": "[1, 5, 4, 12, 7, 6, 10, 2]"}]
+    },
+    {
+      "id": "q09", "origine": "Liste Q10",
+      "nom": "[Listes] Trier une liste avec sort",
+      "objectif": "Prévoir l'effet de la méthode sort sur une liste de nombres.",
+      "enonce": ["La méthode `sort()` trie une liste dans l'ordre croissant."],
+      "code": ["liste = [1, 5, 4, 12, 7, 9, 10, 2]", "liste.sort()", "print(liste)"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "[1, 5, 4, 12, 7, 9, 10, 2]", "feedback": "sort() modifie la liste elle-même : après l'appel, elle est triée. Elle ne renvoie rien, mais elle change la liste."},
+        {"texte": "[1, 2, 4, 5, 7, 9, 10, 12]", "juste": true, "feedback": "Oui : sort() range les éléments du plus petit au plus grand, dans la liste elle-même."},
+        {"texte": "[1, 10, 12, 2, 4, 5, 7, 9]", "feedback": "C'est l'ordre alphabétique des textes '1', '10', '12', '2'… Ici, ce sont des nombres : ils sont triés selon leur valeur."},
+        {"texte": "[12, 10, 9, 7, 5, 4, 2, 1]", "feedback": "C'est l'ordre décroissant, celui de liste.sort(reverse=True). Sans option, sort() trie dans l'ordre croissant."}
+      ],
+      "verifications": [
+        {"sortie": "[1, 2, 4, 5, 7, 9, 10, 12]"},
+        {"option": "ordre des textes", "reprendre_code": false, "code": ["print(sorted(['1', '5', '4', '12', '7', '9', '10', '2']))"], "sortie": "['1', '10', '12', '2', '4', '5', '7', '9']"}
+      ],
+      "fond": {"avant": "feedbacks venus d'une question sur la suppression (« Aucun élément supprimé », « Element 5 a été supprimé » sur la bonne réponse, « La méthode remove supprime l'élément indiqué »), et aucun feedback sur D", "apres": "un feedback sur le tri pour chaque option", "raison": "les feedbacks ne correspondaient pas à la question."}
+    },
+    {
+      "id": "q10", "origine": "Liste Q11",
+      "type": "qcm",
+      "nom": "[Listes] Tester l'appartenance avec in",
+      "objectif": "Prévoir le résultat de x in liste selon le type des éléments.",
+      "code": [
+        "liste = [1, 1 + 1, 'un', '2+3', 7, 23, '1', 'vingt trois']",
+        "print(23 in liste)             # ligne 2",
+        "print(2 in liste)              # ligne 3",
+        "print(5 in liste)              # ligne 4",
+        "print('7' in liste)            # ligne 5",
+        "print('vingt' in liste)        # ligne 6",
+        "print('23' in liste)           # ligne 7",
+        "print('vingt trois' in liste)  # ligne 8",
+        "print([7, 23] in liste)        # ligne 9"
+      ],
+      "question": ["Quelles lignes affichent `True` ? Cocher toutes les bonnes réponses."],
+      "options": [
+        {"texte": "Ligne 2", "juste": true, "feedback": "Oui : l'entier 23 est un élément de la liste."},
+        {"texte": "Ligne 3", "juste": true, "feedback": "Oui : 1 + 1 est calculé à la création de la liste, qui contient donc l'entier 2."},
+        {"texte": "Ligne 4", "feedback": "'2+3' est un texte entre guillemets : il n'est pas calculé. L'entier 5 n'est pas dans la liste."},
+        {"texte": "Ligne 5", "feedback": "La liste contient l'entier 7, pas le texte '7' : pour Python, ce sont deux valeurs différentes."},
+        {"texte": "Ligne 6", "feedback": "in compare des éléments entiers : 'vingt' n'est pas un élément, même s'il est le début de 'vingt trois'."},
+        {"texte": "Ligne 7", "feedback": "La liste contient l'entier 23, pas le texte '23' : le type compte."},
+        {"texte": "Ligne 8", "juste": true, "feedback": "Oui : le texte 'vingt trois' est un élément de la liste, écrit exactement pareil."},
+        {"texte": "Ligne 9", "feedback": "in cherche un élément égal à [7, 23] : la liste contient 7 et 23 séparément, mais pas la liste [7, 23] comme élément."}
+      ],
+      "verifications": [{"sortie": "True\nTrue\nFalse\nFalse\nFalse\nFalse\nTrue\nFalse"}]
+    },
+    {
+      "id": "q11", "origine": "Liste Q12",
+      "nom": "[Listes] Parcourir avec enumerate",
+      "objectif": "Prévoir les couples (indice, élément) donnés par enumerate.",
+      "enonce": ["Dans les réponses, le signe / sépare deux lignes d'affichage."],
+      "code": ["liste = ['T', 'e', 'x', 't', 'e']", "for i, c in enumerate(liste):", "    print(i, c)"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "0 T / 1 e / 2 x / 3 t / 4 e", "juste": true, "feedback": "Oui : enumerate donne à chaque tour l'indice (à partir de 0) et l'élément. print(i, c) les sépare par une espace."},
+        {"texte": "Texte", "feedback": "print est appelé à chaque tour : il y a 5 lignes, et chacune contient aussi l'indice."},
+        {"texte": "T / e / x / t / e", "feedback": "Ce serait le cas avec for c in liste. Avec enumerate, i reçoit aussi l'indice, et print(i, c) l'affiche."},
+        {"texte": "1 T / 2 e / 3 x / 4 t / 5 e", "feedback": "Par défaut, enumerate commence à 0, comme les indices des listes."}
+      ],
+      "verifications": [{"sortie": "0 T\n1 e\n2 x\n3 t\n4 e"}]
+    },
+    {
+      "id": "q12", "origine": "Liste Q13",
+      "nom": "[Listes] Lire une case d'une liste de listes",
+      "objectif": "Lire un élément avec deux indices : ligne puis colonne.",
+      "code": ["grille = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]", "print(grille[2][1])"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "4", "feedback": "4 est grille[1][0]. Le premier indice choisit la ligne (ici la 3e, [7, 8, 9]), le second la case."},
+        {"texte": "2", "feedback": "2 est grille[0][1] : les deux indices ont été lus à partir de 1. Ils commencent à 0."},
+        {"texte": "6", "feedback": "6 est grille[1][2] : les indices sont inversés. D'abord la ligne (2), puis la colonne (1)."},
+        {"texte": "8", "juste": true, "feedback": "Oui : grille[2] est la ligne [7, 8, 9], et son élément d'indice 1 est 8."}
+      ],
+      "verifications": [{"sortie": "8"}]
+    },
+    {
+      "id": "q13", "origine": "Liste Q14",
+      "nom": "[Listes] insert, del et append à la suite",
+      "objectif": "Suivre l'état d'une liste après plusieurs modifications.",
+      "code": ["liste = [1, 2, 3, 4, 5]", "liste.insert(1, 6)", "del liste[0]", "liste.append(1)", "print(liste)"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "[1, 6, 2, 3, 4, 1]", "feedback": "del liste[0] supprime l'élément d'indice 0 (le 1), pas le dernier. Refais les étapes une par une."},
+        {"texte": "[6, 1, 2, 3, 4, 5]", "feedback": "insert(1, 6) place 6 à l'indice 1, après le 1, pas au début. Et append(1) ajoute encore un 1 à la fin."},
+        {"texte": "[6, 2, 3, 4, 5, 1]", "juste": true, "feedback": "Oui : [1, 6, 2, 3, 4, 5] après insert, [6, 2, 3, 4, 5] après del liste[0], puis [6, 2, 3, 4, 5, 1] après append."},
+        {"texte": "[6, 2, 3, 4, 5]", "feedback": "C'est l'état après del : il reste append(1), qui ajoute 1 à la fin."}
+      ],
+      "verifications": [{"sortie": "[6, 2, 3, 4, 5, 1]"}]
+    },
+    {
+      "id": "q14", "origine": "Liste Q15",
+      "nom": "[Listes] Des sommes cumulées",
+      "objectif": "Suivre un accumulateur et la liste qu'il remplit.",
+      "code": ["liste = [1, 2, 3, 4, 5]", "cumuls = []", "total = 0", "for nombre in liste:", "    total = total + nombre", "    cumuls.append(total)", "print(cumuls)"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "[1, 3, 6, 10, 15]", "juste": true, "feedback": "Oui : total vaut 1, puis 1 + 2 = 3, 3 + 3 = 6, 6 + 4 = 10, 10 + 5 = 15 ; chaque valeur est ajoutée à cumuls."},
+        {"texte": "[1, 2, 3, 4, 5]", "feedback": "On n'ajoute pas nombre, mais total, qui garde la somme des tours précédents."},
+        {"texte": "[15]", "feedback": "append est dans la boucle : une valeur est ajoutée à chaque tour, pas seulement à la fin."},
+        {"texte": "[10, 20, 30, 40, 50]", "feedback": "Aucune multiplication ici : total augmente de nombre à chaque tour. Suis la trace : 1, 3, 6…"}
+      ],
+      "verifications": [{"sortie": "[1, 3, 6, 10, 15]"}],
+      "fond": {"avant": "distracteur « [11, 22, 33, 44, 55] »", "apres": "distracteur « [15] » (append cru hors de la boucle)", "raison": "« [11, 22, 33, 44, 55] » ne correspondait à aucune erreur de raisonnement."}
+    },
+    {
+      "id": "q15", "origine": "Liste Q16",
+      "nom": "[Listes] La longueur d'une liste qui contient une liste",
+      "objectif": "Compter les éléments d'une liste dont un élément est une liste.",
+      "code": ["liste = [1, [2, 3], 4]", "print(len(liste))"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "3", "juste": true, "feedback": "Oui : la liste a 3 éléments : 1, la liste [2, 3] (un seul élément), et 4."},
+        {"texte": "4", "feedback": "len ne compte pas les éléments de la liste intérieure : [2, 3] compte pour un seul élément."},
+        {"texte": "2", "feedback": "1 et 4 comptent, mais [2, 3] est aussi un élément : len donne 3."},
+        {"texte": "Une erreur de syntaxe", "feedback": "Une liste peut contenir d'autres listes : c'est du Python valide."}
+      ],
+      "verifications": [{"sortie": "3"}],
+      "fond": {"avant": "distracteur « SyntaxError : Invalid syntax ([2, 3]) > line 0 » (message inventé)", "apres": "« Une erreur de syntaxe »", "raison": "un message que Python n'affiche jamais ; même distracteur, sans message inventé."}
+    },
+    {
+      "id": "q16", "origine": "Liste Q17",
+      "nom": "[Listes] Lire l'élément qui est une liste",
+      "objectif": "Lire un élément qui est lui-même une liste.",
+      "code": ["liste = [1, [2, 3], 4]", "print(liste[1])"],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "[2]", "feedback": "liste[1] renvoie l'élément entier d'indice 1 : la liste [2, 3], pas seulement son début."},
+        {"texte": "[2, 3]", "juste": true, "feedback": "Oui : l'élément d'indice 1 est la liste [2, 3]. Pour obtenir 3, on écrirait liste[1][1]."},
+        {"texte": "1", "feedback": "1 est l'élément d'indice 0. Les indices commencent à 0 : liste[1] est le 2e élément."},
+        {"texte": "[3]", "feedback": "L'indice 1 de la grande liste ne va pas dans la petite : il désigne tout l'élément [2, 3]."}
+      ],
+      "verifications": [{"sortie": "[2, 3]"}],
+      "fond": {"avant": "5 options, dont « [4] »", "apres": "4 options ; « [1] » devient « 1 » (l'élément d'indice 0)", "raison": "règle des 4 options ; « [1] » n'était l'affichage d'aucun élément."}
+    }
+  ]
+}
