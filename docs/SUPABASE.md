@@ -89,7 +89,9 @@ Trois ressources passent par **Supabase** :
   2026) ; le pseudo, le programme en cours, la vitesse du robot, le niveau de Zéro et le jeton de
   session du code élève, un jour après leur dernière écriture. Passé ce délai, la page les efface
   du navigateur au premier chargement de Court-circuit sur ce poste (la page des élèves ou celle
-  de la salle).
+  de la salle). Le bouton « Effacer ma progression sur cet appareil », sous la liste des
+  challenges de l'entraînement, efface tout cela aussitôt et déconnecte l'appareil du code élève,
+  sans rien effacer en ligne.
 
 **QuizzNSI**
 
