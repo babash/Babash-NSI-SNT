@@ -106,9 +106,9 @@ M3 = [
          code="argent = 20\nsemaines = 0\nwhile argent ⟦<⟧ 100:\n    argent = ⟦argent + 15⟧\n    semaines = ⟦semaines + 1⟧\nprint(semaines)", attendu=["6"]),
 ]
 M4 = [
-    dict(code="for i in range(2):\n    nord()\n    est()"),
-    dict(code="while not obstacleNord():\n    nord()\nest()"),
-    dict(etoile=True, code="for i in range(5):\n    if obstacleEst():\n        nord()\n    else:\n        est()"),
+    dict(code="nord()\nfor i in range(3):\n    est()", arr_attendue="D4"),
+    dict(code="est()\nwhile not obstacleNord():\n    nord()", arr_attendue="B1"),
+    dict(etoile=True, code="while not obstacleNord():\n    nord()\n    if not obstacleEst():\n        est()", arr_attendue="D2"),
 ]
 
 def verifier_mini():
@@ -127,6 +127,7 @@ def verifier_mini():
         ch, _ = lancer(q["code"], GM["depart"], GM["obstacles"], nc=6, nl=5)
         q["chemin"], q["arr"] = ch, nom(ch[-1])
         assert len(set(ch)) == len(ch) and len(ch) >= 4
+        assert q["arr"] == q["arr_attendue"], (q["code"], q["arr"])
     assert len({q["arr"] for q in M4}) == 3
     print("mini :", [q["arr"] for q in M4])
 
