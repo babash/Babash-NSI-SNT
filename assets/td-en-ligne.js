@@ -860,15 +860,15 @@
     var q = this, ol = this.s.querySelector('.td-lignes');
     this.lignesJustes = Array.prototype.slice.call(ol.children).map(function (li) { return li.textContent.replace(/\s+$/, ''); });
     ol.parentNode.removeChild(ol);
-    var n = this.lignesJustes.length, ordre = this.etat.valeur;
-    if (!ordre || ordre.length !== n) {
-      var r = hasard(this.f.id + this.id), essai = 0;
-      do {
-        ordre = this.lignesJustes.map(function (_, i) { return i; });
-        for (var i = n - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = ordre[i]; ordre[i] = ordre[j]; ordre[j] = t; }
-      } while (this.estDansOrdre(ordre) && ++essai < 20);
-    }
-    this.ordre = ordre;
+    var n = this.lignesJustes.length, ordre, r = hasard(this.f.id + this.id), essai = 0;
+    // l'ordre mélangé de départ (toujours le même) : c'est lui qui s'imprime
+    do {
+      ordre = this.lignesJustes.map(function (_, i) { return i; });
+      for (var i = n - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = ordre[i]; ordre[i] = ordre[j]; ordre[j] = t; }
+    } while (this.estDansOrdre(ordre) && ++essai < 20);
+    this.ordreDepart = ordre.slice();
+    var garde = this.etat.valeur;
+    this.ordre = garde && garde.length === n ? garde.slice() : ordre;
     this.liste = el('ol', { class: 'td-ordre', 'aria-label': 'Lignes à remettre dans l\'ordre' });
     this.annonce = el('p', { class: 'td-invisible', 'aria-live': 'assertive' });
     this.zone.appendChild(el('p', { class: 'td-indic', text: 'Utilise les flèches ▲ ▼ (ou Alt + flèche haut ou bas) pour déplacer une ligne.' }));
@@ -1122,11 +1122,17 @@
       if (c.type === 'radio' || c.type === 'checkbox') c.checked = false; else c.value = '';
     });
     this.questions.forEach(function (q) { if (q.ed) { s.editeurs.push([q.ed, q.ed.valeur()]); q.ed.valeur(''); } });
+    // un état qui n'est pas un champ : l'ordre des lignes reprend l'ordre mélangé de départ
+    s.ordres = [];
+    this.questions.forEach(function (q) {
+      if (q.ordreDepart) { s.ordres.push([q, q.ordre]); q.ordre = q.ordreDepart.slice(); q.dessinerOrdre(); }
+    });
   };
   Feuille.prototype.restaurerApresImpression = function () {
     var s = this.sauvegarde; if (!s) return;
     s.champs.forEach(function (x) { if (x[0].type === 'radio' || x[0].type === 'checkbox') x[0].checked = x[2]; else x[0].value = x[1]; });
     s.editeurs.forEach(function (x) { x[0].valeur(x[1]); });
+    s.ordres.forEach(function (x) { x[0].ordre = x[1]; x[0].dessinerOrdre(); });
     this.sauvegarde = null;
   };
   // échéance atteinte, page ouverte : on efface vraiment (et on recharge la feuille vide)

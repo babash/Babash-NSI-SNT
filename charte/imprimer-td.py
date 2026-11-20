@@ -11,11 +11,13 @@ pour avoir les polices du site quand Google Fonts n'est pas joignable.
 
 Le script :
 1. ouvre la page sans aucun stockage (aucune réponse gardée) et vérifie que tous les champs sont vides ;
-2. écrit un repère dans chaque champ et dans chaque éditeur, coche chaque case, puis déclenche
+2. écrit un repère dans chaque champ et dans chaque éditeur, coche chaque case, remet par de vrais
+   clics les lignes des questions « ordre » dans l'ordre de la solution, puis déclenche
    l'impression (événement beforeprint) : le moteur doit tout vider pour de bon ;
 3. imprime en A4 et extrait le texte du PDF (pdftotext) : aucun repère, aucune sortie attendue,
-   aucun coup de pouce, aucun retour et aucune correction ne doit s'y trouver ;
-4. après l'impression (afterprint), vérifie que les réponses sont remises à l'écran.
+   aucun coup de pouce, aucun retour et aucune correction ne doit s'y trouver, et les lignes
+   des questions « ordre » doivent y être dans l'ordre mélangé de départ ;
+4. après l'impression (afterprint), vérifie que les réponses (et l'ordre de l'élève) sont remises à l'écran.
 Il dit le nombre de pages (4 au plus pour un TD).
 """
 import glob
@@ -77,6 +79,27 @@ def main():
             document.querySelectorAll('.td input, .td textarea').forEach(c => {
               if (c.type === 'radio' || c.type === 'checkbox') c.checked = true; else { c.value = r + (n++); }
             }); return n; }""", REPERE)
+        # les questions « ordre » : l'état n'est pas un champ. On les résout par de vrais clics
+        # (flèches ▲ ▼), dans l'ordre de la solution lu dans la source de la page.
+        solutions = p.evaluate("""async () => {
+            const doc = new DOMParser().parseFromString(await (await fetch(location.href)).text(), 'text/html');
+            const sol = {};
+            doc.querySelectorAll('.td-q[data-type="ordre"]').forEach(s => {
+              sol[s.id] = [...s.querySelectorAll('.td-lignes > li')].map(li => li.textContent.trim()); });
+            return sol; }""")
+        ordres = {}
+        lire = lambda qid: [t.strip() for t in p.locator(f'#{qid} .td-ordre-code').all_inner_texts()]
+        for qid, sol in solutions.items():
+            depart = lire(qid)
+            for cible, ligne in enumerate(sol):
+                pos = next(i for i, t in enumerate(lire(qid)) if t == ligne and i >= cible)
+                while pos > cible:
+                    p.locator(f'#{qid} .td-ordre-ligne').nth(pos).locator('button').first.click()
+                    pos -= 1
+            if lire(qid) != sol:
+                erreurs.append(f'{qid} : les lignes n\'ont pas pu être remises dans l\'ordre de la solution')
+            num = p.locator(f'#{qid} .td-q-num').inner_text().strip()
+            ordres[qid] = (num, depart, sol)
         # textes qui ne doivent jamais être imprimés (pris avant que le moteur ne les déplace)
         caches = p.evaluate("""() => [...document.querySelectorAll('.td-aide, .td-correction, .td-retour')]
             .map(e => e.innerText.trim()).filter(t => t.length > 12)""")
@@ -91,6 +114,9 @@ def main():
         remis = p.evaluate("r => [...document.querySelectorAll('.td input, .td textarea')].filter(c => (c.value || '').startsWith(r)).length", REPERE)
         if remis != n:
             erreurs.append(f'après l\'impression, {remis} réponse(s) remise(s) sur {n}')
+        for qid, (num, depart, sol) in ordres.items():
+            if lire(qid) != sol:
+                erreurs.append(f'{qid} : après l\'impression, l\'ordre de l\'élève n\'est pas revenu à l\'écran')
         b.close()
     texte = subprocess.run(['pdftotext', '-layout', sortie, '-'], capture_output=True, text=True, check=True).stdout
     plat = normal(texte)
@@ -100,6 +126,19 @@ def main():
         debut = normal(c)[:40]
         if debut and debut in plat:
             erreurs.append('texte caché imprimé : ' + debut)
+    # dans le PDF, les lignes de chaque question « ordre » sont dans l'ordre mélangé de départ
+    for qid, (num, depart, sol) in ordres.items():
+        debut = plat.find(num + ' ')
+        suite = plat[debut:] if debut >= 0 else plat
+        fin = suite.find('Question', len(num) + 1)
+        bloc = suite[:fin] if fin > 0 else suite
+        places = [bloc.find(normal(l)) for l in depart]
+        if -1 in places:
+            erreurs.append(f'{qid} : lignes introuvables dans le PDF')
+        elif places != sorted(places):
+            erreurs.append(f'{qid} : les lignes ne sont pas imprimées dans l\'ordre de départ')
+        elif depart != sol:
+            print(f'{qid} : imprimée dans l\'ordre de départ ({" / ".join(depart)}), pas dans celui de l\'élève')
     pages = int(next(l for l in subprocess.run(['pdfinfo', sortie], capture_output=True, text=True).stdout.splitlines()
                      if l.startswith('Pages:')).split()[1])
     print(f'{sortie} : {pages} page(s) A4 ; {n} champ(s) remplis puis vidés ; {len(caches)} texte(s) caché(s) contrôlé(s)')
