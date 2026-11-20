@@ -1144,7 +1144,8 @@
   /* Les pages à part : <div id="site" data-page="…"> et la fonction qui les dessine */
   var PAGES_A_PART = {
     bibliotheque: { fonction: 'pageBibliotheque', nom: 'La bibliothèque', script: 'assets/bibliotheque.js' },
-    admin: { fonction: 'pageAdmin', nom: 'L\'espace administrateur', script: 'assets/admin.js' }
+    admin: { fonction: 'pageAdmin', nom: 'L\'espace administrateur', script: 'assets/admin.js' },
+    annales: { fonction: 'pageAnnales', nom: 'La page des annales du bac', script: 'assets/annales.js' }
   };
 
   function afficher() {
