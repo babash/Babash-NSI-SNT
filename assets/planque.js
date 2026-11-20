@@ -221,6 +221,7 @@
     tabs = P.onglets([
       { id: 'loge', nom: 'Ma loge', quandChoisi: remplirLoge },
       { id: 'boutique', nom: 'Boutique', quandChoisi: remplirBoutique },
+      { id: 'trophees', nom: 'Trophées', quandChoisi: remplirTrophees },
       { id: 'hauts-faits', nom: 'Hauts faits', quandChoisi: remplirHautsFaits },
       { id: 'classe', nom: 'Ma classe', quandChoisi: remplirClasse },
       { id: 'applications', nom: 'Applications', quandChoisi: remplirApplications },
@@ -344,8 +345,7 @@
   function remplirBoutique(panneau) {
     O.vider(panneau);
     var aPrendre = cat.elements.filter(function (e) { return e.acces === 'credits' && e.actif !== false && !possede(e); });
-    var aGagner = cat.elements.filter(function (e) { return e.acces === 'haut_fait' && !possede(e); });
-    var pris = cat.elements.filter(function (e) { return e.acces !== 'libre' && possede(e); });
+    var pris = cat.elements.filter(function (e) { return e.acces === 'credits' && possede(e); });
 
     panneau.appendChild(el('p', { class: 'cc-intro' }, [
       'Tu as ', el('strong', null, fiche.credits + ' crédits'), '. Tu les gagnes en travaillant : une feuille de TD validée, un cours-quiz suivi jusqu\'au bout, une mission… ',
@@ -354,7 +354,7 @@
     var m = P.zoneMessage();
     panneau.appendChild(m);
 
-    (A.familles || []).forEach(function (f) {
+    (A.familles || []).filter(function (f) { return !f.trophees; }).forEach(function (f) {
       var dans = aPrendre.filter(function (e) { return e.famille === f.id; });
       if (!dans.length) return;
       var liste = el('ul', { class: 'cc-vitrine' });
@@ -366,22 +366,45 @@
     });
     if (!aPrendre.length) panneau.appendChild(el('p', { class: 'vide' }, 'Tu as déjà tous les objets.'));
 
-    if (aGagner.length) {
-      panneau.appendChild(el('h3', null, 'Les compagnons, à gagner avec un haut fait'));
-      panneau.appendChild(el('p', { class: 'petit' }, 'Ils ne s\'achètent pas : ils racontent ce que tu as fait. Le margouillat est là dès le départ.'));
-      panneau.appendChild(el('ul', { class: 'cc-vitrine' }, aGagner.map(function (e) {
-        var source = (cat.hauts_faits || []).filter(function (h) { return (h.recompenses || []).indexOf(e.id) >= 0; })[0];
-        return el('li', { class: 'cc-article cc-a-gagner' }, [
-          miniature(e),
-          el('p', { class: 'cc-article-nom' }, e.nom),
-          el('p', { class: 'petit' }, source ? 'Se gagne avec : ' + source.nom + ' (' + K.app(source.application).nom + ')' : 'Se gagne avec un haut fait.')
-        ]);
-      })));
-    }
+    panneau.appendChild(el('p', { class: 'petit' }, ['Les compagnons et les objets de trophée ne s\'achètent pas : ils sont dans l\'onglet « Trophées ».']));
     if (pris.length) {
       panneau.appendChild(el('h3', null, 'Déjà dans ta loge'));
       panneau.appendChild(el('ul', { class: 'cc-puces' }, pris.map(function (e) { return el('li', null, e.nom); })));
     }
+  }
+
+  /* ── 2b'. Les trophées : ce qui ne s'achète pas ───────────────────
+     Les compagnons et les familles de trophées du catalogue (« trophees » : vrai dans apparences.json) :
+     gagnés par un haut fait, offerts par l'enseignant·e avec un motif, ou donnés par un jeu. */
+  function remplirTrophees(panneau) {
+    O.vider(panneau);
+    var origines = {};
+    (fiche.trophees || []).forEach(function (t) { origines[t.element] = t; });
+    function source(e) { return (cat.hauts_faits || []).filter(function (h) { return (h.recompenses || []).indexOf(e.id) >= 0; })[0]; }
+    function carte(e) {
+      var a = possede(e), t = origines[e.id], h = source(e), texte;
+      if (a && t && t.origine === 'enseignant') texte = 'Offert' + (t.par ? ' par ' + t.par : '') + (t.motif ? ' : ' + t.motif : '') + (t.depuis ? ' (' + P.date(t.depuis) + ')' : '');
+      else if (a && t && t.haut_fait) texte = 'Gagné avec : ' + K.nomHf(t.haut_fait.application, t.haut_fait.id);
+      else if (a) texte = e.depart ? 'Avec toi dès le départ.' : 'À toi.';
+      else if (h) texte = 'Se gagne avec : ' + (h.nom || 'un haut fait secret') + (h.application === 'commun' ? ', accordé par ton enseignant·e' : ' (' + K.app(h.application).nom + ')');
+      else texte = 'Ton enseignant·e peut te l\'offrir, ou un jeu te le donnera.';
+      return el('li', { class: 'cc-article' + (a ? ' cc-trophee-a-toi' : ' cc-a-gagner') }, [
+        miniature(e),
+        el('p', { class: 'cc-article-nom' }, [e.nom, el('span', { class: 'invisible' }, a ? ' (à toi)' : ' (pas encore)')]),
+        el('p', { class: 'cc-article-empl' }, nomEmplacement(e.emplacement)),
+        el('p', { class: 'petit' }, texte)
+      ]);
+    }
+    panneau.appendChild(el('p', { class: 'cc-intro' }, 'Ils ne s\'achètent pas : ils racontent ce que tu as fait. Ceux qui t\'attendent sont en pointillés.'));
+    var compagnons = cat.elements.filter(function (e) { return e.emplacement === 'compagnon'; });
+    panneau.appendChild(el('h3', null, 'Les compagnons'));
+    panneau.appendChild(el('ul', { class: 'cc-vitrine' }, compagnons.map(carte)));
+    (A.familles || []).filter(function (f) { return f.trophees; }).forEach(function (f) {
+      var dans = cat.elements.filter(function (e) { return e.famille === f.id; });
+      if (!dans.length) return;
+      panneau.appendChild(el('h3', null, f.nom));
+      panneau.appendChild(el('ul', { class: 'cc-vitrine' }, dans.map(carte)));
+    });
   }
 
   function avecElement(e) {
