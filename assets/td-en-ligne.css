@@ -165,20 +165,21 @@ body.td-page {
 .td-criteres li { margin: .1rem 0; }
 .td-duree { color: var(--td-encre-douce); margin: .2rem 0; font-size: .95rem; }
 
-/* barre d'avancement (collée en haut à l'écran) */
+/* barre d'avancement : une seule ligne collée en haut (la jauge seulement).
+   Le moteur règle scroll-padding-top à sa hauteur : le focus n'est jamais caché dessous. */
 .td-barre {
   position: sticky; top: 0; z-index: 5;
-  display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: center; justify-content: space-between;
-  margin: .5rem calc(-1 * var(--td-gouttiere)) 1rem;
-  padding: .5rem var(--td-gouttiere);
+  margin: .5rem calc(-1 * var(--td-gouttiere)) 0;
+  padding: .35rem var(--td-gouttiere);
   background: var(--td-panneau);
   border-bottom: 1px solid var(--td-trait);
 }
-.td-barre-jauge { flex: 1 1 14rem; min-width: 0; }
-.td-jauge-texte { margin: 0 0 .25rem; font-size: .92rem; }
-.td-jauge { height: .6rem; border: 1px solid var(--td-trait-fort); border-radius: 99px; background: var(--td-panneau-2); overflow: hidden; }
+.td-barre-jauge { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+.td-jauge-texte { margin: 0; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.td-jauge { flex: 1 1 4rem; min-width: 3rem; height: .6rem; border: 1px solid var(--td-trait-fort); border-radius: 99px; background: var(--td-panneau-2); overflow: hidden; }
 .td-jauge-plein { display: block; height: 100%; width: 0; background: var(--td-accent); transition: width .3s; }
-.td-barre-outils { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+.td-barre-outils { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; margin: .5rem 0 1rem; }
+.td-theme[aria-pressed="true"] { font-weight: 700; border-width: 2px; box-shadow: inset 0 -3px 0 var(--td-accent); }
 .td-confirmer { display: inline-flex; flex-wrap: wrap; gap: .35rem; align-items: center; font-size: .92rem; }
 .td-confirmer[hidden] { display: none; }
 
@@ -405,6 +406,8 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
 /* ── Petits écrans ─────────────────────────── */
 @media (max-width: 560px) {
   :root { --td-taille: 1rem; --td-taille-code: .86rem; }
+  .td-jauge-texte { font-size: .82rem; }
+  .td-barre-jauge { gap: .5rem; }
   .td-q { padding: .7rem .7rem .8rem; }
   .td-num { width: 2.2em; padding-right: .45em; margin-right: .35em; }
   .td-ordre-num { width: 1.1rem; }
@@ -425,7 +428,7 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   @page { size: A4; margin: 12mm 13mm 13mm; }
   body.td-page { background: #fff; color: #000; font-size: 10.5pt; line-height: 1.38; }
   .td { max-width: none; padding: 0; }
-  .td-barre, .td-actions, .td-retour-zone, .td-aide, .td-correction, .td-retour, .td-explication,
+  .td-barre, .td-barre-outils, .td-actions, .td-retour-zone, .td-aide, .td-correction, .td-retour, .td-explication,
   .td-erreur-bloc > button, .td-ed-info, .td-ed-aide, .td-ac, .td-fin, .td-ordre-btn, .td-indic, .td-py-note,
   .td-q-etat, .td-ecran-seul, .td-lignes-choix { display: none !important; }
   .td-papier-seul { display: block; }

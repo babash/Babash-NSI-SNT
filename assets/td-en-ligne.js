@@ -5,7 +5,9 @@
    en feuille auto-corrective. Mode d'emploi : design/td-en-ligne.md.
 
    - Tout se corrige dans le navigateur : rien n'est envoyé.
-   - L'avancement reste sur l'appareil 24 heures au plus.
+   - L'avancement sert 24 heures, sur l'appareil seulement. Ensuite il est
+     effacé : à l'échéance si la page est ouverte, sinon à la prochaine
+     ouverture d'un TD en ligne sur cet appareil.
    - Pas de note, pas de score : une jauge d'avancement, puis
      « Feuille validée ». L'événement td:feuille-validee (identifiant
      de la feuille seulement) est prévu pour le compte commun.
@@ -341,7 +343,8 @@
       var f = python.attente[e.data.id]; delete python.attente[e.data.id];
       if (f) f(e.data);
     };
-    python.worker.onerror = function () {
+    python.worker.onerror = function (e) {
+      if (e && e.preventDefault) e.preventDefault();      // erreur traitée : rien dans la console
       Object.keys(python.attente).forEach(function (k) { python.attente[k]({ etat: 'indisponible' }); });
       python.attente = {}; python.worker = null; python.charge = false;
     };
@@ -356,7 +359,7 @@
         delete python.attente[id];
         python.worker.terminate(); python.worker = null; python.charge = false;   // il faudra recharger Python
         resoudre({ etat: premier ? 'indisponible' : 'trop-long' });
-      }, premier ? 90000 : DELAI_PYTHON);
+      }, premier ? 240000 : DELAI_PYTHON);
       python.attente[id] = function (r) { clearTimeout(limite); resoudre(r); };
       python.worker.postMessage({ id: id, code: code, tests: tests, fichier: fichier });
     });
@@ -980,11 +983,13 @@
     var premier = !python.charge;
     this.bLancer.disabled = true;
     this.dire(premier ? 'Python se charge… (la première fois, cela peut prendre quelques secondes)' : 'Ton programme tourne…', 'info');
+    var lent = premier ? setTimeout(function () { q.dire('Python se charge encore : la connexion est lente. Patiente un peu…', 'info'); }, 15000) : null;
     lancerPython(this.f.pyodide, code, this.tests, this.fichier, premier).then(function (r) {
+      clearTimeout(lent);
       q.bLancer.disabled = false;
       if (r.etat === 'indisponible') {
         if (window.console) console.warn('TD en ligne : Python indisponible.', r.detail || '');
-        q.dire('Python n\'a pas pu se charger (pas de connexion ?). Tu peux comparer ton programme avec la correction.', 'info');
+        q.dire('Python n\'a pas pu se charger (pas de connexion, ou connexion trop lente). Tu peux comparer ton programme avec la correction.', 'info');
         q.etat.essais = Math.max(q.etat.essais, ESSAIS_AVANT_CORRECTION); q.majBoutons(); q.enregistrer();
         return;
       }
@@ -1052,7 +1057,7 @@
     this.validee = el('p', { class: 'td-validee', role: 'status', 'aria-live': 'polite' });
     this.expire = el('p', { class: 'td-expire' });
     var confirmer = el('span', { class: 'td-confirmer', hidden: true }, [
-      el('span', { text: 'Tout effacer sur cet appareil ? ' }),
+      el('span', { text: 'Effacer tes réponses à cette feuille, sur cet appareil ? ' }),
       el('button', { type: 'button', class: 'td-bouton td-petit', text: 'Oui, effacer', onclick: function () { f.effacer(); } }),
       el('button', { type: 'button', class: 'td-bouton td-petit', text: 'Annuler', onclick: function () { confirmer.hidden = true; bEff.hidden = false; bEff.focus(); } })
     ]);
@@ -1060,13 +1065,17 @@
     var bTheme = el('button', { type: 'button', class: 'td-bouton td-petit td-theme', onclick: function () { f.basculerTheme(bTheme); } });
     this.majTheme(bTheme);
     var bImp = el('button', { type: 'button', class: 'td-bouton td-petit', text: 'Imprimer la feuille', onclick: function () { window.print(); } });
+    // la barre collée en haut ne garde que la jauge (une ligne) ; les outils restent dans la page
     var barre = el('div', { class: 'td-barre', role: 'region', 'aria-label': 'Avancement' }, [
-      el('div', { class: 'td-barre-jauge' }, [this.texteJauge, this.jauge]),
-      el('div', { class: 'td-barre-outils' }, [bTheme, bImp, bEff, confirmer])
+      el('div', { class: 'td-barre-jauge' }, [this.texteJauge, this.jauge])
     ]);
+    var outils = el('div', { class: 'td-barre-outils' }, [bTheme, bImp, bEff, confirmer]);
     var entete = this.r.querySelector('.td-entete');
-    if (entete && entete.nextSibling) this.r.insertBefore(barre, entete.nextSibling); else this.r.insertBefore(barre, this.r.firstChild);
-    var fin = el('div', { class: 'td-fin' }, [this.validee, el('p', { class: 'td-vie-privee', text: 'Rien n\'est envoyé : tout se corrige sur cet appareil. Tes réponses y restent 24 heures au plus, puis s\'effacent.' }), this.expire]);
+    var apres = entete ? entete.nextSibling : this.r.firstChild;
+    this.r.insertBefore(outils, apres); this.r.insertBefore(barre, outils);
+    this.barre = barre;
+    this.garderFocusVisible();
+    var fin = el('div', { class: 'td-fin' }, [this.validee, el('p', { class: 'td-vie-privee', text: 'Rien n\'est envoyé : tout se corrige sur cet appareil. Tes réponses servent 24 heures, sur cet appareil seulement. Ensuite, elles sont effacées : à cette heure-là si la page est encore ouverte, sinon à la prochaine ouverture d\'un TD en ligne sur cet appareil.' }), this.expire]);
     var pied = this.r.querySelector('.td-pied');
     this.r.insertBefore(fin, pied || null);
   };
@@ -1080,7 +1089,8 @@
     this.jauge.setAttribute('aria-valuenow', String(faites));
     var txt = faites + ' question' + (faites > 1 ? 's' : '') + ' réussie' + (faites > 1 ? 's' : '') + ' sur ' + req.length;
     if (bonus.length) txt += ' · bonus : ' + bf + ' sur ' + bonus.length;
-    this.texteJauge.textContent = 'Avancement : ' + txt;
+    this.texteJauge.textContent = 'Avancement : ' + faites + ' sur ' + req.length + (bonus.length ? ' · bonus ' + bf + ' sur ' + bonus.length : '');
+    this.texteJauge.title = txt;
     this.jauge.setAttribute('aria-valuetext', txt);
     var toutes = faites === req.length;
     this.r.classList.toggle('td-feuille-validee', toutes);
@@ -1098,7 +1108,39 @@
     if (!this.expire) return;
     if (!this.memoire.cree) { this.expire.textContent = ''; return; }
     var d = new Date(this.memoire.cree + DUREE);
-    this.expire.textContent = 'Effacement automatique : le ' + d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '.';
+    this.expire.textContent = 'Gardées jusqu\'au ' + d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + ' ; ensuite, elles sont effacées (aussitôt si la page est ouverte, sinon à la prochaine ouverture d\'un TD en ligne).';
+    this.programmerEffacement();
+  };
+  // échéance atteinte, page ouverte : on efface vraiment (et on recharge la feuille vide)
+  Feuille.prototype.programmerEffacement = function () {
+    var f = this;
+    clearTimeout(this.minuteur);
+    if (!this.memoire.cree) return;
+    var reste = this.memoire.cree + DUREE - Date.now();
+    this.minuteur = setTimeout(function () { f.echeance(); }, Math.max(0, Math.min(reste, 2147483000)));
+    if (!this.surVisible) {
+      this.surVisible = function () { if (!document.hidden) f.echeance(); };
+      document.addEventListener('visibilitychange', this.surVisible);    // minuteurs ralentis en arrière-plan
+    }
+  };
+  Feuille.prototype.echeance = function () {
+    if (!this.memoire.cree) return;
+    if (Date.now() - this.memoire.cree < DUREE) { this.programmerEffacement(); return; }
+    stock.effacer(this.cle);
+    location.reload();
+  };
+  // la barre collée en haut ne doit jamais cacher l'élément qui a le focus (WCAG 2.4.11)
+  Feuille.prototype.garderFocusVisible = function () {
+    var barre = this.barre, html = document.documentElement;
+    function hauteur() { return barre.getBoundingClientRect().height; }
+    function regler() { html.style.scrollPaddingTop = Math.ceil(hauteur() + 8) + 'px'; }
+    regler();
+    if (window.ResizeObserver) new ResizeObserver(regler).observe(barre); else window.addEventListener('resize', regler);
+    document.addEventListener('focusin', function (e) {
+      var t = e.target; if (!t || barre.contains(t) || !t.getBoundingClientRect) return;
+      var r = t.getBoundingClientRect(), bas = barre.getBoundingClientRect().bottom;
+      if (getComputedStyle(barre).position === 'sticky' && r.top < bas + 4 && r.bottom > 0) window.scrollBy(0, r.top - bas - 8);
+    });
   };
   Feuille.prototype.effacer = function () {
     stock.effacer(this.cle);
@@ -1107,9 +1149,8 @@
   Feuille.prototype.majTheme = function (b) {
     var t = document.documentElement.getAttribute('data-theme');
     var obscur = t ? t === 'dark' : !!(window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches);
-    b.textContent = obscur ? 'Affichage clair' : 'Affichage obscur';
+    b.textContent = 'Affichage obscur';            // libellé fixe ; l'état est dans aria-pressed (WCAG 2.5.3)
     b.setAttribute('aria-pressed', String(obscur));
-    b.setAttribute('aria-label', 'Affichage obscur');
   };
   Feuille.prototype.basculerTheme = function (b) {
     var obscur = b.getAttribute('aria-pressed') === 'true';
