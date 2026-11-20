@@ -61,7 +61,7 @@ python3 -I qcm/outils/verifier_qcm.py     # contrôle tout ; code de sortie 1 en
 - l'objectif affiché au début, et le nom de chaque question ;
 - les positions de la bonne réponse : équilibrées, sans série, sans motif ;
 - la longueur de la bonne réponse : elle ne doit pas la faire repérer ;
-- les contrastes des couleurs du code (4,5:1 au moins) ;
+- les contrastes des couleurs du code (7:1 au moins), et une coloration qui se lit aussi en noir et blanc ;
 - les caractères invisibles ;
 - les doublons, dans un quiz ou entre deux quiz ;
 - l'exécution :

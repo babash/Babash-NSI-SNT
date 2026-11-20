@@ -14,7 +14,8 @@ Contrôles :
   - objectif affiché au début, nom « [Thème] … » ;
   - position de la bonne réponse : équilibrée (A à D), sans série de 3, sans période ;
     la bonne réponse n'est la plus longue que dans 40 % des QCU au plus ;
-  - coloration : tout bloc de code est coloré, et chaque couleur a un contraste ≥ 4,5:1 sur son fond ;
+  - coloration : tout bloc de code est coloré, chaque couleur a un contraste ≥ 7:1 sur son fond, et la
+    coloration se lit aussi en noir et blanc (gras, souligné, italique) ;
   - exécution : chaque vérification Python (python3 -I) et SQL (SQLite en mémoire) donne le résultat annoncé ;
   - caractères invisibles ou de contrôle refusés ;
   - doublons : deux questions (énoncé + code) identiques (erreur) ou presque (à relire), dans un quiz ou entre deux quiz.
@@ -284,13 +285,16 @@ def verifier_xml(quiz, chemin):
         if periode:
             err(quiz['id'], None, f'motif périodique ({periode}) dans {lettres}')
     # contrastes
-    fonds = {C.FOND_CODE: set(re.findall(r'<span style="color: (#[0-9a-fA-F]{6});">', brut)) | {C.TEXTE_CODE},
+    fonds = {C.FOND_CODE: C.styles_de_couleur(brut) | {C.TEXTE_CODE},
              C.FOND_CONSOLE: {C.TEXTE_CONSOLE}, C.FOND_CODE_EN_LIGNE: {C.TEXTE_CODE_EN_LIGNE}, '#ffffff': {C.TEXTE_OBJECTIF}}
     for fond, cols in fonds.items():
         for col in cols:
             r = C.contraste(col, fond)
-            if r < 4.5:
-                err(quiz['id'], None, f'contraste {col} sur {fond} : {r:.2f}:1 (4,5:1 au moins)')
+            if r < C.SEUIL_CONTRASTE:
+                err(quiz['id'], None, f'contraste {col} sur {fond} : {r:.2f}:1 ({C.SEUIL_CONTRASTE:.0f}:1 au moins)')
+    for classe, forme in C.FORMES.items():
+        if f'<span style="color: {C.COULEURS[classe]};">' in brut:
+            err(quiz['id'], None, f'{classe} marqué par la couleur seule ({forme} attendu)')
     caracteres(quiz['id'], chemin)
 
 

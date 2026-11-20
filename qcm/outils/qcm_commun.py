@@ -15,29 +15,47 @@ NIVEAU_PRONOTE = {'snt': '2NDE', 'nsi-premiere': '1ERE', 'nsi-terminale': 'TERMI
 LETTRES = 'ABCD'
 
 # ---------------------------------------------------------------- couleurs
-FOND_CODE = '#1e1e1e'
-TEXTE_CODE = '#d4d4d4'
+# Décision de l'enseignant du 20/11/2026 (code affiché) : fond clair, coloration qui se lit aussi
+# en noir et blanc (mots-clés en gras, fonctions soulignées, chaînes en italique, commentaires gris),
+# contrastes d'au moins 7:1, indentation très visible (un filet par niveau sur une bande grise),
+# consoles compactes (une ligne de console par ligne de texte).
+SEUIL_CONTRASTE = 7.0
+FOND_CODE = '#f7f7f7'
+TEXTE_CODE = '#1b1b1b'
 COULEURS = {
-    'motcle': '#569cd6',     # def, class, True, False, None
-    'controle': '#c586c0',   # if, for, return…
-    'fonction': '#dcdcaa',   # fonctions natives, commandes
-    'nombre': '#b5cea8',
-    'chaine': '#ce9178',
-    'commentaire': '#6a9955',
-    'option': '#9cdcfe',     # options d'une commande (-r, -a)
-    'classe': '#4ec9b0',
+    'motcle': '#00309c',     # def, class, True, False, None
+    'controle': '#6a0f8e',   # if, for, return…
+    'fonction': '#5c3c00',   # fonctions natives, commandes
+    'nombre': '#0a4f24',
+    'chaine': '#8a1c00',
+    'commentaire': '#474747',
+    'option': '#00507a',     # options d'une commande (-r, -a)
+    'classe': '#004d47',
 }
-FOND_CONSOLE = '#2d0000'
-TEXTE_CONSOLE = '#f38ba8'
-FOND_CODE_EN_LIGNE = '#f3f3f3'
-TEXTE_CODE_EN_LIGNE = '#a31515'
+# ce qui ne passe pas par la couleur (lisible en noir et blanc)
+FORMES = {
+    'motcle': 'font-weight: bold;',
+    'controle': 'font-weight: bold;',
+    'fonction': 'text-decoration: underline;',
+    'chaine': 'font-style: italic;',
+    'commentaire': 'font-style: italic;',
+    'classe': 'font-weight: bold;',
+}
+FOND_INDENT = '#e8e8e8'
+FILET_INDENT = '#6e6e6e'
+FOND_CONSOLE = '#1b1b1b'
+TEXTE_CONSOLE = '#f0f0f0'
+FOND_CODE_EN_LIGNE = '#f0f0f0'
+TEXTE_CODE_EN_LIGNE = '#8b0f0f'
 TEXTE_OBJECTIF = '#3b3b3b'
-STYLE_BLOC = (f"background-color: {FOND_CODE}; color: {TEXTE_CODE}; padding: 10px; "
-              "font-family: 'Courier New', Courier, monospace; font-size: 14px; border-radius: 5px; line-height: 1.4;")
-STYLE_CONSOLE = (f"background-color: {FOND_CONSOLE}; color: {TEXTE_CONSOLE}; padding: 10px; "
-                 "font-family: 'Courier New', Courier, monospace; font-size: 14px; border-radius: 5px;")
+POLICE_CODE = "font-family: 'Courier New', Courier, monospace; font-size: 14px;"
+STYLE_BLOC = (f"background-color: {FOND_CODE}; color: {TEXTE_CODE}; border: 1px solid #8a8a8a; "
+              f"padding: 6px 10px; {POLICE_CODE} line-height: 1.45; border-radius: 4px;")
+STYLE_CONSOLE = (f"background-color: {FOND_CONSOLE}; color: {TEXTE_CONSOLE}; padding: 2px 8px; "
+                 f"{POLICE_CODE} line-height: 1.35; border-radius: 3px;")
 STYLE_EN_LIGNE = (f"font-family: 'Courier New', Courier, monospace; background-color: {FOND_CODE_EN_LIGNE}; "
                   f"color: {TEXTE_CODE_EN_LIGNE}; padding: 1px 4px; border-radius: 3px;")
+STYLE_INDENT = f"border-left: 2px solid {FILET_INDENT}; background-color: {FOND_INDENT};"
 
 
 def luminance(hexa):
@@ -75,7 +93,18 @@ JETON_SQL = re.compile(r"(?P<commentaire>--.*)|(?P<chaine>'(?:''|[^'])*'?)|(?P<n
 
 
 def _span(classe, texte):
-    return f'<span style="color: {COULEURS[classe]};">{texte}</span>'
+    forme = FORMES.get(classe, '')
+    return f'<span style="color: {COULEURS[classe]};{" " + forme if forme else ""}">{texte}</span>'
+
+
+def indentation(ligne):
+    """Sépare l'indentation (4 espaces ou une tabulation par niveau) du reste de la ligne,
+    et la dessine : un filet par niveau, sur une bande grise."""
+    m = re.match(r'[ \t]*', ligne)
+    blanc = m.group(0).replace('\t', ' ' * 4)
+    niveaux, reste = divmod(len(blanc), 4)
+    dessin = ''.join(f'<span style="{STYLE_INDENT}">{"&nbsp;" * 3}</span>&nbsp;' for _ in range(niveaux))
+    return dessin + '&nbsp;' * reste, ligne[m.end():]
 
 
 def echapper_code(texte):
@@ -85,6 +114,9 @@ def echapper_code(texte):
 
 
 def colorer_ligne(ligne, langage):
+    if langage in ('python', 'sql', 'bash') and ligne[:1] in (' ', '\t'):
+        debut, reste = indentation(ligne)
+        return debut + colorer_ligne(reste, langage)
     if langage == 'python':
         sortie, prec = [], ''
         for m in JETON_PY.finditer(ligne):
@@ -150,6 +182,11 @@ def bloc_code(lignes, langage):
 def bloc_console(lignes):
     corps = '<br>'.join(echapper_code(l) for l in lignes)
     return f'<div style="{STYLE_CONSOLE}">{corps}</div>'
+
+
+def styles_de_couleur(brut):
+    """Les couleurs de texte utilisées dans les spans de coloration d'un XML."""
+    return set(re.findall(r'<span style="color: (#[0-9a-fA-F]{6});', brut))
 
 
 # ---------------------------------------------------------------- texte
