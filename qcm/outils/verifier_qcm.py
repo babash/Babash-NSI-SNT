@@ -110,7 +110,7 @@ def verifier_execution(quiz, q):
                     err(quiz['id'], qid, f'{lab} : erreur SQL inattendue : {e}')
             continue
         lignes = list(quiz.get('prelude_python', []))
-        if ver.get('reprendre_code', True) and q.get('code'):
+        if ver.get('reprendre_code', True) and q.get('code') and q.get('langage', 'python') == 'python':
             lignes += q['code']
         lignes += ver.get('code', [])
         code = '\n'.join(lignes) + '\n'
