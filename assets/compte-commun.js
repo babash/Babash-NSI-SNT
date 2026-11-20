@@ -117,7 +117,7 @@
     var apps = [
       ['commun', 'Ressources NSI et SNT', 'https://babash.github.io/Babash-NSI-SNT/eleve/'],
       ['td', 'Feuilles de TD en ligne', 'https://babash.github.io/Babash-NSI-SNT/'],
-      ['calendrier', 'Calendrier des vacances', null],
+      ['calendrier', 'Calendrier des vacances', 'https://babash.github.io/Babash-NSI-SNT/calendrier/'],
       ['quizz_nsi', 'QuizzNSI', 'https://babash.github.io/QuizzNSI/'],
       ['gombessa', 'Expédition Gombessa', 'https://babash.github.io/Rappel-1er/'],
       ['court_circuit', 'Court-circuit', 'https://babash.github.io/court-circuit/'],
@@ -170,6 +170,7 @@
     /* Tableaux de bord : dans la démonstration, ils ouvrent la démonstration de chaque application */
     var adressesProf = {
       commun: 'https://babash.github.io/Babash-NSI-SNT/enseignant/',
+      calendrier: 'https://babash.github.io/Babash-NSI-SNT/calendrier/prof.html',
       gombessa: 'https://babash.github.io/Rappel-1er/prof.html',
       lagon: 'https://babash.github.io/lagon-arena/prof.html?demo',
       court_circuit: 'https://babash.github.io/court-circuit/prof.html?demo'

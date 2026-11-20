@@ -240,8 +240,7 @@
     sec.appendChild(el('ul', { class: 'cc-apps cc-tableaux' }, t.applications.map(function (a) {
       return el('li', { class: 'cc-app' }, [
         a.adresse ? el('a', { href: a.adresse }, el('strong', null, a.nom)) : el('strong', null, a.nom),
-        el('p', { class: 'petit' }, a.texte),
-        a.adresse ? null : el('p', { class: 'petit cc-a-venir' }, 'Adresse à venir')
+        el('p', { class: 'petit' }, a.texte)
       ]);
     })));
     return sec;
@@ -348,7 +347,7 @@
         el('p', { class: 'cc-lien-url' }, el('a', { href: c.lien }, c.lien)),
         el('div', { class: 'cc-actions' }, [inviter, copier]), m
       ]),
-      qr ? el('div', { class: 'cc-qr', role: 'img', 'aria-label': 'QR code du lien de la classe ' + c.nom, html: qr }) : el('p', { class: 'petit' }, 'QR code indisponible (enseignant/qrcode.js n\'a pas pu se charger).')
+      qr ? el('div', { class: 'cc-qr', role: 'img', 'aria-label': 'QR code du lien de la classe ' + c.nom, html: qr }) : el('p', { class: 'petit' }, 'QR code indisponible (assets/qrcode-generator.js n\'a pas pu se charger).')
     ]);
   }
 

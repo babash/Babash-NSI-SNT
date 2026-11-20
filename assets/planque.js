@@ -537,12 +537,11 @@
   function remplirApplications(panneau) {
     O.vider(panneau);
     var mesApps = appsDeMesClasses();
-    var toutes = cat.applications.filter(function (a) { return a.id !== 'commun'; });
+    /* Seules les applications dont l'adresse est connue : un lien qui marche, jamais une promesse */
+    var toutes = cat.applications.filter(function (a) { return a.id !== 'commun' && a.adresse; });
     function liste(apps) {
       return el('ul', { class: 'cc-apps' }, apps.map(function (a) {
-        return el('li', { class: 'cc-app' }, a.adresse
-          ? el('a', { href: a.adresse }, [el('strong', null, a.nom), el('span', { class: 'petit' }, ' Ouvrir')])
-          : el('span', null, [el('strong', null, a.nom), el('span', { class: 'petit' }, ' Bientôt')]));
+        return el('li', { class: 'cc-app' }, el('a', { href: a.adresse }, [el('strong', null, a.nom), el('span', { class: 'petit' }, ' Ouvrir')]));
       }));
     }
     var deClasse = toutes.filter(function (a) { return mesApps[a.id]; });
