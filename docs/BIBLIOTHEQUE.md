@@ -23,6 +23,16 @@ l'extérieur (aujourd'hui toutes, puisque rien n'est caché), avec ces documents
   (`?r=identifiant`), avec ses documents et sa place dans les rubriques ;
 - une adresse qui garde la recherche, les filtres, le tri et la vue : elle se partage telle quelle.
 
+Son chapeau mène aussi à **la page des annales du bac NSI par notion** (`bibliotheque/annales/`,
+depuis le 20 novembre 2026, `assets/annales.js`). Elle lit l'inventaire des sujets
+(`donnees/annales/annales-bac-nsi.json`) et le classement de leurs exercices dans les 22 chapitres
+des fiches de révision (`donnees/annales/notions-par-exercice.json`, construit par
+`scripts/annales_notions.py` à partir des notions et de l'en-tête de chaque exercice). Ce
+classement est une proposition automatique : tant que `verifie` vaut `false`, la page écrit
+« classement automatique, à vérifier » sur chaque exercice, et les classements écartés y sont
+expliqués. Le lien principal de chaque exercice mène directement au PDF du sujet, sur le site qui
+le publie ; `?vue=imprimer` donne une version imprimable avec un QR code par sujet.
+
 Elle ne lit pas les fiches une à une : `scripts/construire_bibliotheque.py` les rassemble en
 trois fichiers, à chaque publication, dans le workflow « Publier le site » (voir
 [la mise en ligne](VERIFICATION.md#la-mise-en-ligne)) :

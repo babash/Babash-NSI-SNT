@@ -40,7 +40,11 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
 - **Données de la bibliothèque**, à chaque modification, sur toutes les branches, et à la
   demande : `scripts/valider_donnees.py --github` vérifie les fiches, la vitrine et les
   référentiels du dossier `donnees/` (voir [les données de la bibliothèque](BIBLIOTHEQUE.md)). Une erreur fait
-  échouer le contrôle (croix rouge). Le même job essaie ensuite la construction de la
+  échouer le contrôle (croix rouge). Il vérifie aussi que le classement des exercices des annales
+  du bac par chapitre (`donnees/annales/notions-par-exercice.json`) est à jour des annales
+  (`scripts/annales_notions.py --verifier`, depuis le 20 novembre 2026) : après une mise à jour
+  des annales, on relance `python3 scripts/annales_notions.py`, sinon le contrôle échoue. Le même
+  job essaie ensuite la construction de la
   bibliothèque, comme « Publier le site », dans un dossier temporaire, et lance les tests du
   thésaurus et de la recherche (`scripts/tests/test_notions.py`, `scripts/tests/test_recherche.js`),
   et celui de la validation de l'[espace administrateur](ADMIN.md), comparée à celle du script
@@ -81,7 +85,11 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   « bibliothèque 132 ressources affichées / 132 fiches visibles de l'extérieur ») ; une recherche trouve une ressource
   par un mot de son titre ; la fiche complète de trois ressources s'ouvre (`?r=identifiant`). Les
   fichiers construits ne sont pas dans le dépôt : c'est ce contrôle qui les vérifie, et non la
-  comparaison des fichiers.
+  comparaison des fichiers. Il affiche aussi **la page des annales du bac** (`bibliotheque/annales/`,
+  depuis le 20 novembre 2026) : elle montre tous les exercices des annales du commit publié, sans
+  erreur et avec le lien « Code source sur GitHub », et la version imprimable du chapitre le plus
+  fourni a un QR code par exercice (ligne « annales 315 exercices affichés / 315 dans les
+  données »).
 
   Il contrôle ensuite **les fichiers déposés sur le site** que citent les fiches de la
   bibliothèque (le champ `fichier` de leurs documents, cachés compris, puisque tout fichier du
