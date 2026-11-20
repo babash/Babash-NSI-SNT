@@ -188,7 +188,7 @@ window.CN_DONNEES = /*DONNEES-DEBUT*/{
     },
     "A": {
      "titre": "Programme A",
-     "code": "e1 = Etal(\"mangue\")\ne2 = Etal(\"banane\", 1)\nprint(e1.prix, e2.prix)\ne1.ajouter(10)\nprint(e1.vendre(4), e1.vendre(8))\nprint(e1.stock, e2.stock)"
+     "code": "e1 = Etal(\"mangue\")\ne2 = Etal(\"goyave\", 1)\nprint(e1.prix, e2.prix)\ne1.ajouter(10)\nprint(e1.vendre(4), e1.vendre(8))\nprint(e1.stock, e2.stock)"
     },
     "B": {
      "code": "e3 = Etal(\"ananas\", 3)\ne4 = e3\ne4.ajouter(5)\nprint(e3.stock)"
@@ -410,7 +410,8 @@ window.CN_DONNEES = /*DONNEES-DEBUT*/{
       "q6",
       "q7"
      ]
-    ]
+    ],
+    "largeurs": "0.9fr 1.1fr"
    }
   ],
   [

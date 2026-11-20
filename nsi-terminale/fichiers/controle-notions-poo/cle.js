@@ -334,10 +334,10 @@ window.CN_CLE = /*CLE-DEBUT*/{
    "diag": [
     {
      "si": "2 2",
-     "texte": "`Etal(\"banane\", 1)` donne 1 à `prix` : la valeur par défaut ne sert que si l'appel ne donne rien."
+     "texte": "`Etal(\"goyave\", 1)` donne 1 à `prix` : la valeur par défaut ne sert que si l'appel ne donne rien."
     },
     {
-     "si": "mangue banane",
+     "si": "mangue goyave",
      "texte": "C'est l'attribut `fruit`. La ligne 3 affiche l'attribut `prix`."
     },
     {

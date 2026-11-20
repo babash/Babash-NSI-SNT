@@ -17,6 +17,17 @@ ICI = pathlib.Path(__file__).resolve().parent.parent
 PORT = sys.argv[1] if len(sys.argv) > 1 else '8765'
 B = 'http://localhost:' + PORT + '/nsi-terminale/fichiers/' + ICI.name + '/'
 
+LARGES = '''() => [...document.querySelectorAll('.feuille')].map((f, n) => {
+    const t = [];
+    f.querySelectorAll('pre, .console, .contexte, .q, .r, .convention, .option, svg, table').forEach(e => {
+        const cadre = e.parentElement.closest('.colonnes > div, .corr > div, .contexte, .feuille');
+        const r = e.getBoundingClientRect(), c = cadre.getBoundingClientRect();
+        if (r.right > c.right + 0.5 || r.left < c.left - 0.5 || (e.tagName === 'PRE' && e.scrollWidth > e.clientWidth + 1))
+            t.push('page ' + (n + 1) + ' : ' + (e.className || e.tagName) + ' « ' + e.textContent.trim().slice(0, 40) + ' »');
+    });
+    return t;
+}).flat()'''
+
 
 async def main():
     probleme = False
@@ -36,7 +47,9 @@ async def main():
                 return { deborde: f.scrollHeight > f.clientHeight + 1 || bas > pied, reste_mm: Math.round((pied - bas) / 3.78) };
             })''')
             print(nom, len(r), 'pages', r)
-            probleme = probleme or any(x['deborde'] for x in r)
+            larges = await pg.evaluate(LARGES)
+            print(nom, 'éléments plus larges que leur cadre :', larges or 'aucun')
+            probleme = probleme or any(x['deborde'] for x in r) or bool(larges)
             await pg.pdf(path=str(ICI / (nom + '.pdf')), format='A4', print_background=True, prefer_css_page_size=True)
         print('console :', msgs or 'rien')
         await b.close()

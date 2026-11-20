@@ -267,6 +267,8 @@
   /* ── Export CSV (séparateur « ; », UTF-8 avec BOM : s'ouvre tel quel dans un tableur) ── */
   function champ(v) {
     v = String(v === undefined || v === null ? '' : v);
+    /* Pas de formule : une cellule qui commence par = + - @ est précédée d'une apostrophe */
+    if (/^[=+\-@]/.test(v)) v = "'" + v;
     return /[;"\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
   }
   $('csv').addEventListener('click', function () {
