@@ -1,0 +1,741 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "snt-pixels-couleurs",
+ "titre": "SNT · Pixels et couleurs",
+ "niveau": "snt",
+ "justification_niveau": "thème « La photographie numérique » de SNT : photosites, pixels, résolution, profondeur de couleur, traitement d'image par programme.",
+ "programme": [
+  "snt-2019.photographie.pixels : Photosites, pixels, résolution (du capteur, de l'image), profondeur de couleur",
+  "snt-2019.photographie.traitement-image : Traitement d'image"
+ ],
+ "notions": [
+  "donnees.image.pixel",
+  "donnees.image.couleur",
+  "donnees.image.traitement",
+  "donnees.image.photographie",
+  "donnees.binaire"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Quiz SNT: Binaire, RVB et Architecture (export `5eef362f`, Q7, Q11 à Q15, Q17, Q18)",
+  "Type base - 2 - Hexadécimale (export `d3c2200c`, Q14, déplacée par le lot 1)",
+  "10 questions nouvelles (photosite, définition, taille, profondeur, résolution, blanc, négatif, gris, éclaircir, tuple)"
+ ],
+ "contexte": "Une photo du lagon, un pixel couleur de mangue ; des programmes Python courts sur des pixels.",
+ "objectifs": [
+  "Distinguer photosite et pixel ; calculer une définition et la taille d'une image sans compression.",
+  "Coder une couleur en RVB, de 0 à 255 sur un octet ; connaître la synthèse additive.",
+  "Relier la profondeur de couleur au nombre de couleurs, et la résolution à une longueur.",
+  "Prévoir l'effet d'un traitement d'image simple (négatif, niveaux de gris, éclaircir) et lire une erreur sur un tuple."
+ ],
+ "progression": "Q1 et Q2 : capteur et définition ; Q3 à Q6 : couleurs ; Q7 à Q10 : bits et octets d'un pixel ; Q11 à Q13 : taille, profondeur, résolution ; Q14 à Q19 : traitement d'image par programme.",
+ "forme": [
+  "Le quiz est recentré sur le programme de SNT (photographie numérique) : titre « SNT · Pixels et couleurs ».",
+  "Noms « [Couleurs] … », « [Pixels] … », « [Traitement] … » ; objectif affiché.",
+  "Énoncés impersonnels (« Représentez » retiré) ; mots anglais traduits (byte, kilobyte, nibble) ; majuscules des couleurs retirées.",
+  "La boucle de la diagonale en bloc de code coloré ; feedbacks complétés (11 faisaient moins de 40 caractères), au tutoiement.",
+  "Positions replacées : D n'était jamais la bonne réponse.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q07, q08) : l'objectif dit la compétence, pas la réponse."
+ ],
+ "retirees": [
+  {
+   "origine": "Quiz SNT Q1 à Q6, Q8 à Q10 (conversions binaire ⇄ décimal, nombre de bits)",
+   "raison": "le binaire est au programme de NSI 1re, pas de SNT. Déplacée dans « NSI 1re · Binaire et architecture » (`nsi-premiere/nsi1-binaire-architecture`)."
+  },
+  {
+   "origine": "Quiz SNT Q16 (le transistor) et Q19 (rôle du disque dur ou du SSD)",
+   "raison": "architecture des machines : programme de NSI 1re. L'énoncé de Q16 y est corrigé (un transistor seul ne stocke pas un bit). Déplacée dans « NSI 1re · Binaire et architecture » (`nsi-premiere/nsi1-binaire-architecture`)."
+  },
+  {
+   "origine": "Quiz SNT Q20 (le mot LEA en ASCII)",
+   "raison": "représentation d'un texte : programme de NSI 1re. Déplacée dans « NSI 1re · Binaire et architecture » (`nsi-premiere/nsi1-binaire-architecture`)."
+  }
+ ],
+ "questions": [
+  {
+   "id": "q01",
+   "nom": "[Photographie] Le photosite du capteur",
+   "objectif": "Distinguer le photosite du capteur et le pixel de l'image.",
+   "question": [
+    "Sur le capteur d'un appareil photo, qu'est-ce qu'un photosite ?"
+   ],
+   "options": [
+    {
+     "texte": "Une minuscule cellule qui mesure la lumière reçue",
+     "feedback": "Oui : le capteur est couvert de photosites. Chacun mesure la quantité de lumière qu'il reçoit ; des algorithmes en tirent ensuite les pixels de l'image.",
+     "juste": true
+    },
+    {
+     "texte": "Un point de l'image enregistrée, avec sa couleur",
+     "feedback": "Ça, c'est un pixel : un élément de l'image enregistrée. Le photosite est sur le capteur, avant le calcul de l'image."
+    },
+    {
+     "texte": "Un point d'encre sur une photo imprimée",
+     "feedback": "Le photosite est dans l'appareil photo, pas sur le papier : c'est lui qui capte la lumière."
+    },
+    {
+     "texte": "Un petit fichier qui décrit la photo",
+     "feedback": "Les informations sur la photo (date, réglages, lieu) sont les métadonnées EXIF. Un photosite est une cellule du capteur."
+    }
+   ]
+  },
+  {
+   "id": "q02",
+   "nom": "[Pixels] La définition d'une image",
+   "objectif": "Calculer la définition d'une image (nombre de pixels).",
+   "question": [
+    "Une photo du lagon mesure 4 000 pixels de large et 3 000 pixels de haut. Quelle est sa définition ?"
+   ],
+   "options": [
+    {
+     "texte": "7 000 pixels",
+     "feedback": "Tu as additionné la largeur et la hauteur. L'image est un tableau : on multiplie, 4 000 × 3 000."
+    },
+    {
+     "texte": "12 millions de pixels",
+     "feedback": "Oui : 4 000 × 3 000 = 12 000 000 pixels, soit 12 mégapixels (12 Mpx).",
+     "juste": true
+    },
+    {
+     "texte": "36 millions de pixels",
+     "feedback": "Tu as multiplié aussi par 3, le nombre de couleurs R, V, B. Ce calcul donne la taille en octets, pas le nombre de pixels."
+    },
+    {
+     "texte": "1,2 million de pixels",
+     "feedback": "Vérifie les zéros : 4 000 × 3 000 = 12 000 000, soit 12 millions."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(4000 * 3000)"
+     ],
+     "sortie": "12000000"
+    }
+   ]
+  },
+  {
+   "id": "q03",
+   "origine": "Quiz SNT Q14",
+   "nom": "[Couleurs] Les lettres R, V, B",
+   "objectif": "Connaître les trois couleurs du codage RVB.",
+   "question": [
+    "Que signifient les lettres RVB (RGB en anglais), utilisées pour coder la couleur d'un pixel ?"
+   ],
+   "options": [
+    {
+     "texte": "Résolution, Vitesse, Bande passante",
+     "feedback": "Ces mots parlent de qualité d'image et de réseau. RVB désigne trois couleurs de lumière."
+    },
+    {
+     "texte": "Rapport, Volume, Binaire",
+     "feedback": "Ces mots ne désignent pas des couleurs. Chaque lettre de RVB est une couleur de lumière."
+    },
+    {
+     "texte": "Rotation, Valeur, Brillance",
+     "feedback": "Ce ne sont pas des termes du codage des couleurs. RVB : rouge, vert, bleu."
+    },
+    {
+     "texte": "Rouge, Vert, Bleu",
+     "feedback": "Oui : chaque pixel d'un écran mélange ces trois lumières. En anglais : Red, Green, Blue.",
+     "juste": true
+    }
+   ],
+   "fond": {
+    "avant": "distracteur « Rotatif, Vibrant, Brillant »",
+    "apres": "distracteur « Rotation, Valeur, Brillance »",
+    "raison": "trois noms comme dans les autres options, pour que la forme ne désigne pas la réponse. Même erreur visée."
+   }
+  },
+  {
+   "id": "q04",
+   "origine": "Quiz SNT Q11",
+   "nom": "[Couleurs] Mélanger le rouge et le bleu",
+   "objectif": "Trouver la couleur d'un pixel à partir de ses trois composantes.",
+   "question": [
+    "Un pixel a les composantes R = 255, V = 0, B = 255. Quelle couleur affiche-t-il ?"
+   ],
+   "options": [
+    {
+     "texte": "Jaune",
+     "feedback": "Le jaune mélange le rouge et le vert : (255, 255, 0). Ici, c'est le vert qui vaut 0."
+    },
+    {
+     "texte": "Magenta",
+     "feedback": "Oui : rouge à fond et bleu à fond, sans vert. Sur un écran, la lumière rouge et la lumière bleue donnent le magenta (un rose violacé).",
+     "juste": true
+    },
+    {
+     "texte": "Vert",
+     "feedback": "Le vert seul serait (0, 255, 0). Ici, la composante verte vaut 0 : il n'y a pas de vert du tout."
+    },
+    {
+     "texte": "Cyan",
+     "feedback": "Le cyan mélange le vert et le bleu : (0, 255, 255). Ici, c'est le rouge qui est à fond."
+    }
+   ]
+  },
+  {
+   "id": "q05",
+   "nom": "[Couleurs] Le code du blanc",
+   "objectif": "Savoir que, sur un écran, toutes les lumières à fond donnent le blanc.",
+   "question": [
+    "Quel triplet (R, V, B) code le blanc ?"
+   ],
+   "options": [
+    {
+     "texte": "(0, 0, 0)",
+     "feedback": "Toutes les lumières éteintes : c'est le noir. Sur un écran, on ajoute de la lumière pour éclaircir."
+    },
+    {
+     "texte": "(1, 1, 1)",
+     "feedback": "1 est une lumière presque éteinte : (1, 1, 1) est un noir. Chaque composante va de 0 à 255."
+    },
+    {
+     "texte": "(255, 255, 255)",
+     "feedback": "Oui : rouge, vert et bleu à fond donnent le blanc. Sur un écran, la lumière s'ajoute.",
+     "juste": true
+    },
+    {
+     "texte": "(128, 128, 128)",
+     "feedback": "Trois composantes égales donnent bien un gris ; à 128, c'est un gris moyen. Le blanc demande le maximum, 255."
+    }
+   ]
+  },
+  {
+   "id": "q06",
+   "origine": "Quiz SNT Q15",
+   "nom": "[Couleurs] Synthèse additive et soustractive",
+   "objectif": "Distinguer la synthèse additive (écran) de la synthèse soustractive (encre).",
+   "question": [
+    "Un écran mélange des lumières (RVB). Une imprimante mélange des encres (CMJN : cyan, magenta, jaune, noir). Quelle phrase est juste ?"
+   ],
+   "options": [
+    {
+     "texte": "Écran : synthèse soustractive ; imprimante : synthèse additive",
+     "feedback": "C'est l'inverse : l'écran part du noir et ajoute des lumières ; l'encre part du papier blanc et absorbe de la lumière."
+    },
+    {
+     "texte": "Écran : synthèse additive ; imprimante : synthèse soustractive",
+     "feedback": "Oui : sur l'écran, on part du noir et on ajoute des lumières (tout à fond : blanc). L'encre retire de la lumière au papier blanc.",
+     "juste": true
+    },
+    {
+     "texte": "Écran et imprimante utilisent les mêmes couleurs primaires",
+     "feedback": "Les primaires sont différentes : rouge, vert, bleu pour l'écran ; cyan, magenta, jaune pour l'encre."
+    },
+    {
+     "texte": "Écran : couleurs en binaire ; imprimante : en décimal",
+     "feedback": "La façon d'écrire les nombres ne change rien aux couleurs. La différence est physique : ajouter ou retirer de la lumière."
+    }
+   ],
+   "fond": {
+    "avant": "bonne réponse de 150 caractères, bien plus longue que les autres",
+    "apres": "quatre options de même forme",
+    "raison": "la longueur désignait la bonne réponse. Même contenu : l'écran ajoute de la lumière, l'encre en retire."
+   }
+  },
+  {
+   "id": "q07",
+   "origine": "Quiz SNT Q7",
+   "nom": "[Couleurs] La plus grande valeur d'un octet",
+   "objectif": "Trouver la plus grande valeur d'une composante codée sur un octet.",
+   "question": [
+    "Chaque composante R, V, B est codée sur un octet. Quel nombre décimal représente l'octet 11111111, la plus grande valeur possible ?"
+   ],
+   "options": [
+    {
+     "texte": "128",
+     "feedback": "128 est le poids du seul bit de gauche (10000000). Ici, les huit bits sont à 1 : 128 + 64 + … + 1."
+    },
+    {
+     "texte": "155",
+     "feedback": "Huit bits à 1 donnent la plus grande valeur d'un octet : 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1 = 255."
+    },
+    {
+     "texte": "255",
+     "feedback": "Oui : 2⁸ - 1 = 255. C'est pourquoi chaque composante va de 0 à 255 : 256 valeurs sur un octet.",
+     "juste": true
+    },
+    {
+     "texte": "256",
+     "feedback": "256 est le nombre de valeurs possibles, de 0 à 255. La plus grande est 255."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(int(\"11111111\", 2), 2 ** 8 - 1)"
+     ],
+     "sortie": "255 255"
+    }
+   ]
+  },
+  {
+   "id": "q08",
+   "origine": "Quiz SNT Q17",
+   "nom": "[Données] La plus petite unité",
+   "objectif": "Connaître l'unité de base de l'information.",
+   "question": [
+    "Quelle est la plus petite unité d'information, qui vaut 0 ou 1 ?"
+   ],
+   "options": [
+    {
+     "texte": "L'octet",
+     "feedback": "Un octet regroupe 8 bits : ce n'est pas la plus petite unité."
+    },
+    {
+     "texte": "Le hertz",
+     "feedback": "Le hertz mesure une fréquence (par exemple la vitesse d'un processeur), pas une quantité d'information."
+    },
+    {
+     "texte": "Le bit",
+     "feedback": "Oui : un bit (de l'anglais binary digit, « chiffre binaire ») vaut 0 ou 1.",
+     "juste": true
+    },
+    {
+     "texte": "Le kilooctet (ko)",
+     "feedback": "Un kilooctet vaut 1 000 octets : c'est une grande unité."
+    }
+   ],
+   "fond": {
+    "avant": "options « L'octet (Byte) », « Le Kilobyte (Ko) »",
+    "apres": "options « L'octet », « Le kilooctet (ko) »",
+    "raison": "mots anglais mélangés au français ; les unités ont un nom français. Même question."
+   }
+  },
+  {
+   "id": "q09",
+   "origine": "Quiz SNT Q18",
+   "nom": "[Données] L'octet",
+   "objectif": "Connaître la relation entre l'octet et le bit.",
+   "question": [
+    "Quelle relation lie l'octet et le bit ?"
+   ],
+   "options": [
+    {
+     "texte": "1 octet = 4 bits",
+     "feedback": "4 bits forment un quartet, la moitié d'un octet."
+    },
+    {
+     "texte": "1 octet = 10 bits",
+     "feedback": "On pense souvent à 10 comme en décimal, mais un octet regroupe 8 bits."
+    },
+    {
+     "texte": "1 octet = 8 bits",
+     "feedback": "Oui : un octet, c'est 8 bits. Il code 2⁸ = 256 valeurs, de 0 à 255 : exactement une composante R, V ou B.",
+     "juste": true
+    },
+    {
+     "texte": "1 bit = 8 octets",
+     "feedback": "C'est l'inverse : le bit est la plus petite unité, et l'octet en contient 8."
+    }
+   ]
+  },
+  {
+   "id": "q10",
+   "origine": "Base 2 et 16 Q14 (export `d3c2200c`)",
+   "nom": "[Pixels] Un pixel en niveaux de gris",
+   "objectif": "Calculer la place d'un pixel en niveaux de gris.",
+   "question": [
+    "Un pixel en niveaux de gris n'a qu'une composante, de 0 (noir) à 255 (blanc). Combien d'octets faut-il pour le coder ?"
+   ],
+   "options": [
+    {
+     "texte": "1 octet",
+     "feedback": "Oui : 256 valeurs, de 0 à 255, tiennent dans un octet (8 bits). Un pixel en couleur RVB en demande 3.",
+     "juste": true
+    },
+    {
+     "texte": "2 octets",
+     "feedback": "Un octet code déjà 256 valeurs, de 0 à 255 : c'est assez pour une seule composante."
+    },
+    {
+     "texte": "3 octets",
+     "feedback": "3 octets, c'est un pixel en couleur : un pour R, un pour V, un pour B. En gris, il n'y a qu'une composante."
+    },
+    {
+     "texte": "8 octets",
+     "feedback": "Tu confonds peut-être avec les 8 bits d'un octet. Une valeur de 0 à 255 tient dans 1 octet."
+    }
+   ],
+   "fond": {
+    "avant": "question du quiz « Type base 2 et hexadécimal » ; « possède qu'un seul canal prenant une valeur comprise de 0 à 255 »",
+    "apres": "question du quiz SNT ; « n'a qu'une composante, de 0 (noir) à 255 (blanc) »",
+    "raison": "déplacée dans le quiz de l'image (lot 1) ; phrase corrigée. Même question."
+   }
+  },
+  {
+   "id": "q11",
+   "nom": "[Pixels] La taille d'une image sans compression",
+   "objectif": "Calculer la taille d'une image : définition × octets par pixel.",
+   "question": [
+    "Une image de 1 000 × 500 pixels est codée en RVB, un octet par composante, sans compression. Quelle est sa taille ?"
+   ],
+   "options": [
+    {
+     "texte": "500 000 octets",
+     "feedback": "C'est le nombre de pixels. Chaque pixel prend 3 octets (R, V, B) : il faut multiplier par 3."
+    },
+    {
+     "texte": "3 octets",
+     "feedback": "C'est la taille d'un seul pixel. L'image en a 1 000 × 500 = 500 000."
+    },
+    {
+     "texte": "12 000 000 octets",
+     "feedback": "Tu as multiplié par 8 en plus : c'est le nombre de bits. 1 500 000 octets = 12 000 000 bits."
+    },
+    {
+     "texte": "1 500 000 octets",
+     "feedback": "Oui : 1 000 × 500 = 500 000 pixels, × 3 octets = 1 500 000 octets, soit 1,5 Mo environ.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(1000 * 500 * 3)"
+     ],
+     "sortie": "1500000"
+    }
+   ]
+  },
+  {
+   "id": "q12",
+   "nom": "[Pixels] La profondeur de couleur",
+   "objectif": "Calculer le nombre de couleurs codées sur 24 bits.",
+   "question": [
+    "Un pixel RVB est codé sur 24 bits : 8 bits par composante. Combien de couleurs différentes peut-il prendre ?"
+   ],
+   "options": [
+    {
+     "texte": "768",
+     "feedback": "Tu as additionné (256 × 3). Mais chaque valeur de R se combine avec chaque valeur de V et de B : on multiplie, 256 × 256 × 256."
+    },
+    {
+     "texte": "16 777 216",
+     "feedback": "Oui : 256 × 256 × 256 = 2²⁴ = 16 777 216 couleurs, plus de 16 millions.",
+     "juste": true
+    },
+    {
+     "texte": "24",
+     "feedback": "24 est le nombre de bits. Avec 24 bits, on a 2²⁴ combinaisons possibles."
+    },
+    {
+     "texte": "765",
+     "feedback": "765 = 255 × 3 : c'est la somme des trois valeurs maximales, pas le nombre de couleurs."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "print(256 ** 3, 2 ** 24)"
+     ],
+     "sortie": "16777216 16777216"
+    }
+   ]
+  },
+  {
+   "id": "q13",
+   "nom": "[Pixels] La résolution",
+   "objectif": "Comprendre la résolution d'une image imprimée, en pixels par pouce.",
+   "question": [
+    "Une image est imprimée avec une résolution de 300 ppp (pixels par pouce ; un pouce mesure 2,54 cm). Que veut dire ce nombre ?"
+   ],
+   "options": [
+    {
+     "texte": "L'image contient 300 pixels en tout",
+     "feedback": "Le nombre total de pixels, c'est la définition. La résolution les rapporte à une longueur."
+    },
+    {
+     "texte": "Chaque pixel peut prendre 300 couleurs",
+     "feedback": "Le nombre de couleurs dépend de la profondeur de couleur (en bits), pas de la résolution."
+    },
+    {
+     "texte": "On aligne 300 pixels sur 2,54 cm",
+     "feedback": "Oui : la résolution compte les pixels par unité de longueur. Plus elle est grande, plus l'image imprimée est fine.",
+     "juste": true
+    },
+    {
+     "texte": "Le fichier pèse 300 octets",
+     "feedback": "La taille du fichier dépend de la définition et du codage, pas directement de la résolution."
+    }
+   ]
+  },
+  {
+   "id": "q14",
+   "origine": "Quiz SNT Q12",
+   "nom": "[Traitement] Un pixel dans une grille",
+   "objectif": "Repérer un pixel par sa ligne et sa colonne, en comptant à partir de 0.",
+   "question": [
+    "Une image est rangée dans une grille : `grille[ligne][colonne]`, les indices commencent à 0. Quelle instruction colore en bleu pur le pixel de la 3ᵉ ligne et de la 10ᵉ colonne ?"
+   ],
+   "options": [
+    {
+     "texte": "grille[3][10] = (255, 0, 0)",
+     "feedback": "Deux erreurs : (255, 0, 0) est le rouge, et les indices 3 et 10 visent la 4ᵉ ligne, 11ᵉ colonne."
+    },
+    {
+     "texte": "grille[2][9] = (0, 0, 255)",
+     "feedback": "Oui : la 3ᵉ ligne a l'indice 2, la 10ᵉ colonne l'indice 9, et (0, 0, 255) est le bleu pur.",
+     "juste": true
+    },
+    {
+     "texte": "grille[3][10] = (0, 0, 255)",
+     "feedback": "La couleur est juste, mais les indices commencent à 0 : la 3ᵉ ligne est la ligne 2."
+    },
+    {
+     "texte": "grille[2][9] = (0, 255, 0)",
+     "feedback": "La position est juste, mais (0, 255, 0) est le vert : le bleu est la troisième composante."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "grille = [[(255, 255, 255)] * 12 for _ in range(5)]",
+      "grille[2][9] = (0, 0, 255)",
+      "print([(l, c) for l in range(5) for c in range(12) if grille[l][c] == (0, 0, 255)])"
+     ],
+     "sortie": "[(2, 9)]"
+    }
+   ]
+  },
+  {
+   "id": "q15",
+   "origine": "Quiz SNT Q13",
+   "nom": "[Traitement] Une boucle qui dessine",
+   "objectif": "Prévoir ce que dessine une boucle sur une grille de pixels.",
+   "enonce": [
+    "Une image carrée de N × N pixels est rangée dans grille[ligne][colonne]."
+   ],
+   "code": [
+    "for i in range(N):",
+    "    grille[i][i] = (0, 0, 0)"
+   ],
+   "question": [
+    "Que dessine ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "Une ligne horizontale noire",
+     "feedback": "Une ligne horizontale garde le même indice de ligne, par exemple grille[5][i]. Ici, la ligne change à chaque tour."
+    },
+    {
+     "texte": "Une colonne noire",
+     "feedback": "Une colonne garde le même indice de colonne, par exemple grille[i][5]. Ici, la colonne change aussi."
+    },
+    {
+     "texte": "Une diagonale noire",
+     "feedback": "Oui : la ligne et la colonne valent toutes deux i : (0, 0), (1, 1), (2, 2)… On noircit la diagonale.",
+     "juste": true
+    },
+    {
+     "texte": "Le bord de l'image en noir",
+     "feedback": "Pour le bord, il faudrait noircir la première et la dernière ligne, et la première et la dernière colonne."
+    }
+   ],
+   "verifications": [
+    {
+     "reprendre_code": false,
+     "code": [
+      "N = 4",
+      "grille = [[(255, 255, 255)] * N for _ in range(N)]",
+      "for i in range(N):",
+      "    grille[i][i] = (0, 0, 0)",
+      "print([(l, c) for l in range(N) for c in range(N) if grille[l][c] == (0, 0, 0)])"
+     ],
+     "sortie": "[(0, 0), (1, 1), (2, 2), (3, 3)]"
+    }
+   ]
+  },
+  {
+   "id": "q16",
+   "nom": "[Traitement] Le négatif d'un pixel",
+   "objectif": "Calculer le négatif d'un pixel : 255 moins chaque composante.",
+   "code": [
+    "# un pixel orange, couleur de mangue",
+    "r, v, b = 200, 150, 0",
+    "r, v, b = 255 - r, 255 - v, 255 - b",
+    "print(r, v, b)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "55 105 255",
+     "feedback": "Oui : 255 - 200 = 55, 255 - 150 = 105, 255 - 0 = 255. L'orange devient un bleu : c'est le négatif.",
+     "juste": true
+    },
+    {
+     "texte": "-200 -150 0",
+     "feedback": "Le programme ne change pas seulement le signe : il calcule 255 moins chaque valeur."
+    },
+    {
+     "texte": "0 150 200",
+     "feedback": "Le négatif n'inverse pas l'ordre des composantes : il calcule 255 - r, 255 - v, 255 - b."
+    },
+    {
+     "texte": "55 105 0",
+     "feedback": "Attention à la dernière composante : 255 - 0 vaut 255, pas 0."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "55 105 255"
+    }
+   ]
+  },
+  {
+   "id": "q17",
+   "nom": "[Traitement] Passer en niveaux de gris",
+   "objectif": "Calculer le gris d'un pixel comme la moyenne de ses composantes.",
+   "code": [
+    "r, v, b = 90, 180, 30",
+    "gris = (r + v + b) // 3",
+    "print(gris)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "300",
+     "feedback": "300 est la somme. Le programme la divise ensuite par 3 : c'est une moyenne."
+    },
+    {
+     "texte": "180",
+     "feedback": "Le programme ne garde pas la plus grande composante : il fait la moyenne des trois."
+    },
+    {
+     "texte": "100",
+     "feedback": "Oui : (90 + 180 + 30) // 3 = 300 // 3 = 100. Le pixel devient (100, 100, 100), un gris.",
+     "juste": true
+    },
+    {
+     "texte": "90",
+     "feedback": "Le programme ne garde pas la première composante : il calcule la moyenne des trois."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "100"
+    }
+   ]
+  },
+  {
+   "id": "q18",
+   "nom": "[Traitement] Éclaircir sans dépasser 255",
+   "objectif": "Éclaircir une composante en la gardant entre 0 et 255.",
+   "code": [
+    "r = 230",
+    "r = min(255, r + 50)",
+    "print(r)"
+   ],
+   "question": [
+    "Qu'affiche ce programme ?"
+   ],
+   "options": [
+    {
+     "texte": "280",
+     "feedback": "230 + 50 = 280, mais min(255, 280) garde la plus petite des deux valeurs : 255. Une composante ne dépasse jamais 255."
+    },
+    {
+     "texte": "255",
+     "feedback": "Oui : min garde la plus petite valeur entre 255 et 280. La composante reste dans les limites, 0 à 255.",
+     "juste": true
+    },
+    {
+     "texte": "230",
+     "feedback": "La ligne 2 change r : r + 50 donne 280, et min le ramène à 255."
+    },
+    {
+     "texte": "50",
+     "feedback": "min compare 255 et r + 50, soit 280 : il ne renvoie pas 50."
+    }
+   ],
+   "verifications": [
+    {
+     "sortie": "255"
+    }
+   ]
+  },
+  {
+   "id": "q19",
+   "nom": "[Erreurs] Modifier un pixel rangé dans un tuple",
+   "objectif": "Lire une TypeError : un tuple ne se modifie pas.",
+   "enonce": [
+    "Le programme suivant est exécuté. Python s'arrête sur l'erreur affichée dans la console."
+   ],
+   "code": [
+    "pixel = (255, 0, 0)",
+    "pixel[0] = 0"
+   ],
+   "console": [
+    "TypeError: 'tuple' object does not support item assignment"
+   ],
+   "question": [
+    "Quelle correction permet d'obtenir un pixel noir ?"
+   ],
+   "options": [
+    {
+     "texte": "Écrire pixel(0) = 0",
+     "feedback": "Les parenthèses servent à appeler une fonction : Python affiche une SyntaxError. Le problème est le tuple."
+    },
+    {
+     "texte": "Écrire pixel[0] == 0",
+     "feedback": "Il n'y a plus d'erreur, mais == compare sans rien changer : le pixel reste (255, 0, 0)."
+    },
+    {
+     "texte": "Créer un nouveau triplet : pixel = (0, 0, 0)",
+     "feedback": "Oui. Le message dit « un tuple ne permet pas de modifier un élément ». On range un nouveau triplet dans la variable.",
+     "juste": true
+    },
+    {
+     "texte": "Écrire pixel[1] = 0",
+     "feedback": "On ne peut modifier aucun élément d'un tuple : Python afficherait la même erreur."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "TypeError: 'tuple' object does not support item assignment"
+    },
+    {
+     "option": "correction",
+     "reprendre_code": false,
+     "code": [
+      "pixel = (255, 0, 0)",
+      "pixel = (0, 0, 0)",
+      "print(pixel)"
+     ],
+     "sortie": "(0, 0, 0)"
+    },
+    {
+     "option": "parenthèses",
+     "reprendre_code": false,
+     "code": [
+      "pixel = (255, 0, 0)",
+      "pixel(0) = 0"
+     ],
+     "erreur": "SyntaxError"
+    },
+    {
+     "option": "==",
+     "reprendre_code": false,
+     "code": [
+      "pixel = (255, 0, 0)",
+      "pixel[0] == 0",
+      "print(pixel)"
+     ],
+     "sortie": "(255, 0, 0)"
+    }
+   ]
+  }
+ ]
+}

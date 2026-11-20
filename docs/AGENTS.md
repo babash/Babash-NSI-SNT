@@ -79,7 +79,12 @@ Les décisions de l'enseignant du 20 novembre 2026 s'y ajoutent (`CLAUDE.md`, §
   lagon…), avec des prénoms variés, sans nom de famille, ni marque, ni cliché ;
 - l'univers « Mamoudzou 2046 » ne sert qu'aux jeux et aux avatars ; le nouveau style des
   feuilles, « Signal pirate », n'est pas encore appliqué ;
-- le cours-quiz (dépôt QuizzNSI) vient en tête de séquence, avant le cours ou le TD.
+- le cours-quiz (dépôt QuizzNSI) vient en tête de séquence, avant le cours ou le TD ;
+- le soir : « on ne promeut aucune religion, mais on ne fait pas comme si c'était problématique
+  qu'elles existent ou d'en avoir une » (un emblème national, comme le croissant et les étoiles du
+  drapeau des Comores sur un maillot, est admis) ; un clin d'œil à une œuvre connue passe par le
+  nom et l'idée, jamais par la forme ; « Imprimer la feuille », dans un TD en ligne, imprime la
+  feuille vierge.
 
 Règle d'écriture : les pages du site et les documents pour les élèves s'écrivent en langage
 inclusif chaque fois que c'est pertinent (formulations épicènes, double flexion, féminisation

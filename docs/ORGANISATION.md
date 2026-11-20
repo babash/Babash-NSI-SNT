@@ -47,6 +47,11 @@ charte/                     les pages de démonstration du Designer, sans lien d
                             indexées : le TD pilote du moteur des TD en ligne (td-pilote/, avec son
                             PDF), le vérificateur de ses réponses (verifier-td.py) et la démonstration
                             du moteur d'avatars (avatars.html)
+qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
+                            nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu
+                            élève et le corrigé enseignant·e de chaque quiz, sans lien depuis le site ;
+                            sources/ (les sources JSON, d'où tout est construit) et outils/
+                            (construire_qcm.py, verifier_qcm.py)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
                             ses fichiers bibliotheque*.json sont construits à la publication
   annales/                  l'inventaire des sujets du bac de NSI, mis à jour chaque 1er janvier et

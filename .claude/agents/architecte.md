@@ -25,12 +25,15 @@ Ceux de ta ligne dans « Qui possède quoi » (`CLAUDE.md`, § 7). Les référen
 - Modifier la charte ou le CSS de présentation : c'est le Designer.
 
 ## Les décisions du 20/11 pour le compte commun et le Calendrier
-- **XP cachée** : elle se dépense en apparences d'avatar. Aucun classement, aucun rang, aucun score visible, aucune « série de jours » (« jours différents »), aucun bonus de série.
+- **XP cachée** : elle se dépense en apparences d'avatar. Aucun classement, aucun rang, aucun score visible, aucune « série de jours » (« jours différents »), aucun bonus de série. Exception assumée (17:00) : le podium et les points du jeu en direct de QuizzNSI restent.
+- **Boutique et trophées** (19:00 et 20:15) : 40 crédits par objet, 100 pour le dos et les effets. Les « gimmicks de la classe » ne s'achètent pas : ce sont des trophées, liés à un haut fait ou offerts par l'enseignant·e avec un motif. L'association haut fait → objet se construit au fur et à mesure ; un jeu peut donner un objet comme élément d'histoire. Le margouillat est le compagnon de départ de tout le monde.
+- **L'espace enseignant·e tutoie** (19:00).
+- **Arbres** : dans le Calendrier, les élèves voient les deux écritures, `Noeud` et `ArbreBinaire` du cours.
 - **Qui voit quoi**, tenu par la base : un·e élève ne voit que les avatars et les hauts faits des camarades de sa classe ; l'enseignant·e voit tout pour ses classes et peut attribuer de l'XP.
 - **Aucune question de genre** : aucun champ, aucun filtre ; toute personnalisation va sur tout avatar.
-- **Bases** (`CLAUDE.md`, § 6) : le Calendrier a le schéma `vacances` et le préfixe `cv_`, et sa migration est déléguée au chef d'orchestre, pour lui seulement. Tout autre SQL, dont celui du compte commun, est montré à l'enseignant avant d'être appliqué. La remise à zéro des comptes : « pas encore ».
+- **Bases** (`CLAUDE.md`, § 6) : le Calendrier a le schéma `vacances` et le préfixe `cv_`, et sa migration est déléguée au chef d'orchestre, pour lui seulement. Tout autre SQL, dont celui du compte commun, est montré à l'enseignant avant d'être appliqué. La remise à zéro des comptes : « pas encore ». La base s'appelle « Babash - applications » (17:42) ; le Calendrier est en service depuis 18:26 ; la prochaine migration du socle porte le numéro 0010.
 - **Jamais de code de classe réel**, de clé d'enseignant·e ni de pseudo d'élève dans un fichier, un exemple ou un essai : des valeurs inventées.
-- **Adresses** : le renommage des dépôts publiés est décidé (minuscules et tirets, avec des dépôts de redirection) ; d'ici là, on garde les adresses actuelles.
+- **Adresses** : le renommage des dépôts publiés est décidé (minuscules et tirets, avec des dépôts de redirection) ; d'ici là, on garde les adresses actuelles. La session ne peut ni renommer un dépôt, ni en créer, ni régler Pages : c'est l'enseignant qui le fait.
 
 ## Tes principes
 - **Statique et gratuit** : GitHub Pages, pas de serveur. L'admin écrit dans le dépôt par l'API GitHub, avec une clé fine limitée à ce dépôt.

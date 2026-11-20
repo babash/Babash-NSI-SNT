@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NSI Tle · SQL 2 : jointures et mises à jour</title>
+<style>
+:root{--fond:#ffffff;--texte:#1b1b1b;--doux:#4a4a4a;--carte:#f5f6f8;--bord:#d5d8de;--lien:#0b57a4;--bonne:#14532d;--bonne-fond:#eef7f0;--alerte:#7a2e00;--alerte-fond:#fff4e5}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--fond:#14161a;--texte:#e8e8e8;--doux:#b8bcc4;--carte:#1f2329;--bord:#3a3f48;--lien:#8ab8ff;--bonne:#a7e8b9;--bonne-fond:#17271c;--alerte:#ffd29a;--alerte-fond:#2e2210}}
+:root[data-theme="dark"]{--fond:#14161a;--texte:#e8e8e8;--doux:#b8bcc4;--carte:#1f2329;--bord:#3a3f48;--lien:#8ab8ff;--bonne:#a7e8b9;--bonne-fond:#17271c;--alerte:#ffd29a;--alerte-fond:#2e2210}
+*{box-sizing:border-box}body{margin:0;background:var(--fond);color:var(--texte);font-family:Arial,Helvetica,sans-serif;line-height:1.5}
+main{max-width:860px;margin:0 auto;padding:16px}h1{font-size:1.5rem;margin:.2em 0}.meta{color:var(--doux);font-size:.95rem}
+section.q{background:var(--carte);border:1px solid var(--bord);border-radius:8px;padding:12px 14px;margin:16px 0;overflow-wrap:anywhere}
+section.q h2{font-size:1.05rem;margin:0 0 .4em}.type{color:var(--doux);font-size:.85rem}
+.pronote>div>div[style]{overflow-x:auto;overflow-wrap:normal;word-break:normal;white-space:nowrap}
+@media print{.pronote>div>div[style]{overflow:visible;white-space:pre-wrap;overflow-wrap:anywhere}}ol.opts{padding-left:1.6em}ol.opts li{margin:.5em 0;padding:4px 6px;border-radius:5px}
+.fb{display:block;color:var(--doux);font-size:.92rem}
+.trou{border:0;border-bottom:2px solid #8a4b2a;padding:0 3px;font:inherit;background:transparent;color:inherit}
+a{color:var(--lien)}footer{color:var(--doux);font-size:.9rem;border-top:1px solid var(--bord);margin-top:24px;padding-top:10px}
+.pronote{background:#ffffff;color:#1b1b1b;border-radius:6px;padding:2px 10px;margin:6px 0}
+table{border-collapse:collapse}td,th{border:1px solid var(--bord);padding:3px 8px;text-align:left}ul.choix{padding-left:1.4em}
+.avertissement{background:var(--alerte-fond);color:var(--alerte);border:1px solid var(--bord);border-radius:6px;padding:8px 12px}
+li.bonne{background:var(--bonne-fond);border-left:4px solid var(--bonne)}.etiquette{font-weight:bold;color:var(--bonne)}.etiquette-faux{font-weight:bold;color:var(--doux)}
+p.reponse{margin:.4em 0}
+</style>
+</head>
+<body>
+<main>
+<p class="meta">Aperçu d'un QCM Pronote · Terminale NSI</p>
+<h1>NSI Tle · SQL 2 : jointures et mises à jour</h1>
+<p class="meta">20 questions · fichier à importer dans Pronote : <a href="nsit-sql-2-jointures-mises-a-jour.xml">nsit-sql-2-jointures-mises-a-jour.xml</a></p>
+<p class="meta">Les questions et les options telles que l'élève les voit, dans l'ordre du fichier, sans les réponses ni les retours.</p>
+<section class="q" id="q01"><h2>1. [Jointures] Écrire la condition de jointure</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Relier la clé étrangère d'une table à la clé primaire de l'autre.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle est la condition de jointure correcte entre ELEVE et CLASSE ?</p></div></div>
+<ol class="opts" type="A">
+<li>ON ELEVE.id_e = CLASSE.id_classe</li>
+<li>WHERE ELEVE.nom = CLASSE.nom_c</li>
+<li>JOIN ON ELEVE = CLASSE</li>
+<li>ON ELEVE.id_classe = CLASSE.id_classe</li>
+</ol>
+</section><section class="q" id="q02"><h2>2. [Jointures] Afficher des colonnes de deux tables</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une jointure complète, sans produit cartésien.</p><p>Schéma : ELEVE (id_e, nom, #id_classe) et CLASSE (id_classe, nom_c).</p><p>Quelle requête affiche le nom de chaque élève et le nom de sa classe ?</p></div></div>
+<ol class="opts" type="A">
+<li>SELECT ELEVE.nom, CLASSE.nom_c FROM ELEVE, CLASSE;</li>
+<li>SELECT nom, nom_c FROM ELEVE JOIN CLASSE;</li>
+<li>SELECT nom, nom_c WHERE ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe;</li>
+<li>SELECT nom, nom_c FROM ELEVE JOIN CLASSE ON ELEVE.id_classe = CLASSE.id_classe;</li>
+</ol>
+</section><section class="q" id="q03"><h2>3. [Jointures] Une jointure suivie d&#x27;un filtre</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer sur un attribut d'une autre table grâce à une jointure.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v).</p><p>Quelle requête affiche les noms des pirogues du village de Bouéni ?</p></div></div>
+<ol class="opts" type="A">
+<li>SELECT nom_p FROM PIROGUE WHERE nom_v = &#x27;Bouéni&#x27;;</li>
+<li>SELECT nom_p FROM PIROGUE JOIN VILLAGE WHERE nom_v = &#x27;Bouéni&#x27;;</li>
+<li>SELECT nom_p FROM PIROGUE JOIN VILLAGE ON PIROGUE.id_v = VILLAGE.id_v WHERE nom_v = &#x27;Bouéni&#x27;;</li>
+<li>SELECT nom_p FROM PIROGUE, VILLAGE WHERE nom_v = &#x27;Bouéni&#x27;;</li>
+</ol>
+</section><section class="q" id="q04"><h2>4. [Jointures] Joindre trois tables</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Enchaîner deux jointures en suivant les clés étrangères.</p><p>Schéma : ZONE (id_z, nom_z) ; RECIF (id_r, nom_r, #id_z) ; MESURE (id_m, valeur, #id_r).</p><p>Quelle clause FROM relie correctement les zones aux mesures ?</p></div></div>
+<ol class="opts" type="A">
+<li>FROM ZONE JOIN MESURE ON ZONE.id_z = MESURE.id_r</li>
+<li>FROM ZONE JOIN RECIF ON ZONE.id_z = RECIF.id_z JOIN MESURE ON RECIF.id_r = MESURE.id_r</li>
+<li>FROM ZONE, RECIF, MESURE</li>
+<li>FROM ZONE JOIN RECIF JOIN MESURE ON id_z = id_r</li>
+</ol>
+</section><section class="q" id="q05"><h2>5. [SQL] La profondeur maximale : MAX</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Obtenir la plus grande valeur d'une colonne avec MAX.</p><p>Schéma : PLONGEUR (id_plongeur, nom, #id_club) ; PLONGEE (id_plongee, lieu, profondeur, #id_plongeur), profondeur en mètres.</p><p>Quelle requête affiche la plus grande profondeur atteinte lors d'une plongée ?</p></div></div>
+<ol class="opts" type="A">
+<li>SELECT MAX(*) FROM PLONGEE;</li>
+<li>SELECT MAX(profondeur) FROM PLONGEE;</li>
+<li>SELECT profondeur FROM PLONGEE ORDER BY profondeur;</li>
+<li>SELECT AVG(profondeur) FROM PLONGEE;</li>
+</ol>
+</section><section class="q" id="q06"><h2>6. [Jointures] Deux colonnes de même nom</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Préfixer un attribut par le nom de sa table pour lever une ambiguïté.</p><p>Les tables PLONGEUR (id_plongeur, nom, #id_club) et CLUB (id_club, nom) ont toutes deux un attribut nom.</p><p>Dans une jointure de ces deux tables, comment désigner le nom du plongeur ou de la plongeuse ?</p></div></div>
+<ol class="opts" type="A">
+<li>PLONGEUR.nom</li>
+<li>nom.PLONGEUR</li>
+<li>PLONGEUR-&gt;nom</li>
+<li>PLONGEUR(nom)</li>
+</ol>
+</section><section class="q" id="q07"><h2>7. [Jointures] Oublier la condition de liaison</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Prévoir le résultat d'une requête sur deux tables sans condition de liaison.</p><p>La table PIROGUE a 4 lignes, la table VILLAGE en a 3. On exécute <code style="font-family: 'Courier New', Courier, monospace; background-color: #f0f0f0; color: #8b0f0f; padding: 1px 4px; border-radius: 3px;">SELECT * FROM PIROGUE, VILLAGE;</code>, sans condition.</p><p>Que se passe-t-il ?</p></div></div>
+<ol class="opts" type="A">
+<li>Le SGBD trouve tout seul la clé étrangère et fait la liaison</li>
+<li>La requête provoque une erreur, car la condition de jointure manque</li>
+<li>On obtient les 12 combinaisons : c&#x27;est un produit cartésien</li>
+<li>La requête ne renvoie aucune ligne, faute de condition</li>
+</ol>
+</section><section class="q" id="q08"><h2>8. [Jointures] L&#x27;ordre des tables dans une jointure</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Savoir qu'une jointure ne dépend pas de l'ordre des tables.</p><p>Dans une jointure <code style="font-family: 'Courier New', Courier, monospace; background-color: #f0f0f0; color: #8b0f0f; padding: 1px 4px; border-radius: 3px;">A JOIN B ON …</code>, l'ordre des tables (A JOIN B ou B JOIN A) change-t-il les lignes obtenues ?</p></div></div>
+<ol class="opts" type="A">
+<li>Oui, les données obtenues sont différentes</li>
+<li>Oui, SQL refuse l&#x27;un des deux sens</li>
+<li>Seulement si les tables ont plus de 100 lignes</li>
+<li>Non, les lignes obtenues sont les mêmes</li>
+</ol>
+</section><section class="q" id="q09"><h2>9. [Jointures] Un alias de table avec AS</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Comprendre le rôle d'un alias de table.</p><p>À quoi sert <code style="font-family: 'Courier New', Courier, monospace; background-color: #f0f0f0; color: #8b0f0f; padding: 1px 4px; border-radius: 3px;">AS</code> dans <code style="font-family: 'Courier New', Courier, monospace; background-color: #f0f0f0; color: #8b0f0f; padding: 1px 4px; border-radius: 3px;">FROM PIROGUE AS P JOIN VILLAGE AS V ON P.id_v = V.id_v</code> ?</p></div></div>
+<ol class="opts" type="A">
+<li>À trier les lignes des deux tables avant la jointure</li>
+<li>À créer une copie de chaque table, le temps de la requête</li>
+<li>À donner un nom court à chaque table, dans la requête</li>
+<li>À protéger l&#x27;accès aux données des deux tables</li>
+</ol>
+</section><section class="q" id="q10"><h2>10. [SQL] Renommer une colonne du résultat</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Donner un autre nom à une colonne affichée.</p><p>Table : VILLAGE (id_v, nom_v).</p><p>Quelle requête affiche la colonne nom_v sous le titre village, sans modifier la table ?</p></div></div>
+<ol class="opts" type="A">
+<li>SELECT nom_v AS village FROM VILLAGE;</li>
+<li>SELECT nom_v RENAME village FROM VILLAGE;</li>
+<li>SELECT nom_v IS village FROM VILLAGE;</li>
+<li>SELECT nom_v -&gt; village FROM VILLAGE;</li>
+</ol>
+</section><section class="q" id="q11"><h2>11. [SQL] Compter avec deux conditions</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Filtrer avec AND avant de compter.</p><p>Table : TORTUE (id_t, espece, poids), poids en kg.</p><p>Quelle requête donne le nombre de tortues vertes de plus de 100 kg ?</p></div></div>
+<ol class="opts" type="A">
+<li>SELECT COUNT(*) FROM TORTUE WHERE espece = &#x27;verte&#x27; OR poids &gt; 100;</li>
+<li>SELECT COUNT(*) FROM TORTUE WHERE espece = &#x27;verte&#x27; AND poids &gt; 100;</li>
+<li>SELECT SUM(*) FROM TORTUE WHERE espece = &#x27;verte&#x27; AND poids &gt; 100;</li>
+<li>SELECT espece, poids FROM TORTUE WHERE espece = &#x27;verte&#x27; AND poids &gt; 100;</li>
+</ol>
+</section><section class="q" id="q12"><h2>12. [SQL] Deux conditions sur les plongées</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Combiner une condition sur un texte et une condition sur un nombre.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle condition garde les plongées faites à Bandrélé à moins de 20 m de profondeur ?</p></div></div>
+<ol class="opts" type="A">
+<li>WHERE lieu = &#x27;Bandrélé&#x27; OR profondeur &lt; 20</li>
+<li>WHERE lieu = &#x27;Bandrélé&#x27;, profondeur &lt; 20</li>
+<li>WHERE lieu = Bandrélé AND profondeur &lt; 20</li>
+<li>WHERE lieu = &#x27;Bandrélé&#x27; AND profondeur &lt; 20</li>
+</ol>
+</section><section class="q" id="q13"><h2>13. [SQL] Trouver l&#x27;erreur dans une requête</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Lire le message de SQLite et corriger l'écriture d'une valeur texte.</p><p>SQLite exécute la requête suivante et affiche le message d'erreur de la console.</p><div style="background-color: #f7f7f7; color: #1b1b1b; border: 1px solid #8a8a8a; padding: 6px 10px; font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.45; border-radius: 4px;"><div style="padding-left: 3ch; text-indent: -3ch;"><span style="color: #00309c; font-weight: bold;">SELECT</span>&nbsp;nom&nbsp;<span style="color: #00309c; font-weight: bold;">FROM</span>&nbsp;CLIENT&nbsp;<span style="color: #00309c; font-weight: bold;">WHERE</span>&nbsp;ville&nbsp;=&nbsp;Mamoudzou;</div></div><p>Console :</p><div style="background-color: #1b1b1b; color: #f0f0f0; padding: 2px 8px; font-family: 'Courier New', Courier, monospace; font-size: 14px; line-height: 1.35; border-radius: 3px;"><div style="padding-left: 3ch; text-indent: -3ch;"><span style="color: #ffb4a8;"><strong>Parse&nbsp;error</strong>:&nbsp;no&nbsp;such&nbsp;column:&nbsp;Mamoudzou</span></div></div><p>Pourquoi cette requête provoque-t-elle une erreur ?</p></div></div>
+<ol class="opts" type="A">
+<li>Le nom Mamoudzou doit être écrit en majuscules</li>
+<li>Il manque des apostrophes autour de Mamoudzou</li>
+<li>On ne peut pas filtrer sur une ville</li>
+<li>Il manque un point-virgule après SELECT nom</li>
+</ol>
+</section><section class="q" id="q14"><h2>14. [SQL] Limiter le nombre de lignes</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Garder seulement les premières lignes d'un résultat.</p><p>Table : PLONGEE (id_plongee, lieu, profondeur, #id_plongeur).</p><p>Quelle requête n'affiche que les 3 premières lignes du résultat ?</p></div></div>
+<ol class="opts" type="A">
+<li>SELECT * FROM PLONGEE LIMIT 3;</li>
+<li>SELECT TOP 3 * FROM PLONGEE;</li>
+<li>SELECT * FROM PLONGEE STOP 3;</li>
+<li>SELECT * FROM PLONGEE WHERE row &lt; 3;</li>
+</ol>
+</section><section class="q" id="q15"><h2>15. [Mises à jour] Supprimer une ligne encore référencée</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Prévoir la réponse du SGBD quand une ligne supprimée est encore référencée.</p><p>Schéma : VILLAGE (id_v, nom_v) et PIROGUE (id_p, nom_p, couleur, #id_v). Le contrôle des clés étrangères est activé (dans SQLite : <code style="font-family: 'Courier New', Courier, monospace; background-color: #f0f0f0; color: #8b0f0f; padding: 1px 4px; border-radius: 3px;">PRAGMA foreign_keys = ON</code>).</p><p>On tente de supprimer un village alors que des pirogues y sont encore reliées. Que se passe-t-il ?</p></div></div>
+<ol class="opts" type="A">
+<li>Le village est supprimé, et toutes ses pirogues sont effacées avec lui</li>
+<li>Le village est supprimé, et la clé étrangère des pirogues passe à 0</li>
+<li>La suppression est refusée, pour préserver l&#x27;intégrité référentielle</li>
+<li>Rien de spécial : la contrainte est ignorée</li>
+</ol>
+</section><section class="q" id="q16"><h2>16. [Mises à jour] Ajouter une ligne : INSERT</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire une requête INSERT INTO … VALUES.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête ajoute un navire nommé « Mamoudzou Express », de 400 tonnes ?</p></div></div>
+<ol class="opts" type="A">
+<li>INSERT INTO NAVIRE (nom, tonnage) VALUES (&#x27;Mamoudzou Express&#x27;, 400);</li>
+<li>ADD INTO NAVIRE VALUES (&#x27;Mamoudzou Express&#x27;, 400);</li>
+<li>UPDATE NAVIRE SET nom = &#x27;Mamoudzou Express&#x27;;</li>
+<li>INSERT INTO NAVIRE (&#x27;Mamoudzou Express&#x27;, 400);</li>
+</ol>
+</section><section class="q" id="q17"><h2>17. [Mises à jour] Modifier une ligne : UPDATE</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un UPDATE … SET … WHERE qui ne modifie qu'une ligne.</p><p>Table : ECOLE (id_e, nom, ville).</p><p>Quelle requête change la ville de l'école n° 42 en « Mtsapéré » ?</p></div></div>
+<ol class="opts" type="A">
+<li>UPDATE ECOLE WHERE id_e = 42 SET ville = &#x27;Mtsapéré&#x27;;</li>
+<li>UPDATE ECOLE SET ville = &#x27;Mtsapéré&#x27; WHERE id_e = 42;</li>
+<li>MODIFY ECOLE SET ville = &#x27;Mtsapéré&#x27; WHERE id_e = 42;</li>
+<li>UPDATE ECOLE SET ville = &#x27;Mtsapéré&#x27;;</li>
+</ol>
+</section><section class="q" id="q18"><h2>18. [Mises à jour] Un UPDATE qui calcule</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Utiliser la valeur actuelle d'une colonne dans un UPDATE.</p><p>Table : RESERVOIR (id_r, nom, volume), volume en m³.</p><p>Quelle requête augmente de 10 m³ le volume de tous les réservoirs ?</p></div></div>
+<ol class="opts" type="A">
+<li>UPDATE RESERVOIR SET volume = volume + 10;</li>
+<li>SET volume = volume + 10 FROM RESERVOIR;</li>
+<li>UPDATE RESERVOIR volume + 10;</li>
+<li>SELECT volume + 10 FROM RESERVOIR;</li>
+</ol>
+</section><section class="q" id="q19"><h2>19. [Mises à jour] Supprimer une ligne : DELETE</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Écrire un DELETE FROM … WHERE.</p><p>Table : NAVIRE (nom, tonnage, port).</p><p>Quelle requête supprime le navire nommé « Vieux Port » ?</p></div></div>
+<ol class="opts" type="A">
+<li>REMOVE FROM NAVIRE WHERE nom = &#x27;Vieux Port&#x27;;</li>
+<li>DELETE nom = &#x27;Vieux Port&#x27; FROM NAVIRE;</li>
+<li>DELETE FROM NAVIRE WHERE nom = &#x27;Vieux Port&#x27;;</li>
+<li>DROP FROM NAVIRE WHERE nom = &#x27;Vieux Port&#x27;;</li>
+</ol>
+</section><section class="q" id="q20"><h2>20. [Mises à jour] Supprimer une table entière</h2>
+<p class="type">QCU, une seule réponse</p>
+<div class="pronote"><div style="font-family: Arial, Helvetica, sans-serif; font-size: 14px;"><p style="color: #3b3b3b;"><strong>Objectif :</strong> Distinguer la suppression des lignes et la suppression de la table.</p><p>Quelle requête supprime définitivement la table NAVIRE, avec toutes ses données ?</p></div></div>
+<ol class="opts" type="A">
+<li>DELETE TABLE NAVIRE;</li>
+<li>REMOVE TABLE NAVIRE;</li>
+<li>DELETE * FROM NAVIRE;</li>
+<li>DROP TABLE NAVIRE;</li>
+</ol>
+</section>
+<footer>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="https://github.com/babash/Babash-NSI-SNT">Code source sur GitHub</a></footer>
+</main>
+</body>
+</html>

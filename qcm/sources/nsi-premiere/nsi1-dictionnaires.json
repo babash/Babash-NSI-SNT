@@ -1,0 +1,1105 @@
+{
+ "format": "qcm-pronote/1",
+ "id": "nsi1-dictionnaires",
+ "titre": "NSI 1re · Les dictionnaires Python",
+ "niveau": "nsi-premiere",
+ "justification_niveau": "dictionnaires par clés et valeurs : programme de première, Types construits.",
+ "programme": [
+  "nsi-1re-2019.types-construits.dictionnaires : Dictionnaires par clés et valeurs"
+ ],
+ "notions": [
+  "donnees.dictionnaire",
+  "donnees.tableau",
+  "prog.boucle.bornee"
+ ],
+ "auteur": "Babash - NSI Tani Malandi",
+ "licence": "CC BY-SA 4.0",
+ "sources": [
+  "Dictionnaires Python - NSI Mayotte (Officiel) (export `8b1043c2`, 20 questions)"
+ ],
+ "contexte": "La barge, les tarifs d'un taxi, les poissons du lagon, les plages de ponte des tortues (Moya, Saziley), l'étal du marché, la pluie ; des prénoms fictifs.",
+ "objectifs": [
+  "Écrire un dictionnaire, lire et modifier une valeur par sa clé, ajouter et supprimer une clé.",
+  "Utiliser len, in, keys, values, items et get, et prévoir la KeyError.",
+  "Parcourir les clés avec for.",
+  "Lire des structures imbriquées : liste dans un dictionnaire, dictionnaire dans un dictionnaire, liste de dictionnaires."
+ ],
+ "progression": "Q1 à Q5 : écrire, lire, ajouter, compter, tester ; Q6 à Q10 : méthodes keys, values, items, modification, KeyError ; Q11 à Q14 : structures imbriquées ; Q15 à Q20 : get, del, for, révision.",
+ "forme": [
+  "Titre sans « (Officiel) » ; noms « [Dictionnaires] … » sans date (ils étaient « Q4 - len() et 1956 ») ; objectif affiché.",
+  "Les dates de l'histoire de l'informatique, plaquées dans chaque énoncé, sont retirées : moins de texte, sans lien avec la question.",
+  "Dictionnaires et programmes en bloc de code coloré (ils étaient écrits dans la phrase).",
+  "Un feedback pour chaque option (aucun avant), au tutoiement, avec le vrai message d'erreur quand l'option en provoque un.",
+  "Positions replacées : D n'était juste qu'une fois sur 20.",
+  "Noms ou objectifs reformulés sans le mot de la réponse (q07, q10) : l'objectif dit la compétence, pas la réponse."
+ ],
+ "retirees": [],
+ "questions": [
+  {
+   "id": "q01",
+   "origine": "Dictionnaires Q1",
+   "nom": "[Dictionnaires] Écrire un dictionnaire",
+   "objectif": "Reconnaître la syntaxe d'un dictionnaire : des accolades et des couples clé : valeur.",
+   "enonce": [
+    "Zaïnaba veut associer à chaque commune desservie par la barge l'île où elle se trouve."
+   ],
+   "question": [
+    "Quelle instruction crée un dictionnaire ?"
+   ],
+   "options": [
+    {
+     "texte": "iles = [\"Dzaoudzi\", \"Mamoudzou\"]",
+     "feedback": "Les crochets créent une liste : des valeurs repérées par leur position (0, 1…), sans clés. Ici, il n'y a pas d'île associée."
+    },
+    {
+     "texte": "iles = {\"Dzaoudzi\": \"Petite-Terre\", \"Mamoudzou\": \"Grande-Terre\"}",
+     "feedback": "Oui : des accolades, et des couples clé : valeur séparés par des virgules. La clé \"Dzaoudzi\" donne la valeur \"Petite-Terre\".",
+     "juste": true
+    },
+    {
+     "texte": "iles = (\"Dzaoudzi\", \"Mamoudzou\")",
+     "feedback": "Les parenthèses créent un tuple : une suite de valeurs qu'on ne peut pas modifier, sans clés."
+    },
+    {
+     "texte": "iles = {\"Dzaoudzi\"; \"Petite-Terre\", \"Mamoudzou\"; \"Grande-Terre\"}",
+     "feedback": "Entre une clé et sa valeur, on écrit deux-points, pas un point-virgule : Python signale une SyntaxError."
+    }
+   ],
+   "verifications": [
+    {
+     "option": "dictionnaire",
+     "reprendre_code": false,
+     "code": [
+      "iles = {\"Dzaoudzi\": \"Petite-Terre\", \"Mamoudzou\": \"Grande-Terre\"}",
+      "print(type(iles).__name__, iles[\"Dzaoudzi\"])"
+     ],
+     "sortie": "dict Petite-Terre"
+    },
+    {
+     "option": "SyntaxError",
+     "reprendre_code": false,
+     "code": [
+      "iles = {\"Dzaoudzi\"; \"Petite-Terre\", \"Mamoudzou\"; \"Grande-Terre\"}"
+     ],
+     "erreur": "SyntaxError"
+    }
+   ],
+   "fond": {
+    "avant": "« lister les villages desservis par la barge » ; bonne réponse {\"A\": \"Dzaoudzi\", \"B\": \"Mamoudzou\"}",
+    "apres": "« associer à chaque commune […] l'île où elle se trouve » ; bonne réponse {\"Dzaoudzi\": \"Petite-Terre\", \"Mamoudzou\": \"Grande-Terre\"} ; le distracteur au point-virgule suit le même modèle",
+    "raison": "pour une simple liste de noms, la liste était l'outil naturel, et les clés « A », « B » étaient artificielles ; Mamoudzou et Dzaoudzi sont des communes. Même question : reconnaître la syntaxe."
+   }
+  },
+  {
+   "id": "q02",
+   "origine": "Dictionnaires Q2",
+   "nom": "[Dictionnaires] Lire une valeur par sa clé",
+   "objectif": "Accéder à une valeur avec dictionnaire[clé].",
+   "enonce": [
+    "Anli range les tarifs d'un taxi, en euros :"
+   ],
+   "code": [
+    "tarifs = {\"Mamoudzou\": 2, \"Koungou\": 3}"
+   ],
+   "question": [
+    "Quelle expression donne le prix pour Koungou ?"
+   ],
+   "options": [
+    {
+     "texte": "tarifs(Koungou)",
+     "feedback": "Les parenthèses servent à appeler une fonction. Et sans guillemets, Koungou est un nom de variable inconnu : NameError."
+    },
+    {
+     "texte": "tarifs{3}",
+     "feedback": "Les accolades servent à écrire un dictionnaire, pas à le lire : SyntaxError. Et on cherche par la clé, pas par la valeur 3."
+    },
+    {
+     "texte": "tarifs[1]",
+     "feedback": "Un dictionnaire ne se lit pas par position : 1 n'est pas une clé, Python répond KeyError: 1. La clé est le texte \"Koungou\"."
+    },
+    {
+     "texte": "tarifs[\"Koungou\"]",
+     "feedback": "Oui : des crochets et la clé entre guillemets. tarifs[\"Koungou\"] vaut 3.",
+     "juste": true
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(tarifs[\"Koungou\"])"
+     ],
+     "sortie": "3"
+    },
+    {
+     "option": "KeyError",
+     "reprendre_code": false,
+     "code": [
+      "tarifs = {\"Mamoudzou\": 2, \"Koungou\": 3}",
+      "tarifs[1]"
+     ],
+     "erreur": "KeyError"
+    },
+    {
+     "option": "NameError",
+     "reprendre_code": false,
+     "code": [
+      "tarifs = {\"Mamoudzou\": 2, \"Koungou\": 3}",
+      "tarifs(Koungou)"
+     ],
+     "erreur": "NameError"
+    }
+   ],
+   "fond": {
+    "avant": "« taxi-be »",
+    "apres": "« taxi »",
+    "raison": "taxi-be est un mot de Madagascar ; à Mayotte, on dit taxi. Date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q03",
+   "origine": "Dictionnaires Q3",
+   "nom": "[Dictionnaires] Ajouter un couple clé : valeur",
+   "objectif": "Ajouter une clé à un dictionnaire par une affectation.",
+   "enonce": [
+    "Faouzia gère un club de handball :"
+   ],
+   "code": [
+    "club = {\"nom\": \"ASC\", \"effectif\": 12}"
+   ],
+   "question": [
+    "Quelle instruction ajoute la ville \"Tsingoni\" au dictionnaire, avec la clé \"ville\" ?"
+   ],
+   "options": [
+    {
+     "texte": "club[\"ville\"] = \"Tsingoni\"",
+     "feedback": "Oui : si la clé \"ville\" n'existe pas, cette affectation la crée, avec la valeur \"Tsingoni\".",
+     "juste": true
+    },
+    {
+     "texte": "club.append(\"ville\", \"Tsingoni\")",
+     "feedback": "append est une méthode des listes. Un dictionnaire n'en a pas : AttributeError."
+    },
+    {
+     "texte": "club = {\"ville\": \"Tsingoni\"}",
+     "feedback": "Cette instruction remplace tout le dictionnaire : le nom et l'effectif seraient perdus."
+    },
+    {
+     "texte": "club[\"Tsingoni\"] = \"ville\"",
+     "feedback": "La clé et la valeur sont inversées : on aurait une clé \"Tsingoni\" de valeur \"ville\". La clé s'écrit entre les crochets."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "club[\"ville\"] = \"Tsingoni\"",
+      "print(club)"
+     ],
+     "sortie": "{'nom': 'ASC', 'effectif': 12, 'ville': 'Tsingoni'}"
+    },
+    {
+     "option": "AttributeError",
+     "reprendre_code": false,
+     "code": [
+      "club = {\"nom\": \"ASC\", \"effectif\": 12}",
+      "club.append(\"ville\", \"Tsingoni\")"
+     ],
+     "erreur": "AttributeError"
+    }
+   ],
+   "fond": {
+    "avant": "clé \"joueurs\"",
+    "apres": "clé \"effectif\"",
+    "raison": "formulation épicène ; même question. Date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q04",
+   "origine": "Dictionnaires Q4",
+   "nom": "[Dictionnaires] Compter les clés avec len",
+   "objectif": "Savoir que len compte les couples clé : valeur.",
+   "enonce": [
+    "Nassim compte les poissons vus dans le lagon :"
+   ],
+   "code": [
+    "p = {\"murene\": 2, \"perroquet\": 5, \"merou\": 1}"
+   ],
+   "question": [
+    "Que renvoie len(p) ?"
+   ],
+   "options": [
+    {
+     "texte": "8",
+     "feedback": "8 est la somme des valeurs (2 + 5 + 1). len ne fait pas de somme : il compte les couples clé : valeur."
+    },
+    {
+     "texte": "3",
+     "feedback": "Oui : le dictionnaire a 3 clés, donc 3 couples. len(p) vaut 3.",
+     "juste": true
+    },
+    {
+     "texte": "6",
+     "feedback": "len ne compte pas les clés et les valeurs séparément : un couple clé : valeur compte pour 1."
+    },
+    {
+     "texte": "1",
+     "feedback": "Le dictionnaire contient 3 éléments, pas un seul : chaque couple clé : valeur compte."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(len(p))"
+     ],
+     "sortie": "3"
+    }
+   ],
+   "fond": {
+    "avant": "énoncé avec « En 1956, IBM crée le RAMAC 305 »",
+    "apres": "énoncé sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé, sans lien avec la question."
+   }
+  },
+  {
+   "id": "q05",
+   "origine": "Dictionnaires Q5",
+   "nom": "[Dictionnaires] Tester une clé avec in",
+   "objectif": "Savoir que in cherche parmi les clés, pas parmi les valeurs.",
+   "enonce": [
+    "Sitti suit les pontes de tortues sur deux plages :"
+   ],
+   "code": [
+    "sites = {\"Moya\": 12, \"Saziley\": 8}"
+   ],
+   "question": [
+    "Quelle expression vaut True ?"
+   ],
+   "options": [
+    {
+     "texte": "12 in sites",
+     "feedback": "in cherche parmi les clés, pas parmi les valeurs : 12 est une valeur. 12 in sites vaut False."
+    },
+    {
+     "texte": "\"Moya\" == sites",
+     "feedback": "On compare ici un texte et tout le dictionnaire : ils sont différents, cela vaut False. Pour tester une clé, on écrit in."
+    },
+    {
+     "texte": "\"Saziley\" in sites",
+     "feedback": "Oui : \"Saziley\" est une clé du dictionnaire. in teste la présence d'une clé.",
+     "juste": true
+    },
+    {
+     "texte": "\"Boueni\" in sites",
+     "feedback": "\"Boueni\" n'est pas une clé de ce dictionnaire : l'expression vaut False."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(12 in sites, \"Moya\" == sites, \"Saziley\" in sites, \"Boueni\" in sites)"
+     ],
+     "sortie": "False False True False"
+    }
+   ],
+   "fond": {
+    "avant": "énoncé avec « En 1969, Arpanet réalise sa première connexion »",
+    "apres": "énoncé sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q06",
+   "origine": "Dictionnaires Q6",
+   "nom": "[Dictionnaires] La méthode keys",
+   "objectif": "Savoir que keys donne les clés d'un dictionnaire.",
+   "code": [
+    "d = {\"A\": 1, \"B\": 2}"
+   ],
+   "question": [
+    "À quoi sert d.keys() ?"
+   ],
+   "options": [
+    {
+     "texte": "Modifier les valeurs du dictionnaire",
+     "feedback": "keys ne modifie rien : elle permet de lire les clés. Pour modifier une valeur, on écrit d[\"A\"] = 5."
+    },
+    {
+     "texte": "Obtenir les valeurs 1 et 2",
+     "feedback": "Les valeurs s'obtiennent avec d.values(). keys (« clés ») donne \"A\" et \"B\"."
+    },
+    {
+     "texte": "Obtenir les clés \"A\" et \"B\"",
+     "feedback": "Oui : print(d.keys()) affiche dict_keys(['A', 'B']). On peut la parcourir avec for, ou en faire une liste avec list(d.keys()).",
+     "juste": true
+    },
+    {
+     "texte": "Supprimer toutes les clés",
+     "feedback": "keys ne supprime rien. Pour vider un dictionnaire, on utilise d.clear() ; pour une seule clé, del d[\"A\"]."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(d.keys())"
+     ],
+     "sortie": "dict_keys(['A', 'B'])"
+    }
+   ],
+   "fond": {
+    "avant": "bonne réponse « Récupérer la liste des étiquettes \"A\" et \"B\" » ; « Python (créé en 1991) »",
+    "apres": "bonne réponse « Obtenir les clés \"A\" et \"B\" »",
+    "raison": "keys ne renvoie pas une liste mais une vue, dict_keys(['A', 'B']) ; « étiquettes » remplacé par « clés », le mot du programme. Date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q07",
+   "origine": "Dictionnaires Q7",
+   "nom": "[Dictionnaires] Obtenir seulement les valeurs",
+   "objectif": "Choisir la méthode qui donne les valeurs d'un dictionnaire.",
+   "enonce": [
+    "Rayanti range des notes :"
+   ],
+   "code": [
+    "notes = {\"Anli\": 15, \"Sitti\": 18}"
+   ],
+   "question": [
+    "Quelle méthode donne seulement 15 et 18 ?"
+   ],
+   "options": [
+    {
+     "texte": "notes.values()",
+     "feedback": "Oui : values (« valeurs ») donne 15 et 18, sans les prénoms.",
+     "juste": true
+    },
+    {
+     "texte": "notes.keys()",
+     "feedback": "keys donne les clés, ici les prénoms \"Anli\" et \"Sitti\"."
+    },
+    {
+     "texte": "notes.items()",
+     "feedback": "items donne les couples (clé, valeur) : (\"Anli\", 15) et (\"Sitti\", 18). On veut les valeurs seules."
+    },
+    {
+     "texte": "notes.content()",
+     "feedback": "content n'existe pas pour un dictionnaire : Python répond AttributeError. La méthode s'appelle values."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(list(notes.values()))"
+     ],
+     "sortie": "[15, 18]"
+    },
+    {
+     "option": "AttributeError",
+     "reprendre_code": false,
+     "code": [
+      "notes = {\"Anli\": 15, \"Sitti\": 18}",
+      "notes.content()"
+     ],
+     "erreur": "AttributeError"
+    }
+   ],
+   "fond": {
+    "avant": "énoncé avec « Le Web a été inventé en 1989 »",
+    "apres": "énoncé sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q08",
+   "origine": "Dictionnaires Q8",
+   "nom": "[Dictionnaires] La méthode items",
+   "objectif": "Savoir que items donne des couples (clé, valeur).",
+   "enonce": [
+    "Houssame range le stock d'un étal du marché :"
+   ],
+   "code": [
+    "stock = {\"mangue\": 40, \"papaye\": 12}"
+   ],
+   "question": [
+    "Que contient chaque élément de stock.items() ?"
+   ],
+   "options": [
+    {
+     "texte": "Seulement la clé",
+     "feedback": "Seulement les clés, c'est keys. items donne la clé et la valeur ensemble."
+    },
+    {
+     "texte": "Seulement la valeur",
+     "feedback": "Seulement les valeurs, c'est values. items donne la clé et la valeur ensemble."
+    },
+    {
+     "texte": "Un tuple (clé, valeur)",
+     "feedback": "Oui : list(stock.items()) vaut [('mangue', 40), ('papaye', 12)]. On l'utilise dans for cle, valeur in stock.items().",
+     "juste": true
+    },
+    {
+     "texte": "Le nombre total d'articles",
+     "feedback": "items ne fait pas de calcul. Pour le total, il faudrait additionner les valeurs, par exemple avec sum(stock.values())."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(list(stock.items()))"
+     ],
+     "sortie": "[('mangue', 40), ('papaye', 12)]"
+    }
+   ],
+   "fond": {
+    "avant": "« un dictionnaire de stock », sans code ; « En 1971, l'Intel 4004 révolutionne l'informatique »",
+    "apres": "le dictionnaire est écrit",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé ; un exemple rend la question concrète."
+   }
+  },
+  {
+   "id": "q09",
+   "origine": "Dictionnaires Q9",
+   "nom": "[Dictionnaires] Modifier une valeur",
+   "objectif": "Remplacer la valeur d'une clé qui existe.",
+   "enonce": [
+    "Zaïnaba note la pluie tombée, en millimètres :"
+   ],
+   "code": [
+    "m = {\"pluie\": 10}"
+   ],
+   "question": [
+    "Quelle instruction remplace 10 par 20 ?"
+   ],
+   "options": [
+    {
+     "texte": "m = 20",
+     "feedback": "Cette instruction remplace tout le dictionnaire par le nombre 20 : la clé \"pluie\" disparaît."
+    },
+    {
+     "texte": "m[\"pluie\"] = 20",
+     "feedback": "Oui : on désigne la valeur par sa clé, entre crochets, et on lui donne la nouvelle valeur.",
+     "juste": true
+    },
+    {
+     "texte": "m{\"pluie\"}: 20",
+     "feedback": "Ce n'est pas une instruction Python : SyntaxError. On lit et on modifie une valeur avec des crochets."
+    },
+    {
+     "texte": "m[20] = \"pluie\"",
+     "feedback": "Cette instruction crée une nouvelle clé 20, de valeur \"pluie\". La clé à modifier est \"pluie\"."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "m[\"pluie\"] = 20",
+      "print(m)"
+     ],
+     "sortie": "{'pluie': 20}"
+    },
+    {
+     "option": "SyntaxError",
+     "reprendre_code": false,
+     "code": [
+      "m = {\"pluie\": 10}",
+      "m{\"pluie\"}: 20"
+     ],
+     "erreur": "SyntaxError"
+    }
+   ],
+   "fond": {
+    "avant": "énoncé avec « Le premier disque dur (1956) pesait plus d'une tonne »",
+    "apres": "énoncé sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q10",
+   "origine": "Dictionnaires Q10",
+   "nom": "[Dictionnaires] Lire une clé absente",
+   "objectif": "Prévoir ce qui se passe quand on lit une clé qui n'existe pas.",
+   "enonce": [
+    "Anli a ce répertoire :"
+   ],
+   "code": [
+    "tel = {\"Papa\": \"0639...\"}",
+    "print(tel[\"Maman\"])"
+   ],
+   "question": [
+    "Que se passe-t-il à l'exécution ?"
+   ],
+   "options": [
+    {
+     "texte": "Python s'arrête sur une erreur KeyError",
+     "feedback": "Oui : Python affiche KeyError: 'Maman', c'est-à-dire « clé 'Maman' introuvable ». Pour éviter l'erreur, on teste d'abord \"Maman\" in tel.",
+     "juste": true
+    },
+    {
+     "texte": "Le programme affiche None",
+     "feedback": "Lire une clé absente avec des crochets ne donne pas None : c'est une erreur. tel.get(\"Maman\") donnerait None."
+    },
+    {
+     "texte": "Le programme affiche 0",
+     "feedback": "Python n'invente pas de valeur : la clé \"Maman\" n'existe pas, il s'arrête sur une KeyError."
+    },
+    {
+     "texte": "Le dictionnaire crée la clé \"Maman\", vide",
+     "feedback": "Lire une clé ne la crée pas. Seule une affectation, tel[\"Maman\"] = …, ajoute une clé."
+    }
+   ],
+   "verifications": [
+    {
+     "message": "KeyError: 'Maman'"
+    }
+   ],
+   "fond": {
+    "avant": "énoncé avec « Arpanet (1969) est l'ancêtre d'Internet »",
+    "apres": "énoncé sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q11",
+   "origine": "Dictionnaires Q11",
+   "nom": "[Dictionnaires] Une liste dans un dictionnaire",
+   "objectif": "Lire un élément d'une liste rangée dans un dictionnaire.",
+   "enonce": [
+    "Faouzia note les scores de deux équipes :"
+   ],
+   "code": [
+    "s = {\"Bleus\": [10, 12], \"Rouges\": [15, 8]}"
+   ],
+   "question": [
+    "Quelle expression donne le score 12 ?"
+   ],
+   "options": [
+    {
+     "texte": "s[\"Bleus\"][0]",
+     "feedback": "s[\"Bleus\"] est la liste [10, 12]. L'indice 0 donne le premier élément, 10. Le score 12 est à l'indice 1."
+    },
+    {
+     "texte": "s[\"Bleus\"][1]",
+     "feedback": "Oui : s[\"Bleus\"] donne la liste [10, 12], puis [1] donne son deuxième élément, 12 (les indices commencent à 0).",
+     "juste": true
+    },
+    {
+     "texte": "s[0][1]",
+     "feedback": "Un dictionnaire ne se lit pas par position : 0 n'est pas une clé, Python répond KeyError: 0."
+    },
+    {
+     "texte": "s[\"Bleus\", 1]",
+     "feedback": "Python chercherait la clé (\"Bleus\", 1), qui n'existe pas : KeyError. On écrit deux paires de crochets, l'une après l'autre."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(s[\"Bleus\"][1], s[\"Bleus\"][0])"
+     ],
+     "sortie": "12 10"
+    },
+    {
+     "option": "KeyError",
+     "reprendre_code": false,
+     "code": [
+      "s = {\"Bleus\": [10, 12], \"Rouges\": [15, 8]}",
+      "s[0][1]"
+     ],
+     "erreur": "KeyError"
+    },
+    {
+     "option": "KeyError",
+     "reprendre_code": false,
+     "code": [
+      "s = {\"Bleus\": [10, 12], \"Rouges\": [15, 8]}",
+      "s[\"Bleus\", 1]"
+     ],
+     "erreur": "KeyError"
+    }
+   ],
+   "fond": {
+    "avant": "clés « Team1 », « Team2 »",
+    "apres": "clés « Bleus », « Rouges »",
+    "raison": "mots anglais remplacés ; même question. Date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q12",
+   "origine": "Dictionnaires Q12",
+   "nom": "[Dictionnaires] Une liste de dictionnaires",
+   "objectif": "Lire une valeur dans une liste de dictionnaires.",
+   "enonce": [
+    "Nassim range des fiches d'élèves dans une liste :"
+   ],
+   "code": [
+    "b = [{\"nom\": \"Anli\", \"age\": 16}, {\"nom\": \"Sitti\", \"age\": 17}]"
+   ],
+   "question": [
+    "Quelle expression donne l'âge de Sitti ?"
+   ],
+   "options": [
+    {
+     "texte": "b[1][\"age\"]",
+     "feedback": "Oui : b est une liste. b[1] est la deuxième fiche, celle de Sitti ; [\"age\"] lit son âge, 17.",
+     "juste": true
+    },
+    {
+     "texte": "b[\"Sitti\"][\"age\"]",
+     "feedback": "b est une liste : elle se lit par un indice entier, pas par un texte (TypeError). \"Sitti\" est une valeur, pas une clé."
+    },
+    {
+     "texte": "b[0][\"age\"]",
+     "feedback": "b[0] est la première fiche, celle d'Anli : on obtiendrait 16."
+    },
+    {
+     "texte": "b[\"age\"][1]",
+     "feedback": "On lit d'abord la liste par un indice, puis le dictionnaire par une clé. b[\"age\"] provoque une TypeError."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(b[1][\"age\"], b[0][\"age\"])"
+     ],
+     "sortie": "17 16"
+    },
+    {
+     "option": "TypeError",
+     "reprendre_code": false,
+     "code": [
+      "b = [{\"nom\": \"Anli\", \"age\": 16}, {\"nom\": \"Sitti\", \"age\": 17}]",
+      "b[\"Sitti\"][\"age\"]"
+     ],
+     "erreur": "TypeError"
+    }
+   ],
+   "fond": {
+    "avant": "énoncé avec « Le Web (1989) utilise souvent des listes d'objets » ; « une base d'élèves »",
+    "apres": "énoncé sans date ; « des fiches d'élèves »",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q13",
+   "origine": "Dictionnaires Q13",
+   "nom": "[Dictionnaires] Un dictionnaire dans un dictionnaire",
+   "objectif": "Modifier une valeur dans un dictionnaire imbriqué.",
+   "enonce": [
+    "Sitti range le prix (en euros) et le stock des fruits de son étal :"
+   ],
+   "code": [
+    "m = {\"mangue\": {\"prix\": 2, \"stock\": 40}}"
+   ],
+   "question": [
+    "Quelle instruction change le stock de mangues en 35 ?"
+   ],
+   "options": [
+    {
+     "texte": "m[\"mangue\"][\"stock\"] = 35",
+     "feedback": "Oui : m[\"mangue\"] donne le dictionnaire intérieur, et [\"stock\"] désigne la valeur à changer.",
+     "juste": true
+    },
+    {
+     "texte": "m[\"stock\"] = 35",
+     "feedback": "\"stock\" n'est pas une clé de m : cette instruction ajouterait une nouvelle clé \"stock\" à côté de \"mangue\"."
+    },
+    {
+     "texte": "m[\"mangue\"] = 35",
+     "feedback": "Le dictionnaire intérieur serait remplacé par 35 : le prix et le stock seraient perdus."
+    },
+    {
+     "texte": "m[0][1] = 35",
+     "feedback": "Un dictionnaire ne se lit pas par position : 0 n'est pas une clé, Python répond KeyError: 0."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "m[\"mangue\"][\"stock\"] = 35",
+      "print(m)"
+     ],
+     "sortie": "{'mangue': {'prix': 2, 'stock': 35}}"
+    },
+    {
+     "option": "KeyError",
+     "reprendre_code": false,
+     "code": [
+      "m = {\"mangue\": {\"prix\": 2, \"stock\": 40}}",
+      "m[0][1] = 35"
+     ],
+     "erreur": "KeyError"
+    }
+   ],
+   "fond": {
+    "avant": "p = {\"4004\": {\"bits\": 4, \"annee\": 1971}}, « puces mémoires », « modifier l'année à 1972 »",
+    "apres": "m = {\"mangue\": {\"prix\": 2, \"stock\": 40}}, « changer le stock en 35 »",
+    "raison": "la donnée devenait fausse (le 4004 date de 1971) et le 4004 est un microprocesseur, pas une puce mémoire. Même question : deux clés à la suite."
+   }
+  },
+  {
+   "id": "q14",
+   "origine": "Dictionnaires Q14",
+   "nom": "[Dictionnaires] Ajouter à une valeur",
+   "objectif": "Modifier une valeur à partir de l'ancienne, dans une liste de dictionnaires.",
+   "enonce": [
+    "Kamel suit les recettes de deux taxis, en euros :"
+   ],
+   "code": [
+    "g = [{\"id\": \"T1\", \"total\": 100}, {\"id\": \"T2\", \"total\": 50}]"
+   ],
+   "question": [
+    "Il veut ajouter 20 € à la recette du taxi T1. Quelle instruction est correcte ?"
+   ],
+   "options": [
+    {
+     "texte": "g[0][\"total\"] = g[0][\"total\"] + 20",
+     "feedback": "Oui : g[0] est la fiche du taxi T1. On lit son total, on ajoute 20, et on range le résultat au même endroit : 120.",
+     "juste": true
+    },
+    {
+     "texte": "g[\"T1\"] = 120",
+     "feedback": "g est une liste : elle se lit par un indice entier. \"T1\" est une valeur, pas une clé : TypeError."
+    },
+    {
+     "texte": "g[0] = 120",
+     "feedback": "Toute la fiche du taxi T1 serait remplacée par le nombre 120 : l'identifiant serait perdu."
+    },
+    {
+     "texte": "g[1][\"total\"] = 120",
+     "feedback": "g[1] est le deuxième taxi, T2. Les indices commencent à 0 : T1 est g[0]."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "g[0][\"total\"] = g[0][\"total\"] + 20",
+      "print(g[0])"
+     ],
+     "sortie": "{'id': 'T1', 'total': 120}"
+    },
+    {
+     "option": "TypeError",
+     "reprendre_code": false,
+     "code": [
+      "g = [{\"id\": \"T1\", \"total\": 100}, {\"id\": \"T2\", \"total\": 50}]",
+      "g[\"T1\"] = 120"
+     ],
+     "erreur": "TypeError"
+    }
+   ],
+   "fond": {
+    "avant": "« les gains des taxis-be », « 20€ »",
+    "apres": "« les recettes de deux taxis », « 20 € »",
+    "raison": "taxi-be est un mot de Madagascar. Même question."
+   }
+  },
+  {
+   "id": "q15",
+   "origine": "Dictionnaires Q15",
+   "nom": "[Dictionnaires] La méthode get et sa valeur par défaut",
+   "objectif": "Lire une clé sans risque d'erreur avec get.",
+   "enonce": [
+    "La méthode d.get(cle, defaut) renvoie la valeur de la clé si elle existe ; sinon, elle renvoie defaut."
+   ],
+   "code": [
+    "stock = {\"livre\": 5}"
+   ],
+   "question": [
+    "Que renvoie stock.get(\"stylo\", 0) ?"
+   ],
+   "options": [
+    {
+     "texte": "None",
+     "feedback": "get renvoie None quand on ne donne pas de valeur par défaut. Ici, on a donné 0."
+    },
+    {
+     "texte": "Une erreur KeyError",
+     "feedback": "Justement, get évite la KeyError : si la clé manque, il renvoie la valeur par défaut."
+    },
+    {
+     "texte": "0",
+     "feedback": "Oui : \"stylo\" n'est pas une clé ; get renvoie la valeur par défaut, 0.",
+     "juste": true
+    },
+    {
+     "texte": "5",
+     "feedback": "5 est la valeur de la clé \"livre\". La clé demandée, \"stylo\", n'existe pas."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(stock.get(\"stylo\", 0), stock.get(\"stylo\"))"
+     ],
+     "sortie": "0 None"
+    }
+   ],
+   "fond": {
+    "avant": "nom « get() et Arpanet 1969 »",
+    "apres": "nom sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q16",
+   "origine": "Dictionnaires Q16",
+   "nom": "[Dictionnaires] Supprimer une clé avec del",
+   "objectif": "Prévoir la taille d'un dictionnaire après un del.",
+   "code": [
+    "d = {\"A\": 1, \"B\": 2, \"C\": 3}",
+    "del d[\"B\"]"
+   ],
+   "question": [
+    "Que vaut len(d) après ces deux lignes ?"
+   ],
+   "options": [
+    {
+     "texte": "3",
+     "feedback": "del d[\"B\"] retire bien le couple \"B\": 2 : il en reste deux."
+    },
+    {
+     "texte": "2",
+     "feedback": "Oui : del retire la clé \"B\" et sa valeur. Il reste \"A\" et \"C\" : len(d) vaut 2.",
+     "juste": true
+    },
+    {
+     "texte": "1",
+     "feedback": "del ne retire qu'une clé : celle qui est entre crochets, \"B\". Il en reste deux."
+    },
+    {
+     "texte": "0",
+     "feedback": "del d[\"B\"] ne vide pas le dictionnaire : il retire seulement la clé \"B\"."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(len(d), d)"
+     ],
+     "sortie": "2 {'A': 1, 'C': 3}"
+    }
+   ],
+   "fond": {
+    "avant": "nom « del et Python 1991 »",
+    "apres": "nom sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q17",
+   "origine": "Dictionnaires Q17",
+   "nom": "[Dictionnaires] Parcourir les clés avec for",
+   "objectif": "Suivre une boucle for sur les clés d'un dictionnaire.",
+   "enonce": [
+    "Zaïnaba exécute ce programme :"
+   ],
+   "code": [
+    "d = {\"pomme\": 2, \"mangue\": 3}",
+    "s = 0",
+    "for k in d:",
+    "    s = s + d[k]"
+   ],
+   "question": [
+    "Que vaut s à la fin ?"
+   ],
+   "options": [
+    {
+     "texte": "2",
+     "feedback": "La boucle passe par toutes les clés, pas seulement la première : elle ajoute 2, puis 3."
+    },
+    {
+     "texte": "3",
+     "feedback": "La boucle commence par la clé \"pomme\" et ajoute aussi sa valeur, 2 : 2 + 3 = 5."
+    },
+    {
+     "texte": "5",
+     "feedback": "Oui : for k in d parcourt les clés. s reçoit d[\"pomme\"] = 2, puis d[\"mangue\"] = 3 : 0 + 2 + 3 = 5.",
+     "juste": true
+    },
+    {
+     "texte": "0",
+     "feedback": "s change à chaque tour de boucle : s = s + d[k] lui ajoute une valeur."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(s)"
+     ],
+     "sortie": "5"
+    },
+    {
+     "option": "SyntaxError",
+     "reprendre_code": false,
+     "code": [
+      "d = {\"pomme\": 2, \"mangue\": 3}; s = 0; for k in d: s = s + d[k]"
+     ],
+     "erreur": "SyntaxError"
+    }
+   ],
+   "fond": {
+    "avant": "code écrit sur une seule ligne : d = {…}; s = 0; for k in d: s = s + d[k]",
+    "apres": "code écrit sur quatre lignes, la boucle indentée",
+    "raison": "sur une ligne, le code provoque une SyntaxError (une boucle ne peut pas suivre un point-virgule) : aucune option n'était juste."
+   }
+  },
+  {
+   "id": "q18",
+   "origine": "Dictionnaires Q18",
+   "nom": "[Dictionnaires] Un dictionnaire de listes",
+   "objectif": "Lire une liste rangée dans un dictionnaire.",
+   "enonce": [
+    "Sur une carte simplifiée, un dictionnaire associe à chaque village la liste des villages reliés directement par une route :"
+   ],
+   "code": [
+    "G = {\"Sada\": [\"Chiconi\", \"Ouangani\"], \"Chiconi\": [\"Sada\"]}"
+   ],
+   "question": [
+    "Quels villages sont reliés directement à Sada ?"
+   ],
+   "options": [
+    {
+     "texte": "Chiconi et Ouangani",
+     "feedback": "Oui : G[\"Sada\"] est la liste [\"Chiconi\", \"Ouangani\"] : ce sont les deux villages reliés à Sada.",
+     "juste": true
+    },
+    {
+     "texte": "Seulement Chiconi",
+     "feedback": "G[\"Sada\"] contient deux villages : Chiconi et Ouangani. Tu as peut-être lu seulement le premier élément de la liste."
+    },
+    {
+     "texte": "Seulement Ouangani",
+     "feedback": "G[\"Sada\"] contient deux villages. Chiconi est le premier de la liste."
+    },
+    {
+     "texte": "Aucun village",
+     "feedback": "La clé \"Sada\" existe, et sa valeur est une liste de deux villages."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(G[\"Sada\"])"
+     ],
+     "sortie": "['Chiconi', 'Ouangani']"
+    }
+   ],
+   "fond": {
+    "avant": "« Un dictionnaire d'adjacence représente les routes entre villages »",
+    "apres": "« Sur une carte simplifiée, un dictionnaire associe à chaque village la liste des villages reliés »",
+    "raison": "« dictionnaire d'adjacence » est un mot de terminale (graphes) ; « carte simplifiée » évite d'affirmer une route réelle. Même question."
+   }
+  },
+  {
+   "id": "q19",
+   "origine": "Dictionnaires Q19",
+   "nom": "[Dictionnaires] Des clés qui sont des nombres",
+   "objectif": "Savoir qu'une clé peut être un nombre, et que 2 et \"2\" sont deux clés différentes.",
+   "enonce": [
+    "Faouzia associe à chaque pièce de monnaie son nom :"
+   ],
+   "code": [
+    "pieces = {2: \"2 euros\", 1: \"1 euro\"}"
+   ],
+   "question": [
+    "Quelle expression donne le nom de la pièce de valeur 2 ?"
+   ],
+   "options": [
+    {
+     "texte": "pieces[2]",
+     "feedback": "Oui : la clé est le nombre 2, écrit sans guillemets. pieces[2] vaut \"2 euros\".",
+     "juste": true
+    },
+    {
+     "texte": "pieces[\"2\"]",
+     "feedback": "\"2\" est un texte, et 2 est un nombre : ce sont deux clés différentes. Python répond KeyError: '2'."
+    },
+    {
+     "texte": "pieces[0]",
+     "feedback": "0 n'est pas une position ici : c'est une clé, et elle n'existe pas (KeyError). Les clés sont 2 et 1."
+    },
+    {
+     "texte": "pieces.value(2)",
+     "feedback": "value n'existe pas pour un dictionnaire (AttributeError). On lit une valeur avec des crochets et la clé."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(pieces[2])"
+     ],
+     "sortie": "2 euros"
+    },
+    {
+     "option": "KeyError",
+     "reprendre_code": false,
+     "code": [
+      "pieces = {2: \"2 euros\", 1: \"1 euro\"}",
+      "pieces[\"2\"]"
+     ],
+     "erreur": "KeyError"
+    },
+    {
+     "option": "AttributeError",
+     "reprendre_code": false,
+     "code": [
+      "pieces = {2: \"2 euros\", 1: \"1 euro\"}",
+      "pieces.value(2)"
+     ],
+     "erreur": "AttributeError"
+    }
+   ],
+   "fond": {
+    "avant": "« 2 Euros », « 1 Euro »",
+    "apres": "« 2 euros », « 1 euro »",
+    "raison": "typographie (euro est un nom commun). Date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  },
+  {
+   "id": "q20",
+   "origine": "Dictionnaires Q20",
+   "nom": "[Dictionnaires] Modifier, puis ajouter",
+   "objectif": "Prévoir un dictionnaire après une modification et un ajout.",
+   "enonce": [
+    "Nassim exécute ce programme :"
+   ],
+   "code": [
+    "d = {\"A\": 10}",
+    "d[\"A\"] = 15",
+    "d[\"B\"] = 20"
+   ],
+   "question": [
+    "Que contient d à la fin ?"
+   ],
+   "options": [
+    {
+     "texte": "{\"A\": 15, \"B\": 20}",
+     "feedback": "Oui : d[\"A\"] = 15 remplace 10 par 15 ; d[\"B\"] = 20 ajoute une nouvelle clé.",
+     "juste": true
+    },
+    {
+     "texte": "{\"A\": 10, \"B\": 20}",
+     "feedback": "d[\"A\"] = 15 remplace la valeur de \"A\" : 10 n'existe plus."
+    },
+    {
+     "texte": "{\"A\": 15}",
+     "feedback": "d[\"B\"] = 20 ajoute une clé : dans un dictionnaire, affecter une clé absente la crée."
+    },
+    {
+     "texte": "{\"A\": 25, \"B\": 20}",
+     "feedback": "d[\"A\"] = 15 remplace la valeur, il n'ajoute pas : \"A\" vaut 15, pas 10 + 15."
+    }
+   ],
+   "verifications": [
+    {
+     "code": [
+      "print(d)"
+     ],
+     "sortie": "{'A': 15, 'B': 20}"
+    }
+   ],
+   "fond": {
+    "avant": "nom « Analyse finale et 1969 »",
+    "apres": "nom sans date",
+    "raison": "date de l'histoire de l'informatique retirée de l'énoncé."
+   }
+  }
+ ]
+}
