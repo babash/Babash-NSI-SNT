@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les boucles : TD en ligne</title>
+  <meta name="description" content="TD auto-correctif sur les boucles for et while (SNT, début de 1re NSI). Page de démonstration du moteur des TD en ligne.">
+  <meta name="robots" content="noindex">
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="../../assets/td-en-ligne.css">
+  <script src="../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<main class="td" data-td="pilote-boucles" data-td-version="1">
+
+  <header class="td-entete">
+    <p class="td-sur-titre">SNT · Début de 1re NSI · Programmer en Python</p>
+    <h1>Les boucles <code>for</code> et <code>while</code></h1>
+    <p class="td-objectif"><b>Objectif :</b> lire et écrire une boucle qui répète des instructions.</p>
+    <p><b>Je sais :</b></p>
+    <ul class="td-criteres">
+      <li>dire quelles valeurs prend la variable dans <code>range(début, fin, pas)</code> ;</li>
+      <li>prévoir ce qu'affiche une boucle <code>for</code> ou <code>while</code> ;</li>
+      <li>lire un message d'erreur de Python et corriger la ligne ;</li>
+      <li>choisir entre <code>for</code> et <code>while</code>.</li>
+    </ul>
+    <p class="td-duree">45 minutes · 11 questions et 1 bonus ★ · seul·e ou en binôme</p>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">1. La boucle <code>for</code> : répéter un nombre de fois connu</h2>
+
+  <section class="td-q" data-type="sortie" id="q1">
+    <p class="td-consigne">Qu'affiche ce programme ?</p>
+    <pre class="td-code">
+for i in range(3):
+    print("Barge", i)</pre>
+    <pre class="td-attendu">
+Barge 0
+Barge 1
+Barge 2</pre>
+    <p class="td-retour" data-si="Barge 1 Barge 2 Barge 3">Attention : <code>range(3)</code> commence à 0.</p>
+    <p class="td-aide"><code>range(3)</code> donne 3 valeurs, en commençant à 0.</p>
+    <p class="td-aide">La variable <code>i</code> vaut 0, puis 1, puis 2. À chaque tour, on affiche « Barge » suivi de la valeur de <code>i</code>.</p>
+    <div class="td-correction">
+      <p><code>range(3)</code> donne 0, 1 et 2 : la boucle fait 3 tours. La fin (3) est exclue.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q2">
+    <p class="td-consigne">Dans cet exercice, la barge part à 6 h, puis toutes les 4 heures, avant 18 h.</p>
+    <pre class="td-code">
+for heure in range(6, 18, 4):
+    print(heure)</pre>
+    <p>Quelles valeurs prend <code>heure</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>6, 10, 14</li>
+      <li data-retour="La fin de range est exclue : 18 n'est jamais atteint.">6, 10, 14, 18</li>
+      <li data-retour="Les trois nombres de range ne sont pas les valeurs : ce sont le début, la fin et le pas.">6, 18, 4</li>
+      <li data-retour="On commence au début : la première valeur est 6.">10, 14, 18</li>
+    </ul>
+    <p class="td-aide">Dans <code>range(début, fin, pas)</code>, on part du début et on ajoute le pas à chaque tour.</p>
+    <p class="td-aide">La fin est exclue : on s'arrête avant d'atteindre 18.</p>
+    <div class="td-correction">
+      <p>On part de 6, on ajoute 4 : 6, 10, 14. La valeur suivante serait 18, mais la fin est exclue.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-reponse="60" data-verifier="sortie">
+    <p class="td-consigne">Chaque jour, on cueille 12 mangues pour le marché. Qu'affiche ce programme ?</p>
+    <pre class="td-code">
+total = 0
+for jour in range(5):
+    total = total + 12
+print(total)</pre>
+    <p class="td-retour" data-si="72">La boucle fait 5 tours, pas 6 : <code>range(5)</code> donne 0, 1, 2, 3, 4.</p>
+    <p class="td-retour" data-si="12">La variable <code>total</code> garde sa valeur d'un tour à l'autre : elle augmente de 12 à chaque tour.</p>
+    <p class="td-aide">Combien de tours fait la boucle ? Compte les valeurs de <code>range(5)</code>.</p>
+    <p class="td-aide">Fais un tableau : avant la boucle, <code>total</code> vaut 0 ; après le 1er tour, 12 ; après le 2e tour, 24…</p>
+    <div class="td-correction">
+      <p>5 tours, et on ajoute 12 à chaque tour : 0 + 12 × 5 = <b>60</b>. La variable <code>total</code> est un <b>accumulateur</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne">Au marché, les étals sont numérotés de 1 à 10. Complète le programme pour afficher les numéros de 1 à 10.</p>
+    <pre class="td-code">
+for n in range([[1]], [[11]]):
+    print(n)</pre>
+    <pre class="td-attendu">
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10</pre>
+    <p class="td-aide">On commence à 1 : c'est le premier nombre de <code>range</code>.</p>
+    <p class="td-aide">La fin est exclue : pour afficher 10, il faut s'arrêter juste après.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+for n in range(1, 11):
+    print(n)</pre>
+      <p><code>range(1, 11)</code> donne 1, 2, …, 10 : la fin 11 est exclue.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="ordre" id="q5">
+    <p class="td-consigne">Remets les lignes dans l'ordre pour calculer 1 + 2 + 3 + 4 + 5, puis afficher le résultat (15).</p>
+    <ol class="td-lignes">
+      <li>somme = 0</li>
+      <li>for k in range(1, 6):</li>
+      <li>    somme = somme + k</li>
+      <li>print(somme)</li>
+    </ol>
+    <pre class="td-attendu">
+15</pre>
+    <p class="td-aide">L'accumulateur doit valoir 0 <b>avant</b> la boucle.</p>
+    <p class="td-aide">La ligne décalée est celle qui est répétée. On affiche le résultat une seule fois, à la fin.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+somme = 0
+for k in range(1, 6):
+    somme = somme + k
+print(somme)</pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="erreur" id="q6" data-fichier="marees.py" data-ligne="1" data-reponse="for i in range(3):">
+    <p class="td-consigne">Ce programme ne se lance pas. Trouve l'erreur.</p>
+    <pre class="td-code">
+for i in range(3)
+    print("Marée haute")</pre>
+    <pre class="td-erreur">
+  File "marees.py", line 1
+    for i in range(3)
+                     ^
+SyntaxError: expected ':'</pre>
+    <p class="td-aide">Lis la dernière ligne du message : <code>expected</code> veut dire « attendu ». Qu'est-ce qui est attendu ?</p>
+    <p class="td-aide">Les <code>^</code> montrent l'endroit : à la fin de la ligne 1.</p>
+    <div class="td-correction">
+      <p>Il manque les deux-points à la fin de la ligne 1 : <code>for i in range(3):</code></p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">2. La boucle <code>while</code> : répéter tant que…</h2>
+
+  <section class="td-q" data-type="sortie" id="q7">
+    <p class="td-consigne">La marée monte. Qu'affiche ce programme ?</p>
+    <pre class="td-code">
+hauteur = 1
+while hauteur &lt; 4:
+    print("Marée :", hauteur, "m")
+    hauteur = hauteur + 1
+print("Fin :", hauteur, "m")</pre>
+    <pre class="td-attendu">
+Marée : 1 m
+Marée : 2 m
+Marée : 3 m
+Fin : 4 m</pre>
+    <p class="td-aide">Avant chaque tour, Python teste la condition <code>hauteur &lt; 4</code>. Si elle est fausse, il sort de la boucle.</p>
+    <p class="td-aide">Quand <code>hauteur</code> vaut 4, la condition est fausse : on sort, puis on exécute la dernière ligne.</p>
+    <div class="td-correction">
+      <p>La boucle tourne pour 1, 2 et 3. Avec 4, la condition <code>4 &lt; 4</code> est fausse : on sort et on affiche « Fin : 4 m ».</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q8">
+    <p class="td-consigne">Coche les boucles qui s'arrêtent.</p>
+    <ul class="td-options">
+      <li data-juste data-verifier="arret"><pre class="td-code">
+n = 10
+while n &gt; 0:
+    n = n - 2</pre></li>
+      <li data-verifier="infini" data-retour="Celle-ci ne s'arrête pas : n vaut 1, 3, 5, 7, 9, 11… et n'est jamais égal à 10."><pre class="td-code">
+n = 1
+while n != 10:
+    n = n + 2</pre></li>
+      <li data-verifier="infini" data-retour="Celle-ci ne s'arrête pas : n n'est jamais modifié dans la boucle, la condition reste vraie."><pre class="td-code">
+n = 0
+while n &lt; 5:
+    print(n)</pre></li>
+      <li data-juste data-verifier="arret"><pre class="td-code">
+n = 100
+while n &gt; 1:
+    n = n // 2</pre></li>
+    </ul>
+    <p class="td-aide">Pour chaque boucle, écris les valeurs successives de <code>n</code>.</p>
+    <p class="td-aide">Une boucle <code>while</code> s'arrête si sa condition finit par devenir fausse. Il faut donc que <code>n</code> change, et dans le bon sens.</p>
+    <div class="td-correction">
+      <p>La 1re s'arrête (10, 8, 6, 4, 2, 0). La 4e aussi (100, 50, 25, 12, 6, 3, 1). La 2e saute 10 (… 9, 11…). La 3e ne change jamais <code>n</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="erreur" id="q9" data-fichier="taxi.py" data-ligne="3" data-reponse="attente = attente + 10">
+    <p class="td-consigne">Le taxi attend d'être plein. Ce programme s'arrête avec une erreur. Trouve-la.</p>
+    <pre class="td-code">
+attente = 0
+while attente &lt; 30:
+    attente = atente + 10
+print("Le taxi part après", attente, "minutes")</pre>
+    <pre class="td-erreur">
+Traceback (most recent call last):
+  File "taxi.py", line 3, in &lt;module&gt;
+    attente = atente + 10
+              ^^^^^^
+NameError: name 'atente' is not defined. Did you mean: 'attente'?</pre>
+    <p class="td-aide">Le message donne la ligne, puis le type d'erreur : <code>NameError</code>, une erreur de nom.</p>
+    <p class="td-aide"><code>Did you mean</code> veut dire « voulais-tu dire ». Python te propose le bon nom.</p>
+    <div class="td-correction">
+      <p>Ligne 3, le nom de la variable est mal écrit : <code>attente = attente + 10</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q10" data-reponse="40" data-verifier="sortie">
+    <p class="td-consigne">Dans le bouchon jusqu'à Mamoudzou, on avance de 3 km toutes les 10 minutes. Qu'affiche ce programme ?</p>
+    <pre class="td-code">
+distance = 12   # km jusqu'à Mamoudzou
+minutes = 0
+while distance &gt; 0:
+    distance = distance - 3
+    minutes = minutes + 10
+print(minutes)</pre>
+    <p class="td-retour" data-si="30">Il manque un tour : quand <code>distance</code> vaut 3, la condition <code>3 &gt; 0</code> est encore vraie.</p>
+    <p class="td-retour" data-si="50">Un tour de trop : quand <code>distance</code> vaut 0, la condition <code>0 &gt; 0</code> est fausse.</p>
+    <p class="td-aide">Fais un tableau avec deux colonnes : <code>distance</code> et <code>minutes</code>.</p>
+    <p class="td-aide">La distance passe par 12, 9, 6, 3, 0. Combien de tours ?</p>
+    <div class="td-correction">
+      <p>4 tours (12 → 9 → 6 → 3 → 0), donc 4 × 10 = <b>40</b> minutes.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. Choisir sa boucle</h2>
+
+  <section class="td-q" data-type="qcu" id="q11">
+    <p class="td-consigne">Au marché, Naïma remplit un panier de mangues jusqu'à ce qu'il pèse au moins 5 kg. Les mangues n'ont pas toutes le même poids. Quelle boucle choisir ?</p>
+    <ul class="td-options">
+      <li data-juste>Une boucle <code>while</code> : on répète tant que le panier pèse moins de 5 kg.</li>
+      <li data-retour="On ne sait pas d'avance combien de mangues il faudra : on ne peut pas choisir le nombre de tours.">Une boucle <code>for i in range(5)</code> : une mangue par kilo.</li>
+      <li data-retour="Une boucle for marche bien quand on connaît le nombre de tours. Ici, on ne le connaît pas.">Une boucle <code>for</code>, car c'est toujours la plus simple.</li>
+      <li data-retour="Une boucle est utile ici : on répète « ajouter une mangue ».">Aucune boucle : on ne peut pas le programmer.</li>
+    </ul>
+    <p class="td-aide">Connaît-on à l'avance le nombre de mangues ?</p>
+    <div class="td-correction">
+      <p><code>for</code> : on connaît le nombre de tours. <code>while</code> : on répète tant qu'une condition est vraie, sans savoir combien de tours.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q12" data-fichier="depart.py">
+    <p class="td-consigne">Écris un programme qui affiche le compte à rebours de la barge : 5, 4, 3, 2, 1 (un nombre par ligne), puis « Départ ! ».</p>
+    <pre class="td-depart">
+# Compte à rebours de la barge
+</pre>
+    <pre class="td-attendu">
+5
+4
+3
+2
+1
+Départ !</pre>
+    <p class="td-aide">Avec <code>while</code> : une variable qui part de 5 et diminue de 1 à chaque tour, tant qu'elle est plus grande que 0.</p>
+    <p class="td-aide">Avec <code>for</code> : <code>range(5, 0, -1)</code> donne 5, 4, 3, 2, 1. « Départ ! » s'affiche après la boucle, sans décalage.</p>
+    <div class="td-correction">
+      <p>Deux façons justes :</p>
+      <pre class="td-code" data-verifier="correction">
+compte = 5
+while compte &gt; 0:
+    print(compte)
+    compte = compte - 1
+print("Départ !")</pre>
+      <pre class="td-code" data-verifier="correction">
+for compte in range(5, 0, -1):
+    print(compte)
+print("Départ !")</pre>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><code>for i in range(n):</code> répète <b>n fois</b> ; <code>i</code> vaut 0, 1, …, n − 1. <code>range(début, fin, pas)</code> : la fin est exclue.</p>
+    <p><code>while condition:</code> répète <b>tant que</b> la condition est vraie. Dans la boucle, une variable doit changer, sinon la boucle ne s'arrête jamais.</p>
+    <p>Le bloc répété est <b>décalé</b> de 4 espaces, après une ligne qui finit par <code>:</code>.</p>
+  </section>
+
+  <footer class="td-pied">
+    <p>Page de démonstration du moteur des TD en ligne. Elle n'est pas dans la bibliothèque.</p>
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/charte/td-pilote">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
