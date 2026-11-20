@@ -1,7 +1,7 @@
-# Essai ponctuel (T91, T93, T93b, T93c, T93d), sur cette branche seulement : jamais fusionnée dans main.
-# T93d : https://babash.github.io/QuizzNSI/ sert les fichiers de main (a99f727), avec les phrases justes
-# sur les données ; l'ancienne adresse redirige toujours.
-name: Essai QuizzNSI T93d (fichiers servis de main, phrases sur les données)
+# Essai ponctuel (T42, bascule de Lagon Arena), sur cette branche seulement : jamais fusionnée dans main.
+# Les fichiers servis par https://babash.github.io/lagon-arena/ sont ceux de main (f629b0a) ; la page
+# vise la base unique ; UN seul appel à la base, en lecture et sans donnée d'élève : lagon_heure_serveur.
+name: Essai Lagon Arena T42 (fichiers servis, base unique)
 on:
   push:
     branches: [gardien/t91-essai-temps-reel]
@@ -10,28 +10,27 @@ permissions:
 jobs:
   essai:
     runs-on: ubuntu-26.04
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
-      - name: Fichiers servis identiques à main (babash/QuizzNSI, a99f727)
+      - name: Fichiers servis identiques à main (babash/lagon-arena, f629b0a)
         run: |
-          git clone --quiet https://github.com/babash/QuizzNSI /tmp/quizznsi
-          cd /tmp/quizznsi && git checkout --quiet a99f727a48a8 && echo "commit attendu : $(git rev-parse HEAD) ; main : $(git rev-parse origin/main)"
+          git clone --quiet https://github.com/babash/lagon-arena /tmp/lagon
+          cd /tmp/lagon && git checkout --quiet f629b0a1c8c9 && echo "commit attendu : $(git rev-parse HEAD) ; main : $(git rev-parse origin/main)"
           total=0; pareils=0; ecarts=0
-          for f in $(git ls-files | grep -v -E '(^|/)[.]'); do
+          for f in $(git ls-files | grep -v -E '(^|/)[.]' | grep -E '\.(html|js|css|json|svg|md)$'); do
             total=$((total+1)); ok=0
-            for essai in 1 2 3 4; do
-              if curl -fsS -o /tmp/servi "https://babash.github.io/QuizzNSI/$f" && cmp -s /tmp/servi "$f"; then ok=1; break; fi
+            for essai in 1 2 3; do
+              if curl -fsS -o /tmp/servi "https://babash.github.io/lagon-arena/$f" && cmp -s /tmp/servi "$f"; then ok=1; break; fi
               sleep 8
             done
             if [ "$ok" = 1 ]; then pareils=$((pareils+1)); else ecarts=$((ecarts+1)); echo "DIFFÉRENT ou absent : $f"; fi
           done
-          echo "$pareils fichier(s) servi(s) identique(s) à a99f727 sur $total (fichiers commençant par un point exclus) ; $ecarts écart(s)"
-          curl -fsS https://babash.github.io/QuizzNSI/ | grep -o "effacés à la fin de la séance (et sinon au premier chargement d'une page de QuizzNSI après 12 heures)" | head -1
-          curl -fsS https://babash.github.io/QuizzNSI/rejoindre.html | grep -o "puis effacés à la fin (sinon, à ta première visite de QuizzNSI après 12 heures)" | head -1
+          echo "$pareils fichier(s) servi(s) identique(s) à f629b0a sur $total ; $ecarts écart(s)"
+          curl -fsS https://babash.github.io/lagon-arena/js/config.js | grep -o 'https://[a-z]*\.supabase\.co' | sort -u
           [ "$ecarts" -eq 0 ]
-      - name: L'ancienne adresse redirige toujours
+      - name: Un seul appel à la base, sans donnée d'élève (lagon_heure_serveur)
         run: |
-          for p in "" "rejoindre.html?s=ABCD"; do
-            curl -fsS -o /tmp/p "https://babash.github.io/Babash-NSI-SNT/nsi-terminale/fichiers/quizz-nsi/$p"
-            grep -q "location.replace('https://babash.github.io/QuizzNSI/" /tmp/p && echo "redirection présente : ${p:-(dossier)}"
-          done
+          CLE=$(curl -fsS https://babash.github.io/lagon-arena/js/config.js | grep -o 'sb_publishable_[A-Za-z0-9_-]*' | head -1)
+          code=$(curl -sS -o /tmp/heure -w '%{http_code}' -X POST https://cukahpyqkljiddmimpyi.supabase.co/rest/v1/rpc/lagon_heure_serveur -H "apikey: $CLE" -H 'Content-Type: application/json' -d '{}')
+          echo "lagon_heure_serveur : HTTP $code ; réponse : $(head -c 60 /tmp/heure)"
+          [ "$code" = "200" ]
