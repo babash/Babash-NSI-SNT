@@ -13,16 +13,23 @@ Chaque quiz suit la règle 22 de la philosophie éducative :
 
 | Niveau | Fichier à importer | Questions | Aperçu de relecture |
 |---|---|---|---|
+| Seconde (SNT) | `snt/snt-pixels-couleurs.xml` | 19 | `snt-pixels-couleurs.html` |
 | Première | `nsi-premiere/nsi1-bases-2-et-16.xml` | 21 (QCU, choix multiples, réponses courtes et numériques, textes à trous, appariements) | `nsi1-bases-2-et-16.html` |
+| Première | `nsi-premiere/nsi1-conditions-1.xml` (if, elif, else) | 21 | `nsi1-conditions-1.html` |
+| Première | `nsi-premiere/nsi1-conditions-2.xml` (blocs imbriqués et erreurs) | 17 | `nsi1-conditions-2.html` |
 | Première | `nsi-premiere/nsi1-cout-1-compter.xml` | 20 | `nsi1-cout-1-compter.html` |
 | Première | `nsi-premiere/nsi1-cout-2-ordres-de-grandeur.xml` | 20 | `nsi1-cout-2-ordres-de-grandeur.html` |
+| Première | `nsi-premiere/nsi1-dictionnaires.xml` | 20 | `nsi1-dictionnaires.html` |
 | Première | `nsi-premiere/nsi1-erreurs-python-1.xml` (sans fonctions) | 15 | `nsi1-erreurs-python-1.html` |
 | Première | `nsi-premiere/nsi1-erreurs-python-2.xml` (avec des fonctions) | 15 | `nsi1-erreurs-python-2.html` |
 | Première | `nsi-premiere/nsi1-ligne-de-commande.xml` | 20 (dont 1 appariement, 3 textes à trous) | `nsi1-ligne-de-commande.html` |
 | Première | `nsi-premiere/nsi1-listes.xml` | 16 (dont 1 choix multiple) | `nsi1-listes.html` |
+| Première | `nsi-premiere/nsi1-types-expressions.xml` | 20 (dont 1 appariement, 1 réponse numérique) | `nsi1-types-expressions.html` |
 | Terminale | `nsi-terminale/nsit-poo-1.xml` | 20 | `nsit-poo-1.html` |
 | Terminale | `nsi-terminale/nsit-sql-1-requetes.xml` | 20 | `nsit-sql-1-requetes.html` |
 | Terminale | `nsi-terminale/nsit-sql-2-jointures-mises-a-jour.xml` | 20 | `nsit-sql-2-jointures-mises-a-jour.html` |
+
+Les deux quiz de conditions conviennent aussi en seconde (SNT, partie programmation), comme « Types, expressions et affectations ».
 
 Le coût des algorithmes est rangé en première : c'est là qu'il est au programme (parcours séquentiel, tris, dichotomie). Les deux quiz servent aussi de rappel en terminale.
 
@@ -44,7 +51,15 @@ Les fichiers reprennent les balises que Pronote exporte lui-même : `name`, `que
 | 3 | L'appariement affiche-t-il son explication générale ? | on l'ajoutera aux appariements (pour l'instant, elle n'est que dans l'aperçu) | l'explication reste dans l'aperçu |
 | 4 | La réponse numérique avec `<tolerance>` est-elle acceptée ? | rien à changer | retirer `tolerance` dans `construire_qcm.py` |
 
-Il faut aussi vérifier que les textes à trous (`cloze`, avec `{:SHORTANSWER:…}` et `{:MULTICHOICE:…}`) s'affichent bien à l'intérieur d'un bloc de code sombre.
+Il faut aussi vérifier que les textes à trous (`cloze`, avec `{:SHORTANSWER:…}` et `{:MULTICHOICE:…}`) s'affichent bien à l'intérieur d'un bloc de code.
+
+## Le code affiché
+D'après la décision de l'enseignant du 20/11/2026, le code se lit aussi imprimé en noir et blanc :
+- fond clair, contraste d'au moins 7:1 pour chaque couleur ;
+- mots-clés en gras, fonctions soulignées, chaînes en italique, commentaires en gris italique ;
+- un filet par niveau d'indentation, sur une bande grise ;
+- consoles compactes : une ligne de console par ligne de texte ;
+- « trouve l'erreur » : toujours le message réel de Python 3.13, vérifié par exécution.
 
 ## Construire et vérifier
 Les quiz s'écrivent dans `sources/<niveau>/<id>.json`. Les fichiers XML et les aperçus sont produits par un outil : on ne les modifie jamais à la main.
