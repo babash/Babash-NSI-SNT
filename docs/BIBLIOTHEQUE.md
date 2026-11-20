@@ -60,7 +60,7 @@ publiée après chaque envoi sur `main` ([VERIFICATION.md](VERIFICATION.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 174 fiches, dont 82 pour les 90 entrées des
+  ressources/<id>.json          une fiche par ressource : 184 fiches. Les 174 premières : 82 pour les 90 entrées des
                                 listes (une ressource placée dans deux rubriques n'a qu'une fiche),
                                 8 pour des fichiers récupérés des conversations de l'enseignant,
                                 19 pour des activités Capytale, 4 pour des ressources tirées d'une
@@ -74,7 +74,13 @@ donnees/
                                 que la refonte de FichesNSI a ajoutées (22 fiches en tout sur ce site ;
                                 les 10 nouvelles sont dans la bibliothèque, pas encore dans les onglets)
                                 et 1 pour le cours-quiz « Piles et files » de QuizzNSI (dans son propre
-                                dépôt, et dans l'onglet NSI Terminale depuis le 19 novembre 2026)
+                                dépôt, et dans l'onglet NSI Terminale depuis le 19 novembre 2026).
+                                Depuis, 10 de plus : les trois contrôles de notions de terminale
+                                (arbres, piles et files, programmation objet), le contrôle, la séance
+                                et le quiz de révision de première « Conditions, boucles, fonctions »,
+                                deux recueils d'annales (l'écrit de Math93, la pratique de KXS), la
+                                page des annales par notion (dans l'onglet NSI Terminale) et le
+                                Calendrier des vacances
   vitrine.json                  la mise en avant de la partie extérieure : ce que le site affiche
                                 aujourd'hui, plus la section « Intelligence artificielle » de SNT
                                 et la grille d'évaluation du Grand oral

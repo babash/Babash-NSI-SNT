@@ -45,7 +45,8 @@ assets/                     mise en page et fonctionnement (ne pas toucher)
                             ne pas le modifier à la main)
 charte/                     les pages de démonstration du Designer, sans lien depuis le site et non
                             indexées : le TD pilote du moteur des TD en ligne (td-pilote/, avec son
-                            PDF), le vérificateur de ses réponses (verifier-td.py) et la démonstration
+                            PDF), le vérificateur de ses réponses (verifier-td.py), le script qui
+                            fait le PDF depuis la feuille vierge (imprimer-td.py) et la démonstration
                             du moteur d'avatars (avatars.html)
 qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
                             nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu
