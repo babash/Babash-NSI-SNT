@@ -30,8 +30,8 @@ REGLES = [
  (r"en profondeur|parcours.*profondeur", ["algo.graphe.profondeur"]),
  (r"plus court chemin|bellman|dijkstra", ["algo.graphe.plus-court-chemin"]),
  (r"\bsql\b|bases? de donnees|schema relationnel|modele relationnel|cles? primaires?|sgbd", ["donnees.bdd", "donnees.bdd.relationnel"]),
- (r"\bsql\b|select|requetes?", ["donnees.bdd.sql"]),
- (r"select|interrogation|where|order by|count|agregation", ["donnees.bdd.sql.interrogation"]),
+ (r"\bsql\b|\bselect\b|requetes?", ["donnees.bdd.sql"]),
+ (r"\bselect\b|interrogation|where|order by|count|agregation", ["donnees.bdd.sql.interrogation"]),
  (r"\bjoin\b|jointures?", ["donnees.bdd.sql.jointure"]),
  (r"\binsert\b|\bupdate\b|\bdelete\b|mise a jour|insertion|suppression", ["donnees.bdd.sql.mise-a-jour"]),
  (r"routage|\brip\b|\bospf\b|tables? de routage", ["reseau.routage"]),
@@ -89,12 +89,25 @@ def notions_de(texte):
     t = norm(texte)
     t_bin = re.sub(r"arbres? binaires?( de recherche)?", " arbre ", t)
     t_bin = re.sub(r"parcours (infixe|prefixe|suffixe)", " parcours ", t_bin)
+    # faux amis (T119) : retirés du texte avant la recherche des mots, pour que la règle visée ne s'applique pas
+    #  - « insertion » dans un tri ou dans un ABR n'est pas une requête SQL INSERT ;
+    #  - « listes d'adjacence » ne sont pas des tableaux ; « tri topologique » n'est pas un tri de liste.
+    t_sql = re.sub(r"(tris?|et|,) par insertion|tris? par insertion|par insertion|abr insertion|insertions? (dans|d'un|d'une|de) (un |une |l')?(abr|arbre)", " ", t)
+    t_tab = re.sub(r"(dictionnaires? de )?listes? d'adjacence", " ", t)
+    t_tri = re.sub(r"tris? topologiques?", " ", t)
     res = []
     for motif, ids in REGLES:
         cible = t_bin if "binaires?(?! de" in motif else t
+        if "mise a jour|insertion" in motif: cible = t_sql
+        elif motif.startswith(r"\blistes?\b|tableaux?"): cible = t_tab
+        elif motif.startswith(r"\btris?\b|stooge"): cible = t_tri
         if re.search(motif, cible):
             for i in ids:
                 if i not in res: res.append(i)
+    # un parcours en largeur d'un arbre n'est pas un parcours de graphe (T119)
+    if "algo.graphe.largeur" in res and "graphe" not in t and re.search(r"\barbres?\b|\babr\b", t):
+        res = [i for i in res if i != "algo.graphe.largeur"]
+        if "algo.arbre" not in res: res.append("algo.arbre")
     # cohérences
     if "donnees.arbre.abr" in res and "donnees.arbre" not in res: res.append("donnees.arbre")
     if "donnees.bdd.sql" in res and "donnees.bdd" not in res: res += ["donnees.bdd", "donnees.bdd.relationnel"]
@@ -179,7 +192,7 @@ data = {
  },
  "sources": [
    {"id": "kxs", "nom": "kxs.fr", "page": "https://kxs.fr/sujets/terminale-ecrit", "licence": "aucune mention sur la page ni dans les PDF ; la page précise : « Les corrigés et les barèmes ne sont pas officiels ! »", "couverture": "écrit 2021-2025 (pas encore 2026 le 20/11/2026) ; manque les sessions de 2025 hors Métropole, Amérique du Nord et Asie", "pratique": "https://kxs.fr/sujets/terminale-pratique"},
-   {"id": "aeif", "nom": "AEIF (Association des enseignantes et enseignants d'informatique de France)", "page": "https://aeif.fr/index.php/annee-2026/", "pages_annuelles": ["https://aeif.fr/index.php/annee-2026/", "https://aeif.fr/index.php/annee-2025/", "https://aeif.fr/index.php/annales-2024/", "https://aeif.fr/index.php/annee-2023/", "https://aeif.fr/index.php/annee-2022/", "https://aeif.fr/index.php/annee-2021/"], "themes": "https://aeif.fr/index.php/themes-par-sujets/", "licence": "CC BY-SA 4.0 : « Tous les documents mis en téléchargement sur cette page sont sous licence CC BY-SA 4.0 » (page « Année 2025 », section Sources et crédits ; non relevé sur les autres pages annuelles) ; copyright © 2026 AEIF en pied de page ; les énoncés officiels restent ceux du ministère", "couverture": "écrit 2021-2026, avec corrigés, sources LaTeX et sujets officiels numérisés (2021-2022)"},
+   {"id": "aeif", "nom": "AEIF (Association des enseignantes et enseignants d'informatique de France)", "page": "https://aeif.fr/index.php/annee-2026/", "pages_annuelles": ["https://aeif.fr/index.php/annee-2026/", "https://aeif.fr/index.php/annee-2025/", "https://aeif.fr/index.php/annales-2024/", "https://aeif.fr/index.php/annee-2023/", "https://aeif.fr/index.php/annee-2022/", "https://aeif.fr/index.php/annee-2021/"], "themes": "https://aeif.fr/index.php/themes-par-sujets/", "licence": "CC BY-SA 4.0 : « Tous les documents mis en téléchargement sur cette page sont sous licence CC BY-SA 4.0 » (relevé sur les pages annuelles 2021 à 2026, le 20/11/2026) ; copyright © 2026 AEIF en pied de page ; les énoncés officiels restent ceux du ministère", "couverture": "écrit 2021-2026, avec corrigés, sources LaTeX et sujets officiels numérisés (2021-2022)"},
    {"id": "math93", "nom": "Math93 (J. Courtois, F. Duffaud)", "page": "https://math93.com/index.php?option=com_content&view=article&id=1202&Itemid=1631", "licence": "non indiquée", "couverture": "écrit 2021-2026 ; corrigés détaillés"},
    {"id": "freemaths", "nom": "freemaths.fr", "page": "https://www.freemaths.fr/sujets-du-bac/baccalaureat-general/numerique-et-sciences-informatiques", "licence": "non indiquée (site commercial)", "couverture": "reprend les PDF officiels 2026 ; ses pages « 2027 » ne sont pas des sujets de session"},
    {"id": "eskool", "nom": "eSkool (Rodrigo Schwencke)", "page": "https://eskool.gitlab.io/tnsi/ressources/annales/epreuves_ecrites/", "licence": "CC BY-NC-SA 4.0 (annoncée par la page)", "couverture": "partielle : sujets 0 et 2021, 2026 Amérique du Nord (page mise à jour le 30/08/2026 d'après la page) ; renvoie à kxs, Pixees, sujetdebac, lewebpedagogique pour les corrigés"},
