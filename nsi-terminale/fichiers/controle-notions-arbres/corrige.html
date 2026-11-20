@@ -8,8 +8,10 @@
 <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="papier.css">
 <style>
-  .corr { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; flex: 1; align-content: start; }
-  .r { margin: 0 0 1.3mm; break-inside: avoid; font-size: 9.4pt; line-height: 1.24; }
+  .corr { display: grid; grid-template-columns: 1fr 1fr; gap: 0 6mm; align-content: start; }
+  .r { margin: 0 0 1.8mm; break-inside: avoid; font-size: 11pt; line-height: 1.25; }
+  .r code { font-size: 10pt; }
+  .suite { display: flex; justify-content: space-between; border-bottom: 1pt solid #000; padding-bottom: 1.5mm; margin-bottom: 2mm; font-size: 10pt; }
   .r .rep { border: 1.2pt solid #000; padding: .6mm 2mm; margin: .6mm 0; background: #fff; font-weight: 700; }
   .r .exp { margin: .4mm 0 0; }
   .r .err { margin: .4mm 0 0; padding-left: 2mm; border-left: 2.5pt solid #000; }
@@ -19,7 +21,7 @@
 </style>
 </head>
 <body>
-<div class="outils"><a href="prof.html">Page de correction</a> · <button type="button" onclick="window.print()">Imprimer</button> · une page A4 par sujet</div>
+<div class="outils"><a href="prof.html">Page de correction</a> · <button type="button" onclick="window.print()">Imprimer</button> · pages A4, noir et blanc</div>
 <div id="feuilles"></div>
 <script src="controle.js"></script>
 <script src="cle.js"></script>
@@ -44,28 +46,53 @@
     if (q.type === 'ensemble') return k.attendu.join(', ') + ' <span style="font-weight:400">(dans n\'importe quel ordre)</span>';
     return Array.isArray(k.attendu) ? k.attendu.join(', ') : String(k.attendu);
   }
-  var pages = Object.keys(D.sujets).map(function (s) {
-    var S = D.sujets[s], Q = D.questions;
-    var blocs = Q.map(function (q, i) {
+  /* Mise en pages (texte à 11 pt, convention des corrigés de terminale) :
+     on remplit la colonne de gauche, puis celle de droite, puis une page de
+     suite, tant que la feuille ne déborde pas. */
+  var conteneur = document.getElementById('feuilles');
+  /* Mesure faite dans la mise en page d'impression (verification/generer-pdf.py
+     émule l'impression avant le chargement), ou à l'écran sur une page assez large. */
+  var mesurer = window.matchMedia('print').matches || window.innerWidth > 820;
+  function feuille(s, n) {
+    var S = D.sujets[s], f = document.createElement('section');
+    f.className = 'feuille';
+    f.setAttribute('aria-label', 'Corrigé du sujet ' + s + (n ? ', suite' : ''));
+    f.innerHTML = (n === 0
+      ? '<div class="entete"><div><h1>Corrigé · ' + e(D.titre) + '</h1><div class="info">' + e(D.niveau) + ' · 1 point par question, tout ou rien · note sur 20 = points × 20 / 12</div></div><div class="sujet">Sujet ' + s + '</div></div>' +
+        '<div class="tete-corr"><div class="convention"><strong>Rappel de convention :</strong> ' + e(D.convention.replace(/^Rappel de convention : /, '')) +
+        '<br>Une liste dans le désordre est fausse, sauf pour les feuilles.</div>' +
+        '<div class="figure">' + CN.svgArbre(S.arbre, { dx: 32, dy: 29, r: 12, titre: 'Arbre du sujet ' + s }) + '</div></div>'
+      : '<div class="suite"><span><strong>Corrigé · ' + e(D.titre) + '</strong> · Sujet ' + s + ' (suite)</span></div>') +
+      '<div class="corr"><div></div><div></div></div>' +
+      '<div class="pied-feuille"><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · réponses vérifiées par exécution</span><a href="' + GITHUB + '">Code source sur GitHub</a></div>';
+    conteneur.appendChild(f);
+    return f;
+  }
+  function deborde(f) {
+    var pied = f.querySelector('.pied-feuille').getBoundingClientRect().top;
+    return [].some.call(f.querySelectorAll('.corr .r'), function (r) { return r.getBoundingClientRect().bottom > pied - 16; }) || f.scrollHeight > f.clientHeight + 1;
+  }
+  Object.keys(D.sujets).forEach(function (s) {
+    var S = D.sujets[s], n = 0, f = feuille(s, n), col = 0;
+    D.questions.forEach(function (q, i) {
       var k = K[s][q.id], d = (k.diag || [])[0];
-      var h = '<div class="r"><strong>' + (i + 1) + '. ' + e(q.nom) + '</strong><div class="rep">' + reponse(q, s) + '</div>';
+      var h = '<strong>' + (i + 1) + '. ' + e(q.nom) + '</strong><div class="rep">' + reponse(q, s) + '</div>';
       if (q.type === 'schema') {
         var l = CN.lettresSquelette(S.squelette);
         h += '<div class="figure">' + CN.svgArbre(remplirSquelette(S.squelette, l, k.attendu), { dx: 32, dy: 30, r: 12, titre: 'ABR obtenu' }) + '</div>';
       }
       h += '<p class="exp">' + e(k.explication) + '</p>';
       if (d) h += '<p class="err"><b>Erreur fréquente :</b> ' + e(d.texte) + '</p>';
-      return h + '</div>';
+      var div = document.createElement('div');
+      div.className = 'r'; div.innerHTML = h;
+      f.querySelectorAll('.corr > div')[col].appendChild(div);
+      if (mesurer && deborde(f)) {
+        div.remove();
+        if (col === 0) col = 1; else { n++; f = feuille(s, n); col = 0; }
+        f.querySelectorAll('.corr > div')[col].appendChild(div);
+      }
     });
-    return '<section class="feuille" aria-label="Corrigé du sujet ' + s + '">' +
-      '<div class="entete"><div><h1>Corrigé · ' + e(D.titre) + '</h1><div class="info">' + e(D.niveau) + ' · 1 point par question, tout ou rien · note sur 20 = points × 20 / 12</div></div><div class="sujet">Sujet ' + s + '</div></div>' +
-      '<div class="tete-corr"><div class="convention"><strong>Rappel de convention :</strong> ' + e(D.convention.replace(/^Rappel de convention : /, '')) +
-      '<br>Une liste dans le désordre est fausse, sauf pour les feuilles.</div>' +
-      '<div class="figure">' + CN.svgArbre(S.arbre, { dx: 32, dy: 29, r: 12, titre: 'Arbre du sujet ' + s }) + '</div></div>' +
-      '<div class="corr"><div>' + blocs.slice(0, 7).join('') + '</div><div>' + blocs.slice(7).join('') + '</div></div>' +
-      '<div class="pied-feuille"><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · réponses vérifiées par exécution</span><a href="' + GITHUB + '">Code source sur GitHub</a></div></section>';
   });
-  document.getElementById('feuilles').innerHTML = pages.join('');
 })();
 </script>
 </body>
