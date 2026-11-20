@@ -94,6 +94,10 @@ jobs:
           AVANT: ${{ steps.publie.outputs.chemin }}
         run: python3 scripts/valider_donnees.py --github ${AVANT:+--avant "$AVANT"}
 
+      # T116 : le classement des annales du bac par chapitre suit les annales (donnees/annales/)
+      - name: Classement des annales par chapitre à jour
+        run: python3 -B scripts/annales_notions.py --verifier
+
       # La même construction que « Publier le site », dans un dossier temporaire : une branche
       # qui la casserait est repérée avant d'arriver sur main (T50).
       - name: Essayer la construction de la bibliothèque
