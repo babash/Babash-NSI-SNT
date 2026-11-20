@@ -1,0 +1,4783 @@
+{
+ "theme": {
+  "id": "nsi2-sql",
+  "titre": "Bases de données et SQL",
+  "nature": "chapitre",
+  "niveaux": [
+   "nsi-tle"
+  ],
+  "langage": "sql",
+  "programme": [
+   "nsi-tle-2019.bases-de-donnees.modele-relationnel",
+   "nsi-tle-2019.bases-de-donnees.base-relationnelle",
+   "nsi-tle-2019.bases-de-donnees.sql"
+  ],
+  "notions": [
+   "donnees.bdd.relationnel",
+   "donnees.bdd.sql.interrogation",
+   "donnees.bdd.sql.jointure",
+   "donnees.bdd.sql.mise-a-jour"
+  ]
+ },
+ "base_sql": "PRAGMA foreign_keys = ON;\nCREATE TABLE plage (\n    id_plage INTEGER PRIMARY KEY,\n    nom TEXT NOT NULL UNIQUE,\n    commune TEXT NOT NULL\n);\nCREATE TABLE tortue (\n    id_tortue INTEGER PRIMARY KEY,\n    nom TEXT NOT NULL,\n    espece TEXT NOT NULL CHECK (espece IN ('verte', 'imbriquée')),\n    longueur INTEGER CHECK (longueur > 0)\n);\nCREATE TABLE observation (\n    id_obs INTEGER PRIMARY KEY,\n    id_tortue INTEGER NOT NULL REFERENCES tortue (id_tortue),\n    id_plage INTEGER NOT NULL REFERENCES plage (id_plage),\n    date_obs TEXT NOT NULL,\n    oeufs INTEGER NOT NULL CHECK (oeufs >= 0),\n    benevole TEXT NOT NULL\n);\nINSERT INTO plage VALUES\n    (1, 'N''Gouja', 'Kani-Kéli'),\n    (2, 'Saziley', 'Bandrélé'),\n    (3, 'Sakouli', 'Bandrélé'),\n    (4, 'Tahiti', 'Sada'),\n    (5, 'Iloni', 'Dembéni'),\n    (6, 'Trévani', 'Koungou');\nINSERT INTO tortue VALUES\n    (1, 'Nuru', 'verte', 98),\n    (2, 'Mira', 'imbriquée', 76),\n    (3, 'Zawadi', 'verte', 105),\n    (4, 'Taya', 'verte', 87),\n    (5, 'Bahari', 'imbriquée', 68),\n    (6, 'Nyota', 'verte', 112),\n    (7, 'Lulu', 'imbriquée', 81),\n    (8, 'Kai', 'verte', 95);\nINSERT INTO observation VALUES\n    (1, 1, 1, '2026-01-05', 110, 'Kenza'),\n    (2, 3, 2, '2026-01-12', 95, 'Ibrahim'),\n    (3, 2, 1, '2026-01-20', 0, 'Lou'),\n    (4, 4, 3, '2026-02-02', 120, 'Naïma'),\n    (5, 1, 2, '2026-02-14', 102, 'Soilihi'),\n    (6, 6, 4, '2026-02-28', 130, 'Kenza'),\n    (7, 5, 5, '2026-03-07', 88, 'Sam'),\n    (8, 3, 1, '2026-03-15', 0, 'Ibrahim'),\n    (9, 7, 2, '2026-03-21', 76, 'Lou'),\n    (10, 4, 4, '2026-04-03', 115, 'Naïma'),\n    (11, 2, 3, '2026-04-10', 92, 'Kenza'),\n    (12, 6, 1, '2026-04-18', 125, 'Soilihi');\n",
+ "exercices": [
+  {
+   "id": "nsi2-sql-001",
+   "type": "vraifaux",
+   "titre": "Les mots des tables",
+   "objectif": "Reconnaître relation, attribut, enregistrement, domaine et clé primaire.",
+   "notions": [
+    "donnees.bdd.relationnel"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "Dans le modèle relationnel, une relation est une table.",
+       "reponse": true,
+       "explication": "Une relation se dessine comme une table : des colonnes et des lignes."
+      },
+      {
+       "texte": "Un attribut est une ligne de la table.",
+       "reponse": false,
+       "explication": "Un attribut est une colonne (nom, espece…). Une ligne s'appelle un enregistrement."
+      },
+      {
+       "texte": "La relation tortue(id_tortue, nom, espece, longueur) a 4 attributs.",
+       "reponse": true,
+       "explication": "On compte les colonnes : id_tortue, nom, espece et longueur."
+      },
+      {
+       "texte": "Un enregistrement est une ligne de la table.",
+       "reponse": true,
+       "explication": "Un enregistrement (on dit aussi un n-uplet) décrit un seul objet : ici une tortue."
+      },
+      {
+       "texte": "Deux enregistrements d'une même table peuvent avoir la même clé primaire.",
+       "reponse": false,
+       "explication": "La clé primaire identifie chaque ligne : deux lignes ne peuvent pas avoir la même."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "Le domaine de l'attribut longueur est l'ensemble des valeurs qu'il peut prendre.",
+       "reponse": true,
+       "explication": "Ici, le domaine de longueur, ce sont des entiers positifs (INTEGER)."
+      },
+      {
+       "texte": "Dans tortue, l'attribut nom ferait une bonne clé primaire.",
+       "reponse": false,
+       "explication": "Deux tortues peuvent porter le même nom : nom n'identifie pas une tortue à coup sûr."
+      },
+      {
+       "texte": "Une clé primaire identifie chaque enregistrement de façon unique.",
+       "reponse": true,
+       "explication": "Connaître la clé primaire suffit pour retrouver une seule ligne."
+      },
+      {
+       "texte": "Dans une table, la première ligne est toujours la plus ancienne.",
+       "reponse": false,
+       "explication": "Une relation est un ensemble : ses lignes n'ont pas d'ordre garanti. Pour ranger, on utilise ORDER BY."
+      },
+      {
+       "texte": "Le schéma d'une relation donne son nom et ses attributs, avec leurs domaines.",
+       "reponse": true,
+       "explication": "Le schéma décrit la forme de la table, pas son contenu."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "Une relation peut contenir deux enregistrements tout à fait identiques.",
+       "reponse": false,
+       "explication": "Une relation est un ensemble : chaque ligne est unique, et la clé primaire le garantit."
+      },
+      {
+       "texte": "Dans la base, une contrainte CHECK limite le domaine de espece à 'verte' et 'imbriquée'.",
+       "reponse": true,
+       "explication": "CHECK (espece IN ('verte', 'imbriquée')) refuse toute autre valeur."
+      },
+      {
+       "texte": "Une table de 3 attributs et 8 enregistrements contient 24 valeurs.",
+       "reponse": true,
+       "explication": "8 lignes de 3 colonnes : 8 × 3 = 24 cases."
+      },
+      {
+       "texte": "Une clé primaire peut être formée de deux attributs.",
+       "reponse": true,
+       "explication": "C'est une clé composée : c'est le couple de valeurs qui doit être unique."
+      },
+      {
+       "texte": "Dans le schéma tortue(id_tortue, nom, espece, longueur), on souligne nom pour montrer la clé primaire.",
+       "reponse": false,
+       "explication": "On souligne la clé primaire : ici id_tortue, pas nom."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-002",
+   "type": "sortie",
+   "titre": "Lire la base",
+   "objectif": "Prévoir ce qu'affiche une requête SELECT … FROM simple.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "SELECT nom\nFROM plage\nWHERE id_plage = 4",
+       "options": [
+        "4",
+        "4 | Tahiti | Sada",
+        "Sada",
+        "Tahiti"
+       ],
+       "bonne": 3,
+       "retours": [
+        "4 est le numéro de la plage. SELECT nom affiche le nom.",
+        "SELECT nom n'affiche que la colonne nom, pas toute la ligne.",
+        "Sada est la commune. Regarde la colonne écrite après SELECT.",
+        "Juste : on lit la colonne nom de la plage n° 4."
+       ],
+       "aides": [
+        "Après SELECT, on lit les colonnes à afficher."
+       ]
+      },
+      {
+       "code": "SELECT nom, espece\nFROM tortue\nWHERE id_tortue = 2",
+       "options": [
+        "Mira | imbriquée",
+        "2 | Mira | imbriquée | 76",
+        "Mira",
+        "imbriquée | Mira"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : deux colonnes, dans l'ordre écrit après SELECT.",
+        "Seules les colonnes nom et espece sont demandées.",
+        "On a demandé deux colonnes : nom et espece.",
+        "Les colonnes s'affichent dans l'ordre où on les écrit après SELECT."
+       ],
+       "aides": [
+        "Compte les colonnes écrites après SELECT."
+       ]
+      },
+      {
+       "code": "SELECT *\nFROM plage\nWHERE id_plage = 5",
+       "options": [
+        "5 | Iloni | Dembéni",
+        "Iloni",
+        "Iloni | Dembéni",
+        "id_plage | nom | commune"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : l'étoile * demande toutes les colonnes.",
+        "L'étoile * ne veut pas dire « le nom » : elle veut dire « toutes les colonnes ».",
+        "L'étoile * prend aussi la colonne id_plage.",
+        "SELECT affiche les valeurs de la ligne, pas les noms des colonnes."
+       ],
+       "aides": [
+        "* se lit « toutes les colonnes »."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "SELECT commune, nom\nFROM plage\nWHERE id_plage = 2",
+       "options": [
+        "2 | Bandrélé | Saziley",
+        "Saziley",
+        "Bandrélé | Saziley",
+        "Saziley | Bandrélé"
+       ],
+       "bonne": 2,
+       "retours": [
+        "id_plage ne fait pas partie du SELECT.",
+        "Deux colonnes sont demandées.",
+        "Juste : commune d'abord, puis nom, comme dans le SELECT.",
+        "L'ordre des colonnes affichées est celui du SELECT, pas celui de la table."
+       ],
+       "aides": [
+        "Lis le SELECT de gauche à droite."
+       ]
+      },
+      {
+       "code": "SELECT nom\nFROM plage\nWHERE commune = 'Bandrélé'\nORDER BY nom",
+       "options": [
+        "Saziley",
+        "Bandrélé / Bandrélé",
+        "Saziley / Sakouli",
+        "Sakouli / Saziley"
+       ],
+       "bonne": 3,
+       "retours": [
+        "Deux plages sont à Bandrélé : regarde toute la table.",
+        "On affiche la colonne nom, pas la colonne commune.",
+        "ORDER BY nom range par ordre alphabétique : k vient avant z.",
+        "Juste : deux plages à Bandrélé, rangées par ordre alphabétique."
+       ],
+       "aides": [
+        "Cherche toutes les lignes où la commune est Bandrélé."
+       ]
+      },
+      {
+       "code": "SELECT id_tortue, id_plage\nFROM observation\nWHERE id_obs = 9",
+       "options": [
+        "9 | 7 | 2",
+        "Lulu | Saziley",
+        "7 | 2",
+        "2 | 7"
+       ],
+       "bonne": 2,
+       "retours": [
+        "id_obs n'est pas dans le SELECT.",
+        "La table observation ne garde que des numéros. Pour lire les noms, il faudra une jointure.",
+        "Juste : l'observation n° 9 concerne la tortue 7 sur la plage 2.",
+        "Les colonnes s'affichent dans l'ordre du SELECT : id_tortue d'abord."
+       ],
+       "aides": [
+        "Trouve la ligne n° 9 de observation."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "code": "SELECT benevole\nFROM observation\nWHERE id_obs = 6",
+       "reponse": "Kenza",
+       "explication": "La ligne n° 6 de observation a été remplie par Kenza.",
+       "aides": [
+        "Tape la valeur seule, sans guillemets."
+       ]
+      },
+      {
+       "code": "SELECT longueur\nFROM tortue\nWHERE nom = 'Nyota'",
+       "reponse": "112",
+       "explication": "Nyota est la tortue n° 6 : sa carapace mesure 112 cm.",
+       "aides": [
+        "La condition porte sur le nom ; on affiche la longueur."
+       ]
+      },
+      {
+       "code": "SELECT id_plage\nFROM plage\nWHERE nom = 'Trévani'",
+       "reponse": "6",
+       "explication": "Trévani est la plage n° 6, à Koungou.",
+       "aides": [
+        "On affiche le numéro de la plage."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-003",
+   "type": "associer",
+   "titre": "Le bon mot",
+   "objectif": "Relier les mots du modèle relationnel à ce qu'ils désignent.",
+   "notions": [
+    "donnees.bdd.relationnel"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque mot à ce qu'il désigne.",
+       "paires": [
+        [
+         "relation",
+         "une table"
+        ],
+        [
+         "attribut",
+         "une colonne"
+        ],
+        [
+         "enregistrement",
+         "une ligne"
+        ],
+        [
+         "clé primaire",
+         "l'attribut qui identifie chaque ligne"
+        ]
+       ],
+       "explication": "Une relation (table) a des attributs (colonnes) et des enregistrements (lignes) ; la clé primaire distingue les lignes.",
+       "aides": [
+        "Pense à une table dessinée sur papier : ses colonnes, ses lignes."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque élément de la base à son rôle.",
+       "paires": [
+        [
+         "id_tortue dans la table tortue",
+         "clé primaire"
+        ],
+        [
+         "id_tortue dans la table observation",
+         "clé étrangère"
+        ],
+        [
+         "espece",
+         "attribut dont le domaine compte deux valeurs"
+        ],
+        [
+         "observation",
+         "relation qui relie une tortue et une plage"
+        ],
+        [
+         "(1, 'Nuru', 'verte', 98)",
+         "enregistrement de la table tortue"
+        ]
+       ],
+       "explication": "Le même attribut id_tortue est clé primaire dans tortue et clé étrangère dans observation : c'est ce qui relie les deux tables.",
+       "aides": [
+        "Une clé étrangère renvoie à la clé primaire d'une autre table."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque élément d'un schéma ou d'un CREATE TABLE à son sens.",
+       "paires": [
+        [
+         "attribut souligné",
+         "la clé primaire"
+        ],
+        [
+         "attribut précédé de #",
+         "une clé étrangère"
+        ],
+        [
+         "INTEGER, TEXT",
+         "des domaines"
+        ],
+        [
+         "NOT NULL",
+         "la valeur est obligatoire"
+        ],
+        [
+         "UNIQUE",
+         "deux lignes n'ont jamais la même valeur"
+        ],
+        [
+         "REFERENCES tortue (id_tortue)",
+         "la valeur doit exister dans tortue"
+        ]
+       ],
+       "explication": "Dans un schéma, on souligne la clé primaire et on marque d'un # la clé étrangère ; en SQL, ce sont des contraintes écrites dans CREATE TABLE.",
+       "aides": [
+        "Trois éléments décrivent une contrainte : NOT NULL, UNIQUE et REFERENCES."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-004",
+   "type": "erreur",
+   "titre": "Chasse au bug",
+   "objectif": "Repérer et corriger une erreur dans une requête SELECT simple.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le nom de la plage n° 3.",
+       "lignes": [
+        "SELECT nom",
+        "FORM plage",
+        "WHERE id_plage = 3"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "FROM plage",
+        "FROM plages",
+        "IN plage"
+       ],
+       "bonne": 0,
+       "affiche": "Sakouli",
+       "explication": "Le mot-clé est FROM (« depuis »), et la table s'appelle plage, au singulier.",
+       "aides": [
+        "Relis chaque mot-clé lettre par lettre."
+       ],
+       "message": "Error: near \"plage\": syntax error"
+      },
+      {
+       "but": "Afficher le nom et l'espèce de la tortue n° 5.",
+       "lignes": [
+        "SELECT nom espece",
+        "FROM tortue",
+        "WHERE id_tortue = 5"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT (nom espece)",
+        "SELECT nom AND espece",
+        "SELECT nom, espece"
+       ],
+       "bonne": 2,
+       "affiche": "Bahari | imbriquée",
+       "explication": "Les colonnes du SELECT se séparent par une virgule. Sans virgule, SQLite prend espece pour un autre nom de la colonne nom.",
+       "aides": [
+        "Combien de colonnes la requête affiche-t-elle ?"
+       ],
+       "affiche_fautif": "Bahari"
+      },
+      {
+       "but": "Afficher la commune de la plage Tahiti.",
+       "lignes": [
+        "SELECT commune",
+        "FROM plage",
+        "WHERE nom = Tahiti"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE nom = 'Tahiti'",
+        "WHERE 'nom' = 'Tahiti'",
+        "WHERE nom = 'tahiti'"
+       ],
+       "bonne": 0,
+       "affiche": "Sada",
+       "explication": "Un texte s'écrit entre apostrophes : 'Tahiti'. Sans elles, SQLite cherche une colonne appelée Tahiti.",
+       "aides": [
+        "Que cherche SQLite quand un mot n'a pas d'apostrophes ?"
+       ],
+       "message": "Error: no such column: Tahiti"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le nom et l'espèce de chaque tortue, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom, espèce",
+        "FROM tortue",
+        "ORDER BY nom"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT nom, espece",
+        "SELECT nom; espece",
+        "SELECT nom, 'espece'"
+       ],
+       "bonne": 0,
+       "affiche": "Bahari | imbriquée\nKai | verte\nLulu | imbriquée\nMira | imbriquée\nNuru | verte\nNyota | verte\nTaya | verte\nZawadi | verte",
+       "explication": "Le nom d'une colonne s'écrit exactement comme dans CREATE TABLE : espece, sans accent.",
+       "aides": [
+        "Compare avec les noms des colonnes de la table tortue."
+       ],
+       "message": "Error: no such column: espèce"
+      },
+      {
+       "but": "Afficher le prénom du ou de la bénévole de l'observation n° 8.",
+       "lignes": [
+        "SELECT benevole",
+        "FROM tortue",
+        "WHERE id_obs = 8"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "FROM benevole",
+        "FROM observation",
+        "FROM tortue, observation"
+       ],
+       "bonne": 1,
+       "affiche": "Ibrahim",
+       "explication": "La colonne benevole est dans la table observation : FROM doit nommer la table qui contient les colonnes utilisées.",
+       "aides": [
+        "Dans quelle table se trouvent benevole et id_obs ?"
+       ],
+       "message": "Error: no such column: benevole"
+      },
+      {
+       "but": "Afficher la longueur de la tortue Kai.",
+       "lignes": [
+        "SELECT longueur",
+        "FROM tortue",
+        "WHERE nom = 'kai'"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE nom = 'Kai'",
+        "WHERE nom = kai",
+        "WHERE nom == 'kai'"
+       ],
+       "bonne": 0,
+       "affiche": "95",
+       "explication": "Avec =, SQLite compare les textes exactement : 'kai' et 'Kai' sont différents à cause de la majuscule.",
+       "aides": [
+        "Regarde comment le nom est écrit dans la table."
+       ],
+       "affiche_fautif": ""
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le nom et la commune des plages de Bandrélé, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom, commune",
+        "FROM plage",
+        "WHERE commune = 'Bandrele'",
+        "ORDER BY nom"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE commune LIKE 'Bandrele'",
+        "WHERE commune = Bandrélé",
+        "WHERE commune = 'Bandrélé'"
+       ],
+       "bonne": 2,
+       "affiche": "Sakouli | Bandrélé\nSaziley | Bandrélé",
+       "explication": "Pour SQLite, e et é sont deux lettres différentes : le texte doit être écrit comme dans la table, accents compris.",
+       "affiche_fautif": ""
+      },
+      {
+       "but": "Afficher le nom des tortues vertes, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom,",
+        "FROM tortue",
+        "WHERE espece = 'verte'",
+        "ORDER BY nom"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT nom",
+        "SELECT nom, espece,",
+        "SELECT nom;"
+       ],
+       "bonne": 0,
+       "affiche": "Kai\nNuru\nNyota\nTaya\nZawadi",
+       "explication": "Une virgule annonce une autre colonne. Après la dernière colonne, pas de virgule : FROM arrive directement.",
+       "message": "Error: near \"FROM\": syntax error"
+      },
+      {
+       "but": "Afficher les dates des observations de Lou, de la plus ancienne à la plus récente.",
+       "lignes": [
+        "SELECT date_obs",
+        "FROM observation",
+        "WHERE benevole = 'Lou'",
+        "ORDER BY date"
+       ],
+       "ligne": 3,
+       "corrections": [
+        "ORDER date_obs",
+        "ORDER BY date_obs DESC",
+        "ORDER BY date_obs"
+       ],
+       "bonne": 2,
+       "affiche": "2026-01-20\n2026-03-21",
+       "explication": "La colonne s'appelle date_obs. ORDER BY range du plus petit au plus grand ; DESC ferait l'inverse.",
+       "message": "Error: no such column: date"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-005",
+   "type": "completer",
+   "titre": "Le bon filtre",
+   "objectif": "Écrire une condition WHERE avec une comparaison.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le nom des tortues de plus de 100 cm, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE longueur {0} 100",
+        "ORDER BY nom"
+       ],
+       "trous": [
+        {
+         "options": [
+          "=",
+          "<",
+          ">"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Nyota\nZawadi",
+       "explication": "« Plus de 100 » se traduit par longueur > 100.",
+       "aides": [
+        "Le signe > se lit « plus grand que »."
+       ]
+      },
+      {
+       "but": "Afficher le nom de la plage n° 2.",
+       "lignes": [
+        "SELECT nom",
+        "FROM plage",
+        "{0} id_plage = 2"
+       ],
+       "trous": [
+        {
+         "options": [
+          "WHERE",
+          "ORDER BY",
+          "FROM"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Saziley",
+       "explication": "WHERE (« où ») garde seulement les lignes qui vérifient la condition.",
+       "aides": [
+        "Quel mot-clé filtre les lignes ?"
+       ]
+      },
+      {
+       "but": "Afficher le nom des tortues imbriquées, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE espece = {0}",
+        "ORDER BY nom"
+       ],
+       "trous": [
+        {
+         "options": [
+          "'imbriquee'",
+          "'imbriquée'",
+          "imbriquée"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Bahari\nLulu\nMira",
+       "explication": "Un texte s'écrit entre apostrophes, exactement comme dans la table, accent compris.",
+       "aides": [
+        "Un texte, en SQL, s'écrit entre deux signes."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le numéro des observations sans œufs, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT id_obs",
+        "FROM observation",
+        "WHERE {0} {1} 0",
+        "ORDER BY id_obs"
+       ],
+       "trous": [
+        {
+         "options": [
+          "oeufs",
+          "id_obs",
+          "benevole"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "<>",
+          ">",
+          "="
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "3\n8",
+       "explication": "Sans œufs veut dire oeufs = 0 : la tortue est montée sur la plage sans pondre.",
+       "aides": [
+        "Quelle colonne compte les œufs ?"
+       ]
+      },
+      {
+       "but": "Afficher le nom des tortues de 87 cm au plus, de la plus petite à la plus grande.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE longueur {0} 87",
+        "ORDER BY longueur"
+       ],
+       "trous": [
+        {
+         "options": [
+          "<=",
+          "<",
+          ">="
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Bahari\nMira\nLulu\nTaya",
+       "explication": "« Au plus 87 » inclut 87 : on écrit <=. Avec <, Taya (87 cm) serait oubliée.",
+       "aides": [
+        "87 cm doit-il être gardé ?"
+       ]
+      },
+      {
+       "but": "Afficher les dates des observations faites après le 1er mars 2026, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT date_obs",
+        "FROM observation",
+        "WHERE date_obs {0} {1}",
+        "ORDER BY date_obs"
+       ],
+       "trous": [
+        {
+         "options": [
+          ">",
+          "<"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "'2026-03-01'",
+          "2026-03-01",
+          "'01/03/2026'"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "2026-03-07\n2026-03-15\n2026-03-21\n2026-04-03\n2026-04-10\n2026-04-18",
+       "explication": "Les dates sont des textes écrits AAAA-MM-JJ : comparer ces textes revient à comparer les dates. Sans apostrophes, 2026-03-01 devient un calcul : 2022.",
+       "aides": [
+        "Écris la date comme dans la table."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le nom des tortues vertes de moins de 100 cm, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE espece = 'verte'",
+        "{0} longueur {1} 100",
+        "ORDER BY nom"
+       ],
+       "trous": [
+        {
+         "options": [
+          "AND",
+          "WHERE",
+          "OR"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          ">",
+          "<",
+          ">="
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Kai\nNuru\nTaya",
+       "explication": "Les deux conditions doivent être vraies en même temps : on les relie par AND."
+      },
+      {
+       "but": "Afficher le nom des plages qui ne sont pas à Bandrélé, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM plage",
+        "WHERE commune {0} 'Bandrélé'",
+        "ORDER BY nom"
+       ],
+       "trous": [
+        {
+         "options": [
+          "=",
+          "<>",
+          "!"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Iloni\nN'Gouja\nTahiti\nTrévani",
+       "explication": "En SQL, « différent de » s'écrit <> (SQLite accepte aussi !=)."
+      },
+      {
+       "but": "Afficher le numéro des observations qui comptent de 92 à 110 œufs, bornes comprises, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT id_obs",
+        "FROM observation",
+        "WHERE oeufs {0} 92",
+        "AND oeufs {1} 110",
+        "ORDER BY id_obs"
+       ],
+       "trous": [
+        {
+         "options": [
+          ">",
+          "<=",
+          ">="
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "<",
+          "<=",
+          ">="
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "1\n2\n5\n11",
+       "explication": "Bornes comprises : >= 92 et <= 110. L'observation n° 11 (92 œufs) et la n° 1 (110) sont gardées."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-006",
+   "type": "ordre",
+   "titre": "Le puzzle de requête",
+   "objectif": "Remettre dans l'ordre les clauses d'une requête d'interrogation.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le nom de la plage n° 5.",
+       "lignes": [
+        "SELECT nom",
+        "FROM plage",
+        "WHERE id_plage = 5"
+       ],
+       "affiche": "Iloni",
+       "aides": [
+        "On choisit les colonnes, puis la table, puis les lignes."
+       ]
+      },
+      {
+       "but": "Afficher le nom des tortues imbriquées, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE espece = 'imbriquée'",
+        "ORDER BY nom"
+       ],
+       "affiche": "Bahari\nLulu\nMira",
+       "aides": [
+        "ORDER BY vient toujours à la fin."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le nom et la longueur des tortues de plus de 95 cm, de la plus grande à la plus petite.",
+       "lignes": [
+        "SELECT nom, longueur",
+        "FROM tortue",
+        "WHERE longueur > 95",
+        "ORDER BY longueur DESC"
+       ],
+       "affiche": "Nyota | 112\nZawadi | 105\nNuru | 98",
+       "aides": [
+        "L'ordre est toujours SELECT, FROM, WHERE, ORDER BY."
+       ]
+      },
+      {
+       "but": "Afficher la date et le nombre d'œufs des observations de Kenza, de la plus récente à la plus ancienne.",
+       "lignes": [
+        "SELECT date_obs, oeufs",
+        "FROM observation",
+        "WHERE benevole = 'Kenza'",
+        "ORDER BY date_obs DESC"
+       ],
+       "affiche": "2026-04-10 | 92\n2026-02-28 | 130\n2026-01-05 | 110",
+       "aides": [
+        "DESC se place après la colonne de tri."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le nom et la longueur des tortues vertes de moins de 100 cm, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom,",
+        "longueur",
+        "FROM tortue",
+        "WHERE espece = 'verte'",
+        "AND longueur < 100",
+        "ORDER BY nom"
+       ],
+       "affiche": "Kai | 95\nNuru | 98\nTaya | 87"
+      },
+      {
+       "but": "Afficher le numéro et la date des observations de Soilihi de plus de 100 œufs, de la plus ancienne à la plus récente.",
+       "lignes": [
+        "SELECT id_obs, date_obs",
+        "FROM observation",
+        "WHERE oeufs > 100",
+        "AND benevole = 'Soilihi'",
+        "ORDER BY date_obs"
+       ],
+       "affiche": "5 | 2026-02-14\n12 | 2026-04-18"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-007",
+   "type": "vraifaux",
+   "titre": "Clés et liens",
+   "objectif": "Distinguer clé primaire et clé étrangère dans la base des tortues.",
+   "notions": [
+    "donnees.bdd.relationnel"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "Dans observation, id_tortue est une clé étrangère : elle renvoie à une tortue.",
+       "reponse": true,
+       "explication": "Sa valeur est la clé primaire d'une ligne de la table tortue."
+      },
+      {
+       "texte": "Une clé étrangère est toujours aussi la clé primaire de sa propre table.",
+       "reponse": false,
+       "explication": "Dans observation, id_tortue n'est pas la clé primaire : c'est id_obs."
+      },
+      {
+       "texte": "La clé primaire de la table plage est id_plage.",
+       "reponse": true,
+       "explication": "Chaque plage a un numéro id_plage différent."
+      },
+      {
+       "texte": "Deux observations peuvent concerner la même tortue.",
+       "reponse": true,
+       "explication": "Nuru (n° 1) apparaît dans les observations n° 1 et n° 5 : une clé étrangère peut se répéter."
+      },
+      {
+       "texte": "Dans le modèle relationnel, une clé primaire peut rester vide.",
+       "reponse": false,
+       "explication": "Une clé primaire doit toujours avoir une valeur, sinon elle n'identifie rien."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "Dans observation, id_obs est la clé primaire.",
+       "reponse": true,
+       "explication": "Chaque observation a son propre numéro id_obs."
+      },
+      {
+       "texte": "La valeur 9 est possible dans la colonne id_tortue de observation.",
+       "reponse": false,
+       "explication": "Il n'y a pas de tortue n° 9 : la clé étrangère doit renvoyer à une tortue qui existe."
+      },
+      {
+       "texte": "Une même plage peut apparaître dans plusieurs observations.",
+       "reponse": true,
+       "explication": "La plage n° 1, N'Gouja, apparaît quatre fois."
+      },
+      {
+       "texte": "Grâce à la clé étrangère, on ne recopie pas le nom de la tortue dans chaque observation.",
+       "reponse": true,
+       "explication": "On écrit seulement son numéro ; le nom est rangé une seule fois, dans tortue."
+      },
+      {
+       "texte": "La table tortue contient une clé étrangère vers observation.",
+       "reponse": false,
+       "explication": "C'est l'inverse : observation contient id_tortue, qui renvoie vers tortue."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "Dans observation(id_obs, #id_tortue, #id_plage, date_obs, oeufs, benevole), le # marque une clé étrangère.",
+       "reponse": true,
+       "explication": "On souligne la clé primaire id_obs et on marque d'un # les clés étrangères."
+      },
+      {
+       "texte": "Quand SQLite contrôle les clés étrangères, on peut supprimer la tortue n° 1 sans toucher aux observations.",
+       "reponse": false,
+       "explication": "Des observations renvoient à la tortue n° 1 : SQLite refuse (FOREIGN KEY constraint failed)."
+      },
+      {
+       "texte": "On peut supprimer la tortue n° 8, Kai, sans casser de lien.",
+       "reponse": true,
+       "explication": "Aucune observation ne cite la tortue n° 8 : aucun lien n'est cassé."
+      },
+      {
+       "texte": "Une clé étrangère a le même domaine que la clé primaire qu'elle référence.",
+       "reponse": true,
+       "explication": "Elle contient les mêmes valeurs : ici des entiers, comme id_tortue dans tortue."
+      },
+      {
+       "texte": "Par défaut, SQLite ne vérifie pas les clés étrangères : on l'active avec PRAGMA foreign_keys = ON.",
+       "reponse": true,
+       "explication": "C'est une particularité de SQLite. La base de ce calendrier commence par cette ligne."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-008",
+   "type": "sortie",
+   "titre": "Et ou ou ?",
+   "objectif": "Prévoir le résultat d'un WHERE avec AND et OR.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "SELECT nom\nFROM tortue\nWHERE espece = 'imbriquée' AND longueur > 75\nORDER BY nom",
+       "options": [
+        "Mira",
+        "Lulu / Mira",
+        "Bahari / Lulu / Mira",
+        "Lulu"
+       ],
+       "bonne": 1,
+       "retours": [
+        "Lulu aussi est imbriquée et mesure plus de 75 cm.",
+        "Juste : Lulu (81 cm) et Mira (76 cm) sont imbriquées et dépassent 75 cm.",
+        "Bahari mesure 68 cm : avec AND, les deux conditions doivent être vraies.",
+        "Mira mesure 76 cm : 76 > 75 est vrai."
+       ],
+       "aides": [
+        "Avec AND, une tortue doit vérifier les deux conditions."
+       ]
+      },
+      {
+       "code": "SELECT nom\nFROM plage\nWHERE commune = 'Sada' OR commune = 'Dembéni'\nORDER BY nom",
+       "options": [
+        "Tahiti",
+        "Iloni",
+        "Iloni / Tahiti",
+        "Sada / Dembéni"
+       ],
+       "bonne": 2,
+       "retours": [
+        "Avec OR, Iloni (à Dembéni) est gardée aussi.",
+        "Avec OR, Tahiti (à Sada) est gardée aussi.",
+        "Juste : avec OR, une seule condition vraie suffit.",
+        "On affiche la colonne nom, pas la commune."
+       ],
+       "aides": [
+        "Avec OR, il suffit qu'une des deux conditions soit vraie."
+       ]
+      },
+      {
+       "code": "SELECT id_obs\nFROM observation\nWHERE benevole = 'Lou' AND oeufs > 0",
+       "options": [
+        "9",
+        "3 / 9",
+        "3",
+        "76"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : l'observation n° 3 de Lou a 0 œuf, elle est écartée.",
+        "L'observation n° 3 compte 0 œuf : 0 > 0 est faux.",
+        "C'est l'observation sans œufs : la condition oeufs > 0 l'écarte.",
+        "76 est le nombre d'œufs ; on affiche id_obs."
+       ],
+       "aides": [
+        "Lou a fait deux observations : regarde leurs œufs."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "SELECT nom, longueur\nFROM tortue\nWHERE longueur < 80 OR longueur > 110\nORDER BY longueur",
+       "options": [
+        "Bahari | 68 / Mira | 76 / Nyota | 112",
+        "Bahari | 68 / Mira | 76",
+        "Nyota | 112 / Mira | 76 / Bahari | 68",
+        "Lulu | 81 / Taya | 87 / Kai | 95 / Nuru | 98 / Zawadi | 105"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : les plus petites et la plus grande, rangées par longueur croissante.",
+        "Avec OR, Nyota (112 cm) est gardée aussi.",
+        "ORDER BY range du plus petit au plus grand, sauf avec DESC.",
+        "Ce sont les tortues entre 80 et 110 : c'est le contraire de la condition."
+       ],
+       "aides": [
+        "Une tortue est gardée si elle est très petite OU très grande."
+       ]
+      },
+      {
+       "code": "SELECT id_obs\nFROM observation\nWHERE id_plage = 1 AND oeufs = 0\nORDER BY id_obs",
+       "options": [
+        "3 / 8",
+        "1 / 3 / 8 / 12",
+        "8",
+        "1 / 12"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : deux montées sans ponte sur la plage n° 1.",
+        "Ce sont toutes les observations de la plage 1 : AND demande aussi 0 œuf.",
+        "L'observation n° 3 est aussi sur la plage 1, sans œufs.",
+        "Ce sont les observations avec des œufs : on cherche oeufs = 0."
+       ],
+       "aides": [
+        "Cherche d'abord les lignes de la plage 1."
+       ]
+      },
+      {
+       "code": "SELECT benevole\nFROM observation\nWHERE date_obs < '2026-02-01'\nORDER BY date_obs",
+       "options": [
+        "Kenza / Ibrahim / Lou / Naïma",
+        "Kenza / Ibrahim / Lou",
+        "Ibrahim / Kenza / Lou",
+        "Lou / Ibrahim / Kenza"
+       ],
+       "bonne": 1,
+       "retours": [
+        "Naïma a observé le 2 février : la condition demande avant le 1er février.",
+        "Juste : les trois observations de janvier, de la plus ancienne à la plus récente.",
+        "La requête range par date, pas par prénom.",
+        "Sans DESC, ORDER BY commence par la date la plus ancienne."
+       ],
+       "aides": [
+        "Garde les dates de janvier, puis range-les."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "SELECT nom\nFROM tortue\nWHERE espece = 'verte'\nAND longueur > 100\nAND longueur < 110",
+       "reponse": "Zawadi",
+       "explication": "Une seule tortue verte mesure entre 100 et 110 cm : Zawadi, 105 cm.",
+       "aides": [
+        "Les trois conditions doivent être vraies."
+       ]
+      },
+      {
+       "code": "SELECT id_obs\nFROM observation\nWHERE benevole = 'Naïma'\nAND oeufs > 116",
+       "reponse": "4",
+       "explication": "Naïma a compté 120 œufs (n° 4) et 115 œufs (n° 10) : seule la n° 4 dépasse 116.",
+       "aides": [
+        "Naïma a fait deux observations."
+       ]
+      },
+      {
+       "code": "SELECT nom\nFROM tortue\nWHERE longueur > 100\nOR espece = 'imbriquée'\nAND longueur < 70\nORDER BY nom",
+       "options": [
+        "Nyota / Zawadi",
+        "Bahari / Nyota / Zawadi",
+        "Bahari",
+        "Bahari / Lulu / Mira / Nyota / Zawadi"
+       ],
+       "bonne": 1,
+       "retours": [
+        "Bahari, imbriquée de 68 cm, vérifie la partie après OR.",
+        "Juste : AND passe avant OR. On garde les plus de 100 cm, OU les imbriquées de moins de 70 cm.",
+        "Tu as calculé (longueur > 100 OR imbriquée) AND longueur < 70. Or AND passe avant OR, comme × avant +.",
+        "La condition longueur < 70 compte : elle s'applique aux imbriquées."
+       ],
+       "aides": [
+        "AND se calcule avant OR, comme la multiplication avant l'addition."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-009",
+   "type": "associer",
+   "titre": "Filtres malins",
+   "objectif": "Lire des conditions avec LIKE, IN et BETWEEN.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
+       "paires": [
+        [
+         "SELECT nom FROM plage WHERE nom LIKE 'S%' ORDER BY nom",
+         "Sakouli, Saziley"
+        ],
+        [
+         "SELECT nom FROM plage WHERE nom LIKE '%i' ORDER BY nom",
+         "Iloni, Sakouli, Tahiti, Trévani"
+        ],
+        [
+         "SELECT nom FROM plage WHERE commune IN ('Sada', 'Koungou') ORDER BY nom",
+         "Tahiti, Trévani"
+        ],
+        [
+         "SELECT nom FROM plage WHERE id_plage BETWEEN 2 AND 4 ORDER BY nom",
+         "Sakouli, Saziley, Tahiti"
+        ]
+       ],
+       "explication": "Avec LIKE, % remplace n'importe quelle suite de lettres. IN donne une liste de valeurs. BETWEEN garde les bornes.",
+       "executer": true,
+       "aides": [
+        "'S%' : commence par S. '%i' : finit par i."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
+       "paires": [
+        [
+         "SELECT nom FROM tortue WHERE longueur BETWEEN 80 AND 95 ORDER BY nom",
+         "Kai, Lulu, Taya"
+        ],
+        [
+         "SELECT nom FROM tortue WHERE nom LIKE '%a%' ORDER BY nom",
+         "Bahari, Kai, Mira, Nyota, Taya, Zawadi"
+        ],
+        [
+         "SELECT nom FROM tortue WHERE nom LIKE '_a%' ORDER BY nom",
+         "Bahari, Kai, Taya, Zawadi"
+        ],
+        [
+         "SELECT nom FROM tortue WHERE id_tortue IN (2, 5, 7) ORDER BY nom",
+         "Bahari, Lulu, Mira"
+        ]
+       ],
+       "explication": "Le tiret bas _ remplace exactement une lettre : '_a%' veut dire « a en deuxième lettre ». BETWEEN 80 AND 95 garde 95.",
+       "executer": true,
+       "aides": [
+        "_ vaut une seule lettre, % vaut zéro, une ou plusieurs lettres."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
+       "paires": [
+        [
+         "SELECT id_obs FROM observation WHERE date_obs BETWEEN '2026-02-01' AND '2026-02-28' ORDER BY id_obs",
+         "4, 5, 6"
+        ],
+        [
+         "SELECT id_obs FROM observation WHERE date_obs LIKE '2026-03%' ORDER BY id_obs",
+         "7, 8, 9"
+        ],
+        [
+         "SELECT id_obs FROM observation WHERE benevole IN ('Sam', 'Lou') ORDER BY id_obs",
+         "3, 7, 9"
+        ],
+        [
+         "SELECT id_obs FROM observation WHERE benevole NOT IN ('Kenza', 'Lou', 'Naïma', 'Soilihi') ORDER BY id_obs",
+         "2, 7, 8"
+        ],
+        [
+         "SELECT id_obs FROM observation WHERE oeufs BETWEEN 100 AND 120 ORDER BY id_obs",
+         "1, 4, 5, 10"
+        ]
+       ],
+       "explication": "BETWEEN garde ses deux bornes : le 28 février et les 120 œufs sont comptés. NOT IN garde ce qui n'est pas dans la liste.",
+       "executer": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-010",
+   "type": "erreur",
+   "titre": "Le filtre qui fuit",
+   "objectif": "Corriger une condition WHERE mal écrite.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le nom des tortues vertes, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE espece = verte",
+        "ORDER BY nom"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE 'espece' = 'verte'",
+        "WHERE espece = 'Verte'",
+        "WHERE espece = 'verte'"
+       ],
+       "bonne": 2,
+       "affiche": "Kai\nNuru\nNyota\nTaya\nZawadi",
+       "explication": "Le texte 'verte' s'écrit entre apostrophes ; le nom de colonne espece, sans apostrophes.",
+       "aides": [
+        "SQLite croit que verte est une colonne."
+       ],
+       "message": "Error: no such column: verte"
+      },
+      {
+       "but": "Afficher le nom des plages de Sada ou de Koungou, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM plage",
+        "WHERE commune IN 'Sada', 'Koungou'",
+        "ORDER BY nom"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE commune IN ('Sada', 'Koungou')",
+        "WHERE commune = 'Sada' AND commune = 'Koungou'",
+        "WHERE commune IN ('Sada' AND 'Koungou')"
+       ],
+       "bonne": 0,
+       "affiche": "Tahiti\nTrévani",
+       "explication": "Après IN, la liste des valeurs s'écrit entre parenthèses, séparées par des virgules.",
+       "aides": [
+        "Que manque-t-il autour de la liste ?"
+       ],
+       "message": "Error: near \",\": syntax error"
+      },
+      {
+       "but": "Afficher le nom des tortues dont le nom commence par N, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE nom LIKE 'N'",
+        "ORDER BY nom"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE nom LIKE 'N%'",
+        "WHERE nom = 'N%'",
+        "WHERE nom LIKE '%N'"
+       ],
+       "bonne": 0,
+       "affiche": "Nuru\nNyota",
+       "explication": "'N%' veut dire : N, puis n'importe quelle suite de lettres. Sans %, LIKE cherche un nom qui est juste « N ».",
+       "aides": [
+        "Quel signe remplace « la suite du mot » ?"
+       ],
+       "affiche_fautif": ""
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le nom des tortues qui mesurent de 80 à 90 cm, par ordre alphabétique.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE longueur BETWEEN 90 AND 80",
+        "ORDER BY nom"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE longueur >= 80 OR longueur <= 90",
+        "WHERE longueur BETWEEN 80 AND 90",
+        "WHERE longueur BETWEEN 80 OR 90"
+       ],
+       "bonne": 1,
+       "affiche": "Lulu\nTaya",
+       "explication": "BETWEEN a AND b demande a <= longueur <= b : la plus petite borne vient en premier.",
+       "aides": [
+        "Aucune longueur n'est à la fois >= 90 et <= 80."
+       ],
+       "affiche_fautif": ""
+      },
+      {
+       "but": "Afficher le numéro des observations de Lou ou de Sam, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT id_obs",
+        "FROM observation",
+        "WHERE benevole = 'Lou' AND benevole = 'Sam'",
+        "ORDER BY id_obs"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE benevole = 'Lou' OR benevole = 'Sam'",
+        "WHERE benevole = 'Lou', 'Sam'",
+        "WHERE benevole = 'Lou' OR 'Sam'"
+       ],
+       "bonne": 0,
+       "affiche": "3\n7\n9",
+       "explication": "Une observation n'a qu'un·e bénévole : il faut OR, et répéter la colonne dans chaque comparaison.",
+       "aides": [
+        "Une ligne peut-elle avoir deux bénévoles à la fois ?"
+       ],
+       "affiche_fautif": ""
+      },
+      {
+       "but": "Afficher les dates des observations d'avril 2026, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT date_obs",
+        "FROM observation",
+        "WHERE date_obs LIKE '04%'",
+        "ORDER BY date_obs"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE date_obs LIKE '2026-04%'",
+        "WHERE date_obs LIKE '%04'",
+        "WHERE date_obs = '2026-04'"
+       ],
+       "bonne": 0,
+       "affiche": "2026-04-03\n2026-04-10\n2026-04-18",
+       "explication": "Les dates s'écrivent AAAA-MM-JJ : avril 2026 commence par '2026-04'.",
+       "aides": [
+        "Regarde comment une date est écrite dans la table."
+       ],
+       "affiche_fautif": ""
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le nom des tortues vertes de plus de 100 cm ou de moins de 90 cm, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE espece = 'verte' AND longueur > 100 OR longueur < 90",
+        "ORDER BY nom"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE espece = 'verte' OR longueur > 100 AND longueur < 90",
+        "WHERE espece = 'verte' AND (longueur > 100 OR longueur < 90)",
+        "WHERE (espece = 'verte' AND longueur > 100) OR longueur < 90"
+       ],
+       "bonne": 1,
+       "affiche": "Nyota\nTaya\nZawadi",
+       "explication": "AND passe avant OR. Les parenthèses forcent le OR à se calculer d'abord, puis AND l'applique aux seules tortues vertes.",
+       "affiche_fautif": "Bahari\nLulu\nMira\nNyota\nTaya\nZawadi"
+      },
+      {
+       "but": "Afficher le numéro des observations qui ne sont ni de Kenza ni de Lou, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT id_obs",
+        "FROM observation",
+        "WHERE benevole <> 'Kenza' OR benevole <> 'Lou'",
+        "ORDER BY id_obs"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE benevole NOT IN ('Kenza', 'Lou')",
+        "WHERE NOT benevole = 'Kenza' OR benevole = 'Lou'",
+        "WHERE benevole NOT IN ('Kenza' OR 'Lou')"
+       ],
+       "bonne": 0,
+       "affiche": "2\n4\n5\n7\n8\n10\n12",
+       "explication": "Chaque prénom est différent de Kenza ou différent de Lou : la condition avec OR est toujours vraie. NOT IN écarte les deux.",
+       "affiche_fautif": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
+      },
+      {
+       "but": "Afficher le nom des tortues dont le nom commence par K ou par L, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "WHERE nom LIKE 'K%' OR 'L%'",
+        "ORDER BY nom"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE nom IN ('K%', 'L%')",
+        "WHERE nom LIKE 'K%' OR nom LIKE 'L%'",
+        "WHERE nom LIKE 'K%' AND nom LIKE 'L%'"
+       ],
+       "bonne": 1,
+       "affiche": "Kai\nLulu",
+       "explication": "Chaque côté de OR est une condition complète : nom LIKE 'L%'. IN compare exactement, sans comprendre le signe %.",
+       "affiche_fautif": "Kai"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-011",
+   "type": "completer",
+   "titre": "Sans doublon, bien rangé",
+   "objectif": "Utiliser DISTINCT pour retirer les doublons et ORDER BY pour ranger.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher la liste des communes, sans doublon, par ordre alphabétique.",
+       "lignes": [
+        "SELECT {0} commune",
+        "FROM plage",
+        "ORDER BY commune"
+       ],
+       "trous": [
+        {
+         "options": [
+          "DISTINCT",
+          "*",
+          "ALL"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Bandrélé\nDembéni\nKani-Kéli\nKoungou\nSada",
+       "explication": "DISTINCT retire les doublons : Bandrélé, qui a deux plages, n'apparaît qu'une fois.",
+       "aides": [
+        "Quel mot-clé enlève les lignes en double ?"
+       ]
+      },
+      {
+       "but": "Afficher le nom des tortues, de la plus grande à la plus petite.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "ORDER BY longueur {0}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "DOWN",
+          "DESC",
+          "ASC"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Nyota\nZawadi\nNuru\nKai\nTaya\nLulu\nMira\nBahari",
+       "explication": "DESC (descendant) range du plus grand au plus petit ; ASC, l'ordre par défaut, fait l'inverse.",
+       "aides": [
+        "Sans précision, ORDER BY range du plus petit au plus grand."
+       ]
+      },
+      {
+       "but": "Afficher la liste des espèces, sans doublon, par ordre alphabétique.",
+       "lignes": [
+        "SELECT DISTINCT {0}",
+        "FROM tortue",
+        "ORDER BY espece"
+       ],
+       "trous": [
+        {
+         "options": [
+          "espece",
+          "*",
+          "nom"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "imbriquée\nverte",
+       "explication": "On applique DISTINCT à la colonne espece : il reste deux lignes, imbriquée et verte.",
+       "aides": [
+        "Quelle colonne contient l'espèce ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher, sans doublon, les prénoms des bénévoles, par ordre alphabétique.",
+       "lignes": [
+        "SELECT {0} benevole",
+        "FROM observation",
+        "ORDER BY benevole {1}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "ALL",
+          "DISTINCT"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "ASC",
+          "DESC"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Ibrahim\nKenza\nLou\nNaïma\nSam\nSoilihi",
+       "explication": "Six bénévoles différent·e·s, chacun·e une seule fois grâce à DISTINCT, de A à Z avec ASC.",
+       "aides": [
+        "Kenza a fait trois observations : combien de fois doit-elle apparaître ?"
+       ]
+      },
+      {
+       "but": "Afficher, sans doublon, les numéros des plages où une tortue est venue, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT DISTINCT {0}",
+        "FROM {1}",
+        "ORDER BY id_plage"
+       ],
+       "trous": [
+        {
+         "options": [
+          "id_plage",
+          "id_tortue"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "observation",
+          "plage"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "1\n2\n3\n4\n5",
+       "explication": "Ce sont les observations qui disent où une tortue est venue. La plage n° 6, sans visite, n'apparaît pas.",
+       "aides": [
+        "Quelle table garde les visites des tortues ?"
+       ]
+      },
+      {
+       "but": "Afficher le nom et la longueur des tortues imbriquées, de la plus petite à la plus grande.",
+       "lignes": [
+        "SELECT nom, longueur",
+        "FROM tortue",
+        "WHERE espece = 'imbriquée'",
+        "ORDER BY {0}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "nom",
+          "longueur DESC",
+          "longueur"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Bahari | 68\nMira | 76\nLulu | 81",
+       "explication": "On range selon la colonne qui compte ici : la longueur, dans l'ordre croissant.",
+       "aides": [
+        "Selon quelle colonne faut-il ranger ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher la commune et le nom des plages, rangées par commune, puis par nom.",
+       "lignes": [
+        "SELECT commune, nom",
+        "FROM plage",
+        "ORDER BY {0}, {1}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "commune",
+          "nom"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "commune",
+          "nom"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Bandrélé | Sakouli\nBandrélé | Saziley\nDembéni | Iloni\nKani-Kéli | N'Gouja\nKoungou | Trévani\nSada | Tahiti",
+       "explication": "ORDER BY commune, nom range par commune ; à commune égale (Bandrélé), le nom départage."
+      },
+      {
+       "but": "Afficher, sans doublon, les communes qui ont une plage dont le nom commence par S.",
+       "lignes": [
+        "SELECT {0} commune",
+        "FROM plage",
+        "WHERE nom LIKE {1}",
+        "ORDER BY commune"
+       ],
+       "trous": [
+        {
+         "options": [
+          "DISTINCT",
+          "ALL"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "'%S'",
+          "'S'",
+          "'S%'"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Bandrélé",
+       "explication": "Saziley et Sakouli sont toutes les deux à Bandrélé : DISTINCT n'en garde qu'une ligne."
+      },
+      {
+       "but": "Afficher, sans doublon, les bénévoles qui ont vu une ponte de plus de 100 œufs, de Z à A.",
+       "lignes": [
+        "SELECT {0} benevole",
+        "FROM observation",
+        "WHERE oeufs > {1}",
+        "ORDER BY benevole {2}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "ALL",
+          "DISTINCT"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "100",
+          "120"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "ASC",
+          "DESC"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Soilihi\nNaïma\nKenza",
+       "explication": "DISTINCT retire les doublons, > 100 garde les grosses pontes et DESC range de Z à A."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-012",
+   "type": "ordre",
+   "titre": "Requête en morceaux",
+   "objectif": "Remettre dans l'ordre une requête avec DISTINCT, WHERE et ORDER BY.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher, sans doublon, la liste des communes, par ordre alphabétique.",
+       "lignes": [
+        "SELECT DISTINCT commune",
+        "FROM plage",
+        "ORDER BY commune"
+       ],
+       "affiche": "Bandrélé\nDembéni\nKani-Kéli\nKoungou\nSada",
+       "aides": [
+        "DISTINCT se place juste après SELECT."
+       ]
+      },
+      {
+       "but": "Afficher le nom des tortues, de la plus grande à la plus petite.",
+       "lignes": [
+        "SELECT nom",
+        "FROM tortue",
+        "ORDER BY longueur DESC"
+       ],
+       "affiche": "Nyota\nZawadi\nNuru\nKai\nTaya\nLulu\nMira\nBahari",
+       "aides": [
+        "ORDER BY vient en dernier."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher, sans doublon, les bénévoles de la plage n° 1, par ordre alphabétique.",
+       "lignes": [
+        "SELECT DISTINCT benevole",
+        "FROM observation",
+        "WHERE id_plage = 1",
+        "ORDER BY benevole"
+       ],
+       "affiche": "Ibrahim\nKenza\nLou\nSoilihi",
+       "aides": [
+        "WHERE vient avant ORDER BY."
+       ]
+      },
+      {
+       "but": "Afficher, sans doublon, les numéros des tortues vues en mars, dans l'ordre croissant.",
+       "lignes": [
+        "SELECT DISTINCT id_tortue",
+        "FROM observation",
+        "WHERE date_obs LIKE '2026-03%'",
+        "ORDER BY id_tortue"
+       ],
+       "affiche": "3\n5\n7",
+       "aides": [
+        "Ordre : SELECT, FROM, WHERE, ORDER BY."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher l'espèce et le nom des tortues de plus de 80 cm, rangées par espèce, puis par nom de Z à A.",
+       "lignes": [
+        "SELECT espece,",
+        "nom",
+        "FROM tortue",
+        "WHERE longueur > 80",
+        "ORDER BY espece,",
+        "nom DESC"
+       ],
+       "affiche": "imbriquée | Lulu\nverte | Zawadi\nverte | Taya\nverte | Nyota\nverte | Nuru\nverte | Kai"
+      },
+      {
+       "but": "Afficher, sans doublon, les plages des pontes que Kenza n'a pas vues, de la plus grande à la plus petite.",
+       "lignes": [
+        "SELECT DISTINCT id_plage",
+        "FROM observation",
+        "WHERE oeufs > 0",
+        "AND benevole <> 'Kenza'",
+        "ORDER BY id_plage DESC"
+       ],
+       "affiche": "5\n4\n3\n2\n1"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-013",
+   "type": "vraifaux",
+   "titre": "Compter vite",
+   "objectif": "Comprendre ce que calculent COUNT, SUM, AVG, MIN et MAX.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "Cette requête affiche 8.",
+       "reponse": true,
+       "explication": "COUNT(*) compte les lignes : la table tortue en a 8.",
+       "code": "SELECT COUNT(*) FROM tortue"
+      },
+      {
+       "texte": "COUNT(*) compte des lignes ; SUM(oeufs) additionne les valeurs de la colonne oeufs.",
+       "reponse": true,
+       "explication": "COUNT compte, SUM additionne : ce sont deux calculs différents."
+      },
+      {
+       "texte": "Cette requête affiche Nyota.",
+       "reponse": false,
+       "explication": "MAX(longueur) donne la plus grande valeur de la colonne, 112, pas le nom de la tortue.",
+       "code": "SELECT MAX(longueur) FROM tortue"
+      },
+      {
+       "texte": "AVG calcule la moyenne d'une colonne.",
+       "reponse": true,
+       "explication": "AVG vient de l'anglais average, « moyenne »."
+      },
+      {
+       "texte": "Cette requête affiche 76.",
+       "reponse": false,
+       "explication": "Deux montées n'ont donné aucun œuf : le plus petit nombre est 0.",
+       "code": "SELECT MIN(oeufs) FROM observation"
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "Cette requête affiche 3.",
+       "reponse": true,
+       "explication": "Kenza a fait les observations n° 1, 6 et 11.",
+       "code": "SELECT COUNT(*) FROM observation\nWHERE benevole = 'Kenza'"
+      },
+      {
+       "texte": "Cette requête affiche 2.",
+       "reponse": false,
+       "explication": "Nuru a été vue 2 fois, mais SUM additionne ses œufs : 110 + 102 = 212.",
+       "code": "SELECT SUM(oeufs) FROM observation\nWHERE id_tortue = 1"
+      },
+      {
+       "texte": "Une requête SELECT COUNT(*) FROM … affiche une seule ligne.",
+       "reponse": true,
+       "explication": "Une fonction d'agrégation résume toutes les lignes en une seule valeur."
+      },
+      {
+       "texte": "Cette requête affiche 99.4.",
+       "reponse": true,
+       "explication": "Les 5 tortues vertes mesurent en tout 497 cm : 497 / 5 = 99,4. SQLite écrit un point à la place de la virgule.",
+       "code": "SELECT AVG(longueur) FROM tortue\nWHERE espece = 'verte'"
+      },
+      {
+       "texte": "COUNT(*) compte les valeurs différentes d'une colonne.",
+       "reponse": false,
+       "explication": "COUNT(*) compte toutes les lignes. Pour les valeurs différentes, on écrit COUNT(DISTINCT colonne)."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "SQLite accepte la requête SELECT benevole FROM observation WHERE COUNT(*) > 2.",
+       "reponse": false,
+       "explication": "Une fonction d'agrégation est interdite dans WHERE : SQLite répond « misuse of aggregate function COUNT() »."
+      },
+      {
+       "texte": "Cette requête affiche 6.",
+       "reponse": true,
+       "explication": "Il y a 12 observations, mais seulement 6 bénévoles différent·e·s.",
+       "code": "SELECT COUNT(DISTINCT benevole)\nFROM observation"
+      },
+      {
+       "texte": "Cette requête affiche 8.",
+       "reponse": false,
+       "explication": "Kai, la tortue n° 8, n'a jamais été vue : 7 tortues différentes seulement.",
+       "code": "SELECT COUNT(DISTINCT id_tortue)\nFROM observation"
+      },
+      {
+       "texte": "Cette requête affiche 2026-04-18.",
+       "reponse": true,
+       "explication": "MAX marche aussi sur les textes. Les dates AAAA-MM-JJ se rangent comme des dates : la plus grande est la plus récente.",
+       "code": "SELECT MAX(date_obs)\nFROM observation"
+      },
+      {
+       "texte": "Cette moyenne est plus grande que AVG(oeufs) calculé sur toutes les observations.",
+       "reponse": true,
+       "explication": "On retire les deux observations à 0 œuf : la moyenne passe de 87.75 à 105.3.",
+       "code": "SELECT AVG(oeufs)\nFROM observation\nWHERE oeufs > 0"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-014",
+   "type": "sortie",
+   "titre": "Le bon total",
+   "objectif": "Prévoir le résultat d'une requête avec une fonction d'agrégation.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "SELECT COUNT(*)\nFROM plage",
+       "options": [
+        "1",
+        "12",
+        "6",
+        "5"
+       ],
+       "bonne": 2,
+       "retours": [
+        "Le résultat tient sur une ligne, mais il compte les lignes de la table.",
+        "12, c'est le nombre d'observations : regarde la table écrite après FROM.",
+        "Juste : la table plage compte 6 lignes.",
+        "5, c'est le nombre de communes différentes. COUNT(*) compte toutes les lignes."
+       ],
+       "aides": [
+        "Compte les lignes de la table plage."
+       ]
+      },
+      {
+       "code": "SELECT MAX(longueur)\nFROM tortue",
+       "options": [
+        "Nyota | 112",
+        "Nyota",
+        "68",
+        "112"
+       ],
+       "bonne": 3,
+       "retours": [
+        "Seule MAX(longueur) est demandée : pas de nom.",
+        "MAX(longueur) donne une longueur, pas un nom.",
+        "68 est la plus petite longueur : c'est MIN.",
+        "Juste : la plus grande carapace mesure 112 cm."
+       ],
+       "aides": [
+        "MAX cherche la plus grande valeur de la colonne."
+       ]
+      },
+      {
+       "code": "SELECT SUM(oeufs)\nFROM observation\nWHERE benevole = 'Lou'",
+       "options": [
+        "2",
+        "38",
+        "76",
+        "0"
+       ],
+       "bonne": 2,
+       "retours": [
+        "2, c'est le nombre d'observations de Lou : SUM additionne les œufs.",
+        "38 serait la moyenne : c'est AVG, pas SUM.",
+        "Juste : 0 + 76 = 76.",
+        "La première observation de Lou a 0 œuf, mais pas la seconde."
+       ],
+       "aides": [
+        "Additionne les œufs des lignes de Lou."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "SELECT COUNT(*)\nFROM observation\nWHERE oeufs = 0",
+       "options": [
+        "2",
+        "0",
+        "12",
+        "10"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : les observations n° 3 et n° 8 n'ont aucun œuf.",
+        "COUNT(*) compte les lignes gardées, pas les œufs.",
+        "WHERE garde seulement les lignes sans œufs.",
+        "10, ce sont les observations avec des œufs."
+       ],
+       "aides": [
+        "Compte les lignes où oeufs vaut 0."
+       ]
+      },
+      {
+       "code": "SELECT MIN(longueur), MAX(longueur)\nFROM tortue\nWHERE espece = 'verte'",
+       "options": [
+        "Taya | Nyota",
+        "87 | 112",
+        "112 | 87",
+        "68 | 112"
+       ],
+       "bonne": 1,
+       "retours": [
+        "MIN et MAX donnent des longueurs, pas des noms.",
+        "Juste : parmi les vertes, Taya est la plus petite (87) et Nyota la plus grande (112).",
+        "MIN est écrit en premier : il s'affiche en premier.",
+        "68 cm, c'est Bahari, une imbriquée : WHERE ne garde que les vertes."
+       ],
+       "aides": [
+        "Garde d'abord les tortues vertes."
+       ]
+      },
+      {
+       "code": "SELECT AVG(oeufs)\nFROM observation\nWHERE id_tortue = 4",
+       "options": [
+        "235",
+        "117.5",
+        "2",
+        "117"
+       ],
+       "bonne": 1,
+       "retours": [
+        "235 est la somme : AVG divise par le nombre de lignes.",
+        "Juste : (120 + 115) / 2 = 117,5. SQLite écrit 117.5.",
+        "2 est le nombre d'observations de Taya.",
+        "AVG garde la partie après la virgule."
+       ],
+       "aides": [
+        "Taya, la tortue n° 4, a été vue deux fois."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "SELECT COUNT(DISTINCT commune)\nFROM plage",
+       "reponse": "5",
+       "explication": "6 plages, mais Bandrélé en a deux : 5 communes différentes.",
+       "aides": [
+        "DISTINCT retire les doublons avant de compter."
+       ]
+      },
+      {
+       "code": "SELECT SUM(oeufs)\nFROM observation\nWHERE date_obs LIKE '2026-02%'",
+       "reponse": "352",
+       "explication": "En février : 120 + 102 + 130 = 352 œufs.",
+       "aides": [
+        "Repère les observations de février."
+       ]
+      },
+      {
+       "code": "SELECT MAX(oeufs) - MIN(oeufs)\nFROM observation\nWHERE id_plage = 2",
+       "reponse": "26",
+       "explication": "Sur la plage n° 2 : 95, 102 et 76 œufs. 102 - 76 = 26.",
+       "aides": [
+        "Cherche le plus grand et le plus petit nombre d'œufs de la plage 2."
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-015",
+   "type": "associer",
+   "titre": "Le bon résultat",
+   "objectif": "Relier une requête d'agrégation à la valeur qu'elle calcule.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à ce qu'elle affiche.",
+       "paires": [
+        [
+         "SELECT COUNT(*) FROM tortue",
+         "8"
+        ],
+        [
+         "SELECT COUNT(*) FROM observation",
+         "12"
+        ],
+        [
+         "SELECT MIN(longueur) FROM tortue",
+         "68"
+        ],
+        [
+         "SELECT MAX(oeufs) FROM observation",
+         "130"
+        ]
+       ],
+       "explication": "COUNT(*) compte les lignes de la table, MIN et MAX cherchent la plus petite et la plus grande valeur d'une colonne.",
+       "executer": true,
+       "aides": [
+        "Deux requêtes comptent des lignes : regarde la table de chacune."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à ce qu'elle affiche.",
+       "paires": [
+        [
+         "SELECT SUM(oeufs) FROM observation",
+         "1053"
+        ],
+        [
+         "SELECT AVG(oeufs) FROM observation",
+         "87.75"
+        ],
+        [
+         "SELECT COUNT(*) FROM tortue WHERE espece = 'imbriquée'",
+         "3"
+        ],
+        [
+         "SELECT SUM(oeufs) FROM observation WHERE id_plage = 1",
+         "235"
+        ],
+        [
+         "SELECT AVG(longueur) FROM tortue",
+         "90.25"
+        ]
+       ],
+       "explication": "SUM additionne, AVG fait la moyenne (1053 / 12 = 87.75), et WHERE choisit les lignes avant le calcul.",
+       "executer": true,
+       "aides": [
+        "La moyenne est plus petite que la somme : il y a deux moyennes, une sur les œufs, une sur les longueurs."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à ce qu'elle affiche.",
+       "paires": [
+        [
+         "SELECT COUNT(DISTINCT id_tortue) FROM observation",
+         "7"
+        ],
+        [
+         "SELECT COUNT(DISTINCT id_plage) FROM observation",
+         "5"
+        ],
+        [
+         "SELECT COUNT(*) FROM observation WHERE oeufs > 0",
+         "10"
+        ],
+        [
+         "SELECT AVG(oeufs) FROM observation WHERE oeufs > 0",
+         "105.3"
+        ],
+        [
+         "SELECT MIN(date_obs) FROM observation WHERE benevole = 'Soilihi'",
+         "2026-02-14"
+        ],
+        [
+         "SELECT MAX(longueur) - MIN(longueur) FROM tortue WHERE espece = 'imbriquée'",
+         "13"
+        ]
+       ],
+       "explication": "COUNT(DISTINCT …) compte les valeurs différentes : Kai et la plage Trévani n'apparaissent dans aucune observation.",
+       "executer": true
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-016",
+   "type": "erreur",
+   "titre": "Calcul de travers",
+   "objectif": "Corriger une requête qui utilise mal une fonction d'agrégation.",
+   "notions": [
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Compter les tortues.",
+       "lignes": [
+        "SELECT SUM(id_tortue)",
+        "FROM tortue"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT COUNT(*)",
+        "SELECT SUM(*)",
+        "SELECT AVG(id_tortue)"
+       ],
+       "bonne": 0,
+       "affiche": "8",
+       "explication": "Pour compter des lignes, on utilise COUNT(*). SUM additionne les numéros : 1 + 2 + … + 8.",
+       "aides": [
+        "Compter ou additionner : quelle fonction compte ?"
+       ],
+       "affiche_fautif": "36"
+      },
+      {
+       "but": "Afficher le nombre total d'œufs comptés.",
+       "lignes": [
+        "SELECT COUNT(oeufs)",
+        "FROM observation"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT SUM(id_obs)",
+        "SELECT MAX(oeufs)",
+        "SELECT SUM(oeufs)"
+       ],
+       "bonne": 2,
+       "affiche": "1053",
+       "explication": "Le total des œufs, c'est la somme de la colonne oeufs : SUM(oeufs). COUNT compte seulement les lignes.",
+       "aides": [
+        "Le résultat 12, c'est le nombre de quoi ?"
+       ],
+       "affiche_fautif": "12"
+      },
+      {
+       "but": "Afficher la longueur moyenne des tortues.",
+       "lignes": [
+        "SELECT MOY(longueur)",
+        "FROM tortue"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT MEAN(longueur)",
+        "SELECT AVG(longueur)",
+        "SELECT SUM(longueur)"
+       ],
+       "bonne": 1,
+       "affiche": "90.25",
+       "explication": "Les fonctions SQL ont des noms anglais : la moyenne s'écrit AVG (average).",
+       "aides": [
+        "Le nom de la fonction vient de l'anglais."
+       ],
+       "message": "Error: no such function: MOY"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Compter les observations de Naïma.",
+       "lignes": [
+        "SELECT COUNT(*)",
+        "FROM observation",
+        "WHERE benevole = 'Naima'"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE benevole = Naïma",
+        "WHERE benevole LIKE 'Naima'",
+        "WHERE benevole = 'Naïma'"
+       ],
+       "bonne": 2,
+       "affiche": "2",
+       "explication": "COUNT(*) vaut 0 car aucune ligne n'a le texte 'Naima' : le prénom s'écrit avec un tréma, Naïma.",
+       "aides": [
+        "Un résultat 0 veut dire qu'aucune ligne n'a passé le filtre."
+       ],
+       "affiche_fautif": "0"
+      },
+      {
+       "but": "Afficher la plus grande longueur des tortues imbriquées.",
+       "lignes": [
+        "SELECT MAX(longueur)",
+        "FROM tortue",
+        "WHERE espece = 'imbriquée' AND longueur = MAX(longueur)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE espece = 'imbriquée'",
+        "WHERE espece = 'verte'",
+        "WHERE longueur = MAX(longueur)"
+       ],
+       "bonne": 0,
+       "affiche": "81",
+       "explication": "Une fonction d'agrégation ne se met pas dans WHERE : WHERE choisit les lignes, puis MAX calcule sur ces lignes.",
+       "aides": [
+        "Quelle partie de la requête calcule déjà le maximum ?"
+       ],
+       "message": "Error: misuse of aggregate: MAX()"
+      },
+      {
+       "but": "Compter les tortues de plus de 100 cm.",
+       "lignes": [
+        "SELECT COUNT(*)",
+        "FROM tortue",
+        "WHERE COUNT(longueur) > 100"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE longueur < 100",
+        "WHERE longueur > 100",
+        "WHERE SUM(longueur) > 100"
+       ],
+       "bonne": 1,
+       "affiche": "2",
+       "explication": "WHERE compare la longueur de chaque tortue, une ligne à la fois. COUNT(*) compte ensuite les lignes gardées.",
+       "aides": [
+        "Dans WHERE, on parle d'une seule ligne à la fois."
+       ],
+       "message": "Error: misuse of aggregate: COUNT()"
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le nombre moyen d'œufs des pontes (les observations qui ont des œufs).",
+       "lignes": [
+        "SELECT AVG(oeufs)",
+        "FROM observation",
+        "WHERE oeufs >= 0"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "WHERE oeufs <> 1",
+        "WHERE oeufs > 0",
+        "WHERE AVG(oeufs) > 0"
+       ],
+       "bonne": 1,
+       "affiche": "105.3",
+       "explication": "Avec >= 0, les montées sans ponte (0 œuf) comptent dans la moyenne et la font baisser. Il faut > 0.",
+       "affiche_fautif": "87.75"
+      },
+      {
+       "but": "Afficher le nombre de bénévoles différent·e·s.",
+       "lignes": [
+        "SELECT DISTINCT COUNT(benevole)",
+        "FROM observation"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT DISTINCT benevole",
+        "SELECT COUNT(DISTINCT benevole)",
+        "SELECT COUNT(benevole)"
+       ],
+       "bonne": 1,
+       "affiche": "6",
+       "explication": "DISTINCT doit agir avant de compter : COUNT(DISTINCT benevole). Placé devant COUNT, il retire seulement les doublons du résultat.",
+       "affiche_fautif": "12"
+      },
+      {
+       "but": "Afficher la date de la première observation de Kenza.",
+       "lignes": [
+        "SELECT MAX(date_obs)",
+        "FROM observation",
+        "WHERE benevole = 'Kenza'"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "SELECT date_obs",
+        "SELECT COUNT(date_obs)",
+        "SELECT MIN(date_obs)"
+       ],
+       "bonne": 2,
+       "affiche": "2026-01-05",
+       "explication": "La première date est la plus ancienne, donc la plus petite : MIN(date_obs).",
+       "affiche_fautif": "2026-04-10"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-017",
+   "type": "completer",
+   "titre": "Relier les tables",
+   "objectif": "Écrire une jointure JOIN … ON entre une clé étrangère et une clé primaire.",
+   "notions": [
+    "donnees.bdd.sql.jointure"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le nom de la tortue de l'observation n° 3.",
+       "lignes": [
+        "SELECT tortue.nom",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = {0}",
+        "WHERE id_obs = 3"
+       ],
+       "trous": [
+        {
+         "options": [
+          "tortue.nom",
+          "observation.id_plage",
+          "tortue.id_tortue"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Mira",
+       "explication": "La clé étrangère observation.id_tortue se compare à la clé primaire tortue.id_tortue.",
+       "aides": [
+        "Les deux côtés du = doivent parler du même numéro de tortue."
+       ]
+      },
+      {
+       "but": "Afficher le nom de la plage de l'observation n° 6.",
+       "lignes": [
+        "SELECT plage.nom",
+        "FROM observation",
+        "{0} plage ON observation.id_plage = plage.id_plage",
+        "WHERE id_obs = 6"
+       ],
+       "trous": [
+        {
+         "options": [
+          "JOIN",
+          "WHERE",
+          "FROM"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Tahiti",
+       "explication": "JOIN ajoute une deuxième table ; ON dit comment ses lignes se relient à celles de la première.",
+       "aides": [
+        "Quel mot-clé ajoute une table à la requête ?"
+       ]
+      },
+      {
+       "but": "Afficher le nom de la tortue vue par Sam.",
+       "lignes": [
+        "SELECT tortue.nom",
+        "FROM observation",
+        "JOIN tortue {0} observation.id_tortue = tortue.id_tortue",
+        "WHERE benevole = 'Sam'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "WHERE",
+          "AND",
+          "ON"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Bahari",
+       "explication": "Après JOIN table, la condition de jointure commence par ON.",
+       "aides": [
+        "Un petit mot anglais de deux lettres."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le nom des tortues vues par Kenza, de la plus ancienne observation à la plus récente.",
+       "lignes": [
+        "SELECT tortue.nom",
+        "FROM observation",
+        "JOIN tortue ON observation.{0} = tortue.{1}",
+        "WHERE benevole = 'Kenza'",
+        "ORDER BY date_obs"
+       ],
+       "trous": [
+        {
+         "options": [
+          "id_tortue",
+          "id_obs",
+          "id_plage"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "id_tortue",
+          "nom"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Nuru\nNyota\nMira",
+       "explication": "On relie le numéro de tortue noté dans l'observation au numéro de la tortue : id_tortue des deux côtés.",
+       "aides": [
+        "La clé étrangère et la clé primaire ont ici le même nom."
+       ]
+      },
+      {
+       "but": "Afficher la commune de chaque observation de Lou, de la plus ancienne à la plus récente.",
+       "lignes": [
+        "SELECT {0}",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE benevole = 'Lou'",
+        "ORDER BY date_obs"
+       ],
+       "trous": [
+        {
+         "options": [
+          "plage.commune",
+          "plage.nom",
+          "observation.id_plage"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Kani-Kéli\nBandrélé",
+       "explication": "La commune est rangée dans la table plage : la jointure permet de la lire.",
+       "aides": [
+        "Quelle colonne contient la commune ?"
+       ]
+      },
+      {
+       "but": "Afficher la date et le nom de la plage des observations de Bahari.",
+       "lignes": [
+        "SELECT date_obs, plage.nom",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE id_tortue = {0}",
+        "ORDER BY date_obs"
+       ],
+       "trous": [
+        {
+         "options": [
+          "5",
+          "2",
+          "'Bahari'"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "2026-03-07 | Iloni",
+       "explication": "observation ne connaît que le numéro de la tortue : Bahari est la tortue n° 5.",
+       "aides": [
+        "La colonne id_tortue contient un numéro, pas un nom."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le nom de la tortue et le nom de la plage de l'observation n° 11.",
+       "lignes": [
+        "SELECT tortue.nom, plage.nom",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "JOIN {0} ON observation.{1} = plage.id_plage",
+        "WHERE id_obs = 11"
+       ],
+       "trous": [
+        {
+         "options": [
+          "tortue",
+          "plage"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "id_plage",
+          "id_tortue"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Mira | Sakouli",
+       "explication": "Deux jointures : une par table à relier, chacune avec sa propre clé étrangère."
+      },
+      {
+       "but": "Afficher le nom des tortues vues sur la plage Saziley, par ordre alphabétique.",
+       "lignes": [
+        "SELECT tortue.nom",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE {0} = 'Saziley'",
+        "ORDER BY tortue.nom"
+       ],
+       "trous": [
+        {
+         "options": [
+          "tortue.nom",
+          "plage.nom",
+          "nom"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Lulu\nNuru\nZawadi",
+       "explication": "tortue et plage ont toutes les deux une colonne nom : on précise la table, sinon SQLite répond « ambiguous column name: nom »."
+      },
+      {
+       "but": "Afficher, sans doublon, les communes où Nuru a été vue, par ordre alphabétique.",
+       "lignes": [
+        "SELECT DISTINCT plage.commune",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "JOIN {0} ON observation.id_tortue = tortue.id_tortue",
+        "WHERE tortue.nom = 'Nuru'",
+        "ORDER BY plage.commune"
+       ],
+       "trous": [
+        {
+         "options": [
+          "plage",
+          "observation",
+          "tortue"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Bandrélé\nKani-Kéli",
+       "explication": "Pour lire le nom de la tortue, il faut joindre la table tortue."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-018",
+   "type": "ordre",
+   "titre": "Jointure en puzzle",
+   "objectif": "Remettre dans l'ordre une requête avec une jointure.",
+   "notions": [
+    "donnees.bdd.sql.jointure"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le nom de la tortue de l'observation n° 7.",
+       "lignes": [
+        "SELECT tortue.nom",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "WHERE id_obs = 7"
+       ],
+       "affiche": "Bahari",
+       "aides": [
+        "JOIN vient juste après FROM."
+       ]
+      },
+      {
+       "but": "Afficher le nom de la plage de l'observation n° 4.",
+       "lignes": [
+        "SELECT plage.nom",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE id_obs = 4"
+       ],
+       "affiche": "Sakouli",
+       "aides": [
+        "WHERE vient après la jointure."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher la date et le nom de la tortue des observations de Soilihi, de la plus ancienne à la plus récente.",
+       "lignes": [
+        "SELECT date_obs, tortue.nom",
+        "FROM observation",
+        "JOIN tortue",
+        "ON observation.id_tortue = tortue.id_tortue",
+        "WHERE benevole = 'Soilihi'",
+        "ORDER BY date_obs"
+       ],
+       "affiche": "2026-02-14 | Nuru\n2026-04-18 | Nyota",
+       "aides": [
+        "ON suit directement le nom de la table jointe."
+       ]
+      },
+      {
+       "but": "Afficher le nom de la plage et les œufs des pontes de plus de 120 œufs, de la plus grosse à la plus petite.",
+       "lignes": [
+        "SELECT plage.nom, oeufs",
+        "FROM observation",
+        "JOIN plage",
+        "ON observation.id_plage = plage.id_plage",
+        "WHERE oeufs > 120",
+        "ORDER BY oeufs DESC"
+       ],
+       "affiche": "Tahiti | 130\nN'Gouja | 125",
+       "aides": [
+        "SELECT, FROM, JOIN, ON, WHERE, ORDER BY."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Compter les observations de tortues vertes.",
+       "lignes": [
+        "SELECT COUNT(*)",
+        "FROM observation",
+        "JOIN tortue",
+        "ON observation.id_tortue = tortue.id_tortue",
+        "WHERE tortue.espece = 'verte'"
+       ],
+       "affiche": "8"
+      },
+      {
+       "but": "Afficher le nom de la plage et la date des observations de plus de 90 œufs à Bandrélé, rangées par plage, puis par date.",
+       "lignes": [
+        "SELECT plage.nom, date_obs",
+        "FROM observation",
+        "JOIN plage",
+        "ON observation.id_plage = plage.id_plage",
+        "WHERE plage.commune = 'Bandrélé' AND oeufs > 90",
+        "ORDER BY plage.nom,",
+        "date_obs"
+       ],
+       "affiche": "Sakouli | 2026-02-02\nSakouli | 2026-04-10\nSaziley | 2026-01-12\nSaziley | 2026-02-14"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-019",
+   "type": "vraifaux",
+   "titre": "Vrai lien, faux lien",
+   "objectif": "Comprendre ce que fait une jointure et pourquoi la condition ON compte.",
+   "notions": [
+    "donnees.bdd.sql.jointure"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "Une jointure réunit les lignes de deux tables qui se correspondent.",
+       "reponse": true,
+       "explication": "Elle colle une ligne d'observation à la ligne de la tortue qu'elle cite."
+      },
+      {
+       "texte": "Pour afficher le nom de la tortue d'une observation, il faut une jointure.",
+       "reponse": true,
+       "explication": "observation ne contient que le numéro de la tortue ; le nom est dans tortue."
+      },
+      {
+       "texte": "La condition de jointure s'écrit après ON.",
+       "reponse": true,
+       "explication": "JOIN tortue ON observation.id_tortue = tortue.id_tortue."
+      },
+      {
+       "texte": "SQLite relie tout seul observation et tortue, même sans condition ON.",
+       "reponse": false,
+       "explication": "Sans ON, SQLite associe chaque observation à chaque tortue : 12 × 8 = 96 lignes, presque toutes fausses."
+      },
+      {
+       "texte": "Dans ON observation.id_tortue = tortue.id_tortue, on relie une clé étrangère à une clé primaire.",
+       "reponse": true,
+       "explication": "C'est le cas le plus courant : la clé étrangère renvoie à la clé primaire."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "Cette requête affiche 12.",
+       "reponse": true,
+       "explication": "Chaque observation trouve exactement une tortue : 12 lignes.",
+       "code": "SELECT COUNT(*)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue"
+      },
+      {
+       "texte": "Cette requête affiche 12.",
+       "reponse": false,
+       "explication": "Sans ON, chaque observation est associée à chacune des 8 tortues : 96 lignes.",
+       "code": "SELECT COUNT(*)\nFROM observation\nJOIN tortue"
+      },
+      {
+       "texte": "Kai n'apparaît dans aucune ligne de observation JOIN tortue ON observation.id_tortue = tortue.id_tortue.",
+       "reponse": true,
+       "explication": "Kai n'a jamais été vue : aucune observation ne la cite, la jointure ne la trouve pas."
+      },
+      {
+       "texte": "Écrire tortue.nom plutôt que nom évite la confusion avec plage.nom.",
+       "reponse": true,
+       "explication": "Le préfixe table. dit de quelle table vient la colonne."
+      },
+      {
+       "texte": "Écrire FROM tortue JOIN observation plutôt que FROM observation JOIN tortue change les lignes trouvées.",
+       "reponse": false,
+       "explication": "Avec la même condition ON, on trouve les mêmes paires : seul l'ordre d'affichage peut changer."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "Cette requête provoque une erreur, car la colonne nom est ambiguë.",
+       "reponse": false,
+       "explication": "Ici, seule la table plage a une colonne nom : il n'y a pas d'ambiguïté. La requête affiche N'Gouja.",
+       "code": "SELECT nom\nFROM observation\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE id_obs = 1"
+      },
+      {
+       "texte": "Dans une requête qui joint observation, tortue et plage, SELECT nom provoque l'erreur « ambiguous column name: nom ».",
+       "reponse": true,
+       "explication": "tortue et plage ont toutes les deux une colonne nom : SQLite ne sait pas laquelle choisir. On écrit tortue.nom ou plage.nom."
+      },
+      {
+       "texte": "La plage Trévani apparaît dans le résultat de plage JOIN observation ON plage.id_plage = observation.id_plage.",
+       "reponse": false,
+       "explication": "Aucune observation n'a eu lieu à Trévani : la jointure ne garde que les lignes qui se correspondent."
+      },
+      {
+       "texte": "La condition ON tortue.id_tortue = observation.id_obs relie chaque tortue à ses observations.",
+       "reponse": false,
+       "explication": "id_obs est le numéro de l'observation, pas celui de la tortue : il faut observation.id_tortue."
+      },
+      {
+       "texte": "Une requête peut joindre trois tables : observation, tortue et plage.",
+       "reponse": true,
+       "explication": "On écrit deux JOIN … ON, un pour chaque table ajoutée."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-020",
+   "type": "sortie",
+   "titre": "Qui, où ?",
+   "objectif": "Prévoir le résultat d'une jointure suivie d'un filtre.",
+   "notions": [
+    "donnees.bdd.sql.jointure"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "SELECT tortue.nom\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE id_obs = 12",
+       "options": [
+        "Nyota",
+        "6",
+        "N'Gouja",
+        "Soilihi"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : l'observation n° 12 cite la tortue n° 6, Nyota.",
+        "6 est le numéro de la tortue ; la jointure permet d'afficher son nom.",
+        "N'Gouja est la plage : on affiche tortue.nom.",
+        "Soilihi est le bénévole : on affiche le nom de la tortue."
+       ],
+       "aides": [
+        "Lis l'observation n° 12, puis cherche sa tortue."
+       ]
+      },
+      {
+       "code": "SELECT plage.nom\nFROM observation\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE id_obs = 7",
+       "options": [
+        "5",
+        "Iloni",
+        "Bahari",
+        "Dembéni"
+       ],
+       "bonne": 1,
+       "retours": [
+        "5 est le numéro de la plage ; on affiche son nom.",
+        "Juste : l'observation n° 7 a eu lieu sur la plage n° 5, Iloni.",
+        "Bahari est la tortue : on affiche plage.nom.",
+        "Dembéni est la commune : on affiche le nom de la plage."
+       ],
+       "aides": [
+        "Lis l'observation n° 7, puis cherche sa plage."
+       ]
+      },
+      {
+       "code": "SELECT benevole\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE tortue.nom = 'Bahari'",
+       "options": [
+        "Kenza",
+        "Bahari",
+        "5",
+        "Sam"
+       ],
+       "bonne": 3,
+       "retours": [
+        "Kenza n'a pas vu Bahari : cherche la ligne de la tortue n° 5.",
+        "On affiche le ou la bénévole, pas la tortue.",
+        "5 est le numéro de Bahari ; on affiche benevole.",
+        "Juste : Bahari n'a été vue qu'une fois, par Sam."
+       ],
+       "aides": [
+        "Bahari est la tortue n° 5."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "SELECT tortue.nom, oeufs\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE benevole = 'Naïma'\nORDER BY oeufs",
+       "options": [
+        "Taya | 120 / Taya | 115",
+        "Taya",
+        "4 | 115 / 4 | 120",
+        "Taya | 115 / Taya | 120"
+       ],
+       "bonne": 3,
+       "retours": [
+        "Sans DESC, ORDER BY commence par la plus petite valeur.",
+        "Deux colonnes sont demandées, et Naïma a fait deux observations.",
+        "La jointure remplace le numéro par le nom : on affiche tortue.nom.",
+        "Juste : Naïma a vu Taya deux fois, rangées par nombre d'œufs croissant."
+       ],
+       "aides": [
+        "Cherche les deux observations de Naïma."
+       ]
+      },
+      {
+       "code": "SELECT DISTINCT tortue.nom\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE id_plage = 1\nORDER BY tortue.nom",
+       "options": [
+        "Nuru / Mira / Zawadi / Nyota",
+        "Nuru",
+        "Mira / Nuru / Zawadi",
+        "Mira / Nuru / Nyota / Zawadi"
+       ],
+       "bonne": 3,
+       "retours": [
+        "C'est l'ordre des observations : ORDER BY tortue.nom range par ordre alphabétique.",
+        "Quatre observations ont eu lieu sur la plage 1.",
+        "Nyota aussi est venue sur la plage 1 (observation n° 12).",
+        "Juste : quatre tortues différentes sont venues à N'Gouja, rangées de A à Z."
+       ],
+       "aides": [
+        "Repère les 4 observations de la plage 1."
+       ]
+      },
+      {
+       "code": "SELECT COUNT(*)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE tortue.espece = 'imbriquée'",
+       "options": [
+        "3",
+        "4",
+        "12",
+        "2"
+       ],
+       "bonne": 1,
+       "retours": [
+        "3, c'est le nombre de tortues imbriquées. On compte ici des observations.",
+        "Juste : Mira (2 fois), Bahari et Lulu : 4 observations de tortues imbriquées.",
+        "WHERE ne garde que les observations de tortues imbriquées.",
+        "Mira a été vue deux fois, mais Bahari et Lulu aussi sont imbriquées."
+       ],
+       "aides": [
+        "Les tortues imbriquées sont les n° 2, 5 et 7."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "SELECT SUM(oeufs)\nFROM observation\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE plage.commune = 'Bandrélé'",
+       "reponse": "485",
+       "explication": "Bandrélé a deux plages : Saziley (95 + 102 + 76) et Sakouli (120 + 92). Total : 485.",
+       "aides": [
+        "Bandrélé a deux plages."
+       ]
+      },
+      {
+       "code": "SELECT plage.nom\nFROM observation\nJOIN plage ON observation.id_plage = plage.id_plage\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE tortue.nom = 'Lulu'",
+       "reponse": "Saziley",
+       "explication": "Lulu a été vue une fois, observation n° 9, sur la plage n° 2 : Saziley.",
+       "aides": [
+        "Trouve d'abord le numéro de Lulu."
+       ]
+      },
+      {
+       "code": "SELECT MAX(tortue.longueur)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE benevole = 'Lou'",
+       "reponse": "81",
+       "explication": "Lou a vu Mira (76 cm) et Lulu (81 cm) : le maximum est 81.",
+       "aides": [
+        "Quelles tortues apparaissent dans les observations de Lou ?"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-021",
+   "type": "associer",
+   "titre": "Écrire dans la base",
+   "objectif": "Reconnaître l'effet d'une requête INSERT, UPDATE ou DELETE.",
+   "notions": [
+    "donnees.bdd.sql.mise-a-jour"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque début de requête à ce qu'il fait.",
+       "paires": [
+        [
+         "INSERT INTO …",
+         "ajouter une ligne"
+        ],
+        [
+         "UPDATE … SET …",
+         "modifier des valeurs"
+        ],
+        [
+         "DELETE FROM …",
+         "supprimer des lignes"
+        ],
+        [
+         "SELECT … FROM …",
+         "lire des données sans rien changer"
+        ]
+       ],
+       "explication": "INSERT ajoute, UPDATE modifie, DELETE supprime : ce sont les requêtes de mise à jour. SELECT ne change rien.",
+       "aides": [
+        "insert : insérer ; update : mettre à jour ; delete : effacer."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à son effet sur la base.",
+       "paires": [
+        [
+         "INSERT INTO plage VALUES (7, 'Sohoa', 'Chiconi')",
+         "la base compte une plage de plus"
+        ],
+        [
+         "UPDATE tortue SET longueur = 99 WHERE id_tortue = 1",
+         "Nuru mesure maintenant 99 cm"
+        ],
+        [
+         "DELETE FROM observation WHERE id_obs = 3",
+         "l'observation n° 3 disparaît"
+        ],
+        [
+         "UPDATE observation SET benevole = 'Sam' WHERE id_obs = 3",
+         "l'observation n° 3 est attribuée à Sam"
+        ]
+       ],
+       "explication": "WHERE choisit les lignes touchées ; SET dit la nouvelle valeur ; VALUES donne la ligne ajoutée.",
+       "aides": [
+        "Regarde le premier mot, puis la condition WHERE."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à son effet. SQLite contrôle les clés étrangères.",
+       "paires": [
+        [
+         "UPDATE tortue SET longueur = 99",
+         "les 8 tortues mesurent 99 cm"
+        ],
+        [
+         "DELETE FROM observation",
+         "la table observation est vidée"
+        ],
+        [
+         "DELETE FROM observation WHERE oeufs = 0",
+         "2 lignes sont supprimées"
+        ],
+        [
+         "UPDATE tortue SET longueur = longueur + 2 WHERE espece = 'verte'",
+         "5 tortues gagnent 2 cm"
+        ],
+        [
+         "DELETE FROM tortue WHERE id_tortue = 1",
+         "refusée : des observations citent cette tortue"
+        ],
+        [
+         "INSERT INTO tortue (nom, espece, longueur) VALUES ('Ylang', 'verte', 90)",
+         "une tortue n° 9 est ajoutée"
+        ]
+       ],
+       "explication": "Sans WHERE, UPDATE et DELETE touchent toutes les lignes. Une clé primaire INTEGER oubliée est choisie par SQLite : le numéro suivant."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-022",
+   "type": "erreur",
+   "titre": "Ajout refusé",
+   "objectif": "Corriger une insertion refusée par une contrainte d'intégrité.",
+   "notions": [
+    "donnees.bdd.sql.mise-a-jour",
+    "donnees.bdd.relationnel"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Ajouter la tortue n° 9 : Ylang, verte, 90 cm.",
+       "lignes": [
+        "INSERT INTO tortue",
+        "VALUES (3, 'Ylang', 'verte', 90)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES (1, 'Ylang', 'verte', 90)",
+        "VALUES (9, 'Ylang', 'verte', 90)",
+        "VALUES (8, 'Ylang', 'verte', 90)"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "La clé primaire id_tortue doit être unique : le numéro 3 est déjà celui de Zawadi.",
+       "aides": [
+        "Quels numéros sont déjà pris dans tortue ?"
+       ],
+       "message": "Error: UNIQUE constraint failed: tortue.id_tortue"
+      },
+      {
+       "but": "Ajouter la plage n° 7, Sohoa, à Chiconi.",
+       "lignes": [
+        "INSERT INTO plage",
+        "VALUES (7, 'Sohoa')"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES (7, 'Sohoa', Chiconi)",
+        "VALUES (7, 'Sohoa'; 'Chiconi')",
+        "VALUES (7, 'Sohoa', 'Chiconi')"
+       ],
+       "bonne": 2,
+       "affiche": "",
+       "explication": "La table plage a 3 colonnes : VALUES doit donner 3 valeurs, dans l'ordre id_plage, nom, commune.",
+       "aides": [
+        "Compte les colonnes de plage."
+       ],
+       "message": "Error: table plage has 3 columns but 2 values were supplied"
+      },
+      {
+       "but": "Ajouter la tortue n° 9 : Ylang, de l'espèce verte, 90 cm.",
+       "lignes": [
+        "INSERT INTO tortue",
+        "VALUES (9, 'Ylang', 'vert', 90)"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES (9, 'Ylang', 'Verte', 90)",
+        "VALUES (9, 'Ylang', 'verte', 90)",
+        "VALUES (9, 'Ylang', 'luth', 90)"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "La contrainte CHECK limite le domaine de espece à 'verte' et 'imbriquée', écrits exactement ainsi.",
+       "aides": [
+        "Le message cite la règle qui n'est pas respectée."
+       ],
+       "message": "Error: CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Ajouter l'observation n° 13 : Kai (n° 8) à Trévani (n° 6), le 2026-05-02, 104 œufs, par Lou. (SQLite contrôle les clés étrangères.)",
+       "lignes": [
+        "INSERT INTO observation",
+        "VALUES (13, 8, 7, '2026-05-02', 104, 'Lou')"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES (13, 8, 0, '2026-05-02', 104, 'Lou')",
+        "VALUES (13, 9, 6, '2026-05-02', 104, 'Lou')",
+        "VALUES (13, 8, 6, '2026-05-02', 104, 'Lou')"
+       ],
+       "bonne": 2,
+       "affiche": "",
+       "explication": "La clé étrangère id_plage doit renvoyer à une plage qui existe : Trévani est la n° 6 ; il n'y a pas de plage n° 7.",
+       "aides": [
+        "Repère l'ordre des colonnes : id_obs, id_tortue, id_plage…"
+       ],
+       "message": "Error: FOREIGN KEY constraint failed"
+      },
+      {
+       "but": "Ajouter l'observation n° 13 : Kai (n° 8) à Trévani (n° 6), le 2026-05-02, 104 œufs, par Lou.",
+       "lignes": [
+        "INSERT INTO observation",
+        "(id_obs, id_tortue, id_plage, date_obs, oeufs, benevole)",
+        "VALUES (13, 8, 6, '2026-05-02', 104, NULL)"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "VALUES (13, 8, 6, '2026-05-02', 104, 'Lou')",
+        "VALUES (13, 8, 6, '2026-05-02', 104)",
+        "VALUES (13, 8, 6, '2026-05-02', 104, Lou)"
+       ],
+       "bonne": 0,
+       "affiche": "",
+       "explication": "benevole est NOT NULL : la valeur est obligatoire. Ici, c'est le texte 'Lou'.",
+       "aides": [
+        "NULL veut dire « pas de valeur »."
+       ],
+       "message": "Error: NOT NULL constraint failed: observation.benevole"
+      },
+      {
+       "but": "Ajouter l'observation n° 13 : Kai (n° 8) à Trévani (n° 6), le 2026-05-02, montée sans ponte, par Lou.",
+       "lignes": [
+        "INSERT INTO observation",
+        "VALUES (13, 8, 6, '2026-05-02', -1, 'Lou')"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES (13, 8, 6, '2026-05-02', 0, 'Lou')",
+        "VALUES (13, 8, 6, '2026-05-02', '-1', 'Lou')",
+        "VALUES (13, 8, 6, '2026-05-02', NULL, 'Lou')"
+       ],
+       "bonne": 0,
+       "affiche": "",
+       "explication": "Sans ponte, il y a 0 œuf. La contrainte CHECK (oeufs >= 0) refuse un nombre négatif, et NOT NULL refuse l'absence de valeur.",
+       "aides": [
+        "Combien d'œufs compte une montée sans ponte ?"
+       ],
+       "message": "Error: CHECK constraint failed: oeufs >= 0"
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Ajouter la plage n° 7, Sohoa, à Chiconi.",
+       "lignes": [
+        "INSERT INTO plage",
+        "VALUES (7, 'Saziley', 'Chiconi')"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES (7, 'Sakouli', 'Chiconi')",
+        "VALUES (2, 'Sohoa', 'Chiconi')",
+        "VALUES (7, 'Sohoa', 'Chiconi')"
+       ],
+       "bonne": 2,
+       "affiche": "",
+       "explication": "nom est UNIQUE dans plage : deux plages ne portent jamais le même nom. Ici, il fallait écrire Sohoa.",
+       "message": "Error: UNIQUE constraint failed: plage.nom"
+      },
+      {
+       "but": "Ajouter la tortue n° 9 : Ylang, verte, 90 cm.",
+       "lignes": [
+        "INSERT INTO tortue (id_tortue, nom, espece, longueur)",
+        "VALUES (9, 'Ylang', 90, 'verte')"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES ('Ylang', 9, 'verte', 90)",
+        "VALUES (9, 'Ylang', 'verte', 90)",
+        "VALUES (9, 90, 'Ylang', 'verte')"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "Les valeurs se placent dans l'ordre des colonnes écrites entre parenthèses : espece, puis longueur.",
+       "message": "Error: CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+      },
+      {
+       "but": "Ajouter l'observation n° 13 : Nyota (n° 6) à Iloni (n° 5), le 2026-05-03, 118 œufs, par Sam. (SQLite contrôle les clés étrangères.)",
+       "lignes": [
+        "INSERT INTO observation",
+        "VALUES (12, 6, 5, '2026-05-03', 118, 'Sam')"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "VALUES (11, 6, 5, '2026-05-03', 118, 'Sam')",
+        "VALUES (13, 6, 5, '2026-05-03', 118, 'Sam')",
+        "VALUES (13, 6, 'Iloni', '2026-05-03', 118, 'Sam')"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "id_obs est la clé primaire : 12 est déjà pris. Et la clé étrangère id_plage attend un numéro, pas un nom.",
+       "message": "Error: UNIQUE constraint failed: observation.id_obs"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-023",
+   "type": "completer",
+   "titre": "Tout ensemble",
+   "objectif": "Combiner jointure, filtre et fonction d'agrégation.",
+   "notions": [
+    "donnees.bdd.sql.jointure",
+    "donnees.bdd.sql.interrogation"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Compter les observations faites sur la plage Tahiti.",
+       "lignes": [
+        "SELECT {0}",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE plage.nom = 'Tahiti'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "COUNT(*)",
+          "MAX(id_obs)",
+          "SUM(oeufs)"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "2",
+       "explication": "Compter des observations, c'est compter des lignes : COUNT(*).",
+       "aides": [
+        "On veut un nombre de lignes."
+       ]
+      },
+      {
+       "but": "Afficher le nombre total d'œufs pondus par Nyota.",
+       "lignes": [
+        "SELECT SUM(oeufs)",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.{0}",
+        "WHERE tortue.nom = 'Nyota'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "id_tortue",
+          "longueur",
+          "nom"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "255",
+       "explication": "La clé étrangère observation.id_tortue se relie à la clé primaire tortue.id_tortue.",
+       "aides": [
+        "Les deux côtés du = parlent du numéro de la tortue."
+       ]
+      },
+      {
+       "but": "Afficher la plus petite longueur des tortues vertes.",
+       "lignes": [
+        "SELECT {0}(longueur)",
+        "FROM tortue",
+        "WHERE espece = 'verte'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "MIN",
+          "AVG",
+          "MAX"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "87",
+       "explication": "La plus petite valeur d'une colonne s'obtient avec MIN.",
+       "aides": [
+        "minimum, maximum, moyenne : laquelle ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher, sans doublon, les bénévoles qui ont vu des tortues vertes, par ordre alphabétique.",
+       "lignes": [
+        "SELECT {0} benevole",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "WHERE tortue.espece = {1}",
+        "ORDER BY benevole"
+       ],
+       "trous": [
+        {
+         "options": [
+          "ALL",
+          "DISTINCT"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "'verte'",
+          "'imbriquée'"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Ibrahim\nKenza\nNaïma\nSoilihi",
+       "explication": "La jointure donne l'espèce de chaque tortue observée ; DISTINCT garde chaque prénom une fois.",
+       "aides": [
+        "Kenza a vu deux tortues vertes : combien de fois doit-elle apparaître ?"
+       ]
+      },
+      {
+       "but": "Afficher le plus grand nombre d'œufs compté sur une plage de Bandrélé.",
+       "lignes": [
+        "SELECT {0}",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE plage.commune = 'Bandrélé'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "MAX(oeufs)",
+          "MAX(id_plage)",
+          "COUNT(oeufs)"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "120",
+       "explication": "MAX(oeufs) cherche la plus grosse ponte parmi les lignes gardées par WHERE.",
+       "aides": [
+        "Sur quelle colonne porte le maximum ?"
+       ]
+      },
+      {
+       "but": "Afficher la date et la commune des pontes de plus de 120 œufs, de la plus ancienne à la plus récente.",
+       "lignes": [
+        "SELECT date_obs, plage.commune",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE oeufs {0} 120",
+        "ORDER BY {1}"
+       ],
+       "trous": [
+        {
+         "options": [
+          ">",
+          ">="
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "plage.commune",
+          "date_obs"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "2026-02-28 | Sada\n2026-04-18 | Kani-Kéli",
+       "explication": "« Plus de 120 » exclut 120 : on écrit >. Puis on range par date.",
+       "aides": [
+        "La ponte de 120 œufs doit-elle être gardée ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Compter les tortues vertes qui ont été vues au moins une fois.",
+       "lignes": [
+        "SELECT COUNT({0} tortue.id_tortue)",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "WHERE tortue.espece = 'verte'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "DISTINCT",
+          "ALL"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "4",
+       "explication": "Une tortue vue deux fois donne deux lignes : COUNT(DISTINCT …) ne la compte qu'une fois."
+      },
+      {
+       "but": "Afficher la longueur moyenne des tortues vues par Lou.",
+       "lignes": [
+        "SELECT AVG({0})",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "WHERE {1} = 'Lou'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "oeufs",
+          "id_tortue",
+          "tortue.longueur"
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "tortue.nom",
+          "benevole"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "78.5",
+       "explication": "Lou a vu Mira (76 cm) et Lulu (81 cm) : la moyenne porte sur tortue.longueur."
+      },
+      {
+       "but": "Compter les pontes (au moins un œuf) des plages de Bandrélé.",
+       "lignes": [
+        "SELECT COUNT(*)",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE plage.commune = 'Bandrélé'",
+        "{0} oeufs {1} 0"
+       ],
+       "trous": [
+        {
+         "options": [
+          "OR",
+          "AND"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "=",
+          ">"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "5",
+       "explication": "Les deux conditions doivent être vraies : AND, et « au moins un œuf » s'écrit oeufs > 0."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-024",
+   "type": "ordre",
+   "titre": "Mise à jour en puzzle",
+   "objectif": "Remettre dans l'ordre une requête INSERT, UPDATE ou DELETE.",
+   "notions": [
+    "donnees.bdd.sql.mise-a-jour"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Ajouter la plage n° 7, Sohoa, à Chiconi.",
+       "lignes": [
+        "INSERT INTO plage",
+        "(id_plage, nom, commune)",
+        "VALUES (7, 'Sohoa', 'Chiconi')"
+       ],
+       "affiche": "",
+       "aides": [
+        "Les colonnes viennent avant les valeurs."
+       ]
+      },
+      {
+       "but": "Supprimer l'observation n° 3.",
+       "lignes": [
+        "DELETE",
+        "FROM observation",
+        "WHERE id_obs = 3"
+       ],
+       "affiche": "",
+       "aides": [
+        "DELETE FROM, puis la condition."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Nuru a grandi : sa carapace mesure maintenant 100 cm.",
+       "lignes": [
+        "UPDATE tortue",
+        "SET longueur = 100",
+        "WHERE nom = 'Nuru'"
+       ],
+       "affiche": "",
+       "aides": [
+        "UPDATE table, puis SET, puis WHERE."
+       ]
+      },
+      {
+       "but": "Corriger l'observation n° 7 : c'est Kenza qui l'a faite, et elle a compté 90 œufs.",
+       "lignes": [
+        "UPDATE observation",
+        "SET benevole = 'Kenza',",
+        "oeufs = 90",
+        "WHERE id_obs = 7"
+       ],
+       "affiche": "",
+       "aides": [
+        "Après SET, les modifications se séparent par une virgule."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Ajouter l'observation n° 13 : Kai (n° 8) à Trévani (n° 6), le 2026-05-02, 104 œufs, par Lou.",
+       "lignes": [
+        "INSERT INTO observation",
+        "(id_obs, id_tortue, id_plage,",
+        "date_obs, oeufs, benevole)",
+        "VALUES (13, 8, 6,",
+        "'2026-05-02', 104, 'Lou')"
+       ],
+       "affiche": ""
+      },
+      {
+       "but": "Supprimer les montées sans ponte de la plage n° 1.",
+       "lignes": [
+        "DELETE FROM observation",
+        "WHERE id_plage = 1",
+        "AND oeufs = 0"
+       ],
+       "affiche": ""
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-025",
+   "type": "vraifaux",
+   "titre": "La base veille",
+   "objectif": "Savoir ce que les contraintes d'intégrité acceptent ou refusent.",
+   "notions": [
+    "donnees.bdd.relationnel",
+    "donnees.bdd.sql.mise-a-jour"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "Sans WHERE, UPDATE tortue SET longueur = 99 modifie toutes les tortues.",
+       "reponse": true,
+       "explication": "Sans WHERE, la mise à jour touche toutes les lignes : il faut toujours vérifier sa condition."
+      },
+      {
+       "texte": "DELETE FROM observation WHERE id_obs = 3 supprime une seule ligne.",
+       "reponse": true,
+       "explication": "id_obs est la clé primaire : une seule observation porte le numéro 3."
+      },
+      {
+       "texte": "INSERT INTO sert à modifier une ligne qui existe déjà.",
+       "reponse": false,
+       "explication": "INSERT ajoute une nouvelle ligne. Pour modifier une ligne, on utilise UPDATE."
+      },
+      {
+       "texte": "Une contrainte d'intégrité est une règle que la base fait respecter.",
+       "reponse": true,
+       "explication": "Clé primaire, clé étrangère, NOT NULL, UNIQUE, CHECK : la base refuse ce qui ne les respecte pas."
+      },
+      {
+       "texte": "SQLite accepte une nouvelle tortue avec un id_tortue déjà utilisé.",
+       "reponse": false,
+       "explication": "La clé primaire doit être unique : SQLite répond « UNIQUE constraint failed: tortue.id_tortue »."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "La base refuse une tortue de l'espèce 'luth'.",
+       "reponse": true,
+       "explication": "La contrainte CHECK n'accepte que 'verte' et 'imbriquée' : « CHECK constraint failed »."
+      },
+      {
+       "texte": "La base accepte une observation sans prénom de bénévole.",
+       "reponse": false,
+       "explication": "benevole est NOT NULL : « NOT NULL constraint failed: observation.benevole »."
+      },
+      {
+       "texte": "Dans cette base, SQLite refuse une observation de la tortue n° 9, qui n'existe pas.",
+       "reponse": true,
+       "explication": "La base active le contrôle (PRAGMA foreign_keys = ON) : « FOREIGN KEY constraint failed »."
+      },
+      {
+       "texte": "Sans la ligne PRAGMA foreign_keys = ON, SQLite accepterait l'observation de la tortue n° 9.",
+       "reponse": true,
+       "explication": "Par défaut, SQLite ne contrôle pas les clés étrangères : c'est pour cela que la base l'active."
+      },
+      {
+       "texte": "UPDATE tortue SET id_tortue = 1 WHERE id_tortue = 8 est accepté.",
+       "reponse": false,
+       "explication": "Le numéro 1 est déjà celui de Nuru : la clé primaire serait en double, SQLite refuse."
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "DELETE FROM tortue WHERE id_tortue = 8 est accepté, même avec le contrôle des clés étrangères.",
+       "reponse": true,
+       "explication": "Aucune observation ne cite Kai : la supprimer ne casse aucun lien."
+      },
+      {
+       "texte": "DELETE FROM plage WHERE id_plage = 1 est accepté.",
+       "reponse": false,
+       "explication": "Quatre observations citent la plage n° 1 : SQLite refuse (FOREIGN KEY constraint failed)."
+      },
+      {
+       "texte": "UPDATE tortue SET longueur = 0 WHERE id_tortue = 2 est refusé.",
+       "reponse": true,
+       "explication": "CHECK (longueur > 0) refuse 0 : une carapace a une vraie longueur."
+      },
+      {
+       "texte": "UPDATE observation SET id_plage = 6 WHERE id_obs = 7 est refusé, car Trévani n'a encore aucune observation.",
+       "reponse": false,
+       "explication": "La plage n° 6 existe : la clé étrangère est respectée, la modification est acceptée."
+      },
+      {
+       "texte": "La contrainte de référence garantit que chaque clé étrangère renvoie à une ligne qui existe.",
+       "reponse": true,
+       "explication": "C'est le rôle de REFERENCES : pas d'observation d'une tortue fantôme."
+      },
+      {
+       "texte": "PRIMARY KEY et UNIQUE empêchent toutes les deux les doublons dans une colonne.",
+       "reponse": true,
+       "explication": "Une table n'a qu'une clé primaire, mais elle peut avoir d'autres colonnes UNIQUE, comme plage.nom."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-026",
+   "type": "sortie",
+   "titre": "Grande révision",
+   "objectif": "Prévoir le résultat de requêtes qui mélangent toutes les clauses.",
+   "notions": [
+    "donnees.bdd.sql.interrogation",
+    "donnees.bdd.sql.jointure"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "SELECT COUNT(*)\nFROM tortue\nWHERE longueur BETWEEN 80 AND 100",
+       "options": [
+        "4",
+        "3",
+        "2",
+        "6"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : Lulu (81), Taya (87), Kai (95) et Nuru (98).",
+        "BETWEEN garde ses bornes, et Nuru (98 cm) est aussi dans l'intervalle.",
+        "Compte toutes les longueurs de 80 à 100.",
+        "Zawadi (105) et Nyota (112) dépassent 100 cm."
+       ],
+       "aides": [
+        "Écris les longueurs, puis garde celles de 80 à 100."
+       ]
+      },
+      {
+       "code": "SELECT DISTINCT espece\nFROM tortue\nORDER BY espece DESC",
+       "options": [
+        "imbriquée / verte",
+        "verte / imbriquée",
+        "verte",
+        "verte / imbriquée / verte"
+       ],
+       "bonne": 1,
+       "retours": [
+        "DESC range dans l'ordre inverse : v avant i.",
+        "Juste : deux espèces, de Z à A.",
+        "Il y a aussi des tortues imbriquées.",
+        "DISTINCT retire les doublons."
+       ],
+       "aides": [
+        "Combien d'espèces différentes ?"
+       ]
+      },
+      {
+       "code": "SELECT nom\nFROM plage\nWHERE commune LIKE 'K%'\nORDER BY nom",
+       "options": [
+        "Trévani / N'Gouja",
+        "N'Gouja",
+        "Kani-Kéli / Koungou",
+        "N'Gouja / Trévani"
+       ],
+       "bonne": 3,
+       "retours": [
+        "ORDER BY nom range de A à Z : N avant T.",
+        "Koungou commence aussi par K.",
+        "On affiche le nom des plages, pas les communes.",
+        "Juste : les plages de Kani-Kéli et de Koungou."
+       ],
+       "aides": [
+        "La condition porte sur la commune."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "SELECT tortue.nom, plage.nom\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE oeufs = 0\nORDER BY date_obs",
+       "options": [
+        "Zawadi | N'Gouja / Mira | N'Gouja",
+        "Mira | N'Gouja / Zawadi | N'Gouja",
+        "Mira | Saziley / Zawadi | N'Gouja",
+        "Mira / Zawadi"
+       ],
+       "bonne": 1,
+       "retours": [
+        "Mira a été vue le 20 janvier, Zawadi le 15 mars : sans DESC, la plus ancienne vient d'abord.",
+        "Juste : les deux montées sans ponte, à N'Gouja, la plus ancienne d'abord.",
+        "L'observation n° 3 a eu lieu sur la plage n° 1.",
+        "Deux colonnes sont demandées : la tortue et la plage."
+       ],
+       "aides": [
+        "Les observations sans œufs sont les n° 3 et n° 8."
+       ]
+      },
+      {
+       "code": "SELECT COUNT(*), SUM(oeufs)\nFROM observation\nWHERE benevole IN ('Kenza', 'Sam')",
+       "options": [
+        "2 | 420",
+        "4 | 332",
+        "3 | 420",
+        "4 | 420"
+       ],
+       "bonne": 3,
+       "retours": [
+        "COUNT(*) compte des observations, pas des personnes.",
+        "332, ce sont les œufs de Kenza seule : IN garde aussi Sam.",
+        "Kenza a fait 3 observations, et Sam 1.",
+        "Juste : 3 observations de Kenza et 1 de Sam ; 332 + 88 = 420 œufs."
+       ],
+       "aides": [
+        "IN garde les lignes de Kenza et celles de Sam."
+       ]
+      },
+      {
+       "code": "SELECT benevole, oeufs\nFROM observation\nWHERE id_plage = 4\nORDER BY oeufs DESC",
+       "options": [
+        "Kenza | 130 / Naïma | 115",
+        "Kenza | 130",
+        "Kenza / Naïma",
+        "Naïma | 115 / Kenza | 130"
+       ],
+       "bonne": 0,
+       "retours": [
+        "Juste : deux observations à Tahiti, la plus grosse ponte d'abord.",
+        "Naïma a aussi observé sur la plage n° 4.",
+        "Deux colonnes sont demandées.",
+        "DESC commence par la plus grande valeur."
+       ],
+       "aides": [
+        "Tahiti est la plage n° 4."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "SELECT COUNT(DISTINCT tortue.espece)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE plage.commune = 'Bandrélé'",
+       "reponse": "2",
+       "explication": "À Bandrélé, on a vu des vertes (Zawadi, Nuru, Taya) et des imbriquées (Lulu, Mira) : 2 espèces.",
+       "aides": [
+        "On compte des espèces différentes, pas des tortues."
+       ]
+      },
+      {
+       "code": "SELECT MIN(date_obs)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE tortue.espece = 'imbriquée'",
+       "reponse": "2026-01-20",
+       "explication": "La première observation d'une imbriquée est celle de Mira, le 2026-01-20.",
+       "aides": [
+        "MIN sur des dates donne la plus ancienne."
+       ]
+      },
+      {
+       "code": "SELECT SUM(oeufs)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue\nWHERE tortue.longueur > 100",
+       "reponse": "350",
+       "explication": "Zawadi (95 + 0) et Nyota (130 + 125) dépassent 100 cm : 350 œufs.",
+       "aides": [
+        "Quelles tortues mesurent plus de 100 cm ?"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-027",
+   "type": "associer",
+   "titre": "Le bon refus",
+   "objectif": "Relier une requête refusée à la contrainte d'intégrité qu'elle viole.",
+   "notions": [
+    "donnees.bdd.relationnel",
+    "donnees.bdd.sql.mise-a-jour"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque requête refusée au message de SQLite. SQLite contrôle les clés étrangères.",
+       "paires": [
+        [
+         "INSERT INTO tortue VALUES (1, 'Ylang', 'verte', 90)",
+         "UNIQUE constraint failed: tortue.id_tortue"
+        ],
+        [
+         "INSERT INTO tortue VALUES (9, 'Ylang', 'luth', 90)",
+         "CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+        ],
+        [
+         "INSERT INTO plage VALUES (7, NULL, 'Chiconi')",
+         "NOT NULL constraint failed: plage.nom"
+        ],
+        [
+         "INSERT INTO observation VALUES (13, 9, 1, '2026-05-01', 80, 'Sam')",
+         "FOREIGN KEY constraint failed"
+        ]
+       ],
+       "explication": "Chaque contrainte a son message : UNIQUE pour un doublon, CHECK pour un domaine, NOT NULL pour une valeur manquante, FOREIGN KEY pour un lien cassé.",
+       "aides": [
+        "Cherche d'abord la valeur qui pose problème dans chaque requête."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque requête refusée à la contrainte qu'elle viole. SQLite contrôle les clés étrangères.",
+       "paires": [
+        [
+         "INSERT INTO plage VALUES (7, 'Iloni', 'Chiconi')",
+         "UNIQUE sur plage.nom"
+        ],
+        [
+         "UPDATE tortue SET longueur = -5 WHERE id_tortue = 1",
+         "CHECK sur longueur"
+        ],
+        [
+         "DELETE FROM plage WHERE id_plage = 2",
+         "clé étrangère de observation vers plage"
+        ],
+        [
+         "UPDATE observation SET benevole = NULL WHERE id_obs = 1",
+         "NOT NULL sur benevole"
+        ],
+        [
+         "INSERT INTO tortue VALUES (2, 'Ylang', 'verte', 90)",
+         "clé primaire de tortue"
+        ]
+       ],
+       "explication": "Une suppression peut aussi être refusée : la plage n° 2 est citée par des observations.",
+       "aides": [
+        "Une seule requête supprime : quel lien casserait-elle ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "consigne": "Associe chaque requête à ce que répond la base. SQLite contrôle les clés étrangères.",
+       "paires": [
+        [
+         "DELETE FROM tortue WHERE id_tortue = 8",
+         "acceptée : aucune observation ne cite Kai"
+        ],
+        [
+         "DELETE FROM tortue WHERE id_tortue = 7",
+         "refusée : une observation cite cette tortue"
+        ],
+        [
+         "UPDATE observation SET id_plage = 6 WHERE id_obs = 7",
+         "acceptée : la plage n° 6 existe"
+        ],
+        [
+         "UPDATE observation SET id_plage = 7 WHERE id_obs = 7",
+         "refusée : la plage n° 7 n'existe pas"
+        ],
+        [
+         "INSERT INTO tortue (nom, espece, longueur) VALUES ('Ylang', 'verte', 90)",
+         "acceptée : SQLite choisit le numéro 9"
+        ],
+        [
+         "UPDATE tortue SET espece = 'Verte' WHERE id_tortue = 1",
+         "refusée : la majuscule sort du domaine"
+        ]
+       ],
+       "explication": "La base vérifie chaque contrainte à chaque mise à jour : les liens, les domaines et l'unicité des clés."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-028",
+   "type": "erreur",
+   "titre": "Mise à jour bloquée",
+   "objectif": "Corriger une requête UPDATE ou DELETE refusée par SQLite.",
+   "notions": [
+    "donnees.bdd.sql.mise-a-jour",
+    "donnees.bdd.relationnel"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Nuru (n° 1) mesure maintenant 100 cm.",
+       "lignes": [
+        "UPDATE tortue",
+        "SET longeur = 100",
+        "WHERE id_tortue = 1"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "SET longueur = 100",
+        "SET tortue.longueur = 100",
+        "SET longueur 100"
+       ],
+       "bonne": 0,
+       "affiche": "",
+       "explication": "Le nom de colonne doit être exact : longueur. Après SET, on écrit colonne = valeur.",
+       "aides": [
+        "Relis le nom de la colonne lettre par lettre."
+       ],
+       "message": "Error: no such column: longeur"
+      },
+      {
+       "but": "Supprimer l'observation n° 3.",
+       "lignes": [
+        "DELETE observation",
+        "WHERE id_obs = 3"
+       ],
+       "ligne": 0,
+       "corrections": [
+        "DELETE * FROM observation",
+        "DELETE FROM observation",
+        "DELETE FROM observations"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "On écrit DELETE FROM table, sans étoile : on supprime des lignes entières.",
+       "aides": [
+        "Il manque un mot-clé que l'on trouve aussi dans SELECT."
+       ],
+       "message": "Error: near \"observation\": syntax error"
+      },
+      {
+       "but": "Corriger la commune de la plage n° 5 : Dembéni.",
+       "lignes": [
+        "UPDATE plage",
+        "SET commune = Dembéni",
+        "WHERE id_plage = 5"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "SET commune = Dembeni",
+        "SET commune := 'Dembéni'",
+        "SET commune = 'Dembéni'"
+       ],
+       "bonne": 2,
+       "affiche": "",
+       "explication": "Un texte s'écrit entre apostrophes : 'Dembéni'. Sans elles, SQLite cherche une colonne de ce nom.",
+       "aides": [
+        "SQLite croit que Dembéni est une colonne."
+       ],
+       "message": "Error: no such column: Dembéni"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Supprimer la tortue Kai (n° 8). (SQLite contrôle les clés étrangères.)",
+       "lignes": [
+        "DELETE FROM tortue",
+        "WHERE id_tortue = 7"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "WHERE nom = 'Lulu'",
+        "WHERE id_tortue = 1",
+        "WHERE id_tortue = 8"
+       ],
+       "bonne": 2,
+       "affiche": "",
+       "explication": "La tortue n° 7, Lulu, est citée par une observation : SQLite refuse de casser ce lien. Kai est la n° 8.",
+       "aides": [
+        "Quel est le numéro de Kai ?"
+       ],
+       "message": "Error: FOREIGN KEY constraint failed"
+      },
+      {
+       "but": "Corriger l'observation n° 7 : elle a eu lieu à Trévani (plage n° 6). (SQLite contrôle les clés étrangères.)",
+       "lignes": [
+        "UPDATE observation",
+        "SET id_plage = 7",
+        "WHERE id_obs = 7"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "SET id_plage = 0",
+        "SET id_plage = 'Trévani'",
+        "SET id_plage = 6"
+       ],
+       "bonne": 2,
+       "affiche": "",
+       "explication": "id_plage est une clé étrangère : elle prend le numéro d'une plage qui existe, ici 6, et jamais un nom.",
+       "aides": [
+        "La clé étrangère attend un numéro de la table plage."
+       ],
+       "message": "Error: FOREIGN KEY constraint failed"
+      },
+      {
+       "but": "Passer la longueur de Mira à 77 cm.",
+       "lignes": [
+        "UPDATE tortue",
+        "SET longueur = 77,",
+        "WHERE nom = 'Mira'"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "SET longueur = 77 AND",
+        "SET longueur = 77",
+        "SET longueur 77"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "Une virgule après SET annonce une autre modification. Ici, il n'y en a qu'une : pas de virgule.",
+       "aides": [
+        "Le message montre le mot juste après l'erreur."
+       ],
+       "message": "Error: near \"WHERE\": syntax error"
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Changer le numéro de Kai : il passe de 8 à 10.",
+       "lignes": [
+        "UPDATE tortue",
+        "SET id_tortue = 1",
+        "WHERE nom = 'Kai'"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "SET id_tortue = NULL",
+        "SET id_tortue = 10",
+        "SET id_tortue = 'dix'"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "La clé primaire doit rester unique (1 est pris par Nuru) et être un entier : « datatype mismatch » refuse un texte ou NULL.",
+       "message": "Error: UNIQUE constraint failed: tortue.id_tortue"
+      },
+      {
+       "but": "Corriger la tortue n° 4 : c'est une imbriquée.",
+       "lignes": [
+        "UPDATE tortue",
+        "SET espece = 'imbriqué'",
+        "WHERE id_tortue = 4"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "SET espece = 'Imbriquée'",
+        "SET espece = 'imbriquée'",
+        "SET espece = imbriquée"
+       ],
+       "bonne": 1,
+       "affiche": "",
+       "explication": "La contrainte CHECK n'accepte que les deux textes exacts 'verte' et 'imbriquée', accent et e final compris.",
+       "message": "Error: CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+      },
+      {
+       "but": "L'observation n° 2 était fausse : on met son nombre d'œufs à 0.",
+       "lignes": [
+        "UPDATE observation",
+        "SET oeufs = NULL",
+        "WHERE id_obs = 2"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "SET oeufs = 0",
+        "SET oeufs = -1",
+        "SET oeufs = zero"
+       ],
+       "bonne": 0,
+       "affiche": "",
+       "explication": "oeufs est NOT NULL et CHECK (oeufs >= 0) : la seule valeur qui convient ici est le nombre 0.",
+       "message": "Error: NOT NULL constraint failed: observation.oeufs"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-029",
+   "type": "completer",
+   "titre": "Dernières pièces",
+   "objectif": "Réviser toutes les clauses : FROM, agrégation, jointure, filtre et tri.",
+   "notions": [
+    "donnees.bdd.sql.interrogation",
+    "donnees.bdd.sql.jointure"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le nom des plages de Sada.",
+       "lignes": [
+        "SELECT nom",
+        "FROM {0}",
+        "WHERE commune = 'Sada'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "observation",
+          "plage",
+          "tortue"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Tahiti",
+       "explication": "La colonne commune est dans la table plage.",
+       "aides": [
+        "Quelle table a une colonne commune ?"
+       ]
+      },
+      {
+       "but": "Compter les observations de mars 2026.",
+       "lignes": [
+        "SELECT {0}",
+        "FROM observation",
+        "WHERE date_obs LIKE '2026-03%'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "COUNT(*)",
+          "DISTINCT benevole",
+          "SUM(oeufs)"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "3",
+       "explication": "Compter des lignes, c'est COUNT(*).",
+       "aides": [
+        "On veut un nombre d'observations."
+       ]
+      },
+      {
+       "but": "Afficher le nom de la plage de l'observation n° 4.",
+       "lignes": [
+        "SELECT plage.nom",
+        "FROM observation",
+        "JOIN plage ON observation.{0} = plage.id_plage",
+        "WHERE id_obs = 4"
+       ],
+       "trous": [
+        {
+         "options": [
+          "id_obs",
+          "id_tortue",
+          "id_plage"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "Sakouli",
+       "explication": "La clé étrangère qui renvoie vers plage est observation.id_plage.",
+       "aides": [
+        "Quelle colonne de observation parle d'une plage ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher, sans doublon, les tortues de plus de 90 cm vues par Kenza, par ordre alphabétique.",
+       "lignes": [
+        "SELECT DISTINCT tortue.nom",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "WHERE benevole = 'Kenza' {0} tortue.longueur {1} 90",
+        "ORDER BY tortue.nom"
+       ],
+       "trous": [
+        {
+         "options": [
+          "AND",
+          "OR"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "<",
+          ">"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "Nuru\nNyota",
+       "explication": "Les deux conditions doivent être vraies : AND, et « plus de 90 » s'écrit > 90.",
+       "aides": [
+        "Kenza a vu Nuru, Nyota et Mira."
+       ]
+      },
+      {
+       "but": "Afficher la longueur moyenne des tortues vertes.",
+       "lignes": [
+        "SELECT {0}",
+        "FROM tortue",
+        "WHERE espece = 'verte'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "COUNT(longueur)",
+          "SUM(longueur)",
+          "AVG(longueur)"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "99.4",
+       "explication": "La moyenne s'obtient avec AVG : 497 / 5 = 99.4.",
+       "aides": [
+        "moyenne se dit average en anglais."
+       ]
+      },
+      {
+       "but": "Afficher la plage et les œufs des observations de Naïma, de la plus grosse ponte à la plus petite.",
+       "lignes": [
+        "SELECT plage.nom, oeufs",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE benevole = 'Naïma'",
+        "ORDER BY oeufs {0}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "DESC",
+          "ASC"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "Sakouli | 120\nTahiti | 115",
+       "explication": "De la plus grosse à la plus petite : ordre décroissant, DESC.",
+       "aides": [
+        "Sans précision, ORDER BY commence par la plus petite valeur."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le total des œufs pondus sur la plage N'Gouja.",
+       "lignes": [
+        "SELECT SUM(oeufs)",
+        "FROM observation",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE plage.nom = {0}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "N'Gouja",
+          "'N''Gouja'",
+          "'N'Gouja'"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "235",
+       "explication": "Dans un texte SQL, une apostrophe s'écrit en double : 'N''Gouja'. Sinon, le texte s'arrête après N."
+      },
+      {
+       "but": "Compter les plages différentes d'une commune où une tortue verte est venue : Bandrélé.",
+       "lignes": [
+        "SELECT COUNT({0} plage.id_plage)",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE plage.commune = {1}",
+        "AND tortue.espece = 'verte'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "ALL",
+          "DISTINCT"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "'Sada'",
+          "'Bandrélé'"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "2",
+       "explication": "Trois observations de vertes à Bandrélé, mais sur deux plages seulement : COUNT(DISTINCT …)."
+      },
+      {
+       "but": "Afficher la plus petite longueur des tortues vues sur la plage Saziley.",
+       "lignes": [
+        "SELECT {0}(tortue.longueur)",
+        "FROM observation",
+        "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
+        "JOIN plage ON observation.id_plage = plage.id_plage",
+        "WHERE plage.nom = 'Saziley'"
+       ],
+       "trous": [
+        {
+         "options": [
+          "MAX",
+          "AVG",
+          "MIN"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "81",
+       "explication": "À Saziley : Zawadi (105), Nuru (98) et Lulu (81). La plus petite, c'est MIN."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "nsi2-sql-030",
+   "type": "ordre",
+   "titre": "Le dernier puzzle",
+   "objectif": "Remettre dans l'ordre des requêtes qui révisent tout le chapitre.",
+   "notions": [
+    "donnees.bdd.sql.interrogation",
+    "donnees.bdd.sql.jointure",
+    "donnees.bdd.sql.mise-a-jour"
+   ],
+   "relu": false,
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Compter les tortues vertes.",
+       "lignes": [
+        "SELECT COUNT(*)",
+        "FROM tortue",
+        "WHERE espece = 'verte'"
+       ],
+       "affiche": "5",
+       "aides": [
+        "SELECT, FROM, WHERE."
+       ]
+      },
+      {
+       "but": "Afficher la plus grande longueur des tortues imbriquées.",
+       "lignes": [
+        "SELECT MAX(longueur)",
+        "FROM tortue",
+        "WHERE espece = 'imbriquée'"
+       ],
+       "affiche": "81",
+       "aides": [
+        "La fonction d'agrégation est dans SELECT."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher, sans doublon, le nom des plages où Kenza a observé, par ordre alphabétique.",
+       "lignes": [
+        "SELECT DISTINCT plage.nom",
+        "FROM observation",
+        "JOIN plage",
+        "ON observation.id_plage = plage.id_plage",
+        "WHERE benevole = 'Kenza'",
+        "ORDER BY plage.nom"
+       ],
+       "affiche": "N'Gouja\nSakouli\nTahiti",
+       "aides": [
+        "JOIN et ON viennent juste après FROM."
+       ]
+      },
+      {
+       "but": "Ajouter 2 cm aux tortues vertes de moins de 100 cm.",
+       "lignes": [
+        "UPDATE tortue",
+        "SET longueur = longueur + 2",
+        "WHERE espece = 'verte'",
+        "AND longueur < 100"
+       ],
+       "affiche": "",
+       "aides": [
+        "UPDATE, SET, puis les conditions."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher la tortue et les œufs des pontes de plus de 110 œufs vues par Kenza ou Soilihi, de la plus grosse à la plus petite.",
+       "lignes": [
+        "SELECT tortue.nom, oeufs",
+        "FROM observation",
+        "JOIN tortue",
+        "ON observation.id_tortue = tortue.id_tortue",
+        "WHERE oeufs > 110 AND benevole IN ('Kenza', 'Soilihi')",
+        "ORDER BY oeufs DESC"
+       ],
+       "affiche": "Nyota | 130\nNyota | 125"
+      },
+      {
+       "but": "Compter les observations de tortues imbriquées sur les plages n° 2 et n° 3.",
+       "lignes": [
+        "SELECT COUNT(*)",
+        "FROM observation",
+        "JOIN tortue",
+        "ON observation.id_tortue = tortue.id_tortue",
+        "WHERE tortue.espece = 'imbriquée' AND observation.id_plage IN (2, 3)"
+       ],
+       "affiche": "2"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
