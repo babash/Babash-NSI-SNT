@@ -84,9 +84,12 @@ Trois ressources passent par **Supabase** :
   imités sur l'appareil (oubliés un jour après leur création). Pour le vrai code élève : lance
   `snt/fichiers/court-circuit/supabase/schema.sql` dans *SQL Editor*, après le socle commun du
   site, puis mets `COMPTES: true` et `PROGRESSION_EN_LIGNE: true` dans `config.js`.
-- Sur l'appareil, le pseudo, le programme en cours, la progression de l'entraînement (les
-  challenges réussis et le dernier code de chacun), la vitesse du robot, le niveau de Zéro et le
-  jeton de session du code élève restent un jour au plus.
+- Sur l'appareil, la progression de l'entraînement (les challenges réussis et le dernier code de
+  chacun) reste 30 jours après le dernier entraînement (décision de l'enseignant du 19 novembre
+  2026) ; le pseudo, le programme en cours, la vitesse du robot, le niveau de Zéro et le jeton de
+  session du code élève, un jour après leur dernière écriture. Passé ce délai, la page les efface
+  du navigateur au premier chargement de Court-circuit sur ce poste (la page des élèves ou celle
+  de la salle).
 
 **QuizzNSI**
 
