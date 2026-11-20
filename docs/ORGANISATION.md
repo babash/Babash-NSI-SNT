@@ -27,7 +27,7 @@ bibliotheque/               l'onglet Bibliothèque (ne pas toucher)
   annales/                  la page des annales du bac NSI par notion (assets/annales.js), liée
                             depuis la bibliothèque
 admin/                      l'espace administrateur (ADMIN.md ; ne pas toucher)
-calendrier/                 le Calendrier des vacances, pas encore en service : la page des élèves
+calendrier/                 le Calendrier des vacances, en service depuis le 20/11/2026 : la page des élèves
                             (index.html), l'espace enseignant·e (prof.html), les banques d'exercices
                             (exercices/, contrôlées à chaque publication) et les migrations de sa base
                             (supabase/, voir SUPABASE.md)
