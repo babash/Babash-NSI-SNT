@@ -50,7 +50,8 @@ charte/                     les pages de démonstration du Designer, sans lien d
                             du moteur d'avatars (avatars.html)
 qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
                             nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu
-                            élève et le corrigé enseignant·e de chaque quiz, sans lien depuis le site ;
+                            élève et le corrigé enseignant·e de chaque quiz, liés depuis sa fiche de la
+                            bibliothèque (pas depuis les onglets) ;
                             sources/ (les sources JSON, d'où tout est construit) et outils/
                             (construire_qcm.py, verifier_qcm.py)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
