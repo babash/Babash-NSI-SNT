@@ -15,6 +15,8 @@ Pour toutes les fiches de la bibliothèque (donnees/ressources/*.json, constat N
 La bibliothèque (bibliotheque/, T50) : donnees/bibliotheque.json se lit en ligne et correspond aux
 fiches visibles de l'extérieur de cette copie ; la page en affiche autant, sans erreur ; une recherche
 trouve une ressource par un mot de son titre ; trois fiches complètes s'ouvrent (?r=identifiant).
+Les annales du bac (bibliotheque/annales/, T116) : la page affiche tous les exercices de
+donnees/annales/annales-bac-nsi.json, sans erreur ; la version imprimable d'un chapitre a un QR code par exercice.
 Une page déposée vue vide est réaffichée deux fois, à 15 s d'intervalle, avant d'être déclarée
 (constat N15) ; le journal donne, pour chaque page, la longueur du texte rendu.
 Le lien « Code source sur GitHub » (décision de l'enseignant du 10/11/2026, 22:58) :
@@ -290,6 +292,39 @@ def bibliotheque(base, problemes, lien_du_site):
             print(f"{'':15} fiche « {f['id']} » : ok")
 
 
+def annales(base, problemes, lien_du_site):
+    """La page bibliotheque/annales/ (T116) : elle affiche autant d'exercices que donnees/annales/annales-bac-nsi.json
+    de cette copie, sans erreur, avec le lien « Code source sur GitHub » ; filtrée sur un chapitre, autant que le
+    classement (donnees/annales/notions-par-exercice.json) en compte ; la version imprimable a un QR code par exercice."""
+    try:
+        sujets = json.loads(lire("donnees/annales/annales-bac-nsi.json"))["epreuve_ecrite"]["sujets"]
+        classement = json.loads(lire("donnees/annales/notions-par-exercice.json"))
+    except (OSError, ValueError, KeyError, TypeError):
+        print(f"{'annales':15} pas de données des annales dans cette copie : rien à vérifier")
+        return
+    attendus = sum(len(s.get("exercices", [])) for s in sujets)
+    page = afficher(f"{base}/bibliotheque/annales/")
+    m = re.search(r'class="compte"[^>]*>(\d+) exercices?<', page)
+    affiche = int(m.group(1)) if m else None
+    if 'class="alerte"' in page:
+        problemes.append("annales : la page affiche une erreur")
+    if affiche != attendus:
+        problemes.append(f"annales : {affiche if affiche is not None else 'aucun'} exercice(s) affiché(s) au lieu de {attendus}")
+    lien_du_site("annales", page)
+    print(f"{'annales':15} {affiche if affiche is not None else '—':>3} exercices affichés / {attendus:3} dans les données")
+    par_chapitre = (classement.get("bilan") or {}).get("par_chapitre") or {}
+    if par_chapitre:
+        chapitre, n = max(par_chapitre.items(), key=lambda x: x[1])
+        page = afficher(f"{base}/bibliotheque/annales/?chapitre={urllib.parse.quote(chapitre)}&vue=imprimer")
+        lignes = len(re.findall(r'<td class="lien-qr"', page))
+        qr = len(re.findall(r'<span class="qr"', page))
+        if lignes != n or qr != n:
+            problemes.append(f"annales : version imprimable du chapitre « {chapitre} » : {lignes} ligne(s) et {qr} QR code(s) "
+                             f"au lieu de {n}")
+        else:
+            print(f"{'':15} version imprimable « {chapitre} » : {n} exercices, {qr} QR codes")
+
+
 def main():
     base = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "https://babash.github.io/Babash-NSI-SNT"
     debut = time.time()
@@ -423,6 +458,7 @@ def main():
                   " page(s) déposée(s) sans le lien : " + ", ".join(sorted(sans_code)))
 
     bibliotheque(base, problemes, lien_du_site)
+    annales(base, problemes, lien_du_site)
     print(f"Durée : {round(time.time() - debut)} s")
 
     if problemes:

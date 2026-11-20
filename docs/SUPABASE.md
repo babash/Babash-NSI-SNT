@@ -2,19 +2,22 @@
 
 *Les applications du site qui utilisent une base, et le socle commun de la base. Retour au [README](../README.md).*
 
-Trois ressources passent par **Supabase** :
+Quatre ressources passent par **Supabase** :
 - Alien Python y enregistre la progression des élèves ;
 - Court-circuit y garde le code élève, les programmes (« Mes codes ») et la liste des challenges
   réussis à l'entraînement des élèves qui le veulent, et passe par son temps réel pour les duels,
   qui ne sont pas enregistrés ;
 - QuizzNSI, dans son propre dépôt depuis le 19 novembre 2026, ne passe que par son temps réel,
-  pour les séances en classe, qui ne sont pas enregistrées.
+  pour les séances en classe, qui ne sont pas enregistrées ;
+- le Calendrier des vacances, en service depuis le 20 novembre 2026, y garde le compte de l'élève
+  (un prénom ou un pseudo, et son code) et ses résultats, case par case.
 
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
 | Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | le schéma `court_circuit` du code élève, depuis le 13 novembre 2026 : `eleves` (avec, depuis le 19 novembre 2026, la liste des challenges réussis) et `programmes` (données d'élèves), `mots` et `menage` ; les duels passent par les canaux temps réel (diffusion et présence), sans table |
 | QuizzNSI (NSI Terminale, Structures de données : le cours-quiz « Piles et files ») | le dépôt [babash/QuizzNSI](https://github.com/babash/QuizzNSI) (l'ancien dossier `nsi-terminale/fichiers/quizz-nsi/` redirige vers [babash.github.io/QuizzNSI](https://babash.github.io/QuizzNSI/)) | la même base commune | aucune : les séances passent par les canaux temps réel (diffusion et présence), sans table ni fonction |
+| Calendrier des vacances (NSI et SNT : des thèmes cochés par l'enseignant·e) | `calendrier/` | la même base commune | le schéma `vacances` depuis le 20 novembre 2026 : `eleves`, `inscriptions`, `resultats` et `sessions` (données d'élèves), `enseignants`, `calendriers`, `cases`, `mots` et `menage` |
 
 **Alien Python**
 
@@ -128,13 +131,40 @@ Trois ressources passent par **Supabase** :
   `config.js`, ou laisse l'adresse vide pour le mode démo (entre les onglets d'un même navigateur).
   Le [README de QuizzNSI](https://github.com/babash/QuizzNSI#readme) donne le détail.
 
+**Le Calendrier des vacances** (dossier `calendrier/`)
+
+- **La base** : le schéma `vacances`, avec 9 tables et 22 fonctions d'entrée `cv_`, créé par la
+  migration `vacances_0001_calendrier` (20 novembre 2026, 15:31), puis inscrit au registre des
+  tables par `base_unique_0009_registre_vacances` (15:33), toutes deux appliquées sur délégation
+  de l'enseignant, limitée au Calendrier. La migration `vacances_0002_index_resultats` (un index,
+  sans effacer aucune donnée) est écrite, et pas appliquée.
+- **Ce qui est gardé en ligne** : le prénom ou le pseudo choisi par l'élève (jamais le nom de
+  famille), son code et, pour chaque case jouée, le niveau, la réussite, les étoiles, le nombre
+  d'essais et de coups de pouce, la durée et la date. Les réponses tapées ne sont jamais
+  envoyées. Un compte est effacé au premier usage de l'application après 12 mois sans visite ;
+  un calendrier et ses résultats, au premier usage après 12 mois suivant sa fin.
+- **Sur l'appareil de l'élève** (le stockage du navigateur) : la session, la partie en cours et
+  les résultats pas encore reçus par la base (quand le réseau manque), rattachés à l'élève par
+  une empreinte de son code. Un résultat n'est envoyé qu'avec la session de l'élève qui l'a
+  produit. Ces données ne sont plus lues après 1 jour, ou 30 jours si l'élève a coché « C'est mon
+  téléphone », et elles sont effacées à l'ouverture suivante de la page sur cet appareil.
+  « Ce n'est pas moi » ferme la session et ne laisse que les résultats en attente de cet·te
+  élève, jusqu'à leur échéance.
+- **Effacer** : l'élève, avec « Effacer mes données », en ligne et sur l'appareil ;
+  l'enseignant·e, en retirant un·e élève ou en supprimant un calendrier.
+- **Aucun classement** : la classe ne voit que des nombres, sans aucun nom, et seulement si
+  l'enseignant·e a choisi de les montrer. Chaque élève voit ses propres étoiles, ses cases faites
+  et ses jours différents.
+- Le détail, les fonctions et les contrôles après application : `calendrier/supabase/LISEZMOI.md`.
+
 **Le socle commun de la base (dossier `supabase/`)**
 
 - La base commune porte SNT 1er jour, Expédition Gombessa, Alien Python, Court-circuit (son
   code élève, sa progression et son temps réel), le temps réel de QuizzNSI et, depuis le
   19 novembre 2026, Lagon Arena (schéma `lagon`, fonctions `public.lagon_…` ; son dépôt
   [babash/lagon-arena](https://github.com/babash/lagon-arena) garde ses migrations et la page
-  publiée l'utilise depuis le 20 novembre 2026). L'ancien projet de Lagon Arena reste intact
+  publiée l'utilise depuis le 20 novembre 2026), et, depuis le 20 novembre 2026, le Calendrier des
+  vacances (schéma `vacances`, fonctions `public.cv_…`). L'ancien projet de Lagon Arena reste intact
   30 jours, pour un retour en arrière, puis ses objets de Lagon Arena seront retirés, sans
   toucher aux objets `guilde_*`. Le dossier `supabase/` du site garde les migrations qui ne
   relèvent d'aucune application, chacune appliquée après l'accord de l'enseignant sur le SQL :
@@ -151,7 +181,12 @@ Trois ressources passent par **Supabase** :
   - `0004` retire à `anon` ses droits sur la séquence du Panthéon, dans l'ancien projet de
     Lagon Arena ;
   - `0005` ajoute Court-circuit au registre des tables : son schéma, `court_circuit`, et son
-    préfixe, `cc_`, pour une table qui serait dans `public`.
+    préfixe, `cc_`, pour une table qui serait dans `public` ;
+  - `0009` (le 20 novembre 2026, sur la délégation de l'enseignant pour le Calendrier) ajoute au
+    registre le Calendrier des vacances : son schéma, `vacances`, et son préfixe, `cv_`. Sa vue
+    reprend celle de `0006` (Hello GO, appliquée le 17 novembre 2026), dont les fichiers ne sont
+    pas encore sur `main` ; les numéros `0007` et `0008` sont réservés au compte commun, pas
+    appliqué.
 - Chaque migration a son fichier inverse. [`supabase/LISEZMOI.md`](../supabase/LISEZMOI.md) donne l'ordre, les contrôles
   et le retour en arrière. Les migrations d'une application restent dans son propre dépôt.
 - Pour ta propre copie : lance `supabase/schema.sql` dans *SQL Editor* d'un projet neuf, avant le
@@ -163,7 +198,8 @@ Les règles communes des bases sont dans `CLAUDE.md`, § 6, « Les bases Supabas
 base pour toutes les applications, un schéma par application, l'accès par des fonctions, des
 migrations avec leur fichier inverse. Aucune base n'est modifiée sans que l'enseignant ait vu le
 SQL exact, sauf quand il en donne lui-même la permission pour une migration précise (comme pour
-la progression de Court-circuit, le 19 novembre 2026), et les agents n'en lisent que les
+la progression de Court-circuit, le 19 novembre 2026, et pour le Calendrier des vacances, le
+20 novembre 2026), et les agents n'en lisent que les
 métadonnées, jamais les données des élèves. Ils ne font aucun essai sur une table d'élèves de la
 base en ligne : les essais d'écriture se font sur une reproduction locale, avec des données
 inventées.
