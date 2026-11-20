@@ -283,15 +283,42 @@ Ce qui est vérifié :
 - motifs interdits : mots de passe, identifiants, identifiants de démonstration, clés secrètes (Supabase `service_role`
   ou `sb_secret_`, GitHub, AWS, Google…), jetons, paramètres secrets dans les adresses, adresses électroniques.
 
-### Les annales du bac NSI (T104, T116)
-- `annales/annales-bac-nsi.json` (le Bibliothécaire) : les sujets de l'écrit depuis 2021, leurs exercices et leurs liens.
-  Procédure de mise à jour : `annales/MISE-A-JOUR.md`.
-- `annales/notions-par-exercice.json` (l'Architecte) : le classement de chaque exercice dans les 22 chapitres des
-  fiches de révision, **construit** par `python3 scripts/annales_notions.py` à partir des notions et de l'en-tête de
-  chaque exercice. On ne le modifie pas à la main, sauf `"verifie": true` sur un exercice relu (le script le garde
-  alors tel quel). À relancer après chaque mise à jour des annales : le workflow « Vérifier le site » échoue sinon.
-- La page `bibliotheque/annales/` les affiche : filtres par chapitre, année, centre et corrigé, version imprimable
-  avec un QR code par sujet (`?chapitre=tris&vue=imprimer`).
+### Les annales du bac NSI (`donnees/annales/`, T104 et T116)
+Ce dossier n'est lu ni par `scripts/valider_donnees.py` ni par la construction de la bibliothèque : seule la page
+`bibliotheque/annales/` s'en sert. On lie, on n'héberge pas : aucun PDF de sujet ou de corrigé n'entre dans le dépôt.
+
+| Fichier | Rôle | Qui le modifie |
+|---|---|---|
+| `annales-bac-nsi.json` | les sujets de l'écrit depuis 2021 (session, centre, code officiel, pages), leurs exercices (points, pages, en-tête « Cet exercice porte sur… », notions du thésaurus) et leurs liens (sujet, corrigé, état, date de vérification) ; l'épreuve pratique ; `a_trouver` | **construit** par `outils/construire_annales.py` (Bibliothécaire) |
+| `outils/donnees_brutes.py` | la saisie des sujets (un appel `S(…)` par sujet) | le Bibliothécaire |
+| `outils/construire_annales.py`, `outils/verifier_liens.py` | construire le JSON (règles des notions : `REGLES`) ; tester les liens | le Bibliothécaire |
+| `notions-par-exercice.json` | le classement de chaque exercice dans les 22 chapitres des fiches de révision, avec ses indices | **construit** par `scripts/annales_notions.py` (Architecte) ; à la main, seulement les exercices relus (voir plus bas) |
+| `MISE-A-JOUR.md` | la procédure de chaque 1er août et 1er janvier | le Bibliothécaire |
+| `LISEZMOI.md` | la présentation du dossier | le Bibliothécaire |
+
+**Après toute modification des annales**, dans cet ordre :
+```
+python3 donnees/annales/outils/construire_annales.py . donnees/annales/annales-bac-nsi.json
+python3 scripts/annales_notions.py
+python3 scripts/annales_notions.py --verifier
+```
+Le workflow « Vérifier le site » lance `--verifier` : un classement en retard sur les annales fait échouer la branche.
+
+**Le classement est automatique et reste « à vérifier »** (décision de l'enseignant du 20/11). Un exercice entre dans un
+chapitre par une notion couverte par le chapitre ou par un mot de son en-tête ; les faux amis sont écartés (« tri
+topologique », « arbre binaire », « tri par insertion »…). `a_classer` liste les exercices sans aucun indice ; un champ
+`a_verifier` sur un exercice note un classement écarté. Les en-têtes ne nomment presque jamais les variables, les boucles
+ou les fonctions : ces chapitres de première restent dans les filtres, avec leur petit nombre.
+
+**Corriger un exercice à la main** : dans `notions-par-exercice.json`, remplacer son entrée (`<id du sujet>#<n°>`) par
+`"2024-asie-j1#2": {"chapitres": ["graphes", "piles-files", "recursivite"], "verifie": true}` (identifiants des chapitres :
+liste `chapitres` en tête du fichier), puis relancer `python3 scripts/annales_notions.py`. Le script garde ensuite cet
+exercice tel quel, refuse un chapitre inconnu et signale un exercice vérifié qui a disparu des annales
+(`verifies_disparus`). La page affiche alors « classement vérifié ».
+
+**La page** `bibliotheque/annales/` : filtres par chapitre, année, centre et corrigé ; recherche dans les en-têtes des
+exercices ; lien direct vers le PDF du sujet et le corrigé ; version imprimable avec un QR code par sujet
+(`?chapitre=tris&vue=imprimer`). L'adresse garde les filtres.
 
 ### Sources des programmes
 Elles sont citées dans `referentiels/programmes.json` (champ `sources`). En résumé :

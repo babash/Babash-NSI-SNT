@@ -580,7 +580,7 @@
     racine.appendChild(page);
     var bandeau = el('header', { class: 'hero hero-rubrique', style: '--hl:' + COULEUR, html: O.scene(COULEUR, 11) });
     ui.chapo = el('p', { class: 'chapo' }, 'Pour chaque chapitre, les exercices de bac qui le travaillent, avec le sujet officiel et son corrigé.');
-    ui.recherche = O.champRecherche('Chercher dans les énoncés (ex. Huffman, RIP, pile)', function (q) {
+    ui.recherche = O.champRecherche('Chercher dans les en-têtes des exercices (ex. Huffman, RIP, pile)', function (q) {
       etat.q = q;
       etat.nombre = PAR_PAGE;
       ecrireAdresse();

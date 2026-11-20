@@ -52,7 +52,12 @@ Les données brutes sont dans `donnees/annales/outils/donnees_brutes.py` ; le JS
 
 ```
 python3 donnees/annales/outils/construire_annales.py . donnees/annales/annales-bac-nsi.json
+python3 scripts/annales_notions.py
 ```
+
+Le second script range chaque exercice dans les 22 chapitres des fiches de révision (`donnees/annales/notions-par-exercice.json`,
+lu par la page `bibliotheque/annales/`). **Toujours le relancer après le premier** : sinon le contrôle « Classement des annales
+par chapitre à jour » du workflow « Vérifier le site » échoue et la branche ne peut pas être publiée.
 
 Pour chaque sujet nouveau, ajouter un appel `S(…)` dans `donnees_brutes.py` (copier un voisin de même année), avec :
 
@@ -64,7 +69,11 @@ Relever pages, points et exercices **dans le PDF**, pas dans une page de présen
 extractible), lire la version AEIF recomposée, et l'écrire dans `remarque`. Ce qu'on n'a pas pu lire reste `None` ou « à vérifier » : on n'invente rien.
 
 Les notions viennent des règles du script (`REGLES`) et du thésaurus `donnees/referentiels/notions.json` (jamais modifié ici). Contrôler à la main
-le classement des exercices nouveaux. **Une notion qui manque au thésaurus se demande dans le rapport** (déjà demandées : files à priorité,
+le classement des exercices nouveaux : leurs notions, puis leurs chapitres dans `donnees/annales/notions-par-exercice.json` (sortie de
+`scripts/annales_notions.py`). Un chapitre faux ou manquant se corrige dans ce fichier, sur l'exercice (`<id du sujet>#<n°>`) :
+`"chapitres": ["tris", "recursivite"], "verifie": true` (identifiants des chapitres : liste `chapitres` en tête du fichier), puis on relance
+`python3 scripts/annales_notions.py`, qui garde désormais cet exercice tel quel. Les exercices de `a_classer` (aucun chapitre trouvé) et ceux
+qui ont un champ `a_verifier` (classement écarté à cause d'un faux ami) sont à regarder en premier. **Une notion qui manque au thésaurus se demande dans le rapport** (déjà demandées : files à priorité,
 fonction de hachage, tri topologique, arbres n-aires, algorithme min-max).
 
 ## Étape 4 : tester les liens (date de vérification)
@@ -97,10 +106,13 @@ sources n'indiquent pas de licence : on ne les copie pas.
 ## Étape 7 : valider et pousser
 
 1. `python3 donnees/annales/outils/construire_annales.py . donnees/annales/annales-bac-nsi.json`
-2. `python3 scripts/valider_donnees.py` : 0 erreur exigée.
-3. `git add donnees/annales donnees/ressources donnees/vitrine.json` ; commit : `[T104][biblio] Annales de NSI : mise à jour du 1er janvier AAAA` ; auteur `Claude <noreply@anthropic.com>`.
-4. `git fetch origin '+refs/heads/*:refs/remotes/origin/*'`, `git rebase origin/main` si `main` a avancé, puis `git push -u origin biblio/annales-AAAA-MM`.
-5. Rapport de fin de tâche (format de `CLAUDE.md`) au chef d'orchestre : sessions nouvelles (liste), corrigés nouveaux, liens à revoir, sources inaccessibles,
+2. `python3 scripts/annales_notions.py`, puis `python3 scripts/annales_notions.py --verifier` : « est à jour » exigé. Relever dans le rapport
+   le bilan qu'il affiche (exercices classés, à classer, à vérifier).
+3. `python3 scripts/valider_donnees.py` : 0 erreur exigée.
+4. `git add donnees/annales donnees/ressources donnees/vitrine.json` ; commit : `[T104][biblio] Annales de NSI : mise à jour du 1er janvier AAAA` ; auteur `Claude <noreply@anthropic.com>`.
+5. `git fetch origin '+refs/heads/*:refs/remotes/origin/*'`, `git rebase origin/main` si `main` a avancé (relancer alors les étapes 2 et 3),
+   puis `git push -u origin biblio/annales-AAAA-MM`.
+6. Rapport de fin de tâche (format de `CLAUDE.md`) au chef d'orchestre : sessions nouvelles (liste), corrigés nouveaux, liens à revoir, sources inaccessibles,
    changement de format éventuel, notions manquantes, et ce qui reste à trouver (`a_trouver`). Pas de question à l'enseignant : tout passe par le rapport.
 
 ## Texte à confier à la tâche planifiée

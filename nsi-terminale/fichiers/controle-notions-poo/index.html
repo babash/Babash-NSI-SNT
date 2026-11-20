@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrôle de notions : programmation orientée objet</title>
+<meta name="description" content="Contrôle de notions de NSI terminale sur la programmation orientée objet : 12 questions, 20 minutes, à rendre par un code ou un QR code.">
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="commun.css">
+<style>
+  .barre-copie {
+    position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--line);
+    padding: .45rem 16px; display: flex; flex-wrap: wrap; gap: .3rem 1rem; align-items: center; font-size: .92rem;
+  }
+  .barre-copie strong { font-family: var(--display); }
+  .barre-copie .droite { margin-left: auto; display: flex; gap: .5rem; align-items: center; }
+  .barre-copie .bouton { min-height: 38px; padding: .3rem .7rem; font-size: .9rem; }
+  .q, .contexte { scroll-margin-top: 4.5rem; }
+  .q h2 { display: flex; flex-wrap: wrap; gap: .2rem .6rem; align-items: baseline; }
+  .q h2 .num { color: var(--accent); }
+  .q .enonce { margin: .2rem 0 .5rem; font-weight: 700; }
+  .q .aide { font-size: .9rem; color: var(--ink-soft); margin: .3rem 0 0; }
+  .q.repondue { border-left: 5px solid var(--accent); }
+  .contexte { border: 2px solid var(--ink); }
+  .contexte h2 { font-size: 1rem; }
+  .ligne-code { display: flex; gap: .4rem; align-items: flex-start; }
+  .ligne-code code { flex: none; margin-top: .65rem; }
+  .ligne-code textarea { flex: 1; min-width: 0; }
+  textarea.zone-code { font: .95rem/1.5 var(--mono); min-height: 3.6rem; tab-size: 4; white-space: pre; overflow-x: auto; }
+  .encadre ul { margin: .3rem 0 0; padding-left: 1.2rem; }
+  .encadre li { margin: .15rem 0; }
+  dialog { border: 2px solid var(--ink); border-radius: 10px; background: var(--panel); color: var(--ink); max-width: min(94vw, 44rem); padding: 1rem; }
+  dialog::backdrop { background: rgba(6, 10, 19, .6); }
+  .rendu { text-align: center; }
+  .rendu textarea { text-align: left; }
+  .sujet-fixe { font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="haut"><a href="../../index.html">Ressources NSI et SNT · NSI terminale</a></div>
+
+<!-- Écran 1 : accueil -->
+<main id="accueil">
+  <h1>Contrôle de notions : programmation orientée objet</h1>
+  <p class="sous-titre">NSI terminale · 20 minutes · 12 questions</p>
+  <div class="carte">
+    <p><strong>Comment ça marche.</strong> Tu réponds aux questions sur cette page. À la fin, la page fabrique un <strong>code de copie</strong> et son <strong>QR code</strong> : tu le montres ou tu l'envoies à ton enseignant·e.</p>
+    <p>Ta correction ne s'affiche pas ici : tu la verras en classe.</p>
+    <p class="note">Rien n'est envoyé sur Internet : tes réponses restent dans ce navigateur, un jour au plus, jusqu'à ce que tu donnes ton code. Sur un ordinateur partagé, efface ta copie à la fin.</p>
+  </div>
+  <div id="copie-existante" class="carte alerte" hidden>
+    <p><strong>Une copie est déjà commencée sur ce navigateur :</strong> <span id="existante-qui"></span>.</p>
+    <p class="note">Si ce n'est pas la tienne, commence une autre copie : celle-ci sera effacée. Une copie est effacée d'elle-même un jour après son début.</p>
+    <div class="boutons">
+      <button class="bouton" type="button" id="reprendre">C'est la mienne : la reprendre</button>
+      <button class="bouton second" type="button" id="autre-copie">En commencer une autre</button>
+    </div>
+  </div>
+  <form id="form-accueil" class="carte" novalidate>
+    <label for="pseudo">Prénom ou pseudo</label>
+    <input type="text" id="pseudo" maxlength="24" autocomplete="off" required aria-describedby="aide-pseudo">
+    <p class="note" id="aide-pseudo">Pas de nom de famille. Ton enseignant·e doit pouvoir te reconnaître.</p>
+    <label for="classe">Classe <span class="note">(facultatif)</span></label>
+    <input type="text" id="classe" maxlength="12" autocomplete="off" placeholder="par exemple TG2">
+    <fieldset id="choix-sujet">
+      <legend>Sujet donné par ton enseignant·e</legend>
+      <label class="choix"><input type="radio" name="sujet" value="1"><span>Sujet 1</span></label>
+      <label class="choix"><input type="radio" name="sujet" value="2"><span>Sujet 2</span></label>
+    </fieldset>
+    <p id="sujet-fixe" class="sujet-fixe" hidden></p>
+    <p id="erreur-accueil" class="alerte" role="alert" hidden></p>
+    <div class="boutons"><button class="bouton" type="submit">Commencer</button></div>
+  </form>
+  <p class="note">Version papier : <a href="sujet.pdf">sujet à imprimer (PDF)</a>.</p>
+</main>
+
+<!-- Écran 2 : la copie -->
+<div id="copie" hidden>
+  <div class="barre-copie" role="region" aria-label="Ma copie">
+    <span><strong id="barre-pseudo"></strong> · <span id="barre-sujet"></span></span>
+    <span id="progression" aria-live="polite"></span>
+    <span class="droite">
+      <span id="chrono" class="note"></span>
+      <button class="bouton second" type="button" id="voir-commun" hidden></button>
+    </span>
+  </div>
+  <main>
+    <h1>Contrôle de notions : programmation orientée objet</h1>
+    <div class="encadre"><strong>Rappels</strong><div id="convention"></div></div>
+    <p class="note" id="consigne"></p>
+    <section class="carte" id="figure-commune" hidden>
+      <h2 id="titre-commun"></h2>
+      <p id="texte-commun"></p>
+      <div id="commun"></div>
+    </section>
+    <form id="questions" novalidate></form>
+    <div class="carte">
+      <p id="reste"></p>
+      <div class="boutons"><button class="bouton" type="button" id="rendre">Rendre ma copie</button></div>
+    </div>
+    <details class="carte">
+      <summary>Ce n'est pas ma copie, ou je veux recommencer</summary>
+      <p class="note">Efface cette copie de ce navigateur (par exemple sur un ordinateur partagé).</p>
+      <button class="bouton second" type="button" id="effacer-copie">Effacer et recommencer</button>
+    </details>
+  </main>
+</div>
+
+<!-- Écran 3 : copie rendue -->
+<main id="rendu" class="rendu" hidden>
+  <h1>Copie prête</h1>
+  <p><strong id="rendu-qui"></strong></p>
+  <p><strong>Montre ce QR code à ton enseignant·e.</strong></p>
+  <div class="qr" id="qr" role="img" aria-label="QR code de ta copie"></div>
+  <div class="carte" style="margin-top:1rem; text-align:left">
+    <label for="code-copie">Ou copie ce code et envoie-le (messagerie de Pronote, par exemple)</label>
+    <textarea id="code-copie" class="code" readonly rows="5"></textarea>
+    <div class="boutons">
+      <button class="bouton" type="button" id="copier">Copier le code</button>
+      <span id="copie-ok" class="note" role="status"></span>
+    </div>
+  </div>
+  <div class="carte" style="text-align:left">
+    <p>Tu veux changer une réponse ? Tu peux revenir à ta copie : un <strong>nouveau code</strong> sera fabriqué. Donne alors le dernier.</p>
+    <div class="boutons">
+      <button class="bouton second" type="button" id="revenir">Revenir à mes réponses</button>
+    </div>
+    <details style="margin-top:1rem">
+      <summary>Commencer une nouvelle copie</summary>
+      <p class="note">Efface ta copie de ce navigateur (par exemple pour prêter ce téléphone à quelqu'un).</p>
+      <button class="bouton second" type="button" id="effacer">Effacer et recommencer</button>
+    </details>
+  </div>
+</main>
+
+<dialog id="dialogue-commun" aria-labelledby="titre-dialogue-commun">
+  <h2 id="titre-dialogue-commun"></h2>
+  <div id="commun-dialogue"></div>
+  <div class="boutons"><button class="bouton" type="button" id="fermer-commun">Fermer</button></div>
+</dialog>
+
+<dialog id="dialogue-rendre" aria-labelledby="titre-dialogue-rendre">
+  <h2 id="titre-dialogue-rendre">Rendre ta copie ?</h2>
+  <p id="dialogue-reste"></p>
+  <div class="boutons">
+    <button class="bouton" type="button" id="confirmer-rendre">Rendre ma copie</button>
+    <button class="bouton second" type="button" id="annuler-rendre">Continuer</button>
+  </div>
+</dialog>
+
+<footer class="pied">
+  Babash - NSI Tani Malandi · contenus CC BY-SA 4.0, code MIT ·
+  QR codes : qrcode-generator de Kazuhiko Arase (MIT) ·
+  <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/controle-notions-poo">Code source sur GitHub</a>
+</footer>
+
+<script src="controle.js"></script>
+<script src="moteur.js"></script>
+<script src="vendor/qrcode.js"></script>
+<script src="zone-code.js"></script>
+<script src="eleve.js"></script>
+</body>
+</html>

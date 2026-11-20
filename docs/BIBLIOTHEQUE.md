@@ -30,7 +30,9 @@ des fiches de révision (`donnees/annales/notions-par-exercice.json`, construit 
 `scripts/annales_notions.py` à partir des notions et de l'en-tête de chaque exercice). Ce
 classement est une proposition automatique : tant que `verifie` vaut `false`, la page écrit
 « classement automatique, à vérifier » sur chaque exercice, et les classements écartés y sont
-expliqués. Le lien principal de chaque exercice mène directement au PDF du sujet, sur le site qui
+expliqués. Un exercice relu se corrige à la main dans ce fichier (`"chapitres": ["tris"],
+"verifie": true`, puis on relance le script ; mode d'emploi dans `donnees/README.md`) : la page
+écrit alors « classement vérifié ». Sa recherche porte sur les en-têtes des exercices. Le lien principal de chaque exercice mène directement au PDF du sujet, sur le site qui
 le publie ; `?vue=imprimer` donne une version imprimable avec un QR code par sujet.
 
 Elle ne lit pas les fiches une à une : `scripts/construire_bibliotheque.py` les rassemble en

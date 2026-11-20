@@ -14,9 +14,11 @@ pour le SQL…) sont retirés avant la recherche des mots. Une notion seule, san
 qu'un faux ami est présent, ne classe pas l'exercice : elle va dans « a_verifier », avec sa raison.
 Rien n'est inventé : un exercice sans aucun indice reste « à classer ».
 
-Chaque classement a « verifie »: false. Quand l'enseignant·e a relu un exercice, on met « verifie »: true
-à la main dans le fichier de sortie : le script garde alors cet exercice tel quel à chaque nouvelle
-exécution (il le signale seulement s'il a disparu des annales).
+Chaque classement a « verifie »: false. Pour corriger un exercice à la main, dans le fichier de sortie :
+  "2024-asie-j1#2": {"chapitres": ["graphes", "piles-files", "recursivite"], "verifie": true}
+(les identifiants des chapitres sont dans « chapitres », en tête du fichier), puis relancer le script.
+Il garde alors cet exercice tel quel à chaque nouvelle exécution, refuse un chapitre inconnu et signale
+un exercice vérifié qui a disparu des annales (« verifies_disparus »).
 
 Usage :
   python3 scripts/annales_notions.py              écrit donnees/annales/notions-par-exercice.json
@@ -218,10 +220,22 @@ def construire(precedent=None):
             if n not in thesaurus:
                 erreurs.append(f"chapitre {c['id']} : notion {n} absente du thésaurus")
     gardes = {}
+    ids_chapitres = {c["id"] for c in CHAPITRES}
     if precedent:
         for eid, e in precedent.get("exercices", {}).items():
-            if e.get("verifie") is True:
-                gardes[eid] = e
+            if not isinstance(e, dict) or e.get("verifie") is not True:
+                continue
+            # Un exercice relu à la main : « chapitres » peut être écrit simplement, ["tris", "recursivite"]
+            chapitres = []
+            for k in e.get("chapitres") or []:
+                if isinstance(k, str):
+                    k = {"chapitre": k, "indices": ["relu à la main"]}
+                if not isinstance(k, dict) or k.get("chapitre") not in ids_chapitres:
+                    erreurs.append(f"{eid} (vérifié à la main) : chapitre inconnu « {k.get('chapitre') if isinstance(k, dict) else k} » ; chapitres possibles : "
+                                   + ", ".join(sorted(ids_chapitres)))
+                    continue
+                chapitres.append(k)
+            gardes[eid] = dict(e, chapitres=chapitres)
 
     exercices, a_classer, a_verifier = {}, [], []
     vus = set()

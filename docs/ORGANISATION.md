@@ -27,17 +27,36 @@ bibliotheque/               l'onglet Bibliothèque (ne pas toucher)
   annales/                  la page des annales du bac NSI par notion (assets/annales.js), liée
                             depuis la bibliothèque
 admin/                      l'espace administrateur (ADMIN.md ; ne pas toucher)
+eleve/                      le compte commun, côté élève (« Ma planque » : l'avatar, la boutique, les
+                            trophées, les hauts faits, la classe), en démonstration depuis le 20/11/2026 :
+                            sans lien depuis le site, non indexé ; données fictives, rien n'est envoyé ni
+                            gardé (assets/planque.js, assets/compte-commun.js)
+enseignant/                 l'espace enseignant·e du compte commun, en démonstration de la même façon
+                            (assets/espace-enseignant.js ; QR codes : assets/qrcode-generator.js)
 calendrier/                 le Calendrier des vacances, en service depuis le 20/11/2026 : la page des élèves
                             (index.html), l'espace enseignant·e (prof.html), les banques d'exercices
                             (exercices/, contrôlées à chaque publication) et les migrations de sa base
                             (supabase/, voir SUPABASE.md)
 assets/                     mise en page et fonctionnement (ne pas toucher)
+  td-en-ligne.js, .css      le moteur des TD en ligne auto-correctifs (Python, avec Pyodide, chargé
+                            à la demande depuis jsDelivr, jamais copié dans le dépôt)
+  equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance) ; equipage/ : son contrat
+                            (LISEZMOI.md) et son catalogue (catalogue.json, généré depuis le module :
+                            ne pas le modifier à la main)
+charte/                     les pages de démonstration du Designer, sans lien depuis le site et non
+                            indexées : le TD pilote du moteur des TD en ligne (td-pilote/, avec son
+                            PDF), le vérificateur de ses réponses (verifier-td.py) et la démonstration
+                            du moteur d'avatars (avatars.html)
 donnees/                    les fiches et les référentiels de la bibliothèque (BIBLIOTHEQUE.md) ;
                             ses fichiers bibliotheque*.json sont construits à la publication
   annales/                  l'inventaire des sujets du bac de NSI, mis à jour chaque 1er janvier et
                             1er août (annales/LISEZMOI.md), et le classement de leurs exercices par
                             chapitre (notions-par-exercice.json, construit par
                             scripts/annales_notions.py) ; la page bibliotheque/annales/ les lit
+  compte-commun/            les apparences de l'avatar du compte commun (apparences.json, construit par
+                            scripts/apparences_compte_commun.py depuis assets/equipage/catalogue.json,
+                            à relancer quand le catalogue change) et les tableaux de bord des
+                            applications (tableaux-de-bord.json)
 .github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
 scripts/                    vérification automatique, validation des données, construction de la
                             bibliothèque, script complet de la base

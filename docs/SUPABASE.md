@@ -186,7 +186,9 @@ Quatre ressources passent par **Supabase** :
     registre le Calendrier des vacances : son schéma, `vacances`, et son préfixe, `cv_`. Sa vue
     reprend celle de `0006` (Hello GO, appliquée le 17 novembre 2026), dont les fichiers ne sont
     pas encore sur `main` ; les numéros `0007` et `0008` sont réservés au compte commun, pas
-    appliqué.
+    appliqué. Ses pages, `eleve/` et `enseignant/`, existent en démonstration depuis le
+    20 novembre 2026 : sans base, rien n'est envoyé ni gardé (`COMPTE_COMMUN_EN_LIGNE: false`
+    dans `reglages.js`, adresse et clé vides).
 - Chaque migration a son fichier inverse. [`supabase/LISEZMOI.md`](../supabase/LISEZMOI.md) donne l'ordre, les contrôles
   et le retour en arrière. Les migrations d'une application restent dans son propre dépôt.
 - Pour ta propre copie : lance `supabase/schema.sql` dans *SQL Editor* d'un projet neuf, avant le

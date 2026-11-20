@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contrôle de notions : programmation orientée objet : sujets à imprimer</title>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="papier.css">
+</head>
+<body>
+<div class="outils"><a href="index.html">Version en ligne</a> · <button type="button" onclick="window.print()">Imprimer</button> · une feuille recto verso par sujet, en noir et blanc</div>
+<div id="feuilles"></div>
+<script src="controle.js"></script>
+<script src="moteur.js"></script>
+<script>
+(function () {
+  'use strict';
+  var CN = window.CN, D = CN.DONNEES, e = CN.echapper, t = CN.texte;
+  var DOSSIER = 'controle-notions-poo';
+  var URL_EN_LIGNE = 'babash.github.io/Babash-NSI-SNT/nsi-terminale/fichiers/' + DOSSIER + '/';
+  var URL_GITHUB = 'https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/' + DOSSIER;
+  var numero = {};
+  D.questions.forEach(function (q, i) { numero[q.id] = i + 1; });
+
+  function zone(q, x) {
+    if (q.type === 'qcu') return x.options.map(function (o) { return '<div class="option"><span class="boite"></span><span>' + t(o[1]) + '</span></div>'; }).join('');
+    if (q.type === 'ligne') return '<div class="ligne-code">' + (x.avant ? '<code>' + e(x.avant) + '</code>' : '') +
+      '<span class="pointilles"></span>' + (x.apres ? '<code>' + e(x.apres) + '</code>' : '') + '</div>';
+    return '<div class="ligne"></div>';
+  }
+  function question(id, s) {
+    var q = D.questions[numero[id] - 1], x = CN.qs(s, q);
+    var court = q.type === 'valeur' && !x.programme;
+    var h = '<div class="q"><div class="titre"><span class="num">' + numero[id] + '.</span>' + t(x.enonce) +
+      (court ? ' <span class="ligne courte"></span>' : '') + '</div>';
+    if (x.programme) h += CN.programmeHTML(s, x.programme);
+    if (!court) h += zone(q, x);
+    return h + '</div>';
+  }
+  function contexte(g, s) {
+    var c = D.sujets[s].contextes[g];
+    var nums = D.questions.filter(function (q) { return q.groupe === g; }).map(function (q) { return numero[q.id]; });
+    return '<div class="contexte"><p><span class="pour">Pour les questions ' + nums.slice(0, -1).join(', ') + ' et ' + nums[nums.length - 1] + ' :</span> ' + t(c.texte) + '</p>' +
+      (c.programme ? CN.programmeHTML(s, c.programme) : '') + '</div>';
+  }
+  function element(it, s) {
+    if (it === 'convention') return '<div class="convention"><strong>Rappels.</strong> ' + e(D.consigne) + '<ul>' + D.convention.map(function (c) { return '<li>' + t(c) + '</li>'; }).join('') + '</ul></div>';
+    if (it === 'commun') { var c = D.sujets[s].commun; return '<div class="contexte"><p><span class="pour">' + t(c.titre) + '.</span> ' + t(c.texte || '') + '</p>' + CN.codeHTML(D.sujets[s].programmes[c.programme].code) + '</div>'; }
+    if (it.indexOf('ctx:') === 0) return contexte(it.slice(4), s);
+    return question(it, s);
+  }
+  var feuilles = [];
+  Object.keys(D.sujets).forEach(function (s) {
+    D.papier.forEach(function (page, p) {
+      var h = '<section class="feuille" aria-label="Sujet ' + s + ', page ' + (p + 1) + '">';
+      if (p === 0) {
+        h += '<div class="entete"><div><h1>' + e(D.titre) + '</h1><div class="info">' + e(D.niveau) + ' · ' + D.duree + ' minutes · ' + D.questions.length +
+          ' questions, 1 point chacune · recto verso</div></div><div class="sujet">Sujet ' + s + '</div></div>' +
+          '<div class="identite"><span>Prénom :</span><span class="court">Classe :</span><span class="court">Note : &nbsp;&nbsp;&nbsp;&nbsp;/ ' + D.questions.length + '</span></div>';
+      } else {
+        h += '<div class="suite"><span><strong>' + e(D.titre) + '</strong> · Sujet ' + s + ' · page ' + (p + 1) + ' sur ' + D.papier.length + '</span><span class="nom">Prénom :</span></div>';
+      }
+      page.forEach(function (rang) {
+        if (rang.pleine) h += rang.pleine.map(function (it) { return element(it, s); }).join('');
+        if (rang.colonnes) h += '<div class="colonnes"' + (rang.largeurs ? ' style="grid-template-columns: ' + rang.largeurs + '"' : '') + '>' + rang.colonnes.map(function (col) {
+          return '<div>' + col.map(function (it) { return element(it, s); }).join('') + '</div>';
+        }).join('') + '</div>';
+      });
+      h += '<div class="pied-feuille"><span>Babash - NSI Tani Malandi · CC BY-SA 4.0 · <a href="' + URL_GITHUB + '">Code source sur GitHub</a></span><span>En ligne : ' + URL_EN_LIGNE + '</span></div></section>';
+      feuilles.push(h);
+    });
+  });
+  document.getElementById('feuilles').innerHTML = feuilles.join('');
+})();
+</script>
+</body>
+</html>
