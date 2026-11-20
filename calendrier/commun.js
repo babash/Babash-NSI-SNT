@@ -26,11 +26,11 @@
       body: JSON.stringify(args || {})
     }).then(function (r) {
       return r.json().then(function (j) {
-        if (!r.ok) return { ok: false, message: "La base a refusé la demande (" + r.status + "). Réessaie dans un moment." };
+        if (!r.ok) return { ok: false, message: "La base a refusé la demande (" + r.status + "). Réessayer dans un moment." };
         return j && typeof j === "object" ? j : { ok: false, message: "Réponse illisible." };
       }, function () { return { ok: false, message: "Réponse illisible (" + r.status + ")." }; });
     }, function () {
-      return { ok: false, reseau: true, message: "Pas de réseau : ta partie est gardée sur cet appareil." };
+      return { ok: false, reseau: true, message: "Pas de réseau pour l'instant. Réessayer dans un moment." };
     });
   };
 
@@ -78,7 +78,8 @@
       else if (m[2]) out += CV.esc(m[2]);
       else if (m[3]) out += '<span class="nb">' + m[3] + "</span>";
       else if (sql ? MC_SQL.test(m[4].toUpperCase()) && m[4] === m[4].toUpperCase() : MC_PY.test(m[4])) out += '<span class="kw">' + m[4] + "</span>";
-      else if (!sql && FN_PY.test(m[4])) out += '<span class="fn">' + m[4] + "</span>";
+      // une fonction : souligner les fonctions connues, celles qu'on appelle (nom suivi de « ( ») et celles qu'on définit
+      else if (!sql && (FN_PY.test(m[4]) || /^\s*\(/.test(texte.slice(re.lastIndex)) || /\bdef\s+$/.test(texte.slice(0, m.index)))) out += '<span class="fn">' + m[4] + "</span>";
       else out += CV.esc(m[4]);
       i = re.lastIndex;
     }
@@ -174,6 +175,6 @@
     return '<footer class="pied">Babash - NSI Tani Malandi · exercices CC BY-SA 4.0, code MIT · <a href="' + CV.esc(C.DEPOT || "#") + '">Code source sur GitHub</a></footer>';
   };
   CV.horsService = function () {
-    return '<div class="message info" role="status">Le calendrier n\'est pas encore en service : la base est en cours de préparation. Reviens bientôt.</div>';
+    return '<div class="message info" role="status">Le calendrier n\'est pas encore en service. Il ouvrira bientôt, à la même adresse.</div>';
   };
 })();

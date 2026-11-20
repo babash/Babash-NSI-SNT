@@ -91,11 +91,20 @@ Les seuils, par heure et par réseau :
   - l'élève : « Effacer mes données » (`cv_effacer_moi`) ;
   - l'enseignant·e : retirer un·e élève ou supprimer un calendrier ;
   - en dernier recours : le tableau de bord de Supabase.
+- **Sur l'appareil de l'élève** (le stockage du navigateur, clés `cv:`), rien d'autre que :
+  - la session : le jeton, le prénom ou pseudo et le code, pour les montrer dans « Mon compte » ;
+  - la partie en cours (les réponses de la partie pas finie, pour la reprendre) ;
+  - les résultats pas encore reçus par la base (envoi différé, quand le réseau manque) ;
+  - le calendrier choisi, et le fait que le code a été noté.
+
+  Tout, sauf la session, est rattaché à l'élève par une **empreinte de son code** (pas le code lui-même). Un résultat en attente n'est envoyé qu'avec la session de l'élève qui l'a produit : si Lou joue sans réseau, quitte (« Ce n'est pas moi »), puis Sam entre sur le même téléphone, le résultat de Lou n'est ni montré à Sam ni envoyé avec son jeton ; il partira si Lou revient sur ce téléphone avec son code avant l'échéance.
+
+  **L'échéance :** 1 jour après l'écriture, ou 30 jours si l'élève a coché « C'est mon téléphone » (la session : 1 jour ou 30 jours après l'entrée). Après l'échéance, rien n'est plus lu, et tout est effacé à l'ouverture suivante de la page sur cet appareil (une page fermée ne peut rien effacer). « Effacer mes données » efface aussi tout ce que l'appareil garde de l'élève ; « Ce n'est pas moi » ferme la session et laisse seulement les résultats en attente, jusqu'à leur échéance. L'état du calendrier n'est gardé qu'en mémoire, le temps que la page est ouverte. Le choix clair ou obscur (`cv:theme`) n'est rattaché à personne.
 - **Les essais au hasard.** Un code faux, un lien de calendrier faux et **un prénom déjà pris** comptent comme des essais. Les seuils, par heure et par réseau : 20 essais pour un code d'élève, 10 pour un code d'enseignant·e, 30 pour un calendrier (lien ou prénom), 60 créations.
 
 ### Le texte du champ `donnees_eleves` de la fiche (à transmettre au Bibliothécaire)
 
-> Le Calendrier des vacances garde en ligne, dans la base de l'enseignant (Supabase, schéma `vacances`), le prénom ou le pseudo choisi par l'élève (jamais le nom de famille), son code d'accès et, pour chaque case jouée, le niveau, la réussite, les étoiles, le nombre d'essais et de coups de pouce, la durée et la date. Les réponses tapées ne sont jamais envoyées. Un compte est effacé au premier usage de l'application après 12 mois sans visite ; un calendrier et ses résultats, au premier usage après 12 mois suivant sa fin. L'élève peut tout effacer à tout moment (« Effacer mes données ») ; l'enseignant·e peut retirer un·e élève ou supprimer un calendrier. Aucun classement : la classe ne voit que des nombres, sans aucun nom.
+> Le Calendrier des vacances garde en ligne, dans la base de l'enseignant (Supabase, schéma `vacances`), le prénom ou le pseudo choisi par l'élève (jamais le nom de famille), son code d'accès et, pour chaque case jouée, le niveau, la réussite, les étoiles, le nombre d'essais et de coups de pouce, la durée et la date. Les réponses tapées ne sont jamais envoyées. Un compte est effacé au premier usage de l'application après 12 mois sans visite ; un calendrier et ses résultats, au premier usage après 12 mois suivant sa fin. Sur le téléphone ou l'ordinateur de l'élève, la page garde la session, la partie en cours et les résultats pas encore envoyés (quand le réseau manque), rattachés à l'élève par une empreinte de son code : un résultat n'est jamais envoyé pour un·e autre élève. Ces données ne sont plus lues après 1 jour (30 jours si l'élève a coché « C'est mon téléphone »), et elles sont effacées à l'ouverture suivante de la page. L'élève peut tout effacer à tout moment, en ligne et sur l'appareil (« Effacer mes données ») ; l'enseignant·e peut retirer un·e élève ou supprimer un calendrier. Aucun classement : la classe ne voit que des nombres, sans aucun nom, et seulement si l'enseignant·e a choisi de les montrer.
 
 ## Vérifier après l'application (métadonnées seulement)
 

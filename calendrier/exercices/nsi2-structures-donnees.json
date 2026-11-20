@@ -2253,42 +2253,42 @@
        "texte": "Cet arbre a une taille de 6.",
        "reponse": true,
        "explication": "Il y a six nœuds : A, B, C, D, E et F.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"A\",\n    Noeud(\"B\", Noeud(\"D\"), Noeud(\"E\")),\n    Noeud(\"C\", None, Noeud(\"F\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\nd, e = ArbreBinaire(\"D\"), ArbreBinaire(\"E\")\nb = ArbreBinaire(\"B\", d, e)\nc = ArbreBinaire(\"C\", None, ArbreBinaire(\"F\"))\na = ArbreBinaire(\"A\", b, c)",
        "verifier": "(t := lambda n: 0 if n is None else 1 + t(n.gauche) + t(n.droit))(a) == 6"
       },
       {
        "texte": "Cet arbre a une hauteur de 3.",
        "reponse": false,
        "explication": "Le plus long chemin, de A à D par exemple, passe par 3 nœuds mais seulement 2 arêtes : la hauteur est 2.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"A\",\n    Noeud(\"B\", Noeud(\"D\"), Noeud(\"E\")),\n    Noeud(\"C\", None, Noeud(\"F\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\nd, e = ArbreBinaire(\"D\"), ArbreBinaire(\"E\")\nb = ArbreBinaire(\"B\", d, e)\nc = ArbreBinaire(\"C\", None, ArbreBinaire(\"F\"))\na = ArbreBinaire(\"A\", b, c)",
        "verifier": "(h := lambda n: -1 if n is None else 1 + max(h(n.gauche), h(n.droit)))(a) == 3"
       },
       {
        "texte": "Le nœud C est à la profondeur 1.",
        "reponse": true,
        "explication": "C est un fils de la racine : une seule arête le sépare de A.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"A\",\n    Noeud(\"B\", Noeud(\"D\"), Noeud(\"E\")),\n    Noeud(\"C\", None, Noeud(\"F\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\nd, e = ArbreBinaire(\"D\"), ArbreBinaire(\"E\")\nb = ArbreBinaire(\"B\", d, e)\nc = ArbreBinaire(\"C\", None, ArbreBinaire(\"F\"))\na = ArbreBinaire(\"A\", b, c)",
        "verifier": "a.droit.valeur == \"C\""
       },
       {
        "texte": "Cet arbre a 3 feuilles : D, E et F.",
        "reponse": true,
        "explication": "D, E et F n'ont aucun fils. B et C ont au moins un fils.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"A\",\n    Noeud(\"B\", Noeud(\"D\"), Noeud(\"E\")),\n    Noeud(\"C\", None, Noeud(\"F\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\nd, e = ArbreBinaire(\"D\"), ArbreBinaire(\"E\")\nb = ArbreBinaire(\"B\", d, e)\nc = ArbreBinaire(\"C\", None, ArbreBinaire(\"F\"))\na = ArbreBinaire(\"A\", b, c)",
        "verifier": "(f := lambda n: [] if n is None else ([n.valeur] if n.gauche is None and n.droit is None else f(n.gauche) + f(n.droit)))(a) == [\"D\", \"E\", \"F\"]"
       },
       {
        "texte": "F est le fils gauche de C.",
        "reponse": false,
-       "explication": "Noeud(\"C\", None, Noeud(\"F\")) : le fils gauche de C est None, F est son fils droit.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"A\",\n    Noeud(\"B\", Noeud(\"D\"), Noeud(\"E\")),\n    Noeud(\"C\", None, Noeud(\"F\")))",
+       "explication": "ArbreBinaire(\"C\", None, ArbreBinaire(\"F\")) : le fils gauche de C est None, F est son fils droit.",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\nd, e = ArbreBinaire(\"D\"), ArbreBinaire(\"E\")\nb = ArbreBinaire(\"B\", d, e)\nc = ArbreBinaire(\"C\", None, ArbreBinaire(\"F\"))\na = ArbreBinaire(\"A\", b, c)",
        "verifier": "a.droit.gauche is not None"
       },
       {
        "texte": "a.gauche.droit.valeur vaut \"E\".",
        "reponse": true,
        "explication": "a.gauche est B, et le fils droit de B est E.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"A\",\n    Noeud(\"B\", Noeud(\"D\"), Noeud(\"E\")),\n    Noeud(\"C\", None, Noeud(\"F\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\nd, e = ArbreBinaire(\"D\"), ArbreBinaire(\"E\")\nb = ArbreBinaire(\"B\", d, e)\nc = ArbreBinaire(\"C\", None, ArbreBinaire(\"F\"))\na = ArbreBinaire(\"A\", b, c)",
        "verifier": "a.gauche.droit.valeur == \"E\""
       }
      ]
@@ -2300,28 +2300,28 @@
        "texte": "Cet arbre a une hauteur de 3.",
        "reponse": true,
        "explication": "Le chemin M, K, G, H compte 3 arêtes : c'est le plus long.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"M\",\n    Noeud(\"K\", Noeud(\"G\", None, Noeud(\"H\"))),\n    Noeud(\"T\", Noeud(\"P\"), Noeud(\"Z\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(\"G\", None, ArbreBinaire(\"H\"))\np, z = ArbreBinaire(\"P\"), ArbreBinaire(\"Z\")\na = ArbreBinaire(\"M\", ArbreBinaire(\"K\", g),\n                 ArbreBinaire(\"T\", p, z))",
        "verifier": "(h := lambda n: -1 if n is None else 1 + max(h(n.gauche), h(n.droit)))(a) == 3"
       },
       {
        "texte": "Cet arbre a une taille de 7.",
        "reponse": true,
        "explication": "Il y a sept nœuds : M, K, T, G, H, P et Z.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"M\",\n    Noeud(\"K\", Noeud(\"G\", None, Noeud(\"H\"))),\n    Noeud(\"T\", Noeud(\"P\"), Noeud(\"Z\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(\"G\", None, ArbreBinaire(\"H\"))\np, z = ArbreBinaire(\"P\"), ArbreBinaire(\"Z\")\na = ArbreBinaire(\"M\", ArbreBinaire(\"K\", g),\n                 ArbreBinaire(\"T\", p, z))",
        "verifier": "(t := lambda n: 0 if n is None else 1 + t(n.gauche) + t(n.droit))(a) == 7"
       },
       {
        "texte": "H est à la profondeur 2.",
        "reponse": false,
        "explication": "De M à H, on passe par K et G : 3 arêtes, donc la profondeur 3.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"M\",\n    Noeud(\"K\", Noeud(\"G\", None, Noeud(\"H\"))),\n    Noeud(\"T\", Noeud(\"P\"), Noeud(\"Z\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(\"G\", None, ArbreBinaire(\"H\"))\np, z = ArbreBinaire(\"P\"), ArbreBinaire(\"Z\")\na = ArbreBinaire(\"M\", ArbreBinaire(\"K\", g),\n                 ArbreBinaire(\"T\", p, z))",
        "verifier": "a.gauche.gauche.droit is None"
       },
       {
        "texte": "Le sous-arbre gauche de la racine a une hauteur de 2.",
        "reponse": true,
        "explication": "Ce sous-arbre a pour racine K ; le chemin K, G, H compte 2 arêtes.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(\"M\",\n    Noeud(\"K\", Noeud(\"G\", None, Noeud(\"H\"))),\n    Noeud(\"T\", Noeud(\"P\"), Noeud(\"Z\")))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(\"G\", None, ArbreBinaire(\"H\"))\np, z = ArbreBinaire(\"P\"), ArbreBinaire(\"Z\")\na = ArbreBinaire(\"M\", ArbreBinaire(\"K\", g),\n                 ArbreBinaire(\"T\", p, z))",
        "verifier": "(h := lambda n: -1 if n is None else 1 + max(h(n.gauche), h(n.droit)))(a.gauche) == 2"
       },
       {
@@ -3211,7 +3211,16 @@
        "aides": [
         "Chaque nœud est une liste [valeur, gauche, droit].",
         "On ne peut utiliser un nœud qu'après l'avoir créé : on commence par le bas."
-       ]
+       ],
+       "arbre": {
+        "v": "A",
+        "g": {
+         "v": "B",
+         "d": {
+          "v": "C"
+         }
+        }
+       }
       },
       {
        "but": "Construire une racine 7 avec une feuille 4 à gauche, puis afficher 7 4.",
@@ -3223,7 +3232,13 @@
        "affiche": "7 4",
        "aides": [
         "r[1] est le fils gauche de r."
-       ]
+       ],
+       "arbre": {
+        "v": 7,
+        "g": {
+         "v": 4
+        }
+       }
       }
      ]
     },
@@ -3355,42 +3370,42 @@
        "texte": "Cet arbre est un ABR.",
        "reponse": true,
        "explication": "Pour chaque nœud, les valeurs à gauche sont plus petites et celles à droite plus grandes.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(8,\n    Noeud(3, Noeud(1), Noeud(6)),\n    Noeud(10, None, Noeud(14)))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(3, ArbreBinaire(1), ArbreBinaire(6))\nd = ArbreBinaire(10, None, ArbreBinaire(14))\na = ArbreBinaire(8, g, d)",
        "verifier": "(e := lambda n, lo, hi: n is None or (lo < n.valeur < hi and e(n.gauche, lo, n.valeur) and e(n.droit, n.valeur, hi)))(a, -999, 999)"
       },
       {
        "texte": "Pour trouver 6, on passe par 8, puis 3, puis 6.",
        "reponse": true,
        "explication": "6 < 8 : à gauche, vers 3. 6 > 3 : à droite, et on trouve 6.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(8,\n    Noeud(3, Noeud(1), Noeud(6)),\n    Noeud(10, None, Noeud(14)))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(3, ArbreBinaire(1), ArbreBinaire(6))\nd = ArbreBinaire(10, None, ArbreBinaire(14))\na = ArbreBinaire(8, g, d)",
        "verifier": "a.gauche.valeur == 3 and a.gauche.droit.valeur == 6"
       },
       {
        "texte": "Pour insérer 9, on le place comme fils gauche de 10.",
        "reponse": true,
        "explication": "9 > 8 : à droite, vers 10. 9 < 10 : à gauche, et la place est vide.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(8,\n    Noeud(3, Noeud(1), Noeud(6)),\n    Noeud(10, None, Noeud(14)))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(3, ArbreBinaire(1), ArbreBinaire(6))\nd = ArbreBinaire(10, None, ArbreBinaire(14))\na = ArbreBinaire(8, g, d)",
        "verifier": "a.droit.valeur == 10 and a.droit.gauche is None"
       },
       {
        "texte": "Pour insérer 7, on le place comme fils gauche de 6.",
        "reponse": false,
        "explication": "7 < 8 : à gauche ; 7 > 3 : à droite, vers 6 ; 7 > 6 : à droite. 7 devient le fils droit de 6.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(8,\n    Noeud(3, Noeud(1), Noeud(6)),\n    Noeud(10, None, Noeud(14)))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(3, ArbreBinaire(1), ArbreBinaire(6))\nd = ArbreBinaire(10, None, ArbreBinaire(14))\na = ArbreBinaire(8, g, d)",
        "verifier": "7 < a.gauche.droit.valeur"
       },
       {
        "texte": "La plus grande valeur, 14, est tout en bas à droite.",
        "reponse": true,
        "explication": "Pour le maximum, on descend toujours à droite : 8, 10, puis 14.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(8,\n    Noeud(3, Noeud(1), Noeud(6)),\n    Noeud(10, None, Noeud(14)))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(3, ArbreBinaire(1), ArbreBinaire(6))\nd = ArbreBinaire(10, None, ArbreBinaire(14))\na = ArbreBinaire(8, g, d)",
        "verifier": "a.droit.droit.valeur == 14 and a.droit.droit.droit is None"
       },
       {
        "texte": "Cet arbre est un ABR.",
        "reponse": false,
        "explication": "7 est dans le sous-arbre gauche de 5, alors que 7 est plus grand que 5.",
-       "code": "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(5, Noeud(2, None, Noeud(7)), Noeud(9))",
+       "code": "class ArbreBinaire:\n    def __init__(self, valeur, gauche=None, droit=None):\n        self.valeur = valeur\n        self.gauche = gauche\n        self.droit = droit\ng = ArbreBinaire(2, None, ArbreBinaire(7))\na = ArbreBinaire(5, g, ArbreBinaire(9))",
        "verifier": "(e := lambda n, lo, hi: n is None or (lo < n.valeur < hi and e(n.gauche, lo, n.valeur) and e(n.droit, n.valeur, hi)))(a, -999, 999)"
       }
      ]
@@ -4040,10 +4055,12 @@
       {
        "but": "Descendre jusqu'au minimum de l'ABR : afficher 1.",
        "lignes": [
-        "class Noeud:",
-        "    def __init__(self, v, g=None, d=None):",
-        "        self.valeur, self.gauche, self.droit = v, g, d",
-        "a = Noeud(8, Noeud(3, Noeud(1)), Noeud(10))",
+        "class ArbreBinaire:",
+        "    def __init__(self, valeur, gauche=None, droit=None):",
+        "        self.valeur = valeur",
+        "        self.gauche = gauche",
+        "        self.droit = droit",
+        "a = ArbreBinaire(8, ArbreBinaire(3, ArbreBinaire(1)))",
         "n = a",
         "while n.{0} is not None:",
         "    n = n.{1}",
@@ -4075,11 +4092,14 @@
       {
        "but": "Insérer 9 à sa place, à gauche de 10 : afficher 9.",
        "lignes": [
-        "class Noeud:",
-        "    def __init__(self, v, g=None, d=None):",
-        "        self.valeur, self.gauche, self.droit = v, g, d",
-        "a = Noeud(8, Noeud(3), Noeud(10))",
-        "a.droit.{0} = Noeud(9)",
+        "class ArbreBinaire:",
+        "    def __init__(self, valeur, gauche=None, droit=None):",
+        "        self.valeur = valeur",
+        "        self.gauche = gauche",
+        "        self.droit = droit",
+        "a = ArbreBinaire(8, ArbreBinaire(3),",
+        "                 ArbreBinaire(10))",
+        "a.droit.{0} = ArbreBinaire(9)",
         "print(a.droit.gauche.valeur)"
        ],
        "trous": [
@@ -4882,13 +4902,15 @@
       {
        "but": "Afficher la valeur du fils gauche : B.",
        "lignes": [
-        "class Noeud:",
-        "    def __init__(self, v, g=None, d=None):",
-        "        self.valeur, self.gauche, self.droit = v, g, d",
-        "a = Noeud(\"A\", Noeud(\"B\"))",
+        "class ArbreBinaire:",
+        "    def __init__(self, valeur, gauche=None, droit=None):",
+        "        self.valeur = valeur",
+        "        self.gauche = gauche",
+        "        self.droit = droit",
+        "a = ArbreBinaire(\"A\", ArbreBinaire(\"B\"))",
         "print(a.Gauche.valeur)"
        ],
-       "ligne": 4,
+       "ligne": 6,
        "corrections": [
         "print(a.droit.valeur)",
         "print(a.gauche.valeur)",
@@ -4900,7 +4922,7 @@
        "aides": [
         "Lis bien la fin du message d'erreur."
        ],
-       "message": "AttributeError: 'Noeud' object has no attribute 'Gauche'. Did you mean: 'gauche'?"
+       "message": "AttributeError: 'ArbreBinaire' object has no attribute 'Gauche'. Did you mean: 'gauche'?"
       }
      ]
     },
@@ -5368,7 +5390,16 @@
        "affiche": "3 4",
        "aides": [
         "On ne peut accrocher 4 sous 3 qu'une fois 3 en place."
-       ]
+       ],
+       "arbre": {
+        "v": 5,
+        "g": {
+         "v": 3,
+         "d": {
+          "v": 4
+         }
+        }
+       }
       }
      ]
     },
