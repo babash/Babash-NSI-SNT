@@ -30,8 +30,8 @@ REGLES = [
  (r"en profondeur|parcours.*profondeur", ["algo.graphe.profondeur"]),
  (r"plus court chemin|bellman|dijkstra", ["algo.graphe.plus-court-chemin"]),
  (r"\bsql\b|bases? de donnees|schema relationnel|modele relationnel|cles? primaires?|sgbd", ["donnees.bdd", "donnees.bdd.relationnel"]),
- (r"\bsql\b|select|requetes?", ["donnees.bdd.sql"]),
- (r"select|interrogation|where|order by|count|agregation", ["donnees.bdd.sql.interrogation"]),
+ (r"\bsql\b|\bselect\b|requetes?", ["donnees.bdd.sql"]),
+ (r"\bselect\b|interrogation|where|order by|count|agregation", ["donnees.bdd.sql.interrogation"]),
  (r"\bjoin\b|jointures?", ["donnees.bdd.sql.jointure"]),
  (r"\binsert\b|\bupdate\b|\bdelete\b|mise a jour|insertion|suppression", ["donnees.bdd.sql.mise-a-jour"]),
  (r"routage|\brip\b|\bospf\b|tables? de routage", ["reseau.routage"]),
@@ -92,7 +92,7 @@ def notions_de(texte):
     # faux amis (T119) : retirés du texte avant la recherche des mots, pour que la règle visée ne s'applique pas
     #  - « insertion » dans un tri ou dans un ABR n'est pas une requête SQL INSERT ;
     #  - « listes d'adjacence » ne sont pas des tableaux ; « tri topologique » n'est pas un tri de liste.
-    t_sql = re.sub(r"tris? par insertion|abr insertion|insertions? (dans|d'un|d'une|de) (un |une |l')?(abr|arbre)", " ", t)
+    t_sql = re.sub(r"(tris?|et|,) par insertion|tris? par insertion|par insertion|abr insertion|insertions? (dans|d'un|d'une|de) (un |une |l')?(abr|arbre)", " ", t)
     t_tab = re.sub(r"(dictionnaires? de )?listes? d'adjacence", " ", t)
     t_tri = re.sub(r"tris? topologiques?", " ", t)
     res = []
