@@ -25,7 +25,7 @@
     if (code) return ouvrir();
     afficher('<section class="carte"><h2>Ouvrir mon espace</h2><label for="code">Mon code d\'enseignant·e (3 mots et 4 chiffres)</label>' +
       '<input type="text" id="code" class="code-saisie" autocomplete="off" spellcheck="false" placeholder="PION-SURF-BINGO-2741">' +
-      '<label class="case-a-cocher"><input type="checkbox" id="garder"> Garder mon code sur cet appareil 60 jours</label>' + message(msg, cls) +
+      '<label class="case-a-cocher"><input type="checkbox" id="garder"> Garder mon code sur cet appareil 60 jours (sur un appareil personnel seulement)</label>' + message(msg, cls) +
       '<div class="pile"><button class="btn plein large" data-act="ouvrir">Ouvrir</button></div></section>' +
       '<section class="carte"><h2>Créer mon espace</h2><p class="doux">Pas de mot de passe ni d\'adresse électronique : un code de 3 mots et 4 chiffres, montré une seule fois.</p>' +
       '<label for="nom">Le nom que verront les élèves</label><input type="text" id="nom" maxlength="40" placeholder="Mme N." autocomplete="off">' +

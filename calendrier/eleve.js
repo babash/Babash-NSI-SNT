@@ -1,27 +1,98 @@
 /* Calendrier des vacances : la page élève.
    Fonctions de la base : cv_calendrier_par_code, cv_inscription, cv_connexion, cv_rejoindre,
    cv_reprise, cv_calendrier, cv_resultat, cv_classe, cv_deconnexion, cv_effacer_moi.
-   Rien ne se perd : une partie est gardée sur l'appareil à chaque geste, et un résultat
-   attend dans l'appareil tant que la base ne l'a pas reçu (envoi différé). */
+   Ce que garde l'appareil (localStorage, clés « cv: ») : la session, la partie en cours, les
+   résultats pas encore reçus par la base (envoi différé), le calendrier choisi et « code noté ».
+   Tout est rattaché à l'élève par une empreinte de son code (jamais le code lui-même, sauf dans
+   la session), et tout a une échéance : 1 jour après l'écriture, ou 30 jours si « C'est mon
+   téléphone » est coché. Après l'échéance, rien n'est plus lu, et tout est effacé à l'ouverture
+   suivante de la page. Un résultat n'est envoyé qu'avec la session de l'élève qui l'a produit. */
 (function () {
   "use strict";
   var CV = window.CV, esc = CV.esc, racine = document.getElementById("app");
   var UN_JOUR = 86400000, TRENTE_JOURS = 30 * UN_JOUR;
   var params = new URLSearchParams(location.search);
   var codeLien = (params.get("c") || params.get("classe") || "").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 4);
-  var session = lireSession(), etatCal = null, calId = CV.lire("calendrier", null), banques = {}, jeu = null, minuterie = null;
+  menage();
+  var session = lireSession(), etatCal = null, calId = null, banques = {}, jeu = null, minuterie = null;
+  if (session) calId = repris(cleEleve("calendrier"), null);
+
+  // ------------------------------------------------------------ ce que garde l'appareil
+  // une empreinte du code (cyrb53) : elle rattache les données à l'élève sans écrire son code
+  function empreinte(t) {
+    var h1 = 0xdeadbeef, h2 = 0x41c6ce57, i, c;
+    t = "cv:" + String(t || "");
+    for (i = 0; i < t.length; i++) { c = t.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    return (h2 >>> 0).toString(36) + (h1 >>> 0).toString(36);
+  }
+  function duree() { return session && session.garder ? TRENTE_JOURS : UN_JOUR; }
+  function cleEleve(nom) { return nom + ":" + (session ? session.proprio : "?"); }
+  // une valeur gardée avec son échéance ; lue seulement avant l'échéance
+  function garde(cle, val) { CV.ecrire(cle, val == null ? null : { v: val, exp: Date.now() + duree() }); }
+  function repris(cle, defaut) {
+    var o = CV.lire(cle, null);
+    if (!o || typeof o !== "object" || typeof o.exp !== "number" || o.exp < Date.now()) { if (o != null) CV.ecrire(cle, null); return defaut; }
+    return o.v;
+  }
+  // à l'ouverture : efface tout ce qui a passé son échéance, et ce qu'écrivaient les versions d'avant
+  function menage() {
+    var cles = [], maintenant = Date.now();
+    try { for (var i = 0; i < localStorage.length; i++) cles.push(localStorage.key(i)); } catch (e) { return; }
+    cles.forEach(function (k) {
+      if (!k || k.indexOf("cv:") !== 0) return;
+      var nom = k.slice(3), o = CV.lire(nom, null);
+      if (nom === "theme") return;
+      if (nom === "session") { if (!o || !o.expire || o.expire < maintenant || !o.proprio) CV.ecrire(nom, null); return; }
+      if (nom === "attente") { ecrireAttente(Array.isArray(o) ? o : []); return; }
+      if (/^(partie|calendrier|note):/.test(nom)) { repris(nom, null); return; }
+      CV.ecrire(nom, null); // dernier-etat:…, calendrier, note, et toute autre clé ancienne
+    });
+  }
 
   // ------------------------------------------------------------ session et envoi différé
   function lireSession() {
     var s = CV.lire("session", null);
-    if (!s || !s.jeton || !s.expire || s.expire < Date.now()) { CV.ecrire("session", null); return null; }
+    if (!s || !s.jeton || !s.expire || s.expire < Date.now() || !s.proprio) { CV.ecrire("session", null); return null; }
     return s;
   }
   function garderSession(r, garder) {
-    session = { jeton: r.jeton, pseudo: r.pseudo, code: r.code_affiche, garder: !!garder, expire: Date.now() + (garder ? TRENTE_JOURS : UN_JOUR) };
+    session = { jeton: r.jeton, pseudo: r.pseudo, code: r.code_affiche, proprio: empreinte(r.code_affiche), garder: !!garder,
+      expire: Date.now() + (garder ? TRENTE_JOURS : UN_JOUR) };
     CV.ecrire("session", session);
   }
-  function attente() { return CV.lire("attente", []) || []; }
+  // « Effacer mes données » : tout ce que l'appareil garde de cet·te élève (session, parties, attente, choix) ;
+  // « Ce n'est pas moi » (garderAttente) : tout, sauf ses résultats en attente, qui gardent leur échéance
+  function effacerAppareil(garderAttente) {
+    var p = session ? session.proprio : null, cles = [];
+    if (p) {
+      if (!garderAttente) ecrireAttente(attenteTous().filter(function (x) { return x.proprio !== p; }));
+      try { for (var i = 0; i < localStorage.length; i++) cles.push(localStorage.key(i)); } catch (e) { /* rien */ }
+      cles.forEach(function (k) { if (k && /^cv:(partie|calendrier|note):/.test(k) && k.split(":")[2] === p) CV.ecrire(k.slice(3), null); });
+    }
+    fermerSession();
+  }
+  function fermerSession() { CV.ecrire("session", null); session = null; calId = null; }
+  // tous les résultats en attente sur l'appareil (de tous les élèves), sans ceux qui ont passé leur échéance
+  function attenteTous() {
+    var a = CV.lire("attente", []), maintenant = Date.now();
+    a = (Array.isArray(a) ? a : []).filter(function (x) { return x && x.proprio && x.cle && typeof x.exp === "number" && x.exp >= maintenant; });
+    return a;
+  }
+  function ecrireAttente(a) {
+    var maintenant = Date.now();
+    a = a.filter(function (x) { return x && x.proprio && x.cle && typeof x.exp === "number" && x.exp >= maintenant; });
+    CV.ecrire("attente", a.length ? a : null);
+  }
+  // ceux de l'élève connecté·e seulement : les seuls qu'on montre et qu'on envoie
+  function attente() { return session ? attenteTous().filter(function (x) { return x.proprio === session.proprio; }) : []; }
+  function retirerAttente(x) { ecrireAttente(attenteTous().filter(function (y) { return y.cle !== x.cle; })); }
+  // l'échéance la plus proche d'une liste de résultats en attente, en clair (« 21 novembre à 10:15 »)
+  function jusquA(a) {
+    var m = Math.min.apply(null, a.map(function (x) { return x.exp; }).concat([Date.now() + duree()]));
+    return new Date(m).toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
+  }
   function envoyer() {
     var a = attente();
     if (!a.length || !session) return Promise.resolve(null);
@@ -31,11 +102,11 @@
       if (r.reseau || r.horsService) return null;
       if (r.ok || /illisible|pas encore ouverte|pas dans ce calendrier/.test(r.message || "")) {
         // reçu (ou refusé pour de bon : on ne le renvoie pas sans fin)
-        var b = attente(); b.shift(); CV.ecrire("attente", b);
+        retirerAttente(r0);
         if (r.ok && r.etat && r0.calendrier === calId) etatCal = r.etat;
         return envoyer().then(function (x) { return x || r; });
       }
-      if (/session a expiré/.test(r.message || "")) { CV.ecrire("session", null); session = null; }
+      if (/session a expiré/.test(r.message || "")) fermerSession();
       return r;
     });
   }
@@ -67,7 +138,7 @@
       return envoyer().then(function () { return CV.rpc("cv_reprise", { p_jeton: session.jeton }); }).then(function (r) {
         if (!r.ok) {
           if (r.reseau) return erreur(r.message);
-          CV.ecrire("session", null); session = null; return demarrer();
+          fermerSession(); return demarrer();
         }
         return apresEntree(r);
       });
@@ -88,7 +159,7 @@
       return CV.rpc("cv_calendrier_par_code", { p_code_calendrier: codeLien }).then(function (k) {
         if (!k.ok) return choisirCalendrier(cals);
         var deja = cals.filter(function (c) { return c.nom === k.nom && c.debut === k.debut && c.fin === k.fin; })[0];
-        if (deja) { calId = deja.id; CV.ecrire("calendrier", calId); return calendrier(); }
+        if (deja) { choisir(deja.id); return calendrier(); }
         afficher("rejoindre", bandeau(session.pseudo) + '<section class="carte"><h2>Rejoindre « ' + esc(k.nom) + " » ?</h2><p>Avec " + esc(k.enseignant) +
           ", du " + esc(CV.dateLongue(k.debut)) + " au " + esc(CV.dateLongue(k.fin)) + '. Tu gardes ton code et tes autres calendriers.</p><div class="pile">' +
           '<button class="btn plein large" data-act="rejoindre">Rejoindre</button><button class="btn large" data-act="pas-rejoindre">Non, rester où je suis</button></div></section>');
@@ -97,11 +168,12 @@
     }
     return choisirCalendrier(cals);
   }
+  function choisir(id) { calId = id; garde(cleEleve("calendrier"), id); }
   function choisirCalendrier(cals) {
     if (!cals.length) return afficher("vide", bandeau(session.pseudo) + '<section class="carte"><p>Tu n\'es encore dans aucun calendrier. Ouvre le lien donné par ton enseignant·e.</p></section>');
     var ici = cals.filter(function (c) { return c.id === calId; })[0];
     if (ici) return calendrier();
-    if (cals.length === 1) { calId = cals[0].id; CV.ecrire("calendrier", calId); return calendrier(); }
+    if (cals.length === 1) { choisir(cals[0].id); return calendrier(); }
     afficher("choix", bandeau(session.pseudo) + "<h2>Mes calendriers</h2><div class=\"a-faire\">" + cals.map(function (c) {
       return '<button class="case-carte" data-act="choisir" data-id="' + esc(c.id) + '"><span class="date"><b>' + CV.versDate(c.debut).getUTCDate() + "</b><span>" + esc(CV.jourCourt(c.debut)) +
         '</span></span><span class="quoi"><b>' + esc(c.nom) + "</b><span>du " + esc(CV.dateCourte(c.debut)) + " au " + esc(CV.dateCourte(c.fin)) + "</span></span></button>";
@@ -115,12 +187,13 @@
     afficher("accueil", bandeau(k.nom + " · " + k.enseignant) + '<section class="carte"><h2>' + esc(k.nom) + '</h2><p class="doux">Avec ' + esc(k.enseignant) + ", du " +
       esc(CV.dateLongue(k.debut)) + " au " + esc(CV.dateLongue(k.fin)) + ".</p>" +
       '<ul class="liste"><li>Chaque jour, une case s\'ouvre : un mini-jeu de 10 minutes au plus.</li><li>Trois cases à faire au plus à la fois. Une case oubliée se rattrape : rien ne se perd.</li>' +
-      "<li>Le corrigé expliqué s'ouvre trois jours après la case.</li><li>Aucun classement : chacun·e avance à son rythme, et toute la classe remplit la même jauge.</li></ul>" +
+      "<li>Le corrigé expliqué s'ouvre trois jours après la case.</li><li>Aucun classement : chacun·e avance à son rythme.</li></ul>" +
       '<div class="pile">' + (k.inscriptions_ouvertes ? '<button class="btn plein large" data-act="nouveau">Je suis nouveau ou nouvelle</button>' : '<p class="message info">Les inscriptions sont fermées : si tu as un code, entre-le.</p>') +
       '<button class="btn large" data-act="connexion">J\'ai déjà un code</button></div></section>');
   }
   function caseGarder(id) {
-    return '<label class="case-a-cocher"><input type="checkbox" id="' + id + '"> C\'est mon téléphone : me garder connecté·e 30 jours (sinon, 1 jour).</label>';
+    return '<label class="case-a-cocher"><input type="checkbox" id="' + id + '"> <span>C\'est mon téléphone : me garder connecté·e 30 jours. ' +
+      "Sinon, au bout d'un jour, cet appareil oublie ma session, ma partie en cours et mes résultats pas encore envoyés.</span></label>";
   }
   function ecranNouveau(msg) {
     afficher("nouveau", bandeau() + '<section class="carte"><h2>Créer mon code</h2><label for="pseudo">Ton prénom ou un pseudo</label>' +
@@ -133,7 +206,7 @@
     attendre("Je crée ton code…");
     CV.rpc("cv_inscription", { p_code_calendrier: codeLien, p_pseudo: p }).then(function (r) {
       if (!r.ok) return ecranNouveau(r.message);
-      garderSession(r, garder); calId = r.calendrier; CV.ecrire("calendrier", calId); CV.ecrire("note", false);
+      garderSession(r, garder); choisir(r.calendrier); garde(cleEleve("note"), false);
       ecranCode();
     });
   }
@@ -146,7 +219,7 @@
   function note() {
     var v = document.getElementById("chiffres").value.trim().replace(/[oO]/g, "0").replace(/[iIlL]/g, "1");
     if (v !== session.code.split("-").pop()) return ecranCode("Ce ne sont pas les bons chiffres : regarde ton code et recopie-le.");
-    CV.ecrire("note", true); calendrier();
+    garde(cleEleve("note"), null); calendrier();
   }
   function carteConnexion(msg, cls) {
     return '<section class="carte"><h2>J\'ai déjà un code</h2><label for="code">Ton code</label><input type="text" id="code" class="code-saisie" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="DOMINO-JOKER-482">' +
@@ -160,7 +233,7 @@
     attendre("Je vérifie ton code…");
     CV.rpc("cv_connexion", { p_code: l.code }).then(function (r) {
       if (!r.ok) return ecranConnexion(r.message);
-      garderSession(r, garder); CV.ecrire("note", true);
+      garderSession(r, garder); garde(cleEleve("note"), null); calId = repris(cleEleve("calendrier"), null);
       envoyer().then(function () { apresEntree(r); });
     });
   }
@@ -185,16 +258,16 @@
   }
   function calendrier() {
     if (!session) return demarrer();
-    if (CV.lire("note", true) === false) return ecranCode();
+    if (repris(cleEleve("note"), true) === false) return ecranCode();
     attendre("J'ouvre ton calendrier…");
     envoyer().then(function () { return CV.rpc("cv_calendrier", { p_jeton: session.jeton, p_calendrier: calId }); }).then(function (r) {
       if (!r.ok) {
         if (r.reseau && etatCal) return dessinerCalendrier(true);
-        if (/expiré/.test(r.message || "")) { CV.ecrire("session", null); session = null; return ecranConnexion("Ta session a expiré : entre de nouveau ton code.", "info"); }
-        if (/pas dans ce calendrier/.test(r.message || "")) { CV.ecrire("calendrier", null); calId = null; return demarrer(); }
+        if (/expiré/.test(r.message || "")) { fermerSession(); return ecranConnexion("Ta session a expiré : entre de nouveau ton code.", "info"); }
+        if (/pas dans ce calendrier/.test(r.message || "")) { garde(cleEleve("calendrier"), null); calId = null; return demarrer(); }
         return erreur(r.message, "calendrier");
       }
-      etatCal = r.etat; CV.ecrire("dernier-etat:" + calId, etatCal);
+      etatCal = r.etat; // gardé en mémoire seulement, jamais sur l'appareil
       return chargerBanques(etatCal.calendrier.themes || []).then(function () { dessinerCalendrier(false); });
     });
   }
@@ -205,8 +278,8 @@
     var aFaire = cases.filter(function (c) { return c.etat === "ouverte" && !enAttente(c).length; });
     var nAtt = attente().length;
     var html = bandeau(session.pseudo + " · " + cal.nom) +
-      (horsLigne ? '<div class="message info" role="status">Pas de réseau : voici ton calendrier tel qu\'il était à ta dernière visite.</div>' : "") +
-      (nAtt ? '<div class="message info" role="status">' + nAtt + " résultat" + (nAtt > 1 ? "s attendent" : " attend") + ' sur ce téléphone : ' + (nAtt > 1 ? "ils partiront" : "il partira") + ' dès que le réseau revient. <button class="lien" data-act="renvoyer">Réessayer maintenant</button></div>' : "") +
+      (horsLigne ? '<div class="message info" role="status">Pas de réseau : voici ton calendrier tel qu\'il était quand cette page l\'a chargé.</div>' : "") +
+      (nAtt ? '<div class="message info" role="status">' + nAtt + " résultat" + (nAtt > 1 ? "s attendent" : " attend") + ' sur ce téléphone jusqu\'au ' + esc(jusquA(attente())) + ' : ' + (nAtt > 1 ? "ils partiront" : "il partira") + ' dès que le réseau revient. <button class="lien" data-act="renvoyer">Réessayer maintenant</button></div>' : "") +
       '<section class="carte" aria-label="Mon score"><div class="score">' +
       '<div class="tuile"><b>' + s.etoiles + "</b><span>étoiles</span></div>" +
       '<div class="tuile"><b>' + s.faites + "/" + cases.length + "</b><span>cases faites</span></div>" +
@@ -274,7 +347,7 @@
         (cor ? '<p class="message info">Le corrigé est ouvert. Tu peux encore jouer : c\'est un rattrapage, il compte comme case faite.</p>'
              : '<p class="doux">Choisis ton niveau. Un niveau suffit ; les autres sont des bonus. Corrigé le ' + esc(CV.dateLongue(c.corrige_le)) + ".</p>") +
         '<div class="niveaux">' + x.ex.niveaux.map(function (nv, i) {
-          var rr = r[i + 1], partie = CV.lire(clePartie(c.numero, i + 1), null), att = enAttente(c).some(function (a) { return a.niveau === i + 1; });
+          var rr = r[i + 1], partie = repris(clePartie(c.numero, i + 1), null), att = enAttente(c).some(function (a) { return a.niveau === i + 1; });
           return '<button class="niveau" data-act="jouer" data-n="' + n + '" data-niv="' + (i + 1) + '"><span><b>' + CV.etoiles(i + 1, 3) + " " + CV.NOMS_NIVEAUX[i] + "</b><small>" +
             nv.items.length + " question" + (nv.items.length > 1 ? "s" : "") + ", environ " + nv.duree + " min" + (partie ? " · partie en cours : reprendre" : "") + "</small></span>" +
             (att ? '<span class="fait">envoi en attente</span>' : rr && rr.reussi ? '<span class="fait">' + (rr.dans_les_temps ? "réussi" : "rattrapé") + "</span>" : "") + "</button>";
@@ -292,7 +365,7 @@
     var b = v.querySelector(".niveau, .btn"); if (b) b.focus();
   }
   function fermer() { var v = document.querySelector(".voile"); if (v) v.remove(); }
-  function clePartie(numero, niv) { return "partie:" + calId + ":" + numero + ":" + niv; }
+  function clePartie(numero, niv) { return "partie:" + (session ? session.proprio : "?") + ":" + calId + ":" + numero + ":" + niv; }
 
   // ------------------------------------------------------------ jouer, terminer, envoyer
   function jouer(n, niv) {
@@ -301,24 +374,25 @@
     vue = "jeu"; racine.innerHTML = '<div id="jeu"></div>' + CV.pied();
     jeu = CV.jouer(document.getElementById("jeu"), {
       exercice: x.ex, niveau: niv, langage: x.langage, tables: x.tables, titreCase: CV.dateCourte(c.jour),
-      sauvegarde: CV.lire(clePartie(n, niv), null),
-      surSauver: function (g) { CV.ecrire(clePartie(n, niv), g); },
+      sauvegarde: repris(clePartie(n, niv), null),
+      surSauver: function (g) { garde(clePartie(n, niv), g); },
       surQuitter: function () { jeu = null; calendrier(); },
       surFin: function (r) { jeu = null; terminer(c, x, r); }
     });
   }
   function terminer(c, x, r) {
     CV.ecrire(clePartie(c.numero, r.niveau), null);
-    var a = attente();
-    a.push({ calendrier: calId, numero: c.numero, niveau: r.niveau, reussi: true, etoiles: r.etoiles, essais: r.essais, coups: r.coups, duree: r.duree });
-    CV.ecrire("attente", a);
+    var a = attenteTous();
+    a.push({ proprio: session.proprio, exp: Date.now() + duree(), cle: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+      calendrier: calId, numero: c.numero, niveau: r.niveau, reussi: true, etoiles: r.etoiles, essais: r.essais, coups: r.coups, duree: r.duree });
+    ecrireAttente(a);
     var dlt = etatCal.aujourdhui < c.corrige_le;
     var min = Math.floor(r.duree / 60), sec = r.duree % 60;
     var proc = r.ratees === 0 ? "Tout juste du premier coup." : "Tu as corrigé " + r.ratees + " erreur" + (r.ratees > 1 ? "s" : "") + " en route : c'est en se trompant qu'on apprend.";
     function ecran(statut) {
       afficher("fin", bandeau() + '<section class="carte bravo"><h2>Case réussie</h2><div>' + CV.etoiles(r.niveau, 3) + "</div><p>" + proc + '</p><p class="doux">' +
         (r.coups ? r.coups + " coup" + (r.coups > 1 ? "s" : "") + " de pouce · " : "Sans coup de pouce · ") + min + " min " + sec + " s</p>" +
-        '<p class="message ' + (statut === "ok" ? "ok" : "info") + '" role="status">' + (statut === "ok" ? "Résultat enregistré." : statut === "attente" ? "Résultat gardé sur ce téléphone : il partira dès que le réseau revient." : "Envoi en cours…") + "</p>" +
+        '<p class="message ' + (statut === "ok" ? "ok" : "info") + '" role="status">' + (statut === "ok" ? "Résultat enregistré." : statut === "attente" ? "Résultat gardé sur ce téléphone jusqu'au " + jusquA(attente()) + " : il partira dès que le réseau revient si tu restes connecté·e ici, sinon quand tu reviendras ici avec ton code." : "Envoi en cours…") + "</p>" +
         (dlt ? '<p class="doux">Le corrigé expliqué s\'ouvre ' + esc(CV.dateLongue(c.corrige_le)) + ".</p>" : '<p class="doux">Rattrapage : la case compte comme faite.</p>') +
         '<div class="pile">' + (r.niveau < 3 ? '<button class="btn plein large" data-act="jouer" data-n="' + c.numero + '" data-niv="' + (r.niveau + 1) + '">Bonus : essayer le niveau ' + CV.NOMS_NIVEAUX[r.niveau].toLowerCase() + "</button>" : "") +
         '<button class="btn large" data-act="calendrier">Retour au calendrier</button></div></section>');
@@ -327,7 +401,7 @@
     envoyer().then(function (rep) {
       if (vue !== "fin") return;
       ecran(attente().some(function (b) { return b.calendrier === calId && b.numero === c.numero && b.niveau === r.niveau; }) ? "attente" : "ok");
-      if (rep && !rep.ok && !rep.reseau && /expiré/.test(rep.message || "")) ecranConnexion("Ta session a expiré : entre de nouveau ton code. Ton résultat attend sur ce téléphone.", "info");
+      if (rep && !rep.ok && !rep.reseau && /expiré/.test(rep.message || "")) ecranConnexion("Ta session a expiré : entre de nouveau ton code. Ton résultat attend sur ce téléphone jusqu'au " + jusquA(attente()) + " : il partira quand tu entreras ton code.", "info");
     });
   }
   function corrige(n) {
@@ -342,7 +416,7 @@
   function compte() {
     var n = attente().length;
     ouvrirFeuille("<h2>" + esc(session.pseudo) + '</h2><p>Ton code :</p><div class="grand-code">' + esc(session.code) + '</div><p class="doux">Garde-le pour toi. Avec lui, tu reviens depuis n\'importe quel appareil.</p>' +
-      (n ? '<p class="message info">' + n + " résultat" + (n > 1 ? "s attendent" : " attend") + " encore sur ce téléphone.</p>" : "") +
+      (n ? '<p class="message info">' + n + " résultat" + (n > 1 ? "s attendent" : " attend") + " encore sur ce téléphone, jusqu'au " + esc(jusquA(attente())) + ".</p>" : "") +
       '<div class="pile"><button class="btn large" data-act="changer">Changer de calendrier</button><button class="btn large" data-act="pas-moi">Ce n\'est pas moi (quitter sur cet appareil)</button>' +
       '<button class="btn large" data-act="effacer">Effacer mes données</button></div>', "Mon compte");
   }
@@ -365,26 +439,29 @@
     if (a === "corrige") return corrige(+el.getAttribute("data-n"));
     if (a === "renvoyer") return envoyer().then(calendrier);
     if (a === "compte") return compte();
-    if (a === "choisir") { calId = el.getAttribute("data-id"); CV.ecrire("calendrier", calId); return calendrier(); }
+    if (a === "choisir") { choisir(el.getAttribute("data-id")); return calendrier(); }
     if (a === "changer") { fermer(); return CV.rpc("cv_reprise", { p_jeton: session.jeton }).then(function (r) { if (r.ok) { calId = null; choisirCalendrier(r.calendriers || []); } }); }
     if (a === "rejoindre") {
       return CV.rpc("cv_rejoindre", { p_jeton: session.jeton, p_code_calendrier: codeLien }).then(function (r) {
         if (!r.ok) return erreur(r.message);
-        calId = r.calendrier; CV.ecrire("calendrier", calId); calendrier();
+        choisir(r.calendrier); calendrier();
       });
     }
     if (a === "pas-rejoindre") { codeLien = ""; return choisirCalendrier(apresEntree.cals || []); }
     if (a === "pas-moi") {
-      if (attente().length && !window.confirm("Des résultats attendent encore sur ce téléphone. Quitter quand même ? Ils partiront quand tu reviendras avec ton code.")) return;
-      fermer(); CV.rpc("cv_deconnexion", { p_jeton: session.jeton }); CV.ecrire("session", null); session = null;
+      // les résultats en attente restent sur l'appareil, rattachés à cet·te élève seulement, jusqu'à leur échéance
+      var mes = attente();
+      if (mes.length && !window.confirm("Des résultats attendent encore sur ce téléphone. Quitter quand même ? Ils y restent jusqu'au " + jusquA(mes) +
+        " : ils partiront si tu reviens avant sur ce téléphone avec ton code. Personne d'autre ne peut les envoyer.")) return;
+      fermer(); CV.rpc("cv_deconnexion", { p_jeton: session.jeton }); effacerAppareil(true);
       return ecranConnexion("Session fermée sur cet appareil. Pour revenir, tape ton code.", "info");
     }
     if (a === "effacer") {
       if (!window.confirm("Effacer ton compte, tes calendriers et tous tes résultats ? C'est définitif.")) return;
       return CV.rpc("cv_effacer_moi", { p_jeton: session.jeton }).then(function (r) {
         if (!r.ok) return erreur(r.message || "L'effacement n'a pas marché : réessaie.", "calendrier");
-        fermer(); CV.ecrire("session", null); CV.ecrire("attente", null); CV.ecrire("calendrier", null); session = null;
-        afficher("efface", bandeau() + '<div class="message ok" role="status">Ton compte et tes résultats sont effacés.</div>');
+        fermer(); effacerAppareil();
+        afficher("efface", bandeau() + '<div class="message ok" role="status">Ton compte et tes résultats sont effacés, dans la base et sur cet appareil.</div>');
       });
     }
   });

@@ -2,6 +2,8 @@
 
 Cette page est pour l'Atelier qui écrit la banque d'un **thème**. Un thème est un chapitre (« Listes et dictionnaires ») ou une notion plus fine (« Les boucles », « Le binaire »). L'enseignant·e coche librement plusieurs thèmes pour un calendrier, quel que soit le niveau de sa classe (une terminale peut recevoir des thèmes de première), et les cases alternent entre eux, tour à tour. Une case du calendrier est un exercice : un mini-jeu de **10 minutes au plus**, en **3 niveaux** (Facile, Moyen, Costaud). L'élève choisit son niveau, et un niveau suffit pour valider la case.
 
+**État au 20/11/2026 :** 8 banques, **135 exercices, 1 178 questions** (le contrôle complet : 0 erreur). Les arbres s'écrivent de deux façons, que les élèves doivent connaître toutes les deux (décision de l'enseignant du 20/11) : la classe courte `Noeud(v, g, d)` et la classe du cours `ArbreBinaire(valeur, gauche, droit)` ; un thème qui parle d'arbres les fait alterner.
+
 ## Les fichiers
 
 | Fichier | Rôle | Qui le modifie |
