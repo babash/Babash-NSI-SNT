@@ -670,7 +670,7 @@
        "affiche": "['Lou', 'Sam', 'Naïma']",
        "explication": "La première boucle doit s'arrêter quand la file est vide. Avec >= 0, elle essaie encore de défiler une file vide.",
        "aides": [
-        "Le message vient de la ligne 4 : la file f est vide à ce moment-là. Quelle boucle ne s'arrête pas à temps ?"
+        "C'est f.pop(0) qui échoue : la file f est déjà vide. Quelle boucle ne s'arrête pas à temps ?"
        ]
       },
       {
@@ -1747,7 +1747,7 @@
        "affiche": "Riziki",
        "explication": "f = File donne un autre nom à la classe, sans créer d'objet. Alors self n'est pas rempli, et \"Riziki\" prend sa place.",
        "aides": [
-        "L'erreur apparaît à la ligne 9, mais elle vient d'avant.",
+        "L'erreur apparaît au premier appel de enfiler, mais elle vient d'avant.",
         "Comment crée-t-on un objet ?"
        ]
       },
@@ -3573,6 +3573,1841 @@
        "aides": [
         "2 > 1 : où va 2 ?",
         "a[1] est le sous-arbre gauche de la racine."
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-021",
+   "type": "associer",
+   "titre": "La bonne structure",
+   "objectif": "Choisir la structure de données adaptée à une situation : pile, file, arbre, ABR.",
+   "notions": [
+    "donnees.structure",
+    "donnees.pile",
+    "donnees.file",
+    "donnees.arbre",
+    "donnees.arbre.abr"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque situation à la structure qui convient.",
+       "paires": [
+        [
+         "revenir aux pages précédentes d'un navigateur, la plus récente d'abord",
+         "une pile"
+        ],
+        [
+         "servir les client·e·s du marché de Mamoudzou dans l'ordre d'arrivée",
+         "une file"
+        ],
+        [
+         "ranger les dossiers et les sous-dossiers d'un ordinateur",
+         "un arbre"
+        ],
+        [
+         "garder des numéros de licence triés pour les retrouver vite",
+         "un arbre binaire de recherche"
+        ]
+       ],
+       "explication": "Le dernier arrivé sort le premier : pile. Le premier arrivé sort le premier : file. Une hiérarchie : arbre. Des valeurs rangées pour chercher vite : ABR.",
+       "aides": [
+        "Demande-toi d'abord : qui sort en premier ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque besoin à la structure et à sa raison.",
+       "paires": [
+        [
+         "annuler ses dernières actions, une par une",
+         "pile : la dernière action faite est la première annulée"
+        ],
+        [
+         "faire monter les voitures sur la barge",
+         "file : la première voiture arrivée embarque la première"
+        ],
+        [
+         "représenter un tournoi de football à élimination directe",
+         "arbre binaire : chaque match réunit les gagnant·e·s de deux matchs"
+        ],
+        [
+         "garder des nombres triés et y chercher vite",
+         "ABR : à chaque nœud, on ne continue que d'un seul côté"
+        ],
+        [
+         "vérifier que chaque parenthèse ouverte est bien fermée",
+         "pile : on ferme d'abord la dernière parenthèse ouverte"
+        ]
+       ],
+       "explication": "On choisit une structure d'après la façon dont on ajoute, retire ou cherche les éléments.",
+       "aides": [
+        "Deux besoins vont avec une pile : lis bien les raisons."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "consigne": "Associe chaque opération à son coût.",
+       "paires": [
+        [
+         "empiler avec append sur une liste Python",
+         "rapide : on ajoute à la fin, rien ne bouge"
+        ],
+        [
+         "défiler avec pop(0) sur une liste Python",
+         "de plus en plus lent : tous les autres éléments se décalent"
+        ],
+        [
+         "chercher dans un ABR bien équilibré de n nœuds",
+         "environ log2(n) comparaisons"
+        ],
+        [
+         "chercher dans un arbre binaire quelconque de n nœuds",
+         "jusqu'à n comparaisons : il faut parfois tout visiter"
+        ],
+        [
+         "lire le sommet d'une pile codée par une liste p",
+         "immédiat avec p[-1], sans rien retirer"
+        ]
+       ],
+       "explication": "Le coût dépend de l'implémentation : pop(0) décale toute la liste, alors qu'un ABR équilibré divise le travail par deux à chaque étape.",
+       "aides": [
+        "log2(n) est le nombre de fois qu'on peut couper n en deux : environ 20 pour un million."
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-022",
+   "type": "erreur",
+   "titre": "ABR en panne",
+   "objectif": "Corriger une recherche ou une insertion dans un ABR, à partir du message d'erreur.",
+   "notions": [
+    "donnees.arbre.abr"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher le minimum de l'ABR : 1. Python s'arrête et affiche : AttributeError: 'NoneType' object has no attribute 'valeur'",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "a = Noeud(8, Noeud(3, Noeud(1)), Noeud(10))",
+        "n = a",
+        "while n is not None:",
+        "    n = n.gauche",
+        "print(n.valeur)"
+       ],
+       "ligne": 5,
+       "corrections": [
+        "while n.gauche is not None:",
+        "while n.droit is not None:",
+        "while n.valeur is not None:"
+       ],
+       "bonne": 0,
+       "affiche": "1",
+       "explication": "On descend à gauche tant qu'il y a un fils gauche. Avec n is not None, on va trop loin et n finit par valoir None.",
+       "aides": [
+        "Que vaut n à la sortie de la boucle ?"
+       ]
+      },
+      {
+       "but": "Afficher le maximum de l'ABR : 10. Python s'arrête et affiche : TypeError: 'Noeud' object is not callable",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "a = Noeud(8, Noeud(3), Noeud(10))",
+        "n = a",
+        "while n.droit is not None:",
+        "    n = n.droit()",
+        "print(n.valeur)"
+       ],
+       "ligne": 6,
+       "corrections": [
+        "    n = n.gauche",
+        "    n = n.droit",
+        "    n = droit"
+       ],
+       "bonne": 1,
+       "affiche": "10",
+       "explication": "droit est un attribut, pas une méthode : pas de parenthèses. Le maximum s'obtient en descendant à droite.",
+       "aides": [
+        "« not callable » : il y a des parenthèses en trop."
+       ]
+      },
+      {
+       "but": "Dire si 3 est la valeur du fils gauche : True. Python s'arrête et affiche : SyntaxError: expression cannot contain assignment, perhaps you meant \"==\"?",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "a = Noeud(8, Noeud(3), Noeud(10))",
+        "print(a.gauche.valeur = 3)"
+       ],
+       "ligne": 4,
+       "corrections": [
+        "print(a.gauche.valeur == 3)",
+        "print(a.gauche == 3)",
+        "print(a.valeur == 3)"
+       ],
+       "bonne": 0,
+       "affiche": "True",
+       "explication": "Pour comparer, on écrit == ; un seul = sert à donner une valeur à une variable.",
+       "aides": [
+        "Python propose lui-même une piste à la fin du message."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Chercher 10 dans l'ABR : True. Python s'arrête et affiche : TypeError: chercher() missing 1 required positional argument: 'x'",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "def chercher(a, x):",
+        "    if a is None:",
+        "        return False",
+        "    if x == a.valeur:",
+        "        return True",
+        "    if x < a.valeur:",
+        "        return chercher(a.gauche, x)",
+        "    return chercher(a.droit)",
+        "print(chercher(Noeud(8, Noeud(3), Noeud(10)), 10))"
+       ],
+       "ligne": 10,
+       "corrections": [
+        "    return chercher(a.gauche, x)",
+        "    return chercher(a, x)",
+        "    return chercher(a.droit, x)"
+       ],
+       "bonne": 2,
+       "affiche": "True",
+       "explication": "Chaque appel récursif doit recevoir le sous-arbre et la valeur cherchée. 10 > 8 : on cherche à droite.",
+       "aides": [
+        "« missing 1 required positional argument: 'x' » : quel appel oublie x ?"
+       ]
+      },
+      {
+       "but": "Chercher 5, qui n'est pas dans l'ABR : False. Python s'arrête et affiche : AttributeError: 'NoneType' object has no attribute 'valeur'",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "def chercher(a, x):",
+        "    while a.valeur != x:",
+        "        if x < a.valeur:",
+        "            a = a.gauche",
+        "        else:",
+        "            a = a.droit",
+        "    return a is not None",
+        "print(chercher(Noeud(8, Noeud(3), Noeud(10)), 5))"
+       ],
+       "ligne": 4,
+       "corrections": [
+        "    while a.valeur != x and a is not None:",
+        "    while a is not None or a.valeur != x:",
+        "    while a is not None and a.valeur != x:"
+       ],
+       "bonne": 2,
+       "affiche": "False",
+       "explication": "Quand 5 n'est pas dans l'arbre, a finit par valoir None. Il faut tester a is not None en premier : and s'arrête dès que le premier test est faux.",
+       "aides": [
+        "Après 8, puis 3, où arrive-t-on en cherchant 5 ?",
+        "L'ordre des deux tests autour de and compte."
+       ]
+      },
+      {
+       "but": "Insérer 3 puis 8 dans l'ABR codé par des listes, puis afficher 3 8. Python s'arrête et affiche : TypeError: 'int' object is not subscriptable",
+       "lignes": [
+        "def inserer(a, x):",
+        "    if a is None:",
+        "        return x",
+        "    if x < a[0]:",
+        "        a[1] = inserer(a[1], x)",
+        "    else:",
+        "        a[2] = inserer(a[2], x)",
+        "    return a",
+        "t = inserer(inserer([5, None, None], 3), 8)",
+        "print(t[1][0], t[2][0])"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "        return [x, None, None]",
+        "        return None",
+        "        return a"
+       ],
+       "bonne": 0,
+       "affiche": "3 8",
+       "explication": "À une place vide, on crée une feuille : une liste [x, None, None], et pas le nombre x tout seul.",
+       "aides": [
+        "« 'int' object is not subscriptable » : t[1] est un nombre, pas une liste.",
+        "Un nœud est une liste [valeur, gauche, droit]."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Afficher le minimum de l'ABR : 1. Python s'arrête et affiche : AttributeError: 'NoneType' object has no attribute 'gauche'",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "def minimum(a):",
+        "    if a.gauche is None:",
+        "        return a.valeur",
+        "    return minimum(a.droit)",
+        "print(minimum(Noeud(8, Noeud(3, Noeud(1)))))"
+       ],
+       "ligne": 6,
+       "corrections": [
+        "    return minimum(a)",
+        "    return a.gauche.valeur",
+        "    return minimum(a.gauche)"
+       ],
+       "bonne": 2,
+       "affiche": "1",
+       "explication": "Le minimum d'un ABR est tout en bas à gauche : on continue dans le sous-arbre gauche tant qu'il existe.",
+       "aides": [
+        "La racine 8 n'a pas de fils droit : que vaut a.droit ?"
+       ]
+      },
+      {
+       "but": "Compter les valeurs de l'ABR plus petites que 7 : 3. Python s'arrête et affiche : TypeError: compter_inf() missing 1 required positional argument: 'x'",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "def compter_inf(a, x):",
+        "    if a is None:",
+        "        return 0",
+        "    if a.valeur < x:",
+        "        return 1 + compter_inf(a.gauche, x) + compter_inf(a.droit, x)",
+        "    return compter_inf(a.gauche)",
+        "t = Noeud(8, Noeud(3, Noeud(1), Noeud(6)), Noeud(10))",
+        "print(compter_inf(t, 7))"
+       ],
+       "ligne": 8,
+       "corrections": [
+        "    return compter_inf(a.droit, x)",
+        "    return compter_inf(a.gauche, x)",
+        "    return 1 + compter_inf(a.gauche, x)"
+       ],
+       "bonne": 1,
+       "affiche": "3",
+       "explication": "Si la valeur du nœud est trop grande, tout son sous-arbre droit l'est aussi : on ne cherche qu'à gauche, sans compter le nœud.",
+       "aides": [
+        "Quel appel oublie le deuxième argument ?",
+        "1, 3 et 6 sont plus petits que 7."
+       ]
+      },
+      {
+       "but": "Insérer 3, 8 et 4 dans l'ABR codé par des listes, puis afficher le fils droit de 3 : 4. Python s'arrête et affiche : TypeError: 'int' object is not subscriptable",
+       "lignes": [
+        "def inserer(a, x):",
+        "    i = 1",
+        "    if x > a[0]:",
+        "        i = 2",
+        "    if a[i] is None:",
+        "        a[i] = x",
+        "    else:",
+        "        inserer(a[i], x)",
+        "t = [5, None, None]",
+        "for x in [3, 8, 4]:",
+        "    inserer(t, x)",
+        "print(t[1][2][0])"
+       ],
+       "ligne": 5,
+       "corrections": [
+        "        a = [x, None, None]",
+        "        a[i] = [x, None, None]",
+        "        a[i] = [x]"
+       ],
+       "bonne": 1,
+       "affiche": "4",
+       "explication": "La place vide doit recevoir un nœud complet, [x, None, None], pour qu'on puisse y insérer d'autres valeurs plus tard.",
+       "aides": [
+        "L'erreur arrive quand on insère 4 : que contient alors t[1] ?"
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-023",
+   "type": "completer",
+   "titre": "Chercher et insérer",
+   "objectif": "Compléter la recherche et l'insertion dans un arbre binaire de recherche.",
+   "notions": [
+    "donnees.arbre.abr",
+    "donnees.interface-implementation"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Dans l'ABR de racine 8, choisir le côté où chercher 5 : afficher gauche.",
+       "lignes": [
+        "racine = 8",
+        "x = 5",
+        "if x {0} racine:",
+        "    print(\"gauche\")",
+        "else:",
+        "    print(\"droite\")"
+       ],
+       "trous": [
+        {
+         "options": [
+          "<",
+          ">",
+          "=="
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "gauche",
+       "explication": "Dans un ABR, les valeurs plus petites que la racine sont à gauche : 5 < 8.",
+       "aides": [
+        "Les petites valeurs sont à gauche."
+       ]
+      },
+      {
+       "but": "Descendre jusqu'au minimum de l'ABR : afficher 1.",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "a = Noeud(8, Noeud(3, Noeud(1)), Noeud(10))",
+        "n = a",
+        "while n.{0} is not None:",
+        "    n = n.{1}",
+        "print(n.valeur)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "droit",
+          "gauche",
+          "valeur"
+         ],
+         "bonne": 1
+        },
+        {
+         "options": [
+          "droit",
+          "gauche"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "1",
+       "explication": "Le minimum est tout en bas à gauche : on descend à gauche tant qu'un fils gauche existe.",
+       "aides": [
+        "Les petites valeurs sont à gauche."
+       ]
+      },
+      {
+       "but": "Insérer 9 à sa place, à gauche de 10 : afficher 9.",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "a = Noeud(8, Noeud(3), Noeud(10))",
+        "a.droit.{0} = Noeud(9)",
+        "print(a.droit.gauche.valeur)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "gauche",
+          "droit",
+          "valeur"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "9",
+       "explication": "9 > 8 : on va à droite, vers 10 ; 9 < 10 : la nouvelle feuille se place à gauche de 10.",
+       "aides": [
+        "9 est plus petit que 10."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Recherche récursive dans un ABR codé par des listes : afficher True False (6 est dans l'arbre, 7 non).",
+       "lignes": [
+        "def chercher(a, x):",
+        "    if a is None:",
+        "        return {0}",
+        "    if x == a[0]:",
+        "        return True",
+        "    if x < a[0]:",
+        "        return chercher(a[{1}], x)",
+        "    return chercher(a[2], x)",
+        "t = [8, [3, None, [6, None, None]], [10, None, None]]",
+        "print(chercher(t, 6), chercher(t, 7))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "True",
+          "None",
+          "False"
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "1",
+          "2",
+          "0"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "True False",
+       "explication": "Arriver sur un arbre vide veut dire que la valeur n'y est pas : False. Une valeur plus petite se cherche dans a[1], le sous-arbre gauche.",
+       "aides": [
+        "a[0] est la valeur, a[1] le sous-arbre gauche, a[2] le droit."
+       ]
+      },
+      {
+       "but": "Insérer 3 puis 8 dans l'ABR [5, None, None] : afficher [5, [3, None, None], [8, None, None]].",
+       "lignes": [
+        "def inserer(a, x):",
+        "    if a is None:",
+        "        return {0}",
+        "    if x < a[0]:",
+        "        a[1] = inserer(a[1], x)",
+        "    else:",
+        "        a[{1}] = inserer(a[2], x)",
+        "    return {2}",
+        "t = inserer(inserer([5, None, None], 3), 8)",
+        "print(t)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "x",
+          "None",
+          "[x, None, None]"
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "2",
+          "1",
+          "0"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "a",
+          "x",
+          "None"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "[5, [3, None, None], [8, None, None]]",
+       "explication": "À une place vide, on crée une feuille [x, None, None] ; on range le résultat du bon côté, puis on renvoie l'arbre a, modifié.",
+       "aides": [
+        "La fonction doit renvoyer l'arbre entier.",
+        "Le sous-arbre droit est a[2]."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Trouver le minimum et le maximum de l'ABR : afficher (1, 14).",
+       "lignes": [
+        "def extremes(a):",
+        "    g, d = a, a",
+        "    while g[{0}] is not None:",
+        "        g = g[1]",
+        "    while d[2] is not None:",
+        "        d = {1}",
+        "    return g[0], d[0]",
+        "t = [8, [3, [1, None, None], None], [10, None, [14, None, None]]]",
+        "print(extremes(t))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "2",
+          "0",
+          "1"
+         ],
+         "bonne": 2
+        },
+        {
+         "options": [
+          "d[1]",
+          "g[2]",
+          "d[2]"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "(1, 14)",
+       "explication": "Le minimum est tout à gauche (on suit a[1]), le maximum tout à droite (on suit a[2]).",
+       "aides": [
+        "La boucle sur g suit les fils gauches.",
+        "La boucle sur d doit faire avancer d."
+       ]
+      },
+      {
+       "but": "Un arbre est un ABR si son parcours infixe est trié. Afficher True False.",
+       "lignes": [
+        "def infixe(a):",
+        "    if a is None:",
+        "        return []",
+        "    return infixe(a[1]) + [a[0]] + infixe(a[{0}])",
+        "def est_abr(a):",
+        "    L = infixe(a)",
+        "    return L == {1}",
+        "print(est_abr([5, [2, None, None], [9, [7, None, None], None]]),",
+        "      est_abr([5, [7, None, None], [9, None, None]]))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "2",
+          "1"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "L",
+          "infixe(a)",
+          "sorted(L)"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "True False",
+       "explication": "L'infixe d'un ABR donne les valeurs dans l'ordre croissant : on compare la liste obtenue à sa version triée.",
+       "aides": [
+        "sorted(L) renvoie une copie triée de L.",
+        "Dans le deuxième arbre, 7 est à gauche de 5."
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-024",
+   "type": "ordre",
+   "titre": "La file au secours de l'arbre",
+   "objectif": "Remettre dans l'ordre un parcours en largeur, qui utilise une file, sur un arbre codé par des listes.",
+   "notions": [
+    "donnees.arbre",
+    "algo.arbre",
+    "donnees.file"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Mettre la racine dans une file, la défiler, puis afficher sa valeur : 8.",
+       "lignes": [
+        "t = [8, [3, None, None], None]",
+        "f = [t]",
+        "n = f.pop(0)",
+        "print(n[0])"
+       ],
+       "affiche": "8",
+       "aides": [
+        "On ne peut défiler qu'une file qui existe."
+       ]
+      },
+      {
+       "but": "Défiler la racine, enfiler son fils gauche, puis afficher la valeur en tête de la file : 3.",
+       "lignes": [
+        "t = [8, [3, None, None], None]",
+        "f = [t]",
+        "n = f.pop(0)",
+        "f.append(n[1])",
+        "print(f[0][0])"
+       ],
+       "affiche": "3",
+       "aides": [
+        "n[1] est le fils gauche du nœud n.",
+        "On enfile le fils après avoir défilé son parent."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Parcours en largeur : afficher chaque valeur et le nombre de nœuds qui attendent encore dans la file : 1 0, 2 1, 3 0, 4 0.",
+       "lignes": [
+        "f = [[1, [2, None, None], [3, [4, None, None], None]]]",
+        "while len(f) > 0:",
+        "    n = f.pop(0)",
+        "    print(n[0], len(f))",
+        "    for e in [n[1], n[2]]:",
+        "        if e is not None:",
+        "            f.append(e)"
+       ],
+       "affiche": "1 0\n2 1\n3 0\n4 0",
+       "aides": [
+        "On affiche juste après avoir défilé, avant d'enfiler les fils.",
+        "On n'enfile que les fils qui existent."
+       ]
+      },
+      {
+       "but": "Défiler deux fois les fils de la racine, dans l'ordre : afficher 2 9.",
+       "lignes": [
+        "t = [5, [2, None, None], [9, None, None]]",
+        "f = [t[1], t[2]]",
+        "a = f.pop(0)",
+        "b = f.pop(0)",
+        "print(a[0], b[0])"
+       ],
+       "affiche": "2 9",
+       "aides": [
+        "Le premier défilé est le premier enfilé : le fils gauche."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "but": "Parcours en largeur : afficher A, puis chaque nœud au moment où il est enfilé : A, B, C, D.",
+       "lignes": [
+        "t = [\"A\", [\"B\", [\"D\", None, None], None], [\"C\", None, None]]",
+        "f = [t]",
+        "print(f[0][0])",
+        "while len(f) > 0:",
+        "    n = f.pop(0)",
+        "    for e in [n[1], n[2]]:",
+        "        if e is not None:",
+        "            f.append(e)",
+        "            print(f[-1][0])"
+       ],
+       "affiche": "A\nB\nC\nD",
+       "aides": [
+        "f[-1] est le dernier nœud enfilé.",
+        "On défile un nœud, puis on enfile ses fils, de gauche à droite."
+       ]
+      },
+      {
+       "but": "Parcours en profondeur avec une pile : afficher chaque valeur et la taille de la pile : 1 0, 2 1, 4 1, 3 0.",
+       "lignes": [
+        "t = [1, [2, [4, None, None], None], [3, None, None]]",
+        "p = [t]",
+        "while len(p) > 0:",
+        "    n = p.pop()",
+        "    print(n[0], len(p))",
+        "    for e in [n[2], n[1]]:",
+        "        if e is not None:",
+        "            p.append(e)"
+       ],
+       "affiche": "1 0\n2 1\n4 1\n3 0",
+       "aides": [
+        "Avec une pile, le dernier nœud empilé est visité le premier.",
+        "On empile le fils droit avant le gauche, pour visiter le gauche d'abord : c'est l'ordre préfixe."
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-025",
+   "type": "vraifaux",
+   "titre": "Interface ou implémentation ?",
+   "objectif": "Distinguer l'interface et l'implémentation d'une structure ; comprendre l'idée d'une liste chaînée.",
+   "notions": [
+    "donnees.interface-implementation",
+    "donnees.liste.chainee",
+    "donnees.liste"
+   ],
+   "niveaux": [
+    {
+     "duree": 2,
+     "items": [
+      {
+       "texte": "L'interface d'une pile, c'est la liste de ses opérations : empiler, dépiler, est_vide…",
+       "reponse": true,
+       "explication": "L'interface dit ce qu'on peut faire avec la structure, sans dire comment c'est codé."
+      },
+      {
+       "texte": "Pour utiliser une pile, il faut savoir comment elle est codée à l'intérieur.",
+       "reponse": false,
+       "explication": "Il suffit de connaître son interface. Le code intérieur, l'implémentation, peut rester caché."
+      },
+      {
+       "texte": "On peut coder la même pile de plusieurs façons : c'est l'implémentation qui change.",
+       "reponse": true,
+       "explication": "Avec une liste Python, une classe ou une liste chaînée : l'interface reste la même."
+      },
+      {
+       "texte": "Une liste chaînée est faite de maillons : chacun contient une valeur et un lien vers le maillon suivant.",
+       "reponse": true,
+       "explication": "Le dernier maillon a pour suivant None : c'est la fin de la liste."
+      },
+      {
+       "texte": "Dans une liste chaînée, on atteint le cinquième maillon directement, comme avec L[4].",
+       "reponse": false,
+       "explication": "Il faut partir du premier maillon et suivre les liens, un par un, jusqu'au cinquième."
+      },
+      {
+       "texte": "En Python, le type list est une liste chaînée.",
+       "reponse": false,
+       "explication": "Malgré son nom, le type list de Python est un tableau : on y accède directement à chaque case par son indice."
+      }
+     ]
+    },
+    {
+     "duree": 3,
+     "items": [
+      {
+       "texte": "L.valeur vaut 3.",
+       "reponse": true,
+       "explication": "L est le premier maillon : sa valeur est 3.",
+       "code": "class Maillon:\n    def __init__(self, valeur, suivant=None):\n        self.valeur, self.suivant = valeur, suivant\nL = Maillon(3, Maillon(7, Maillon(1)))",
+       "verifier": "L.valeur == 3"
+      },
+      {
+       "texte": "L.suivant.valeur vaut 7.",
+       "reponse": true,
+       "explication": "Le suivant du premier maillon est le maillon 7.",
+       "code": "class Maillon:\n    def __init__(self, valeur, suivant=None):\n        self.valeur, self.suivant = valeur, suivant\nL = Maillon(3, Maillon(7, Maillon(1)))",
+       "verifier": "L.suivant.valeur == 7"
+      },
+      {
+       "texte": "Le suivant du dernier maillon est None.",
+       "reponse": true,
+       "explication": "Maillon(1) n'a pas reçu de suivant : il vaut None.",
+       "code": "class Maillon:\n    def __init__(self, valeur, suivant=None):\n        self.valeur, self.suivant = valeur, suivant\nL = Maillon(3, Maillon(7, Maillon(1)))",
+       "verifier": "L.suivant.suivant.suivant is None"
+      },
+      {
+       "texte": "Cette liste chaînée a 4 maillons.",
+       "reponse": false,
+       "explication": "On compte trois appels à Maillon(…) : 3, 7 et 1.",
+       "code": "class Maillon:\n    def __init__(self, valeur, suivant=None):\n        self.valeur, self.suivant = valeur, suivant\nL = Maillon(3, Maillon(7, Maillon(1)))",
+       "verifier": "(n := lambda m: 0 if m is None else 1 + n(m.suivant))(L) == 4"
+      },
+      {
+       "texte": "L.suivant.suivant.valeur vaut 7.",
+       "reponse": false,
+       "explication": "On avance deux fois : 3, puis 7, puis 1. La valeur est 1.",
+       "code": "class Maillon:\n    def __init__(self, valeur, suivant=None):\n        self.valeur, self.suivant = valeur, suivant\nL = Maillon(3, Maillon(7, Maillon(1)))",
+       "verifier": "L.suivant.suivant.valeur == 7"
+      },
+      {
+       "texte": "Pour ajouter 5 en tête, on écrit L = Maillon(5, L).",
+       "reponse": true,
+       "explication": "Le nouveau maillon a pour suivant l'ancienne tête : rien d'autre ne bouge.",
+       "code": "class Maillon:\n    def __init__(self, valeur, suivant=None):\n        self.valeur, self.suivant = valeur, suivant\nL = Maillon(3, Maillon(7, Maillon(1)))",
+       "verifier": "(L := Maillon(5, L)).valeur == 5 and L.suivant.valeur == 3"
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "texte": "Avec une liste Python, défiler avec pop(0) oblige à décaler tous les éléments qui restent.",
+       "reponse": true,
+       "explication": "Après pop(0), chaque élément doit avancer d'une case : c'est long pour une très grande file."
+      },
+      {
+       "texte": "Avec une liste Python, empiler avec append et dépiler avec pop() restent rapides, même pour une très grande pile.",
+       "reponse": true,
+       "explication": "On travaille à la fin de la liste : aucun autre élément ne bouge."
+      },
+      {
+       "texte": "Avec deux piles, on peut défiler le premier élément arrivé.",
+       "reponse": true,
+       "explication": "On transvase la pile d'entrée dans la pile de sortie : l'ordre s'inverse, et le premier arrivé se retrouve au sommet.",
+       "code": "entree, sortie = [], []\nfor x in [1, 2, 3]:\n    entree.append(x)\nwhile len(entree) > 0:\n    sortie.append(entree.pop())\npremier = sortie.pop()",
+       "verifier": "premier == 1"
+      },
+      {
+       "texte": "longueur(L) vaut 2.",
+       "reponse": true,
+       "explication": "La boucle compte un maillon à chaque tour, et s'arrête sur None après b.",
+       "code": "class Maillon:\n    def __init__(self, valeur, suivant=None):\n        self.valeur, self.suivant = valeur, suivant\ndef longueur(m):\n    n = 0\n    while m is not None:\n        n = n + 1\n        m = m.suivant\n    return n\nL = Maillon(\"a\", Maillon(\"b\"))",
+       "verifier": "longueur(L) == 2"
+      },
+      {
+       "texte": "Pour lire le dernier maillon d'une liste chaînée de 100 maillons, on passe par les 100 maillons.",
+       "reponse": true,
+       "explication": "On ne peut avancer que de maillon en maillon : on part du premier et on suit 99 liens."
+      },
+      {
+       "texte": "Une file et une pile ont la même interface.",
+       "reponse": false,
+       "explication": "Leurs opérations n'ont pas le même effet : dépiler retire le dernier arrivé, défiler retire le premier."
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-026",
+   "type": "sortie",
+   "titre": "Pile, file : le mélange",
+   "objectif": "Suivre un programme qui fait passer des éléments d'une pile à une file, ou l'inverse.",
+   "notions": [
+    "donnees.pile",
+    "donnees.file"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "code": "f = [1, 2, 3]\np = []\np.append(f.pop(0))\nprint(p, f)",
+       "options": [
+        "[3] [1, 2]",
+        "[1] [1, 2, 3]",
+        "[1, 2, 3] []",
+        "[1] [2, 3]"
+       ],
+       "bonne": 3,
+       "retours": [
+        "pop(0) retire le premier élément, pas le dernier.",
+        "pop(0) retire vraiment l'élément de la file.",
+        "Une seule ligne déplace un élément : il n'y a pas de boucle.",
+        "Juste : on défile 1 et on l'empile."
+       ],
+       "aides": [
+        "Commence par ce que renvoie f.pop(0)."
+       ]
+      },
+      {
+       "code": "p = [1, 2, 3]\nf = []\nf.append(p.pop())\nprint(f, p)",
+       "options": [
+        "[1] [2, 3]",
+        "[3] [1, 2, 3]",
+        "[3] [1, 2]",
+        "[1, 2, 3] []"
+       ],
+       "bonne": 2,
+       "retours": [
+        "pop() sans indice retire le dernier élément, le sommet.",
+        "pop() retire vraiment le sommet de la pile.",
+        "Juste : on dépile le sommet 3 et on l'enfile.",
+        "Un seul élément change de place."
+       ],
+       "aides": [
+        "Le sommet de p est à la fin de la liste."
+       ]
+      },
+      {
+       "code": "f = [\"a\", \"b\"]\nf.append(f.pop(0))\nprint(f)",
+       "options": [
+        "['a', 'b']",
+        "['b', 'a']",
+        "['b']",
+        "['a', 'b', 'a']"
+       ],
+       "bonne": 1,
+       "retours": [
+        "La file change : \"a\" passe derrière \"b\".",
+        "Juste : la tête \"a\" sort, puis se remet à la fin de la file.",
+        "\"a\" n'est pas perdu : append le remet dans la file.",
+        "pop(0) retire \"a\" avant qu'on le remette."
+       ],
+       "aides": [
+        "Python calcule f.pop(0) avant l'append."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "code": "f = [1, 2, 3]\np = []\nwhile len(f) > 0:\n    p.append(f.pop(0))\nwhile len(p) > 0:\n    f.append(p.pop())\nprint(f)",
+       "options": [
+        "[1, 2, 3]",
+        "[]",
+        "[3, 2, 1]",
+        "[3, 2, 1, 1, 2, 3]"
+       ],
+       "bonne": 2,
+       "retours": [
+        "En passant par la pile, le dernier entré sort le premier.",
+        "La deuxième boucle remet tous les éléments dans f.",
+        "Juste : la pile renverse l'ordre de la file.",
+        "La première boucle vide f avant qu'on le remplisse."
+       ],
+       "aides": [
+        "Écris p à la fin de la première boucle."
+       ]
+      },
+      {
+       "code": "f = [\"Lou\", \"Sam\", \"Kenza\", \"Naïma\"]\nfor i in range(3):\n    f.append(f.pop(0))\nprint(f[0])",
+       "options": [
+        "Kenza",
+        "Lou",
+        "Naïma",
+        "Sam"
+       ],
+       "bonne": 2,
+       "retours": [
+        "La boucle tourne 3 fois, pas 2.",
+        "Lou passe derrière : la tête de la file change.",
+        "Juste : trois personnes passent de la tête à la fin, et Naïma se retrouve devant.",
+        "Après un seul tour, Sam serait devant ; il y en a 3."
+       ],
+       "aides": [
+        "À chaque tour, la tête passe à la fin.",
+        "range(3) fait 3 tours."
+       ]
+      },
+      {
+       "code": "p = [5, 3, 8]\nm = p.pop()\nwhile len(p) > 0:\n    x = p.pop()\n    if x > m:\n        m = x\nprint(m, p)",
+       "options": [
+        "8 [5, 3]",
+        "5 []",
+        "8 []",
+        "3 []"
+       ],
+       "bonne": 2,
+       "retours": [
+        "La boucle dépile tout, jusqu'à ce que la pile soit vide.",
+        "m commence au sommet, 8, et ne change que pour une valeur plus grande.",
+        "Juste : m garde la plus grande valeur dépilée, et la pile finit vide.",
+        "On cherche la plus grande valeur, pas la dernière dépilée."
+       ],
+       "aides": [
+        "Que vaut m avant la boucle ?"
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "code": "f = [1, 2, 3, 4, 5]\np = []\nfor i in range(3):\n    p.append(f.pop(0))\nwhile len(p) > 0:\n    f.append(p.pop())\nprint(f)",
+       "reponse": "[4, 5, 3, 2, 1]",
+       "explication": "Les trois premiers (1, 2, 3) passent dans la pile, puis reviennent à la fin de la file dans l'ordre inverse : 3, 2, 1.",
+       "aides": [
+        "Après la première boucle, f vaut [4, 5].",
+        "La pile rend 3 d'abord."
+       ]
+      },
+      {
+       "code": "mot = \"kayak\"\np, f = [], []\nfor c in mot:\n    p.append(c)\n    f.append(c)\nok = True\nwhile len(p) > 0:\n    if p.pop() != f.pop(0):\n        ok = False\nprint(ok)",
+       "reponse": "True",
+       "explication": "La pile rend le mot de la fin vers le début, la file du début vers la fin. Ils sont toujours égaux : kayak est un palindrome.",
+       "aides": [
+        "La pile lit le mot à l'envers, la file à l'endroit.",
+        "Un palindrome se lit pareil dans les deux sens."
+       ]
+      },
+      {
+       "code": "f = [4, 1, 3]\np = []\nwhile len(f) > 0:\n    x = f.pop(0)\n    if len(p) > 0 and p[-1] > x:\n        f.append(p.pop())\n    p.append(x)\nprint(p)",
+       "reponse": "[1, 3, 4]",
+       "explication": "Quand le sommet est plus grand que x, il repart dans la file. 4 repart quand 1 arrive, puis revient au-dessus de 3 : la pile est triée.",
+       "aides": [
+        "Suis f et p à chaque tour : il y a 4 tours.",
+        "Au deuxième tour, x vaut 1 et le sommet vaut 4."
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-027",
+   "type": "associer",
+   "titre": "Qui affiche quoi ?",
+   "objectif": "Relier un programme objet à ce qu'il affiche : attributs, méthodes, deux noms pour un même objet.",
+   "notions": [
+    "prog.poo",
+    "prog.poo.attribut",
+    "prog.poo.methode",
+    "donnees.arbre"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "class Boite:\n    def __init__(self, n):\n        self.n = n\nb = Boite(3)\nprint(b.n)",
+         "3"
+        ],
+        [
+         "class Boite:\n    def __init__(self, n):\n        self.n = n\nb = Boite(3)\nb.n = b.n + 1\nprint(b.n)",
+         "4"
+        ],
+        [
+         "class Boite:\n    def __init__(self, n):\n        self.n = n\na = Boite(3)\nb = a\nb.n = 0\nprint(a.n)",
+         "0"
+        ],
+        [
+         "class Boite:\n    def __init__(self, n):\n        self.n = n\na = Boite(3)\nb = Boite(a.n)\nb.n = 9\nprint(a.n, b.n)",
+         "3 9"
+        ]
+       ],
+       "explication": "b = a donne un deuxième nom au même objet ; Boite(…) en fabrique un nouveau, avec ses propres attributs.",
+       "aides": [
+        "Compte les appels à Boite(…) : c'est le nombre d'objets."
+       ],
+       "executer": true
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "class Club:\n    def __init__(self):\n        self.points = 0\n    def gagner(self):\n        self.points = self.points + 3\nc = Club()\nc.gagner()\nprint(c.points)",
+         "3"
+        ],
+        [
+         "class Club:\n    def __init__(self):\n        self.points = 0\n    def gagner(self):\n        self.points = self.points + 3\nc = Club()\nprint(c.points)",
+         "0"
+        ],
+        [
+         "class Club:\n    def __init__(self):\n        self.points = 0\n    def gagner(self):\n        self.points = self.points + 3\nc = Club()\nd = Club()\nc.gagner()\nd.gagner()\nc.gagner()\nprint(c.points, d.points)",
+         "6 3"
+        ],
+        [
+         "class Club:\n    def __init__(self):\n        self.points = 0\n    def gagner(self):\n        self.points = self.points + 3\nc = Club()\nd = c\nd.gagner()\nd.gagner()\nprint(c.points)",
+         "6"
+        ],
+        [
+         "class Club:\n    def __init__(self):\n        self.points = 0\n    def gagner(self):\n        self.points = self.points + 3\nc = Club()\nprint(c.gagner())",
+         "None"
+        ]
+       ],
+       "explication": "Chaque objet a ses propres points, sauf quand deux noms désignent le même objet. Une méthode sans return renvoie None.",
+       "aides": [
+        "d = c ne crée pas de nouveau club.",
+        "gagner modifie les points, mais ne renvoie rien."
+       ],
+       "executer": true
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "consigne": "Associe chaque programme à ce qu'il affiche.",
+       "paires": [
+        [
+         "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\nprint(Noeud(4, Noeud(2)).gauche.valeur)",
+         "2"
+        ],
+        [
+         "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(4, None, Noeud(7))\nprint(a.gauche)",
+         "None"
+        ],
+        [
+         "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(4)\na.droit = Noeud(7)\nprint(a.droit.valeur + a.valeur)",
+         "11"
+        ],
+        [
+         "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(4, Noeud(2))\nb = a.gauche\nb.valeur = 9\nprint(a.gauche.valeur)",
+         "9"
+        ],
+        [
+         "class Noeud:\n    def __init__(self, v, g=None, d=None):\n        self.valeur, self.gauche, self.droit = v, g, d\na = Noeud(4, Noeud(2))\nb = Noeud(2)\nb.valeur = 9\nprint(a.gauche.valeur, b.valeur)",
+         "2 9"
+        ]
+       ],
+       "explication": "b = a.gauche donne un nom au fils gauche lui-même : le modifier modifie l'arbre. Noeud(…) crée un nouveau nœud, indépendant.",
+       "aides": [
+        "Noeud(v, g, d) : valeur, fils gauche, fils droit.",
+        "Repère quand un nouveau nœud est créé."
+       ],
+       "executer": true
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-028",
+   "type": "erreur",
+   "titre": "Chasse au bug : révisions",
+   "objectif": "Lire le message d'erreur et corriger un programme qui mêle pile, file, objets et arbres.",
+   "notions": [
+    "donnees.pile",
+    "donnees.file",
+    "prog.poo",
+    "donnees.arbre"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Défiler la file et afficher qui sort : Kenza. Python s'arrête et affiche : TypeError: 'str' object cannot be interpreted as an integer",
+       "lignes": [
+        "f = [\"Kenza\", \"Sam\"]",
+        "f.append(\"Lou\")",
+        "print(f.pop(\"0\"))"
+       ],
+       "ligne": 2,
+       "corrections": [
+        "print(f.pop(0))",
+        "print(f.pop())",
+        "print(f.pop(\"Kenza\"))"
+       ],
+       "bonne": 0,
+       "affiche": "Kenza",
+       "explication": "pop attend un indice, un nombre entier : 0, sans guillemets. \"0\" est un texte.",
+       "aides": [
+        "« cannot be interpreted as an integer » : Python attend un nombre entier."
+       ]
+      },
+      {
+       "but": "Afficher le sommet de la pile : 2. Python s'arrête et affiche : IndexError: list index out of range",
+       "lignes": [
+        "p = []",
+        "for x in range(3):",
+        "    p.append(x)",
+        "print(p[3])"
+       ],
+       "ligne": 3,
+       "corrections": [
+        "print(p[-1])",
+        "print(p[0])",
+        "print(p[1])"
+       ],
+       "bonne": 0,
+       "affiche": "2",
+       "explication": "La pile contient 0, 1, 2, aux indices 0, 1 et 2. Le sommet est le dernier élément : p[-1].",
+       "aides": [
+        "range(3) donne 3 valeurs. Quel est le dernier indice ?"
+       ]
+      },
+      {
+       "but": "Afficher la valeur du fils gauche : B. Python s'arrête et affiche : AttributeError: 'Noeud' object has no attribute 'Gauche'. Did you mean: 'gauche'?",
+       "lignes": [
+        "class Noeud:",
+        "    def __init__(self, v, g=None, d=None):",
+        "        self.valeur, self.gauche, self.droit = v, g, d",
+        "a = Noeud(\"A\", Noeud(\"B\"))",
+        "print(a.Gauche.valeur)"
+       ],
+       "ligne": 4,
+       "corrections": [
+        "print(a.droit.valeur)",
+        "print(a.gauche.valeur)",
+        "print(a.gauche)"
+       ],
+       "bonne": 1,
+       "affiche": "B",
+       "explication": "Python distingue les majuscules : l'attribut s'appelle gauche, pas Gauche.",
+       "aides": [
+        "Lis bien la fin du message d'erreur."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Afficher le minimum de l'ABR codé par des listes : 3. Python s'arrête et affiche : TypeError: 'int' object is not subscriptable",
+       "lignes": [
+        "t = [8, [3, None, None], [10, None, None]]",
+        "n = t",
+        "while n[1] is not None:",
+        "    n = n[1]",
+        "print(n[0][0])"
+       ],
+       "ligne": 4,
+       "corrections": [
+        "print(n[1])",
+        "print(t[0])",
+        "print(n[0])"
+       ],
+       "bonne": 2,
+       "affiche": "3",
+       "explication": "n[0] est déjà la valeur, un nombre : on ne peut pas lui mettre un indice de plus.",
+       "aides": [
+        "« 'int' object is not subscriptable » : on a mis des crochets après un nombre."
+       ]
+      },
+      {
+       "but": "Empiler 4 dans la pile, puis afficher sa taille : 1. Python s'arrête et affiche : TypeError: object of type 'Pile' has no len()",
+       "lignes": [
+        "class Pile:",
+        "    def __init__(self):",
+        "        self.contenu = []",
+        "    def empiler(self, x):",
+        "        self.contenu.append(x)",
+        "p = Pile()",
+        "p.empiler(4)",
+        "print(len(p))"
+       ],
+       "ligne": 7,
+       "corrections": [
+        "print(p.contenu)",
+        "print(len(p.contenu))",
+        "print(len(Pile))"
+       ],
+       "bonne": 1,
+       "affiche": "1",
+       "explication": "len s'applique à une liste, pas à un objet Pile. Les éléments sont dans l'attribut contenu.",
+       "aides": [
+        "« has no len() » : de quoi veut-on la longueur ?"
+       ]
+      },
+      {
+       "but": "Calculer la hauteur de l'arbre codé par des listes : 1. Python s'arrête et affiche : TypeError: 'NoneType' object is not subscriptable",
+       "lignes": [
+        "def hauteur(a):",
+        "    if a == []:",
+        "        return -1",
+        "    return 1 + max(hauteur(a[1]), hauteur(a[2]))",
+        "print(hauteur([1, [2, None, None], None]))"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "    if a[0] is None:",
+        "    if a is None:",
+        "    if a[1] is None:"
+       ],
+       "bonne": 1,
+       "affiche": "1",
+       "explication": "Un arbre vide est codé par None, pas par une liste vide. Le cas de base teste donc a is None.",
+       "aides": [
+        "« 'NoneType' object is not subscriptable » : on a écrit None[1].",
+        "La convention : un seul nœud a une hauteur de 0, l'arbre vide -1."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Jeu de la patate chaude : on fait passer 2 fois, puis la personne en tête sort. Afficher qui reste. Python s'arrête et affiche : IndexError: list index out of range",
+       "lignes": [
+        "f = [\"Anli\", \"Faïza\", \"Sam\", \"Lou\"]",
+        "while len(f) > 0:",
+        "    for i in range(2):",
+        "        f.append(f.pop(0))",
+        "    f.pop(0)",
+        "print(f[0])"
+       ],
+       "ligne": 1,
+       "corrections": [
+        "while len(f) > 2:",
+        "while len(f) >= 1:",
+        "while len(f) > 1:"
+       ],
+       "bonne": 2,
+       "affiche": "Anli",
+       "explication": "Le jeu s'arrête quand il reste une seule personne : len(f) > 1. Avec > 0, la boucle sort aussi la dernière personne, et f[0] n'existe plus.",
+       "aides": [
+        "Combien de personnes doivent rester à la fin ?"
+       ]
+      },
+      {
+       "but": "Défiler toute la file et afficher Kenza, puis Sam. Python s'arrête et affiche : IndexError: pop from empty list",
+       "lignes": [
+        "class File:",
+        "    def __init__(self):",
+        "        self.contenu = []",
+        "    def enfiler(self, x):",
+        "        self.contenu.append(x)",
+        "    def defiler(self):",
+        "        return self.contenu.pop(0)",
+        "f = File()",
+        "for nom in [\"Kenza\", \"Sam\"]:",
+        "    f.enfiler(nom)",
+        "while f.contenu is not None:",
+        "    print(f.defiler())"
+       ],
+       "ligne": 10,
+       "corrections": [
+        "while len(f.contenu) > 0:",
+        "while f.contenu != None:",
+        "while len(f.contenu) >= 0:"
+       ],
+       "bonne": 0,
+       "affiche": "Kenza\nSam",
+       "explication": "Une liste vide n'est pas None : c'est []. Pour savoir si la file est vide, on regarde sa longueur.",
+       "aides": [
+        "Que vaut f.contenu quand tout le monde est sorti ?"
+       ]
+      },
+      {
+       "but": "Insérer 3, 8 et 4 dans un ABR codé par des listes, puis afficher 3 4 8. Python s'arrête et affiche : RecursionError: maximum recursion depth exceeded",
+       "lignes": [
+        "def inserer(a, x):",
+        "    i = 1",
+        "    if x > a[0]:",
+        "        i = 2",
+        "    if a[i] is None:",
+        "        a[i] = [x, None, None]",
+        "    else:",
+        "        inserer(a, x)",
+        "t = [5, None, None]",
+        "for x in [3, 8, 4]:",
+        "    inserer(t, x)",
+        "print(t[1][0], t[1][2][0], t[2][0])"
+       ],
+       "ligne": 7,
+       "corrections": [
+        "        inserer(a[i], x)",
+        "        inserer(a[0], x)",
+        "        inserer(t, x)"
+       ],
+       "bonne": 0,
+       "affiche": "3 4 8",
+       "explication": "Si la place est prise, on recommence plus bas, dans le sous-arbre a[i]. Rappeler inserer(a, x) recommence au même nœud, sans fin.",
+       "aides": [
+        "RecursionError : la fonction s'appelle elle-même sans jamais s'arrêter.",
+        "Où doit-on continuer à chercher une place ?"
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-029",
+   "type": "completer",
+   "titre": "Maillon après maillon",
+   "objectif": "Compléter le parcours d'une liste chaînée faite de maillons (valeur, suivant).",
+   "notions": [
+    "donnees.liste.chainee",
+    "prog.poo"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Afficher la valeur du deuxième maillon : 7.",
+       "lignes": [
+        "class Maillon:",
+        "    def __init__(self, valeur, suivant=None):",
+        "        self.valeur, self.suivant = valeur, suivant",
+        "L = Maillon(3, Maillon(7, Maillon(1)))",
+        "print(L.{0}.valeur)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "suivant",
+          "valeur",
+          "droit"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "7",
+       "explication": "L est le premier maillon ; L.suivant est le deuxième, et on lit sa valeur.",
+       "aides": [
+        "Chaque maillon connaît seulement le maillon qui le suit."
+       ]
+      },
+      {
+       "but": "Ajouter 5 en tête de la liste chaînée, puis afficher les deux premières valeurs : 5 3.",
+       "lignes": [
+        "class Maillon:",
+        "    def __init__(self, valeur, suivant=None):",
+        "        self.valeur, self.suivant = valeur, suivant",
+        "L = Maillon(3, Maillon(7))",
+        "L = Maillon(5, {0})",
+        "print(L.valeur, L.suivant.valeur)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "None",
+          "L",
+          "L.suivant"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "5 3",
+       "explication": "Le nouveau maillon de tête a pour suivant toute l'ancienne liste, L.",
+       "aides": [
+        "Rien ne doit être perdu : le 3 doit suivre le 5."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Parcourir la liste chaînée : afficher 3, 7, 1.",
+       "lignes": [
+        "class Maillon:",
+        "    def __init__(self, valeur, suivant=None):",
+        "        self.valeur, self.suivant = valeur, suivant",
+        "L = Maillon(3, Maillon(7, Maillon(1)))",
+        "m = L",
+        "while m is not {0}:",
+        "    print(m.valeur)",
+        "    m = m.{1}"
+       ],
+       "trous": [
+        {
+         "options": [
+          "None",
+          "L",
+          "0"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "valeur",
+          "suivant"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "3\n7\n1",
+       "explication": "On avance de maillon en maillon avec m = m.suivant, jusqu'à None, qui marque la fin.",
+       "aides": [
+        "Que vaut le suivant du dernier maillon ?"
+       ]
+      },
+      {
+       "but": "Somme récursive des valeurs : afficher 11.",
+       "lignes": [
+        "class Maillon:",
+        "    def __init__(self, valeur, suivant=None):",
+        "        self.valeur, self.suivant = valeur, suivant",
+        "def somme(m):",
+        "    if m is None:",
+        "        return {0}",
+        "    return m.valeur + somme({1})",
+        "print(somme(Maillon(3, Maillon(7, Maillon(1)))))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "0",
+          "1",
+          "None"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "m",
+          "m.valeur",
+          "m.suivant"
+         ],
+         "bonne": 2
+        }
+       ],
+       "affiche": "11",
+       "explication": "Une liste vide a une somme de 0 ; sinon, c'est la valeur du maillon plus la somme du reste de la liste.",
+       "aides": [
+        "Le reste de la liste commence au maillon suivant."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 6,
+     "items": [
+      {
+       "but": "Compter les maillons : afficher 3.",
+       "lignes": [
+        "class Maillon:",
+        "    def __init__(self, valeur, suivant=None):",
+        "        self.valeur, self.suivant = valeur, suivant",
+        "def longueur(m):",
+        "    n = 0",
+        "    while m is not None:",
+        "        n = n + {0}",
+        "        m = {1}",
+        "    return n",
+        "print(longueur(Maillon(\"a\", Maillon(\"b\", Maillon(\"c\")))))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "1",
+          "m.valeur",
+          "n"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "m.suivant",
+          "m.valeur",
+          "None"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "3",
+       "explication": "On ajoute 1 par maillon rencontré, puis on passe au suivant jusqu'à None.",
+       "aides": [
+        "On compte des maillons : on ajoute 1 à chaque tour."
+       ]
+      },
+      {
+       "but": "Trouver la valeur du dernier maillon : afficher 2.",
+       "lignes": [
+        "class Maillon:",
+        "    def __init__(self, valeur, suivant=None):",
+        "        self.valeur, self.suivant = valeur, suivant",
+        "def dernier(m):",
+        "    while m.{0} is not None:",
+        "        m = m.suivant",
+        "    return m.{1}",
+        "L = Maillon(4, Maillon(8, Maillon(2)))",
+        "print(dernier(L))"
+       ],
+       "trous": [
+        {
+         "options": [
+          "suivant",
+          "valeur"
+         ],
+         "bonne": 0
+        },
+        {
+         "options": [
+          "valeur",
+          "suivant"
+         ],
+         "bonne": 0
+        }
+       ],
+       "affiche": "2",
+       "explication": "Le dernier maillon est celui dont le suivant vaut None : on s'arrête sur lui, et on renvoie sa valeur.",
+       "aides": [
+        "Il faut s'arrêter sur le dernier maillon, pas après."
+       ]
+      },
+      {
+       "but": "Retourner une liste chaînée, comme avec une pile : afficher 3 2.",
+       "lignes": [
+        "class Maillon:",
+        "    def __init__(self, valeur, suivant=None):",
+        "        self.valeur, self.suivant = valeur, suivant",
+        "L = Maillon(1, Maillon(2, Maillon(3)))",
+        "R = None",
+        "while L is not None:",
+        "    R = Maillon(L.valeur, {0})",
+        "    L = L.suivant",
+        "print(R.valeur, R.suivant.valeur)"
+       ],
+       "trous": [
+        {
+         "options": [
+          "None",
+          "R",
+          "L"
+         ],
+         "bonne": 1
+        }
+       ],
+       "affiche": "3 2",
+       "explication": "Chaque valeur lue se place en tête de R, devant celles déjà rangées : l'ordre s'inverse, comme avec une pile.",
+       "aides": [
+        "On ajoute en tête de R."
+       ]
+      }
+     ]
+    }
+   ],
+   "relu": false
+  },
+  {
+   "id": "nsi2-structures-donnees-030",
+   "type": "ordre",
+   "titre": "Le grand final",
+   "objectif": "Remettre dans l'ordre des programmes complets qui utilisent une pile, une file et un ABR.",
+   "notions": [
+    "donnees.pile",
+    "donnees.file",
+    "donnees.arbre.abr"
+   ],
+   "niveaux": [
+    {
+     "duree": 3,
+     "items": [
+      {
+       "but": "Vérifier avec une pile si les parenthèses de « (() » sont bien fermées : afficher False.",
+       "lignes": [
+        "p = []",
+        "for c in \"(()\":",
+        "    if c == \"(\":",
+        "        p.append(c)",
+        "    else:",
+        "        p.pop()",
+        "print(len(p) == 0)"
+       ],
+       "affiche": "False",
+       "aides": [
+        "On empile chaque parenthèse ouvrante, et on dépile pour chaque fermante."
+       ]
+      },
+      {
+       "but": "Construire l'ABR de racine 5, avec 3 à gauche et 4 à droite de 3 : afficher 3 4.",
+       "lignes": [
+        "t = [5, None, None]",
+        "t[1] = [3, None, None]",
+        "t[1][2] = [4, None, None]",
+        "print(t[1][0], t[1][2][0])"
+       ],
+       "affiche": "3 4",
+       "aides": [
+        "On ne peut accrocher 4 sous 3 qu'une fois 3 en place."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 4,
+     "items": [
+      {
+       "but": "Vérifier les parenthèses de « ())( » avec une pile : afficher False 1 (une fermante n'a pas d'ouvrante, et une ouvrante reste dans la pile).",
+       "lignes": [
+        "p, ok = [], True",
+        "for c in \"())(\":",
+        "    if c == \"(\":",
+        "        p.append(c)",
+        "    elif len(p) > 0:",
+        "        p.pop()",
+        "    else:",
+        "        ok = False",
+        "print(ok, len(p))"
+       ],
+       "affiche": "False 1",
+       "aides": [
+        "Une fermante ne peut dépiler que si la pile n'est pas vide.",
+        "ok devient False quand une fermante arrive sur une pile vide."
+       ]
+      },
+      {
+       "but": "Retourner une file grâce à une pile : afficher ['Lou', 'Sam', 'Kenza'].",
+       "lignes": [
+        "def retourner(f):",
+        "    p = []",
+        "    while len(f) > 0:",
+        "        p.append(f.pop(0))",
+        "    while len(p) > 0:",
+        "        f.append(p.pop())",
+        "    return f",
+        "print(retourner([\"Kenza\", \"Sam\", \"Lou\"]))"
+       ],
+       "affiche": "['Lou', 'Sam', 'Kenza']",
+       "aides": [
+        "On vide d'abord la file dans la pile.",
+        "return vient après les deux boucles."
+       ]
+      }
+     ]
+    },
+    {
+     "duree": 5,
+     "items": [
+      {
+       "but": "Dire si un mot est un palindrome grâce à une pile : afficher True False.",
+       "lignes": [
+        "def palindrome(mot):",
+        "    p = []",
+        "    for c in mot:",
+        "        p.append(c)",
+        "    for i in range(len(mot)):",
+        "        if mot[i] != p.pop():",
+        "            return False",
+        "    return True",
+        "print(palindrome(\"kayak\"), palindrome(\"barge\"))"
+       ],
+       "affiche": "True False",
+       "aides": [
+        "La pile rend les lettres du mot à l'envers.",
+        "On compare chaque lettre du mot à la lettre dépilée."
+       ]
+      },
+      {
+       "but": "Calculer « 3 4 + 5 * » (notation où l'opération suit ses deux nombres) avec une pile : afficher 35.",
+       "lignes": [
+        "p = []",
+        "for e in \"34+5*\":",
+        "    if e == \"+\":",
+        "        p.append(p.pop() + p.pop())",
+        "    elif e == \"*\":",
+        "        p.append(p.pop() * p.pop())",
+        "    else:",
+        "        p.append(int(e))",
+        "print(p.pop())"
+       ],
+       "affiche": "35",
+       "aides": [
+        "Un chiffre est empilé ; une opération dépile deux nombres et empile le résultat.",
+        "3 + 4 = 7, puis 7 * 5 = 35."
        ]
       }
      ]
