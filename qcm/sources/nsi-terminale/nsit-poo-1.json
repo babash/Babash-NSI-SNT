@@ -1,0 +1,497 @@
+{
+  "format": "qcm-pronote/1",
+  "id": "nsit-poo-1",
+  "titre": "NSI Tle · Programmation orientée objet 1",
+  "niveau": "nsi-terminale",
+  "justification_niveau": "le vocabulaire de la programmation objet (classe, attribut, méthode, objet) est au programme de terminale, rubrique Structures de données.",
+  "programme": ["nsi-tle-2019.structures-de-donnees.poo : Vocabulaire de la programmation objet : classes, attributs, méthodes, objets"],
+  "notions": ["prog.poo", "prog.poo.classe", "prog.poo.attribut", "prog.poo.methode", "donnees.liste.chainee"],
+  "auteur": "Babash - NSI Tani Malandi",
+  "licence": "CC BY-SA 4.0",
+  "sources": ["QCM1 Programmation orientée objet 1 (export Pronote `584edf60`, 22 questions)"],
+  "contexte": "Des objets simples (compte, point, maillon, triangle) ; des prénoms fictifs.",
+  "objectifs": [
+    "Employer le vocabulaire de la POO : classe, instance, attribut, méthode, constructeur.",
+    "Lire une classe et prévoir la valeur d'un attribut après des appels de méthodes.",
+    "Repérer un appel de méthode incorrect (oubli de l'objet, self passé deux fois, appel sur la classe).",
+    "Prévoir l'affichage d'un objet qui a une méthode __str__."
+  ],
+  "progression": "Q1 à Q4 : vocabulaire ; Q5 à Q14 : lecture de code, de la plus simple (lire un attribut) à la plus longue (une chaîne de maillons, un objet qui en contient d'autres) ; Q15 à Q20 : le rôle de self et l'appel des méthodes.",
+  "forme": [
+    "Les 22 noms vides sont remplacés par des noms « [POO] … », et chaque question affiche son objectif.",
+    "Q1 à Q5 passent de `single=false` (cases à cocher) à `single=true` : une seule réponse était juste.",
+    "Tout le code est mis en forme et coloré (modèle « Traiter les erreurs _1 ») ; les noms anglais du code (`Account`, `deposit`, `withdraw`, `Student`, `name`) deviennent français (`Compte`, `deposer`, `retirer`, `Eleve`, `nom`).",
+    "Un feedback bienveillant et explicatif pour chaque option (aucun avant).",
+    "Les Vrai/Faux à 2 options deviennent des QCU à 4 options (voir les corrections de fond).",
+    "La bonne réponse est replacée : positions équilibrées et sans motif."
+  ],
+  "retirees": [
+    {"origine": "POO Q17 (« La méthode qui crée l'objet est : __init__ »)", "raison": "doublon de Q1 (rôle de __init__), et inexact : en Python, l'objet est créé par __new__ puis initialisé par __init__."},
+    {"origine": "POO Q19 (« On peut créer autant d'instances d'une classe qu'on le souhaite », Vrai/Faux)", "raison": "aucune difficulté d'élève derrière ; l'idée est reprise dans le feedback de la question 4."}
+  ],
+  "questions": [
+    {
+      "id": "q01", "origine": "POO Q1",
+      "nom": "[POO] Le rôle de __init__",
+      "objectif": "Nommer la méthode exécutée à la création d'un objet.",
+      "enonce": ["La méthode `__init__` d'une classe est exécutée automatiquement à la création de chaque instance."],
+      "question": ["Comment l'appelle-t-on dans les sujets de bac ?"],
+      "options": [
+        {"texte": "Un accesseur", "feedback": "Un accesseur est une méthode qui renvoie la valeur d'un attribut (comme get_solde). __init__, elle, donne leurs premières valeurs aux attributs quand l'objet naît."},
+        {"texte": "La méthode principale", "feedback": "Tu penses sans doute au « programme principal » ou au main d'autres langages. En Python, __init__ ne lance pas le programme : elle prépare chaque nouvel objet."},
+        {"texte": "Le constructeur", "juste": true, "feedback": "Oui. Au bac, on appelle __init__ le constructeur : elle s'exécute à chaque création d'objet et initialise ses attributs (en Python, c'est précisément une méthode d'initialisation)."},
+        {"texte": "Un attribut de classe", "feedback": "Un attribut est une donnée (comme self.solde), pas une fonction. __init__ est une méthode : elle s'écrit avec def et reçoit self."}
+      ],
+      "fond": {"avant": "distracteur « l'initialisateur »", "apres": "distracteur « Un accesseur »", "raison": "en Python, __init__ est justement la méthode d'initialisation : le distracteur n'était pas faux."}
+    },
+    {
+      "id": "q02", "origine": "POO Q2",
+      "nom": "[POO] Écrire l'en-tête d'une classe",
+      "objectif": "Reconnaître la syntaxe qui définit une classe.",
+      "question": ["Quelle ligne commence correctement la définition d'une classe `Domino` ?"],
+      "options": [
+        {"texte": "class Domino:", "juste": true, "feedback": "Oui : le mot-clé class, le nom de la classe (avec une majuscule, par convention), puis les deux-points. Le corps de la classe est ensuite indenté."},
+        {"texte": "Class Domino:", "feedback": "Python distingue majuscules et minuscules : le mot-clé s'écrit class, tout en minuscules. Class provoque une erreur de syntaxe."},
+        {"texte": "classe Domino:", "feedback": "Les mots-clés de Python sont en anglais : on écrit class, pas classe. Ici, Python signale une erreur de syntaxe."},
+        {"texte": "class Domino(self):", "feedback": "self est le premier paramètre des méthodes, pas de la classe. Entre parenthèses après le nom de la classe, Python attend une autre classe : ici, il ne connaît pas self et s'arrête (NameError)."}
+      ],
+      "verifications": [
+        {"option": "juste", "code": ["class Domino:", "    pass", "print('ok')"], "sortie": "ok"},
+        {"option": "Class", "code": ["Class Domino:", "    pass"], "erreur": "SyntaxError"},
+        {"option": "classe", "code": ["classe Domino:", "    pass"], "erreur": "SyntaxError"},
+        {"option": "(self)", "code": ["class Domino(self):", "    pass"], "erreur": "NameError"}
+      ],
+      "fond": {"avant": "distracteur « class Domino () : »", "apres": "distracteur « Class Domino: »", "raison": "« class Domino () : » est une syntaxe valide en Python 3 : la question avait deux bonnes réponses."}
+    },
+    {
+      "id": "q03", "origine": "POO Q3",
+      "nom": "[POO] Nommer les fonctions d'un objet",
+      "objectif": "Distinguer méthode, attribut, classe et instance.",
+      "enonce": ["Les fonctions définies dans une classe, qui agissent sur les objets de cette classe ou les utilisent, s'appellent des …"],
+      "options": [
+        {"texte": "attributs", "feedback": "Les attributs sont les données d'un objet (self.solde, self.nom). Les fonctions qui agissent sur l'objet sont ses méthodes."},
+        {"texte": "classes", "feedback": "La classe est le modèle qui regroupe attributs et méthodes. Les fonctions qu'elle contient sont des méthodes."},
+        {"texte": "instances", "feedback": "Une instance est un objet fabriqué à partir de la classe, comme compte = Compte(...). Ce n'est pas une fonction."},
+        {"texte": "méthodes", "juste": true, "feedback": "Oui : une méthode est une fonction définie dans la classe, avec self comme premier paramètre. On l'appelle sur un objet : objet.methode()."}
+      ]
+    },
+    {
+      "id": "q04", "origine": "POO Q4",
+      "nom": "[POO] Nommer les objets d'une classe",
+      "objectif": "Employer le mot « instance ».",
+      "enonce": ["Une classe sert de modèle pour fabriquer des objets. Ces objets, représentants de la classe, s'appellent aussi des …"],
+      "options": [
+        {"texte": "attributs", "feedback": "Un attribut est une donnée rangée dans un objet, pas l'objet lui-même. Les objets fabriqués par une classe sont ses instances."},
+        {"texte": "fonctions", "feedback": "Une fonction est un morceau de code qu'on appelle. Les objets créés à partir d'une classe sont des instances."},
+        {"texte": "instances", "juste": true, "feedback": "Oui : chaque objet créé avec la classe est une instance de cette classe. On peut en créer autant qu'on veut, chacune avec ses propres valeurs d'attributs."},
+        {"texte": "méthodes", "feedback": "Les méthodes sont les fonctions de la classe. Les objets qu'elle fabrique s'appellent des instances."}
+      ]
+    },
+    {
+      "id": "q05", "origine": "POO Q5",
+      "nom": "[POO] Suivre un attribut modifié par des méthodes",
+      "objectif": "Prévoir la valeur d'un attribut après plusieurs appels de méthodes.",
+      "enonce": ["On considère le programme suivant."],
+      "code": [
+        "class Compte:",
+        "    def __init__(self, numero, solde):",
+        "        self.numero = numero",
+        "        self.solde = solde",
+        "",
+        "    def deposer(self, montant):",
+        "        self.solde = self.solde + montant",
+        "",
+        "    def retirer(self, montant):",
+        "        self.solde = self.solde - montant",
+        "",
+        "compte = Compte('123', 100)",
+        "compte.deposer(800)",
+        "compte.retirer(500)",
+        "compte.deposer(200)"
+      ],
+      "question": ["Que vaut `compte.solde` à la fin de l'exécution ?"],
+      "options": [
+        {"texte": "600", "juste": true, "feedback": "Oui : 100 au départ, puis 100 + 800 = 900, 900 - 500 = 400, 400 + 200 = 600. Chaque méthode modifie le même attribut self.solde."},
+        {"texte": "100", "feedback": "100 est la valeur donnée à la création. Mais deposer et retirer modifient self.solde : l'attribut change à chaque appel. Refais le calcul pas à pas."},
+        {"texte": "800", "feedback": "800 est le montant du premier dépôt, pas le solde. Pars de 100, puis applique les trois appels dans l'ordre."},
+        {"texte": "200", "feedback": "200 est le dernier montant déposé. Le solde garde la mémoire des opérations précédentes : 100, puis 900, 400 et 600."}
+      ],
+      "verifications": [{"code": ["print(compte.solde)"], "sortie": "600"}],
+      "fond": {"avant": "code qui ne s'exécute pas (« self.id = id self » puis « balance = balance ») ; question sur « mybalance », qui n'existe pas", "apres": "code réparé (self.solde = solde) ; question sur compte.solde", "raison": "SyntaxError à l'exécution, et variable inexistante ; la réponse 600 est conservée."}
+    },
+    {
+      "id": "q06", "origine": "POO Q6",
+      "nom": "[POO] Paramètre ou attribut ?",
+      "objectif": "Distinguer le nom d'un paramètre du nom de l'attribut qui reçoit sa valeur.",
+      "code": [
+        "class Test:",
+        "    def __init__(self, a, b):",
+        "        self.x = a",
+        "        self.y = b",
+        "",
+        "u = Test(4, 5)"
+      ],
+      "question": ["Laquelle des expressions suivantes a pour valeur 4 ?"],
+      "options": [
+        {"texte": "u.a", "feedback": "a est le nom du paramètre, il n'existe que pendant l'exécution de __init__. La valeur 4 est rangée dans l'attribut x : u.a provoque une AttributeError."},
+        {"texte": "u.b", "feedback": "b est un paramètre (il reçoit 5), pas un attribut de l'objet. Regarde à gauche des signes = : ce sont les attributs, self.x et self.y."},
+        {"texte": "u.x", "juste": true, "feedback": "Oui : self.x = a range la valeur du paramètre a (ici 4) dans l'attribut x. On la lit ensuite avec u.x."},
+        {"texte": "u.y", "feedback": "self.y reçoit b, c'est-à-dire 5. Le premier argument, 4, va dans self.x."}
+      ],
+      "verifications": [
+        {"code": ["print(u.x)"], "sortie": "4"},
+        {"option": "u.a", "code": ["print(u.a)"], "erreur": "AttributeError"}
+      ]
+    },
+    {
+      "id": "q07", "origine": "POO Q7",
+      "nom": "[POO] Créer une instance",
+      "objectif": "Écrire l'instruction qui crée un objet et le range dans une variable.",
+      "code": [
+        "class Personne:",
+        "    def __init__(self, nom, annee_naissance, ville_naissance):",
+        "        self.nom = nom",
+        "        self.annee = annee_naissance",
+        "        self.ville = ville_naissance"
+      ],
+      "question": ["Quelle instruction crée un nouvel objet `p` de la classe `Personne` ?"],
+      "options": [
+        {"texte": "p == Personne('Fatima', 2008, 'Sada')", "feedback": "== compare deux valeurs, il ne range rien. Pour créer l'objet et le mettre dans p, il faut une affectation avec un seul signe =."},
+        {"texte": "p = Personne('Fatima', 2008, 'Sada')", "juste": true, "feedback": "Oui : on appelle la classe comme une fonction, avec les arguments de __init__ (sauf self), et on range l'objet obtenu dans p."},
+        {"texte": "p.Personne('Fatima', 2008, 'Sada')", "feedback": "La notation p.quelque_chose sert à utiliser un objet qui existe déjà. Ici, p n'existe pas encore : on écrit p = Personne(...)."},
+        {"texte": "Personne.p('Fatima', 2008, 'Sada')", "feedback": "Personne.p chercherait une méthode p dans la classe, qui n'existe pas. On crée un objet en appelant la classe : Personne(...)."}
+      ],
+      "verifications": [
+        {"code": ["p = Personne('Fatima', 2008, 'Sada')", "print(p.ville)"], "sortie": "Sada"},
+        {"option": "==", "code": ["p == Personne('Fatima', 2008, 'Sada')"], "erreur": "NameError"},
+        {"option": "Personne.p", "code": ["Personne.p('Fatima', 2008, 'Sada')"], "erreur": "AttributeError"}
+      ]
+    },
+    {
+      "id": "q08", "origine": "POO Q8",
+      "nom": "[POO] Appeler une méthode sur la classe au lieu de l'objet",
+      "objectif": "Repérer qu'une méthode s'appelle sur une instance.",
+      "code": [
+        "class Triangle:",
+        "    def __init__(self, a, b, c):",
+        "        self.a = a",
+        "        self.b = b",
+        "        self.c = c",
+        "",
+        "    def est_rectangle(self):",
+        "        cotes = self.a**2 + self.b**2",
+        "        hypotenuse = self.c**2",
+        "        return cotes == hypotenuse",
+        "",
+        "t = Triangle(3, 4, 5)",
+        "print(Triangle.est_rectangle())"
+      ],
+      "question": ["Qu'affiche l'exécution de ce programme ?"],
+      "options": [
+        {"texte": "True", "feedback": "Le triangle 3, 4, 5 est bien rectangle, et t.est_rectangle() afficherait True. Mais la dernière ligne appelle la méthode sur la classe Triangle, sans objet : self ne reçoit rien."},
+        {"texte": "False", "feedback": "Le calcul 9 + 16 = 25 donnerait True. Ici, le calcul n'a même pas lieu : la méthode est appelée sur la classe, sans objet pour self."},
+        {"texte": "Une erreur", "juste": true, "feedback": "Oui : Triangle.est_rectangle() n'a pas d'objet à mettre dans self, et Python signale TypeError: missing 1 required positional argument: 'self'. Il fallait écrire t.est_rectangle()."},
+        {"texte": "L'adresse de l'objet, comme <__main__.Triangle object at 0x…>", "feedback": "Ce texte s'affiche quand on fait print(t) sans méthode __str__. Ici, on appelle une méthode, et sans objet : c'est une erreur."}
+      ],
+      "verifications": [
+        {"message": "TypeError: Triangle.est_rectangle() missing 1 required positional argument: 'self'"},
+        {"option": "appel correct", "reprendre_code": false, "code": ["class Triangle:", "    def __init__(self, a, b, c):", "        self.a, self.b, self.c = a, b, c", "    def est_rectangle(self):", "        return self.a**2 + self.b**2 == self.c**2", "t = Triangle(3, 4, 5)", "print(t.est_rectangle())"], "sortie": "True"}
+      ],
+      "fond": {"avant": "code à l'indentation fausse (IndentationError dès la classe), puis « t = tri(3,4,5) » et « tri.est_rectangle() » ; option D vide à l'écran", "apres": "classe correcte ; une seule erreur, celle que vise la question : la méthode appelée sur la classe ; option D rédigée", "raison": "le programme échouait avant l'erreur visée, pour une autre raison ; la bonne réponse (« Une erreur ») est conservée."}
+    },
+    {
+      "id": "q09", "origine": "POO Q9",
+      "nom": "[POO] Une méthode qui calcule à partir d'un attribut",
+      "objectif": "Prévoir la valeur renvoyée par une méthode qui utilise un attribut et un paramètre.",
+      "code": [
+        "class Identite:",
+        "    def __init__(self, nom, prenom, annee):",
+        "        self.nom = nom",
+        "        self.prenom = prenom",
+        "        self.annee = annee",
+        "",
+        "    def age(self, a):",
+        "        return a - self.annee",
+        "",
+        "theo = Identite('Courant', 'Théo', 2001)",
+        "print(theo.age(2020))"
+      ],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "Théo", "feedback": "Théo est la valeur de l'attribut prenom. La méthode age renvoie un calcul : l'année donnée moins self.annee."},
+        {"texte": "19", "juste": true, "feedback": "Oui : age(2020) renvoie 2020 - self.annee, soit 2020 - 2001 = 19. Le paramètre a reçoit 2020, self reçoit l'objet theo."},
+        {"texte": "2001", "feedback": "2001 est l'attribut annee. La méthode ne le renvoie pas tel quel : elle le soustrait à l'année passée en argument."},
+        {"texte": "Courant", "feedback": "Courant est l'attribut nom. age ne s'en sert pas : elle calcule a - self.annee."}
+      ],
+      "verifications": [{"sortie": "19"}],
+      "fond": {"avant": "indentation incohérente (IndentationError) ; Identite('Théo', 'Courant', 2001) avec les paramètres nom, prenom", "apres": "indentation correcte ; Identite('Courant', 'Théo', 2001)", "raison": "le code ne s'exécutait pas, et le nom et le prénom étaient inversés ; la réponse 19 est conservée."}
+    },
+    {
+      "id": "q10", "origine": "POO Q10",
+      "nom": "[POO] Suivre une chaîne de maillons",
+      "objectif": "Enchaîner deux accès à des attributs (objet.attribut.attribut).",
+      "code": [
+        "class Maillon:",
+        "    def __init__(self, val, suiv):",
+        "        self.valeur = val",
+        "        self.suivant = suiv",
+        "",
+        "a = Maillon(10, None)",
+        "b = Maillon(20, a)",
+        "c = Maillon(30, b)"
+      ],
+      "question": ["Laquelle de ces expressions a pour valeur 20 ?"],
+      "options": [
+        {"texte": "a.suivant.valeur", "feedback": "a.suivant vaut None : a est le dernier maillon. None n'a pas d'attribut valeur, d'où une AttributeError."},
+        {"texte": "a.valeur.suivant", "feedback": "a.valeur vaut 10, un entier : un entier n'a pas d'attribut suivant. Lis de gauche à droite : d'abord le maillon, puis son attribut."},
+        {"texte": "c.suivant.valeur", "juste": true, "feedback": "Oui : c.suivant est le maillon b, et b.valeur vaut 20. On lit de gauche à droite, un attribut après l'autre."},
+        {"texte": "c.valeur.suivant", "feedback": "c.valeur vaut 30, un entier, qui n'a pas d'attribut suivant. Il faut d'abord passer au maillon suivant, puis lire sa valeur."}
+      ],
+      "verifications": [
+        {"code": ["print(c.suivant.valeur)"], "sortie": "20"},
+        {"option": "a.suivant.valeur", "code": ["print(a.suivant.valeur)"], "erreur": "AttributeError"},
+        {"option": "c.valeur.suivant", "code": ["print(c.valeur.suivant)"], "erreur": "AttributeError"}
+      ]
+    },
+    {
+      "id": "q11", "origine": "POO Q11",
+      "nom": "[POO] Modifier un attribut puis appeler une méthode",
+      "objectif": "Suivre la valeur d'un attribut modifié directement, puis utilisé par une méthode.",
+      "code": [
+        "class Bizarre:",
+        "    def __init__(self, v):",
+        "        self.valeur = v",
+        "",
+        "    def truc(self, chose):",
+        "        return self.valeur + chose",
+        "",
+        "a = Bizarre(5)",
+        "a.valeur = a.valeur + 2",
+        "b = a.truc(3)",
+        "b = b + 4"
+      ],
+      "question": ["Quelle est la valeur de `b` à la fin du programme ?"],
+      "options": [
+        {"texte": "12", "feedback": "12, c'est 5 + 3 + 4 : tu as oublié la ligne a.valeur = a.valeur + 2, qui fait passer l'attribut à 7 avant l'appel de truc."},
+        {"texte": "14", "juste": true, "feedback": "Oui : l'attribut passe de 5 à 7, truc(3) renvoie 7 + 3 = 10, puis b = 10 + 4 = 14."},
+        {"texte": "3", "feedback": "3 est l'argument donné à truc. La méthode renvoie self.valeur + chose, et b est ensuite augmenté de 4."},
+        {"texte": "10", "feedback": "10 est bien la valeur renvoyée par a.truc(3). Mais la dernière ligne ajoute encore 4 à b."}
+      ],
+      "verifications": [{"code": ["print(b)"], "sortie": "14"}],
+      "fond": {"avant": "distracteur « 8 »", "apres": "distracteur « 10 »", "raison": "8 ne correspondait à aucune erreur de raisonnement ; 10 est l'oubli de la dernière ligne. Changement de distracteur, la bonne réponse est inchangée."}
+    },
+    {
+      "id": "q12", "origine": "POO Q12",
+      "nom": "[POO] Une méthode qui compare deux objets",
+      "objectif": "Identifier self et le paramètre dans un appel x.methode(y).",
+      "code": [
+        "class Score:",
+        "    def __init__(self, valeur):",
+        "        self.valeur = valeur",
+        "",
+        "    def mystere(self, autre):",
+        "        return self.valeur > autre.valeur",
+        "",
+        "x = Score(100)",
+        "y = Score(80)"
+      ],
+      "question": ["Laquelle de ces expressions vaut `True` ?"],
+      "options": [
+        {"texte": "x.mystere(x)", "feedback": "self et autre sont alors le même objet : 100 > 100 est faux. Une valeur n'est jamais strictement plus grande qu'elle-même."},
+        {"texte": "x.mystere(y)", "juste": true, "feedback": "Oui : self est x (100) et autre est y (80) ; 100 > 80 vaut True. L'objet avant le point devient self."},
+        {"texte": "y.mystere(x)", "feedback": "Ici self est y (80) et autre est x (100) : 80 > 100 est faux. L'objet placé avant le point prend la place de self."},
+        {"texte": "y.mystere(y)", "feedback": "80 > 80 est faux : comparer un objet à lui-même avec > donne toujours False."}
+      ],
+      "verifications": [{"code": ["print(x.mystere(x), x.mystere(y), y.mystere(x), y.mystere(y))"], "sortie": "False True False False"}]
+    },
+    {
+      "id": "q13", "origine": "POO Q13",
+      "nom": "[POO] Passer un attribut en argument",
+      "objectif": "Passer à une méthode l'attribut d'un autre objet, et non l'objet lui-même.",
+      "code": [
+        "class Eleve:",
+        "    def __init__(self, nom):",
+        "        self.nom = nom",
+        "",
+        "    def mystere(self, x):",
+        "        return self.nom + x",
+        "",
+        "james = Eleve('JAMES')",
+        "bond = Eleve('BOND')"
+      ],
+      "question": ["Laquelle de ces expressions a pour valeur `'JAMESBOND'` ?"],
+      "options": [
+        {"texte": "james.mystere(bond.nom)", "juste": true, "feedback": "Oui : self.nom vaut 'JAMES' et x reçoit bond.nom, la chaîne 'BOND'. 'JAMES' + 'BOND' donne 'JAMESBOND'."},
+        {"texte": "james.mystere(bond)", "feedback": "x reçoit alors l'objet bond, pas une chaîne : 'JAMES' + bond provoque une TypeError. Il faut passer son attribut, bond.nom."},
+        {"texte": "mystere(james, bond.nom)", "feedback": "mystere est une méthode : elle n'existe pas seule, hors de la classe. Python répond NameError. On l'appelle sur un objet : james.mystere(...)."},
+        {"texte": "mystere(james, bond)", "feedback": "Deux erreurs : mystere ne s'appelle pas sans objet devant (NameError), et bond est un objet, pas une chaîne."}
+      ],
+      "verifications": [
+        {"code": ["print(james.mystere(bond.nom))"], "sortie": "JAMESBOND"},
+        {"option": "objet passé", "code": ["james.mystere(bond)"], "erreur": "TypeError"},
+        {"option": "sans objet", "code": ["mystere(james, bond.nom)"], "erreur": "NameError"}
+      ]
+    },
+    {
+      "id": "q14", "origine": "POO Q14",
+      "nom": "[POO] Attribut et variable de même nom",
+      "objectif": "Distinguer l'attribut d'un objet d'une variable du programme qui porte le même nom.",
+      "code": [
+        "class Eleve:",
+        "    def __init__(self, nom):",
+        "        self.nom = nom",
+        "",
+        "bob = Eleve('BOB')",
+        "nom = 'nom'"
+      ],
+      "question": ["Quelle est la valeur de l'expression `bob.nom` ?"],
+      "options": [
+        {"texte": "'BOB'", "juste": true, "feedback": "Oui : bob.nom est l'attribut de l'objet bob, qui a reçu 'BOB' à la création. La variable nom du programme est une autre case mémoire."},
+        {"texte": "'nom'", "feedback": "'nom' est la valeur de la variable nom du programme principal. bob.nom désigne l'attribut de l'objet, qui vaut 'BOB'."},
+        {"texte": "Une erreur, car nom désigne deux choses", "feedback": "Python les distingue sans peine : nom seul est une variable, bob.nom est l'attribut de bob. Aucune erreur ici."},
+        {"texte": "Eleve", "feedback": "Eleve est la classe. bob.nom lit un attribut de l'objet bob : la chaîne qu'on lui a donnée à la création."}
+      ],
+      "verifications": [{"code": ["print(bob.nom)"], "sortie": "BOB"}]
+    },
+    {
+      "id": "q15", "origine": "POO Q15",
+      "nom": "[POO] Ce que désigne self",
+      "objectif": "Savoir ce que reçoit le paramètre self d'une méthode.",
+      "enonce": ["Dans la définition `def deposer(self, montant):` d'une classe `Compte`, on appelle ensuite `compte.deposer(50)`."],
+      "question": ["Que désigne `self` pendant cet appel ?"],
+      "options": [
+        {"texte": "La classe Compte", "feedback": "La classe est le modèle commun. self désigne un objet précis : celui qui est écrit avant le point, ici compte."},
+        {"texte": "La valeur 50", "feedback": "50 va dans le deuxième paramètre, montant. Le premier, self, reçoit automatiquement l'objet placé avant le point."},
+        {"texte": "L'objet compte", "juste": true, "feedback": "Oui : Python donne à self l'objet sur lequel on appelle la méthode. compte.deposer(50) revient à Compte.deposer(compte, 50)."},
+        {"texte": "Une copie de l'objet compte", "feedback": "Ce n'est pas une copie : self est l'objet lui-même. C'est pour cela que self.solde = ... modifie vraiment compte."}
+      ],
+      "verifications": [{"reprendre_code": false, "code": ["class Compte:", "    def __init__(self):", "        self.solde = 0", "    def deposer(self, montant):", "        self.solde = self.solde + montant", "        return self", "compte = Compte()", "print(compte.deposer(50) is compte, compte.solde)"], "sortie": "True 50"}],
+      "fond": {"avant": "Vrai/Faux « self est toujours le premier paramètre d'une méthode » (Vrai)", "apres": "QCU à 4 options : ce que désigne self pendant un appel", "raison": "un Vrai/Faux à 2 options, discutable (self n'est qu'une convention de nom, et les méthodes de classe font exception) ; même notion, posée sans ambiguïté."}
+    },
+    {
+      "id": "q16", "origine": "POO Q16",
+      "nom": "[POO] Appeler une méthode depuis une autre méthode",
+      "objectif": "Appeler une méthode de l'objet avec self., sans repasser l'objet en argument.",
+      "code": [
+        "class Compte:",
+        "    def __init__(self, solde):",
+        "        self.solde = solde",
+        "",
+        "    def deposer(self, montant):",
+        "        self.solde = self.solde + montant",
+        "",
+        "    def prime(self):",
+        "        # ligne à écrire : déposer 50 sur ce même compte"
+      ],
+      "question": ["Quelle ligne, placée dans `prime`, dépose 50 sur le même compte ?"],
+      "options": [
+        {"texte": "self.deposer(self, 50)", "feedback": "C'est l'erreur la plus fréquente : avec self.deposer, Python passe déjà l'objet à self. Le redonner fait un argument de trop (TypeError)."},
+        {"texte": "self.deposer(50)", "juste": true, "feedback": "Oui : self.deposer(50) appelle la méthode sur l'objet courant ; Python met cet objet dans self et 50 dans montant."},
+        {"texte": "deposer(50)", "feedback": "Sans objet devant, Python cherche une fonction deposer hors de la classe et ne la trouve pas (NameError). Il faut écrire self.deposer(50)."},
+        {"texte": "Compte.deposer(50)", "feedback": "Appelée sur la classe, la méthode ne reçoit pas d'objet : 50 irait dans self et montant manquerait (TypeError)."}
+      ],
+      "verifications": [
+        {"code": ["        self.deposer(50)", "c = Compte(10)", "c.prime()", "print(c.solde)"], "sortie": "60"},
+        {"option": "self deux fois", "code": ["        self.deposer(self, 50)", "Compte(10).prime()"], "erreur": "TypeError"},
+        {"option": "sans objet", "code": ["        deposer(50)", "Compte(10).prime()"], "erreur": "NameError"},
+        {"option": "sur la classe", "code": ["        Compte.deposer(50)", "Compte(10).prime()"], "erreur": "TypeError"}
+      ],
+      "fond": {"avant": "Vrai/Faux « Lorsque l'on appelle une méthode avec self.methode, il faut rappeler l'objet dans les paramètres » (Faux)", "apres": "QCU à 4 options sur la même règle, avec du code", "raison": "règle 22 (4 options, analyse de code) ; même notion, même réponse attendue (on ne repasse pas l'objet)."}
+    },
+    {
+      "id": "q17", "origine": "POO Q18",
+      "nom": "[POO] Le mot-clé qui définit une classe",
+      "objectif": "Reconnaître le mot-clé class parmi les autres mots de la POO.",
+      "enonce": ["En Python, on définit un nouveau type d'objet avec le mot-clé …"],
+      "options": [
+        {"texte": "def", "feedback": "def définit une fonction ou une méthode. Pour définir un type d'objet, c'est-à-dire une classe, on utilise class."},
+        {"texte": "__init__", "feedback": "__init__ est le nom du constructeur, une méthode écrite dans la classe. Le mot-clé qui ouvre la classe est class."},
+        {"texte": "__str__", "feedback": "__str__ est une méthode spéciale qui donne le texte affiché par print. Elle se range dans une classe définie avec class."},
+        {"texte": "class", "juste": true, "feedback": "Oui : class Nom: ouvre la définition d'une classe, c'est-à-dire d'un nouveau type d'objet. Ses méthodes, dont __init__, sont définies dedans avec def."}
+      ]
+    },
+    {
+      "id": "q18", "origine": "POO Q20",
+      "nom": "[POO] Instance ou classe ?",
+      "objectif": "Décrire ce que contient une variable après x = Classe().",
+      "enonce": ["Une classe `Entier` a été définie. On exécute `x = Entier()`."],
+      "question": ["Quelle affirmation décrit le mieux la variable `x` ?"],
+      "options": [
+        {"texte": "x est la classe Entier elle-même", "feedback": "Les parenthèses appellent la classe : elles fabriquent un nouvel objet. x contient cet objet, pas la classe."},
+        {"texte": "x contient une valeur de type int", "feedback": "Le nom Entier fait penser aux entiers, mais x a le type Entier, une classe définie par le programme, pas le type int."},
+        {"texte": "x est une instance de la classe Entier", "juste": true, "feedback": "Oui : Entier() crée un objet de la classe Entier, une instance. type(x) affiche <class '__main__.Entier'>."},
+        {"texte": "x est une méthode de la classe Entier", "feedback": "Une méthode est une fonction définie dans la classe avec def. Ici, x reçoit l'objet que fabrique l'appel Entier()."}
+      ],
+      "verifications": [{"reprendre_code": false, "code": ["class Entier:", "    pass", "x = Entier()", "print(isinstance(x, Entier), type(x) is int, x is Entier)"], "sortie": "True False False"}],
+      "fond": {"avant": "options « x contient un objet de type Entier » et « x est une instance de la classe Entier » (la seconde juste) ; option « On peut affecter une valeur de type int à x »", "apres": "distracteurs « x est la classe Entier elle-même » et « x est une méthode de la classe Entier »", "raison": "les deux premières options disaient la même chose, et la troisième est vraie en Python (toute variable peut être réaffectée)."}
+    },
+    {
+      "id": "q19", "origine": "POO Q21",
+      "nom": "[POO] Appeler une méthode sans argument",
+      "objectif": "Écrire l'appel d'une méthode qui n'a que self comme paramètre.",
+      "code": [
+        "class Objet3D:",
+        "    def __init__(self, x, y, z, longueur, hauteur, profondeur):",
+        "        self.x = x",
+        "        self.y = y",
+        "        self.z = z",
+        "        self.longueur = longueur",
+        "        self.hauteur = hauteur",
+        "        self.profondeur = profondeur",
+        "",
+        "    def volume(self):",
+        "        return self.longueur * self.hauteur * self.profondeur",
+        "",
+        "    def translation(self, dx, dy, dz):",
+        "        self.x = self.x + dx",
+        "        self.y = self.y + dy",
+        "        self.z = self.z + dz"
+      ],
+      "question": ["`o` est une instance de la classe `Objet3D`. Quelle instruction calcule le volume de `o` ?"],
+      "options": [
+        {"texte": "volume(o)", "feedback": "volume est une méthode : elle n'existe pas hors de la classe (NameError). On l'appelle sur l'objet : o.volume()."},
+        {"texte": "o.volume(self)", "feedback": "self ne s'écrit que dans la définition. À l'appel, Python remplit self tout seul avec o ; écrire self ici provoque une NameError."},
+        {"texte": "o.volume()", "juste": true, "feedback": "Oui : o.volume() appelle la méthode sur o, qui devient self. Les parenthèses restent vides, car volume n'a pas d'autre paramètre."},
+        {"texte": "volume(self)", "feedback": "Hors de la classe, ni volume ni self n'existent. On écrit l'objet, un point, puis la méthode : o.volume()."}
+      ],
+      "verifications": [
+        {"code": ["o = Objet3D(0, 0, 0, 2, 3, 4)", "print(o.volume())"], "sortie": "24"},
+        {"option": "volume(o)", "code": ["o = Objet3D(0, 0, 0, 2, 3, 4)", "volume(o)"], "erreur": "NameError"},
+        {"option": "o.volume(self)", "code": ["o = Objet3D(0, 0, 0, 2, 3, 4)", "o.volume(self)"], "erreur": "NameError"}
+      ],
+      "fond": {"avant": "code à l'indentation détruite (méthodes Volume et Translation placées dans __init__) : IndentationError", "apres": "classe correctement indentée (noms en minuscules : volume, translation)", "raison": "le code ne s'exécutait pas ; la bonne réponse (o.volume()) est conservée."}
+    },
+    {
+      "id": "q20", "origine": "POO Q22",
+      "nom": "[POO] Ce qu'affiche print avec __str__",
+      "objectif": "Prévoir l'affichage d'un objet qui contient d'autres objets et a une méthode __str__.",
+      "code": [
+        "class Point:",
+        "    def __init__(self, x, y):",
+        "        self.px = x",
+        "        self.py = y",
+        "",
+        "class Segment:",
+        "    def __init__(self, x1, y1, x2, y2):",
+        "        self.orig = Point(x1, y1)",
+        "        self.extrem = Point(x2, y2)",
+        "",
+        "    def __str__(self):",
+        "        o, e = self.orig, self.extrem",
+        "        return f'Segment : [({o.px}, {o.py}), ({e.px}, {e.py})]'",
+        "",
+        "s = Segment(4.0, 3.0, 2.0, 1.0)",
+        "print(s)"
+      ],
+      "question": ["Qu'affiche ce programme ?"],
+      "options": [
+        {"texte": "Segment : [(4, 3), (2, 1)]", "feedback": "Les coordonnées ont été données avec une virgule décimale (4.0, 3.0…) : ce sont des flottants, et Python les affiche 4.0, 3.0."},
+        {"texte": "Segment : [(4.0, 3.0), (2.0, 1.0)]", "juste": true, "feedback": "Oui : print(s) utilise __str__, qui place l'origine (4.0, 3.0) puis l'extrémité (2.0, 1.0). Les valeurs gardent leur type flottant."},
+        {"texte": "Segment : [(2.0, 1.0), (4.0, 3.0)]", "feedback": "L'ordre est inversé : orig reçoit les deux premiers arguments (4.0 et 3.0), extrem les deux derniers."},
+        {"texte": "<__main__.Segment object at 0x…>", "feedback": "C'est l'affichage d'un objet sans méthode __str__. Ici, Segment en a une : print(s) affiche le texte qu'elle renvoie."}
+      ],
+      "verifications": [{"sortie": "Segment : [(4.0, 3.0), (2.0, 1.0)]"}],
+      "fond": {"avant": "code non exécutable (guillemets typographiques, parenthèse non fermée, __str__ sans f-string) ; question « que contient la variable s ? » ; bonne réponse annoncée « Segment : [(4, 3), (2, 1)] »", "apres": "code exécutable avec une f-string ; question « qu'affiche print(s) ? » ; bonne réponse « Segment : [(4.0, 3.0), (2.0, 1.0)] »", "raison": "aucune option n'était juste : Python affiche des flottants (4.0), et s contient un objet, pas un texte."}
+    }
+  ]
+}
