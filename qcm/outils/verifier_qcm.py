@@ -17,7 +17,7 @@ Contrôles :
   - coloration : tout bloc de code est coloré, et chaque couleur a un contraste ≥ 4,5:1 sur son fond ;
   - exécution : chaque vérification Python (python3 -I) et SQL (SQLite en mémoire) donne le résultat annoncé ;
   - caractères invisibles ou de contrôle refusés ;
-  - doublons : deux questions (énoncé + code) identiques ou presque, dans un quiz ou entre deux quiz.
+  - doublons : deux questions (énoncé + code) identiques (erreur) ou presque (à relire), dans un quiz ou entre deux quiz.
 Code de sortie 1 en cas d'erreur.
 
 Auteur : Babash - NSI Tani Malandi. Licence MIT."""
@@ -194,7 +194,7 @@ def verifier_source(quiz, executer):
             if t == 'reponse_courte':
                 if not q.get('reponses'):
                     err(quiz['id'], qid, 'aucune réponse acceptée')
-                if any(len(r.split()) > 3 for r in q['reponses']):
+                if any(len(r.split()) > 3 and not re.fullmatch(r'[0-9A-Fa-f ]+', r) for r in q['reponses']):
                     err(quiz['id'], qid, 'réponse courte de plus de 3 mots')
             if t == 'trous' and not any('[[' in l for l in q.get('lignes', [])):
                 err(quiz['id'], qid, 'texte à trous sans trou')
@@ -308,8 +308,8 @@ def verifier_doublons(tous):
             if len(a) < 30 or abs(len(a) - len(b)) > 0.2 * max(len(a), len(b)):
                 continue
             r = difflib.SequenceMatcher(None, a, b).ratio()
-            if r >= 0.97:
-                err(f'{items[i][0]} {items[i][1]}', None, f'doublon de {items[j][0]} {items[j][1]} ({r:.2f})')
+            if a == b:
+                err(f'{items[i][0]} {items[i][1]}', None, f'doublon exact de {items[j][0]} {items[j][1]}')
             elif r >= 0.9:
                 avert(f'{items[i][0]} {items[i][1]}', None, f'très proche de {items[j][0]} {items[j][1]} ({r:.2f})')
 

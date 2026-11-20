@@ -1,0 +1,333 @@
+{
+  "format": "qcm-pronote/1",
+  "id": "nsi1-bases-2-et-16",
+  "titre": "NSI 1re · Écrire un entier en base 2 et en base 16",
+  "niveau": "nsi-premiere",
+  "justification_niveau": "écriture d'un entier positif dans une base b ⩾ 2 (passer de la base 2 à la base 16, et à la base 10) : programme de première, Représentation des données : types et valeurs de base.",
+  "programme": ["nsi-1re-2019.types-de-base.entiers-base-b : Écriture d'un entier positif dans une base b ⩾ 2"],
+  "notions": ["donnees.binaire", "donnees.image.couleur", "prog.fonction"],
+  "auteur": "Babash - NSI Tani Malandi",
+  "licence": "CC BY-SA 4.0",
+  "sources": ["Type base - 2 - Hexadécimale (export `d3c2200c`, 25 questions)"],
+  "contexte": "Des nombres, des codes de couleurs RVB, deux petites fonctions Python de conversion.",
+  "prelude_python": [],
+  "objectifs": [
+    "Reconnaître dans quelles bases un nombre écrit peut être lu, et les préfixes 0b et 0x de Python.",
+    "Convertir entre les bases 2, 10 et 16, à la main et avec Python (bin, hex, int).",
+    "Passer d'un code couleur RVB décimal à son écriture hexadécimale, et inversement.",
+    "Compléter et remettre en ordre une fonction de conversion."
+  ],
+  "progression": "Q1 à Q5 : les bases et leurs chiffres ; Q6 à Q14 : conversions ; Q15 à Q21 : couleurs, algorithmes de conversion et calculs posés.",
+  "forme": [
+    "Noms « [Bases] … » pour toutes les questions (14 noms étaient vides, un autre était « Copie de ») ; numéros retirés des énoncés (Q7 et Q10 apparaissaient deux fois) ; objectif affiché.",
+    "Code Python des questions à trous et d'appariement en bloc à chasse fixe et coloré (il était en police proportionnelle, sans indentation visible), noms en français : dec_vers_hex, indice_hex, hex_vers_dec.",
+    "Un feedback pour chaque option des QCU et des choix multiples, et une explication pour les autres types (aucun feedback avant).",
+    "Consignes d'écriture reformulées (« en tout chiffre », « Le résultat suivant faux respecte la consigne ») ; coquilles corrigées (« héxadécimal », « mot hexadécimale », « décimale ») ; « built-in » traduit (fonction native).",
+    "Positions de la bonne réponse replacées."
+  ],
+  "retirees": [
+    {"origine": "Base 2 et 16 Q14 (un pixel en niveaux de gris : combien d'octets ?)", "raison": "notion d'image numérique (SNT) plutôt que de bases : déplacée vers le futur quiz SNT « pixels et couleurs » (reste à faire)."}
+  ],
+  "questions": [
+    {
+      "id": "q01", "origine": "Bases Q1, Q2 et Q3",
+      "type": "appariement",
+      "nom": "[Bases] La base de chaque numération",
+      "objectif": "Associer chaque numération à la valeur de sa base.",
+      "question": ["Associer chaque numération à sa base."],
+      "paires": [["Numération binaire", "2"], ["Numération décimale", "10"], ["Numération hexadécimale", "16"]],
+      "feedback": "La base est le nombre de chiffres différents : 2 en binaire (0 et 1), 10 en décimal (0 à 9), 16 en hexadécimal (0 à 9, puis A à F).",
+      "fond": {"avant": "trois QCU à 3 options (base du binaire, du décimal, de l'hexadécimal)", "apres": "un appariement de trois paires", "raison": "trois questions identiques à un mot près ; même contenu, en une question (règle 22 : variété mesurée)."}
+    },
+    {
+      "id": "q02", "origine": "Bases Q4",
+      "type": "qcm",
+      "nom": "[Bases] Dans quelles bases lire 10111 ?",
+      "objectif": "Reconnaître les bases dans lesquelles une écriture est possible.",
+      "question": ["Sans autre indication, le nombre 10111 peut être écrit dans quelles bases ? Cocher toutes les bonnes réponses."],
+      "options": [
+        {"texte": "Base 2", "juste": true, "feedback": "Oui : 10111 n'utilise que les chiffres 0 et 1, permis en base 2. Il vaudrait alors 23."},
+        {"texte": "Base 10", "juste": true, "feedback": "Oui : 0 et 1 sont aussi des chiffres de la base 10. Lu en décimal, c'est dix mille cent onze."},
+        {"texte": "Base 16", "juste": true, "feedback": "Oui : 0 et 1 sont aussi des chiffres hexadécimaux. Sans préfixe ni indice, on ne peut pas savoir dans quelle base il est écrit."}
+      ],
+      "verifications": [{"code": ["print(int('10111', 2), int('10111', 10), int('10111', 16))"], "sortie": "23 10111 65809"}]
+    },
+    {
+      "id": "q03", "origine": "Bases Q5",
+      "type": "qcm",
+      "nom": "[Bases] Dans quelles bases lire 10113 ?",
+      "objectif": "Écarter une base quand un chiffre n'y existe pas.",
+      "question": ["Sans autre indication, le nombre 10113 peut être écrit dans quelles bases ? Cocher toutes les bonnes réponses."],
+      "options": [
+        {"texte": "Base 2", "feedback": "En base 2, les seuls chiffres sont 0 et 1 : le chiffre 3 y est impossible."},
+        {"texte": "Base 10", "juste": true, "feedback": "Oui : tous les chiffres (0, 1, 3) existent en base 10."},
+        {"texte": "Base 16", "juste": true, "feedback": "Oui : 0, 1 et 3 sont aussi des chiffres hexadécimaux. Les lettres A à F ne sont pas obligatoires dans un nombre hexadécimal."}
+      ],
+      "verifications": [{"code": ["print(int('10113', 10), int('10113', 16))", "int('10113', 2)"], "erreur": "ValueError"}]
+    },
+    {
+      "id": "q04", "origine": "Bases Q6",
+      "nom": "[Bases] Dans quelle base lire 10A11 ?",
+      "objectif": "Reconnaître qu'une lettre de A à F impose la base 16.",
+      "question": ["Sans autre indication, le nombre 10A11 est écrit dans quelle base ?"],
+      "options": [
+        {"texte": "Base 2", "feedback": "La base 2 n'a que les chiffres 0 et 1 : A n'y existe pas."},
+        {"texte": "Base 8", "feedback": "La base 8 a les chiffres 0 à 7 : la lettre A n'y existe pas."},
+        {"texte": "Base 10", "feedback": "La base 10 n'a que les chiffres 0 à 9. La lettre A est un chiffre de la base 16, qui vaut 10."},
+        {"texte": "Base 16", "juste": true, "feedback": "Oui : en base 16, les chiffres vont de 0 à 9, puis de A (qui vaut 10) à F (qui vaut 15). C'est la seule base possible ici."}
+      ],
+      "verifications": [{"code": ["print(int('10A11', 16))", "int('10A11', 10)"], "erreur": "ValueError"}],
+      "fond": {"avant": "choix multiple à 3 options (base 2, 10, 16), une seule juste", "apres": "QCU à 4 options, avec la base 8", "raison": "une seule réponse juste : QCU ; règle des 4 options."}
+    },
+    {
+      "id": "q05", "origine": "Bases Q7 et Q8",
+      "nom": "[Bases] Les préfixes 0b et 0x de Python",
+      "objectif": "Lire les préfixes 0b et 0x d'un nombre en Python.",
+      "code": ["a = 0b1011", "b = 0x1011"],
+      "question": ["Dans quelles bases sont écrits les nombres `a` et `b` ?"],
+      "options": [
+        {"texte": "a en base 2, b en base 16", "juste": true, "feedback": "Oui : 0b (pour binary) annonce la base 2, 0x (pour hexadecimal) la base 16. a vaut 11 et b vaut 4113."},
+        {"texte": "a en base 16, b en base 2", "feedback": "C'est l'inverse : le b de 0b vient de binary (binaire), le x de 0x vient de hexadecimal."},
+        {"texte": "a et b en base 2", "feedback": "Les chiffres sont les mêmes, mais les préfixes diffèrent : 0x annonce la base 16."},
+        {"texte": "a et b en base 10", "feedback": "Les préfixes servent justement à dire que le nombre n'est pas en base 10 : 0b pour la base 2, 0x pour la base 16."}
+      ],
+      "verifications": [{"code": ["print(a, b)"], "sortie": "11 4113"}],
+      "fond": {"avant": "deux QCU à 3 options, toutes deux numérotées Q7 (« 0b1011 » puis « 0x1011 »)", "apres": "un QCU à 4 options sur les deux préfixes", "raison": "même notion posée deux fois, avec un numéro doublé ; règle des 4 options."}
+    },
+    {
+      "id": "q06", "origine": "Bases Q9",
+      "nom": "[Bases] La fonction native hex",
+      "objectif": "Connaître la fonction native de Python qui donne l'écriture hexadécimale.",
+      "question": ["Quelle fonction native de Python (fournie sans importer de module) donne l'écriture hexadécimale d'un entier ?"],
+      "options": [
+        {"texte": "int()", "feedback": "int() fait le chemin inverse : int('ff', 16) lit un texte hexadécimal et donne l'entier 255."},
+        {"texte": "bin()", "feedback": "bin() donne l'écriture binaire : bin(255) vaut '0b11111111'."},
+        {"texte": "oct()", "feedback": "oct() donne l'écriture en base 8 (octale) : oct(255) vaut '0o377'."},
+        {"texte": "hex()", "juste": true, "feedback": "Oui : hex(255) renvoie la chaîne '0xff'. Le résultat est un texte, précédé du préfixe 0x."}
+      ],
+      "verifications": [{"code": ["print(hex(255), bin(255), oct(255), int('ff', 16))"], "sortie": "0xff 0b11111111 0o377 255"}],
+      "fond": {"avant": "3 options (int, bin, hex)", "apres": "4 options, avec oct()", "raison": "règle des 4 options."}
+    },
+    {
+      "id": "q07", "origine": "Bases Q10",
+      "nom": "[Bases] Convertir 0xBAC en décimal",
+      "objectif": "Convertir un nombre hexadécimal en décimal.",
+      "question": ["Quelle est l'écriture décimale du nombre hexadécimal 0xBAC ?"],
+      "options": [
+        {"texte": "8829", "feedback": "Tu as peut-être lu les chiffres de droite à gauche. B est le chiffre de poids fort : B × 256 + A × 16 + C."},
+        {"texte": "8892", "feedback": "Vérifie les valeurs des lettres : B = 11, A = 10, C = 12, et les poids 256, 16, 1."},
+        {"texte": "2988", "juste": true, "feedback": "Oui : B × 16² + A × 16 + C = 11 × 256 + 10 × 16 + 12 = 2816 + 160 + 12 = 2988."},
+        {"texte": "2898", "feedback": "Presque : les chiffres sont bons, mais deux sont inversés. Refais l'addition : 2816 + 160 + 12."}
+      ],
+      "verifications": [{"code": ["print(0xBAC, 11 * 256 + 10 * 16 + 12)"], "sortie": "2988 2988"}]
+    },
+    {
+      "id": "q08", "origine": "Bases Q11",
+      "nom": "[Bases] Convertir 0x1984 en décimal",
+      "objectif": "Convertir un nombre hexadécimal sans lettre en décimal.",
+      "question": ["Quelle est l'écriture décimale du nombre hexadécimal 0x1984 ?"],
+      "options": [
+        {"texte": "3265", "feedback": "Le nombre est en base 16 : les poids sont 4096, 256, 16 et 1, pas 1000, 100, 10 et 1."},
+        {"texte": "2356", "feedback": "Les chiffres semblent pris dans le désordre. Calcule 1 × 4096 + 9 × 256 + 8 × 16 + 4."},
+        {"texte": "6325", "feedback": "Presque : les chiffres sont bons, mais deux sont inversés. Refais l'addition : 4096 + 2304 + 128 + 4."},
+        {"texte": "6532", "juste": true, "feedback": "Oui : 1 × 16³ + 9 × 16² + 8 × 16 + 4 = 4096 + 2304 + 128 + 4 = 6532. Un nombre hexadécimal n'a pas toujours de lettre."}
+      ],
+      "verifications": [{"code": ["print(0x1984)"], "sortie": "6532"}]
+    },
+    {
+      "id": "q09", "origine": "Bases Q12",
+      "type": "reponse_courte",
+      "nom": "[Bases] Convertir A340 en binaire",
+      "objectif": "Convertir un nombre hexadécimal en binaire, chiffre par chiffre.",
+      "question": ["Écrire en binaire le nombre hexadécimal A340. Écrire seulement des 0 et des 1, sans préfixe (par exemple : 1101000000)."],
+      "reponses": ["1010001101000000", "1010 0011 0100 0000", "0b1010001101000000"],
+      "feedback": "Chaque chiffre hexadécimal donne 4 bits : A = 1010, 3 = 0011, 4 = 0100, 0 = 0000. On les met bout à bout : 1010 0011 0100 0000.",
+      "verifications": [{"code": ["print(bin(0xA340)[2:])"], "sortie": "1010001101000000"}],
+      "fond": {"avant": "réponse numérique (numerical) 1010001101000000", "apres": "réponse courte acceptant aussi « 1010 0011 0100 0000 » et « 0b1010001101000000 »", "raison": "une réponse numérique lit 1010… comme un nombre décimal, et refusait l'écriture par groupes de 4 bits, pourtant juste."}
+    },
+    {
+      "id": "q10", "origine": "Bases Q13",
+      "type": "numerique",
+      "nom": "[Bases] Bits nécessaires pour un chiffre hexadécimal",
+      "objectif": "Savoir qu'un chiffre hexadécimal s'écrit sur 4 bits.",
+      "question": ["Combien de bits faut-il pour écrire n'importe quel chiffre hexadécimal (de 0 à F) ? Répondre par un nombre."],
+      "reponse": 4,
+      "tolerance": 0,
+      "feedback": "Il y a 16 chiffres hexadécimaux, et 4 bits donnent 2⁴ = 16 combinaisons : de 0000 (0) à 1111 (F). C'est pourquoi 1 chiffre hexadécimal = 4 bits.",
+      "verifications": [{"code": ["print(len(bin(0xF)[2:]), 2**4)"], "sortie": "4 16"}],
+      "fond": {"avant": "« Combien a-t-on besoin de bits au maximum pour coder un chiffre hexadécimal quelconque ? »", "apres": "« Combien de bits faut-il pour écrire n'importe quel chiffre hexadécimal ? »", "raison": "« au maximum » brouillait la question : on cherche le nombre de bits suffisant pour tous les chiffres."}
+    },
+    {
+      "id": "q11", "origine": "Bases Q15",
+      "nom": "[Bases] Les nombres 1, 10, 100… en base 16",
+      "objectif": "Relier l'écriture 1 suivi de zéros aux puissances de la base.",
+      "question": ["Les entiers dont l'écriture en base 16 est un 1 suivi de zéros (1, 10, 100, 1000…) sont :"],
+      "options": [
+        {"texte": "les puissances de 2", "feedback": "C'est vrai en base 2 : 1, 10, 100 y valent 1, 2, 4. En base 16, chaque zéro ajouté multiplie par 16."},
+        {"texte": "les puissances de 8", "feedback": "Ce serait le cas en base 8. En base 16, 10 vaut 16, 100 vaut 16² = 256."},
+        {"texte": "les puissances de 10", "feedback": "C'est vrai en base 10. En base 16, chaque position vaut 16 fois la précédente."},
+        {"texte": "les puissances de 16", "juste": true, "feedback": "Oui : en base 16, 1 = 16⁰, 10 = 16¹ = 16, 100 = 16² = 256, 1000 = 16³ = 4096. Cela marche dans toutes les bases."}
+      ],
+      "verifications": [{"code": ["print([int(s, 16) for s in ['1', '10', '100', '1000']])"], "sortie": "[1, 16, 256, 4096]"}]
+    },
+    {
+      "id": "q12", "origine": "Bases Q16",
+      "nom": "[Bases] Le nombre qui suit 9F",
+      "objectif": "Compter en base 16 avec une retenue.",
+      "question": ["Quel nombre hexadécimal suit 9F ?"],
+      "options": [
+        {"texte": "9F1", "feedback": "Ajouter 1, ce n'est pas écrire un 1 à la fin. F + 1 donne 0 avec une retenue sur le chiffre de gauche."},
+        {"texte": "9G", "feedback": "G n'est pas un chiffre hexadécimal : après F (15), on revient à 0 et on ajoute une retenue."},
+        {"texte": "A0", "juste": true, "feedback": "Oui : F + 1 = 10 en base 16, on écrit 0 et on retient 1 ; 9 + 1 = A. Donc 9F + 1 = A0 (de 159 à 160)."},
+        {"texte": "910", "feedback": "F + 1 donne bien « 10 », mais le 1 est une retenue : il s'ajoute au 9, il ne s'écrit pas à part."}
+      ],
+      "verifications": [{"code": ["print(hex(0x9F + 1), 0x9F, 0xA0)"], "sortie": "0xa0 159 160"}],
+      "fond": {"avant": "options B et D identiques (« 9G »)", "apres": "option D « 910 »", "raison": "deux options identiques : il ne restait que 3 choix différents."}
+    },
+    {
+      "id": "q13", "origine": "Bases Q17",
+      "type": "qcm",
+      "nom": "[Bases] D'autres écritures de F16",
+      "objectif": "Reconnaître un même nombre écrit dans plusieurs bases.",
+      "question": ["Quelles écritures ont la même valeur que le nombre hexadécimal F16 ? Cocher toutes les bonnes réponses."],
+      "options": [
+        {"texte": "3937 (en décimal)", "feedback": "3937 vaut F61 en hexadécimal : les chiffres de F16 ont été lus à l'envers."},
+        {"texte": "111100010110 (en binaire)", "juste": true, "feedback": "Oui : F = 1111, 1 = 0001, 6 = 0110. Mis bout à bout : 1111 0001 0110."},
+        {"texte": "111101100001 (en binaire)", "feedback": "C'est l'écriture binaire de F61 : les groupes 0001 et 0110 sont inversés."},
+        {"texte": "160 (en décimal)", "feedback": "160 vaut A0 en hexadécimal. F16 est bien plus grand : F × 256 dépasse déjà 3800."},
+        {"texte": "3862 (en décimal)", "juste": true, "feedback": "Oui : F × 256 + 1 × 16 + 6 = 3840 + 16 + 6 = 3862."}
+      ],
+      "verifications": [{"code": ["print(0xF16, bin(0xF16)[2:], hex(3937), bin(0xF61)[2:], hex(160))"], "sortie": "3862 111100010110 0xf61 111101100001 0xa0"}]
+    },
+    {
+      "id": "q14", "origine": "Bases Q18",
+      "nom": "[Bases] Combien de nombres avec 2 chiffres hexadécimaux ?",
+      "objectif": "Compter les valeurs qu'on écrit avec 2 chiffres hexadécimaux.",
+      "question": ["Combien de nombres différents peut-on écrire avec 2 chiffres hexadécimaux ?"],
+      "options": [
+        {"texte": "16", "feedback": "16, c'est avec un seul chiffre. Avec deux, chaque chiffre a 16 valeurs : 16 × 16."},
+        {"texte": "32", "feedback": "32 = 16 + 16 : on additionne au lieu de multiplier. Chaque valeur du premier chiffre se combine avec les 16 du second."},
+        {"texte": "128", "feedback": "128 = 2⁷, ce serait avec 7 bits. Deux chiffres hexadécimaux font 8 bits : 2⁸ = 256."},
+        {"texte": "256", "juste": true, "feedback": "Oui : 16 × 16 = 256 nombres, de 00 à FF (0 à 255). C'est exactement un octet."}
+      ],
+      "verifications": [{"code": ["print(16 * 16, 0xFF + 1)"], "sortie": "256 256"}],
+      "fond": {"avant": "6 options (2, 16, 32, 128, 256, 1024)", "apres": "4 options (16, 32, 128, 256)", "raison": "règle des 4 options ; 2 et 1024, les moins plausibles, sont retirées."}
+    },
+    {
+      "id": "q15", "origine": "Bases Q19",
+      "nom": "[Bases] Un code couleur RVB en hexadécimal",
+      "objectif": "Convertir chaque composante d'une couleur RVB en hexadécimal.",
+      "enonce": ["Une couleur se code par trois nombres de 0 à 255 (rouge, vert, bleu). Le « vert impérial » est codé (0, 86, 27) en décimal."],
+      "question": ["Quel est son codage hexadécimal ?"],
+      "options": [
+        {"texte": "(0, 134, 1B)", "feedback": "134 est l'écriture décimale de 0x86 : tu as converti dans le mauvais sens. 86 en décimal vaut 5 × 16 + 6, soit 56."},
+        {"texte": "(0, 134, 39)", "feedback": "Les deux composantes ont été converties à l'envers : 0x86 vaut 134 et 0x27 vaut 39. Il faut partir de 86 et de 27, en décimal."},
+        {"texte": "(0, 56, 1B)", "juste": true, "feedback": "Oui : 86 = 5 × 16 + 6, donc 56 ; 27 = 1 × 16 + 11, donc 1B. En HTML, on écrirait #00561B."},
+        {"texte": "(0, 56, 39)", "feedback": "56 est juste, mais 39 est l'écriture décimale de 0x27. 27 en décimal vaut 1 × 16 + 11, soit 1B."}
+      ],
+      "verifications": [{"code": ["print(hex(86), hex(27), 0x86, 0x27)"], "sortie": "0x56 0x1b 134 39"}]
+    },
+    {
+      "id": "q16", "origine": "Bases Q20",
+      "type": "trous",
+      "nom": "[Bases] Compléter une fonction de conversion en hexadécimal",
+      "objectif": "Compléter une fonction qui convertit un entier de 0 à 255 en deux chiffres hexadécimaux.",
+      "enonce": ["La fonction `dec_vers_hex` prend un entier de 0 à 255 (une composante d'une couleur RVB) et renvoie son écriture hexadécimale sur deux chiffres, sous forme de chaîne."],
+      "question": ["Compléter les cases."],
+      "langage": "python",
+      "lignes": [
+        "def dec_vers_hex(d):",
+        "    HEX = '0123456789ABCDEF'",
+        "    q = d [[//]] 16     # quotient",
+        "    r = d % [[16]]      # reste",
+        "    x_hex = HEX[ [[q]] ] + HEX[ [[r]] ]",
+        "    return [[x_hex]]",
+        "",
+        "assert dec_vers_hex(255) == '[[FF]]'"
+      ],
+      "feedback": "Le quotient par 16 (d // 16) donne le chiffre de gauche, le reste (d % 16) celui de droite ; on lit chaque chiffre dans la chaîne HEX. Pour 255 : 255 // 16 = 15 (F) et 255 % 16 = 15 (F), d'où 'FF'.",
+      "verifications": [{"code": ["def dec_vers_hex(d):", "    HEX = '0123456789ABCDEF'", "    q = d // 16", "    r = d % 16", "    x_hex = HEX[ q ] + HEX[ r ]", "    return x_hex", "assert dec_vers_hex(255) == 'FF'", "print(dec_vers_hex(0), dec_vers_hex(86), dec_vers_hex(171))"], "sortie": "00 56 AB"}],
+      "fond": {"avant": "code affiché deux fois (avec des « ? », puis avec les cases) ; première case sur le nom du paramètre (d), commentaire « condition du nombre »", "apres": "code affiché une fois, paramètre d écrit ; cinq cases et le résultat du test", "raison": "n'importe quel nom de paramètre convenait : la case n'avait pas une seule bonne réponse."}
+    },
+    {
+      "id": "q17", "origine": "Bases Q21",
+      "type": "appariement",
+      "nom": "[Bases] Remettre en ordre une conversion en décimal",
+      "objectif": "Reconstituer l'ordre des lignes d'une fonction de conversion hexadécimal vers décimal.",
+      "enonce": ["Les lignes ci-dessous forment un programme qui convertit un nombre hexadécimal de deux chiffres en décimal. La fonction auxiliaire `indice_hex` donne la valeur d'un chiffre ; sa définition est la ligne 1."],
+      "question": ["Associer chaque ligne à son numéro (indentation non montrée)."],
+      "paires": [
+        ["def indice_hex(car):", "1"],
+        ["HEX = '0123456789ABCDEF'", "2"],
+        ["for i in range(16):", "3"],
+        ["if HEX[i] == car:", "4"],
+        ["return i", "5"],
+        ["def hex_vers_dec(mot_hexa):", "6"],
+        ["chiffre1 = indice_hex(mot_hexa[0])", "7"],
+        ["chiffre2 = indice_hex(mot_hexa[1])", "8"],
+        ["d = chiffre1 * 16**1 + chiffre2 * 16**0", "9"],
+        ["return d", "10"],
+        ["assert hex_vers_dec('FF') == 255", "11"]
+      ],
+      "feedback": "indice_hex parcourt les 16 chiffres et renvoie la position du caractère ; hex_vers_dec calcule chiffre1 × 16 + chiffre2. Le test final vérifie que FF vaut 255.",
+      "verifications": [{"code": ["def indice_hex(car):", "    HEX = '0123456789ABCDEF'", "    for i in range(16):", "        if HEX[i] == car:", "            return i", "def hex_vers_dec(mot_hexa):", "    chiffre1 = indice_hex(mot_hexa[0])", "    chiffre2 = indice_hex(mot_hexa[1])", "    d = chiffre1 * 16**1 + chiffre2 * 16**0", "    return d", "assert hex_vers_dec('FF') == 255", "print(hex_vers_dec('56'), hex_vers_dec('1B'))"], "sortie": "86 27"}]
+    },
+    {
+      "id": "q18", "origine": "Bases Q22",
+      "type": "reponse_courte",
+      "nom": "[Bases] Les composantes d'un code couleur hexadécimal",
+      "objectif": "Lire un code couleur hexadécimal comme trois octets.",
+      "enonce": ["La couleur grenadine a pour code hexadécimal 0xe9383f. On le lit comme un code couleur : trois composantes rouge, vert, bleu."],
+      "question": ["Quelles sont ses composantes RVB en décimal ? Écrire les trois nombres séparés par des virgules (par exemple : 255,0,12)."],
+      "reponses": ["233,56,63", "233, 56, 63", "(233,56,63)", "(233, 56, 63)"],
+      "feedback": "On découpe le code en trois octets : e9, 38 et 3f. e9 = 14 × 16 + 9 = 233 ; 38 = 3 × 16 + 8 = 56 ; 3f = 3 × 16 + 15 = 63.",
+      "verifications": [{"code": ["print(0xe9, 0x38, 0x3f)"], "sortie": "233 56 63"}],
+      "fond": {"avant": "une seule réponse acceptée, « 233,56,63 », alors que la consigne parlait d'un « 3-uplets »", "apres": "réponses acceptées avec ou sans espaces, avec ou sans parenthèses", "raison": "des réponses justes, écrites comme un tuple, étaient refusées."}
+    },
+    {
+      "id": "q19", "origine": "Bases Q23",
+      "type": "numerique",
+      "nom": "[Bases] Le même code lu comme un seul nombre",
+      "objectif": "Convertir un nombre hexadécimal de six chiffres en décimal.",
+      "enonce": ["Cette fois, 0xe9383f n'est pas lu comme une couleur, mais comme un seul nombre."],
+      "question": ["Quelle est sa valeur en décimal ? Écrire le nombre avec des chiffres, sans espace."],
+      "reponse": 15284287,
+      "tolerance": 0,
+      "feedback": "e9383f = 233 × 65 536 + 56 × 256 + 63 = 15 269 888 + 14 336 + 63 = 15 284 287. Le même code donne trois petits nombres (une couleur) ou un grand nombre, selon la façon de le lire.",
+      "verifications": [{"code": ["print(0xe9383f, 233 * 65536 + 56 * 256 + 63)"], "sortie": "15284287 15284287"}]
+    },
+    {
+      "id": "q20", "origine": "Bases Q24",
+      "type": "trous",
+      "nom": "[Bases] Divisions successives par 16",
+      "objectif": "Convertir un entier décimal en hexadécimal par divisions successives.",
+      "enonce": ["On convertit 44933 en hexadécimal en divisant par 16 jusqu'à obtenir un quotient nul. Les lettres s'écrivent en majuscules."],
+      "question": ["Compléter les divisions, puis le résultat."],
+      "langage": "texte",
+      "lignes": [
+        "44933 = 16 × 2808 + [[5]]",
+        "2808 = 16 × [[175]] + 8",
+        "175 = 16 × 10 + [[15]]",
+        "10 = 16 × [[0]] + 10",
+        "(44933) en base 10 s'écrit ([[AF85]]) en base 16."
+      ],
+      "feedback": "Les restes, lus du dernier au premier, donnent les chiffres : 10 (A), 15 (F), 8 et 5. Donc 44933 = AF85 en hexadécimal.",
+      "verifications": [{"code": ["print(divmod(44933, 16), divmod(2808, 16), divmod(175, 16), divmod(10, 16), hex(44933))"], "sortie": "(2808, 5) (175, 8) (10, 15) (0, 10) 0xaf85"}],
+      "fond": {"avant": "« Le nombre (44933)10 en écriture binaire est (AF85)16 » ; potence dessinée avec des espaces (illisible) ; cases sur le reste 5, le diviseur 16, le reste 15, le quotient 10, le quotient 0", "apres": "« écriture hexadécimale » ; divisions écrites en lignes ; cases sur les restes 5 et 15, les quotients 175 et 0, et le résultat", "raison": "le mot « binaire » était faux, et la mise en page en espaces n'était pas lisible ; les cases portent sur les mêmes calculs."}
+    },
+    {
+      "id": "q21", "origine": "Bases Q25",
+      "type": "trous",
+      "nom": "[Bases] Développer FAC03 en puissances de 16",
+      "objectif": "Écrire un nombre hexadécimal comme une somme de puissances de 16.",
+      "question": ["Compléter l'écriture de FAC03 (en base 16), puis sa valeur décimale."],
+      "langage": "texte",
+      "lignes": [
+        "FAC03 = [[15]] × 16**[[4]] + 10 × 16**3 + [[12]] × 16**2 + [[0]] × 16**1 + 3 × 16**[[0]]",
+        "FAC03 s'écrit [[1027075]] en base 10."
+      ],
+      "feedback": "F = 15 au rang 4, A = 10 au rang 3, C = 12 au rang 2, 0 au rang 1, 3 au rang 0 : 983 040 + 40 960 + 3072 + 0 + 3 = 1 027 075.",
+      "verifications": [{"code": ["print(0xFAC03, 15 * 16**4 + 10 * 16**3 + 12 * 16**2 + 0 * 16 + 3)"], "sortie": "1027075 1027075"}]
+    }
+  ]
+}
