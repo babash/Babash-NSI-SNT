@@ -117,7 +117,7 @@
     var apps = [
       ['commun', 'Ressources NSI et SNT', 'https://babash.github.io/Babash-NSI-SNT/eleve/'],
       ['td', 'Feuilles de TD en ligne', 'https://babash.github.io/Babash-NSI-SNT/'],
-      ['calendrier', 'Calendrier des vacances', null],
+      ['calendrier', 'Calendrier des vacances', 'https://babash.github.io/Babash-NSI-SNT/calendrier/'],
       ['quizz_nsi', 'QuizzNSI', 'https://babash.github.io/QuizzNSI/'],
       ['gombessa', 'Expédition Gombessa', 'https://babash.github.io/Rappel-1er/'],
       ['court_circuit', 'Court-circuit', 'https://babash.github.io/court-circuit/'],
@@ -129,8 +129,8 @@
     /* [application, id, nom, description, catégorie, accord, récompenses, indice si secret] */
     var hauts = [
       ['commun', 'premiere-planque', 'Première planque', 'Entrer dans sa planque avec son code.', 'premiers_pas', 'serveur', []],
-      ['commun', 'coup-de-main', 'Coup de main', 'Aider un·e camarade à comprendre, sans faire à sa place.', 'entraide', 'enseignant', []],
-      ['commun', 'explication-claire', 'Explication claire', 'Expliquer une notion à la classe.', 'entraide', 'enseignant', []],
+      ['commun', 'coup-de-main', 'Coup de main', 'Aider un·e camarade à comprendre, sans faire à sa place.', 'entraide', 'enseignant', ['cou:cle_usb']],
+      ['commun', 'explication-claire', 'Explication claire', 'Expliquer une notion à la classe.', 'entraide', 'enseignant', ['main:telecommande']],
       ['td', 'premiere-feuille', 'Première feuille', 'Valider en ligne sa première feuille de TD.', 'premiers_pas', 'page', []],
       ['td', 'erreur-surmontee', 'Erreur surmontée', 'Valider un exercice après au moins un essai raté.', 'perseverance', 'page', ['compagnon:robot']],
       ['td', 'lecteur-de-traces', 'Lecteur de traces', 'Lire jusqu\'au bout le message d\'erreur de Python.', 'maitrise', 'page', [], 'Il paraît que certains messages d\'erreur cachent un indice.'],
@@ -170,6 +170,7 @@
     /* Tableaux de bord : dans la démonstration, ils ouvrent la démonstration de chaque application */
     var adressesProf = {
       commun: 'https://babash.github.io/Babash-NSI-SNT/enseignant/',
+      calendrier: 'https://babash.github.io/Babash-NSI-SNT/calendrier/prof.html',
       gombessa: 'https://babash.github.io/Rappel-1er/prof.html',
       lagon: 'https://babash.github.io/lagon-arena/prof.html?demo',
       court_circuit: 'https://babash.github.io/court-circuit/prof.html?demo'
@@ -271,7 +272,7 @@
         D.gagnes.push({ compte_id: cid, application: app, haut_fait: h.id, gagne_le: quand || maintenant(), par: par });
         h.recompenses.forEach(function (eid) {
           if (!D.debloques.some(function (d) { return d.compte_id === cid && d.element_id === eid; })) {
-            D.debloques.push({ compte_id: cid, element_id: eid, origine: 'haut_fait', depuis: quand || maintenant() });
+            D.debloques.push({ compte_id: cid, element_id: eid, origine: 'haut_fait', haut_fait: { application: app, id: h.id }, depuis: quand || maintenant() });
             res.elements.push({ id: eid, nom: (element(eid) || {}).nom });
           }
         });
@@ -279,6 +280,9 @@
         res.hauts_faits.push({ application: app, id: h.id, nom: h.nom });
       });
       return res;
+    }
+    function offrir(cid, eid, motif, pid, quand) {
+      D.debloques.push({ compte_id: cid, element_id: eid, origine: 'enseignant', motif: motif, enseignant_id: pid, depuis: quand || maintenant() });
     }
     function acheter(cid, eid, quand) {
       var e = element(eid), k = D.comptes[cid];
@@ -332,6 +336,11 @@
         hauts_faits: D.gagnes.filter(function (g) { return g.compte_id === cid; })
           .map(function (g) { return { application: g.application, id: g.haut_fait, gagne_le: g.gagne_le }; }),
         elements: D.debloques.filter(function (d) { return d.compte_id === cid; }).map(function (d) { return d.element_id; }),
+        /* Proposition T101b (à ajouter à commun.fiche) : d'où vient chaque trophée */
+        trophees: D.debloques.filter(function (d) { return d.compte_id === cid && d.origine !== 'achat'; }).map(function (d) {
+          return { element: d.element_id, origine: d.origine, haut_fait: d.haut_fait || null, motif: d.motif || null,
+            par: d.enseignant_id && D.enseignants[d.enseignant_id] ? D.enseignants[d.enseignant_id].nom : null, depuis: d.depuis };
+        }),
         journal: D.journal.filter(function (j) { return j.compte_id === cid; })
           .sort(function (a, b) { return a.cree_le < b.cree_le ? 1 : -1; }).slice(0, 100)
           .map(function (j) {
@@ -579,6 +588,10 @@
             .sort(trierPseudo).map(function (k) {
               return { compte: k.id, pseudo: k.pseudo, avatar: copie(k.avatar), xp: k.xp, credits: k.credits, vu_le: k.vu_le,
                 codes: D.codes.filter(function (x) { return x.compte_id === k.id; }).map(function (x) { return x.code_affiche; }),
+                /* Proposition T101b (à ajouter à commun_prof_classe) : les trophées, avec leur motif */
+                trophees: D.debloques.filter(function (d) { return d.compte_id === k.id && d.origine !== 'achat'; }).map(function (d) {
+                  return { element: d.element_id, nom: (element(d.element_id) || {}).nom || d.element_id, origine: d.origine, motif: d.motif || null };
+                }),
                 hauts_faits: D.gagnes.filter(function (g) { return g.compte_id === k.id; })
                   .map(function (g) { return { application: g.application, id: g.haut_fait, gagne_le: g.gagne_le }; }) };
             }) };
@@ -608,6 +621,21 @@
               evenement: j.evenement, xp: j.xp, motif: j.motif, par: j.enseignant_id && D.enseignants[j.enseignant_id] ? D.enseignants[j.enseignant_id].nom : null,
               cle: j.cle };
           }) };
+      },
+      /* Proposition T101b (fonction à ajouter en 0010) : offrir un trophée (un objet qui ne s'achète pas)
+         à un·e élève de ses classes, avec un motif court, que l'élève lit dans sa planque */
+      commun_prof_offrir: function (p) {
+        var pid = prof(p.p_code);
+        if (!pid) return MAUVAIS_PROF;
+        var e = element(p.p_element);
+        /* Décision de l'enseignant (20/11) : seulement des objets de trophée, jamais un compagnon */
+        if (!e || e.acces !== 'haut_fait' || e.emplacement === 'compagnon') return { ok: false, message: 'Seul un objet de trophée (qui ne s\'achète pas) peut être offert ; un compagnon se gagne.' };
+        var m = nettoyerTexte(p.p_motif, 3, 80);
+        if (!m) return { ok: false, message: 'Donne un motif de 3 à 80 caractères.' };
+        if (!eleveVisible(pid, p.p_compte)) return { ok: false, message: 'Cet·te élève n\'est dans aucune de tes classes.' };
+        if (D.debloques.some(function (d) { return d.compte_id === p.p_compte && d.element_id === e.id; })) return { ok: false, message: 'Cet·te élève l\'a déjà.' };
+        offrir(p.p_compte, e.id, m, pid);
+        return { ok: true, element: e.id, nom: e.nom };
       },
       commun_prof_accorder: function (p) {
         var pid = prof(p.p_code);
@@ -727,6 +755,7 @@
           if (x[0] === 'xp') gagnerXp(cid, x[1], x[2], x[3], x[1] === 'court_circuit' || x[1] === 'lagon' ? 'application' : 'page', q);
           else if (x[0] === 'hf') accorder(cid, x[1], [x[2]], x[3] || 'serveur', q);
           else if (x[0] === 'achat') acheter(cid, x[1], q);
+          else if (x[0] === 'offert') offrir(cid, x[1], x[2], pid, q);
           else if (x[0] === 'prof') crediter(cid, 'commun', 'attribution', null, x[1], 'enseignant', x[2], pid, q);
         });
       }
@@ -737,7 +766,7 @@
       fait('Anli', 25, [['xp', 'td', 'feuille_validee', 'td:poo-td1'], ['hf', 'td', 'premiere-feuille', 'page'], ['hf', 'td', 'erreur-surmontee', 'page']]);
       fait('Anli', 8, [['xp', 'court_circuit', 'challenge_reussi', 'cc:defi-1'], ['xp', 'court_circuit', 'challenge_reussi', 'cc:defi-2'], ['hf', 'court_circuit', 'premier-circuit']]);
       fait('Zoé', 22, [['xp', 'td', 'feuille_validee', 'td:poo-td1'], ['hf', 'td', 'erreur-surmontee', 'page'], ['hf', 'court_circuit', 'sortie-de-la-grotte']]);
-      fait('Zoé', 6, [['xp', 'quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files'], ['hf', 'commun', 'premiere-planque']]);
+      fait('Zoé', 6, [['offert', 'main:feutre', 'A remis en état les feutres de la salle'], ['xp', 'quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files'], ['hf', 'commun', 'premiere-planque']]);
       fait('Kenji', 15, [['xp', 'td', 'exercice_valide', 'td:boucles-td2/ex3'], ['hf', 'commun', 'premiere-planque']]);
       fait('Faïza', 9, [['xp', 'quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files'], ['hf', 'quizz_nsi', 'jusqu-au-bout', 'page']]);
       fait('Maëlys', 40, [['prof', 50, 'Exposé sur le chiffrement'], ['xp', 'td', 'feuille_validee', 'td:poo-td1'], ['xp', 'quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files']]);
@@ -923,6 +952,7 @@
     eleves: function () { return avecProf('commun_prof_eleves', {}); },
     attribuerXp: function (compte, xp, motif) { return avecProf('commun_prof_attribuer_xp', { p_compte: compte, p_xp: xp, p_motif: motif }); },
     journalXp: function (classe) { return avecProf('commun_prof_journal_xp', { p_classe: classe }); },
+    offrir: function (compte, element, motif) { return avecProf('commun_prof_offrir', { p_compte: compte, p_element: element, p_motif: motif }); },
     accorder: function (compte, app, hautFait) { return avecProf('commun_prof_accorder', { p_compte: compte, p_application: app, p_haut_fait: hautFait }); },
     retirerEleve: function (classe, compte) { return avecProf('commun_prof_retirer_eleve', { p_classe: classe, p_compte: compte }); },
     renommerEleve: function (compte, pseudo) { return avecProf('commun_prof_renommer_eleve', { p_compte: compte, p_pseudo: pseudo }); },

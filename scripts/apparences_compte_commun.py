@@ -10,8 +10,9 @@ donnees/compte-commun/apparences.json, que lisent assets/compte-commun.js et
 les pages eleve/ et enseignant/ :
 - « identite » : tout ce qui sert à se reconnaître et s'habiller, toujours gratuit,
   pour tout avatar (aucune pièce réservée à une lignée ni à un genre) ;
-- « elements » : les objets (8 emplacements, 9 familles) et les compagnons, avec
-  leur accès : « libre », « credits » (et un prix) ou « haut_fait » ;
+- « elements » : les objets (8 emplacements, rangés en familles lues dans le catalogue) et les
+  compagnons, avec leur accès : « libre », « credits » (et un prix) ou « haut_fait » (un trophée :
+  gagné par un haut fait, offert par l'enseignant·e ou donné par un jeu ; jamais acheté) ;
 - « module » : vrai seulement si assets/equipage.js est à côté du catalogue ; la
   page ne charge le module que dans ce cas (sinon, dessin de remplacement, sans
   requête vers un fichier absent).
@@ -31,6 +32,10 @@ SORTIE = os.path.join(RACINE, "donnees", "compte-commun", "apparences.json")
 # Les prix par emplacement d'objet : un petit objet 40 (environ une feuille de TD),
 # un objet de dos ou un effet autour 100 (environ une semaine de travail).
 PRIX = {"tete": 40, "visage": 40, "cou": 40, "main": 40, "epaule": 40, "pieds": 40, "dos": 100, "autour": 100}
+# Les familles de trophées (par identifiant, jamais par nom) : leurs objets ne s'achètent pas ; ils
+# viennent d'un haut fait, de l'enseignant·e (avec un motif) ou d'un jeu, comme élément d'histoire.
+# Décision de l'enseignant du 20/11 (19:00) : « Les gimmicks de la classe » ne sont pas dans la boutique.
+FAMILLES_TROPHEES = {"classe"}
 IDENTIFIANT = re.compile(r"^[a-z0-9_]{1,40}$")
 
 
@@ -58,8 +63,9 @@ def construire(chemin):
                 erreur(f"identifiant d'objet illisible : {e}:{o['id']}")
             if o.get("famille") not in familles:
                 erreur(f"objet sans famille connue : {e}:{o['id']}")
+            trophee = o["famille"] in FAMILLES_TROPHEES
             elements.append({"id": f"{e}:{o['id']}", "emplacement": e, "nom": o["nom"], "famille": o["famille"],
-                             "acces": "credits", "prix": PRIX[e]})
+                             "acces": "haut_fait" if trophee else "credits", "prix": None if trophee else PRIX[e]})
     for c in cat["compagnon"]:
         if c["id"] == "aucun":
             continue
@@ -78,14 +84,15 @@ def construire(chemin):
         "version": 1,
         "a_propos": "Généré par scripts/apparences_compte_commun.py depuis assets/equipage/catalogue.json (moteur d'avatars "
                     "du Designer) : ne pas modifier à la main. Identité et tenues gratuites pour tout avatar ; objets à "
-                    "prendre avec des crédits ; compagnons gagnés par un haut fait (le margouillat est donné au départ).",
+                    "prendre avec des crédits, sauf les familles de trophées ; trophées et compagnons gagnés par un haut fait "
+                    "ou offerts (le margouillat est donné au départ).",
         "equipage_version": source.get("version"),
         "module": module,
         "taille_max_description": 600,
         "defaut": source["defaut"],
         "identite": identite,
         "emplacements": cat["emplacements"] + [{"id": "compagnon", "nom": "Compagnon"}],
-        "familles": cat["familles"],
+        "familles": [dict(f, trophees=f["id"] in FAMILLES_TROPHEES) for f in cat["familles"]],
         "elements": elements,
     }
 
