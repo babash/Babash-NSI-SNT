@@ -39,9 +39,10 @@ begin;
 --  nom de famille), le code, les jetons de session, et pour chaque case jouée :
 --  le niveau, la réussite, les étoiles, le nombre d'essais et de coups de pouce,
 --  la durée et la date. Jamais les réponses tapées.
---  Conservation : un compte est effacé 12 mois après la dernière visite ; un
---  calendrier, avec ses résultats, 12 mois après sa date de fin ; une session,
---  après 30 jours sans usage. L'élève peut effacer son compte avant
+--  Conservation (le ménage passe au premier usage de l'application après
+--  l'échéance) : un compte, 12 mois après la dernière visite ; un calendrier,
+--  avec ses résultats, 12 mois après sa date de fin ; un espace d'enseignant·e,
+--  24 mois après sa dernière ouverture ; une session, 30 jours sans usage. L'élève peut effacer son compte avant
 --  (« Effacer mes données »), l'enseignant·e un calendrier ou un·e élève.
 --
 --  Ce que ce fichier ne change pas : aucun objet existant, aucune autre
@@ -131,12 +132,12 @@ create table if not exists vacances.enseignants (
 alter table vacances.enseignants enable row level security;
 revoke all on vacances.enseignants from public, anon, authenticated;
 comment on table vacances.enseignants is
-  'Calendrier des vacances. Un espace par enseignant·e : le nom affiché aux élèves et l''empreinte SHA-256 de son code (3 mots et 4 chiffres, montré une seule fois, gardé nulle part en clair). Données d''élèves : non.';
+  'Calendrier des vacances. Un espace par enseignant·e : le nom affiché aux élèves et l''empreinte SHA-256 de son code (3 mots et 4 chiffres, montré une seule fois, gardé nulle part en clair). Effacé, avec ses calendriers, au premier usage de l''application après 24 mois sans ouverture. Données d''élèves : non.';
 comment on column vacances.enseignants.id is 'L''identifiant de l''espace ; il ne change jamais (il deviendra celui de commun.enseignants, T101).';
-comment on column vacances.enseignants.nom is 'Le nom affiché aux élèves (« Mme Ali », « M. Babash »), de 2 à 40 caractères.';
+comment on column vacances.enseignants.nom is 'Le nom affiché aux élèves (« Mme N. », « M. K. »), de 2 à 40 caractères.';
 comment on column vacances.enseignants.code_empreinte is 'L''empreinte SHA-256 de la forme canonique du code : personne ne peut relire le code.';
 comment on column vacances.enseignants.cree_le is 'La date de création de l''espace.';
-comment on column vacances.enseignants.vu_le is 'La date de la dernière ouverture de l''espace.';
+comment on column vacances.enseignants.vu_le is 'La date de la dernière ouverture de l''espace : il est effacé 24 mois après.';
 
 create table if not exists vacances.calendriers (
   id                    uuid primary key default gen_random_uuid(),
@@ -530,9 +531,11 @@ returns json language sql stable set search_path = '' as $$
     'classe', vacances.classe(p_cal))
 $$;
 
--- Au plus une fois par heure : efface les comptes sans visite depuis 12 mois,
--- les calendriers finis depuis 12 mois (avec leurs cases et leurs résultats),
--- et les sessions sans usage depuis 30 jours.
+-- Au plus une fois par heure, au premier appel d'une fonction d'entrée qui le
+-- lance : efface les comptes sans visite depuis 12 mois, les calendriers finis
+-- depuis 12 mois (avec leurs cases et leurs résultats), les espaces
+-- d'enseignant·e·s sans ouverture depuis 24 mois (avec leurs calendriers), et
+-- les sessions sans usage depuis 30 jours.
 create or replace function vacances.menage_si_besoin()
 returns integer language plpgsql volatile set search_path = '' as $$
 declare n integer := 0;
@@ -542,6 +545,10 @@ begin
     delete from vacances.resultats r using vacances.calendriers c
      where r.calendrier_id = c.id and c.fin < vacances.jour() - interval '12 months';
     delete from vacances.calendriers c where c.fin < vacances.jour() - interval '12 months';
+    -- les espaces sans ouverture depuis 24 mois, avec leurs calendriers et leurs résultats
+    delete from vacances.resultats r using vacances.calendriers c, vacances.enseignants e
+     where r.calendrier_id = c.id and c.enseignant_id = e.id and e.vu_le < now() - interval '24 months';
+    delete from vacances.enseignants e where e.vu_le < now() - interval '24 months';
     with efface as (delete from vacances.eleves e where e.vu_le < now() - interval '12 months' returning 1)
     select count(*)::integer into n from efface;
     delete from vacances.sessions s where s.vu_le < now() - interval '30 days';
@@ -584,7 +591,7 @@ comment on function vacances.verifier_enseignant(text) is 'Calendrier des vacanc
 comment on function vacances.generer_cases(uuid, date) is 'Calendrier des vacances, interne. Refait les cases d''un calendrier à partir d''un jour, sans jamais toucher une case qui a des résultats.';
 comment on function vacances.classe(uuid) is 'Calendrier des vacances, interne. Les nombres de toute la classe, sans aucun nom.';
 comment on function vacances.etat(uuid, uuid) is 'Calendrier des vacances, interne. L''état d''un calendrier pour un·e élève : cases, résultats, score (étoiles, cases faites, rattrapages, jours différents ; aucun rang).';
-comment on function vacances.menage_si_besoin() is 'Calendrier des vacances, interne. Le ménage : comptes (12 mois), calendriers (12 mois après la fin), sessions (30 jours).';
+comment on function vacances.menage_si_besoin() is 'Calendrier des vacances, interne. Le ménage, au premier usage après l''échéance : comptes (12 mois), calendriers (12 mois après la fin), espaces enseignant·e·s (24 mois), sessions (30 jours).';
 comment on function vacances.resume_eleve(uuid) is 'Calendrier des vacances, interne. Le résumé d''un compte, pour le compte commun (T101).';
 
 -- -----------------------------------------------------------------------------
@@ -632,8 +639,13 @@ begin
   if not c.inscriptions_ouvertes then
     return json_build_object('ok', false, 'message', 'Les inscriptions à ce calendrier sont fermées. Si tu as déjà un code, utilise-le.');
   end if;
+  -- un prénom déjà pris compte comme un essai « classe » : on ne peut pas tester les prénoms sans limite
+  if not commun.essai_permis('vacances', 'classe', 30) then
+    return json_build_object('ok', false, 'message', 'Trop d''essais depuis ce réseau. Attends un peu, ou demande de l''aide à ton enseignant·e.');
+  end if;
   if exists (select 1 from vacances.inscriptions i join vacances.eleves x on x.id = i.eleve_id
              where i.calendrier_id = c.id and lower(x.pseudo) = lower(ps)) then
+    perform commun.noter_echec('vacances', 'classe');
     return json_build_object('ok', false, 'message', 'Ce prénom est déjà pris dans ce calendrier. Si c''est toi, utilise ton code ; sinon, ajoute une initiale.');
   end if;
   perform commun.noter_echec('vacances', 'creation');
@@ -805,7 +817,7 @@ returns json language plpgsql volatile security definer set search_path = '' as 
 declare nm text := vacances.nettoyer(p_nom, 2, 40); n record;
 begin
   if nm is null then
-    return json_build_object('ok', false, 'message', 'Donne un nom affiché de 2 à 40 caractères (« Mme Ali », « M. Babash »).');
+    return json_build_object('ok', false, 'message', 'Donne un nom affiché de 2 à 40 caractères (« Mme N. », « M. K. »).');
   end if;
   if not commun.essai_permis('vacances', 'creation', 60) then
     return json_build_object('ok', false, 'message', 'Trop d''espaces créés depuis ce réseau : attends un peu.');

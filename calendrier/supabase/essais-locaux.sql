@@ -82,3 +82,17 @@ select public.cv_prof_supprimer_calendrier((select v->>'code_affiche' from t whe
 select public.cv_prof_supprimer_calendrier((select v->>'code_affiche' from t where k='prof'), (select (v->>'id')::uuid from t where k='cal'), (select v->>'code' from t where k='cal'))->>'ok' as supprime;
 reset role;
 select (select count(*) from vacances.calendriers) calendriers, (select count(*) from vacances.resultats) resultats, (select count(*) from vacances.eleves) comptes;
+
+-- 10. un prénom déjà pris compte comme un essai « classe » (Gardien, 20/11)
+set role anon;
+insert into t select 'cal3', public.cv_prof_creer_calendrier((select v->>'code_affiche' from t where k='prof'), 'Essai doublons',
+  (now() at time zone 'Indian/Mayotte')::date, (now() at time zone 'Indian/Mayotte')::date + 2, array['py-boucles'], 'alternance', 'jauge');
+select public.cv_inscription((select v->>'code' from t where k='cal3'), 'Lou')->>'ok' as lou_inscrit;
+select count(*) filter (where (public.cv_inscription((select v->>'code' from t where k='cal3'), 'lou')->>'message') like 'Trop%') as bloques_apres_30
+from generate_series(1, 32);
+reset role;
+-- 11. ménage : un espace sans ouverture depuis 25 mois part avec ses calendriers et leurs résultats
+update vacances.enseignants set vu_le = now() - interval '25 months';
+update vacances.menage set fait_le = now() - interval '2 hours';
+select vacances.menage_si_besoin() >= 0 as menage_passe;
+select (select count(*) from vacances.enseignants) enseignants, (select count(*) from vacances.calendriers) calendriers, (select count(*) from vacances.resultats) resultats;

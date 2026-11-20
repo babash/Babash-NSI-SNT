@@ -67,6 +67,35 @@ Les seuils, par heure et par réseau :
 | Code de calendrier faux | 30 |
 | Création de compte | 60 |
 
+## Les données gardées, et combien de temps
+
+- **Pour chaque élève :**
+  - un prénom ou un pseudo (2 à 24 caractères, jamais le nom de famille) ;
+  - le code ;
+  - un jeton par appareil (5 au plus) ;
+  - les calendriers rejoints ;
+  - pour chaque case jouée et chaque niveau : réussite, étoiles, nombre d'essais, nombre de coups de pouce, durée, date, et « avant ou après le corrigé ».
+
+  **Jamais les réponses tapées**, ni le nom de famille, ni l'adresse électronique, ni l'adresse IP en clair : seulement son empreinte du jour, dans `commun.essais`, effacée après 24 h.
+- **Pour chaque enseignant·e :** le nom affiché (un exemple neutre : « Mme N. ») et l'empreinte du code.
+- **Les durées.** Le ménage passe au plus une fois par heure, **au premier usage de l'application après l'échéance** : rien ne s'efface tant que personne n'ouvre l'application.
+
+  | Données | Effacées au premier usage de l'application après… |
+  |---|---|
+  | Le compte d'un·e élève, ses inscriptions et ses résultats | 12 mois sans visite |
+  | Un calendrier, ses cases et ses résultats | 12 mois après sa fin |
+  | Un espace d'enseignant·e, avec ses calendriers | 24 mois sans ouverture |
+  | Une session | 30 jours sans usage |
+- **Effacer avant :**
+  - l'élève : « Effacer mes données » (`cv_effacer_moi`) ;
+  - l'enseignant·e : retirer un·e élève ou supprimer un calendrier ;
+  - en dernier recours : le tableau de bord de Supabase.
+- **Les essais au hasard.** Un code faux, un lien de calendrier faux et **un prénom déjà pris** comptent comme des essais. Les seuils, par heure et par réseau : 20 essais pour un code d'élève, 10 pour un code d'enseignant·e, 30 pour un calendrier (lien ou prénom), 60 créations.
+
+### Le texte du champ `donnees_eleves` de la fiche (à transmettre au Bibliothécaire)
+
+> Le Calendrier des vacances garde en ligne, dans la base de l'enseignant (Supabase, schéma `vacances`), le prénom ou le pseudo choisi par l'élève (jamais le nom de famille), son code d'accès et, pour chaque case jouée, le niveau, la réussite, les étoiles, le nombre d'essais et de coups de pouce, la durée et la date. Les réponses tapées ne sont jamais envoyées. Un compte est effacé au premier usage de l'application après 12 mois sans visite ; un calendrier et ses résultats, au premier usage après 12 mois suivant sa fin. L'élève peut tout effacer à tout moment (« Effacer mes données ») ; l'enseignant·e peut retirer un·e élève ou supprimer un calendrier. Aucun classement : la classe ne voit que des nombres, sans aucun nom.
+
 ## Vérifier après l'application (métadonnées seulement)
 
 Les requêtes a à f du § 6 des règles des bases, plus celles-ci :
