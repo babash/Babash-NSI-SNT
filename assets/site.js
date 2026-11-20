@@ -1144,7 +1144,10 @@
   /* Les pages à part : <div id="site" data-page="…"> et la fonction qui les dessine */
   var PAGES_A_PART = {
     bibliotheque: { fonction: 'pageBibliotheque', nom: 'La bibliothèque', script: 'assets/bibliotheque.js' },
-    admin: { fonction: 'pageAdmin', nom: 'L\'espace administrateur', script: 'assets/admin.js' }
+    admin: { fonction: 'pageAdmin', nom: 'L\'espace administrateur', script: 'assets/admin.js' },
+    /* Le compte commun (T101b) : pas encore lié depuis l'accueil, atteignable par son adresse */
+    eleve: { fonction: 'pagePlanque', nom: 'Ma planque', script: 'assets/planque.js' },
+    enseignant: { fonction: 'pageEnseignant', nom: 'L\'espace enseignant·e', script: 'assets/espace-enseignant.js' }
   };
 
   function afficher() {
