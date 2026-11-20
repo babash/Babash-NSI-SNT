@@ -14,7 +14,7 @@ Quatre ressources passent par **Supabase** :
 
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
-| Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « SNT-1er Jour », la base commune des applications (à renommer « Babash - applications ») | `alien_classes`, `alien_students`, `alien_progress` |
+| Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « Babash - applications », la base commune des applications (nommée « SNT-1er Jour » jusqu'au 20 novembre 2026) | `alien_classes`, `alien_students`, `alien_progress` |
 | Court-circuit (SNT, Programmation ; NSI Première, Constructions élémentaires) | `snt/fichiers/court-circuit/` | la même base commune | le schéma `court_circuit` du code élève, depuis le 13 novembre 2026 : `eleves` (avec, depuis le 19 novembre 2026, la liste des challenges réussis) et `programmes` (données d'élèves), `mots` et `menage` ; les duels passent par les canaux temps réel (diffusion et présence), sans table |
 | QuizzNSI (NSI Terminale, Structures de données : le cours-quiz « Piles et files ») | le dépôt [babash/QuizzNSI](https://github.com/babash/QuizzNSI) (l'ancien dossier `nsi-terminale/fichiers/quizz-nsi/` redirige vers [babash.github.io/QuizzNSI](https://babash.github.io/QuizzNSI/)) | la même base commune | aucune : les séances passent par les canaux temps réel (diffusion et présence), sans table ni fonction |
 | Calendrier des vacances (NSI et SNT : des thèmes cochés par l'enseignant·e) | `calendrier/` | la même base commune | le schéma `vacances` depuis le 20 novembre 2026 : `eleves`, `inscriptions`, `resultats` et `sessions` (données d'élèves), `enseignants`, `calendriers`, `cases`, `mots` et `menage` |
