@@ -126,7 +126,12 @@ Trois ressources passent par **Supabase** :
 **Le socle commun de la base (dossier `supabase/`)**
 
 - La base commune porte SNT 1er jour, Expédition Gombessa, Alien Python, Court-circuit (son
-  code élève, sa progression et son temps réel) et le temps réel de QuizzNSI. Le dossier `supabase/` du site garde les migrations qui ne
+  code élève, sa progression et son temps réel), le temps réel de QuizzNSI et, depuis le
+  19 novembre 2026, Lagon Arena (schéma `lagon`, fonctions `public.lagon_…` ; son dépôt
+  [babash/lagon-arena](https://github.com/babash/lagon-arena) garde ses migrations et la page
+  publiée l'utilise depuis le 20 novembre 2026). L'ancien projet de Lagon Arena reste intact
+  30 jours, pour un retour en arrière, puis ses objets de Lagon Arena seront retirés, sans
+  toucher aux objets `guilde_*`. Le dossier `supabase/` du site garde les migrations qui ne
   relèvent d'aucune application, chacune appliquée après l'accord de l'enseignant sur le SQL :
   `0001` à `0004` (n° 2 du plan de la base unique) le 11 novembre 2026, et `0005` le
   13 novembre 2026 :
