@@ -17,7 +17,7 @@ Premier « contrôle de notions » du site (T108) : un contrôle formatif court,
 | `sujet.html` → `sujet.pdf` | Version papier : une page A4 par sujet, noir et blanc. |
 | `corrige.html` → `corrige.pdf` | Corrigé : une page A4 par sujet, avec une erreur fréquente par question. |
 | `verification/verifier.py` | Recalcule toute la clé par exécution (classe `Noeud`, `print`, ligne complétée, insertion dans un ABR). |
-| `verification/generer-pdf.py`, `verification/essai-navigateur.py` | Régénèrent les PDF et rejouent un essai complet (élèves, puis page prof) avec Playwright. |
+| `verification/generer-pdf.py`, `verification/essai-navigateur.py`, `verification/essai-horloge.py` | Régénèrent les PDF, rejouent un essai complet (élèves, puis page prof) et l'effacement à un jour, avec Playwright. |
 | `vendor/` | Bibliothèques QR hébergées ici (MIT et Apache 2.0). |
 
 ## Le code de copie
@@ -26,7 +26,10 @@ JSON `[version, pseudo, classe, sujet, début, durée, graine, réponses]`, en U
 **Ce que vaut la protection** : la page élève ne contient pas la clé, donc l'élève ne voit pas sa correction pendant qu'il ou elle compose. Mais `cle.js`, `prof.html` et le corrigé sont publics : un·e élève qui les ouvre trouve les réponses. Pour un contrôle formatif, surveillé en classe, c'est suffisant.
 
 ## Données
-Rien n'est envoyé : le brouillon reste dans le navigateur de l'élève (`localStorage`), les copies lues dans celui de l'enseignant·e. Le code contient le prénom ou pseudo choisi par l'élève et sa classe facultative.
+Rien n'est envoyé sur Internet, mais des copies nominatives sont réunies (fiche : `collecte: true`).
+- **Côté élève** : le brouillon (prénom ou pseudo, classe facultative, réponses) est dans `localStorage`, **un jour au plus après le début de la copie**, puis effacé au chargement. Il ne s'ouvre jamais d'office : l'accueil propose de le reprendre ou d'en commencer un autre, qui l'efface ; « Effacer et recommencer » est aussi dans la copie et sur l'écran de rendu.
+- **Côté enseignant·e** : les copies lues sont dans `localStorage`, **un jour au plus après leur lecture**, puis effacées (au chargement, et chaque minute si la page reste ouverte). La page rappelle la date de l'effacement : exporter en CSV avant.
+- `verification/essai-horloge.py` le prouve en avançant l'horloge d'un jour et une minute.
 
 ## Vérifier après une modification
 ```

@@ -11,12 +11,21 @@
 
   CN.appliquerTheme();
 
-  /* ── Stockage local (brouillon, pour ne rien perdre si le téléphone se met en veille) ── */
+  /* ── Stockage local (brouillon, pour ne rien perdre si le téléphone se met en veille) ──
+     Gardé UN JOUR au plus après le début de la copie (règle des codes d'accès :
+     ce que la page garde sur l'appareil pour un·e élève expire au bout d'un jour),
+     effacé au chargement s'il est périmé. Jamais repris sans le choix de l'élève. */
+  var UN_JOUR = 24 * 60 * 60 * 1000;
   function sauver() {
     try { localStorage.setItem(CLE_STOCKAGE, JSON.stringify(etat)); } catch (e) { /* navigation privée : tant pis */ }
   }
   function relire() {
-    try { var t = localStorage.getItem(CLE_STOCKAGE); return t ? JSON.parse(t) : null; } catch (e) { return null; }
+    var c = null;
+    try { var t = localStorage.getItem(CLE_STOCKAGE); c = t ? JSON.parse(t) : null; } catch (e) { c = null; }
+    var valide = c && typeof c.debut === 'number' && Date.now() - c.debut < UN_JOUR && Date.now() >= c.debut - 60000 &&
+      c.sujet && D.sujets[c.sujet] && Array.isArray(c.reponses) && c.reponses.length === D.questions.length;
+    if (c && !valide) effacer();
+    return valide ? c : null;
   }
   function effacer() {
     try { localStorage.removeItem(CLE_STOCKAGE); } catch (e) { /* rien */ }
@@ -224,15 +233,33 @@
     else { t.select(); try { document.execCommand('copy'); ok(); } catch (e) { /* sélection laissée à l'élève */ } }
   });
   $('revenir').addEventListener('click', function () { etat.rendu = false; sauver(); ouvrirCopie(); });
-  $('effacer').addEventListener('click', function () {
-    if (!confirm('Effacer ta copie de ce navigateur ?')) return;
-    effacer(); etat = null; location.reload();
-  });
+  function toutEffacer() {
+    if (!confirm('Effacer cette copie de ce navigateur ? Ses réponses seront perdues.')) return;
+    effacer(); etat = null;
+    location.href = location.pathname + location.search;
+  }
+  $('effacer').addEventListener('click', toutEffacer);
+  $('effacer-copie').addEventListener('click', toutEffacer);
 
-  /* ── Reprise d'une copie commencée ── */
+  /* ── Une copie commencée sur ce navigateur (moins d'un jour) ──
+     Poste partagé : on ne l'ouvre jamais d'office. L'accueil demande de la
+     reprendre ou d'en commencer une autre, qui l'efface. */
   var ancien = relire();
-  if (ancien && ancien.sujet && D.sujets[ancien.sujet] && Array.isArray(ancien.reponses) && ancien.reponses.length === D.questions.length) {
-    etat = ancien;
-    if (etat.rendu) ouvrirRendu(); else ouvrirCopie();
+  if (ancien) {
+    $('copie-existante').hidden = false;
+    $('form-accueil').hidden = true;
+    $('existante-qui').textContent = ancien.pseudo + (ancien.classe ? ' (' + ancien.classe + ')' : '') + ', sujet ' + ancien.sujet +
+      (ancien.rendu ? ', déjà rendue' : ', pas encore rendue');
+    $('reprendre').addEventListener('click', function () {
+      etat = relire();
+      if (!etat) { location.reload(); return; }
+      if (etat.rendu) ouvrirRendu(); else ouvrirCopie();
+    });
+    $('autre-copie').addEventListener('click', function () {
+      effacer();
+      $('copie-existante').hidden = true;
+      $('form-accueil').hidden = false;
+      $('pseudo').focus();
+    });
   }
 })();

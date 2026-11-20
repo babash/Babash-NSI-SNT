@@ -1,18 +1,41 @@
 /* Contrôle de notions : page enseignant·e
    Lit les codes (collés ou scannés), corrige avec cle.js, exporte en CSV.
-   Les copies lues sont gardées dans ce navigateur seulement (localStorage).
+   Les copies lues sont gardées dans ce navigateur seulement (localStorage),
+   UN JOUR au plus après leur lecture, puis effacées (au chargement et pendant
+   que la page est ouverte). L'export CSV est rappelé avant l'effacement.
    Babash - NSI Tani Malandi · MIT */
 
 (function () {
   'use strict';
   var CN = window.CN, CLE = window.CLE, D = CN.DONNEES, $ = function (id) { return document.getElementById(id); };
   var STOCK = 'controle-' + D.id + '-v' + D.version + '-prof';
+  var UN_JOUR = 24 * 60 * 60 * 1000;
   var codes = [];      /* les codes lus, tels quels */
+  var lus = {};        /* code -> date de lecture (ms) */
 
   CN.appliquerTheme();
 
-  function sauver() { try { localStorage.setItem(STOCK, JSON.stringify(codes)); } catch (e) { /* rien */ } }
-  try { codes = JSON.parse(localStorage.getItem(STOCK) || '[]') || []; } catch (e) { codes = []; }
+  function sauver() {
+    try {
+      if (codes.length) localStorage.setItem(STOCK, JSON.stringify(codes.map(function (c) { return { c: c, t: lus[c] }; })));
+      else localStorage.removeItem(STOCK);
+    } catch (e) { /* rien */ }
+  }
+  /* Relit les copies gardées et efface celles lues il y a un jour ou plus. Renvoie le nombre effacé. */
+  function purger() {
+    var garde = [], effacees = 0;
+    try { garde = JSON.parse(localStorage.getItem(STOCK) || '[]'); } catch (e) { garde = []; }
+    if (!Array.isArray(garde)) garde = [];
+    codes = []; lus = {};
+    garde.forEach(function (x) {
+      if (x && typeof x.c === 'string' && typeof x.t === 'number' && Date.now() - x.t < UN_JOUR && x.t <= Date.now() + 60000) {
+        codes.push(x.c); lus[x.c] = x.t;
+      } else effacees++;
+    });
+    if (effacees) sauver();
+    return effacees;
+  }
+  var effaceesAuChargement = purger();
 
   function message(texte, type) {
     var li = document.createElement('li');
@@ -41,7 +64,7 @@
       try {
         var c = CN.decoder(code);
         if (codes.indexOf(c.code) >= 0) { message('Déjà lue : copie de ' + c.pseudo + '.'); return; }
-        codes.push(c.code); nouveaux++;
+        codes.push(c.code); lus[c.code] = Date.now(); nouveaux++;
         message('Copie de ' + c.pseudo + ' (sujet ' + c.sujet + ') ajoutée' + (source ? ' (' + source + ')' : '') + '.', 'ok');
       } catch (e) { erreurs++; message('Code refusé : ' + e.message, 'ko'); }
     });
@@ -171,6 +194,7 @@
   function minutes(s) { return Math.round(s / 6) / 10; }
 
   function afficher() {
+    majExpiration();
     var res = copies(), liste = res.liste, Q = D.questions;
     var aucune = !liste.length;
     ['csv', 'imprimer', 'vider'].forEach(function (id) { $(id).disabled = aucune; });
@@ -273,9 +297,26 @@
   });
   $('vider').addEventListener('click', function () {
     if (!confirm('Effacer toutes les copies lues de ce navigateur ? Pensez à exporter en CSV avant.')) return;
-    codes = []; sauver(); afficher(); message('Copies effacées.');
+    codes = []; lus = {}; sauver(); afficher(); message('Copies effacées.');
   });
 
+  /* Rappel d'export : la date d'effacement de la copie la plus ancienne. */
+  function majExpiration() {
+    var el = $('expiration');
+    if (!codes.length) { el.hidden = true; return; }
+    var plusAncienne = Math.min.apply(null, codes.map(function (c) { return lus[c]; }));
+    var d = new Date(plusAncienne + UN_JOUR);
+    el.hidden = false;
+    el.innerHTML = '<strong>Exportez en CSV avant le ' + d.toLocaleDateString('fr-FR') + ' à ' +
+      d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) + '.</strong> Les copies lues restent un jour dans ce navigateur, puis sont effacées.';
+  }
+
+  setInterval(function () {
+    var n = purger();
+    if (n) { message(n + ' copie' + (n > 1 ? 's lues il y a plus d\'un jour effacées' : ' lue il y a plus d\'un jour effacée') + ' de ce navigateur.', 'ko'); afficher(); }
+  }, 60000);
+
   afficher();
+  if (effaceesAuChargement) message(effaceesAuChargement + ' copie' + (effaceesAuChargement > 1 ? 's lues il y a plus d\'un jour effacées' : ' lue il y a plus d\'un jour effacée') + ' de ce navigateur.', 'ko');
   window.CN_PROF = { ajouter: ajouter, copies: copies };
 })();

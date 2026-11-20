@@ -27,7 +27,8 @@ async def eleve(b, sujet, pseudo, rep, larg=375, sombre=False):
     await pg.click('#rendre'); await pg.click('#confirmer-rendre')
     code=await pg.input_value('#code-copie')
     # reprise après rechargement : la copie rendue reste
-    await pg.reload(); assert not await pg.is_hidden('#rendu')
+    await pg.reload(); assert await pg.is_hidden('#rendu') and await pg.is_visible('#copie-existante')
+    await pg.click('#reprendre'); assert not await pg.is_hidden('#rendu')
     assert await pg.input_value('#code-copie')==code
     await pg.locator('#qr').screenshot(path=f'{OUT}/qr-{sujet}.png')
     await ctx.close()

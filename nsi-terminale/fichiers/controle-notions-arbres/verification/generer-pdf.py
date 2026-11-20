@@ -6,7 +6,7 @@ OUT=sys.argv[1]
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch()
-        pg=await b.new_page(viewport={'width':900,'height':1200})
+        pg=await b.new_page(viewport={'width':703,'height':1041})
         msgs=[]
         pg.on('console', lambda m: msgs.append(m.text)); pg.on('pageerror', lambda e: msgs.append(str(e)))
         for nom in ['sujet','corrige']:
