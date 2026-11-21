@@ -115,10 +115,10 @@ $ ls ../archives</pre>
   <section class="td-q" data-type="qcu" data-support="ecran" id="q6">
     <p class="td-consigne">L'utilisateur <code>eleve</code> (qui n'est pas dans le groupe <code>enseignants</code>) peut-il modifier ce fichier ? Peut-il l'exécuter ?</p>
     <ul class="td-options">
-      <li data-retour="rwx sont les droits du propriétaire, prof. eleve n'est ni le propriétaire ni dans le groupe : ses droits sont les trois derniers caractères.">Oui aux deux : le fichier a les droits <code>rwx</code>.</li>
-      <li data-retour="rw- sont les droits du groupe enseignants. eleve n'est pas dans ce groupe.">Il peut le modifier (<code>w</code>), mais pas l'exécuter.</li>
-      <li data-juste>Non aux deux : pour les autres, les droits sont <code>r--</code>, lecture seule.</li>
-      <li data-retour="Les autres ont bien un droit : r, la lecture. Ils peuvent lire le fichier.">Non : il ne peut même pas le lire.</li>
+      <li data-retour="rwx sont les droits du propriétaire, prof. eleve n'est ni le propriétaire ni dans le groupe : ses droits sont les trois derniers caractères.">Oui aux deux : le fichier a les droits <code>rwx</code>, tout est permis.</li>
+      <li data-retour="rw- sont les droits du groupe enseignants. eleve n'est pas dans ce groupe.">Il peut le modifier (<code>w</code>), mais pas l'exécuter (<code>x</code>).</li>
+      <li data-juste>Non aux deux : les autres ont <code>r--</code>, lecture seule.</li>
+      <li data-retour="Les autres ont bien un droit : r, la lecture. Ils peuvent lire le fichier.">Non aux deux : il ne peut même pas le lire.</li>
     </ul>
     <p class="td-aide">Après le premier caractère (<code>-</code> : un fichier), les droits vont par trois : propriétaire, groupe, autres.</p>
     <p class="td-aide"><code>eleve</code> n'est ni le propriétaire (<code>prof</code>) ni dans le groupe : ce sont les trois derniers caractères.</p>
@@ -144,7 +144,7 @@ $ sudo chown directeur notes.csv</pre>
   <section class="td-q" data-type="qcu" data-support="ecran" id="q8">
     <p class="td-consigne">Quel est le rôle de cette commande, et que signifie le préfixe <code>sudo</code> ?</p>
     <ul class="td-options">
-      <li data-juste><code>chown</code> fait de <code>directeur</code> le propriétaire du fichier ; <code>sudo</code> lance la commande avec les droits du super-utilisateur (root).</li>
+      <li data-juste>La commande fait de <code>directeur</code> le propriétaire ; <code>sudo</code> la lance en super-utilisateur (root).</li>
       <li data-retour="chown change le propriétaire, pas les droits : c'est chmod qui change les droits.">La commande donne tous les droits à <code>directeur</code> ; <code>sudo</code> veut dire « super-dossier ».</li>
       <li data-retour="Le fichier ne bouge pas : chown change son propriétaire. Déplacer, c'est mv.">La commande déplace <code>notes.csv</code> chez <code>directeur</code> ; <code>sudo</code> confirme le déplacement.</li>
       <li data-retour="sudo ne change pas d'utilisateur pour la suite : il lance seulement cette commande avec les droits de root.">La commande connecte la session en tant que <code>directeur</code> ; <code>sudo</code> demande son mot de passe.</li>
@@ -179,7 +179,7 @@ eleve   1215  1050  0  ps -ef</pre>
   <section class="td-q" data-type="qcu" data-support="ecran" id="q10">
     <p class="td-consigne">Quel graphe de parenté (l'arbre des processus) correspond à cet extrait ? Une flèche va du parent vers l'enfant.</p>
     <ul class="td-options">
-      <li data-retour="Le PPID de 1215 est 1050, pas 1210 : ps -ef a été lancé par bash, pas par python3.">1 → 500 → 1050 → 1210 → 1215</li>
+      <li data-retour="Le PPID de 1215 est 1050, pas 1210 : ps -ef a été lancé par bash, pas par python3.">1 → 500 → 1050, puis 1050 → 1210 → 1215</li>
       <li data-juste>1 → 500 → 1050, puis 1050 → 1210 et 1050 → 1215</li>
       <li data-retour="Lis la colonne PPID : chaque processus a son propre parent, ce n'est pas toujours 1.">1 → 500, 1 → 1050, 1 → 1210 et 1 → 1215</li>
       <li data-retour="Les flèches vont du parent vers l'enfant : init (PID 1) est en haut de l'arbre.">1215 → 1050, 1210 → 1050, 1050 → 500 → 1</li>
@@ -248,10 +248,10 @@ eleve   1215  1050  0  ps -ef</pre>
   <section class="td-q" data-type="qcu" data-support="ecran" id="q14">
     <p class="td-consigne">Quel est le rôle de la commande <code>ping</code> ?</p>
     <ul class="td-options">
-      <li data-retour="ping n'échange aucun fichier : il envoie de petits paquets de test.">Télécharger un fichier depuis le serveur.</li>
-      <li data-juste>Tester si une machine répond sur le réseau, et mesurer le temps d'aller-retour.</li>
-      <li data-retour="ping ne donne pas d'adresse : on lui en donne une (ici 8.8.8.8).">Donner l'adresse IP de son propre ordinateur.</li>
-      <li data-retour="ping ne montre pas le chemin des paquets : c'est le rôle de traceroute.">Afficher la liste des routeurs traversés.</li>
+      <li data-retour="ping n'échange aucun fichier : il envoie de petits paquets de test.">Télécharger un fichier depuis le serveur 8.8.8.8.</li>
+      <li data-juste>Tester si une machine répond, et en combien de temps.</li>
+      <li data-retour="ping ne donne pas d'adresse : on lui en donne une (ici 8.8.8.8).">Donner l'adresse IP de son propre ordinateur sur le réseau.</li>
+      <li data-retour="ping ne montre pas le chemin des paquets : c'est le rôle de traceroute.">Afficher la liste des routeurs traversés par les paquets.</li>
     </ul>
     <p class="td-aide">Chaque ligne <code>64 bytes from…</code> est une réponse du serveur, avec un temps.</p>
     <div class="td-correction"><p><code>ping</code> envoie des paquets de test (ICMP) à une machine et attend ses réponses : il dit si elle est joignable et mesure le temps d'aller-retour. <code>-c 3</code> : trois paquets.</p></div>
@@ -264,10 +264,10 @@ eleve   1215  1050  0  ps -ef</pre>
   <section class="td-q" data-type="qcu" data-support="ecran" id="q15">
     <p class="td-consigne">Que peux-tu conclure sur la connexion entre l'ordinateur et le serveur 8.8.8.8 ?</p>
     <ul class="td-options">
-      <li data-juste>Elle fonctionne bien : 3 paquets envoyés, 3 reçus (0 % de perte), en 13 ms environ.</li>
-      <li data-retour="0% packet loss veut dire « aucun paquet perdu », et non « aucun paquet reçu ».">Elle ne fonctionne pas : 0 % des paquets sont passés.</li>
-      <li data-retour="time 2003ms est la durée totale du test (une seconde entre chaque paquet), pas le temps d'un aller-retour.">Elle est très lente : plus de 2 secondes par paquet.</li>
-      <li data-retour="ping teste seulement la liaison avec 8.8.8.8 : il ne dit rien des autres serveurs.">Tous les serveurs d'internet sont joignables.</li>
+      <li data-juste>Elle fonctionne : 3 paquets reçus sur 3, en 13 ms environ.</li>
+      <li data-retour="0% packet loss veut dire « aucun paquet perdu », et non « aucun paquet reçu ».">Elle ne fonctionne pas : 0 % des paquets envoyés sont passés.</li>
+      <li data-retour="time 2003ms est la durée totale du test (une seconde entre chaque paquet), pas le temps d'un aller-retour.">Elle est très lente : plus de 2 secondes pour chaque paquet.</li>
+      <li data-retour="ping teste seulement la liaison avec 8.8.8.8 : il ne dit rien des autres serveurs.">Tous les serveurs d'internet sont joignables depuis l'ordinateur.</li>
     </ul>
     <p class="td-aide">Lis la dernière ligne : envoyés, reçus, perte.</p>
     <div class="td-correction"><p>Les 3 paquets envoyés ont reçu une réponse (0 % de perte), avec un temps d'aller-retour d'environ 12 à 13 ms : la connexion avec ce serveur fonctionne, et elle est rapide.</p></div>
