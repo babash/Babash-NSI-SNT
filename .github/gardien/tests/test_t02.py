@@ -42,7 +42,7 @@ def json_(f):
 
 
 def lien_github(x):
-    x["documents"][0]["url"] = "https://github.com/babash/NSI-Terminale/blob/main/td1.pdf"
+    x["documents"][0]["url"] = "https://github.com/babash/nsi-terminale/blob/main/td1.pdf"
     x["documents"][0].pop("fichier", None)
 
 

@@ -86,7 +86,7 @@ ressource({
   texte: "Cours complet du premier chapitre du thème « Structures de données » : interface et implémentation, puis les listes avec 8 exercices, puis les files FIFO et les piles LIFO avec 3 exercices. 9 pages A4.",
   tags: ["À imprimer", "Cours"],
   annexes: {
-    "Code source : sources LaTeX": "https://github.com/babash/NSI-Terminale/tree/main/Th%C3%A8me%201%20%E2%80%93%20Structures%20de%20donn%C3%A9es",
+    "Code source : sources LaTeX": "https://github.com/babash/nsi-terminale/tree/main/Th%C3%A8me%201%20%E2%80%93%20Structures%20de%20donn%C3%A9es",
   },
 });
 
@@ -116,13 +116,13 @@ ressource({
 
 ressource({
   titre: "TP de programmation objet : le Pokédex",
-  lien: "https://nbviewer.org/github/babash/NSI-Terminale/blob/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
+  lien: "https://nbviewer.org/github/babash/nsi-terminale/blob/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
   texte: "Notebook Jupyter : créer une classe `Pokemon`, instancier des pokémons avec leurs attributs et les faire interagir. Les données des pokémons sont fournies en JSON.",
   tags: ["Python", "Notebook"],
   annexes: {
-    "Code source : notebook à télécharger (.ipynb)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
-    "Code source : données des pokémons (JSON)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/pokemon_data_light.json",
-    "Code source": "https://github.com/babash/NSI-Terminale/tree/main/tp-poo-pokemons",
+    "Code source : notebook à télécharger (.ipynb)": "https://raw.githubusercontent.com/babash/nsi-terminale/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
+    "Code source : données des pokémons (JSON)": "https://raw.githubusercontent.com/babash/nsi-terminale/main/tp-poo-pokemons/pokemon_data_light.json",
+    "Code source": "https://github.com/babash/nsi-terminale/tree/main/tp-poo-pokemons",
   },
 });
 
