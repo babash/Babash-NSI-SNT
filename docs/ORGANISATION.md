@@ -57,8 +57,11 @@ charte/                     les pages de démonstration du Designer, sans lien d
                             Ateliers), le TD pilote (td-pilote/, avec son PDF), le script qui crée
                             le squelette d'un TD (nouveau-td.py), le vérificateur de ses réponses
                             (verifier-td.py), le script qui fait le PDF depuis la feuille vierge et
-                            contrôle sa mise en page (imprimer-td.py), celui qui dessine les
-                            bandeaux (bandeaux-td.py) et la démonstration du moteur d'avatars
+                            contrôle sa mise en page (imprimer-td.py, qui réunit aussi les
+                            feuilles d'un TD en un seul PDF), celui qui dessine les bandeaux
+                            (bandeaux-td.py), celui qui les répartit entre tous les TD
+                            (reattribuer-bandeaux.py), celui qui refait la police « TD Symboles »
+                            (symboles-td.py) et la démonstration du moteur d'avatars
                             (avatars.html)
 qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
                             nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu

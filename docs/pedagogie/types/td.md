@@ -49,8 +49,15 @@ Le style graphique des feuilles de TD est **arrêté** : c'est « Signal pirate 
 - la feuille est **imprimée et projetée** ;
 - **pas de fond noir** ni de grand aplat sombre à l'impression, et tout reste lisible en noir et blanc : rien d'essentiel ne passe par la couleur ;
 - des **contrastes forts** : 7:1 au moins pour le texte et le code ;
-- la **place est optimisée**, sur le **moins de feuilles possible** (4 pages A4 au plus), sans texte sous 10 pt ;
+- la **place est optimisée**, sur le **moins de feuilles possible** (4 pages A4 au plus par feuille, 5 pour un exercice de bac de 6 points), sans texte sous 10 pt ;
 - en tête, un bandeau dessiné (quatre paysages qui tournent, sans lien avec le chapitre) et le QR code du cours-quiz du chapitre ; sur papier, « Nom et prénom » et « Classe ».
+
+Les décisions de l'auteur du 21 novembre 2026 complètent la feuille :
+
+- **une question ouverte a deux supports** : en ligne, un choix corrigé aussitôt ; sur papier, la question ouverte, avec des lignes à remplir. Les deux variantes portent le même numéro ;
+- **« Écris le programme » est obligatoire** pour valider la feuille, sauf s'il est marqué comme bonus ; sur papier, il a ses lignes à remplir ;
+- **les crédits sont sur chaque page imprimée** : un TD écrit à plusieurs porte tous les noms au pied de chaque page ;
+- le mémo et « Pour aller plus loin » restent à l'écran, sauf si la page demande de les imprimer.
 
 Le modèle est le gabarit du site, `charte/gabarit-td/`, avec son mode d'emploi, et son TD pilote sur les boucles, `charte/td-pilote/`. L'objectif reste **le même style** pour toutes les feuilles (contrôles, fiches de séance) : pour elles, il n'est pas encore appliqué.
 
