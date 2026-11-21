@@ -18,3 +18,5 @@ Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en l
 ## Page en ligne : conversion binaire et liste (T125, lot L7)
 
 Pour ce sujet, **la page HTML est désormais la référence** : `dm-conversion-binaire-liste/index.html` (en ligne, auto-corrective, corrigé compris). Le PDF `dm-conversion-binaire-liste.pdf` est fait depuis la page (`charte/imprimer-td.py`, feuille vierge ; deux feuilles : un seul PDF). Réponses obtenues par exécution : `dm-conversion-binaire-liste/source/verifier.py`.
+
+Structures imbriquées (T125, nouveau style) : **la page HTML est désormais la référence**, `../dm-structures-imbriquees/index.html` (en ligne, auto-corrective, corrigé compris) ; le PDF `../dm-structures-imbriquees.pdf` en est la feuille vierge imprimée (`charte/imprimer-td.py`) ; les réponses sont obtenues par exécution (`../dm-structures-imbriquees/source/verifier.py`). La source LaTeX `chap-structures-imbriquees.tex` reste pour mémoire.
