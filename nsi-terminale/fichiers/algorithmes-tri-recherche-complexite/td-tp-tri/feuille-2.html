@@ -1,0 +1,305 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le bal des tris : TD en ligne</title>
+  <meta name="description" content="TD en ligne auto-correctif : Le bal des tris (Tle NSI, Tris et complexité).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-tri-bal-des-tris-2" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-feuille="2">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:67.38%;--y:68.75%;--r:-106deg;--l:3.08%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Tris et complexité</span></p>
+        <h1>Le bal des tris</h1>
+        <p class="td-accroche">Feuille 2 sur 2</p>
+      </div>
+      
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+        <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> comprendre le tri fusion (diviser pour régner), puis choisir le bon tri selon la taille et l'état des données.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>dessiner l'arbre de division d'un tri fusion ;</li>
+        <li>fusionner deux listes triées, pas à pas ;</li>
+        <li>associer chaque tri à sa stratégie et à sa complexité ;</li>
+        <li>mesurer, puis choisir le tri adapté à une situation.</li>
+      </ul>
+      <p class="td-duree">Feuille 2 sur 2 · 55 minutes · 14 questions · le crash test se fait sur poste</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p class="td-ecran-seul">Cette feuille fait suite à la <a href="./">feuille 1 (sélection et insertion)</a>.</p>
+
+  <h2 class="td-partie">3. Le tri fusion</h2>
+  <pre class="td-code">
+def fusion(gauche, droite):
+    # Mélange deux listes triées pour en faire une seule, triée
+    resultat = []
+    i, j = 0, 0
+    while i &lt; len(gauche) or j &lt; len(droite):
+        if j == len(droite) or (
+                i &lt; len(gauche) and gauche[i] &lt;= droite[j]):
+            resultat.append(gauche[i])
+            i = i + 1
+        else:
+            resultat.append(droite[j])
+            j = j + 1
+    return resultat
+
+def tri_fusion(tab):
+    if len(tab) &lt;= 1: return tab  # cas de base
+    milieu = len(tab) // 2
+    # Diviser pour régner : appels récursifs
+    gauche = tri_fusion(tab[:milieu])
+    droite = tri_fusion(tab[milieu:])
+    return fusion(gauche, droite)  # on recolle
+
+print(tri_fusion([7, 5, 3, 0, 1, 6, 4, 2]))</pre>
+  <figure class="td-schema">
+<svg width="410" viewBox="0 0 410 386" role="img" aria-label="Tri fusion de [7, 5, 3, 0, 1, 6, 4, 2] : on divise le tableau en deux jusqu'à des cases seules (cas de base), puis on fusionne deux à deux des listes triées jusqu'à [0, 1, 2, 3, 4, 5, 6, 7]."><defs><marker id="fl" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs><rect x="35.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="50.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">7</text><rect x="65.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="80.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">5</text><rect x="95.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="110.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">3</text><rect x="125.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="140.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">0</text><rect x="155.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="170.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">1</text><rect x="185.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="200.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">6</text><rect x="215.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="230.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">4</text><rect x="245.0" y="4" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="260.0" y="24.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">2</text><rect x="0.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="15.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">7</text><rect x="30.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="45.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">5</text><rect x="60.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="75.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">3</text><rect x="90.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="105.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">0</text><rect x="190.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="205.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">1</text><rect x="220.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="235.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">6</text><rect x="250.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="265.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">4</text><rect x="280.0" y="62" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="295.0" y="82.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">2</text><line x1="155.0" y1="34" x2="60.0" y2="60" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="155.0" y1="34" x2="250.0" y2="60" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><text x="318" y="82.0" text-anchor="start" font-size="14" font-weight="bold" fill="currentColor">diviser</text><rect x="0.0" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="15.0" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">7</text><rect x="30.0" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="45.0" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">5</text><rect x="83.3" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="98.3" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">3</text><rect x="113.3" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="128.3" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">0</text><rect x="166.7" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="181.7" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">1</text><rect x="196.7" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="211.7" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">6</text><rect x="250.0" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="265.0" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">4</text><rect x="280.0" y="120" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="295.0" y="140.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">2</text><line x1="60.0" y1="92" x2="30.0" y2="118" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="60.0" y1="92" x2="113.3" y2="118" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="250.0" y1="92" x2="196.7" y2="118" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="250.0" y1="92" x2="280.0" y2="118" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><text x="318" y="140.0" text-anchor="start" font-size="14" font-weight="bold" fill="currentColor">diviser</text><rect x="0.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="15.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">7</text><rect x="40.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="55.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">5</text><rect x="80.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="95.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">3</text><rect x="120.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="135.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">0</text><rect x="160.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="175.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">1</text><rect x="200.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="215.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">6</text><rect x="240.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="255.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">4</text><rect x="280.0" y="178" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="295.0" y="198.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">2</text><line x1="30.0" y1="150" x2="15.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="30.0" y1="150" x2="55.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="113.3" y1="150" x2="95.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="113.3" y1="150" x2="135.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="196.7" y1="150" x2="175.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="196.7" y1="150" x2="215.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="280.0" y1="150" x2="255.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="280.0" y1="150" x2="295.0" y2="176" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><text x="318" y="198.0" text-anchor="start" font-size="14" font-weight="bold" fill="currentColor">cas de base</text><rect x="0.0" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="15.0" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">5</text><rect x="30.0" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="45.0" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">7</text><rect x="83.3" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="98.3" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">0</text><rect x="113.3" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="128.3" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">3</text><rect x="166.7" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="181.7" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">1</text><rect x="196.7" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="211.7" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">6</text><rect x="250.0" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="265.0" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">2</text><rect x="280.0" y="236" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="295.0" y="256.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">4</text><line x1="15.0" y1="208" x2="30.0" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="55.0" y1="208" x2="30.0" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="95.0" y1="208" x2="113.3" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="135.0" y1="208" x2="113.3" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="175.0" y1="208" x2="196.7" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="215.0" y1="208" x2="196.7" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="255.0" y1="208" x2="280.0" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="295.0" y1="208" x2="280.0" y2="234" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><text x="318" y="256.0" text-anchor="start" font-size="14" font-weight="bold" fill="currentColor">fusionner</text><rect x="0.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="15.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">0</text><rect x="30.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="45.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">3</text><rect x="60.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="75.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">5</text><rect x="90.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="105.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">7</text><rect x="190.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="205.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">1</text><rect x="220.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="235.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">2</text><rect x="250.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="265.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">4</text><rect x="280.0" y="294" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="295.0" y="314.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">6</text><line x1="30.0" y1="266" x2="60.0" y2="292" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="113.3" y1="266" x2="60.0" y2="292" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="196.7" y1="266" x2="250.0" y2="292" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="280.0" y1="266" x2="250.0" y2="292" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><text x="318" y="314.0" text-anchor="start" font-size="14" font-weight="bold" fill="currentColor">fusionner</text><rect x="35.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="50.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">0</text><rect x="65.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="80.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">1</text><rect x="95.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="110.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">2</text><rect x="125.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="140.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">3</text><rect x="155.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="170.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">4</text><rect x="185.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="200.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">5</text><rect x="215.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="230.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">6</text><rect x="245.0" y="352" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="260.0" y="372.5" text-anchor="middle" font-size="15" font-weight="bold" fill="currentColor">7</text><line x1="60.0" y1="324" x2="155.0" y2="350" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><line x1="250.0" y1="324" x2="155.0" y2="350" stroke="currentColor" stroke-width="1.2" marker-end="url(#fl)"/><text x="318" y="372.0" text-anchor="start" font-size="14" font-weight="bold" fill="currentColor">fusionner</text></svg>
+    <figcaption>Le tri fusion de [7, 5, 3, 0, 1, 6, 4, 2] : diviser, puis fusionner.</figcaption>
+  </figure>
+
+  <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
+    <p class="td-consigne">La stratégie. Que veut dire « diviser pour régner », appliqué ici ?</p>
+    <ul class="td-options">
+      <li data-juste>on coupe le tableau en deux moitiés, on trie chaque moitié de la même façon (récursivement), puis on fusionne les deux moitiés triées</li>
+      <li data-retour="On ne cherche pas le minimum : c'est la stratégie du tri par sélection.">on cherche le minimum de chaque moitié, puis on l'échange avec la première case</li>
+      <li data-retour="Une moitié seule n'est pas triée ; on trie les deux, puis on les fusionne.">on coupe le tableau en deux et on ne trie que la moitié gauche</li>
+      <li data-retour="La division s'arrête aux listes d'un élément, déjà triées : c'est le cas de base de la récursivité.">on divise le tableau en deux sans fin, jusqu'à ce qu'il soit vide</li>
+    </ul>
+    <p class="td-aide">Relis les trois commentaires de <code>tri_fusion</code> : cas de base, appels récursifs, recoller.</p>
+    <div class="td-correction"><p><b>Diviser</b> : couper le tableau en deux. <b>Régner</b> : trier chaque moitié par le même algorithme (appels récursifs), jusqu'aux listes d'un élément. <b>Combiner</b> : fusionner les deux moitiés triées.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">La stratégie. Explique avec tes mots le concept de « diviser pour régner » appliqué ici.</p>
+    <div class="td-correction"><p>On coupe en deux, on trie chaque moitié récursivement, on fusionne les moitiés triées.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" data-langage="texte" id="q2">
+    <p class="td-consigne">Le déroulé global. Complète l'arbre de division pour <code>[4, 1, 7, 3]</code>.</p>
+    <pre class="td-code">
+départ   : [4, 1, 7, 3]
+niveau 1 : [[[4, 1]]]  et  [[[7, 3]]]
+niveau 2 : [[[4]]]  [[[1]]]  [[[7]]]  [[[3]]]</pre>
+    <p class="td-aide"><code>milieu = 4 // 2 = 2</code> : la moitié gauche est <code>tab[:2]</code>.</p>
+    <div class="td-correction"><p><code>[4, 1, 7, 3]</code> se coupe en <code>[4, 1]</code> et <code>[7, 3]</code>, puis en <code>[4]</code>, <code>[1]</code>, <code>[7]</code>, <code>[3]</code> : quatre cas de base.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3">
+    <p class="td-consigne">La fusion. Une fois les éléments isolés, on remonte. Si on fusionne <code>[1, 4]</code> et <code>[3, 7]</code>, quel est le premier élément placé dans le tableau final, et pourquoi ?</p>
+    <ul class="td-options">
+      <li data-juste>1 : on compare les premiers éléments des deux listes triées, 1 et 3, et on prend le plus petit</li>
+      <li data-retour="La fusion ne prend pas tout le côté gauche d'abord : elle compare les deux têtes de liste.">1 : la fusion recopie toujours la liste de gauche en premier</li>
+      <li data-retour="3 est la tête de la liste de droite, mais 1 est plus petit.">3 : on commence par la liste de droite</li>
+      <li data-retour="On ne cherche pas le maximum : on construit le résultat du plus petit au plus grand.">7 : on place d'abord le plus grand</li>
+    </ul>
+    <p class="td-aide">Les deux listes sont triées : leur plus petit élément est en tête.</p>
+    <div class="td-correction"><p><b>1</b> : les deux listes sont triées, donc le plus petit de tous est l'une des deux têtes. On compare 1 et 3 : 1 est le plus petit.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" data-langage="texte" id="q4">
+    <p class="td-consigne">On fusionne <code>G = [2, 8]</code> et <code>D = [1, 5]</code>. Complète.</p>
+    <pre class="td-code">
+étape 1 : on compare 2 et 1, on prend [[1]] ; liste : [[[1]]]
+étape 2 : on compare 2 et 5, on prend [[2]] ; liste : [[[1, 2]]]
+résultat final de la fusion : [[[1, 2, 5, 8]]]</pre>
+    <p class="td-aide">À chaque étape, on prend la plus petite des deux têtes, et on avance dans la liste d'où elle vient.</p>
+    <div class="td-correction"><p>On prend 1, puis 2 ; ensuite on compare 8 et 5 : on prend 5 ; <code>D</code> est vide, on finit avec 8 : <code>[1, 2, 5, 8]</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
+    <p class="td-consigne">Performance. Pourquoi ce tri est-il plus long à écrire, mais beaucoup plus rapide pour de très grandes listes ?</p>
+    <ul class="td-options">
+      <li data-juste>il demande la récursivité et une fonction de fusion, mais il ne compare pas tout le monde à tout le monde : environ log₂(n) niveaux de n comparaisons</li>
+      <li data-retour="Le tri fusion fait des comparaisons, comme les autres : il en fait beaucoup moins.">parce qu'il ne fait aucune comparaison</li>
+      <li data-retour="Python n'a pas de règle spéciale pour la récursivité : c'est le nombre d'opérations qui compte.">parce que Python exécute plus vite les fonctions récursives</li>
+      <li data-retour="Au contraire, il crée des copies (tab[:milieu]) : il utilise plus de mémoire.">parce qu'il utilise moins de mémoire que les autres tris</li>
+    </ul>
+    <div class="td-correction"><p>Il est plus long à écrire (récursivité, fusion), mais l'arbre a environ log₂(n) niveaux, et chaque niveau coûte de l'ordre de n comparaisons : n log₂(n) en tout, bien moins que n².</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Performance. Pourquoi ce tri est-il plus complexe à écrire, mais beaucoup plus rapide pour de très grandes listes ?</p>
+    <div class="td-correction"><p>Récursivité et fusion ; mais log₂(n) niveaux de n comparaisons, au lieu de n².</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q6" data-reponse="O(n log n)|O(n log(n))|O(nlog n)|O(n*log(n))|O(n × log n)|n log n|O(n log2 n)|O(n log₂ n)">
+    <p class="td-consigne">Complexité. Le tri fusion ne compare pas tout le monde avec tout le monde. Sa complexité est dite <b>quasi-linéaire</b>. Note-la avec la notation O.</p>
+    <p class="td-retour" data-si="O(log n)">O(log n), c'est la recherche dichotomique : le tri fusion doit au moins regarder chaque élément.</p>
+    <p class="td-aide">n éléments, et environ log(n) niveaux dans l'arbre.</p>
+    <div class="td-correction"><p><b>O(n log n)</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q7" data-support="ecran">
+    <p class="td-consigne">Comparaison. Pourquoi cet algorithme est-il le « sauveur » de nos serveurs face à 100 000 données ?</p>
+    <ul class="td-options">
+      <li data-juste>pour n = 100 000, il fait de l'ordre de 1,7 million de comparaisons (n log₂ n), contre 5 milliards (n²/2) pour le tri par sélection</li>
+      <li data-retour="Le tri fusion n'est pas en O(n) : il fait environ n log₂ n comparaisons, mais c'est déjà très peu à côté de n².">parce qu'il fait exactement 100 000 comparaisons</li>
+      <li data-retour="Tous les tris donnent le même résultat ; c'est le temps mis qui change.">parce que c'est le seul qui trie correctement</li>
+      <li data-retour="Le tri fusion garde le même comportement sur toutes les données : il ne profite pas spécialement d'un tableau presque trié.">parce qu'il est le plus rapide sur les petites listes presque triées</li>
+    </ul>
+    <div class="td-correction"><p>n log₂ n ≈ 100 000 × 17 ≈ 1,7 million, contre n(n − 1)/2 ≈ 5 milliards pour la sélection : environ 3 000 fois moins de comparaisons.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q7-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Comparaison. Pourquoi cet algorithme est-il le « sauveur » de nos serveurs face à 100 000 données ?</p>
+    <div class="td-correction"><p>n log₂ n ≈ 1,7 million de comparaisons contre environ 5 milliards en O(n²).</p></div>
+  </section>
+
+  <h2 class="td-partie">4. Les philosophies de tri</h2>
+  <ul>
+    <li><b>Philosophie A :</b> on divise le tableau récursivement en deux, jusqu'à obtenir des listes d'un seul élément. On les fusionne ensuite deux par deux en les classant, pour reconstruire le tableau final. C'est la stratégie « diviser pour régner ».</li>
+    <li><b>Philosophie B :</b> on parcourt le tableau pour trouver la plus petite valeur. Une fois trouvée, on l'échange avec la première position. On recommence pour la deuxième position, et ainsi de suite.</li>
+    <li><b>Philosophie C :</b> on considère que le premier élément est déjà trié. On prend le suivant et on le fait « reculer » à sa place dans la partie gauche en décalant les autres, exactement comme on range des cartes dans sa main.</li>
+  </ul>
+  <section class="td-q" data-type="trous" data-langage="texte" id="q8">
+    <p class="td-consigne">Associe chaque algorithme à sa philosophie : fusion, sélection ou insertion.</p>
+    <pre class="td-code">
+philosophie A : tri [[fusion|par fusion]]
+philosophie B : tri [[par sélection|sélection|par selection|selection]]
+philosophie C : tri [[par insertion|insertion]]</pre>
+    <p class="td-aide">B cherche le minimum ; C range comme des cartes dans la main.</p>
+    <div class="td-correction"><p>A : tri fusion ; B : tri par sélection ; C : tri par insertion.</p></div>
+  </section>
+
+  <h2 class="td-partie">5. Crash test des serveurs (sur poste)</h2>
+  <p>Télécharge le programme de mesure <a href="crash-test.py" download><code>crash-test.py</code></a> et lance-le sur ton poste : il trie des listes de 1 000, 10 000 et 100 000 nombres tirés au hasard, avec les trois tris, et affiche le temps et le nombre d'opérations (les comparaisons). Un tri qui dépasse 5 minutes est arrêté : il affiche « ÉCHEC ».</p>
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="0">
+    <p class="td-consigne">Remplis le rapport avec les résultats du programme. <i>Si le tri dépasse 5 min, note « ÉCHEC ».</i></p>
+    <div class="td-table"><table>
+      <thead><tr><th>Taille (n)</th><th>Sélection : temps</th><th>opérations</th><th>Insertion : temps</th><th>opérations</th><th>Fusion : temps</th><th>opérations</th></tr></thead>
+      <tbody>
+        <tr><td class="td-nb">1 000</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="td-nb">10 000</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+        <tr><td class="td-nb">100 000</td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
+    <p class="td-consigne">Pour n = 10 000, combien de comparaisons le programme compte-t-il pour le tri par sélection ?</p>
+    <ul class="td-options">
+      <li data-juste>49 995 000, quelle que soit la liste : n(n − 1)/2</li>
+      <li data-retour="La boucle j parcourt tout le reste du tableau à chaque tour de i : beaucoup plus que n.">10 000 : une comparaison par élément</li>
+      <li data-retour="n log₂ n, c'est l'ordre de grandeur du tri fusion, pas de la sélection.">environ 133 000 : n log₂ n</li>
+      <li data-retour="On ne compare pas chaque élément à tous les autres dans les deux sens : (n − 1) + (n − 2) + … + 1 = n(n − 1)/2.">100 000 000 : n²</li>
+    </ul>
+    <p class="td-aide">(n − 1) + (n − 2) + … + 1 = n(n − 1)/2.</p>
+    <div class="td-correction"><p>10 000 × 9 999 / 2 = <b>49 995 000</b> comparaisons, pour toute liste de 10 000 nombres (mesuré par le programme).</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q10" data-support="ecran">
+    <p class="td-consigne">Sur un poste, le tri par sélection met environ 11 s pour n = 10 000. Que se passe-t-il pour n = 100 000 ?</p>
+    <ul class="td-options">
+      <li data-juste>environ 100 fois plus long, soit près de 20 minutes : le programme l'arrête, « ÉCHEC »</li>
+      <li data-retour="Le temps n'est pas proportionnel à n mais à n² : n × 10 donne un temps × 100.">environ 110 s : 10 fois plus long</li>
+      <li data-retour="Le tri par sélection fait le même travail quelles que soient les données : son temps croît comme n².">à peu près 11 s : le temps ne dépend pas de n</li>
+      <li data-retour="Il finirait, mais trop tard : plus de 5 minutes, donc il est arrêté.">il ne s'arrête jamais</li>
+    </ul>
+    <div class="td-correction"><p>Quadratique : n multiplié par 10, temps multiplié par 100, soit environ 1 100 s (18 minutes) : au-delà de 5 minutes, « ÉCHEC ». Le tri par insertion échoue aussi ; le tri fusion met moins d'une seconde.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q11" data-support="ecran">
+    <p class="td-consigne">Pour n = 100 000, combien de comparaisons environ le programme compte-t-il pour le tri fusion ?</p>
+    <ul class="td-options">
+      <li data-juste>environ 1,5 million</li>
+      <li data-retour="5 milliards, c'est l'ordre de grandeur de n²/2 : celui de la sélection.">environ 5 milliards</li>
+      <li data-retour="Il faut au moins regarder chaque élément sur chacun des 17 niveaux de l'arbre : plus que n.">environ 100 000</li>
+      <li data-retour="log₂(100 000) ≈ 17 : c'est le nombre de niveaux de l'arbre, pas le nombre de comparaisons.">environ 17</li>
+    </ul>
+    <div class="td-correction"><p>Environ 1,5 million (mesure : 1 536 177 pour une liste tirée au hasard), de l'ordre de n log₂ n ≈ 1,7 million.</p></div>
+  </section>
+
+  <h2 class="td-partie">6. Conclusion sur la complexité</h2>
+  <p>En tant qu'expert·e NSI, tu conseilles l'agence sur l'algorithme à utiliser selon l'état des données.</p>
+  <section class="td-q" data-type="qcu" id="q12" data-support="ecran">
+    <p class="td-consigne">Tu reçois une liste de 10 dossiers chaque seconde : la liste est très petite, mais cela arrive très souvent. Quel tri ?</p>
+    <ul class="td-options">
+      <li data-juste>le tri par insertion : simple et très rapide sur les petites listes, sans copie</li>
+      <li data-retour="Pour 10 éléments, la récursivité et les copies du tri fusion coûtent plus qu'elles ne rapportent.">le tri fusion, toujours le plus rapide</li>
+      <li data-retour="Le tri par sélection marcherait, mais il fait toujours toutes ses comparaisons ; l'insertion s'arrête plus tôt.">le tri par sélection</li>
+      <li data-retour="Il faut bien trier : chaque petite liste arrive dans le désordre.">aucun : 10 dossiers ne se trient pas</li>
+    </ul>
+    <div class="td-correction"><p>Le <b>tri par insertion</b> : sur une très petite liste, n² reste minuscule, et il est simple, sans copie ni appel récursif.</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q13" data-support="ecran">
+    <p class="td-consigne">Tu travailles sur une base de 1 000 000 d'utilisateurs ; la mémoire vive du serveur est limitée. Quel tri ?</p>
+    <ul class="td-options">
+      <li data-juste>le tri fusion : le seul assez rapide pour un million de données (environ 2 × 10⁷ comparaisons), à condition de prévoir la mémoire de ses copies</li>
+      <li data-retour="Il trie sans copie, mais il ferait environ 5 × 10¹¹ comparaisons : des heures, voire des jours.">le tri par sélection, parce qu'il trie sans copie</li>
+      <li data-retour="Sur une liste en désordre, l'insertion reste en O(n²) : beaucoup trop lent pour un million de données.">le tri par insertion, parce qu'il trie sans copie</li>
+      <li data-retour="Les trois tris donnent le même résultat, mais pas dans le même temps.">n'importe lequel : ils se valent</li>
+    </ul>
+    <div class="td-correction"><p>Les tris en O(n²) feraient environ 5 × 10¹¹ comparaisons : beaucoup trop. Le <b>tri fusion</b> (n log₂ n ≈ 2 × 10⁷) est le seul envisageable, mais ses copies demandent de la mémoire : il faut la prévoir.</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q14" data-support="ecran">
+    <p class="td-consigne">Un fichier de 50 000 lignes est déjà <i>presque</i> entièrement trié : seules les deux dernières lignes sont mal placées. Quel tri ?</p>
+    <ul class="td-options">
+      <li data-juste>le tri par insertion : presque tout est en place, la boucle <code>while</code> ne tourne que pour les deux dernières lignes</li>
+      <li data-retour="Le tri fusion ferait tout son travail (n log n), alors que l'insertion n'a presque rien à faire ici.">le tri fusion</li>
+      <li data-retour="La sélection ferait ses 1,25 milliard de comparaisons, même sur un fichier presque trié.">le tri par sélection</li>
+      <li data-retour="Deux lignes mal placées suffisent à rendre le fichier faux : il faut trier.">aucun : le fichier est déjà trié</li>
+    </ul>
+    <div class="td-correction"><p>Le <b>tri par insertion</b> : sur une liste presque triée, son coût est proche de O(n).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q12-papier" data-support="papier" data-lignes="6">
+    <p class="td-consigne">Relie chaque situation à l'algorithme le plus adapté et justifie ton choix. (1) Tu reçois une liste de 10 dossiers chaque seconde : très petite, mais très souvent. (2) Une base de 1 000 000 d'utilisateurs ; la mémoire vive du serveur est limitée. (3) Un fichier de 50 000 lignes déjà <i>presque</i> trié (seules les deux dernières lignes sont mal placées).</p>
+    <div class="td-correction"><p>(1) insertion ; (2) fusion, en prévoyant la mémoire ; (3) insertion.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" data-langage="texte" id="q15">
+    <p class="td-consigne">Complète avec : quadratique, logarithmique, linéaire, quasi-linéaire, trié (et un nombre).</p>
+    <pre class="td-code">
+1. La recherche dichotomique est la plus efficace : complexité
+   [[logarithmique|O(log n)|log n]], mais elle impose un tableau [[trié]].
+2. Les tris par insertion et par sélection ont une complexité
+   [[quadratique|O(n²)|O(n^2)]] ; si n est multiplié par 10, le nombre
+   d'opérations est multiplié par environ [[100|cent]].
+3. Le tri fusion, de complexité [[quasi-linéaire|quasi linéaire|O(n log n)]],
+   est le seul capable de traiter nos flux massifs.</pre>
+    <p class="td-aide">La dichotomie divise la zone de recherche par deux à chaque étape.</p>
+    <div class="td-correction"><p>1. logarithmique, trié ; 2. quadratique, 100 (10² = 100) ; 3. quasi-linéaire.</p></div>
+  </section>
+
+  <h2 class="td-partie">À retenir</h2>
+  <ul>
+    <li>Le <b>tri par insertion</b> est l'un des plus performants pour les petites listes ou les listes presque triées.</li>
+    <li>Le <b>tri fusion</b> est stable et garantit un temps de réponse rapide même dans le pire des cas, mais il consomme plus de mémoire, car il crée des copies des listes.</li>
+    <li>Le <b>tri par sélection</b> est rarement utilisé sur de gros volumes : il est « aveugle », il fait le même nombre de comparaisons que la liste soit triée ou non.</li>
+  </ul>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Sélection : O(n²) toujours. Insertion : O(n) au mieux, O(n²) au pire. Fusion : O(n log n) toujours, avec des copies. n × 10 : temps × 100 en O(n²).</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/algorithmes-tri-recherche-complexite/td-tp-tri">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
