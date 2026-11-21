@@ -14,3 +14,7 @@ Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en l
 - Diviser pour régner, le tri fusion : `dm-tri-fusion/index.html` (PDF : `dm-tri-fusion.pdf`).
 - Trouver le maximum : `dm-trouver-max/index.html` (PDF : `dm-trouver-max.pdf`).
 - Ranger les Lagonnet, le tri par insertion : `dm-tri-par-insertion/index.html` (PDF : `dm-tri-par-insertion.pdf`).
+
+## Page en ligne : conversion binaire et liste (T125, lot L7)
+
+Pour ce sujet, **la page HTML est désormais la référence** : `dm-conversion-binaire-liste/index.html` (en ligne, auto-corrective, corrigé compris). Le PDF `dm-conversion-binaire-liste.pdf` est fait depuis la page (`charte/imprimer-td.py`, feuille vierge ; deux feuilles : un seul PDF). Réponses obtenues par exécution : `dm-conversion-binaire-liste/source/verifier.py`.

@@ -1,0 +1,236 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Représenter un graphe : TP en ligne</title>
+  <meta name="description" content="TP en ligne, auto-correctif : Représenter un graphe (Tle NSI, Graphes).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-tp-representations-graphe" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:41.43%;--y:91.96%;--r:-4deg;--l:3.08%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TP</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Graphes</span></p>
+        <h1>Représenter un graphe</h1>
+        <p class="td-accroche">Arêtes, voisins, classe</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=graphes" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h1v1h-1zM20 1h1v1h-1zM23 1h2v1h-2zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h2v1h-2zM12 2h5v1h-5zM22 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h5v1h-5zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h2v1h-2zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM11 5h1v1h-1zM16 5h5v1h-5zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h3v1h-3zM14 7h1v1h-1zM17 7h1v1h-1zM24 7h1v1h-1zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM9 8h3v1h-3zM15 8h1v1h-1zM17 8h3v1h-3zM21 8h4v1h-4zM26 8h1v1h-1zM29 8h1v1h-1zM31 8h2v1h-2zM2 9h1v1h-1zM5 9h1v1h-1zM7 9h2v1h-2zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM12 10h3v1h-3zM16 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM31 10h2v1h-2zM0 11h2v1h-2zM3 11h1v1h-1zM7 11h2v1h-2zM10 11h1v1h-1zM13 11h2v1h-2zM16 11h1v1h-1zM18 11h3v1h-3zM22 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM32 11h1v1h-1zM1 12h2v1h-2zM6 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h3v1h-3zM5 13h1v1h-1zM9 13h1v1h-1zM14 13h3v1h-3zM18 13h2v1h-2zM21 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM29 13h3v1h-3zM0 14h1v1h-1zM2 14h1v1h-1zM4 14h4v1h-4zM10 14h4v1h-4zM16 14h1v1h-1zM19 14h3v1h-3zM26 14h1v1h-1zM29 14h1v1h-1zM0 15h3v1h-3zM5 15h1v1h-1zM7 15h2v1h-2zM10 15h1v1h-1zM13 15h3v1h-3zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h3v1h-3zM4 16h3v1h-3zM10 16h1v1h-1zM18 16h2v1h-2zM21 16h2v1h-2zM25 16h2v1h-2zM28 16h3v1h-3zM0 17h1v1h-1zM2 17h2v1h-2zM8 17h3v1h-3zM14 17h2v1h-2zM17 17h1v1h-1zM20 17h7v1h-7zM28 17h2v1h-2zM32 17h1v1h-1zM1 18h2v1h-2zM4 18h1v1h-1zM6 18h2v1h-2zM11 18h2v1h-2zM14 18h3v1h-3zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h1v1h-1zM5 19h1v1h-1zM9 19h2v1h-2zM12 19h2v1h-2zM16 19h3v1h-3zM20 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM0 20h4v1h-4zM5 20h2v1h-2zM10 20h3v1h-3zM14 20h1v1h-1zM17 20h2v1h-2zM21 20h1v1h-1zM27 20h1v1h-1zM29 20h2v1h-2zM32 20h1v1h-1zM0 21h2v1h-2zM4 21h1v1h-1zM8 21h5v1h-5zM16 21h6v1h-6zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM2 22h2v1h-2zM5 22h2v1h-2zM8 22h1v1h-1zM10 22h3v1h-3zM14 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM21 22h4v1h-4zM26 22h2v1h-2zM30 22h3v1h-3zM1 23h4v1h-4zM8 23h2v1h-2zM11 23h3v1h-3zM16 23h1v1h-1zM18 23h1v1h-1zM23 23h7v1h-7zM31 23h2v1h-2zM0 24h1v1h-1zM4 24h1v1h-1zM6 24h4v1h-4zM12 24h1v1h-1zM14 24h5v1h-5zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h2v1h-2zM11 25h2v1h-2zM15 25h3v1h-3zM19 25h1v1h-1zM21 25h1v1h-1zM23 25h2v1h-2zM28 25h2v1h-2zM0 26h7v1h-7zM8 26h2v1h-2zM12 26h2v1h-2zM17 26h3v1h-3zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM10 27h2v1h-2zM13 27h1v1h-1zM15 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM14 28h1v1h-1zM18 28h1v1h-1zM20 28h2v1h-2zM23 28h6v1h-6zM30 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM12 29h2v1h-2zM15 29h1v1h-1zM17 29h2v1h-2zM20 29h2v1h-2zM23 29h1v1h-1zM27 29h1v1h-1zM32 29h1v1h-1zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM15 30h1v1h-1zM17 30h1v1h-1zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM11 31h2v1h-2zM14 31h2v1h-2zM17 31h3v1h-3zM22 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM0 32h7v1h-7zM8 32h4v1h-4zM13 32h1v1h-1zM17 32h2v1h-2zM20 32h2v1h-2zM23 32h1v1h-1zM28 32h1v1h-1zM30 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> représenter un même graphe de trois façons en Python : une liste d'arêtes, un dictionnaire d'adjacence, puis une classe.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire un graphe comme une liste d'arêtes (des tuples) ;</li>
+        <li>lire les voisins d'un sommet dans un dictionnaire d'adjacence ;</li>
+        <li>ajouter une arête dans les deux sens pour un graphe non orienté ;</li>
+        <li>dire quelle représentation est la plus rapide pour trouver des voisins.</li>
+      </ul>
+      <p class="td-duree">1 heure · 3 questions et 2 bonus ★ · sur ordinateur, seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>Ce TP te fait manipuler les différentes manières de représenter un <b>graphe</b> en Python : les tuples pour les arêtes, le dictionnaire d'adjacence (des listes de voisins), puis la programmation orientée objet (POO).</p>
+  <p>On représente toujours le même graphe : sommets A, B, C, D ; arêtes A-B, A-C, B-C, C-D.</p>
+  <figure class="td-schema"><svg viewBox="0 0 240 120" width="240" role="img" aria-label="Graphe non orienté à 4 sommets. Arêtes : A-B, A-C, B-C, C-D."><g fill="none" stroke="currentColor" stroke-width="1.8"><path d="M66 30H134M59.8 42.7L90.2 82.3M140.2 42.7L109.8 82.3M116 95H184"/><circle cx="50" cy="30" r="16"/><circle cx="150" cy="30" r="16"/><circle cx="100" cy="95" r="16"/><circle cx="200" cy="95" r="16"/></g><g fill="currentColor" font-family="inherit" font-size="16" font-weight="700" text-anchor="middle"><text x="50" y="36">A</text><text x="150" y="36">B</text><text x="100" y="101">C</text><text x="200" y="101">D</text></g></svg></figure>
+
+  <h2 class="td-partie">1. Liste d'arêtes (tuples)</h2>
+
+  <p>C'est la méthode la plus simple : on stocke le graphe comme une liste de couples (des tuples).</p>
+
+  <section class="td-q" data-type="trous" id="q1">
+    <p class="td-consigne"><b>Mission :</b> complète le code pour ajouter l'arête manquante, C-D.</p>
+    <pre class="td-code">
+# Représentation par liste d'arêtes
+graph_edges = [
+    ('A', 'B'),
+    ('A', 'C'),
+    ('B', 'C'),
+    [[('C', 'D')|('D', 'C')]],
+]
+
+def afficher_aretes(graphe):
+    for u, v in graphe:
+        print(f"Lien entre {u} et {v}")
+
+afficher_aretes(graph_edges)</pre>
+    <pre class="td-attendu">
+Lien entre A et B
+Lien entre A et C
+Lien entre B et C
+Lien entre C et D</pre>
+    <p class="td-aide">Chaque arête s'écrit comme les autres : un tuple de deux sommets, entre parenthèses.</p>
+    <div class="td-correction"><pre class="td-code">
+    ('C', 'D'),</pre><p>Dans un graphe non orienté, <code>('D', 'C')</code> représente la même arête (l'affichage dit alors « Lien entre D et C »).</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Dictionnaire d'adjacence (listes)</h2>
+
+  <p>Cette méthode est plus efficace pour savoir rapidement quels sont les voisins d'un sommet. On utilise un dictionnaire : chaque clé est un sommet, et chaque valeur est la liste de ses voisins.</p>
+  <pre class="td-code">
+graph_adj = {
+    'A': ['B', 'C'],
+    'B': ['A', 'C'],
+    'C': ['A', 'B', 'D'],
+    'D': ['C']
+}</pre>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q2" data-fichier="voisins.py" data-obligatoire>
+    <p class="td-consigne"><b>Mission :</b> écris la fonction <code>compte_voisins(graphe, sommet)</code> qui renvoie le nombre de voisins de <code>sommet</code>. Avec le graphe ci-dessus, le programme doit afficher <code>Voisins de C : 3</code>.</p>
+    <pre class="td-depart">
+graph_adj = {
+    'A': ['B', 'C'],
+    'B': ['A', 'C'],
+    'C': ['A', 'B', 'D'],
+    'D': ['C']
+}
+
+def compte_voisins(graphe, sommet):
+    # Ton code ici
+    pass
+
+# Test
+print(f"Voisins de C : {compte_voisins(graph_adj, 'C')}")
+</pre>
+    <pre class="td-attendu">
+Voisins de C : 3</pre>
+    <script type="text/x-python" class="td-tests">
+assert compte_voisins(graph_adj, 'A') == 2, "compte_voisins(graph_adj, 'A') doit renvoyer 2."
+assert compte_voisins(graph_adj, 'D') == 1, "compte_voisins(graph_adj, 'D') doit renvoyer 1."
+assert compte_voisins({'X': []}, 'X') == 0, "Un sommet sans voisin a 0 voisin."
+assert compte_voisins({'X': ['Y', 'Z'], 'Y': ['X'], 'Z': ['X']}, 'X') == 2, "La fonction doit utiliser le graphe reçu en paramètre, pas graph_adj."
+</script>
+    <p class="td-aide"><code>graphe[sommet]</code> est la liste des voisins de <code>sommet</code>.</p>
+    <p class="td-aide"><code>len(une_liste)</code> donne le nombre d'éléments d'une liste.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+graph_adj = {'A': ['B', 'C'], 'B': ['A', 'C'], 'C': ['A', 'B', 'D'], 'D': ['C']}
+
+def compte_voisins(graphe, sommet):
+    return len(graphe[sommet])
+
+print(f"Voisins de C : {compte_voisins(graph_adj, 'C')}")</pre>
+      <p>Un seul accès au dictionnaire, puis la longueur de la liste : c'est immédiat, quel que soit le nombre de sommets.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. L'approche POO (classes)</h2>
+
+  <p>En POO, on crée une classe <code>Graphe</code> qui regroupe les données et les comportements (ajouter un sommet, ajouter une arête).</p>
+
+  <section class="td-q" data-type="trous" id="q3">
+    <p class="td-consigne"><b>Mission :</b> complète la méthode <code>ajouter_arete</code>. N'oublie pas : dans un graphe <b>non orienté</b>, si A est relié à B, alors B est aussi relié à A.</p>
+    <pre class="td-code">
+class Graphe:
+    def __init__(self):
+        self.adjacence = {}
+
+    def ajouter_sommet(self, sommet):
+        if sommet not in self.adjacence:
+            self.adjacence[sommet] = []
+
+    def ajouter_arete(self, u, v):
+        # 1. S'assurer que les sommets existent
+        self.ajouter_sommet(u)
+        self.ajouter_sommet(v)
+        # 2. Ajouter le lien dans les deux sens
+        [[self.adjacence[u].append(v)|self.adjacence[v].append(u)]]
+        [[self.adjacence[v].append(u)|self.adjacence[u].append(v)]]
+
+    def afficher(self):
+        for sommet, voisins in self.adjacence.items():
+            print(f"{sommet} -> {', '.join(voisins)}")
+
+# --- Test du TP ---
+mon_graphe = Graphe()
+mon_graphe.ajouter_arete('A', 'B')
+mon_graphe.ajouter_arete('A', 'C')
+mon_graphe.ajouter_arete('B', 'C')
+mon_graphe.ajouter_arete('C', 'D')
+mon_graphe.afficher()</pre>
+    <pre class="td-attendu">
+A -> B, C
+B -> A, C
+C -> A, B, D
+D -> C</pre>
+    <p class="td-aide"><code>self.adjacence[u]</code> est la liste des voisins de <code>u</code> ; <code>.append(v)</code> y ajoute <code>v</code>.</p>
+    <p class="td-aide">Il faut deux lignes : <code>v</code> dans les voisins de <code>u</code>, <b>et</b> <code>u</code> dans les voisins de <code>v</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+        self.adjacence[u].append(v)
+        self.adjacence[v].append(u)</pre>
+      <p>Le programme affiche alors <code>A -&gt; B, C</code>, <code>B -&gt; A, C</code>, <code>C -&gt; A, B, D</code> et <code>D -&gt; C</code>. Avec une seule ligne, D n'aurait aucun voisin.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">Pour aller plus loin</h2>
+
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran" data-bonus>
+    <p class="td-consigne"><b>Complexité.</b> Pourquoi la représentation de l'exercice 2 est-elle plus rapide que celle de l'exercice 1 pour savoir si D est voisin de A ?</p>
+    <ul class="td-options">
+      <li data-juste>Avec le dictionnaire, on regarde seulement la liste des voisins de A ; avec la liste d'arêtes, il faut parcourir toutes les arêtes.</li>
+      <li data-retour="Les deux représentations décrivent le même graphe, avec les mêmes arêtes : ce n'est pas le nombre d'arêtes qui change.">Parce que le dictionnaire contient moins d'arêtes.</li>
+      <li data-retour="Les tuples ne sont pas lents à lire : c'est le parcours de toute la liste qui coûte cher.">Parce que les tuples sont plus lents à lire que les listes.</li>
+      <li data-retour="Le dictionnaire n'est pas trié par ordre alphabétique ; il donne directement les voisins d'une clé.">Parce que le dictionnaire est trié par ordre alphabétique.</li>
+    </ul>
+    <p class="td-aide">Combien d'éléments faut-il regarder dans chaque cas, si le graphe a des milliers d'arêtes ?</p>
+    <div class="td-correction"><p><code>graph_adj['A']</code> donne directement les voisins de A : on ne regarde que eux. Avec la liste d'arêtes, il faut, dans le pire des cas, examiner chaque arête. Mesuré sur 200 001 arêtes : environ 0,1 s pour la liste, quelques microsecondes pour le dictionnaire.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="3" data-bonus>
+    <p class="td-consigne"><b>Complexité.</b> Pourquoi la représentation de l'exercice 2 est-elle plus rapide que celle de l'exercice 1 pour vérifier si D est voisin de A ?</p>
+    <div class="td-correction"><p>Avec le dictionnaire, on lit directement la liste des voisins de A (<code>graph_adj['A']</code>), qui est courte. Avec la liste d'arêtes, il faut parcourir toutes les arêtes du graphe.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q5" data-support="ecran" data-bonus>
+    <p class="td-consigne"><b>Pondération.</b> Comment modifier les tuples de l'exercice 1 pour ajouter un « poids » (une distance en km) à chaque route ?</p>
+    <ul class="td-options">
+      <li data-juste>Ajouter un troisième élément : <code>('A', 'B', 5)</code>.</li>
+      <li data-retour="Une liste de distances à part se désynchronise facilement des arêtes : on garde le poids avec son arête.">Faire une deuxième liste avec les distances.</li>
+      <li data-retour="'A5' mélange le nom du sommet et la distance : on ne retrouve plus le sommet A.">Écrire <code>('A5', 'B')</code>.</li>
+      <li data-retour="Un tuple peut avoir plus de deux éléments : (u, v, poids) est permis.">C'est impossible avec des tuples.</li>
+    </ul>
+    <p class="td-aide">Un tuple peut contenir plus de deux valeurs.</p>
+    <div class="td-correction"><p>On écrit des triplets <code>(u, v, poids)</code>, par exemple <code>('A', 'B', 5)</code>, et on les lit avec <code>for u, v, poids in graphe:</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="3" data-bonus>
+    <p class="td-consigne"><b>Pondération.</b> Comment modifierais-tu les tuples de l'exercice 1 pour ajouter un « poids » (une distance) à chaque route ?</p>
+    <div class="td-correction"><p>On ajoute un troisième élément à chaque tuple : <code>('A', 'B', 5)</code>, lu avec <code>for u, v, poids in graphe:</code>.</p></div>
+  </section>
+
+  <!-- MÉMO -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Liste d'arêtes : simple, mais il faut tout parcourir. Dictionnaire d'adjacence : les voisins d'un sommet en un accès.</p>
+    <p>Graphe non orienté : chaque arête s'ajoute dans les deux sens.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/graphes-tp-representations-terminale/graphe-tp">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
