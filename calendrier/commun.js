@@ -172,7 +172,7 @@
   CV.ICONE_THEME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
   CV.ICONE_COMPTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
   CV.pied = function () {
-    return '<footer class="pied">Babash - NSI Tani Malandi · exercices CC BY-SA 4.0, code MIT · <a href="' + CV.esc(C.DEPOT || "#") + '">Code source sur GitHub</a> · conçu avec l\'aide de l\'IA</footer>';
+    return '<footer class="pied">Babash - NSI Tani Malandi · exercices CC BY-SA 4.0, code MIT · <a href="' + CV.esc(C.DEPOT || "#") + '">Code source sur GitHub</a></footer>';
   };
   CV.horsService = function () {
     return '<div class="message info" role="status">Le calendrier n\'est pas encore en service. Il ouvrira bientôt, à la même adresse.</div>';
