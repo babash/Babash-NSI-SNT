@@ -1,0 +1,298 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alien-Python (feuille 3) : activité en ligne</title>
+  <meta name="description" content="SNT, programmation : écrire les instructions qui guident un alien sur une grille, puis suivre des programmes avec boucles et conditions. Feuille 3 sur 3, auto-corrective et imprimable.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="snt-alien-python-3" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara, d'après Mathieu Degrange" data-ordre="melange" data-code="obligatoire" data-feuille="3">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">SNT</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation en Python</span></p>
+        <h1>Alien-Python (feuille 3)</h1>
+        <p class="td-accroche">Guider l&#x27;alien</p>
+      </div>
+      
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> écrire les instructions qui mènent l'alien à une case, puis suivre des programmes plus longs.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire une suite d'instructions qui mène à une case donnée ;</li>
+        <li>suivre une boucle qui contient une condition ;</li>
+        <li>utiliser la valeur donnée par une fonction (<code>colonne()</code>).</li>
+      </ul>
+      <p class="td-duree">40 minutes · 6 questions · seul·e ou en binôme · feuille 3 sur 3</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p class="td-ecran-seul">Cette feuille fait suite à la <a href="feuille-2.html">feuille 2 de l'activité Alien-Python</a>.</p>
+
+  <p>L'alien part toujours de la case H8, au centre de la grille.</p>
+<figure class="td-schema"><svg viewBox="0 0 390 390" width="384" height="384" role="img" aria-labelledby="grille-titre">
+<title id="grille-titre">La grille de l'alien : 15 lignes, de A (en haut) à O (en bas), et 15 colonnes, de 1 (à gauche) à 15 (à droite). L'alien part de la case H8, au centre.</title>
+<rect x="196" y="28" width="24" height="360" fill="currentColor" opacity=".12"/><rect x="28" y="196" width="360" height="24" fill="currentColor" opacity=".12"/>
+<g fill="none" stroke="currentColor">
+<line x1="28" y1="28" x2="28" y2="388" stroke-width="2"/>
+<line x1="28" y1="28" x2="388" y2="28" stroke-width="2"/>
+<line x1="52" y1="28" x2="52" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="52" x2="388" y2="52" stroke-width="0.8"/>
+<line x1="76" y1="28" x2="76" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="76" x2="388" y2="76" stroke-width="0.8"/>
+<line x1="100" y1="28" x2="100" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="100" x2="388" y2="100" stroke-width="0.8"/>
+<line x1="124" y1="28" x2="124" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="124" x2="388" y2="124" stroke-width="0.8"/>
+<line x1="148" y1="28" x2="148" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="148" x2="388" y2="148" stroke-width="0.8"/>
+<line x1="172" y1="28" x2="172" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="172" x2="388" y2="172" stroke-width="0.8"/>
+<line x1="196" y1="28" x2="196" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="196" x2="388" y2="196" stroke-width="0.8"/>
+<line x1="220" y1="28" x2="220" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="220" x2="388" y2="220" stroke-width="0.8"/>
+<line x1="244" y1="28" x2="244" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="244" x2="388" y2="244" stroke-width="0.8"/>
+<line x1="268" y1="28" x2="268" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="268" x2="388" y2="268" stroke-width="0.8"/>
+<line x1="292" y1="28" x2="292" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="292" x2="388" y2="292" stroke-width="0.8"/>
+<line x1="316" y1="28" x2="316" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="316" x2="388" y2="316" stroke-width="0.8"/>
+<line x1="340" y1="28" x2="340" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="340" x2="388" y2="340" stroke-width="0.8"/>
+<line x1="364" y1="28" x2="364" y2="388" stroke-width="0.8"/>
+<line x1="28" y1="364" x2="388" y2="364" stroke-width="0.8"/>
+<line x1="388" y1="28" x2="388" y2="388" stroke-width="2"/>
+<line x1="28" y1="388" x2="388" y2="388" stroke-width="2"/>
+</g><g fill="currentColor" font-family="JetBrains Mono, monospace" font-size="14" text-anchor="middle">
+<text x="40.0" y="19">1</text>
+<text x="13.0" y="45.0">A</text>
+<text x="64.0" y="19">2</text>
+<text x="13.0" y="69.0">B</text>
+<text x="88.0" y="19">3</text>
+<text x="13.0" y="93.0">C</text>
+<text x="112.0" y="19">4</text>
+<text x="13.0" y="117.0">D</text>
+<text x="136.0" y="19">5</text>
+<text x="13.0" y="141.0">E</text>
+<text x="160.0" y="19">6</text>
+<text x="13.0" y="165.0">F</text>
+<text x="184.0" y="19">7</text>
+<text x="13.0" y="189.0">G</text>
+<text x="208.0" y="19">8</text>
+<text x="13.0" y="213.0">H</text>
+<text x="232.0" y="19">9</text>
+<text x="13.0" y="237.0">I</text>
+<text x="256.0" y="19">10</text>
+<text x="13.0" y="261.0">J</text>
+<text x="280.0" y="19">11</text>
+<text x="13.0" y="285.0">K</text>
+<text x="304.0" y="19">12</text>
+<text x="13.0" y="309.0">L</text>
+<text x="328.0" y="19">13</text>
+<text x="13.0" y="333.0">M</text>
+<text x="352.0" y="19">14</text>
+<text x="13.0" y="357.0">N</text>
+<text x="376.0" y="19">15</text>
+<text x="13.0" y="381.0">O</text>
+</g><circle cx="208.0" cy="208.0" r="11" fill="none" stroke="currentColor" stroke-width="2"/>
+<text x="208.0" y="212.5" fill="currentColor" stroke="none" font-family="JetBrains Mono, monospace" font-size="14" letter-spacing="-1" font-weight="700" text-anchor="middle">H8</text>
+</svg></figure>
+  <h2 class="td-partie">Exercice 3. Guider l'alien</h2>
+  <section class="td-q" data-type="code" id="e3-1" data-fichier="alien.py" data-lignes="4">
+    <p class="td-consigne">C'est à toi maintenant de guider le robot pour essayer de lui trouver une sortie. Donne les instructions pour aller en <b>O15</b>.</p>
+    <pre class="td-depart">
+# L&#x27;alien (ne modifie pas ces lignes) : il part de H8.
+x, y = 8, 8    # colonne (1 à 15), ligne (1 = A, 15 = O)
+def droite(n=1): global x; x = x + n
+def gauche(n=1): global x; x = x - n
+def bas(n=1): global y; y = y + n
+def haut(n=1): global y; y = y - n
+# Tes instructions, à partir d&#x27;ici :
+</pre>
+    <script type="text/x-python" class="td-tests">
+lettres = "ABCDEFGHIJKLMNO"
+assert 1 <= y <= 15 and 1 <= x <= 15, "L'alien est sorti de la grille."
+assert (x, y) == (15, 15), "L'alien arrive en " + lettres[y - 1] + str(x) + ", pas en O15."
+print("L'alien est bien arrivé en O15 !")
+</script>
+    <p class="td-aide">Compte les lignes à descendre ou à monter (de H à O), puis les colonnes (de 8 à 15).</p>
+    <div class="td-correction"><p>Par exemple (d'autres chemins sont justes) :</p><pre class="td-code" data-verifier="correction">
+# L&#x27;alien (ne modifie pas ces lignes) : il part de H8.
+x, y = 8, 8    # colonne (1 à 15), ligne (1 = A, 15 = O)
+def droite(n=1): global x; x = x + n
+def gauche(n=1): global x; x = x - n
+def bas(n=1): global y; y = y + n
+def haut(n=1): global y; y = y - n
+# Tes instructions, à partir d&#x27;ici :
+bas(7)
+droite(7)</pre></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="e3-2" data-fichier="alien.py" data-lignes="4">
+    <p class="td-consigne">Donne les instructions pour aller en <b>K4</b>.</p>
+    <pre class="td-depart">
+# L&#x27;alien (ne modifie pas ces lignes) : il part de H8.
+x, y = 8, 8    # colonne (1 à 15), ligne (1 = A, 15 = O)
+def droite(n=1): global x; x = x + n
+def gauche(n=1): global x; x = x - n
+def bas(n=1): global y; y = y + n
+def haut(n=1): global y; y = y - n
+# Tes instructions, à partir d&#x27;ici :
+</pre>
+    <script type="text/x-python" class="td-tests">
+lettres = "ABCDEFGHIJKLMNO"
+assert 1 <= y <= 15 and 1 <= x <= 15, "L'alien est sorti de la grille."
+assert (x, y) == (4, 11), "L'alien arrive en " + lettres[y - 1] + str(x) + ", pas en K4."
+print("L'alien est bien arrivé en K4 !")
+</script>
+    <p class="td-aide">Compte les lignes à descendre ou à monter (de H à K), puis les colonnes (de 8 à 4).</p>
+    <div class="td-correction"><p>Par exemple (d'autres chemins sont justes) :</p><pre class="td-code" data-verifier="correction">
+# L&#x27;alien (ne modifie pas ces lignes) : il part de H8.
+x, y = 8, 8    # colonne (1 à 15), ligne (1 = A, 15 = O)
+def droite(n=1): global x; x = x + n
+def gauche(n=1): global x; x = x - n
+def bas(n=1): global y; y = y + n
+def haut(n=1): global y; y = y - n
+# Tes instructions, à partir d&#x27;ici :
+bas(3)
+gauche(4)</pre></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="e3-3" data-fichier="alien.py" data-lignes="4">
+    <p class="td-consigne">Donne les instructions pour aller en <b>C5</b>.</p>
+    <pre class="td-depart">
+# L&#x27;alien (ne modifie pas ces lignes) : il part de H8.
+x, y = 8, 8    # colonne (1 à 15), ligne (1 = A, 15 = O)
+def droite(n=1): global x; x = x + n
+def gauche(n=1): global x; x = x - n
+def bas(n=1): global y; y = y + n
+def haut(n=1): global y; y = y - n
+# Tes instructions, à partir d&#x27;ici :
+</pre>
+    <script type="text/x-python" class="td-tests">
+lettres = "ABCDEFGHIJKLMNO"
+assert 1 <= y <= 15 and 1 <= x <= 15, "L'alien est sorti de la grille."
+assert (x, y) == (5, 3), "L'alien arrive en " + lettres[y - 1] + str(x) + ", pas en C5."
+print("L'alien est bien arrivé en C5 !")
+</script>
+    <p class="td-aide">Compte les lignes à descendre ou à monter (de H à C), puis les colonnes (de 8 à 5).</p>
+    <div class="td-correction"><p>Par exemple (d'autres chemins sont justes) :</p><pre class="td-code" data-verifier="correction">
+# L&#x27;alien (ne modifie pas ces lignes) : il part de H8.
+x, y = 8, 8    # colonne (1 à 15), ligne (1 = A, 15 = O)
+def droite(n=1): global x; x = x + n
+def gauche(n=1): global x; x = x - n
+def bas(n=1): global y; y = y + n
+def haut(n=1): global y; y = y - n
+# Tes instructions, à partir d&#x27;ici :
+haut(5)
+gauche(3)</pre></div>
+  </section>
+
+  <h2 class="td-partie">Exercice 4. Pour aller plus loin</h2>
+  <p>La fonction <code>colonne()</code> donne le numéro de la colonne où se trouve l'alien. Pour chacun des scripts suivants, donne la position finale du robot.</p>
+  <section class="td-q" data-type="courte" id="e4-1" data-reponse="G12|G 12" data-etiquette="La position finale est :">
+    <pre class="td-code">
+a = 13
+b = 10
+
+gauche(6)
+haut(3)
+for loop in range(5):
+    droite()
+    b = b + 1
+    if a == b:
+        haut(4)
+    else:
+        bas()
+    droite()
+bas(2)</pre>
+    <p class="td-retour" data-si="I12|I 12">Attention au sens : <code>haut</code> va vers la ligne A, <code>bas</code> vers la ligne O.</p>
+    <p class="td-retour" data-si="G4|G 4">Attention au sens : <code>gauche</code> va vers la colonne 1, <code>droite</code> vers la colonne 15.</p>
+    <p class="td-retour" data-si="H8|H 8">H8, c'est la case de départ : l'alien a bougé depuis.</p>
+    <p class="td-aide">Le bloc décalé sous <code>for loop in range(n):</code> se répète n fois. Sans nombre, <code>droite()</code> avance d'une case.</p>
+    <p class="td-aide">Dans la boucle, b vaut 11, 12, 13, 14 puis 15 : a == b n'est vrai qu'au 3<sup>e</sup> tour.</p>
+    <div class="td-correction"><p>L'alien finit en <b>G12</b>. Son chemin, instruction par instruction : H8 → H2 → E2 → E3 → F3 → F4 → F5 → G5 → G6 → G7 → C7 → C8 → C9 → D9 → D10 → D11 → E11 → E12 → G12.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="e4-2" data-reponse="G12|G 12" data-etiquette="La position finale est :">
+    <pre class="td-code">
+gauche(6)
+bas(5)
+for loop in range(8):
+    droite()
+    if colonne() &lt; 7:
+        bas()
+        droite()
+    haut()</pre>
+    <p class="td-retour" data-si="I12|I 12">Attention au sens : <code>haut</code> va vers la ligne A, <code>bas</code> vers la ligne O.</p>
+    <p class="td-retour" data-si="F5|F 5">Attention au sens : <code>gauche</code> va vers la colonne 1, <code>droite</code> vers la colonne 15.</p>
+    <p class="td-retour" data-si="H8|H 8">H8, c'est la case de départ : l'alien a bougé depuis.</p>
+    <p class="td-aide"><code>colonne()</code> donne le numéro de la colonne où se trouve l'alien, au moment où on l'appelle.</p>
+    <p class="td-aide">Note la colonne au début de chaque tour : 2 au départ de la boucle.</p>
+    <div class="td-correction"><p>L'alien finit en <b>G12</b>. Son chemin, instruction par instruction : H8 → H2 → M2 → M3 → N3 → N4 → M4 → M5 → N5 → N6 → M6 → M7 → L7 → L8 → K8 → K9 → J9 → J10 → I10 → I11 → H11 → H12 → G12.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="e4-3" data-reponse="D7|D 7" data-etiquette="La position finale est :">
+    <pre class="td-code">
+gauche(6)
+haut(5)
+if colonne() &lt; 3:
+    droite(4)
+if colonne() &lt; 5:
+    droite(2)
+if colonne() &gt; 9:
+    bas(4)
+droite(4)
+if colonne() &gt; 9:
+    bas(4)
+for loop in range(3):
+    gauche()
+    haut()</pre>
+    <p class="td-retour" data-si="L7|L 7">Attention au sens : <code>haut</code> va vers la ligne A, <code>bas</code> vers la ligne O.</p>
+    <p class="td-retour" data-si="H13|H 13">Attention au sens : <code>gauche</code> va vers la colonne 1, <code>droite</code> vers la colonne 15.</p>
+    <p class="td-retour" data-si="H8|H 8">H8, c'est la case de départ : l'alien a bougé depuis.</p>
+    <p class="td-aide"><code>colonne()</code> donne le numéro de la colonne où se trouve l'alien, au moment où on l'appelle.</p>
+    <p class="td-aide">Après gauche(6) et haut(5), l'alien est en C2 : colonne() vaut 2.</p>
+    <div class="td-correction"><p>L'alien finit en <b>D7</b>. Son chemin, instruction par instruction : H8 → H2 → C2 → C6 → C10 → G10 → G9 → F9 → F8 → E8 → E7 → D7.</p></div>
+  </section>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Pour guider l'alien, on compte les lignes (de A à O) et les colonnes (de 1 à 15) qui séparent le départ de l'arrivée. Une fonction comme <code>colonne()</code> donne une valeur <b>au moment</b> où on l'appelle.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:-1"></span>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara (enseignante de NSI à Bandrélé) ; exercices et grilles d'après Alien-Python, de Mathieu Degrange (MIT) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/snt/fichiers/alien-seances/activite-alien">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
