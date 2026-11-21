@@ -44,3 +44,10 @@ print("BAC :", [ord(c) - ord("A") for c in "BAC"])
 print("RXTTBO / WETTER, lettres codées par elles-mêmes :", [i + 1 for i, (a, b) in enumerate(zip("RXTTBO", "WETTER")) if a == b])
 secondes = 158_000_000_000_000_000_000 / 1_000_000
 print(f"Enigma : {secondes:.3g} s = {secondes / (365.25 * 24 * 3600):.3g} ans")
+
+# Tableau des fréquences de l'énoncé : ce que se partagent les autres lettres.
+# L'original disait « les autres lettres : moins de 1 % » : c'est faux (erreur corrigée en T125b).
+frequences = {"E": 14.7, "A": 7.6, "I": 7.5, "S": 7.1, "N": 7.1, "R": 6.7, "T": 7.2, "O": 5.8, "L": 5.4, "U": 6.3}
+total = sum(frequences.values())
+autres = 26 - len(frequences)
+print(f"10 lettres du tableau : {total:.1f} % ; les {autres} autres : {100 - total:.1f} %, soit {(100 - total) / autres:.2f} % en moyenne")
