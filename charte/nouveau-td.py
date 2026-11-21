@@ -11,12 +11,19 @@ Usage (à la racine du dépôt) :
   --niveau     ex. « SNT », « 1re NSI », « Tle NSI »
   --chapitre   ex. « Programmer en Python »
   --bandeau    facultatif : force le paysage (1 : le cône et la baie · 2 : l'îlot et le lagon · 3 : la ville et la barge ·
-               4 : le baobab). Sans lui, les bandeaux TOURNENT : le nouveau TD prend le bandeau le moins utilisé
-               par les TD du dépôt (à égalité, l'ordre est tiré de l'identifiant) ; un TD qui existe déjà
-               (même identifiant) garde son bandeau. Aucune correspondance avec le chapitre.
+               4 : le baobab). Sans lui, le bandeau est TIRÉ DE L'IDENTIFIANT (empreinte SHA-256, modulo 4) : le
+               même identifiant donne toujours le même bandeau, sur n'importe quelle branche, sans regarder le
+               dépôt ; la répartition est équilibrée en moyenne. Une page qui existe déjà garde son bandeau.
+               Pour rééquilibrer d'un coup tous les TD existants : charte/reattribuer-bandeaux.py.
+               Aucune correspondance avec le chapitre.
   --quiz       adresse du cours-quiz du chapitre (QR code fabriqué ici, hors ligne) ; sans --quiz, pas de QR code
   --accroche   une ligne sous le titre (facultatif)
   --controle   bandeau de 20 mm et puce « Contrôle » (le margouillat va alors sur le mémo ou le pied)
+  --genre      la puce du bandeau : TD (par défaut), DM, TP, Activité, Séance
+  --auteurs    tous les auteurs et autrices, séparés par « ; » : ils vont dans le pied de la page et dans
+               le pied de chaque page imprimée (data-auteurs) ; par défaut « Babash - NSI Tani Malandi »
+  --feuille    numéro de la feuille d'un TD à plusieurs feuilles (2, 3…) : bande de titre fine sur papier
+  --pages-max  nombre de pages A4 admis (4 par défaut ; 5 pour un exercice de bac de 6 points)
   --remplacer  écrase un index.html existant
   --cachette   force la cachette du margouillat (ex. b2, memo, pied) ; sinon elle vient de l'identifiant
 
@@ -127,20 +134,18 @@ def pages_td(sauf):
                 yield i.group(1), int(b.group(1))
 
 
+def bandeau_de(ident):
+    """Le bandeau tiré de l'identifiant seul : déterministe, le même sur toutes les branches."""
+    return int(hashlib.sha256(ident.encode()).hexdigest(), 16) % 4 + 1
+
+
 def bandeau_suivant(ident, cible):
-    """Rotation équilibrée et stable : le bandeau le moins utilisé ; à égalité, l'ordre vient de l'identifiant."""
+    """Une page qui existe déjà garde son bandeau ; sinon, celui de l'identifiant (sans regarder le dépôt)."""
     if os.path.exists(cible):
         b = re.search(r'class="td-bandeau[^"]*" data-bandeau="([1-4])"', open(cible, encoding="utf-8").read())
         if b:
             return int(b.group(1))
-    compte = {n: 0 for n in (1, 2, 3, 4)}
-    for i, b in pages_td(cible):
-        if i == ident:
-            return b
-        compte[b] += 1
-    h = int(hashlib.sha256(ident.encode()).hexdigest(), 16)
-    ordre = [(h + k) % 4 + 1 for k in range(4)]
-    return min(ordre, key=lambda n: (compte[n], ordre.index(n)))
+    return bandeau_de(ident)
 
 
 def choisir_cachette(ident, bandeau, prises, forcee=None, controle=False):
@@ -178,6 +183,10 @@ def main():
     a.add_argument("--controle", action="store_true")
     a.add_argument("--remplacer", action="store_true")
     a.add_argument("--cachette")
+    a.add_argument("--genre", default="TD", choices=("TD", "DM", "TP", "Activité", "Séance"))
+    a.add_argument("--auteurs")
+    a.add_argument("--feuille", type=int)
+    a.add_argument("--pages-max", type=int, dest="pages_max")
     o = a.parse_args()
 
     if not re.fullmatch(r"[a-z0-9]+(-[a-z0-9]+)*", o.id):
@@ -198,6 +207,7 @@ def main():
         o.bandeau = bandeau_suivant(o.id, cible)
     nom, marg = choisir_cachette(o.id, o.bandeau, cachettes_prises(o.bandeau, cible), o.cachette, o.controle)
     titre_txt = o.titre.replace("`", "")
+    auteurs = " ; ".join(x.strip() for x in (o.auteurs or "Babash - NSI Tani Malandi").split(";") if x.strip())
     qr = ""
     if o.quiz:
         u = html.escape(o.quiz)
@@ -207,12 +217,17 @@ def main():
         "ID": o.id,
         "TITRE_TEXTE": html.escape(titre_txt),
         "TITRE_HTML": titre_html(o.titre),
-        "DESCRIPTION": html.escape(f"TD en ligne auto-correctif : {titre_txt} ({o.niveau}, {o.chapitre})."),
+        "DESCRIPTION": html.escape(f"{o.genre} en ligne auto-correctif : {titre_txt} ({o.niveau}, {o.chapitre})."),
         "NIVEAU": html.escape(o.niveau),
         "CHAPITRE": html.escape(o.chapitre),
         "BANDEAU": str(o.bandeau),
         "CLASSE_CONTROLE": " td-controle" if o.controle else "",
-        "PUCE": "Contrôle" if o.controle else "TD",
+        "PUCE": "Contrôle" if o.controle else html.escape(o.genre),
+        "GENRE": html.escape("Contrôle" if o.controle else o.genre),
+        "ATTR_MAIN": (f' data-auteurs="{html.escape(auteurs)}"' if o.auteurs else "")
+                     + (f' data-feuille="{o.feuille}"' if o.feuille else "")
+                     + (f' data-pages-max="{o.pages_max}"' if o.pages_max else ""),
+        "AUTEURS_PIED": html.escape(auteurs),
         "ASSETS": assets,
         "ACCROCHE": f'<p class="td-accroche">{html.escape(o.accroche)}</p>' if o.accroche else "",
         "QR": qr,

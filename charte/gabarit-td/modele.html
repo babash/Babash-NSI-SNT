@@ -18,7 +18,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{TITRE_TEXTE}} : TD en ligne</title>
+  <title>{{TITRE_TEXTE}} : {{GENRE}} en ligne</title>
   <meta name="description" content="{{DESCRIPTION}}">
   <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
@@ -29,8 +29,11 @@
 </head>
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
-     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="{{ID}}" data-td-version="1">
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="{{ID}}" data-td-version="1" data-ordre="melange" data-code="obligatoire"{{ATTR_MAIN}}>
 
   <header class="td-entete">
     <!-- BANDEAU : paysage n° {{BANDEAU}} (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
@@ -175,9 +178,11 @@ SyntaxError: '(' was never closed</pre>
     <div class="td-correction"><p>Ligne 2, il manque la parenthèse fermante : <code>print("Bonjour", prenom)</code>.</p></div>
   </section>
 
-  <!-- code : un éditeur ; exécuté par Python (chargé au clic). Bonus par défaut (data-bonus implicite) ;
-       data-obligatoire pour le compter dans la jauge. Correction vérifiée par verifier-td.py. -->
-  <section class="td-q" data-type="code" id="q8" data-fichier="compter.py">
+  <!-- code : un éditeur ; exécuté par Python (chargé au clic). Obligatoire (data-code="obligatoire" sur <main>) ;
+       data-bonus pour un bonus. Sur papier : data-lignes="6" lignes à écrire. Plusieurs pre.td-attendu = plusieurs
+       essais, chacun avec ses data-entrees (une ligne par input()) et sa data-graine (random).
+       Correction vérifiée par verifier-td.py. -->
+  <section class="td-q" data-type="code" id="q8" data-fichier="compter.py" data-lignes="4">
     <p class="td-consigne">Écris un programme qui affiche 1, 2 et 3, un nombre par ligne.</p>
     <pre class="td-depart">
 # Ton programme
@@ -192,6 +197,27 @@ for n in range(1, 4):
     print(n)</pre></div>
   </section>
 
+  <!-- deux supports pour une même question (décision du 21/11) : en ligne un choix auto-corrigé,
+       sur papier la question ouverte, avec des lignes. Les deux se suivent : même numéro. -->
+  <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
+    <p class="td-consigne">Pourquoi ce programme n'affiche-t-il pas 3 ?</p>
+    <pre class="td-code">
+for i in range(3):
+    print(i)</pre>
+    <ul class="td-options">
+      <li data-juste><code>range(3)</code> s'arrête avant 3</li>
+      <li data-retour="print affiche bien chaque valeur de i.">print n'affiche pas la dernière valeur</li>
+      <li data-retour="range(3) commence à 0 et donne 3 valeurs.">la boucle ne tourne que deux fois</li>
+    </ul>
+    <div class="td-correction"><p><code>range(3)</code> donne 0, 1 et 2 : la fin est exclue.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Pourquoi ce programme n'affiche-t-il pas 3 ? Explique en une ou deux phrases.</p>
+    <pre class="td-code">
+for i in range(3):
+    print(i)</pre>
+  </section>
+
   <!-- ═══ FIN DES EXEMPLES ═══ -->
 
   <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
@@ -202,7 +228,7 @@ for n in range(1, 4):
 
   <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">
-    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="{{DEPOT}}">Code source sur GitHub</a></p>{{MARG_PIED}}
+    <p>{{AUTEURS_PIED}} · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="{{DEPOT}}">Code source sur GitHub</a></p>{{MARG_PIED}}
   </footer>
 </main>
 </body>
