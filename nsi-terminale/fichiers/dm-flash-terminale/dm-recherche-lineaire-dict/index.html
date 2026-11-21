@@ -15,15 +15,18 @@
 </head>
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
-     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="tle-dm-recherche-dict" data-td-version="1">
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-dm-recherche-dict" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 4 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 3 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="4">
-      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:72.86%;--y:77.68%;--r:-70deg;--l:3.36%;--s:-1"></span></div>
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:78.57%;--y:62.5%;--r:4deg;--l:3.08%;--s:-1"></span></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">DM</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Dictionnaires</span></p>
         <h1>Recherche linéaire</h1>
@@ -59,7 +62,7 @@ def recherche(d, x):
             return v
     return -1</pre>
 
-  <section class="td-q" data-type="qcu" id="q1">
+  <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
     <p class="td-consigne">Quel est le type du paramètre <code>d</code> ? Choisis la réponse et sa justification.</p>
     <ul class="td-options">
       <li data-retour="Une liste n'a pas de méthode items() : on la parcourt valeur par valeur.">Une liste : on la parcourt avec <code>for</code>.</li>
@@ -69,6 +72,10 @@ def recherche(d, x):
     </ul>
     <p class="td-aide">Quelle structure de Python a une méthode <code>items()</code> ?</p>
     <div class="td-correction"><p><code>d</code> est un <b>dictionnaire</b> (<code>dict</code>) : <code>d.items()</code> donne ses couples (clé, valeur), que la boucle range dans <code>k</code> et <code>v</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Quel est le type du paramètre <code>d</code> ? Justifie ta réponse.</p>
   </section>
 
   <section class="td-q" data-type="trous" id="q2">
@@ -119,7 +126,7 @@ r4 = -1</pre>
 
   <h2 class="td-partie">2. Une valeur « pas trouvé » ambiguë</h2>
 
-  <section class="td-q" data-type="qcu" id="q4">
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
     <p class="td-consigne"><code>recherche({3: 1, 1: 0}, 5)</code> et <code>recherche({5: 6, 7: 1, 11: -1}, 11)</code> renvoient le même résultat. Pourquoi n'est-ce pas satisfaisant ?</p>
     <ul class="td-options">
       <li data-retour="Pour la clé 11, le résultat est juste : sa valeur est bien -1. Le souci est ailleurs.">La fonction se trompe pour la clé 11.</li>
@@ -131,7 +138,11 @@ r4 = -1</pre>
     <div class="td-correction"><p>Le résultat -1 a deux sens : « clé absente » et « la valeur associée est -1 ». Celui ou celle qui appelle la fonction ne peut pas les distinguer.</p></div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="q5">
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="4">
+    <p class="td-consigne">Les appels <code>recherche({3: 1, 1: 0}, 5)</code> et <code>recherche({5: 6, 7: 1, 11: -1}, 11)</code> renvoient le même résultat. Explique pourquoi ce n'est pas satisfaisant.</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
     <p class="td-consigne">Quelle solution règle ce problème ?</p>
     <ul class="td-options">
       <li data-retour="0 peut aussi être une valeur : recherche({1: 0}, 1) renverrait 0.">Renvoyer 0 quand la clé est absente.</li>
@@ -143,7 +154,11 @@ r4 = -1</pre>
     <div class="td-correction"><p><code>None</code> veut dire « aucune valeur ». On le teste avec <code>is None</code>. (Si une valeur du dictionnaire peut elle-même être <code>None</code>, on teste d'abord la présence de la clé avec <code>x in d</code>.)</p></div>
   </section>
 
-  <section class="td-q" data-type="code" id="q6" data-fichier="recherche.py">
+  <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="4">
+    <p class="td-consigne">Propose une solution pour régler ce problème.</p>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="6" id="q6" data-fichier="recherche.py" data-bonus>
     <p class="td-consigne">Modifie la fonction pour qu'elle renvoie <code>None</code> quand la clé est absente. <span class="td-ecran-seul">Des tests, cachés, la vérifient quand tu cliques sur « Lancer et vérifier ».</span></p>
     <pre class="td-depart">
 def recherche(d, x):
@@ -179,7 +194,7 @@ def recherche(d, x):
 
   <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">
-    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-recherche-lineaire-dict">Code source sur GitHub</a></p>
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-recherche-lineaire-dict">Code source sur GitHub</a></p>
   </footer>
 </main>
 </body>

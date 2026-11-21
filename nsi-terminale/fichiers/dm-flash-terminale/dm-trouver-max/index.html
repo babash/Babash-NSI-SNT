@@ -15,14 +15,17 @@
 </head>
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
-     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="tle-dm-trouver-max" data-td-version="1">
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-dm-trouver-max" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 3 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="3">
+    <div class="td-bandeau" data-bandeau="2">
       <div class="td-bandeau-decor" aria-hidden="true"></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">DM</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Parcours d&#x27;un tableau</span></p>
@@ -61,7 +64,7 @@ def recherche_max(tab):
             imax = i
     return vmax, imax</pre>
 
-  <section class="td-q" data-type="qcu" id="q1">
+  <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
     <p class="td-consigne">Quel type de parcours est utilisé à la ligne 3 de la fonction ?</p>
     <ul class="td-options">
       <li data-retour="Un parcours par valeur s'écrit for v in tab : la variable reçoit directement les éléments.">Un parcours par valeur.</li>
@@ -73,7 +76,11 @@ def recherche_max(tab):
     <div class="td-correction"><p><code>for i in range(...)</code> : <code>i</code> prend des <b>indices</b> (0, 1, 2…), et on lit l'élément avec <code>tab[i]</code>. C'est un parcours par indice.</p></div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="q2">
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quel type de parcours est utilisé à la ligne 3 de la fonction ?</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q2" data-support="ecran">
     <p class="td-consigne">Que représente la variable <code>imax</code> ?</p>
     <ul class="td-options">
       <li data-retour="La plus grande valeur, c'est vmax.">La plus grande valeur vue jusqu'ici.</li>
@@ -83,6 +90,10 @@ def recherche_max(tab):
     </ul>
     <p class="td-aide">Regarde la ligne <code>imax = i</code> : quand est-elle exécutée ?</p>
     <div class="td-correction"><p><code>imax</code> est la <b>position</b> du maximum : on la met à jour en même temps que <code>vmax</code>, quand <code>tab[i]</code> dépasse le maximum provisoire.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que représente la variable <code>imax</code> ?</p>
   </section>
 
   <section class="td-q" data-type="courte" id="q3" data-comparer="code" data-reponse="recherche_max([9, 100, 8, 48, 73])|print(recherche_max([9, 100, 8, 48, 73]))|vmax, imax = recherche_max([9, 100, 8, 48, 73])|resultat = recherche_max([9, 100, 8, 48, 73])">
@@ -135,7 +146,7 @@ r2 = (0, None)</pre>
     </div>
   </section>
 
-  <section class="td-q" data-type="cases" id="q6">
+  <section class="td-q" data-type="cases" id="q6" data-support="ecran">
     <p class="td-consigne">La fonction n'est pas correcte. Coche toutes ses erreurs.</p>
     <ul class="td-options">
       <li data-retour="La comparaison > est juste : elle garde la première position du maximum.">La comparaison devrait être <code>&lt;</code> au lieu de <code>&gt;</code>.</li>
@@ -147,7 +158,11 @@ r2 = (0, None)</pre>
     <div class="td-correction"><p>Deux erreurs. Avec <code>[-10, -2, -10]</code>, on obtient <code>(0, None)</code> : <code>vmax</code> doit partir d'un élément du tableau. Avec <code>[1, 2, 3]</code>, on obtient <code>(2, 1)</code> : le dernier élément est oublié, il faut <code>range(len(tab))</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="code" id="q7" data-fichier="maximum.py" data-obligatoire>
+  <section class="td-q" data-type="libre" id="q6-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">La fonction proposée est-elle correcte ? Si non, justifie en t'aidant de la question précédente.</p>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="8" id="q7" data-fichier="maximum.py" data-obligatoire>
     <p class="td-consigne">Réécris la fonction en corrigeant les deux erreurs. <span class="td-ecran-seul">Des tests, cachés, la vérifient quand tu cliques sur « Lancer et vérifier ».</span></p>
     <pre class="td-depart">
 def recherche_max(tab):
@@ -188,7 +203,7 @@ def recherche_max(tab):
 
   <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">
-    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-trouver-max">Code source sur GitHub</a></p><span class="td-margouillat" data-cachette="pied" style="--x:54%;--r:5deg;--s:1"></span>
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-trouver-max">Code source sur GitHub</a></p><span class="td-margouillat" data-cachette="pied" style="--x:54%;--r:5deg;--s:1"></span>
   </footer>
 </main>
 </body>
