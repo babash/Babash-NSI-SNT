@@ -9,6 +9,7 @@ toute seule à l'écran et, imprimée, elle est la feuille papier. Le PDF est fa
 | Boucle fermée : `for` | `td-for.html`, `td-for-2.html`, `td-for-3.html` | `td-for.pdf` |
 | Boucle ouverte : `while` | `td-while.html`, `td-while-2.html`, `td-while-3.html` | `td-while.pdf` |
 | Instructions conditionnelles | `td-conditions.html`, `td-conditions-2.html`, `td-conditions-3.html` | `td-conditions.pdf` |
+| Récapitulatif : conditions et boucles | `td-recapitulatif.html`, `td-recapitulatif-2.html`, `td-recapitulatif-3.html` | `td-recapitulatif.pdf` |
 
 Les anciennes pages statiques (police embarquée) sont remplacées à la même adresse ; elles restent
 dans l'historique Git.
