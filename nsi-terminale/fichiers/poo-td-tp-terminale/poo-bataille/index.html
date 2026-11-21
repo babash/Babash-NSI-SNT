@@ -1,0 +1,237 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La classe CarteBataille : TD en ligne</title>
+  <meta name="description" content="Exercice préparatoire de terminale NSI, en ligne et auto-correctif : écrire la classe CarteBataille (constructeur, méthode battre), puis l'utiliser pour faire s'affronter deux cartes.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsit-poo-bataille" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Terminale NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La classe <code>CarteBataille</code></h1>
+        <p class="td-accroche">Exercice préparatoire</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> créer une classe <code>CarteBataille</code> qui simule l'affrontement direct de deux cartes.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire une classe et son constructeur <code>__init__</code> ;</li>
+        <li>écrire une méthode qui compare l'objet <code>self</code> à un autre objet ;</li>
+        <li>créer des objets (instancier) dans le programme principal ;</li>
+        <li>afficher les attributs d'un objet et le résultat d'une méthode.</li>
+      </ul>
+      <p class="td-duree">30 minutes · 7 questions · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>Au jeu de la bataille, chaque joueur ou joueuse retourne une carte : la plus forte l'emporte. Une carte a une <b>valeur</b>, un entier de 2 à 14 (11 pour le valet, 12 pour la dame, 13 pour le roi, 14 pour l'as), et un <b>symbole</b>, une chaîne de caractères parmi <code>"Coeur"</code>, <code>"Carreau"</code>, <code>"Trèfle"</code> et <code>"Pique"</code>.</p>
+
+  <h2 class="td-partie">1. Définir la classe et son constructeur</h2>
+
+  <section class="td-q" data-type="courte" id="q1" data-comparer="code" data-reponse="class CarteBataille:|class CarteBataille():|class CarteBataille(object):" data-etiquette="Première ligne :">
+    <p class="td-consigne">Écris la première ligne, celle qui crée une classe nommée <code>CarteBataille</code>.</p>
+    <p class="td-retour" data-si="class CarteBataille|class CarteBataille()">Il manque les deux-points à la fin de la ligne : le bloc de la classe suit.</p>
+    <p class="td-retour" data-si="def CarteBataille():|def CarteBataille:">Le mot-clé <code>def</code> crée une fonction. Pour une classe, c'est un autre mot-clé.</p>
+    <p class="td-aide">Le mot-clé est <code>class</code>, suivi du nom de la classe.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+class CarteBataille:</pre>
+      <p>Comme pour <code>def</code> ou <code>if</code>, la ligne finit par <code>:</code> et le contenu de la classe est décalé de 4 espaces.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="4" id="q2" data-fichier="bataille.py" data-obligatoire>
+    <p class="td-consigne">Écris le constructeur <code>__init__</code> de la classe. Il prend deux paramètres, <code>valeur</code> et <code>symbole</code>, et les range dans deux attributs du même nom.</p>
+    <pre class="td-depart">
+class CarteBataille:
+    # le constructeur
+    ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_c = CarteBataille(10, "Trèfle")
+assert hasattr(_c, "valeur") and hasattr(_c, "symbole"), "L'objet doit avoir deux attributs, valeur et symbole : écris self.valeur = … et self.symbole = …"
+assert _c.valeur == 10, "Pour CarteBataille(10, \"Trèfle\"), l'attribut valeur doit valoir 10. Il vaut : " + repr(_c.valeur)
+assert _c.symbole == "Trèfle", "Pour CarteBataille(10, \"Trèfle\"), l'attribut symbole doit valoir \"Trèfle\". Il vaut : " + repr(_c.symbole)
+_d = CarteBataille(13, "Coeur")
+assert (_d.valeur, _d.symbole) == (13, "Coeur"), "Pour CarteBataille(13, \"Coeur\"), on attend la valeur 13 et le symbole \"Coeur\"."
+assert (_c.valeur, _c.symbole) == (10, "Trèfle"), "Chaque carte garde ses propres attributs : créer une 2e carte ne doit pas changer la 1re."
+</script>
+    <p class="td-aide">Le constructeur s'écrit comme une méthode : <code>def __init__(self, valeur, symbole):</code>.</p>
+    <p class="td-aide">Dans son bloc, on range chaque paramètre dans un attribut : <code>self.valeur = valeur</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class CarteBataille:
+    # le constructeur
+    def __init__(self, valeur, symbole):
+        self.valeur = valeur
+        self.symbole = symbole
+</pre>
+      <p><code>valeur</code> seul est le paramètre, qui disparaît à la fin de <code>__init__</code> ; <code>self.valeur</code> est l'attribut, gardé dans l'objet.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">2. La méthode de comparaison</h2>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q3" data-fichier="bataille.py" data-obligatoire>
+    <p class="td-consigne">Écris la méthode <code>battre(self, autre_carte)</code> : elle renvoie <code>True</code> si la valeur de la carte <code>self</code> est <b>strictement supérieure</b> à celle de <code>autre_carte</code>, et <code>False</code> sinon.</p>
+    <pre class="td-depart">
+class CarteBataille:
+    def __init__(self, valeur, symbole):
+        self.valeur = valeur
+        self.symbole = symbole
+
+    def battre(self, autre_carte):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_roi, _dix = CarteBataille(13, "Coeur"), CarteBataille(10, "Trèfle")
+_r = _roi.battre(_dix)
+assert _r is not None, "battre doit renvoyer True ou False avec return. Elle renvoie None."
+assert _r is True, "Le roi (13) bat le 10 : on attend True. Ta méthode renvoie : " + repr(_r)
+assert _dix.battre(_roi) is False, "Le 10 ne bat pas le roi (13) : on attend False."
+assert CarteBataille(7, "Pique").battre(CarteBataille(7, "Carreau")) is False, "Deux cartes de même valeur : aucune ne bat l'autre (strictement supérieure), on attend False."
+assert CarteBataille(14, "Pique").battre(CarteBataille(2, "Pique")) is True, "L'as (14) bat le 2 : on attend True."
+</script>
+    <p class="td-aide">La valeur de la carte est <code>self.valeur</code> ; celle de l'autre carte, <code>autre_carte.valeur</code>.</p>
+    <p class="td-aide">« Strictement supérieure » : <code>&gt;</code>, pas <code>&gt;=</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class CarteBataille:
+    def __init__(self, valeur, symbole):
+        self.valeur = valeur
+        self.symbole = symbole
+
+    def battre(self, autre_carte):
+        return self.valeur &gt; autre_carte.valeur
+</pre>
+      <p>La comparaison donne déjà <code>True</code> ou <code>False</code> : on la renvoie directement. Un <code>if … else</code> avec deux <code>return</code> est juste aussi.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. Le programme principal</h2>
+
+  <section class="td-q" data-type="courte" id="q4" data-comparer="code" data-reponse="joueur1 = CarteBataille(10, &quot;Trèfle&quot;)|joueur1 = CarteBataille(10, &quot;Trefle&quot;)|joueur1 = CarteBataille(valeur=10, symbole=&quot;Trèfle&quot;)" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui crée (instancie) une carte <code>joueur1</code> : le 10 de trèfle.</p>
+    <p class="td-retour" data-si="joueur1 = CarteBataille(&quot;Trèfle&quot;, 10)">L'ordre compte : le constructeur attend d'abord la valeur, puis le symbole.</p>
+    <p class="td-retour" data-si="joueur1 = CarteBataille(10, Trèfle)|joueur1 = CarteBataille(10, Trefle)">Le symbole est une chaîne de caractères : il faut des guillemets.</p>
+    <p class="td-aide">On appelle la classe avec les deux valeurs : <code>CarteBataille(valeur, symbole)</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+joueur1 = CarteBataille(10, "Trèfle")</pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-comparer="code" data-reponse="joueur2 = CarteBataille(13, &quot;Coeur&quot;)|joueur2 = CarteBataille(13, &quot;Cœur&quot;)|joueur2 = CarteBataille(valeur=13, symbole=&quot;Coeur&quot;)" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui crée une carte <code>joueur2</code> : le 13 de cœur (un roi).</p>
+    <p class="td-retour" data-si="joueur2 = CarteBataille(&quot;Roi&quot;, &quot;Coeur&quot;)|joueur2 = CarteBataille(&quot;Coeur&quot;, 13)">La valeur est un entier : le roi vaut 13. Et la valeur vient en premier.</p>
+    <p class="td-aide">Le roi vaut 13 ; le symbole s'écrit <code>"Coeur"</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+joueur2 = CarteBataille(13, "Coeur")</pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q6">
+    <p class="td-consigne">Pour afficher la carte, Lina écrit <code>print(joueur1)</code>. Qu'affiche Python ?</p>
+    <ul class="td-options">
+      <li data-juste>Une ligne comme <code>&lt;__main__.CarteBataille object at 0x7fcb3f1370e0&gt;</code></li>
+      <li data-retour="Python ne sait pas tout seul comment écrire une carte : il n'affiche pas ses attributs.">10 de Trèfle</li>
+      <li data-retour="print affiche la valeur de la variable, pas son nom.">joueur1</li>
+      <li data-retour="Afficher un objet ne provoque pas d'erreur : Python écrit une description technique de l'objet.">Une erreur <code>TypeError</code></li>
+    </ul>
+    <p class="td-aide">Python ne connaît pas la façon d'écrire une carte : il décrit l'objet comme il peut (sa classe et son adresse en mémoire).</p>
+    <div class="td-correction">
+      <p>Python affiche la classe de l'objet et son adresse en mémoire (elle change à chaque lancement). Pour afficher la carte, on affiche ses attributs : <code>print(joueur1.valeur, "de", joueur1.symbole)</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="9" id="q7" data-fichier="bataille.py" data-obligatoire>
+    <p class="td-consigne">Sous la classe, écris le programme principal : il crée <code>joueur1</code> et <code>joueur2</code>, affiche les deux cartes, puis utilise la méthode <code>battre</code> pour afficher <code>Joueur 1 gagne !</code> ou <code>Joueur 2 gagne !</code>. On doit voir exactement :</p>
+    <pre class="td-console">
+<span class="td-l">10 de Trèfle</span><span class="td-l">13 de Coeur</span><span class="td-l">Joueur 2 gagne !</span></pre>
+    <pre class="td-depart">
+class CarteBataille:
+    def __init__(self, valeur, symbole):
+        self.valeur = valeur
+        self.symbole = symbole
+
+    def battre(self, autre_carte):
+        return self.valeur &gt; autre_carte.valeur
+
+# programme principal
+</pre>
+    <pre class="td-attendu">
+10 de Trèfle
+13 de Coeur
+Joueur 2 gagne !</pre>
+    <script type="text/x-python" class="td-tests">
+assert isinstance(joueur1, CarteBataille) and isinstance(joueur2, CarteBataille), "joueur1 et joueur2 doivent être des objets CarteBataille."
+assert (joueur1.valeur, joueur2.valeur) == (10, 13), "joueur1 est le 10 de trèfle et joueur2 le roi de cœur (13)."
+</script>
+    <p class="td-aide">Pour afficher une carte : <code>print(joueur1.valeur, "de", joueur1.symbole)</code>.</p>
+    <p class="td-aide"><code>joueur1.battre(joueur2)</code> vaut <code>True</code> si le joueur 1 gagne : utilise-le dans un <code>if … else</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class CarteBataille:
+    def __init__(self, valeur, symbole):
+        self.valeur = valeur
+        self.symbole = symbole
+
+    def battre(self, autre_carte):
+        return self.valeur &gt; autre_carte.valeur
+
+# programme principal
+joueur1 = CarteBataille(10, "Trèfle")
+joueur2 = CarteBataille(13, "Coeur")
+print(joueur1.valeur, "de", joueur1.symbole)
+print(joueur2.valeur, "de", joueur2.symbole)
+if joueur1.battre(joueur2):
+    print("Joueur 1 gagne !")
+else:
+    print("Joueur 2 gagne !")
+</pre>
+      <p>Le message dépend de ce que renvoie <code>battre</code> : avec deux autres cartes, le même programme donnerait le bon gagnant. (Pour deux cartes de même valeur, il y a « bataille » : ce programme simple ne le gère pas.)</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><code>class Nom:</code> crée la classe ; le constructeur <code>__init__(self, …)</code> range les paramètres dans les attributs : <code>self.valeur = valeur</code>.</p>
+    <p>Une méthode compare <code>self</code> à un autre objet : <code>self.valeur &gt; autre_carte.valeur</code>. <code>print(objet)</code> n'affiche pas ses attributs.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:-1"></span>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/poo-td-tp-terminale/poo-bataille">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

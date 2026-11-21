@@ -1,0 +1,388 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La classe Recette : TD en ligne</title>
+  <meta name="description" content="DM flash de terminale NSI, en ligne et auto-correctif : une classe Recette dont les attributs sont des listes ; compléter ses méthodes, créer et modifier un objet, suivre une boucle pas à pas.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsit-dm-poo-liste" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:52.38%;--y:91.07%;--r:-6deg;--l:4.2%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Terminale NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La classe <code>Recette</code></h1>
+        <p class="td-accroche">DM flash</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> manipuler un objet dont les attributs sont des listes : les lire, les compléter, les parcourir.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>donner le type des attributs et des valeurs renvoyées par les méthodes ;</li>
+        <li>créer un objet, puis modifier un de ses attributs ;</li>
+        <li>suivre pas à pas une boucle dans une méthode ;</li>
+        <li>écrire une méthode qui parcourt des listes et renvoie une liste de tuples.</li>
+      </ul>
+      <p class="td-duree">45 minutes · 8 questions · devoir maison</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>On s'intéresse au code suivant. Une recette a un nom et trois listes de même longueur : à la position <code>i</code>, on trouve un ingrédient, sa quantité et son unité.</p>
+  <pre class="td-code">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+    def ajouter(...):
+        ...
+
+    def calcul_prix(self, prix_unitaires):
+        ''' Calcule le prix de la recette à partir des prix unitaires. '''
+        total = 0
+        for i in range(len(self.ingredients)):
+            total += prix_unitaires[i] * self.quantites[i]
+        return total
+
+    def liste_course(self, cellier):
+        ''' Renvoie une liste de tuples (ingredient, quantite). '''
+        pass</pre>
+
+  <h2 class="td-partie">1. Lire la classe</h2>
+
+  <section class="td-q" data-type="cases" id="q1" data-support="ecran">
+    <p class="td-consigne">Coche les <b>attributs</b> de la classe <code>Recette</code>, avec leur bon type.</p>
+    <ul class="td-options">
+      <li data-juste><code>nom</code> : <code>str</code></li>
+      <li data-juste><code>ingredients</code> : <code>list</code></li>
+      <li data-juste><code>quantites</code> : <code>list</code></li>
+      <li data-juste><code>unites</code> : <code>list</code></li>
+      <li data-retour="prix_unitaires est un paramètre de calcul_prix, pas un attribut : il n'est pas rangé dans self."><code>prix_unitaires</code> : <code>list</code></li>
+      <li data-retour="Le nom est un texte, comme &quot;Muffin au chocolat&quot; : une chaîne (str)."><code>nom</code> : <code>list</code></li>
+      <li data-retour="quantites contient toutes les quantités, une par ingrédient : c'est une liste."><code>quantites</code> : <code>int</code></li>
+    </ul>
+    <p class="td-aide">Les attributs sont créés dans le constructeur, avec <code>self.</code> devant leur nom.</p>
+    <p class="td-aide">Regarde l'exemple du muffin, plus bas : quelles valeurs donne-t-on pour chaque paramètre ?</p>
+    <div class="td-correction">
+      <p>Quatre attributs : <code>nom</code>, une chaîne (<code>str</code>), et trois listes (<code>list</code>) : <code>ingredients</code> (des chaînes), <code>quantites</code> (des nombres) et <code>unites</code> (des chaînes).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Liste les attributs de la classe <code>Recette</code>, en précisant leur type.</p>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="5" id="q2" data-fichier="recette.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>ajouter</code> : elle ajoute un ingrédient, sa quantité et son unité, dans cet ordre de paramètres, à la fin des listes correspondantes.</p>
+    <pre class="td-depart">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+    def ajouter(...):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_r = Recette("Mataba", ["feuilles de manioc"], [1000], ["g"])
+_r.ajouter("lait de coco", 400, "mL")
+assert _r.ingredients == ["feuilles de manioc", "lait de coco"], "Après ajouter(\"lait de coco\", 400, \"mL\"), la liste des ingrédients doit finir par \"lait de coco\". Elle vaut : " + repr(_r.ingredients)
+assert _r.quantites == [1000, 400], "La quantité 400 doit être ajoutée à la fin de quantites. On a : " + repr(_r.quantites)
+assert _r.unites == ["g", "mL"], "L'unité \"mL\" doit être ajoutée à la fin de unites. On a : " + repr(_r.unites)
+_r.ajouter("sel", 5, "g")
+assert len(_r.ingredients) == len(_r.quantites) == len(_r.unites) == 3, "Après deux ajouts, les trois listes doivent avoir 3 éléments chacune."
+assert (_r.ingredients[2], _r.quantites[2], _r.unites[2]) == ("sel", 5, "g"), "Le 2e ajout (sel, 5, g) doit être à la fin des trois listes."
+</script>
+    <p class="td-aide">La méthode a quatre paramètres : <code>self</code>, puis l'ingrédient, la quantité et l'unité.</p>
+    <p class="td-aide">Trois listes à compléter : trois <code>append</code>, un par attribut.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+    def ajouter(self, ingredient, quantite, unite):
+        self.ingredients.append(ingredient)
+        self.quantites.append(quantite)
+        self.unites.append(unite)
+</pre>
+      <p>Les trois listes restent alignées : à la même position, on trouve l'ingrédient, sa quantité et son unité.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q3" data-support="ecran">
+    <p class="td-consigne">Quel est le type de ce que renvoient les méthodes ? Coche les phrases justes (pour <code>liste_course</code>, une fois écrite).</p>
+    <ul class="td-options">
+      <li data-juste><code>ajouter</code> ne renvoie rien : elle renvoie <code>None</code>.</li>
+      <li data-juste><code>calcul_prix</code> renvoie un nombre (<code>int</code> ou <code>float</code>).</li>
+      <li data-juste><code>liste_course</code> renvoie une liste de tuples.</li>
+      <li data-retour="ajouter modifie les listes de l'objet, mais elle n'a pas de return : elle renvoie None."><code>ajouter</code> renvoie une liste.</li>
+      <li data-retour="calcul_prix renvoie total, une somme de produits : un seul nombre."><code>calcul_prix</code> renvoie une liste de prix.</li>
+    </ul>
+    <p class="td-aide">Cherche le <code>return</code> de chaque méthode. Pas de <code>return</code> : la méthode renvoie <code>None</code>.</p>
+    <div class="td-correction">
+      <p><code>ajouter</code> : <code>None</code> (elle modifie l'objet). <code>calcul_prix</code> : un nombre, ici un <code>float</code> car les prix sont des nombres à virgule. <code>liste_course</code> : une liste de tuples, comme le dit son commentaire.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Quel est le type de ce que renvoient les méthodes <code>ajouter</code>, <code>calcul_prix</code> et <code>liste_course</code> ?</p>
+  </section>
+
+  <h2 class="td-partie">2. Créer et modifier une recette</h2>
+
+  <section class="td-q" data-type="code" data-lignes="6" id="q4" data-fichier="recette.py" data-obligatoire>
+    <p class="td-consigne">Écris l'instruction qui crée (instancie) l'objet <code>tartiflette</code>, la recette de la tartiflette : 500 g de reblochon, 200 g d'oignons émincés, 200 g de lardons fumés et 1 kg de pommes de terre.</p>
+    <pre class="td-depart">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+tartiflette = ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert isinstance(tartiflette, Recette), "tartiflette doit être un objet Recette, créé avec Recette(…). C'est : " + repr(tartiflette)
+assert isinstance(tartiflette.nom, str) and "tartiflette" in tartiflette.nom.lower(), "Le nom de la recette doit être une chaîne, par exemple \"Tartiflette\". On a : " + repr(tartiflette.nom)
+_l = (tartiflette.ingredients, tartiflette.quantites, tartiflette.unites)
+assert all(isinstance(x, list) for x in _l), "ingredients, quantites et unites doivent être trois listes."
+assert len(_l[0]) == len(_l[1]) == len(_l[2]) == 4, "Il y a 4 ingrédients : chaque liste doit avoir 4 éléments. Longueurs : " + str([len(x) for x in _l])
+def _g(i):
+    u = str(tartiflette.unites[i]).lower().strip()
+    f = 1000 if u in ("kg", "kilo", "kilos", "kilogramme", "kilogrammes") else 1 if u in ("g", "gramme", "grammes") else None
+    assert f is not None, "Unité inconnue : " + repr(tartiflette.unites[i]) + ". Écris \"g\" (ou \"grammes\") et \"kg\"."
+    return tartiflette.quantites[i] * f
+_v = {}
+for _i, _n in enumerate(tartiflette.ingredients):
+    for _m in ("reblochon", "oignon", "lardon", "pomme"):
+        if _m in str(_n).lower():
+            _v[_m] = _g(_i)
+assert sorted(_v) == ["lardon", "oignon", "pomme", "reblochon"], "Il faut les 4 ingrédients : reblochon, oignons, lardons et pommes de terre. On trouve : " + repr(tartiflette.ingredients)
+assert _v == {"reblochon": 500, "oignon": 200, "lardon": 200, "pomme": 1000}, "Une quantité ne va pas avec son unité (500 g, 200 g, 200 g, 1 kg). Quantités : " + repr(tartiflette.quantites) + ", unités : " + repr(tartiflette.unites)
+</script>
+    <p class="td-aide">L'ordre des paramètres : <code>Recette(nom, ingredients, quantites, unites)</code>. Les trois derniers sont des listes.</p>
+    <p class="td-aide">Les listes sont alignées : le reblochon en premier dans <code>ingredients</code>, donc 500 en premier dans <code>quantites</code> et <code>"g"</code> en premier dans <code>unites</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+tartiflette = Recette("Tartiflette",
+                      ["reblochon", "oignons émincés",
+                       "lardons fumés", "pommes de terre"],
+                      [500, 200, 200, 1],
+                      ["g", "g", "g", "kg"])
+</pre>
+      <p>Écrire 1000 avec l'unité <code>"g"</code> pour les pommes de terre est juste aussi.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q5" data-fichier="recette.py" data-obligatoire>
+    <p class="td-consigne">On raconte qu'il vaut mieux mettre 1 kg de reblochon dans la tartiflette. Écris les instructions qui mettent à jour la recette <code>tartiflette</code>.</p>
+    <pre class="td-depart">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+tartiflette = Recette("Tartiflette",
+                      ["reblochon", "oignons émincés",
+                       "lardons fumés", "pommes de terre"],
+                      [500, 200, 200, 1],
+                      ["g", "g", "g", "kg"])
+
+# 1 kg de reblochon
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert isinstance(tartiflette, Recette) and tartiflette.ingredients[0] == "reblochon", "On modifie la recette tartiflette déjà créée : ne la remplace pas par autre chose."
+assert len(tartiflette.quantites) == 4 and len(tartiflette.unites) == 4, "Les listes doivent garder 4 éléments : on change une quantité, on n'en ajoute pas."
+_u = str(tartiflette.unites[0]).lower()
+_q = tartiflette.quantites[0] * (1000 if _u in ("kg", "kilogramme", "kilogrammes") else 1)
+assert _q == 1000, "Le reblochon (position 0) doit passer à 1 kg (1000 g). On a : " + repr(tartiflette.quantites[0]) + " " + repr(tartiflette.unites[0])
+assert tartiflette.quantites[1:] == [200, 200, 1] and tartiflette.unites[1:] == ["g", "g", "kg"], "Les autres ingrédients ne changent pas. Quantités : " + repr(tartiflette.quantites)
+</script>
+    <p class="td-aide">Le reblochon est à la position 0 : sa quantité est <code>tartiflette.quantites[0]</code>.</p>
+    <p class="td-aide">L'unité du reblochon est <code>"g"</code> : 1 kg, c'est 1000 g.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+tartiflette = Recette("Tartiflette",
+                      ["reblochon", "oignons émincés",
+                       "lardons fumés", "pommes de terre"],
+                      [500, 200, 200, 1],
+                      ["g", "g", "g", "kg"])
+
+# 1 kg de reblochon
+tartiflette.quantites[0] = 1000
+</pre>
+      <p>On modifie un élément d'une liste qui est un attribut. Autre réponse juste : <code>tartiflette.quantites[0] = 1</code> et <code>tartiflette.unites[0] = "kg"</code>.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. Calculer un prix, faire les courses</h2>
+
+  <p>On considère le code suivant, écrit sous la classe <code>Recette</code>.</p>
+  <pre class="td-code">
+muffin = Recette("Muffin au chocolat",
+                 ["farine", "chocolat", "lait", "oeuf"],
+                 [100, 50, 200, 2],
+                 ["grammes", "grammes", "grammes", "unites"])
+prix = muffin.calcul_prix([0.1, 1.1, 0.75, 0.25])
+print(f"Le prix de vente du {muffin.nom} est de {prix} €.")</pre>
+
+  <section class="td-q" data-type="courte" id="q6" data-reponse="Le prix de vente du Muffin au chocolat est de 215.5 €." data-etiquette="Affichage :">
+    <p class="td-consigne">On sait que <code>muffin.calcul_prix([0.1, 1.1, 0.75, 0.25])</code> vaut 215.5. Qu'affiche exactement la ligne 6 du code ci-dessus ?</p>
+    <p class="td-retour" data-si="Le prix de vente du {muffin.nom} est de {prix} €.">Le <code>f</code> devant les guillemets fait une f-chaîne : chaque <code>{…}</code> est remplacé par sa valeur.</p>
+    <p class="td-retour" data-si="Le prix de vente du muffin est de 215.5 €.">Le nom de l'objet <code>muffin</code> n'est pas ce qui s'affiche : <code>muffin.nom</code> est l'attribut, la chaîne donnée au constructeur.</p>
+    <p class="td-aide">Dans une f-chaîne, <code>{muffin.nom}</code> est remplacé par la valeur de l'attribut <code>nom</code> de l'objet.</p>
+    <div class="td-correction">
+      <pre class="td-console">
+<span class="td-l">Le prix de vente du Muffin au chocolat est de 215.5 €.</span></pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q7" data-reponse="10.0, 65.0, 215.0, 215.5|10.0,65.0,215.0,215.5|10.0; 65.0; 215.0; 215.5|10.0;65.0;215.0;215.5|10.0 65.0 215.0 215.5|0, 10.0, 65.0, 215.0, 215.5|0,10.0,65.0,215.0,215.5|0; 10.0; 65.0; 215.0; 215.5|0;10.0;65.0;215.0;215.5|0 10.0 65.0 215.0 215.5|10, 65, 215, 215.5|10,65,215,215.5|10; 65; 215; 215.5|10;65;215;215.5|10 65 215 215.5|0, 10, 65, 215, 215.5|0,10,65,215,215.5|0; 10; 65; 215; 215.5|0;10;65;215;215.5|0 10 65 215 215.5" data-etiquette="Valeurs de total :">
+    <p class="td-consigne">Fais le tableau d'avancement de l'appel <code>muffin.calcul_prix(…)</code> de la ligne 5 : tour par tour, les valeurs de <code>i</code> et de <code>total</code>. Puis écris les valeurs successives de <code>total</code> après chaque tour, séparées par des virgules.</p>
+    <p class="td-retour" data-si="10, 55, 150, 0.5|10.0, 55.0, 150.0, 0.5">Ce sont les produits de chaque tour. <code>total +=</code> les ajoute : on garde la somme depuis le début.</p>
+    <p class="td-retour" data-si="215.5">C'est la valeur finale. On demande aussi les valeurs après chacun des 4 tours.</p>
+    <p class="td-aide">Il y a 4 ingrédients : <code>i</code> prend les valeurs 0, 1, 2 et 3.</p>
+    <p class="td-aide">Au tour <code>i = 0</code> : <code>total = 0 + 0.1 × 100</code>.</p>
+    <div class="td-correction">
+      <ul>
+        <li><code>i = 0</code> : 0.1 × 100 = 10.0, <code>total</code> vaut 10.0 ;</li>
+        <li><code>i = 1</code> : 1.1 × 50 ≈ 55, <code>total</code> vaut 65.0 ;</li>
+        <li><code>i = 2</code> : 0.75 × 200 = 150.0, <code>total</code> vaut 215.0 ;</li>
+        <li><code>i = 3</code> : 0.25 × 2 = 0.5, <code>total</code> vaut 215.5.</li>
+      </ul>
+      <p>Les prix sont des <code>float</code> : <code>total</code> devient un <code>float</code> dès le premier tour.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="10" id="q8" data-fichier="recette.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>liste_course</code>. Le <b>cellier</b> est un dictionnaire : à chaque ingrédient qu'on a déjà, il associe sa quantité (dans l'unité de la recette). La méthode renvoie la liste de courses : une liste de tuples <code>(ingrédient, quantité)</code>, dans l'ordre de la recette. Un ingrédient est dans la liste de courses si :</p>
+    <ul>
+      <li>il n'est pas dans le cellier : on prend la quantité de la recette ;</li>
+      <li>sa quantité dans le cellier est inférieure à celle de la recette : on prend la différence.</li>
+    </ul>
+    <p>Exemple : pour le muffin et le cellier <code>{"farine": 500, "chocolat": 20, "oeuf": 2}</code>, on renvoie <code>[("chocolat", 30), ("lait", 200)]</code>.</p>
+    <pre class="td-depart">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+    def liste_course(self, cellier):
+        ''' Renvoie une liste de tuples (ingredient, quantite). '''
+        pass
+</pre>
+    <script type="text/x-python" class="td-tests">
+_m = Recette("Muffin au chocolat", ["farine", "chocolat", "lait", "oeuf"], [100, 50, 200, 2], ["grammes", "grammes", "grammes", "unites"])
+_l = _m.liste_course({"farine": 500, "chocolat": 20, "oeuf": 2})
+assert isinstance(_l, list), "liste_course doit renvoyer une liste (avec return). Elle renvoie : " + repr(_l)
+assert all(isinstance(x, tuple) for x in _l), "Chaque élément de la liste est un tuple (ingrédient, quantité). On a : " + repr(_l)
+assert _l == [("chocolat", 30), ("lait", 200)], "Cellier {farine: 500, chocolat: 20, oeuf: 2} : on attend [('chocolat', 30), ('lait', 200)]. Ta méthode renvoie : " + repr(_l)
+_l = _m.liste_course({})
+assert _l == [("farine", 100), ("chocolat", 50), ("lait", 200), ("oeuf", 2)], "Cellier vide : il faut tout acheter, avec les quantités de la recette. Ta méthode renvoie : " + repr(_l)
+_l = _m.liste_course({"farine": 100, "chocolat": 50, "lait": 200, "oeuf": 6})
+assert _l == [], "Si le cellier a assez de tout (autant ou plus), la liste de courses est vide. Ta méthode renvoie : " + repr(_l)
+_l = _m.liste_course({"lait": 150, "sucre": 300})
+assert _l == [("farine", 100), ("chocolat", 50), ("lait", 50), ("oeuf", 2)], "Cellier {lait: 150, sucre: 300} : on achète tout, et 50 de lait seulement. Ta méthode renvoie : " + repr(_l)
+</script>
+    <p class="td-aide">Parcours les ingrédients avec leur position : <code>for i in range(len(self.ingredients)):</code>. Commence avec une liste vide.</p>
+    <p class="td-aide">Pour savoir si un ingrédient est dans le cellier : <code>if ingredient not in cellier:</code>.</p>
+    <p class="td-aide">Sinon, la quantité du cellier est <code>cellier[ingredient]</code> : si elle est plus petite (strictement) que celle de la recette, on ajoute <code>(ingredient, besoin - cellier[ingredient])</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Recette:
+
+    def __init__(self, nom, ingredients, quantites, unites):
+        self.ingredients = ingredients
+        self.quantites = quantites
+        self.unites = unites
+        self.nom = nom
+
+    def liste_course(self, cellier):
+        ''' Renvoie une liste de tuples (ingredient, quantite). '''
+        courses = []
+        for i in range(len(self.ingredients)):
+            ingredient = self.ingredients[i]
+            besoin = self.quantites[i]
+            if ingredient not in cellier:
+                courses.append((ingredient, besoin))
+            elif cellier[ingredient] &lt; besoin:
+                courses.append((ingredient, besoin - cellier[ingredient]))
+        return courses
+</pre>
+      <p>Les doubles parenthèses de <code>append((…, …))</code> sont nécessaires : on ajoute <b>un</b> tuple. Avec <code>&lt;=</code>, un ingrédient déjà en quantité suffisante serait acheté pour 0.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Un attribut peut être une liste : on la complète avec <code>self.ingredients.append(…)</code> et on modifie un élément avec <code>tartiflette.quantites[0] = 1000</code>.</p>
+    <p>Des listes alignées se parcourent par position : <code>for i in range(len(self.ingredients)):</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-poo-liste">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

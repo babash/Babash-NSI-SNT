@@ -1,0 +1,355 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La classe Chemin : TD en ligne</title>
+  <meta name="description" content="DM flash de terminale NSI, en ligne et auto-correctif : la classe Chemin représente un itinéraire sur une grille ; lire ses attributs, compléter et écrire ses méthodes, tirer un itinéraire au hasard et compter les chemins.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsit-dm-poo-itineraire" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:83.93%;--y:76.79%;--r:176deg;--l:3.92%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Terminale NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La classe <code>Chemin</code></h1>
+        <p class="td-accroche">DM flash</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> compléter et écrire les méthodes d'une classe qui représente un itinéraire sur une grille.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>lire la valeur d'un attribut d'un objet ;</li>
+        <li>parcourir une chaîne et une grille (une liste de listes) dans une méthode ;</li>
+        <li>écrire une méthode qui affiche, et une méthode qui renvoie un tuple ;</li>
+        <li>compter les chemins possibles de taille N.</li>
+      </ul>
+      <p class="td-duree">45 minutes · 7 questions · devoir maison</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>Un itinéraire est noté par une suite de lettres : <b>D</b> pour un déplacement d'une case vers la droite, <b>B</b> pour un déplacement d'une case vers le bas. Le nombre de D est la <b>longueur</b> de l'itinéraire ; le nombre de B est sa <b>largeur</b>.</p>
+  <p>Ainsi, l'itinéraire <code>'DDBDBBDDDDB'</code> a pour longueur 7 et pour largeur 4. Sa représentation graphique est :</p>
+  <pre class="td-console">
+<span class="td-l">S * *</span><span class="td-l">    * *</span><span class="td-l">      *</span><span class="td-l">      * * * * *</span><span class="td-l">              E</span></pre>
+  <p>avec <b>S</b> la case de départ (start), de coordonnées (0 ; 0), <b>*</b> les cases visitées, et <b>E</b> la case d'arrivée (end).</p>
+  <pre class="td-code">
+class Chemin:
+    def __init__(self, itineraire):
+        self.itineraire = itineraire
+        longueur, largeur = 0, 0
+        for direction in self.itineraire:
+            if direction == "D":
+                longueur = longueur + 1
+            if direction == "B":
+                largeur = largeur + 1
+        self.longueur = longueur
+        self.largeur = largeur
+        self.grille = [['.' for i in range(longueur + 1)]
+                       for j in range(largeur + 1)]
+
+    def remplir_grille(self):
+        ...  # à compléter : question 3
+
+    def get_dimensions(self):
+        ...  # à écrire : question 5</pre>
+
+  <h2 class="td-partie">1. Lire les attributs</h2>
+  <p>On exécute ce code, sous la classe :</p>
+  <pre class="td-code">
+chemin_1 = Chemin("DDBDBBDDDDB")  # on crée une instance de Chemin
+a = chemin_1.largeur
+b = chemin_1.longueur</pre>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="4|quatre" data-etiquette="a =">
+    <p class="td-consigne">Quelle valeur contient la variable <code>a</code> ?</p>
+    <p class="td-retour" data-si="7">7, c'est la longueur : le nombre de D. <code>a</code> reçoit la largeur.</p>
+    <p class="td-aide">La largeur est le nombre de B dans l'itinéraire. Compte-les.</p>
+    <div class="td-correction"><p><code>a</code> vaut <b>4</b> : il y a 4 lettres B dans <code>"DDBDBBDDDDB"</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q2" data-reponse="7|sept" data-etiquette="b =">
+    <p class="td-consigne">Quelle valeur contient la variable <code>b</code> ?</p>
+    <p class="td-retour" data-si="4">4, c'est la largeur. <code>b</code> reçoit la longueur : le nombre de D.</p>
+    <p class="td-retour" data-si="11">11, c'est le nombre total de lettres (longueur + largeur).</p>
+    <p class="td-aide">La longueur est le nombre de D dans l'itinéraire.</p>
+    <div class="td-correction"><p><code>b</code> vaut <b>7</b> : il y a 7 lettres D. Le constructeur les a comptées dans sa boucle.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Compléter et écrire les méthodes</h2>
+
+  <section class="td-q" data-type="trous" id="q3">
+    <p class="td-consigne">Complète la méthode <code>remplir_grille</code>. <code>i</code> est le numéro de la ligne, <code>j</code> celui de la colonne. Les trois dernières lignes affichent la grille, pour vérifier.</p>
+    <pre class="td-code">
+class Chemin:
+    def __init__(self, itineraire):
+        self.itineraire = itineraire
+        longueur, largeur = 0, 0
+        for direction in self.itineraire:
+            if direction == "D":
+                longueur = longueur + 1
+            if direction == "B":
+                largeur = largeur + 1
+        self.longueur = longueur
+        self.largeur = largeur
+        self.grille = [['.' for i in range(longueur + 1)]
+                       for j in range(largeur + 1)]
+
+    def remplir_grille(self):
+        i, j = 0, 0  # position initiale
+        self.grille[0][0] = 'S'  # case de départ marquée d'un S
+        for direction in [[self.itineraire]]:
+            if direction == 'D':
+                [[j]] = [[j + 1|1 + j]]  # vers la droite
+            elif direction == 'B':
+                [[i]] = [[i + 1|1 + i]]  # vers le bas
+            self.grille[i][j] = '*'  # marquer le chemin avec '*'
+        self.grille[self.largeur][self.longueur] = 'E'  # case E
+
+chemin_1 = Chemin("DDBDBBDDDDB")
+chemin_1.remplir_grille()
+for ligne in chemin_1.grille: print("".join(ligne))</pre>
+    <pre class="td-attendu">
+S**.....
+..**....
+...*....
+...*****
+.......E</pre>
+    <p class="td-aide">On parcourt les lettres de l'itinéraire : c'est l'attribut <code>self.itineraire</code>.</p>
+    <p class="td-aide">Aller à droite, c'est changer de colonne : <code>j</code> augmente de 1. Aller en bas, c'est changer de ligne : <code>i</code> augmente de 1.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+        for direction in self.itineraire:
+            if direction == 'D':
+                j = j + 1  # vers la droite
+            elif direction == 'B':
+                i = i + 1  # vers le bas</pre>
+      <p><code>self.grille[i][j]</code> : d'abord la ligne <code>i</code>, puis la colonne <code>j</code>. La grille affichée :</p>
+      <pre class="td-console">
+<span class="td-l">S**.....</span><span class="td-l">..**....</span><span class="td-l">...*....</span><span class="td-l">...*****</span><span class="td-l">.......E</span></pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="9" id="q4" data-fichier="chemin.py" data-obligatoire>
+    <p class="td-consigne">Écris la méthode <code>tracer_chemin</code> : elle affiche la représentation graphique de l'itinéraire, comme dans l'énoncé (une case vide s'affiche comme un espace). On l'appelle après <code>remplir_grille</code>.</p>
+    <pre class="td-depart">
+class Chemin:
+    def __init__(self, itineraire):
+        self.itineraire = itineraire
+        longueur, largeur = 0, 0
+        for direction in self.itineraire:
+            if direction == "D":
+                longueur = longueur + 1
+            if direction == "B":
+                largeur = largeur + 1
+        self.longueur = longueur
+        self.largeur = largeur
+        self.grille = [['.' for i in range(longueur + 1)]
+                       for j in range(largeur + 1)]
+
+    def remplir_grille(self):
+        i, j = 0, 0
+        self.grille[0][0] = 'S'
+        for direction in self.itineraire:
+            if direction == 'D':
+                j = j + 1
+            elif direction == 'B':
+                i = i + 1
+            self.grille[i][j] = '*'
+        self.grille[self.largeur][self.longueur] = 'E'
+
+    def tracer_chemin(self):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+import io, contextlib
+def _attendu(c, sep):
+    return [sep.join(' ' if x == '.' else x for x in ligne).rstrip() for ligne in c.grille]
+def _trace(iti):
+    c = Chemin(iti)
+    c.remplir_grille()
+    b = io.StringIO()
+    with contextlib.redirect_stdout(b):
+        r = c.tracer_chemin()
+    lignes = [l.replace('.', ' ').rstrip() for l in b.getvalue().rstrip('\n').split('\n')]
+    return c, lignes, r
+for _iti in ("DDBDBBDDDDB", "BDBD", "DDD"):
+    _c, _l, _r = _trace(_iti)
+    assert _l != [""], "tracer_chemin doit afficher la grille avec print : elle n'affiche rien."
+    assert _l in (_attendu(_c, ' '), _attendu(_c, '')), "Pour l'itinéraire " + _iti + ", on attend :\n" + "\n".join(_attendu(_c, ' ')) + "\nTa méthode affiche :\n" + "\n".join(_l)
+</script>
+    <p class="td-aide">La grille est une liste de lignes : une boucle sur <code>self.grille</code>, et un <code>print</code> par ligne.</p>
+    <p class="td-aide">Pour chaque case d'une ligne, on construit un texte : un espace si la case vaut <code>'.'</code>, sinon la case, chaque fois suivie d'un espace.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Chemin:
+    def __init__(self, itineraire):
+        self.itineraire = itineraire
+        longueur, largeur = 0, 0
+        for direction in self.itineraire:
+            if direction == "D":
+                longueur = longueur + 1
+            if direction == "B":
+                largeur = largeur + 1
+        self.longueur = longueur
+        self.largeur = largeur
+        self.grille = [['.' for i in range(longueur + 1)]
+                       for j in range(largeur + 1)]
+
+    def remplir_grille(self):
+        i, j = 0, 0
+        self.grille[0][0] = 'S'
+        for direction in self.itineraire:
+            if direction == 'D':
+                j = j + 1
+            elif direction == 'B':
+                i = i + 1
+            self.grille[i][j] = '*'
+        self.grille[self.largeur][self.longueur] = 'E'
+
+    def tracer_chemin(self):
+        for ligne in self.grille:
+            texte = ''
+            for case in ligne:
+                if case == '.':
+                    texte = texte + '  '
+                else:
+                    texte = texte + case + ' '
+            print(texte.rstrip())
+</pre>
+      <p>Chaque case prend deux caractères : la case (ou un espace) et un espace. Sans espaces entre les cases, l'affichage est juste aussi.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q5" data-fichier="chemin.py" data-obligatoire>
+    <p class="td-consigne">Écris la méthode <code>get_dimensions</code> : elle renvoie la longueur et la largeur de l'itinéraire, dans cet ordre, sous la forme d'un tuple.</p>
+    <pre class="td-depart">
+class Chemin:
+    def __init__(self, itineraire):
+        self.itineraire = itineraire
+        longueur, largeur = 0, 0
+        for direction in self.itineraire:
+            if direction == "D":
+                longueur = longueur + 1
+            if direction == "B":
+                largeur = largeur + 1
+        self.longueur = longueur
+        self.largeur = largeur
+
+    def get_dimensions(self):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_d = Chemin("DDBDBBDDDDB").get_dimensions()
+assert _d is not None, "get_dimensions doit renvoyer un tuple avec return. Elle renvoie None."
+assert isinstance(_d, tuple), "get_dimensions doit renvoyer un tuple, comme (7, 4). Elle renvoie : " + repr(_d)
+assert _d == (7, 4), "Pour \"DDBDBBDDDDB\", on attend (7, 4) : la longueur, puis la largeur. Ta méthode renvoie : " + repr(_d)
+assert Chemin("BBD").get_dimensions() == (1, 2), "Pour \"BBD\", on attend (1, 2)."
+assert Chemin("").get_dimensions() == (0, 0), "Pour l'itinéraire vide, on attend (0, 0)."
+</script>
+    <p class="td-aide">La longueur et la largeur sont déjà des attributs, calculés par le constructeur.</p>
+    <p class="td-aide">Un tuple s'écrit avec une virgule : <code>return (a, b)</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Chemin:
+    def __init__(self, itineraire):
+        self.itineraire = itineraire
+        longueur, largeur = 0, 0
+        for direction in self.itineraire:
+            if direction == "D":
+                longueur = longueur + 1
+            if direction == "B":
+                largeur = largeur + 1
+        self.longueur = longueur
+        self.largeur = largeur
+
+    def get_dimensions(self):
+        return (self.longueur, self.largeur)
+</pre>
+      <p>Inutile de recompter les lettres : on renvoie les attributs. Les parenthèses sont facultatives : <code>return self.longueur, self.largeur</code> renvoie le même tuple.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. Un itinéraire au hasard</h2>
+
+  <section class="td-q" data-type="trous" id="q6">
+    <p class="td-consigne">Complète la fonction <code>itineraire_aleatoire</code> : elle crée un itinéraire aléatoire de taille <code>taille</code> (la taille est longueur + largeur, le nombre de lettres). La dernière ligne vérifie la taille.</p>
+    <pre class="td-code">
+from random import choice
+
+def itineraire_aleatoire(taille):
+    itineraire = ''
+    i = 0
+    while [[i &lt; taille|i != taille|i &lt;= taille - 1|len(itineraire) &lt; taille]]:
+        direction = choice(["D", "B"])
+        itineraire += [[direction]]
+        [[i = i + 1|i += 1|i = 1 + i]]
+    return itineraire
+
+print(len(itineraire_aleatoire(10)))</pre>
+    <pre class="td-attendu">
+10</pre>
+    <p class="td-aide"><code>i</code> compte les lettres déjà ajoutées : on continue tant qu'il en manque.</p>
+    <p class="td-aide">Dans la boucle : on ajoute la lettre tirée au hasard, puis on n'oublie pas de faire avancer <code>i</code>, sinon la boucle ne s'arrête jamais.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+    while i &lt; taille:
+        direction = choice(["D", "B"])
+        itineraire += direction
+        i = i + 1</pre>
+      <p><code>choice(["D", "B"])</code> tire une des deux lettres au hasard. Après <code>taille</code> tours, l'itinéraire a <code>taille</code> lettres.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q7" data-reponse="2**N|2 ** N|2^N|2 ^ N|2 puissance N|2 exposant N|2 à la puissance N|2 puissance N chemins|2**N chemins|2^N chemins" data-etiquette="Nombre de chemins :" data-support="ecran">
+    <p class="td-consigne">Combien y a-t-il de chemins possibles de taille N ? Écris le nombre en fonction de N (par exemple avec <code>**</code> pour la puissance).</p>
+    <p class="td-retour" data-si="2N|2*N|2 * N|2xN|N*2|2 x N">Chaque lettre <b>multiplie</b> par 2 le nombre de chemins : on ne l'ajoute pas. Essaie avec N = 1, 2, 3.</p>
+    <p class="td-retour" data-si="N**2|N^2|N²|N ** 2">Attention à l'ordre : 2 choix par lettre, N lettres. Pour N = 3, il y a 8 chemins, pas 9.</p>
+    <p class="td-aide">Pour N = 1 : D ou B, 2 chemins. Pour N = 2 : DD, DB, BD, BB. Et pour N = 3 ?</p>
+    <p class="td-aide">À chaque lettre ajoutée, chaque chemin donne deux chemins : un qui finit par D, un qui finit par B.</p>
+    <div class="td-correction">
+      <p>Il y a <b>2<sup>N</sup></b> chemins (en Python, <code>2 ** N</code>). Un chemin de taille N est une suite de N lettres, et chaque lettre a 2 valeurs possibles, D ou B, sans contrainte : 2 × 2 × … × 2 (N fois) = 2<sup>N</sup>. Pour N = 11, comme <code>"DDBDBBDDDDB"</code>, il y en a 2048.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q7-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Combien y a-t-il de chemins possibles de taille N ? Justifie ta réponse.</p>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Un attribut se lit avec <code>objet.attribut</code> ; une méthode qui <b>renvoie</b> utilise <code>return</code>, une méthode qui <b>affiche</b> utilise <code>print</code>.</p>
+    <p>Dans une grille (liste de listes), <code>grille[i][j]</code> : ligne <code>i</code>, puis colonne <code>j</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-poo-itineraire">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

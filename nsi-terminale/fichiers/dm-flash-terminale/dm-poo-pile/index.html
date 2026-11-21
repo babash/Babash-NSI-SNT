@@ -1,0 +1,365 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La classe Pile : TD en ligne</title>
+  <meta name="description" content="DM flash de terminale NSI, en ligne et auto-correctif : lire une classe Pile, compléter ses méthodes empiler et depiler, puis se servir de son interface.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsit-dm-poo-pile" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:69.52%;--y:75.0%;--r:-90deg;--l:2.8%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Terminale NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La classe <code>Pile</code></h1>
+        <p class="td-accroche">DM flash</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> écrire une pile sous forme de classe, puis l'utiliser par son interface.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>reconnaître les attributs, les méthodes et le constructeur d'une classe ;</li>
+        <li>créer une pile vide ou une pile déjà remplie ;</li>
+        <li>écrire <code>empiler</code> et <code>depiler</code> avec une liste Python ;</li>
+        <li>enchaîner des opérations sur une pile.</li>
+      </ul>
+      <p class="td-duree">30 minutes · 9 questions · devoir maison</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>On s'intéresse au code suivant. La pile est rangée dans une liste Python : la <b>tête</b> de la pile est le <b>dernier</b> élément de la liste.</p>
+  <pre class="td-code">
+class Pile:
+    '''
+    On cherche à implémenter l'interface de la Pile sous forme de classe
+    '''
+    def __init__(self, tab):
+        self.pile = tab
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def empiler(self, x):
+        ...
+
+    def depiler(self):
+        return ...
+
+    def tete(self):
+        return self.pile[-1]</pre>
+
+  <h2 class="td-partie">1. Lire la classe</h2>
+
+  <section class="td-q" data-type="cases" id="q1" data-support="ecran">
+    <p class="td-consigne">Coche les <b>attributs</b> de la classe <code>Pile</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>pile</code></li>
+      <li data-retour="tab est un paramètre du constructeur : sa valeur est rangée dans l'attribut, mais tab lui-même disparaît à la fin de __init__."><code>tab</code></li>
+      <li data-retour="x est un paramètre de la méthode empiler, pas une donnée de l'objet."><code>x</code></li>
+      <li data-retour="est_vide est une méthode : une fonction de la classe."><code>est_vide</code></li>
+      <li data-retour="tete est une méthode : elle renvoie la tête, mais ce n'est pas une donnée rangée dans l'objet."><code>tete</code></li>
+    </ul>
+    <p class="td-aide">Un attribut se reconnaît à <code>self.</code> devant son nom, quand on lui donne une valeur.</p>
+    <div class="td-correction">
+      <p>Un seul attribut : <code>pile</code>, créé par <code>self.pile = tab</code> dans le constructeur.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quels sont les attributs de cette classe ?</p>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q2" data-support="ecran">
+    <p class="td-consigne">Coche les <b>méthodes</b> de la classe <code>Pile</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>__init__</code></li>
+      <li data-juste><code>est_vide</code></li>
+      <li data-juste><code>empiler</code></li>
+      <li data-juste><code>depiler</code></li>
+      <li data-juste><code>tete</code></li>
+      <li data-retour="Pile est le nom de la classe, pas une méthode."><code>Pile</code></li>
+      <li data-retour="len est une fonction de Python, utilisée dans est_vide : elle n'est pas définie dans la classe."><code>len</code></li>
+    </ul>
+    <p class="td-aide">Une méthode est une fonction écrite dans la classe, avec <code>def</code>. Compte-les toutes.</p>
+    <div class="td-correction">
+      <p>Cinq méthodes : le constructeur <code>__init__</code>, puis <code>est_vide</code>, <code>empiler</code>, <code>depiler</code> et <code>tete</code>. Ensemble, les quatre dernières forment l'<b>interface</b> de la pile.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quelles sont les méthodes de cette classe ?</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
+    <p class="td-consigne">De quelle ligne à quelle ligne se trouve le constructeur ?</p>
+    <ul class="td-options">
+      <li data-juste>Des lignes 5 à 6.</li>
+      <li data-retour="La ligne 1 crée la classe ; le constructeur est la méthode __init__.">Des lignes 1 à 6.</li>
+      <li data-retour="Les lignes 2 à 4 sont un commentaire de documentation (une docstring).">Des lignes 2 à 4.</li>
+      <li data-retour="Ce sont les lignes de toute la classe.">Des lignes 1 à 18.</li>
+    </ul>
+    <p class="td-aide">Le constructeur est la méthode qui s'appelle <code>__init__</code>.</p>
+    <div class="td-correction">
+      <p>Lignes 5 et 6 : <code>def __init__(self, tab):</code> et son bloc, <code>self.pile = tab</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">De quelle ligne à quelle ligne se trouve le constructeur ?</p>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q4" data-comparer="code" data-reponse="p1 = Pile([])|p1 = Pile(list())|p1 = Pile(tab=[])" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui crée une variable <code>p1</code> : une pile vide.</p>
+    <p class="td-retour" data-si="p1 = Pile()">Le constructeur attend le paramètre <code>tab</code>. Python s'arrêterait sur <code>TypeError: Pile.__init__() missing 1 required positional argument: 'tab'</code>.</p>
+    <p class="td-retour" data-si="p1 = []">Ici, <code>p1</code> serait une simple liste, pas un objet <code>Pile</code>.</p>
+    <p class="td-aide">On crée un objet en appelant la classe : <code>Pile(…)</code>. Que donner pour <code>tab</code>, si la pile est vide ?</p>
+    <div class="td-correction">
+      <pre class="td-code">
+p1 = Pile([])</pre>
+      <p>On donne une liste vide pour <code>tab</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-comparer="code" data-reponse="p2 = Pile([5, 8, 6, 5, 3])|p2 = Pile(tab=[5, 8, 6, 5, 3])" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui crée une variable <code>p2</code> : la pile [5, 8, 6, 5, 3], avec 3 en tête de pile.</p>
+    <p class="td-retour" data-si="p2 = Pile([3, 5, 6, 8, 5])">Ici, la tête serait 5 : <code>tete</code> renvoie <code>self.pile[-1]</code>, le <b>dernier</b> élément. 3 doit donc être à la fin.</p>
+    <p class="td-retour" data-si="p2 = [5, 8, 6, 5, 3]">Ici, <code>p2</code> serait une liste, pas un objet <code>Pile</code>.</p>
+    <p class="td-aide">Regarde la méthode <code>tete</code> : quel élément de la liste renvoie-t-elle ?</p>
+    <div class="td-correction">
+      <pre class="td-code">
+p2 = Pile([5, 8, 6, 5, 3])</pre>
+      <p>La tête est le dernier élément de la liste : 3.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q6" data-reponse="14|quatorze" data-etiquette="Valeur :">
+    <p class="td-consigne">Les méthodes étant complétées (<code>depiler</code> enlève la tête et la renvoie), que vaut <code>p2.depiler() + p2.depiler() + p2.tete()</code> ?</p>
+    <p class="td-retour" data-si="9">Chaque <code>depiler()</code> <b>enlève</b> la tête : après le premier, la tête n'est plus 3.</p>
+    <p class="td-retour" data-si="13">Après deux dépilements (3, puis 5), il reste [5, 8, 6] : la tête est 6.</p>
+    <p class="td-retour" data-si="19">La tête est à la fin de la liste : on dépile d'abord 3, pas 5.</p>
+    <p class="td-aide">Python calcule de gauche à droite. Écris la pile après chaque appel.</p>
+    <p class="td-aide">[5, 8, 6, 5, 3] : on dépile 3, puis on dépile 5. Que reste-t-il ?</p>
+    <div class="td-correction">
+      <p>Le premier <code>depiler()</code> renvoie 3, il reste [5, 8, 6, 5] ; le second renvoie 5, il reste [5, 8, 6] ; <code>tete()</code> renvoie 6, sans l'enlever. Total : 3 + 5 + 6 = <b>14</b>.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">2. Compléter et utiliser la classe</h2>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q7" data-fichier="pile.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>empiler</code> : elle ajoute <code>x</code> en tête de la pile.</p>
+    <pre class="td-depart">
+class Pile:
+    def __init__(self, tab):
+        self.pile = tab
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def empiler(self, x):
+        ...
+
+    def tete(self):
+        return self.pile[-1]
+</pre>
+    <script type="text/x-python" class="td-tests">
+_p = Pile([])
+_p.empiler(4)
+assert not _p.est_vide(), "Après empiler(4) sur une pile vide, la pile ne doit plus être vide."
+assert _p.tete() == 4, "Après empiler(4) sur une pile vide, la tête doit être 4. Elle vaut : " + repr(_p.tete())
+_p.empiler(7)
+assert _p.tete() == 7, "Après empiler(7), la tête doit être 7 : le dernier élément empilé. Elle vaut : " + repr(_p.tete())
+assert _p.pile == [4, 7], "Empiler ajoute sans rien effacer : après empiler(4) puis empiler(7), la liste doit être [4, 7]. Elle est : " + repr(_p.pile)
+_q = Pile([1, 2])
+_q.empiler(3)
+assert _q.pile == [1, 2, 3], "Sur la pile [1, 2], empiler(3) doit donner [1, 2, 3] : la tête est à la fin. On a : " + repr(_q.pile)
+</script>
+    <p class="td-aide">La tête est le <b>dernier</b> élément de la liste <code>self.pile</code> : on ajoute donc à la fin.</p>
+    <p class="td-aide">La méthode <code>append</code> d'une liste ajoute un élément à la fin.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Pile:
+    def __init__(self, tab):
+        self.pile = tab
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def empiler(self, x):
+        self.pile.append(x)
+
+    def tete(self):
+        return self.pile[-1]
+</pre>
+      <p><code>append</code> modifie la liste de l'objet : la méthode n'a rien à renvoyer.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q8" data-fichier="pile.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>depiler</code> : elle enlève la tête de la pile et la renvoie.</p>
+    <pre class="td-depart">
+class Pile:
+    def __init__(self, tab):
+        self.pile = tab
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def empiler(self, x):
+        self.pile.append(x)
+
+    def depiler(self):
+        return ...
+
+    def tete(self):
+        return self.pile[-1]
+</pre>
+    <script type="text/x-python" class="td-tests">
+_p = Pile([5, 8, 6, 5, 3])
+_x = _p.depiler()
+assert _x == 3, "Sur la pile [5, 8, 6, 5, 3], depiler() doit renvoyer la tête, 3. Elle renvoie : " + repr(_x)
+assert _p.pile == [5, 8, 6, 5], "depiler doit enlever la tête : il doit rester [5, 8, 6, 5]. Il reste : " + repr(_p.pile)
+assert _p.depiler() == 5 and _p.tete() == 6, "Un second depiler() doit renvoyer 5 et laisser 6 en tête."
+_q = Pile([])
+_q.empiler(9)
+assert _q.depiler() == 9 and _q.est_vide(), "Après empiler(9) puis depiler() sur une pile vide, depiler renvoie 9 et la pile redevient vide."
+</script>
+    <p class="td-aide">La méthode <code>pop()</code> d'une liste enlève le dernier élément <b>et</b> le renvoie.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Pile:
+    def __init__(self, tab):
+        self.pile = tab
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def empiler(self, x):
+        self.pile.append(x)
+
+    def depiler(self):
+        return self.pile.pop()
+
+    def tete(self):
+        return self.pile[-1]
+</pre>
+      <p><code>self.pile[-1]</code> renverrait la tête sans l'enlever ; <code>pop(0)</code> enlèverait le bas de la pile.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="6" id="q9" data-fichier="pile.py" data-obligatoire>
+    <p class="td-consigne">Sous la classe complète, écris le code qui, dans l'ordre :</p>
+    <ol>
+      <li>crée une pile <code>p</code> vide ;</li>
+      <li>empile 2 dans <code>p</code> ;</li>
+      <li>teste si <code>p</code> est vide, et range la réponse dans <code>vide</code> ;</li>
+      <li>empile dans <code>p</code> une copie de l'élément en tête de <code>p</code> ;</li>
+      <li>dépile <code>p</code>, et range l'élément dépilé dans <code>x</code>.</li>
+    </ol>
+    <pre class="td-depart">
+class Pile:
+    def __init__(self, tab):
+        self.pile = tab
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def empiler(self, x):
+        self.pile.append(x)
+
+    def depiler(self):
+        return self.pile.pop()
+
+    def tete(self):
+        return self.pile[-1]
+
+# 1. Crée une pile p vide.
+p = ...
+# 2. Empile 2 dans p.
+
+# 3. Teste si p est vide.
+vide = ...
+# 4. Empile dans p une copie de l'élément en tête de p.
+
+# 5. Dépile p.
+x = ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert isinstance(p, Pile), "p doit être un objet Pile, créé avec Pile(…). C'est : " + repr(p)
+assert vide is False, "Après avoir empilé 2, la pile n'est pas vide : vide doit valoir False (appelle la méthode, avec ses parenthèses). vide vaut : " + repr(vide)
+assert x == 2, "L'élément dépilé doit être 2, la copie de la tête. x vaut : " + repr(x)
+assert p.pile == [2], "À la fin, il doit rester [2] dans la pile. On a : " + repr(p.pile)
+</script>
+    <p class="td-aide">On n'utilise que les méthodes : <code>p.empiler(…)</code>, <code>p.est_vide()</code>, <code>p.tete()</code>, <code>p.depiler()</code>.</p>
+    <p class="td-aide">Pour l'étape 4, on empile ce que renvoie <code>p.tete()</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Pile:
+    def __init__(self, tab):
+        self.pile = tab
+
+    def est_vide(self):
+        return len(self.pile) == 0
+
+    def empiler(self, x):
+        self.pile.append(x)
+
+    def depiler(self):
+        return self.pile.pop()
+
+    def tete(self):
+        return self.pile[-1]
+
+# 1. Crée une pile p vide.
+p = Pile([])
+# 2. Empile 2 dans p.
+p.empiler(2)
+# 3. Teste si p est vide.
+vide = p.est_vide()
+# 4. Empile dans p une copie de l'élément en tête de p.
+p.empiler(p.tete())
+# 5. Dépile p.
+x = p.depiler()
+</pre>
+      <p>On se sert de la pile <b>par son interface</b>, sans toucher à <code>p.pile</code>. Sans parenthèses, <code>p.est_vide</code> serait la méthode elle-même, pas sa réponse.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Ici, la tête de la pile est le <b>dernier</b> élément de la liste : <code>append</code> empile, <code>pop()</code> dépile et renvoie la tête.</p>
+    <p>On crée une pile avec <code>Pile([])</code> et on s'en sert par ses méthodes : <code>p.empiler(2)</code>, <code>p.est_vide()</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-poo-pile">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

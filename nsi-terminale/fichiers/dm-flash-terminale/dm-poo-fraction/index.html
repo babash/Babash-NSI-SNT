@@ -1,0 +1,328 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La classe Fraction : TD en ligne</title>
+  <meta name="description" content="DM flash de terminale NSI, en ligne et auto-correctif : lire la classe Fraction, compléter ses méthodes somme et quotient_entier, créer des objets et appeler leurs méthodes.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsit-dm-poo-fraction" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Terminale NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La classe <code>Fraction</code></h1>
+        <p class="td-accroche">DM flash</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> lire une classe, compléter ses méthodes et s'en servir pour calculer avec des fractions.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>reconnaître les attributs et les méthodes d'une classe ;</li>
+        <li>dire à quoi sert un <code>assert</code> dans un constructeur ;</li>
+        <li>créer un objet et appeler une de ses méthodes ;</li>
+        <li>écrire une méthode qui renvoie un nouvel objet.</li>
+      </ul>
+      <p class="td-duree">30 minutes · 10 questions · devoir maison</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>On s'intéresse au code suivant, enregistré dans le fichier <code>fraction.py</code>. Une fraction <var>a</var>/<var>b</var> a un numérateur <code>a</code> et un dénominateur <code>b</code>.</p>
+  <pre class="td-code">
+class Fraction:
+    def __init__(self, a, b):
+        self.a = a
+        assert b != 0
+        self.b = b
+
+    def somme(self, fraction):
+        r = ...
+        # mise sur le même dénominateur
+        if ... != ...:
+            r.b = ... * ...
+            r.a = (... * ...) + (... * ...)
+        else:
+            r.a = ...
+            r.b = ...
+        return r
+
+    def quotient_entier(self):
+        return ...</pre>
+
+  <h2 class="td-partie">1. Lire la classe</h2>
+
+  <section class="td-q" data-type="cases" id="q1" data-support="ecran">
+    <p class="td-consigne">Coche les <b>attributs</b> de la classe <code>Fraction</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>a</code></li>
+      <li data-juste><code>b</code></li>
+      <li data-retour="fraction est un paramètre de la méthode somme : c'est une autre fraction, pas une donnée de l'objet."><code>fraction</code></li>
+      <li data-retour="r est une variable locale de la méthode somme : elle disparaît à la fin de la méthode."><code>r</code></li>
+      <li data-retour="quotient_entier est une méthode : une fonction de la classe, pas une donnée."><code>quotient_entier</code></li>
+    </ul>
+    <p class="td-aide">Un attribut est une donnée de l'objet : on le reconnaît à <code>self.</code> devant son nom.</p>
+    <div class="td-correction">
+      <p>Les attributs sont <code>a</code> et <code>b</code> : le constructeur les crée avec <code>self.a = a</code> et <code>self.b = b</code>. Chaque objet <code>Fraction</code> a les siens.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quels sont les attributs de cette classe ?</p>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q2" data-support="ecran">
+    <p class="td-consigne">Coche les <b>méthodes</b> de la classe <code>Fraction</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>__init__</code></li>
+      <li data-juste><code>somme</code></li>
+      <li data-juste><code>quotient_entier</code></li>
+      <li data-retour="Fraction est le nom de la classe : c'est le type, pas une méthode."><code>Fraction</code></li>
+      <li data-retour="assert est un mot-clé de Python : il vérifie une condition."><code>assert</code></li>
+    </ul>
+    <p class="td-aide">Une méthode est une fonction écrite dans la classe : elle commence par <code>def</code>.</p>
+    <p class="td-aide">Le constructeur est lui aussi une méthode.</p>
+    <div class="td-correction">
+      <p>Trois méthodes : le constructeur <code>__init__</code>, <code>somme</code> et <code>quotient_entier</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quelles sont les méthodes de cette classe ?</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
+    <p class="td-consigne">À quoi sert le <code>assert</code> de la ligne 4 ?</p>
+    <ul class="td-options">
+      <li data-juste>À vérifier que le dénominateur n'est pas nul.</li>
+      <li data-retour="assert ne change aucune valeur : il vérifie seulement une condition.">À remplacer un dénominateur nul par 1.</li>
+      <li data-retour="Regarde la condition : b != 0 parle de b, le dénominateur. Le numérateur peut valoir 0.">À vérifier que le numérateur n'est pas nul.</li>
+      <li data-retour="assert n'affiche rien quand la condition est vraie : il ne sert pas à afficher.">À afficher la fraction.</li>
+    </ul>
+    <p class="td-aide"><code>!=</code> veut dire « différent de ». Que représente <code>b</code> dans une fraction <var>a</var>/<var>b</var> ?</p>
+    <div class="td-correction">
+      <p><code>assert b != 0</code> vérifie que le dénominateur n'est pas nul : une fraction de dénominateur 0 n'a pas de sens (on ne divise pas par 0).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">À quoi sert le <code>assert</code> de la ligne 4 ?</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
+    <p class="td-consigne">On ajoute, à la fin du fichier <code>fraction.py</code>, la ligne <code>f3 = Fraction(3, 0)</code>. Que va-t-il se passer ?</p>
+    <ul class="td-options">
+      <li data-juste>Le programme s'arrête sur une erreur <code>AssertionError</code> : <code>f3</code> n'est pas créée.</li>
+      <li data-retour="La condition b != 0 est fausse pour b = 0 : assert arrête le programme.">L'objet <code>f3</code> est créé, avec <code>b</code> égal à 0.</li>
+      <li data-retour="assert ne corrige rien : il arrête le programme quand la condition est fausse.">L'objet <code>f3</code> est créé, avec <code>b</code> égal à 1.</li>
+      <li data-retour="Python ne passe pas en silence : un assert faux provoque une erreur.">Rien de visible : <code>f3</code> vaut <code>None</code>.</li>
+    </ul>
+    <p class="td-aide">Pour <code>b = 0</code>, la condition <code>b != 0</code> est-elle vraie ou fausse ?</p>
+    <p class="td-aide">Quand la condition d'un <code>assert</code> est fausse, Python s'arrête sur une erreur.</p>
+    <div class="td-correction">
+      <p>La condition <code>b != 0</code> est fausse : Python s'arrête et affiche ce message. L'objet n'est jamais créé.</p>
+      <pre class="td-erreur">
+Traceback (most recent call last):
+  File "fraction.py", line 21, in &lt;module&gt;
+    f3 = Fraction(3, 0)
+  File "fraction.py", line 4, in __init__
+    assert b != 0
+           ^^^^^^
+AssertionError</pre>
+      <p>Le message se lit de bas en haut : l'erreur est ligne 4, dans <code>__init__</code>, appelée par la ligne 21.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">On ajoute, à la fin du fichier <code>fraction.py</code>, la ligne <code>f3 = Fraction(3, 0)</code>. Que va-t-il se passer ?</p>
+  </section>
+
+  <h2 class="td-partie">2. Compléter et utiliser la classe</h2>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q5" data-fichier="fraction.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>quotient_entier</code> : elle renvoie le quotient entier du numérateur par le dénominateur. Par exemple, pour 17/5, elle renvoie 3.</p>
+    <pre class="td-depart">
+class Fraction:
+    def __init__(self, a, b):
+        self.a = a
+        assert b != 0
+        self.b = b
+
+    def quotient_entier(self):
+        return ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_q = Fraction(17, 5).quotient_entier()
+assert _q is not None, "quotient_entier doit renvoyer une valeur avec return. Elle renvoie None."
+assert _q == 3, "Pour 17/5, le quotient entier est 3 (17 = 3 × 5 + 2). Ta méthode renvoie : " + repr(_q)
+assert isinstance(_q, int), "Le quotient entier est un entier (int), pas un nombre à virgule. Ta méthode renvoie : " + repr(_q)
+_q = Fraction(19, 5).quotient_entier()
+assert _q == 3, "Pour 19/5, le quotient entier est 3 (19 = 3 × 5 + 4) : on n'arrondit pas, on garde la partie entière. Ta méthode renvoie : " + repr(_q)
+assert Fraction(3, 4).quotient_entier() == 0, "Pour 3/4, le quotient entier est 0 : 3 contient 0 fois 4."
+assert Fraction(12, 4).quotient_entier() == 3, "Pour 12/4, le quotient entier est 3."
+</script>
+    <p class="td-aide">Le numérateur est <code>self.a</code>, le dénominateur <code>self.b</code>.</p>
+    <p class="td-aide">En Python, l'opérateur <code>//</code> donne le quotient entier : <code>17 // 5</code> vaut 3.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Fraction:
+    def __init__(self, a, b):
+        self.a = a
+        assert b != 0
+        self.b = b
+
+    def quotient_entier(self):
+        return self.a // self.b
+</pre>
+      <p><code>/</code> donnerait 3.4, un nombre à virgule ; <code>%</code> donnerait le reste, 2. Le quotient entier, c'est <code>//</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q6" data-comparer="code" data-reponse="f1 = Fraction(5, 9)|f1 = Fraction(a=5, b=9)|f1 = Fraction(b=9, a=5)" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui crée une variable <code>f1</code> représentant la fraction 5/9.</p>
+    <p class="td-retour" data-si="f1 = Fraction(9, 5)">Regarde l'ordre des paramètres du constructeur : d'abord <code>a</code>, le numérateur, puis <code>b</code>.</p>
+    <p class="td-retour" data-si="f1 = 5/9|f1 = 5 / 9">Ici, <code>f1</code> serait un nombre à virgule, pas un objet <code>Fraction</code> : on appelle la classe.</p>
+    <p class="td-retour" data-si="Fraction(5, 9)">Presque : il faut aussi ranger l'objet dans la variable <code>f1</code>.</p>
+    <p class="td-aide">On crée un objet en appelant la classe comme une fonction : <code>NomDeLaClasse(…)</code>.</p>
+    <p class="td-aide">On ne donne pas <code>self</code> : Python le passe tout seul.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+f1 = Fraction(5, 9)</pre>
+      <p><code>Fraction(5, 9)</code> appelle le constructeur avec <code>a = 5</code> et <code>b = 9</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q7" data-comparer="code" data-reponse="f2 = Fraction(9, 12)|f2 = Fraction(a=9, b=12)|f2 = Fraction(b=12, a=9)" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui crée une variable <code>f2</code> représentant la fraction 9/12.</p>
+    <p class="td-retour" data-si="f2 = Fraction(12, 9)">D'abord le numérateur, 9, puis le dénominateur, 12.</p>
+    <p class="td-retour" data-si="f2 = Fraction(3, 4)">C'est la même valeur, mais l'énoncé demande la fraction 9/12, telle quelle.</p>
+    <p class="td-aide">Comme pour <code>f1</code>, avec d'autres valeurs.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+f2 = Fraction(9, 12)</pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q8" data-comparer="code" data-reponse="f1.quotient_entier()|print(f1.quotient_entier())|Fraction.quotient_entier(f1)" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui donne le quotient entier de <code>f1</code>.</p>
+    <p class="td-retour" data-si="quotient_entier(f1)">C'est une méthode, pas une fonction : on l'appelle <b>sur l'objet</b>, avec un point.</p>
+    <p class="td-retour" data-si="f1.quotient_entier">Il manque les parenthèses : sans elles, la méthode n'est pas appelée.</p>
+    <p class="td-retour" data-si="f1.quotient_entier(f1)|f1.quotient_entier(self)">On ne donne pas <code>self</code> : c'est l'objet devant le point.</p>
+    <p class="td-aide">On appelle une méthode ainsi : <code>objet.methode()</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+f1.quotient_entier()</pre>
+      <p>L'objet devant le point, <code>f1</code>, devient <code>self</code> dans la méthode. Elle renvoie 0 : 5 contient 0 fois 9.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q9" data-comparer="code" data-reponse="f1.somme(f2)|print(f1.somme(f2))|Fraction.somme(f1, f2)|f2.somme(f1)" data-etiquette="Instruction :">
+    <p class="td-consigne">Écris l'instruction qui donne la somme de <code>f1</code> et <code>f2</code>.</p>
+    <p class="td-retour" data-si="f1 + f2">Le signe <code>+</code> ne sait pas additionner deux objets <code>Fraction</code> : Python s'arrêterait sur <code>TypeError: unsupported operand type(s) for +: 'Fraction' and 'Fraction'</code>. Utilise la méthode <code>somme</code>.</p>
+    <p class="td-retour" data-si="somme(f1, f2)">C'est une méthode : on l'appelle sur un objet, avec un point.</p>
+    <p class="td-retour" data-si="f1.somme(f1, f2)">Le premier objet est devant le point : on ne le redonne pas entre les parenthèses.</p>
+    <p class="td-aide">La méthode <code>somme(self, fraction)</code> a deux paramètres : <code>self</code>, l'objet devant le point, et <code>fraction</code>, l'autre fraction.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+f1.somme(f2)</pre>
+      <p><code>self</code> est <code>f1</code>, et <code>fraction</code> est <code>f2</code>. La méthode renvoie un nouvel objet <code>Fraction</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="7" id="q10" data-fichier="fraction.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>somme</code> : elle renvoie une <b>nouvelle</b> fraction <code>r</code>, égale à la somme de <code>self</code> et de <code>fraction</code>. Elle ne modifie ni <code>self</code> ni <code>fraction</code>.</p>
+    <pre class="td-depart">
+class Fraction:
+    def __init__(self, a, b):
+        self.a = a
+        assert b != 0
+        self.b = b
+
+    def somme(self, fraction):
+        r = ...
+        # mise sur le même dénominateur
+        if ... != ...:
+            r.b = ... * ...
+            r.a = (... * ...) + (... * ...)
+        else:
+            r.a = ...
+            r.b = ...
+        return r
+</pre>
+    <script type="text/x-python" class="td-tests">
+_f1, _f2 = Fraction(5, 9), Fraction(9, 12)
+_s = _f1.somme(_f2)
+assert isinstance(_s, Fraction), "somme doit renvoyer un objet Fraction. Elle renvoie : " + repr(_s)
+assert (_f1.a, _f1.b) == (5, 9) and (_f2.a, _f2.b) == (9, 12), "somme ne doit modifier ni self ni fraction : r doit être un nouvel objet, créé avec Fraction(…)."
+assert _s.b != 0 and _s.a * 108 == 141 * _s.b, "5/9 + 9/12 = 141/108. Ta méthode donne : " + str(_s.a) + "/" + str(_s.b)
+_t = Fraction(1, 4).somme(Fraction(2, 4))
+assert _t.b != 0 and _t.a * 4 == 3 * _t.b, "Même dénominateur : 1/4 + 2/4 = 3/4 (on ajoute les numérateurs, on garde le dénominateur). Ta méthode donne : " + str(_t.a) + "/" + str(_t.b)
+_u = Fraction(2, 3).somme(Fraction(1, 6))
+assert _u.b != 0 and _u.a * 6 == 5 * _u.b, "2/3 + 1/6 = 5/6. Ta méthode donne : " + str(_u.a) + "/" + str(_u.b)
+_v = Fraction(7, 2).somme(Fraction(-3, 5))
+assert _v.b != 0 and _v.a * 10 == 29 * _v.b, "7/2 + (-3)/5 = 29/10. Ta méthode donne : " + str(_v.a) + "/" + str(_v.b)
+</script>
+    <p class="td-aide">D'abord, crée un nouvel objet pour <code>r</code>, par exemple <code>Fraction(0, 1)</code> : ses attributs seront changés ensuite.</p>
+    <p class="td-aide">Les deux dénominateurs sont <code>self.b</code> et <code>fraction.b</code>. S'ils sont différents, on multiplie : a/b + c/d = (a × d + c × b) / (b × d).</p>
+    <p class="td-aide">S'ils sont égaux : a/b + c/b = (a + c) / b.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Fraction:
+    def __init__(self, a, b):
+        self.a = a
+        assert b != 0
+        self.b = b
+
+    def somme(self, fraction):
+        r = Fraction(0, 1)
+        # mise sur le même dénominateur
+        if self.b != fraction.b:
+            r.b = self.b * fraction.b
+            r.a = (self.a * fraction.b) + (fraction.a * self.b)
+        else:
+            r.a = self.a + fraction.a
+            r.b = self.b
+        return r
+</pre>
+      <p><code>r = Fraction(0, 1)</code> crée un nouvel objet : <code>self</code> et <code>fraction</code> ne changent pas. Écrire <code>r = self</code> modifierait <code>f1</code> !</p>
+      <p>Le résultat n'est pas simplifié : 5/9 + 9/12 donne 141/108, une fraction égale à 47/36.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Un <b>attribut</b> est une donnée de l'objet (<code>self.a</code>) ; une <b>méthode</b> est une fonction de la classe (<code>def somme(self, …)</code>).</p>
+    <p>On crée un objet avec <code>Fraction(5, 9)</code> et on appelle une méthode avec <code>f1.somme(f2)</code> : <code>f1</code> devient <code>self</code>.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:1"></span>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-poo-fraction">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
