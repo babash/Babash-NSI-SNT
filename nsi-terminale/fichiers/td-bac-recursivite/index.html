@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La récursivité : TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : la récursivité (sujet zéro B 2023, exercice 2), avec coups de pouce et corrections.">
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<main class="td" data-td="tle-td-bac-recursivite-1" data-td-version="1">
+
+  <header class="td-entete">
+    <p class="td-sur-titre">Terminale NSI · Langages et programmation · TD type bac, feuille 1 sur 2</p>
+    <h1>La récursivité : TD type bac (1/2)</h1>
+    <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les fonctions récursives.</p>
+    <p><b>Je sais :</b></p>
+    <ul class="td-criteres">
+      <li>dire ce qu'est une fonction récursive et repérer son cas de base ;</li>
+      <li>suivre les appels récursifs et prévoir ce qu'ils affichent et renvoient ;</li>
+      <li>écrire une fonction récursive (la factorielle), puis une version avec une boucle.</li>
+    </ul>
+    <p class="td-duree">45 minutes · 1 exercice de bac (4 points), 6 questions · seul·e ou en binôme</p>
+    <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+    <p class="td-ecran-seul"><b>Ce TD a deux feuilles :</b> 1. compte à rebours, factorielle et somme (la plus guidée, ici) ; 2. <a href="feuille-2.html">construire des chaînes avec des règles</a> (plus proche de l'épreuve).</p>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+  <h2 class="td-partie">Exercice : compte à rebours, factorielle et somme (4 points)</h2>
+  <p><i>Bac 2023, sujet 0.B (sujet zéro publié pour la session 2023), exercice 2, 4 points. <a href="https://kxs.fr/files/sujets/2023/ecrit/terminale-2023-sujet-zero-B.pdf">Sujet d'origine (PDF)</a>.</i></p>
+  <p><i>Cet exercice est consacré à l’analyse et à l’écriture de programmes récursifs.</i></p>
+
+  <section class="td-q" data-type="qcu" id="q1">
+    <p class="td-consigne"><b>1. a.</b> Expliquer en quelques mots ce qu’est une fonction récursive.</p>
+    <p class="td-ecran-seul">Sur la copie, on l'écrit en une phrase. Ici, choisis la bonne explication.</p>
+    <ul class="td-options">
+      <li data-retour="Une boucle répète des instructions, mais une fonction récursive n'a pas besoin de boucle : elle s'appelle elle-même.">Une fonction qui contient une boucle <code>for</code> ou <code>while</code>.</li>
+      <li data-retour="Appeler une autre fonction ne suffit pas : il faut que la fonction s'appelle elle-même.">Une fonction qui appelle une autre fonction.</li>
+      <li data-juste>Une fonction qui s'appelle elle-même dans sa propre définition.</li>
+      <li data-retour="Ce n'est pas une question de valeur renvoyée : une fonction récursive peut renvoyer n'importe quoi, ou rien.">Une fonction qui renvoie une autre fonction.</li>
+    </ul>
+    <p class="td-aide">Regarde la fonction <code>compte_rebours</code> ci-dessous : quelle fonction appelle-t-elle à la ligne 5 ?</p>
+    <div class="td-correction">
+      <p>Une fonction récursive est une fonction qui <b>s'appelle elle-même</b>. Pour qu'elle s'arrête, elle a un <b>cas de base</b>, où elle ne s'appelle plus.</p>
+    </div>
+  </section>
+
+  <p><b>1. b.</b> On considère la fonction Python suivante :</p>
+  <pre class="td-code">
+def compte_rebours(n):
+    """ n est un entier positif ou nul """
+    if n &gt;= 0:
+        print(n)
+        compte_rebours(n - 1)</pre>
+
+  <section class="td-q" data-type="qcu" id="q2">
+    <p class="td-consigne"><b>1. b.</b> L’appel <code>compte_rebours(3)</code> affiche successivement les nombres 3, 2, 1 et 0. Expliquer pourquoi le programme s’arrête après l’affichage du nombre 0.</p>
+    <p class="td-ecran-seul">Sur la copie, on rédige l'explication. Ici, choisis-la.</p>
+    <ul class="td-options">
+      <li data-retour="Il n'y a pas de return dans cette fonction : ce n'est pas lui qui arrête les appels.">Parce que la fonction renvoie 0.</li>
+      <li data-juste>Après 0, la fonction s'appelle avec <code>n = -1</code> : la condition <code>n &gt;= 0</code> est fausse, la fonction n'affiche rien et ne s'appelle plus.</li>
+      <li data-retour="Python ne s'arrête pas tout seul à 0 : c'est la condition du if qui décide.">Parce que Python arrête toujours une fonction quand elle atteint 0.</li>
+      <li data-retour="Il n'y a pas d'erreur ici : le programme s'arrête normalement. Une erreur de récursion n'arrive qu'après environ 1 000 appels.">Parce qu'il se produit une erreur quand <code>n</code> devient négatif.</li>
+    </ul>
+    <p class="td-aide">Après avoir affiché 0, la fonction s'appelle avec quelle valeur de <code>n</code> ?</p>
+    <p class="td-aide">Pour cette valeur, la condition de la ligne 3 est-elle vraie ?</p>
+    <div class="td-correction">
+      <p>Après l'affichage de 0, on appelle <code>compte_rebours(-1)</code>. Comme <code>-1 &gt;= 0</code> est faux, cet appel ne fait rien : il n'y a plus d'appel récursif. Le cas <code>n &lt; 0</code> est le <b>cas de base</b>.</p>
+    </div>
+  </section>
+
+  <p><b>2.</b> En mathématiques, la factorielle d'un entier naturel <i>n</i> est le produit des nombres entiers strictement positifs inférieurs ou égaux à <i>n</i>. Par convention, la factorielle de 0 est 1. Par exemple :</p>
+  <ul>
+    <li>la factorielle de 1 est 1</li>
+    <li>la factorielle de 2 est 2 x 1 =2</li>
+    <li>la factorielle de 3 est 3 x 2 x 1 = 6</li>
+    <li>la factorielle de 4 est 4 x 3 x 2 x 1 = 24…</li>
+  </ul>
+
+  <section class="td-q" data-type="trous" id="q3">
+    <p class="td-consigne"><b>2.</b> Recopier et compléter sur votre copie le programme donné ci-dessous afin que la fonction récursive <code>fact</code> renvoie la factorielle de l’entier passé en paramètre de cette fonction.</p>
+    <p>Exemple : <code>fact(4)</code> renvoie 24.</p>
+    <pre class="td-code">
+def fact(n):
+    """ Renvoie le produit des nombres entiers
+    strictement positifs inférieurs à n """
+    if n == 0:
+        return [[1]]
+    else:
+        return [[n * fact(n - 1)|n*fact(n-1)|fact(n - 1) * n|fact(n-1)*n|n * fact(n-1)|fact(n-1) * n]]</pre>
+    <p class="td-aide">Que vaut la factorielle de 0 ? Relis la convention de l'énoncé.</p>
+    <p class="td-aide">4 x 3 x 2 x 1, c'est 4 x (la factorielle de 3). En général : <code>n</code> fois la factorielle de <code>n - 1</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code td-sans-num">
+    if n == 0:
+        return 1
+    else:
+        return n * fact(n - 1)</pre>
+      <p>Cas de base : <code>fact(0)</code> vaut 1. Sinon, <code>fact(n) = n × fact(n − 1)</code>, avec un appel sur un nombre plus petit : on finit par atteindre 0. Vérifié : <code>fact(4)</code> renvoie 24.</p>
+      <p><b>Remarque sur le sujet :</b> la documentation de la fonction dit « inférieurs à n » ; il faut lire « inférieurs <b>ou égaux</b> à n », comme dans l'énoncé (4 fait partie du produit de <code>fact(4)</code>).</p>
+    </div>
+  </section>
+
+  <p><b>3.</b> La fonction <code>somme_entiers_rec</code> ci-dessous permet de calculer la somme des entiers, de 0 à l'entier naturel <code>n</code> passé en paramètre.</p>
+  <p>Par exemple :</p>
+  <ul>
+    <li>Pour <code>n</code> = 0, la fonction renvoie la valeur 0.</li>
+    <li>Pour <code>n</code> = 1, la fonction renvoie la valeur 0 + 1 = 1.</li>
+    <li>…</li>
+    <li>Pour <code>n</code> = 4, la fonction renvoie la valeur 0 + 1 + 2 + 3 + 4 = 10.</li>
+  </ul>
+
+  <section class="td-q" data-type="sortie" id="q4">
+    <p class="td-consigne"><b>3. a.</b> Écrire ce qui sera affiché dans la console après l'exécution de la ligne suivante : <code>res = somme_entiers_rec(3)</code></p>
+    <pre class="td-code">
+def somme_entiers_rec(n):
+    """ Permet de calculer la somme des entiers,
+    de 0 à l'entier naturel n """
+    if n == 0:
+        return 0
+    else:
+        print(n) #pour vérification
+        return n + somme_entiers_rec(n - 1)
+
+res = somme_entiers_rec(3)</pre>
+    <p>L'instruction <code>print(n)</code> de la ligne 7 dans le code précédent a été insérée afin de mettre en évidence le mécanisme en œuvre au niveau des appels récursifs.</p>
+    <pre class="td-attendu">
+3
+2
+1</pre>
+    <p class="td-retour" data-si="3 2 1 0">Quand <code>n</code> vaut 0, la fonction renvoie 0 <b>sans</b> passer par le <code>print</code> de la ligne 7.</p>
+    <p class="td-retour" data-si="6">La ligne <code>res = …</code> n'affiche pas la valeur renvoyée : seuls les <code>print(n)</code> affichent quelque chose.</p>
+    <p class="td-aide">Suis les appels : <code>somme_entiers_rec(3)</code> affiche 3, puis appelle <code>somme_entiers_rec(2)</code>…</p>
+    <p class="td-aide">Que se passe-t-il pour l'appel avec <code>n = 0</code> ? Passe-t-il par la ligne 7 ?</p>
+    <div class="td-correction">
+      <p>Les appels 3, 2 et 1 affichent leur <code>n</code> avant de s'appeler. L'appel avec 0 renvoie 0 directement, sans rien afficher. On lit donc <b>3, 2, 1</b>, un nombre par ligne.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-reponse="6|six">
+    <p class="td-consigne"><b>3. b.</b> Quelle valeur sera alors affectée à la variable <code>res</code> ?</p>
+    <p class="td-retour" data-si="3">3 est le premier nombre affiché. <code>res</code> reçoit la valeur <b>renvoyée</b> par l'appel : la somme.</p>
+    <p class="td-retour" data-si="0">0 est renvoyé par le dernier appel seulement. Chaque appel ajoute son <code>n</code> en remontant.</p>
+    <p class="td-aide">Remonte les appels : <code>somme_entiers_rec(0)</code> renvoie 0, donc <code>somme_entiers_rec(1)</code> renvoie 1 + 0…</p>
+    <div class="td-correction">
+      <p>3 + (2 + (1 + 0)) = <b>6</b>. Vérifié par exécution : <code>res</code> vaut 6.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q6" data-obligatoire data-fichier="somme_entiers.py">
+    <p class="td-consigne"><b>4.</b> Écrire en Python une fonction <code>somme_entiers</code> non récursive : cette fonction devra prendre en argument un entier naturel <code>n</code> et renvoyer la somme des entiers de 0 à <code>n</code> compris. Elle devra donc renvoyer le même résultat que la fonction <code>somme_entiers_rec</code> définie à la question 3.</p>
+    <p>Exemple : <code>somme_entiers(4)</code> renvoie 10.</p>
+    <pre class="td-depart">
+def somme_entiers(n):
+    ...
+
+print(somme_entiers(4))
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert somme_entiers(4) == 10, "somme_entiers(4) doit renvoyer 10."
+assert somme_entiers(0) == 0, "somme_entiers(0) doit renvoyer 0."
+assert somme_entiers(1) == 1, "somme_entiers(1) doit renvoyer 1."
+try:
+    _grand = somme_entiers(5000)
+except RecursionError:
+    raise AssertionError("Ta fonction est récursive : avec n = 5000, Python dépasse le nombre d'appels permis. Utilise une boucle.")
+assert _grand == 12502500, "somme_entiers(5000) doit renvoyer 12502500."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Non récursive : la fonction ne s'appelle pas. Utilise une boucle et un accumulateur qui vaut 0 au départ.</p>
+    <p class="td-aide"><code>for i in range(n + 1):</code> donne 0, 1, …, n : la fin <code>n + 1</code> est exclue.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def somme_entiers(n):
+    somme = 0
+    for i in range(n + 1):
+        somme = somme + i
+    return somme</pre>
+      <p>Attention à <code>range(n + 1)</code> : avec <code>range(n)</code>, on oublierait <code>n</code>. Autre réponse juste : <code>return n * (n + 1) // 2</code>.</p>
+    </div>
+  </section>
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Une fonction récursive <b>s'appelle elle-même</b>. Elle a un <b>cas de base</b>, où elle ne s'appelle plus, et chaque appel se rapproche de ce cas : c'est ce qui garantit qu'elle se termine.</p>
+    <p>Suivre une récursion : on descend les appels (ce qui est affiché avant l'appel s'affiche à l'aller), puis on remonte les valeurs renvoyées.</p>
+    <p>fact(n) = n × fact(n − 1), avec fact(0) = 1 ; somme(n) = n + somme(n − 1), avec somme(0) = 0.</p>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, construire des chaînes avec des règles</a>.</p>
+  <footer class="td-pied">
+    <p>Énoncé : sujet zéro B de l'épreuve écrite de NSI publié pour la session 2023 (ministère de l'Éducation nationale), exercice 2, recopié d'après le PDF diffusé par <a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> et l'<a href="https://aeif.fr/index.php/annee-2023/">AEIF</a>. Aucun corrigé de l'AEIF n'est publié pour ce sujet : corrections de la mise en TD, vérifiées par exécution.</p>
+    <p>Mise en TD, coups de pouce et corrections : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-recursivite">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
