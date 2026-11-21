@@ -118,7 +118,7 @@
       ['commun', 'Ressources NSI et SNT', 'https://babash.github.io/Babash-NSI-SNT/eleve/'],
       ['td', 'Feuilles de TD en ligne', 'https://babash.github.io/Babash-NSI-SNT/'],
       ['calendrier', 'Calendrier des vacances', 'https://babash.github.io/Babash-NSI-SNT/calendrier/'],
-      ['quizz_nsi', 'QuizzNSI', 'https://babash.github.io/QuizzNSI/'],
+      ['quizz_nsi', 'QuizzNSI', 'https://babash.github.io/quizz-nsi/'],
       ['gombessa', 'Expédition Gombessa', 'https://babash.github.io/Rappel-1er/'],
       ['court_circuit', 'Court-circuit', 'https://babash.github.io/court-circuit/'],
       ['grand_oral', 'Hello GO', null],
