@@ -6,17 +6,18 @@ Compilation : `latexmk -pdf -shell-escape main-poo-fraction.tex main-poo-pile.te
 
 ## Pages en ligne (T125, nouveau style)
 
-Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en ligne, auto-corrective, corrigé compris) ; le PDF à la même adresse qu'avant en est la feuille vierge imprimée (`charte/imprimer-td.py`). Les sources LaTeX restent ici pour mémoire. Les réponses sont obtenues par exécution : `source/verifier.py` dans le dossier de chaque page.
+Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en ligne, auto-corrective, corrigé compris) ; le PDF à la même adresse qu'avant en est la feuille vierge imprimée (`charte/imprimer-td.py`). Les sources LaTeX ci-dessus restent pour mémoire. Les réponses sont obtenues par exécution : `source/verifier.py` dans le dossier de chaque page. Les chemins partent de ce dossier `source/`.
 
-- Piles et files : `dm-pile/index.html` (PDF : `dm-pile.pdf`).
-- Recherche linéaire dans un dictionnaire : `dm-recherche-lineaire-dict/index.html` (PDF : `dm-recherche-lineaire-dict.pdf`).
-- La récursivité en famille : `dm-recursivite/index.html` (PDF : `dm-recursivite.pdf`).
-- Diviser pour régner, le tri fusion : `dm-tri-fusion/index.html` (PDF : `dm-tri-fusion.pdf`).
-- Trouver le maximum : `dm-trouver-max/index.html` (PDF : `dm-trouver-max.pdf`).
-- Ranger les Lagonnet, le tri par insertion : `dm-tri-par-insertion/index.html` (PDF : `dm-tri-par-insertion.pdf`).
+DM de structures de données et d'algorithmique (lot L6) :
+- Piles et files : `../dm-pile/index.html` (PDF : `../dm-pile.pdf`).
+- Recherche linéaire dans un dictionnaire : `../dm-recherche-lineaire-dict/index.html` (PDF : `../dm-recherche-lineaire-dict.pdf`).
+- La récursivité en famille : `../dm-recursivite/index.html` (PDF : `../dm-recursivite.pdf`).
+- Diviser pour régner, le tri fusion : `../dm-tri-fusion/index.html` (PDF : `../dm-tri-fusion.pdf`).
+- Trouver le maximum : `../dm-trouver-max/index.html` (PDF : `../dm-trouver-max.pdf`).
+- Ranger les Lagonnet, le tri par insertion : `../dm-tri-par-insertion/index.html` (PDF : `../dm-tri-par-insertion.pdf`).
 
-## Page en ligne : conversion binaire et liste (T125, lot L7)
+Conversion binaire et liste (lot L7) : `../dm-conversion-binaire-liste/index.html` (une seule feuille ; PDF : `../dm-conversion-binaire-liste.pdf`).
 
-Pour ce sujet, **la page HTML est désormais la référence** : `dm-conversion-binaire-liste/index.html` (en ligne, auto-corrective, corrigé compris). Le PDF `dm-conversion-binaire-liste.pdf` est fait depuis la page (`charte/imprimer-td.py`, feuille vierge ; deux feuilles : un seul PDF). Réponses obtenues par exécution : `dm-conversion-binaire-liste/source/verifier.py`.
+Structures imbriquées (lot L8) : `../dm-structures-imbriquees/index.html` (PDF : `../dm-structures-imbriquees.pdf`).
 
-Structures imbriquées (T125, nouveau style) : **la page HTML est désormais la référence**, `../dm-structures-imbriquees/index.html` (en ligne, auto-corrective, corrigé compris) ; le PDF `../dm-structures-imbriquees.pdf` en est la feuille vierge imprimée (`charte/imprimer-td.py`) ; les réponses sont obtenues par exécution (`../dm-structures-imbriquees/source/verifier.py`). La source LaTeX `chap-structures-imbriquees.tex` reste pour mémoire.
+DM flash de POO (lot L5) : `../dm-poo-fraction/index.html`, `../dm-poo-pile/index.html`, `../dm-poo-liste/index.html`, `../dm-poo-itineraire/index.html`, `../dm-poo-cartes-avance/index.html` ; leur PDF est `../dm-poo-*.pdf`. Dans le jeu de cartes (avancé), la question « Corrige le programme » est le bonus annoncé (9 questions et 1 bonus) : elle n'est pas dans le sujet d'origine.

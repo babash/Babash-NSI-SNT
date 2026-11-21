@@ -1,0 +1,472 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Un jeu de cartes : TD en ligne</title>
+  <meta name="description" content="DM flash de terminale NSI (niveau avancé), en ligne et auto-correctif : les classes Carte et Paquet d'un jeu de 52 cartes ; lire, prévoir, compléter des méthodes, comprendre les erreurs et la comparaison de deux objets.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsit-dm-poo-cartes-avance" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:81.43%;--y:78.57%;--r:172deg;--l:4.48%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Terminale NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>Un jeu de cartes</h1>
+        <p class="td-accroche">DM flash, niveau avancé</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> faire travailler deux classes ensemble : un paquet qui contient des objets cartes.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>reconnaître les attributs et les méthodes de deux classes ;</li>
+        <li>prévoir ce qu'affiche un programme, erreur comprise ;</li>
+        <li>remplir une liste d'objets avec deux boucles imbriquées ;</li>
+        <li>expliquer pourquoi <code>==</code> ne compare pas deux objets attribut par attribut.</li>
+      </ul>
+      <p class="td-duree">50 minutes · 9 questions et 1 bonus ★ · devoir maison</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>Un jeu classique de 52 cartes a quatre <b>couleurs</b> : trèfle (noir), carreau (rouge), cœur (rouge) et pique (noir). Chaque couleur a treize cartes : As, 2, 3, 4, 5, 6, 7, 8, 9, 10, Valet, Dame, Roi.</p>
+  <p>Les couleurs s'appellent aussi des enseignes. <b>Dans le jeu de cartes, le mot « couleur » n'a donc pas le même sens que dans la vie courante</b> (où l'on dirait qu'il n'y a que deux couleurs : le rouge et le noir).</p>
+  <p>On s'intéresse au code suivant, enregistré dans le fichier <code>cartes.py</code>.</p>
+  <pre class="td-code">
+class Carte:
+
+    def __init__(self, c, v):
+        """Initialise couleur (entre 1 et 4) et valeur (entre 1 et 13)."""
+        self.couleur = c
+        self.valeur = v
+
+    def get_nom(self):
+        """Renvoie le nom de la carte : As, 2, ... 10, Valet, Dame, Roi."""
+        if self.valeur &gt; 1 and self.valeur &lt; 11:
+            return str(self.valeur)
+        elif self.valeur == 11:
+            return "Valet"
+        elif self.valeur == 12:
+            return "Dame"
+        elif self.valeur == 13:
+            return "Roi"
+        else:
+            return "As"
+
+    def get_couleur(self):
+        """Renvoie la couleur (parmi pique, coeur, carreau, trefle)."""
+        return ['pique', 'coeur', 'carreau', 'trefle'][self.couleur - 1]
+
+class Paquet:
+
+    def __init__(self):
+        self.contenu = []
+
+    def remplir(self):
+        """Remplit le paquet de cartes."""
+        for couleur in range(1, ...):
+            for valeur in range(1, ...):
+                ...
+
+    def get_carte_at(self, pos):
+        """Renvoie la carte qui se trouve à la position donnée."""
+        if 0 &lt;= pos &lt; ...:
+            return ...
+
+    def nb_cartes(self):
+        return len(self.contenu)</pre>
+
+  <h2 class="td-partie">1. La classe <code>Carte</code></h2>
+
+  <section class="td-q" data-type="cases" id="q1" data-support="ecran">
+    <p class="td-consigne">Coche les <b>attributs</b> de la classe <code>Carte</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>couleur</code></li>
+      <li data-juste><code>valeur</code></li>
+      <li data-retour="c est un paramètre du constructeur : sa valeur est rangée dans l'attribut couleur."><code>c</code></li>
+      <li data-retour="v est un paramètre du constructeur : sa valeur est rangée dans l'attribut valeur."><code>v</code></li>
+      <li data-retour="get_nom est une méthode : une fonction de la classe."><code>get_nom</code></li>
+    </ul>
+    <p class="td-aide">Un attribut se reconnaît à <code>self.</code> devant son nom, dans le constructeur.</p>
+    <div class="td-correction"><p>Deux attributs : <code>couleur</code> et <code>valeur</code> (<code>self.couleur = c</code>, <code>self.valeur = v</code>).</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quels sont les attributs de la classe <code>Carte</code> ?</p>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q2" data-support="ecran">
+    <p class="td-consigne">Coche les <b>méthodes</b> de la classe <code>Carte</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>__init__</code></li>
+      <li data-juste><code>get_nom</code></li>
+      <li data-juste><code>get_couleur</code></li>
+      <li data-retour="str est une fonction de Python, utilisée dans get_nom."><code>str</code></li>
+      <li data-retour="nb_cartes est une méthode de la classe Paquet, pas de Carte."><code>nb_cartes</code></li>
+    </ul>
+    <p class="td-aide">Les méthodes de <code>Carte</code> sont les <code>def</code> écrits dans le bloc de <code>class Carte</code>.</p>
+    <div class="td-correction"><p>Trois méthodes : le constructeur <code>__init__</code>, <code>get_nom</code> et <code>get_couleur</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quelles sont les méthodes de la classe <code>Carte</code> ?</p>
+  </section>
+
+  <p>On écrit ce programme à la fin du fichier <code>cartes.py</code> (ses lignes sont les lignes 44 à 53 du fichier).</p>
+  <pre class="td-code">
+carte1 = Carte(2, 2)
+print(carte1.valeur)
+print(carte1.couleur)
+print(carte1.get_nom())
+print(carte1.get_couleur())
+carte2 = Carte(12, 3)
+print(carte2.valeur)
+print(carte2.couleur)
+print(carte2.get_nom())
+print(carte2.get_couleur())</pre>
+
+  <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
+    <p class="td-consigne">Qu'affiche ce programme ? (Les valeurs sont données dans l'ordre, une par ligne affichée.)</p>
+    <ul class="td-options">
+      <li data-juste>2, 2, 2, coeur, puis 3, 12, 3, puis une erreur <code>IndexError</code>.</li>
+      <li data-retour="Regarde l'ordre des paramètres : Carte(c, v). Carte(12, 3) a la couleur 12 et la valeur 3, pas l'inverse.">2, 2, 2, coeur, puis 12, 3, Dame, carreau.</li>
+      <li data-retour="Le constructeur ne vérifie rien : Carte(12, 3) est bien créée. L'erreur vient plus tard, quand on cherche sa couleur.">2, 2, 2, coeur, puis une erreur à la création de <code>carte2</code>.</li>
+      <li data-retour="get_couleur prend l'indice self.couleur - 1 : pour la couleur 2, c'est l'indice 1 de la liste, 'coeur'.">2, 2, 2, carreau, puis 3, 12, 3, puis une erreur <code>IndexError</code>.</li>
+    </ul>
+    <p class="td-aide">Le constructeur est <code>Carte(c, v)</code> : d'abord la couleur, puis la valeur.</p>
+    <p class="td-aide">Pour <code>carte2</code>, la couleur vaut 12. Que calcule <code>get_couleur</code> avec <code>self.couleur - 1</code> ?</p>
+    <div class="td-correction">
+      <p><code>carte1</code> : valeur 2, couleur 2, nom <code>2</code>, couleur <code>coeur</code> (indice 1). <code>carte2 = Carte(12, 3)</code> a la couleur 12 et la valeur 3 : on affiche 3, 12 et <code>3</code>, puis <code>get_couleur</code> cherche l'indice 11 d'une liste de 4 éléments :</p>
+      <pre class="td-erreur">
+Traceback (most recent call last):
+  File "cartes.py", line 53, in &lt;module&gt;
+    print(carte2.get_couleur())
+          ~~~~~~~~~~~~~~~~~~^^
+  File "cartes.py", line 23, in get_couleur
+    return ['pique', 'coeur', 'carreau', 'trefle'][self.couleur - 1]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+IndexError: list index out of range</pre>
+      <p>Pour la dame de carreau, il fallait écrire <code>Carte(3, 12)</code>. Le constructeur ne vérifie pas que la couleur est entre 1 et 4 : un <code>assert</code> l'aurait fait.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Qu'affiche ce programme ?</p>
+  </section>
+
+  <h2 class="td-partie">2. La classe <code>Paquet</code></h2>
+
+  <section class="td-q" data-type="cases" id="q4" data-support="ecran">
+    <p class="td-consigne">Coche les <b>attributs</b> de la classe <code>Paquet</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>contenu</code></li>
+      <li data-retour="couleur est ici une variable de la boucle de remplir, pas un attribut du paquet."><code>couleur</code></li>
+      <li data-retour="pos est un paramètre de get_carte_at."><code>pos</code></li>
+      <li data-retour="nb_cartes est une méthode : elle calcule le nombre de cartes à partir de contenu."><code>nb_cartes</code></li>
+    </ul>
+    <p class="td-aide">Cherche <code>self.</code> dans le constructeur de <code>Paquet</code>.</p>
+    <div class="td-correction"><p>Un seul attribut : <code>contenu</code>, une liste (vide au départ) qui contiendra des objets <code>Carte</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quels sont les attributs de la classe <code>Paquet</code> ?</p>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q5" data-support="ecran">
+    <p class="td-consigne">Coche les <b>méthodes</b> de la classe <code>Paquet</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>__init__</code></li>
+      <li data-juste><code>remplir</code></li>
+      <li data-juste><code>get_carte_at</code></li>
+      <li data-juste><code>nb_cartes</code></li>
+      <li data-retour="Carte est une autre classe : remplir s'en servira pour créer les cartes."><code>Carte</code></li>
+      <li data-retour="len est une fonction de Python, utilisée dans nb_cartes."><code>len</code></li>
+    </ul>
+    <p class="td-aide">Compte les <code>def</code> du bloc de <code>class Paquet</code>.</p>
+    <div class="td-correction"><p>Quatre méthodes : <code>__init__</code>, <code>remplir</code>, <code>get_carte_at</code> et <code>nb_cartes</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quelles sont les méthodes de la classe <code>Paquet</code> ?</p>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="4" id="q6" data-fichier="cartes.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>remplir</code> : elle ajoute au paquet les 52 cartes, chacune une seule fois (couleurs de 1 à 4, valeurs de 1 à 13).</p>
+    <pre class="td-depart">
+class Carte:
+    def __init__(self, c, v):
+        self.couleur = c
+        self.valeur = v
+
+class Paquet:
+    def __init__(self):
+        self.contenu = []
+
+    def remplir(self):
+        for couleur in range(1, ...):
+            for valeur in range(1, ...):
+                ...
+
+    def nb_cartes(self):
+        return len(self.contenu)
+</pre>
+    <script type="text/x-python" class="td-tests">
+_p = Paquet()
+_p.remplir()
+assert all(isinstance(c, Carte) for c in _p.contenu), "Le paquet doit contenir des objets Carte, créés avec Carte(couleur, valeur). On trouve : " + repr(_p.contenu[:2])
+assert _p.nb_cartes() == 52, "Après remplir, le paquet doit avoir 52 cartes. Il en a : " + str(_p.nb_cartes())
+_vus = {(c.couleur, c.valeur) for c in _p.contenu}
+assert _vus == {(c, v) for c in range(1, 5) for v in range(1, 14)}, "Il faut chaque couleur de 1 à 4 avec chaque valeur de 1 à 13, une seule fois."
+</script>
+    <p class="td-aide"><code>range(1, n)</code> s'arrête <b>avant</b> n : pour aller jusqu'à 4, on écrit <code>range(1, 5)</code>.</p>
+    <p class="td-aide">Dans la boucle, on crée une carte et on l'ajoute à la liste : <code>self.contenu.append(Carte(…, …))</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Carte:
+    def __init__(self, c, v):
+        self.couleur = c
+        self.valeur = v
+
+class Paquet:
+    def __init__(self):
+        self.contenu = []
+
+    def remplir(self):
+        for couleur in range(1, 5):
+            for valeur in range(1, 14):
+                self.contenu.append(Carte(couleur, valeur))
+
+    def nb_cartes(self):
+        return len(self.contenu)
+</pre>
+      <p>4 × 13 = 52 tours : un objet <code>Carte</code> par tour. Les cartes sont rangées couleur par couleur : la carte de couleur <code>c</code> et de valeur <code>v</code> est à la position (c − 1) × 13 + (v − 1).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q7" data-fichier="cartes.py" data-obligatoire>
+    <p class="td-consigne">Complète la méthode <code>get_carte_at</code> : elle renvoie la carte à la position <code>pos</code> (la première est à la position 0). Pour une position qui n'existe pas, elle ne renvoie rien (<code>None</code>).</p>
+    <pre class="td-depart">
+class Carte:
+    def __init__(self, c, v):
+        self.couleur = c
+        self.valeur = v
+
+class Paquet:
+    def __init__(self):
+        self.contenu = []
+
+    def remplir(self):
+        for couleur in range(1, 5):
+            for valeur in range(1, 14):
+                self.contenu.append(Carte(couleur, valeur))
+
+    def get_carte_at(self, pos):
+        if 0 &lt;= pos &lt; ...:
+            return ...
+
+    def nb_cartes(self):
+        return len(self.contenu)
+</pre>
+    <script type="text/x-python" class="td-tests">
+_p = Paquet()
+_p.remplir()
+_c = _p.get_carte_at(0)
+assert isinstance(_c, Carte), "get_carte_at(0) doit renvoyer un objet Carte, la première du paquet. Elle renvoie : " + repr(_c)
+assert (_c.couleur, _c.valeur) == (1, 1), "La carte en position 0 est la première ajoutée : couleur 1, valeur 1."
+_c = _p.get_carte_at(51)
+assert _c is not None and (_c.couleur, _c.valeur) == (4, 13), "La carte en position 51 est la dernière : couleur 4, valeur 13."
+_c = _p.get_carte_at(14)
+assert _c is not None and (_c.couleur, _c.valeur) == (2, 2), "La carte en position 14 est le 2 de la couleur 2."
+assert _p.get_carte_at(52) is None, "Il n'y a pas de position 52 (les positions vont de 0 à 51) : on attend None."
+assert _p.get_carte_at(-1) is None, "Une position négative n'existe pas ici : on attend None."
+_v = Paquet()
+assert _v.get_carte_at(0) is None, "Dans un paquet vide, aucune position n'existe : on attend None (compare pos au nombre de cartes du paquet, pas à 52)."
+</script>
+    <p class="td-aide">Les positions vont de 0 au nombre de cartes moins 1 : <code>pos</code> doit être strictement plus petit que <code>self.nb_cartes()</code>.</p>
+    <p class="td-aide">La carte est l'élément <code>pos</code> de la liste <code>self.contenu</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Carte:
+    def __init__(self, c, v):
+        self.couleur = c
+        self.valeur = v
+
+class Paquet:
+    def __init__(self):
+        self.contenu = []
+
+    def remplir(self):
+        for couleur in range(1, 5):
+            for valeur in range(1, 14):
+                self.contenu.append(Carte(couleur, valeur))
+
+    def get_carte_at(self, pos):
+        if 0 &lt;= pos &lt; self.nb_cartes():
+            return self.contenu[pos]
+
+    def nb_cartes(self):
+        return len(self.contenu)
+</pre>
+      <p>Sans le <code>if</code>, <code>self.contenu[52]</code> provoquerait une erreur <code>IndexError</code>. Quand la condition est fausse, la méthode arrive à sa fin sans <code>return</code> : elle renvoie <code>None</code>. <code>len(self.contenu)</code> est juste aussi.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. Chercher une carte dans le paquet</h2>
+  <p>Les méthodes étant complétées comme aux questions 6 et 7, on écrit ce programme sous les classes :</p>
+  <pre class="td-code">
+carte1 = Carte(2, 2)
+paquet = Paquet()
+paquet.remplir()
+for i in range(1, len(paquet.nb_cartes)+1):
+    current = paquet.get_carte_at(i)
+    if current.couleur == carte1.couleur and current.valeur == carte1.valeur:
+        print("Trouvé en position {i}")</pre>
+
+  <section class="td-q" data-type="qcu" id="q8" data-support="ecran">
+    <p class="td-consigne">Qu'affiche ce programme ?</p>
+    <ul class="td-options">
+      <li data-juste>Rien : il s'arrête aussitôt sur une erreur <code>TypeError</code>.</li>
+      <li data-retour="Python n'arrive même pas jusqu'à la boucle : regarde len(paquet.nb_cartes), sans parenthèses après nb_cartes.">Trouvé en position 14, une seule fois, sans erreur</li>
+      <li data-retour="Il manque bien le f devant la chaîne… mais Python s'arrête avant : regarde len(paquet.nb_cartes)."><code>Trouvé en position {i}</code>, avec les accolades</li>
+      <li data-retour="La carte est bien dans le paquet, mais Python s'arrête avant de la chercher : regarde la ligne du for.">Rien, sans erreur : la carte n'est jamais trouvée dans le paquet.</li>
+    </ul>
+    <p class="td-aide"><code>paquet.nb_cartes</code>, sans parenthèses, n'appelle pas la méthode : c'est la méthode elle-même.</p>
+    <p class="td-aide">Peut-on calculer la longueur (<code>len</code>) d'une méthode ?</p>
+    <div class="td-correction">
+      <p>Sans parenthèses, <code>paquet.nb_cartes</code> est la méthode, pas le nombre de cartes. Python s'arrête à la ligne du <code>for</code> :</p>
+      <pre class="td-console">
+<span class="td-l">TypeError: object of type 'method' has no len()</span></pre>
+      <p>Et ce n'est pas la seule erreur : voir la question bonus.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Qu'affiche ce programme ?</p>
+  </section>
+
+  <section class="td-q" data-type="code" data-lignes="3" id="q9" data-bonus data-fichier="cartes.py">
+    <p class="td-consigne">Corrige le programme : il doit afficher <code>Trouvé en position 14</code>. Lance-le, lis chaque message d'erreur, corrige, recommence : il y a trois erreurs.</p>
+    <pre class="td-depart">
+class Carte:
+    def __init__(self, c, v):
+        self.couleur = c
+        self.valeur = v
+
+class Paquet:
+    def __init__(self):
+        self.contenu = []
+
+    def remplir(self):
+        for couleur in range(1, 5):
+            for valeur in range(1, 14):
+                self.contenu.append(Carte(couleur, valeur))
+
+    def get_carte_at(self, pos):
+        if 0 &lt;= pos &lt; self.nb_cartes():
+            return self.contenu[pos]
+
+    def nb_cartes(self):
+        return len(self.contenu)
+
+carte1 = Carte(2, 2)
+paquet = Paquet()
+paquet.remplir()
+for i in range(1, len(paquet.nb_cartes)+1):
+    current = paquet.get_carte_at(i)
+    if current.couleur == carte1.couleur and current.valeur == carte1.valeur:
+        print("Trouvé en position {i}")
+</pre>
+    <pre class="td-attendu">
+Trouvé en position 14</pre>
+    <p class="td-aide">1. <code>nb_cartes</code> est une méthode : on l'appelle avec des parenthèses, et elle renvoie déjà un nombre.</p>
+    <p class="td-aide">2. Les positions vont de 0 à 51 : <code>get_carte_at(52)</code> renvoie <code>None</code>, et <code>None.couleur</code> provoque une erreur.</p>
+    <p class="td-aide">3. Pour que <code>{i}</code> soit remplacé par la valeur de <code>i</code>, il faut une f-chaîne : <code>f"…"</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Carte:
+    def __init__(self, c, v):
+        self.couleur = c
+        self.valeur = v
+
+class Paquet:
+    def __init__(self):
+        self.contenu = []
+
+    def remplir(self):
+        for couleur in range(1, 5):
+            for valeur in range(1, 14):
+                self.contenu.append(Carte(couleur, valeur))
+
+    def get_carte_at(self, pos):
+        if 0 &lt;= pos &lt; self.nb_cartes():
+            return self.contenu[pos]
+
+    def nb_cartes(self):
+        return len(self.contenu)
+
+carte1 = Carte(2, 2)
+paquet = Paquet()
+paquet.remplir()
+for i in range(paquet.nb_cartes()):
+    current = paquet.get_carte_at(i)
+    if current.couleur == carte1.couleur and current.valeur == carte1.valeur:
+        print(f"Trouvé en position {i}")
+</pre>
+      <p>Trois corrections : <code>paquet.nb_cartes()</code> sans <code>len</code>, les positions de 0 à 51 (<code>range(paquet.nb_cartes())</code>), et le <code>f</code> devant la chaîne. Le 2 de la couleur 2 est en position (2 − 1) × 13 + (2 − 1) = 14.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q10" data-support="ecran">
+    <p class="td-consigne">Pourquoi ne peut-on pas comparer directement <code>current</code> et <code>carte1</code> avec <code>current == carte1</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Pour deux objets <code>Carte</code> (sans méthode <code>__eq__</code>), <code>==</code> vérifie si c'est le même objet : deux cartes créées à part ne sont pas égales.</li>
+      <li data-retour="Python accepte la comparaison, sans erreur : elle renvoie simplement False.">Python s'arrête sur une erreur : on ne peut pas comparer deux objets d'une classe que l'on a écrite soi-même.</li>
+      <li data-retour="== ne regarde pas les attributs de lui-même : la classe Carte ne lui dit pas comment comparer deux cartes.">On peut : comme pour deux tuples, <code>==</code> compare tout seul la couleur et la valeur des deux cartes, attribut par attribut.</li>
+      <li data-retour="get_carte_at renvoie un objet Carte, celui rangé dans le paquet.">Parce que <code>current</code> est une chaîne de caractères (le nom de la carte, comme <code>"Dame"</code>), pas un objet <code>Carte</code>.</li>
+    </ul>
+    <p class="td-aide"><code>carte1</code> a été créée par <code>Carte(2, 2)</code> ; la carte du paquet, par un autre appel à <code>Carte(2, 2)</code> dans <code>remplir</code>. Est-ce le même objet ?</p>
+    <div class="td-correction">
+      <p><code>Carte(2, 2) == Carte(2, 2)</code> vaut <code>False</code> : ce sont deux objets distincts en mémoire, et la classe ne dit pas comment comparer deux cartes. On compare donc les attributs, un par un, comme dans le programme.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q10-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Pourquoi ne peut-on pas comparer directement <code>current</code> et <code>carte1</code> ?</p>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Un objet peut en contenir d'autres : <code>self.contenu</code> est une liste d'objets <code>Carte</code>, remplie avec <code>self.contenu.append(Carte(c, v))</code>.</p>
+    <p>Une méthode s'appelle avec ses parenthèses : <code>paquet.nb_cartes()</code>. Deux objets <code>Carte</code> distincts ne sont pas <code>==</code>, même avec les mêmes attributs : la classe n'a pas de méthode <code>__eq__</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/dm-flash-terminale/dm-poo-cartes-avance">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
