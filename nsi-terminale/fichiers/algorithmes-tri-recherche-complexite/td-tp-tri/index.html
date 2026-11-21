@@ -1,0 +1,265 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Le bal des tris : TD en ligne</title>
+  <meta name="description" content="TD en ligne auto-correctif : Le bal des tris (Tle NSI, Tris et complexité).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-tri-bal-des-tris" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:67.38%;--y:68.75%;--r:-106deg;--l:3.08%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Tris et complexité</span></p>
+        <h1>Le bal des tris</h1>
+        <p class="td-accroche">Mission 3 · TD-TP</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/QuizzNSI/revision.html?cours=tris" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h2v1h-2zM15 0h2v1h-2zM18 0h1v1h-1zM20 0h1v1h-1zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM17 1h4v1h-4zM22 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM13 2h1v1h-1zM16 2h4v1h-4zM21 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM11 3h1v1h-1zM14 3h1v1h-1zM20 3h1v1h-1zM23 3h2v1h-2zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h3v1h-3zM12 4h1v1h-1zM14 4h1v1h-1zM17 4h1v1h-1zM21 4h1v1h-1zM23 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h3v1h-3zM14 5h1v1h-1zM16 5h2v1h-2zM19 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM15 7h3v1h-3zM19 7h1v1h-1zM21 7h3v1h-3zM0 8h1v1h-1zM4 8h1v1h-1zM6 8h3v1h-3zM13 8h1v1h-1zM16 8h2v1h-2zM19 8h3v1h-3zM23 8h1v1h-1zM25 8h5v1h-5zM32 8h1v1h-1zM2 9h2v1h-2zM5 9h1v1h-1zM11 9h1v1h-1zM13 9h6v1h-6zM21 9h1v1h-1zM23 9h1v1h-1zM25 9h1v1h-1zM29 9h3v1h-3zM0 10h5v1h-5zM6 10h1v1h-1zM8 10h5v1h-5zM15 10h1v1h-1zM17 10h2v1h-2zM20 10h2v1h-2zM23 10h2v1h-2zM29 10h1v1h-1zM0 11h2v1h-2zM3 11h2v1h-2zM7 11h2v1h-2zM10 11h3v1h-3zM14 11h5v1h-5zM20 11h2v1h-2zM23 11h1v1h-1zM25 11h2v1h-2zM31 11h1v1h-1zM0 12h4v1h-4zM5 12h3v1h-3zM10 12h1v1h-1zM12 12h4v1h-4zM17 12h1v1h-1zM19 12h1v1h-1zM21 12h2v1h-2zM24 12h1v1h-1zM26 12h4v1h-4zM31 12h1v1h-1zM0 13h1v1h-1zM2 13h1v1h-1zM4 13h1v1h-1zM7 13h3v1h-3zM11 13h1v1h-1zM13 13h1v1h-1zM16 13h2v1h-2zM21 13h1v1h-1zM23 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM29 13h1v1h-1zM1 14h1v1h-1zM3 14h1v1h-1zM6 14h2v1h-2zM9 14h2v1h-2zM12 14h1v1h-1zM16 14h2v1h-2zM20 14h1v1h-1zM23 14h1v1h-1zM25 14h2v1h-2zM28 14h1v1h-1zM30 14h2v1h-2zM0 15h1v1h-1zM5 15h1v1h-1zM10 15h2v1h-2zM14 15h1v1h-1zM17 15h2v1h-2zM20 15h3v1h-3zM24 15h4v1h-4zM2 16h3v1h-3zM6 16h1v1h-1zM8 16h5v1h-5zM15 16h1v1h-1zM17 16h1v1h-1zM19 16h1v1h-1zM21 16h4v1h-4zM26 16h1v1h-1zM28 16h2v1h-2zM31 16h1v1h-1zM3 17h2v1h-2zM7 17h4v1h-4zM12 17h2v1h-2zM15 17h2v1h-2zM18 17h1v1h-1zM21 17h1v1h-1zM23 17h1v1h-1zM25 17h1v1h-1zM29 17h4v1h-4zM0 18h2v1h-2zM4 18h1v1h-1zM6 18h2v1h-2zM10 18h1v1h-1zM15 18h1v1h-1zM17 18h2v1h-2zM21 18h1v1h-1zM23 18h1v1h-1zM26 18h2v1h-2zM29 18h1v1h-1zM31 18h1v1h-1zM0 19h2v1h-2zM4 19h1v1h-1zM8 19h1v1h-1zM12 19h4v1h-4zM17 19h1v1h-1zM21 19h2v1h-2zM25 19h1v1h-1zM27 19h1v1h-1zM31 19h2v1h-2zM1 20h1v1h-1zM3 20h1v1h-1zM6 20h2v1h-2zM10 20h3v1h-3zM14 20h1v1h-1zM17 20h1v1h-1zM21 20h1v1h-1zM24 20h1v1h-1zM26 20h1v1h-1zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h1v1h-1zM5 21h1v1h-1zM7 21h2v1h-2zM12 21h3v1h-3zM17 21h1v1h-1zM22 21h4v1h-4zM27 21h1v1h-1zM30 21h2v1h-2zM2 22h1v1h-1zM6 22h2v1h-2zM9 22h1v1h-1zM11 22h1v1h-1zM13 22h3v1h-3zM18 22h1v1h-1zM20 22h1v1h-1zM23 22h1v1h-1zM27 22h1v1h-1zM29 22h3v1h-3zM2 23h2v1h-2zM5 23h1v1h-1zM7 23h3v1h-3zM13 23h2v1h-2zM16 23h6v1h-6zM24 23h1v1h-1zM26 23h1v1h-1zM28 23h1v1h-1zM32 23h1v1h-1zM0 24h2v1h-2zM3 24h1v1h-1zM5 24h3v1h-3zM10 24h2v1h-2zM13 24h2v1h-2zM16 24h3v1h-3zM20 24h9v1h-9zM31 24h1v1h-1zM8 25h1v1h-1zM11 25h1v1h-1zM14 25h3v1h-3zM18 25h1v1h-1zM21 25h1v1h-1zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM8 26h2v1h-2zM12 26h1v1h-1zM15 26h1v1h-1zM24 26h1v1h-1zM26 26h1v1h-1zM28 26h2v1h-2zM31 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM9 27h2v1h-2zM13 27h1v1h-1zM15 27h3v1h-3zM20 27h2v1h-2zM24 27h1v1h-1zM28 27h1v1h-1zM32 27h1v1h-1zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM14 28h1v1h-1zM16 28h2v1h-2zM19 28h4v1h-4zM24 28h6v1h-6zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM10 29h1v1h-1zM12 29h1v1h-1zM15 29h4v1h-4zM21 29h1v1h-1zM23 29h2v1h-2zM26 29h5v1h-5zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM10 30h1v1h-1zM13 30h1v1h-1zM15 30h1v1h-1zM18 30h1v1h-1zM20 30h4v1h-4zM26 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h3v1h-3zM13 31h1v1h-1zM15 31h5v1h-5zM21 31h1v1h-1zM23 31h4v1h-4zM0 32h7v1h-7zM8 32h1v1h-1zM15 32h2v1h-2zM19 32h1v1h-1zM21 32h4v1h-4zM29 32h1v1h-1zM32 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+        <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> dérouler le tri par sélection et le tri par insertion, et comparer leur coût selon les données.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>suivre pas à pas un tri par sélection et un tri par insertion ;</li>
+        <li>énoncer l'invariant de boucle du tri par sélection ;</li>
+        <li>dire quand chaque tri va vite ou lentement, en comptant les comparaisons ;</li>
+        <li>donner la complexité de ces tris : O(n²), ou O(n) au mieux pour l'insertion.</li>
+      </ul>
+      <p class="td-duree">Feuille 1 sur 2 · 50 minutes · 15 questions · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">1. Le tri par sélection</h2>
+  <pre class="td-code">
+def tri_selection(tab):
+    n = len(tab)
+    for i in range(n - 1):  # on parcourt le tableau de gauche à droite
+        i_min = i  # on suppose que le minimum est à l'indice actuel
+        for j in range(i + 1, n):  # on cherche le plus petit
+            if tab[j] &lt; tab[i_min]:
+                i_min = j  # on a trouvé un nouveau minimum
+        tab[i], tab[i_min] = tab[i_min], tab[i]  # permutation
+    return tab</pre>
+  <figure class="td-schema">
+<svg width="330" viewBox="0 0 330 362" role="img" aria-label="Tri par sélection de [3, 5, 2, 6, 4, 1, 8] : à chaque étape i, on cherche le minimum du reste et on l&#x27;échange avec la case i ; la partie gauche grandit, triée et définitive."><defs><pattern id="hs" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="1.6" opacity=".55"/></pattern></defs><rect x="2" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="19.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="36" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="53.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">5</text><rect x="70" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="87.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><rect x="104" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">6</text><rect x="138" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="172" y="4" width="34" height="34" fill="url(#hs)"/><rect x="172" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="189.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">1</text><rect x="206" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="223.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">8</text><text x="2" y="55" text-anchor="start" font-size="14" fill="currentColor">i = 0 : le minimum est 1 (indice 5) ;</text><text x="2" y="72" text-anchor="start" font-size="14" fill="currentColor">échange avec la case 0.</text><rect x="2" y="84" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="84" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="106.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">1</text><rect x="36" y="84" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="53.0" y="106.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">5</text><rect x="70" y="84" width="34" height="34" fill="url(#hs)"/><rect x="70" y="84" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="87.0" y="106.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><rect x="104" y="84" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="106.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">6</text><rect x="138" y="84" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="106.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="172" y="84" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="189.0" y="106.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="206" y="84" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="223.0" y="106.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">8</text><text x="2" y="135" text-anchor="start" font-size="14" fill="currentColor">i = 1 : le minimum du reste est 2</text><text x="2" y="152" text-anchor="start" font-size="14" fill="currentColor">(indice 2) ; échange avec la case 1.</text><rect x="2" y="164" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="164" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="186.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">1</text><rect x="36" y="164" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="36" y="164" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="53.0" y="186.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><rect x="70" y="164" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="87.0" y="186.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">5</text><rect x="104" y="164" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="186.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">6</text><rect x="138" y="164" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="186.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="172" y="164" width="34" height="34" fill="url(#hs)"/><rect x="172" y="164" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="189.0" y="186.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="206" y="164" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="223.0" y="186.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">8</text><text x="2" y="215" text-anchor="start" font-size="14" fill="currentColor">i = 2 : le minimum du reste est 3</text><text x="2" y="232" text-anchor="start" font-size="14" fill="currentColor">(indice 5) ; échange avec la case 2.</text><rect x="2" y="244" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="244" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="266.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">1</text><rect x="36" y="244" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="36" y="244" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="53.0" y="266.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><rect x="70" y="244" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="70" y="244" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="87.0" y="266.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="104" y="244" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="266.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">6</text><rect x="138" y="244" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="266.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="172" y="244" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="189.0" y="266.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">5</text><rect x="206" y="244" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="223.0" y="266.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">8</text><text x="2" y="295" text-anchor="start" font-size="14" fill="currentColor">Après trois étapes, les trois premières</text><text x="2" y="312" text-anchor="start" font-size="14" fill="currentColor">cases sont définitives.</text><rect x="2" y="324" width="34" height="34" fill="url(#hs)"/><rect x="2" y="324" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="42" y="346" text-anchor="start" font-size="14" fill="currentColor">minimum</text><rect x="118" y="324" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="118" y="324" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="158" y="346" text-anchor="start" font-size="14" fill="currentColor">définitif</text><rect x="232" y="324" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="272" y="346" text-anchor="start" font-size="14" fill="currentColor">case i</text></svg>
+    <figcaption>Le tri par sélection de [3, 5, 2, 6, 4, 1, 8], étape par étape.</figcaption>
+  </figure>
+
+  <section class="td-q" data-type="trous" data-langage="texte" id="q1">
+    <p class="td-consigne">Le déroulé. Soit <code>tab = [15, 4, 8, 2]</code>. L'étape <code>i = 0</code> est faite : <code>i_min</code> vaut 3, <code>tab[i_min]</code> vaut 2, on échange 15 et 2. Complète les étapes suivantes.</p>
+    <pre class="td-code">
+étape i = 0 : i_min = 3     tab[i_min] = 2     tableau : [2, 4, 8, 15]
+étape i = 1 : i_min = [[1]]   tab[i_min] = [[4]]   tableau : [[[2, 4, 8, 15]]]
+étape i = 2 : i_min = [[2]]   tab[i_min] = [[8]]   tableau : [[[2, 4, 8, 15]]]</pre>
+    <p class="td-aide">À l'étape i, on cherche le minimum parmi les cases d'indice i à 3 ; <code>i_min</code> est son indice.</p>
+    <p class="td-aide">Après l'étape 0, le tableau est déjà [2, 4, 8, 15] : à l'étape 1, le minimum du reste [4, 8, 15] est déjà à sa place.</p>
+    <div class="td-correction"><p>Étape 1 : le minimum de [4, 8, 15] est 4, à l'indice 1 = i ; on échange 4 avec lui-même. Étape 2 : le minimum de [8, 15] est 8, à l'indice 2 ; même chose. Le tableau reste <code>[2, 4, 8, 15]</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q2">
+    <p class="td-consigne">Aux étapes <code>i = 1</code> et <code>i = 2</code>, quel échange la ligne <code>tab[i], tab[i_min] = tab[i_min], tab[i]</code> effectue-t-elle ?</p>
+    <ul class="td-options">
+      <li data-juste>elle échange une case avec elle-même (4 avec 4, puis 8 avec 8) : le tableau ne change pas</li>
+      <li data-retour="La ligne de permutation n'est pas dans un if : elle s'exécute à chaque tour de la boucle i.">elle ne s'exécute pas : le minimum est déjà en place</li>
+      <li data-retour="On échange la case i avec la case i_min, pas avec la suivante.">elle échange 4 et 8, puis 8 et 15</li>
+      <li data-retour="15 a été placé à la fin dès l'étape 0, par l'échange avec 2.">elle ramène 15 à la fin du tableau</li>
+    </ul>
+    <p class="td-aide">Ici, <code>i_min</code> vaut <code>i</code> : que fait l'échange de <code>tab[i]</code> avec <code>tab[i]</code> ?</p>
+    <div class="td-correction"><p>Comme <code>i_min == i</code>, la ligne échange la case avec elle-même : rien ne bouge. Ce code fait toujours n − 1 permutations, même inutiles.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
+    <p class="td-consigne">L'invariant de boucle. À la fin de chaque étape <code>i</code>, qu'est-ce qui est toujours vrai pour la partie gauche du tableau (indices 0 à <code>i</code>) ?</p>
+    <ul class="td-options">
+      <li data-juste>elle est triée et contient les i + 1 plus petites valeurs du tableau, à leur place définitive</li>
+      <li data-retour="Elle est triée, mais surtout définitive : aucune valeur plus petite ne viendra s'y glisser ensuite.">elle est triée, mais ses valeurs peuvent encore changer de place plus tard</li>
+      <li data-retour="La boucle i va de gauche à droite : c'est la partie gauche qui se remplit, avec les plus petites valeurs.">elle contient les plus grandes valeurs du tableau</li>
+      <li data-retour="Après l'étape 0, la case 0 contient déjà le minimum du tableau entier : la partie gauche change.">elle est restée comme au départ</li>
+    </ul>
+    <p class="td-aide">Regarde la figure : les cases grisées ne bougent plus jamais.</p>
+    <div class="td-correction"><p>Les cases 0 à i sont <b>triées</b> et contiennent les i + 1 plus petites valeurs, à leur <b>place définitive</b>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">L'invariant de boucle. À la fin de chaque étape <code>i</code>, quelle affirmation est toujours vraie pour la partie gauche du tableau (indices 0 à <code>i</code>) ?</p>
+    <div class="td-correction"><p>Elle est triée et contient les i + 1 plus petites valeurs, à leur place définitive.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4">
+    <p class="td-consigne">Réflexion sur le coût. Si le tableau est déjà trié au départ, l'algorithme va-t-il plus vite ? Observe la boucle <code>j</code>.</p>
+    <ul class="td-options">
+      <li data-juste>Non : la boucle <code>j</code> parcourt toujours tout le reste du tableau, trié ou non</li>
+      <li data-retour="La boucle j n'a pas de condition d'arrêt : for j in range(i + 1, n) fait tous ses tours.">Oui : la boucle <code>j</code> s'arrête dès qu'elle voit que le reste est trié</li>
+      <li data-retour="Les permutations se font aussi (case avec elle-même) ; et surtout, le nombre de comparaisons ne change pas.">Oui : il n'y a plus aucune permutation à faire</li>
+      <li data-retour="Un tableau trié ne pose aucun problème : le tri se termine normalement.">Non : il tourne sans fin</li>
+    </ul>
+    <p class="td-aide">Combien de tours fait <code>for j in range(i + 1, n)</code> ? Est-ce que ça dépend des valeurs du tableau ?</p>
+    <div class="td-correction"><p>Non : la boucle <code>j</code> fait n − 1 − i tours quoi qu'il arrive. Le tri par sélection est « aveugle » : il fait le même effort, trié ou non.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
+    <p class="td-consigne">Quel est le <b>pire des cas</b> pour cet algorithme ?</p>
+    <ul class="td-options">
+      <li data-juste>il n'y en a pas pour les comparaisons : n(n − 1)/2 dans tous les cas ; seul le nombre d'échanges effectifs (case différente d'elle-même) varie, de 0 à n − 1</li>
+      <li data-retour="Pour un tableau trié à l'envers, il fait n(n − 1)/2 comparaisons, exactement autant que pour un tableau trié : le coût en comparaisons ne dépend pas des données.">le tableau trié à l'envers : c'est là qu'il fait le plus de comparaisons</li>
+      <li data-retour="Un tableau déjà trié coûte autant de comparaisons que les autres : n(n − 1)/2.">le tableau déjà trié, car il fait des échanges inutiles</li>
+      <li data-retour="Des valeurs égales ne changent rien au nombre de tours des deux boucles.">un tableau qui contient des valeurs égales</li>
+    </ul>
+    <p class="td-aide">Compte les comparaisons <code>tab[j] &lt; tab[i_min]</code> : (n − 1) + (n − 2) + … + 1. Dépend-il des valeurs ?</p>
+    <div class="td-correction"><p>Pour les comparaisons, il n'y a <b>pas de pire des cas</b> : la boucle <code>j</code> fait (n − 1) + (n − 2) + … + 1 = n(n − 1)/2 comparaisons, quel que soit le tableau (vérifié par exécution avec des compteurs : 15 pour n = 6, trié, à l'envers ou mélangé). Seul le nombre d'échanges effectifs varie : 0 si le tableau est trié, au plus n − 1.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Quel est le <b>pire des cas</b> pour cet algorithme ? Compte les comparaisons, puis les échanges.</p>
+    <div class="td-correction"><p>Pas de pire des cas pour les comparaisons (toujours n(n − 1)/2) ; seuls les échanges effectifs varient, de 0 à n − 1.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q6" data-reponse="O(n²)|O(n^2)|O(n**2)|n²|n^2|O(n*n)|O(n x n)|O(n × n)">
+    <p class="td-consigne">Complexité. On compare chaque élément à tous les autres (deux boucles imbriquées) : on dit que la complexité est <b>quadratique</b>. Note-la avec la notation O.</p>
+    <p class="td-retour" data-si="O(n)">O(n), c'est la complexité linéaire : une seule boucle sur le tableau.</p>
+    <p class="td-aide">Quadratique : en fonction du carré de n. Écris par exemple <code>O(n^2)</code>.</p>
+    <div class="td-correction"><p><b>O(n²)</b> : n(n − 1)/2 comparaisons, c'est de l'ordre de n².</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Le tri par insertion</h2>
+  <pre class="td-code">
+def tri_insertion(tab):
+    for i in range(1, len(tab)):  # on commence au deuxième élément
+        cle = tab[i]  # l'élément à insérer
+        j = i - 1
+        # On fait « reculer » la clé tant qu'elle est plus petite
+        # que ses voisins de gauche
+        while j &gt;= 0 and tab[j] &gt; cle:
+            tab[j + 1] = tab[j]  # on décale vers la droite
+            j = j - 1
+        tab[j + 1] = cle  # on insère la clé à sa place
+    return tab</pre>
+  <figure class="td-schema">
+<svg width="300" viewBox="0 0 300 352" role="img" aria-label="Tri par insertion de [4, 7, 3, 9, 2] : à chaque étape, la clé recule à sa place dans la partie déjà triée, en décalant les plus grandes vers la droite."><defs><pattern id="hi" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="currentColor" stroke-width="1.6" opacity=".55"/></pattern></defs><rect x="2" y="4" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="36" y="4" width="34" height="34" fill="url(#hi)"/><rect x="36" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="53.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">7</text><rect x="70" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="87.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="104" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">9</text><rect x="138" y="4" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="26.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><text x="2" y="55" text-anchor="start" font-size="14" fill="currentColor">i = 1 : clé 7 ; aucun décalage.</text><rect x="2" y="66" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="66" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="88.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="36" y="66" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="36" y="66" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="53.0" y="88.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">7</text><rect x="70" y="66" width="34" height="34" fill="url(#hi)"/><rect x="70" y="66" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="87.0" y="88.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="104" y="66" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="88.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">9</text><rect x="138" y="66" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="88.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><text x="2" y="117" text-anchor="start" font-size="14" fill="currentColor">i = 2 : clé 3 ; on décale 7 puis 4.</text><rect x="2" y="128" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="128" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="150.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="36" y="128" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="36" y="128" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="53.0" y="150.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="70" y="128" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="70" y="128" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="87.0" y="150.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">7</text><rect x="104" y="128" width="34" height="34" fill="url(#hi)"/><rect x="104" y="128" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="121.0" y="150.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">9</text><rect x="138" y="128" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="150.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><text x="2" y="179" text-anchor="start" font-size="14" fill="currentColor">i = 3 : clé 9 ; aucun décalage.</text><rect x="2" y="190" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="190" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="212.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="36" y="190" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="36" y="190" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="53.0" y="212.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="70" y="190" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="70" y="190" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="87.0" y="212.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">7</text><rect x="104" y="190" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="104" y="190" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="212.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">9</text><rect x="138" y="190" width="34" height="34" fill="url(#hi)"/><rect x="138" y="190" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="155.0" y="212.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><text x="2" y="241" text-anchor="start" font-size="14" fill="currentColor">i = 4 : clé 2 ; on décale 9, 7, 4, 3.</text><rect x="2" y="252" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="252" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="19.0" y="274.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">2</text><rect x="36" y="252" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="36" y="252" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="53.0" y="274.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">3</text><rect x="70" y="252" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="70" y="252" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="87.0" y="274.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">4</text><rect x="104" y="252" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="104" y="252" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="121.0" y="274.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">7</text><rect x="138" y="252" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="138" y="252" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="155.0" y="274.5" text-anchor="middle" font-size="16" font-weight="bold" fill="currentColor">9</text><text x="2" y="303" text-anchor="start" font-size="14" fill="currentColor">Tableau trié.</text><rect x="2" y="314" width="34" height="34" fill="currentColor" opacity=".18"/><rect x="2" y="314" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.2"/><text x="42" y="336" text-anchor="start" font-size="14" fill="currentColor">déjà trié</text><rect x="140" y="314" width="34" height="34" fill="url(#hi)"/><rect x="140" y="314" width="34" height="34" fill="none" stroke="currentColor" stroke-width="3.5"/><text x="180" y="336" text-anchor="start" font-size="14" fill="currentColor">clé à insérer</text></svg>
+    <figcaption>Le tri par insertion de [4, 7, 3, 9, 2], étape par étape.</figcaption>
+  </figure>
+
+  <p><b>Le déroulé.</b> On trie <code>tab = [12, 11, 13, 5]</code>. Étape <code>i = 1</code> (<code>cle = 11</code>) : on décale 12. Résultat : <code>[11, 12, 13, 5]</code>.</p>
+  <section class="td-q" data-type="courte" id="q7" data-reponse="0|zéro|aucun">
+    <p class="td-consigne">Étape <code>i = 2</code> (<code>cle = 13</code>) : combien de décalages sont effectués ?</p>
+    <p class="td-retour" data-si="1">Compare 13 à son voisin de gauche, 12 : la condition <code>tab[j] &gt; cle</code> est-elle vraie ?</p>
+    <p class="td-aide">La boucle <code>while</code> ne tourne que si le voisin de gauche est plus grand que la clé.</p>
+    <div class="td-correction"><p><b>0</b> : 12 &gt; 13 est faux, la boucle <code>while</code> ne tourne pas ; 13 reste à sa place.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q8">
+    <p class="td-consigne">Étape <code>i = 3</code> (<code>cle = 5</code>) : comment se déplace la valeur 5 ?</p>
+    <ul class="td-options">
+      <li data-juste>13, 12 et 11 sont décalés d'une case vers la droite (3 décalages), puis 5 est placé à l'indice 0</li>
+      <li data-retour="Le tri par insertion ne fait pas d'échange avec le premier : il décale chaque voisin plus grand d'une case.">5 est échangé directement avec 11</li>
+      <li data-retour="La boucle continue tant que le voisin est plus grand que 5 : 12 et 11 sont aussi plus grands.">seul 13 est décalé, et 5 se place à l'indice 2</li>
+      <li data-retour="5 est plus petit que ses voisins : il doit reculer.">5 reste à la fin du tableau</li>
+    </ul>
+    <p class="td-aide">Combien de valeurs plus grandes que 5 y a-t-il à sa gauche ?</p>
+    <div class="td-correction"><p>13, 12 puis 11 sont plus grands que 5 : chacun est décalé d'une case vers la droite. La boucle s'arrête à <code>j = -1</code>, et 5 est placé à l'indice 0 : <code>[5, 11, 12, 13]</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" data-langage="texte" id="q9">
+    <p class="td-consigne">Le déroulé global. On trie <code>[5, 2, 8, 1]</code>. À chaque étape, on insère l'élément d'indice i à sa place. Complète l'état du tableau après chaque étape.</p>
+    <pre class="td-code">
+départ                : [5, 2, 8, 1]
+étape 1 (on insère 2) : [[[2, 5, 8, 1]]]
+étape 2 (on insère 8) : [[[2, 5, 8, 1]]]
+étape 3 (on insère 1) : [[[1, 2, 5, 8]]]</pre>
+    <p class="td-aide">À l'étape 1, 2 recule devant 5. À l'étape 2, 8 est plus grand que 5 : il ne bouge pas.</p>
+    <div class="td-correction"><p>Après l'étape 1 : <code>[2, 5, 8, 1]</code> (on insère 2 avant 5) ; étape 2 : <code>[2, 5, 8, 1]</code> (8 reste en place) ; étape 3 : <code>[1, 2, 5, 8]</code> (1 recule de trois cases).</p></div>
+  </section>
+
+  <p><b>Meilleur ou pire des cas ?</b></p>
+  <section class="td-q" data-type="qcu" id="q10">
+    <p class="td-consigne">Dans quel cas la boucle <code>while</code> ne s'exécute-t-elle <b>jamais</b> ?</p>
+    <ul class="td-options">
+      <li data-juste>quand chaque clé est déjà plus grande ou égale à son voisin de gauche : le tableau est déjà trié</li>
+      <li data-retour="Dans un tableau trié à l'envers, chaque clé recule jusqu'au début : la boucle tourne le plus possible.">quand le tableau est trié à l'envers</li>
+      <li data-retour="La boucle for commence à i = 1, et la condition j &gt;= 0 est vraie au premier tour : ce n'est pas elle qui bloque.">quand j vaut −1 dès le départ</li>
+      <li data-retour="Pour un tableau d'un seul élément, la boucle for ne tourne pas non plus ; on cherche un cas pour un tableau quelconque.">jamais : elle s'exécute toujours au moins une fois</li>
+    </ul>
+    <p class="td-aide">La condition est <code>tab[j] &gt; cle</code> : quand est-elle fausse dès le premier test ?</p>
+    <div class="td-correction"><p>Si le voisin de gauche n'est jamais plus grand que la clé, c'est-à-dire si le tableau est <b>déjà trié</b>, la boucle <code>while</code> ne tourne jamais.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q11" data-support="ecran">
+    <p class="td-consigne">Réflexion. Le tableau est <b>déjà trié</b>. Quel impact sur le temps de calcul ?</p>
+    <ul class="td-options">
+      <li data-juste>la boucle <code>while</code> ne tourne jamais : il ne reste qu'une comparaison par élément, le temps est proportionnel à n</li>
+      <li data-retour="Contrairement au tri par sélection, la boucle intérieure (while) s'arrête dès que la clé est à sa place.">aucun impact : le tri par insertion fait toujours le même nombre de comparaisons</li>
+      <li data-retour="Il reste un travail : la boucle for parcourt les n − 1 éléments et compare chacun à son voisin.">le tri ne fait plus rien du tout : temps nul</li>
+      <li data-retour="Un tableau trié est le cas le plus favorable, pas le pire.">il devient plus lent, car il vérifie chaque élément</li>
+    </ul>
+    <div class="td-correction"><p>Une seule comparaison par élément, aucun décalage : n − 1 comparaisons. Le temps est proportionnel à n.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q11-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Réflexion. Imagine que le tableau soit <b>déjà trié</b>. La boucle <code>while</code> va-t-elle s'exécuter souvent ? Quel impact sur le temps de calcul ?</p>
+    <div class="td-correction"><p>Jamais : n − 1 comparaisons, temps proportionnel à n.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q12" data-reponse="O(n)|n|linéaire">
+    <p class="td-consigne">Quel est le coût (la complexité) dans ce meilleur des cas ? Utilise la notation O.</p>
+    <p class="td-retour" data-si="O(1)">O(1) serait un coût constant ; ici, on passe quand même une fois sur chaque élément.</p>
+    <p class="td-retour" data-si="O(n²)">C'est le coût au pire. Dans un tableau déjà trié, la boucle while ne tourne pas.</p>
+    <p class="td-aide">Une comparaison par élément : combien en tout, pour n éléments ?</p>
+    <div class="td-correction"><p><b>O(n)</b> : linéaire.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q13" data-support="ecran">
+    <p class="td-consigne">Pourquoi est-ce le tri préféré pour les listes « presque triées » ?</p>
+    <ul class="td-options">
+      <li data-juste>chaque élément ne recule que de quelques cases : peu de tours de <code>while</code>, un coût proche de O(n)</li>
+      <li data-retour="La sélection fait toujours n(n − 1)/2 comparaisons, même sur une liste presque triée.">parce qu'il fait moins de comparaisons que le tri par sélection dans tous les cas</li>
+      <li data-retour="Le tri par insertion trie dans le tableau lui-même, sans copie : il n'utilise presque pas de mémoire en plus.">parce qu'il utilise beaucoup de mémoire</li>
+      <li data-retour="Au pire (liste à l'envers), il reste en O(n²) ; c'est sur les listes presque triées qu'il brille.">parce qu'il est toujours en O(n)</li>
+    </ul>
+    <div class="td-correction"><p>Dans une liste presque triée, chaque clé ne recule que de très peu : la boucle <code>while</code> tourne à peine, le coût est proche de O(n).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q13-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Pourquoi est-ce le tri préféré pour les listes « presque triées » ?</p>
+    <div class="td-correction"><p>Chaque élément recule de peu : coût proche de O(n).</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q14" data-reponse="O(n²)|O(n^2)|O(n**2)|n²|n^2|quadratique|O(n*n)">
+    <p class="td-consigne">Complexité au pire. Si le tableau est trié à l'envers, quelle est la complexité ?</p>
+    <p class="td-retour" data-si="O(n)">C'est le meilleur cas. Trié à l'envers, chaque clé recule jusqu'au début.</p>
+    <p class="td-aide">La clé d'indice i recule de i cases : 1 + 2 + … + (n − 1) décalages.</p>
+    <div class="td-correction"><p><b>O(n²)</b> : 1 + 2 + … + (n − 1) = n(n − 1)/2 décalages.</p></div>
+  </section>
+
+  <p class="td-ecran-seul">La suite : <a href="feuille-2.html">feuille 2, le tri fusion et le crash test</a>.</p>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Sélection : n(n − 1)/2 comparaisons dans tous les cas, O(n²). Insertion : O(n) si le tableau est trié, O(n²) au pire. Les deux trient dans le tableau, sans copie.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/algorithmes-tri-recherche-complexite/td-tp-tri">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
