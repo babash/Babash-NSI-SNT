@@ -40,13 +40,13 @@
     <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
     <div class="td-objectifs">
       <p class="td-objectif"><b>Objectif :</b> modifier et améliorer un jeu écrit avec Pygame, défi après défi.</p>
-      <p><b>Je sais :</b></p>
-      <ul class="td-criteres">
+      <p data-support="ecran"><b>Je sais :</b></p>
+      <ul class="td-criteres" data-support="ecran">
         <li>changer une constante et prévoir son effet ;</li>
         <li>afficher le score dans la fenêtre, au bon endroit de la boucle ;</li>
         <li>utiliser un dictionnaire et une liste pour gérer les objets du jeu.</li>
       </ul>
-      <p class="td-duree">1 heure · feuille 2 sur 2 · sur l'ordinateur, seul·e ou en binôme</p>
+      <p class="td-duree" data-support="ecran">1 heure · feuille 2 sur 2 · sur l'ordinateur, seul·e ou en binôme</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
@@ -60,9 +60,9 @@ COULEUR_JOUEUR = (255, 0, 0)  # rouge</pre>
   <section class="td-q" data-type="qcu" id="q1">
     <p class="td-consigne">Quelle couleur donne <code>COULEUR_JOUEUR = (0, 0, 255)</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Bleu.</li>
       <li data-retour="Le premier nombre est le rouge : ici, il vaut 0.">Rouge.</li>
       <li data-retour="Le deuxième nombre est le vert : ici, il vaut 0.">Vert.</li>
+      <li data-juste>Bleu.</li>
       <li data-retour="Le noir, c'est (0, 0, 0) : aucune lumière.">Noir.</li>
     </ul>
     <p class="td-aide">Une couleur, c'est (rouge, vert, bleu), chaque quantité de 0 à 255.</p>
@@ -126,10 +126,10 @@ def afficher_score():
   <section class="td-q" data-type="qcu" id="q5">
     <p class="td-consigne">Où écrire l'appel <code>afficher_score()</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Dans la boucle, après <code>fenetre.fill(BLANC)</code> et avant <code>pygame.display.update()</code>.</li>
-      <li data-retour="Avant la boucle, le score s'afficherait une seule fois, puis serait effacé par fill au premier tour.">Avant la boucle de jeu, avec la police.</li>
-      <li data-retour="fill efface toute la fenêtre : le score disparaîtrait aussitôt écrit.">Dans la boucle, juste avant <code>fenetre.fill(BLANC)</code>.</li>
-      <li data-retour="Après pygame.quit(), la fenêtre est déjà fermée.">Après <code>pygame.quit()</code>.</li>
+      <li data-retour="Avant la boucle, le score s'afficherait une seule fois, puis serait effacé par fill au premier tour.">Avant la boucle de jeu, juste après avoir créé la police.</li>
+      <li data-juste>Dans la boucle, entre <code>fill(BLANC)</code> et <code>display.update()</code>.</li>
+      <li data-retour="fill efface toute la fenêtre : le score disparaîtrait aussitôt écrit.">Dans la boucle, juste avant <code>fenetre.fill(BLANC)</code>, en haut.</li>
+      <li data-retour="Après pygame.quit(), la fenêtre est déjà fermée.">Après <code>pygame.quit()</code>, à la fin du programme.</li>
     </ul>
     <p class="td-aide">À chaque tour : on efface (<code>fill</code>), on dessine, puis on montre (<code>display.update</code>).</p>
     <div class="td-correction"><p>À chaque tour, <code>fill</code> efface tout ; on redessine le joueur, l'objet et le score ; puis <code>display.update()</code> montre le tout. L'appel va donc entre les deux, par exemple juste après la ligne 65.</p></div>
@@ -181,10 +181,10 @@ else:
   <section class="td-q" data-type="qcu" id="q8">
     <p class="td-consigne">Où placer le second morceau ?</p>
     <ul class="td-options">
+      <li data-retour="Au début, il n'y a encore eu aucune collision : le score ne doit changer que si l'objet est attrapé.">Au début du programme, avec les constantes du jeu.</li>
+      <li data-retour="Ce bloc-là s'exécute quand l'objet est raté : on ne gagne rien.">Dans le test de fin du jeu (ligne 58), quand l'objet tombe.</li>
+      <li data-retour="Après pygame.quit(), la partie est finie.">Juste après <code>pygame.quit()</code>, à la toute fin.</li>
       <li data-juste>À la place de <code>score += 1</code>, dans le bloc de la collision.</li>
-      <li data-retour="Au début, il n'y a encore eu aucune collision : le score ne doit changer que si l'objet est attrapé.">Au début du programme, avec les constantes.</li>
-      <li data-retour="Ce bloc-là s'exécute quand l'objet est raté : on ne gagne rien.">Dans le test de fin du jeu (ligne 58).</li>
-      <li data-retour="Après pygame.quit(), la partie est finie.">Juste après <code>pygame.quit()</code>.</li>
     </ul>
     <div class="td-correction"><p>Les points dépendent du type de l'objet <b>attrapé</b> : ce test remplace <code>score += 1</code> dans le bloc de la collision (ligne 53).</p></div>
   </section>
@@ -212,7 +212,7 @@ objets = [{'x': random.randint(0, LARGEUR - TAILLE_OBJET),
            'y': 0,
            'type': random.choice(['normal', 'bonus', 'malus'])}
           for _ in range(3)]</pre>
-  <section class="td-q" data-type="code" id="q10" data-fichier="objets.py" data-lignes="4" data-graine="2046">
+  <section class="td-q" data-type="code" id="q10" data-fichier="objets.py" data-graine="2046" data-lignes="3">
     <p class="td-consigne">La liste <code>objets</code> et <code>VITESSE_OBJET</code> sont déjà créés. Écris la boucle qui fait descendre <b>chaque</b> objet de la liste de <code>VITESSE_OBJET</code> pixels (elle remplacera la ligne 47). <span data-support="ecran">Des tests, cachés, la vérifient quand tu cliques sur « Lancer et vérifier ».</span></p>
     <script type="text/x-python" class="td-preambule">
 import random
@@ -248,9 +248,9 @@ image_objet = pygame.image.load("chemin/vers/objet.png")</pre>
     <p class="td-consigne">Dans la boucle, quelle ligne affiche l'image du joueur à sa place, au lieu du carré de la ligne 64 ?</p>
     <ul class="td-options">
       <li data-juste><code>fenetre.blit(image_joueur, (x, y))</code></li>
-      <li data-retour="draw.rect dessine un rectangle d'une couleur : il ne sait pas afficher une image.">avec <code>pygame.draw.rect</code></li>
-      <li data-retour="load charge l'image depuis le fichier : à chaque tour, ce serait très lent. On la charge une fois, avant la boucle.">avec <code>pygame.image.load</code></li>
-      <li data-retour="print écrit dans la console, pas dans la fenêtre.">avec <code>print(image_joueur)</code></li>
+      <li data-retour="draw.rect dessine un rectangle d'une couleur : il ne sait pas afficher une image."><code>pygame.draw.rect(image_joueur)</code></li>
+      <li data-retour="load charge l'image depuis le fichier : à chaque tour, ce serait très lent. On la charge une fois, avant la boucle."><code>pygame.image.load(image_joueur)</code></li>
+      <li data-retour="print écrit dans la console, pas dans la fenêtre."><code>print(image_joueur, (x, y))</code></li>
     </ul>
     <p class="td-aide">C'est la même fonction que pour le texte du score, au défi 5.</p>
     <div class="td-correction"><p><code>fenetre.blit(image_joueur, (joueur_x, HAUTEUR - TAILLE_JOUEUR))</code> pose l'image dans la fenêtre, à la place du carré.</p></div>
