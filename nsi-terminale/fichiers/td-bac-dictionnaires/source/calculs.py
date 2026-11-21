@@ -90,7 +90,9 @@ vendre(e, 5)
 assert e == {1: 2}                                           # exemple 2 de l'énoncé
 
 # ---------- les réponses écrites dans la page ----------
-page = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'index.html'), encoding='utf-8').read()
+# le TD a une feuille par exercice de bac (index.html, feuille-2.html) : on lit les deux
+page = ''.join(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', f), encoding='utf-8').read()
+               for f in ('index.html', 'feuille-2.html'))
 
 
 def reponses(q):
