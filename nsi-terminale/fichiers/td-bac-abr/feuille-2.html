@@ -1,36 +1,54 @@
 <!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Les arbres binaires de recherche : TD type bac (2/2)</title>
-  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : insérer et compter dans un arbre binaire de recherche (bac 2022, Métropole, exercice 1), avec coups de pouce et corrections.">
+  <title>Arbres de recherche · TD type bac (2/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : insérer et compter dans un ABR (bac 2022, Métropole, 22-NSIJ2ME1, exercice 1).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
   <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
   <script src="../../../assets/td-en-ligne.js" defer></script>
 </head>
 <body class="td-page">
-<main class="td" data-td="tle-td-bac-abr-2" data-td-version="1">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-abr-2" data-td-version="2">
 
   <header class="td-entete">
-    <p class="td-sur-titre">Terminale NSI · Algorithmique · TD type bac, feuille 2 sur 2</p>
-    <h1>Les arbres binaires de recherche : TD type bac (2/2)</h1>
-    <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : insérer et compter dans un ABR.</p>
-    <p><b>Je sais :</b></p>
-    <ul class="td-criteres">
+    <!-- BANDEAU : paysage n° 1 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Arbres binaires de recherche</span></p>
+        <h1>Arbres de recherche</h1>
+        <p class="td-accroche">Type bac · feuille 2/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=abr" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h3v1h-3zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM5 11h1v1h-1zM10 11h3v1h-3zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM0 12h4v1h-4zM6 12h1v1h-1zM8 12h3v1h-3zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h2v1h-2zM4 13h2v1h-2zM7 13h2v1h-2zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM6 14h3v1h-3zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM7 15h5v1h-5zM13 15h1v1h-1zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h1v1h-1zM5 16h2v1h-2zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM1 17h1v1h-1zM4 17h1v1h-1zM7 17h1v1h-1zM9 17h2v1h-2zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM2 18h3v1h-3zM6 18h4v1h-4zM12 18h5v1h-5zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM10 19h1v1h-1zM12 19h1v1h-1zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h1v1h-1zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h4v1h-4zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h6v1h-6zM8 21h4v1h-4zM14 21h2v1h-2zM17 21h5v1h-5zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h1v1h-1zM8 22h3v1h-3zM13 22h1v1h-1zM15 22h1v1h-1zM17 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM8 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM15 24h4v1h-4zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM11 26h1v1h-1zM14 26h3v1h-3zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM11 27h3v1h-3zM15 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h2v1h-2zM15 28h3v1h-3zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM11 29h2v1h-2zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM13 30h3v1h-3zM17 30h1v1h-1zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM11 31h1v1h-1zM13 31h2v1h-2zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM11 32h1v1h-1zM13 32h5v1h-5zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : insérer et compter dans un ABR.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
       <li>lire la convention de hauteur d'un sujet et l'appliquer ;</li>
       <li>construire un ABR avec une classe <code>Noeud</code> et écrire une insertion récursive ;</li>
       <li>compter les appels d'une fonction récursive, puis les réduire grâce à l'ordre de l'ABR.</li>
     </ul>
-    <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (4 points), 9 questions · seul·e ou en binôme</p>
-    <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
-    <p class="td-ecran-seul"><b>Ce TD a deux feuilles :</b> 1. <a href="index.html">les billets de loterie</a> (la plus guidée) ; 2. insérer et compter dans un ABR (ici).</p>
+      <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (4 points) · 9 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. <a href="index.html">les billets de loterie</a> ; 2. insérer et compter dans un ABR (ici).</p>
+    </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
+
   <h2 class="td-partie">Exercice : insérer et compter dans un ABR (4 points)</h2>
   <p><i>Bac 2022, Métropole, jour 2 (sujet 22-NSIJ2ME1), exercice 1, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-metropole-sujet-2.pdf">Sujet d'origine (PDF)</a>.</i></p>
   <p><i>Cet exercice porte sur les arbres binaires de recherche, la programmation orientée objet et la récursivité.</i></p>
@@ -109,13 +127,19 @@ class Noeud:
   <section class="td-q" data-type="qcu" id="q6">
     <p class="td-consigne"><b>a.</b> Parmi les trois instructions (A), (B) et (C) suivantes, écrire sur la copie la lettre correspondant à celle qui construit et stocke dans la variable <code>abr</code> l’arbre représenté ci-dessous.</p>
     <svg viewBox="0 0 120 72" width="120" height="72" role="img" aria-label="Un arbre : racine 15, fils gauche 13, fils droit 21." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="51.9" y1="27.2" x2="38.1" y2="44.8"/><line x1="68.1" y1="27.2" x2="81.9" y2="44.8"/><circle cx="30.0" cy="55.0" r="13"/><circle cx="90.0" cy="55.0" r="13"/><circle cx="60.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="30.0" y="60.0">13</text><text x="90.0" y="60.0">21</text><text x="60.0" y="22.0">15</text></g></svg>
+    <p><b>(A)</b></p>
+    <pre class="td-code">
+abr=Noeud(Noeud(Noeud(None,13,None),15,None),21,None)</pre>
+    <p><b>(B)</b></p>
+    <pre class="td-code">
+abr=Noeud(None,13,Noeud(Noeud(None,15,None),21,None))</pre>
+    <p><b>(C)</b></p>
+    <pre class="td-code">
+abr=Noeud(Noeud(None,13,None),15,Noeud(None,21,None))</pre>
     <ul class="td-options">
-      <li data-retour="(A) met 13 sous 15, et 15 sous 21 : la racine serait 21, avec un seul fils."><b>(A)</b><pre class="td-code">
-abr=Noeud(Noeud(Noeud(None,13,None),15,None),21,None)</pre></li>
-      <li data-retour="(B) met 13 à la racine, et 21 à droite de 13 : ce n'est pas l'arbre dessiné."><b>(B)</b><pre class="td-code">
-abr=Noeud(None,13,Noeud(Noeud(None,15,None),21,None))</pre></li>
-      <li data-juste><b>(C)</b><pre class="td-code">
-abr=Noeud(Noeud(None,13,None),15,Noeud(None,21,None))</pre></li>
+      <li data-retour="(A) met 13 sous 15, et 15 sous 21 : la racine serait 21, avec un seul fils."><b>(A)</b></li>
+      <li data-retour="(B) met 13 à la racine, et 21 à droite de 13 : ce n'est pas l'arbre dessiné."><b>(B)</b></li>
+      <li data-juste><b>(C)</b></li>
     </ul>
     <p class="td-aide">L'appel le plus extérieur construit la racine : sa valeur est le <b>deuxième</b> paramètre. Quelle instruction a 15 en deuxième position de l'appel extérieur ?</p>
     <div class="td-correction">
@@ -267,23 +291,16 @@ def nb_sup(v, abr):
       <p>Quand <code>abr.valeur &lt; v</code>, tout le sous-arbre gauche est plus petit encore : on ne cherche qu'à droite. Pour <code>nb_sup(16, abr)</code>, on passe de 17 à 10 appels (compté par exécution).</p>
     </div>
   </section>
+
   <section class="td-memo">
     <h2>Mémo</h2>
     <p>Taille : le nombre de nœuds. Hauteur : <b>lis la convention du sujet</b> (ici un nœud seul vaut 1 ; dans le cours, 0).</p>
     <p>Insérer récursivement : si <code>v</code> est plus petit, on insère dans le sous-arbre gauche, sinon dans le droit ; l'arbre vide devient une feuille.</p>
-    <p>Dans un ABR, si le nœud est plus petit que ce qu'on cherche, tout son sous-arbre gauche l'est aussi : inutile d'y aller.</p>
-  </section>
-  <section class="td-memo td-ecran-seul">
-    <h2>Pour aller plus loin</h2>
-    <ul>
-      <li><a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-amerique-nord-jour-1.pdf">Bac 2022, Amérique du Nord, jour 1, exercice 3</a> (4 points) : un ABR de noms de pays, recherche et taille. Hauteur d'un nœud seul : 1.</li>
-      <li><a href="https://kxs.fr/files/sujets/2021/ecrit/terminale-2021-metropole-candidat-libre-sujet-2.pdf">Bac 2021, Métropole (candidats libres), jour 2, exercice 3</a> (4 points) : classes <code>Noeud</code> et <code>Arbre</code>, insertion récursive, arbre « bien construit ».</li>
-      <li><a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-metropole-juin-sujet-1.pdf">Bac 2024, Métropole, jour 1, exercice 3</a> (8 points) : programmation orientée objet, ABR et récursivité, un exercice long comme à l'épreuve.</li>
-    </ul>
+    <p>Dans un ABR, si le nœud est plus petit que ce qu'on cherche, tout son sous-arbre gauche l'est aussi : inutile d'y aller.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:-1"></span>
   </section>
   <footer class="td-pied">
-    <p>Énoncé : sujet officiel du baccalauréat de NSI, Métropole, mai 2022, jour 2 (22-NSIJ2ME1), exercice 1 (ministère de l'Éducation nationale), recopié d'après le PDF diffusé par <a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> et l'<a href="https://aeif.fr/index.php/annee-2022/">AEIF</a> ; arbres redessinés. Correction comparée au corrigé de l'AEIF (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0).</p>
-    <p>Mise en TD, coups de pouce et corrections : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-abr">Code source sur GitHub</a></p>
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Métropole, mai 2022, jour 2 (22-NSIJ2ME1), exercice 1. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-metropole-sujet-2.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_metropole_mai_2022_2.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document). Arbres redessinés.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-abr">Code source sur GitHub</a></p>
   </footer>
 </main>
 </body>
