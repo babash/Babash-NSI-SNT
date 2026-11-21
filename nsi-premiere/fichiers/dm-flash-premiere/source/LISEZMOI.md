@@ -7,3 +7,4 @@ Compilation : `latexmk -pdf -shell-escape main-dm-premiers-pas.tex main-dm-boucl
 ## Pages en ligne du lot L3 (T125)
 
 - « Boucle while : la pyramide » (`main-dm-boucles-while.tex`) : la page HTML auto-corrective `../dm-boucles-while-pyramide/index.html` est désormais la référence ; le PDF `../dm-boucles-while-pyramide.pdf` en est l'impression vierge (`charte/imprimer-td.py`). Corrigé calculé par `corrige-dm-boucles-while.py`.
+- « DM de Noël » (`main-dm-DM_noel.tex`) : la page HTML auto-corrective `../dm-noel/index.html` est désormais la référence ; le PDF `../dm-noel.pdf` en est l'impression vierge. Corrigé calculé par `corrige-dm-noel.py`.
