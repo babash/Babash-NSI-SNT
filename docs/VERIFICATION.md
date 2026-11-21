@@ -40,15 +40,19 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
 - **Données de la bibliothèque**, à chaque modification, sur toutes les branches, et à la
   demande : `scripts/valider_donnees.py --github` vérifie les fiches, la vitrine et les
   référentiels du dossier `donnees/` (voir [les données de la bibliothèque](BIBLIOTHEQUE.md)). Une erreur fait
-  échouer le contrôle (croix rouge). Il vérifie aussi que le classement des exercices des annales
+  échouer le contrôle (croix rouge). Depuis le 21 novembre 2026, une fiche ou la vitrine qui cite
+  l'ancienne adresse d'un dépôt renommé est une erreur : les dépôts sont renommés sans
+  redirection, et une ancienne adresse ne mène nulle part (la liste est dans
+  `scripts/depots-renommes/`). Il vérifie aussi que le classement des exercices des annales
   du bac par chapitre (`donnees/annales/notions-par-exercice.json`) est à jour des annales
   (`scripts/annales_notions.py --verifier`, depuis le 20 novembre 2026) : après une mise à jour
   des annales, on relance `python3 scripts/annales_notions.py`, sinon le contrôle échoue. Le même
   job essaie ensuite la construction de la
   bibliothèque, comme « Publier le site », dans un dossier temporaire, et lance les tests du
   thésaurus et de la recherche (`scripts/tests/test_notions.py`, `scripts/tests/test_recherche.js`),
-  et celui de la validation de l'[espace administrateur](ADMIN.md), comparée à celle du script
-  (`scripts/tests/test_admin_donnees.js`) :
+  celui de la validation de l'[espace administrateur](ADMIN.md), comparée à celle du script
+  (`scripts/tests/test_admin_donnees.js`), et celui des dépôts renommés
+  (`scripts/tests/test_depots_renommes.py`, depuis le 21 novembre 2026) :
   une branche qui casserait la publication est ainsi repérée avant d'arriver sur `main`. Les avertissements et les informations sont dans le
   résumé du run, sans échec, et les erreurs et avertissements apparaissent aussi en
   annotations sur les fichiers concernés. Les quinze avertissements connus (l'éditeur d'Alien

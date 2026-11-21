@@ -66,7 +66,8 @@ donnees/                    les fiches et les référentiels de la bibliothèque
                             applications (tableaux-de-bord.json)
 .github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
 scripts/                    vérification automatique, validation des données, construction de la
-                            bibliothèque, script complet de la base
+                            bibliothèque, script complet de la base, et les dépôts renommés
+                            (depots-renommes/, avec l'outil renommer_depots.py)
 supabase/                   le socle commun de la base des applications (SUPABASE.md)
 ```
 

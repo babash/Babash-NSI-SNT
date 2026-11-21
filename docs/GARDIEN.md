@@ -38,6 +38,17 @@ D'autres outils du même dossier servent au cas par cas. Pour le site :
 - `annexes_code_source.py` liste les fiches qui ont un dépôt sans le donner en
   « Code source » ; `chemins_readme.py` vérifie que les chemins cités dans un README existent.
 
+Les dépôts de l'enseignant sont renommés sans redirection depuis le 21 novembre 2026 (T100) : le
+validateur refuse, dans les fiches et la vitrine, l'ancienne adresse d'un dépôt inscrit dans
+`scripts/depots-renommes/`. Pour les autres fichiers d'une branche écrite avant un renommage (pages,
+scripts, documentation), le Gardien lance, sur un essai de fusion avec `main` et sur `main`,
+`python3 -I scripts/renommer_depots.py <copie> --site --audit` (la copie est une copie Git, par
+exemple un `git worktree`), qui liste chaque ligne où reste
+un ancien nom (adresse ou nom affiché), et compare les deux listes sans les numéros de ligne : une
+adresse ajoutée qui cite l'ancien nom d'un dépôt déjà renommé est à corriger avant la
+publication. À l'inverse, une adresse au nouveau nom d'un dépôt pas encore renommé ne répond pas
+encore : la branche attend ce renommage.
+
 Pour les autres dépôts de l'enseignant (applications, mini-sites des TD, diaporamas) :
 
 - `pages_depot.py` compare les pages avant et après une branche : erreurs JavaScript,
