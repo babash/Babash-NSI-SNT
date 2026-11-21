@@ -1,0 +1,445 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Attrape les objets : TP en ligne</title>
+  <meta name="description" content="TP en ligne auto-correctif : Attrape les objets, feuille 1 sur 2, comprendre le code d'un jeu (1re NSI, Programmer un jeu, Pygame).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsi1-tp-pygame-attrape-objets" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TP</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmer un jeu</span></p>
+        <h1>Attrape les objets</h1>
+        <p class="td-accroche">Crée ton jeu avec Pygame</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=conditions-boucles" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h2v1h-2zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM22 0h1v1h-1zM25 0h2v1h-2zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h1v1h-1zM13 1h2v1h-2zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h3v1h-3zM24 1h1v1h-1zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM13 2h1v1h-1zM15 2h1v1h-1zM20 2h2v1h-2zM23 2h4v1h-4zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM16 3h6v1h-6zM24 3h2v1h-2zM27 3h2v1h-2zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM16 4h4v1h-4zM22 4h1v1h-1zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h5v1h-5zM17 5h2v1h-2zM20 5h2v1h-2zM23 5h1v1h-1zM26 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM9 7h3v1h-3zM13 7h4v1h-4zM20 7h1v1h-1zM22 7h2v1h-2zM25 7h4v1h-4zM0 8h1v1h-1zM3 8h9v1h-9zM15 8h2v1h-2zM18 8h3v1h-3zM23 8h2v1h-2zM26 8h1v1h-1zM28 8h2v1h-2zM32 8h1v1h-1zM34 8h3v1h-3zM2 9h1v1h-1zM4 9h2v1h-2zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM17 9h1v1h-1zM20 9h1v1h-1zM23 9h1v1h-1zM25 9h3v1h-3zM29 9h1v1h-1zM31 9h2v1h-2zM35 9h1v1h-1zM2 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM10 10h3v1h-3zM21 10h1v1h-1zM23 10h1v1h-1zM26 10h6v1h-6zM33 10h1v1h-1zM36 10h1v1h-1zM0 11h1v1h-1zM7 11h1v1h-1zM13 11h3v1h-3zM17 11h1v1h-1zM23 11h1v1h-1zM26 11h2v1h-2zM29 11h1v1h-1zM31 11h6v1h-6zM1 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h3v1h-3zM16 12h1v1h-1zM19 12h1v1h-1zM24 12h1v1h-1zM28 12h1v1h-1zM30 12h2v1h-2zM36 12h1v1h-1zM0 13h1v1h-1zM2 13h3v1h-3zM12 13h1v1h-1zM15 13h3v1h-3zM22 13h2v1h-2zM27 13h1v1h-1zM32 13h2v1h-2zM1 14h6v1h-6zM9 14h2v1h-2zM14 14h2v1h-2zM17 14h1v1h-1zM19 14h1v1h-1zM21 14h1v1h-1zM25 14h1v1h-1zM27 14h4v1h-4zM32 14h5v1h-5zM2 15h4v1h-4zM8 15h5v1h-5zM14 15h1v1h-1zM16 15h4v1h-4zM24 15h1v1h-1zM28 15h4v1h-4zM33 15h2v1h-2zM0 16h1v1h-1zM3 16h4v1h-4zM9 16h2v1h-2zM13 16h2v1h-2zM16 16h2v1h-2zM19 16h2v1h-2zM22 16h1v1h-1zM24 16h2v1h-2zM30 16h1v1h-1zM34 16h1v1h-1zM0 17h1v1h-1zM3 17h2v1h-2zM9 17h2v1h-2zM12 17h2v1h-2zM16 17h3v1h-3zM20 17h1v1h-1zM22 17h1v1h-1zM24 17h1v1h-1zM26 17h2v1h-2zM31 17h1v1h-1zM33 17h2v1h-2zM0 18h1v1h-1zM2 18h2v1h-2zM5 18h3v1h-3zM11 18h1v1h-1zM14 18h2v1h-2zM18 18h1v1h-1zM20 18h2v1h-2zM23 18h1v1h-1zM25 18h1v1h-1zM27 18h1v1h-1zM29 18h2v1h-2zM33 18h2v1h-2zM36 18h1v1h-1zM5 19h1v1h-1zM7 19h1v1h-1zM13 19h1v1h-1zM18 19h1v1h-1zM22 19h6v1h-6zM29 19h5v1h-5zM36 19h1v1h-1zM2 20h2v1h-2zM5 20h2v1h-2zM11 20h2v1h-2zM14 20h4v1h-4zM24 20h1v1h-1zM26 20h8v1h-8zM8 21h3v1h-3zM12 21h4v1h-4zM18 21h2v1h-2zM22 21h2v1h-2zM26 21h2v1h-2zM32 21h1v1h-1zM34 21h1v1h-1zM2 22h1v1h-1zM6 22h1v1h-1zM8 22h2v1h-2zM12 22h1v1h-1zM14 22h5v1h-5zM23 22h2v1h-2zM27 22h5v1h-5zM33 22h1v1h-1zM35 22h2v1h-2zM7 23h3v1h-3zM11 23h2v1h-2zM14 23h4v1h-4zM20 23h1v1h-1zM27 23h3v1h-3zM31 23h5v1h-5zM0 24h1v1h-1zM2 24h5v1h-5zM8 24h1v1h-1zM10 24h1v1h-1zM13 24h1v1h-1zM15 24h4v1h-4zM20 24h1v1h-1zM27 24h2v1h-2zM30 24h2v1h-2zM0 25h1v1h-1zM2 25h1v1h-1zM4 25h2v1h-2zM7 25h1v1h-1zM14 25h1v1h-1zM16 25h1v1h-1zM19 25h3v1h-3zM23 25h1v1h-1zM26 25h4v1h-4zM32 25h3v1h-3zM0 26h2v1h-2zM4 26h3v1h-3zM9 26h2v1h-2zM12 26h2v1h-2zM16 26h1v1h-1zM19 26h4v1h-4zM24 26h2v1h-2zM27 26h1v1h-1zM30 26h1v1h-1zM32 26h1v1h-1zM34 26h3v1h-3zM0 27h1v1h-1zM4 27h2v1h-2zM8 27h2v1h-2zM14 27h2v1h-2zM19 27h2v1h-2zM23 27h1v1h-1zM26 27h1v1h-1zM31 27h1v1h-1zM33 27h4v1h-4zM0 28h1v1h-1zM2 28h2v1h-2zM6 28h2v1h-2zM11 28h2v1h-2zM16 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM24 28h2v1h-2zM28 28h8v1h-8zM8 29h1v1h-1zM11 29h3v1h-3zM15 29h1v1h-1zM19 29h1v1h-1zM21 29h1v1h-1zM24 29h5v1h-5zM32 29h1v1h-1zM34 29h2v1h-2zM0 30h7v1h-7zM8 30h4v1h-4zM13 30h3v1h-3zM19 30h3v1h-3zM23 30h4v1h-4zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM36 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM10 31h2v1h-2zM13 31h2v1h-2zM17 31h2v1h-2zM20 31h1v1h-1zM23 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h3v1h-3zM12 32h3v1h-3zM20 32h1v1h-1zM24 32h1v1h-1zM26 32h7v1h-7zM35 32h1v1h-1zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h5v1h-5zM16 33h1v1h-1zM18 33h2v1h-2zM21 33h3v1h-3zM26 33h5v1h-5zM33 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM9 34h1v1h-1zM11 34h1v1h-1zM15 34h2v1h-2zM23 34h1v1h-1zM27 34h1v1h-1zM29 34h1v1h-1zM32 34h2v1h-2zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM10 35h1v1h-1zM12 35h1v1h-1zM14 35h1v1h-1zM16 35h3v1h-3zM20 35h1v1h-1zM22 35h1v1h-1zM26 35h2v1h-2zM29 35h2v1h-2zM32 35h1v1h-1zM34 35h3v1h-3zM0 36h7v1h-7zM8 36h1v1h-1zM11 36h1v1h-1zM15 36h2v1h-2zM19 36h1v1h-1zM24 36h1v1h-1zM27 36h2v1h-2zM31 36h1v1h-1zM36 36h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> comprendre le programme d'un petit jeu écrit avec Pygame, puis en compléter une partie.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>donner les coordonnées d'un point de la fenêtre (le point (0, 0) est en haut à gauche) ;</li>
+        <li>dire le rôle d'une variable et d'une fonction du programme ;</li>
+        <li>expliquer comment l'objet tombe et comment le jeu sait qu'il est attrapé ;</li>
+        <li>compléter un morceau du programme.</li>
+      </ul>
+      <p class="td-duree">1 heure · feuille 1 sur 2 · sur l'ordinateur, seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Le jeu</h2>
+  <ul>
+    <li>Le joueur (le carré rouge, en bas de la fenêtre) se déplace à gauche et à droite avec les flèches du clavier.</li>
+    <li>Un objet (le carré vert) tombe du haut de la fenêtre.</li>
+    <li>Si le joueur attrape l'objet, le score augmente et un nouvel objet apparaît en haut.</li>
+    <li>Si l'objet atteint le bas de la fenêtre, la partie est terminée.</li>
+  </ul>
+  <p><b>Sur l'ordinateur :</b> ouvre EduPython, puis le programme <code>tp-ramasse-objet.py</code>, dans le répertoire de ton groupe (copie-le d'abord dans ton répertoire personnel). <b>Teste le jeu !</b> Les numéros de ligne de cette feuille sont ceux de ce programme.</p>
+  <p data-support="ecran">Le programme est aussi ici : <a href="tp-ramasse-objet.py" download>tp-ramasse-objet.py</a> (68 lignes). Il faut Pygame pour le lancer.</p>
+
+  <h2 class="td-partie">1. Se repérer dans la fenêtre</h2>
+  <p>Pour placer le joueur et l'objet, le jeu utilise des coordonnées (x, y). La fenêtre mesure <code>LARGEUR</code> × <code>HAUTEUR</code>, soit 800 × 600. Le schéma montre le jeu à un instant où <code>joueur_x</code> vaut 400, <code>objet_x</code> vaut 300 et <code>objet_y</code> vaut 100.</p>
+  <figure class="td-schema">
+    <svg viewBox="0 0 820 640" width="256" height="200" role="img" aria-label="La fenêtre du jeu, un grand rectangle. Le petit carré de l'objet est vers le haut, un peu à gauche du milieu ; le carré du joueur est collé au bas de la fenêtre, au milieu.">
+      <rect x="10" y="10" width="800" height="600" fill="none" stroke="currentColor" stroke-width="5"/>
+      <rect x="310" y="110" width="20" height="20" fill="none" stroke="currentColor" stroke-width="5"/>
+      <text x="345" y="135" fill="currentColor" font-family="Atkinson Hyperlegible, sans-serif" font-size="46">objet</text>
+      <rect x="410" y="560" width="50" height="50" fill="currentColor" fill-opacity=".35" stroke="currentColor" stroke-width="5"/>
+      <text x="475" y="598" fill="currentColor" font-family="Atkinson Hyperlegible, sans-serif" font-size="46">joueur</text>
+    </svg>
+    <figcaption>La fenêtre du jeu (le schéma n'est pas à l'échelle pour les carrés).</figcaption>
+  </figure>
+
+  <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
+    <p class="td-consigne">Où se trouve le point (0, 0) de la fenêtre ?</p>
+    <ul class="td-options">
+      <li data-juste>En haut à gauche.</li>
+      <li data-retour="C'est le repère des maths. Dans une fenêtre, y augmente vers le bas : l'objet tombe quand objet_y augmente (ligne 47).">En bas à gauche.</li>
+      <li data-retour="joueur_x = LARGEUR // 2 place le joueur au milieu : le milieu a pour x 400, pas 0.">Au milieu de la fenêtre.</li>
+      <li data-retour="Au départ, objet_y vaut 0 et l'objet est en haut : y = 0 est le haut de la fenêtre.">En bas à droite.</li>
+    </ul>
+    <p class="td-aide">Au départ, <code>objet_y</code> vaut 0 (ligne 26) et l'objet est en haut de la fenêtre.</p>
+    <div class="td-correction"><p>En haut à gauche : x augmente vers la droite et <b>y augmente vers le bas</b>. C'est pour cela que l'objet tombe quand on ajoute <code>VITESSE_OBJET</code> à <code>objet_y</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Où se trouve le point (0, 0) de la fenêtre ?</p>
+    <div class="td-correction"><p>En haut à gauche : x augmente vers la droite et <b>y augmente vers le bas</b>. C'est pour cela que l'objet tombe quand on ajoute <code>VITESSE_OBJET</code> à <code>objet_y</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q2">
+    <p class="td-consigne">Donne les coordonnées des quatre coins de l'objet, sur le schéma.</p>
+    <pre class="td-code">
+haut_gauche = ([[300]], [[100]])
+haut_droit = ([[320]], [[100]])
+bas_gauche = ([[300]], [[120]])
+bas_droit = ([[320]], [[120]])</pre>
+    <p class="td-aide">Ligne 65, le jeu dessine l'objet avec <code>(objet_x, objet_y, TAILLE_OBJET, TAILLE_OBJET)</code> : son coin en haut à gauche, puis sa largeur et sa hauteur.</p>
+    <p class="td-aide"><code>TAILLE_OBJET</code> vaut 20 : le coin de droite est 20 pixels plus loin en x, le coin du bas 20 pixels plus bas en y.</p>
+    <div class="td-correction"><p>Le coin en haut à gauche est (<code>objet_x</code>, <code>objet_y</code>) = (300, 100). On ajoute 20 vers la droite et 20 vers le bas : (320, 100), (300, 120) et (320, 120).</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q3">
+    <p class="td-consigne">Donne les coordonnées des quatre coins du joueur.</p>
+    <pre class="td-code">
+haut_gauche = ([[400]], [[550]])
+haut_droit = ([[450]], [[550]])
+bas_gauche = ([[400]], [[600]])
+bas_droit = ([[450]], [[600]])</pre>
+    <p class="td-aide">Ligne 64 : le joueur est dessiné avec <code>(joueur_x, HAUTEUR - TAILLE_JOUEUR, TAILLE_JOUEUR, TAILLE_JOUEUR)</code>.</p>
+    <p class="td-aide"><code>HAUTEUR - TAILLE_JOUEUR</code> = 600 - 50 = 550 : le haut du joueur. Son bas touche le bas de la fenêtre, en y = 600.</p>
+    <div class="td-correction"><p>Le coin en haut à gauche est (<code>joueur_x</code>, <code>HAUTEUR - TAILLE_JOUEUR</code>) = (400, 550). Le joueur est un carré de 50 : (450, 550), (400, 600) et (450, 600).</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
+    <p class="td-consigne">À ton avis, quelle est l'unité de mesure de ces coordonnées ?</p>
+    <ul class="td-options">
+      <li data-juste>Le pixel, un point de l'écran.</li>
+      <li data-retour="La fenêtre ferait alors 8 mètres de large !">Le centimètre, comme sur une règle.</li>
+      <li data-retour="La fenêtre ferait 80 cm de large : bien plus que ton écran.">Le millimètre, pour plus de précision.</li>
+      <li data-retour="Pygame ne découpe pas la fenêtre en cases : chaque point de l'écran a ses propres coordonnées.">La case d'un quadrillage.</li>
+    </ul>
+    <p class="td-aide">Une fenêtre de 800 sur 600 tient sur ton écran.</p>
+    <div class="td-correction"><p>Le <b>pixel</b> : un écran est une grille de petits points lumineux. La fenêtre fait 800 pixels de large et 600 de haut.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">À ton avis, quelle est l'unité de mesure de ces coordonnées ?</p>
+    <div class="td-correction"><p>Le <b>pixel</b> : un écran est une grille de petits points lumineux. La fenêtre fait 800 pixels de large et 600 de haut.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Les variables</h2>
+  <p>Lis le programme. Que représentent ces variables ?</p>
+
+  <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
+    <p class="td-consigne">Que représente <code>joueur_x</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Sa position en x (de gauche à droite).</li>
+      <li data-retour="La vitesse, c'est VITESSE_JOUEUR, une constante.">La vitesse du joueur, en pixels par tour.</li>
+      <li data-retour="La taille, c'est TAILLE_JOUEUR.">La largeur du joueur, en pixels.</li>
+      <li data-retour="Le joueur reste en bas : son y est toujours HAUTEUR - TAILLE_JOUEUR. Seul son x change.">Sa position en y (de haut en bas).</li>
+    </ul>
+    <div class="td-correction"><p><code>joueur_x</code> est la position du joueur sur l'axe x. Les flèches la changent (lignes 41 à 44).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que représente <code>joueur_x</code> ?</p>
+    <div class="td-correction"><p>La position du joueur en x.</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q6" data-support="ecran">
+    <p class="td-consigne">Que représentent <code>objet_x</code> et <code>objet_y</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Le coin en haut à gauche de l'objet.</li>
+      <li data-retour="La taille de l'objet, c'est TAILLE_OBJET.">La largeur et la hauteur de l'objet.</li>
+      <li data-retour="L'objet ne bouge qu'en y, de VITESSE_OBJET à chaque tour.">La vitesse de l'objet en x et en y.</li>
+      <li data-retour="Le nombre d'objets attrapés, c'est score.">Le nombre d'objets tombés et attrapés.</li>
+    </ul>
+    <div class="td-correction"><p>(<code>objet_x</code>, <code>objet_y</code>) est le coin en haut à gauche de l'objet : la ligne 65 le dessine là.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q6-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que représentent <code>objet_x</code> et <code>objet_y</code> ?</p>
+    <div class="td-correction"><p>Le coin en haut à gauche de l'objet.</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q7" data-support="ecran">
+    <p class="td-consigne">Que représente <code>VITESSE_OBJET</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Les pixels parcourus par l'objet à chaque tour.</li>
+      <li data-retour="Rien n'est compté en secondes ici : à chaque tour, objet_y augmente de VITESSE_OBJET (ligne 47).">Le temps de chute de l'objet, en secondes.</li>
+      <li data-retour="La vitesse du joueur, c'est VITESSE_JOUEUR.">La vitesse du joueur quand il se déplace.</li>
+      <li data-retour="Il n'y a qu'un objet à la fois dans ce programme.">Le nombre d'objets qui tombent en même temps.</li>
+    </ul>
+    <div class="td-correction"><p>Ligne 47, <code>objet_y += VITESSE_OBJET</code> : à chaque tour de boucle, l'objet descend de 3 pixels.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q7-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que représente <code>VITESSE_OBJET</code> ?</p>
+    <div class="td-correction"><p>Les pixels dont l'objet descend à chaque tour de boucle.</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q8" data-support="ecran">
+    <p class="td-consigne">Que représente <code>score</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Le nombre d'objets attrapés.</li>
+      <li data-retour="score n'augmente que dans le bloc de la collision (ligne 53) : quand l'objet est attrapé.">Le nombre d'objets tombés.</li>
+      <li data-retour="Aucune variable ne compte le temps dans ce programme.">Le temps de jeu.</li>
+      <li data-retour="Le programme ne garde rien d'une partie à l'autre.">Le meilleur score des parties précédentes.</li>
+    </ul>
+    <div class="td-correction"><p><code>score</code> part de 0 (ligne 27) et augmente de 1 à chaque objet attrapé (ligne 53).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que représente <code>score</code> ?</p>
+    <div class="td-correction"><p>Le nombre d'objets attrapés.</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
+    <p class="td-consigne">Que représente <code>jeu_en_cours</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Un booléen : <code>True</code> tant que le jeu continue.</li>
+      <li data-retour="Elle ne vaut que True ou False : ce n'est pas un compteur.">Un compteur des parties jouées depuis le début.</li>
+      <li data-retour="Elle vaut True ou False, pas un texte.">Un texte, « en cours », affiché dans la fenêtre.</li>
+      <li data-retour="Le score, c'est score.">Le score de la partie, <code>0</code> au départ.</li>
+    </ul>
+    <div class="td-correction"><p><code>jeu_en_cours</code> vaut <code>True</code> au départ (ligne 30). La boucle <code>while jeu_en_cours:</code> tourne tant qu'elle vaut <code>True</code> ; on la met à <code>False</code> pour finir (lignes 37 et 60).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que représente <code>jeu_en_cours</code> ?</p>
+    <div class="td-correction"><p><code>True</code> tant que le jeu continue, <code>False</code> pour l'arrêter.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q10" data-support="ecran">
+    <p class="td-consigne">Ligne 7, un commentaire dit que les variables qui suivent sont des constantes. Pourquoi ?</p>
+    <ul class="td-options">
+      <li data-juste>Leur valeur ne change pas : les majuscules le signalent.</li>
+      <li data-retour="Python ne l'interdit pas : les majuscules sont une convention entre programmeur·euses. On pourrait écrire VITESSE_OBJET = 6 plus loin.">Python interdit de modifier une variable en majuscules.</li>
+      <li data-retour="joueur_x aussi est écrite avant la boucle, et elle change.">Elles sont écrites avant la boucle du jeu, en haut.</li>
+      <li data-retour="Être un entier ne rend pas constant : score aussi est un nombre entier, et il change. Une constante est une valeur qui ne change pas pendant la partie.">Ce sont des nombres entiers, comme 800 ou 3.</li>
+    </ul>
+    <p class="td-aide">Cherche dans la boucle si <code>LARGEUR</code> ou <code>VITESSE_OBJET</code> reçoivent une nouvelle valeur.</p>
+    <div class="td-correction"><p>Aucune ligne ne leur donne une nouvelle valeur : elles restent les mêmes pendant toute la partie. Les écrire en MAJUSCULES le signale à qui lit le programme ; Python, lui, ne l'impose pas.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q10-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Ligne 7, un commentaire dit que les variables qui suivent sont des constantes. Explique pourquoi ce sont des constantes.</p>
+    <div class="td-correction"><p>Leur valeur ne change pas pendant la partie ; les majuscules le signalent (c'est une convention, Python ne l'impose pas).</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q11" data-support="ecran">
+    <p class="td-consigne">Lignes 23 à 27, on donne leur valeur de départ à <code>joueur_x</code>, <code>objet_x</code>, <code>objet_y</code> et <code>score</code>. Quelle explication est juste ?</p>
+    <ul class="td-options">
+      <li data-juste>Joueur au milieu, objet en haut au hasard, score à 0.</li>
+      <li data-retour="LARGEUR // 2 vaut 800 // 2 = 400 : le milieu de la fenêtre.">Joueur au bord gauche, car <code>LARGEUR // 2</code> vaut 0.</li>
+      <li data-retour="y = 0, c'est le haut de la fenêtre : y augmente vers le bas.">Objet en bas de la fenêtre, car <code>objet_y</code> vaut 0.</li>
+      <li data-retour="randint(0, LARGEUR - TAILLE_OBJET) va jusqu'à 780 : l'objet, de 20 pixels, reste entier dans la fenêtre.">L'objet peut partir à moitié hors de la fenêtre, à droite.</li>
+    </ul>
+    <p class="td-aide"><code>random.randint(a, b)</code> tire un nombre entier entre a et b, compris.</p>
+    <div class="td-correction"><p><code>LARGEUR // 2</code> = 400 : le joueur part du milieu. <code>objet_y = 0</code> : l'objet part du haut, à un x tiré entre 0 et 780 pour qu'il reste dans la fenêtre. <code>score = 0</code> : aucun objet n'est encore attrapé.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q11-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Lignes 23 à 27, on donne leur valeur de départ à la position du joueur en x, à la position de l'objet en x et en y, et au score. Explique le choix de ces valeurs.</p>
+    <div class="td-correction"><p>Le joueur part du milieu (<code>LARGEUR // 2</code> = 400), l'objet part du haut (y = 0) à un x tiré au hasard entre 0 et 780 (il reste dans la fenêtre), le score part de 0.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q12" data-support="ecran">
+    <p class="td-consigne">Que fait-on des lignes 14 à 17 ?</p>
+    <ul class="td-options">
+      <li data-juste>On définit 3 couleurs par leurs quantités de rouge, vert, bleu.</li>
+      <li data-retour="Dessiner, c'est pygame.draw.rect, lignes 64 et 65 : ici, on prépare seulement les couleurs.">On dessine trois carrés de couleur, un par ligne, dans la fenêtre.</li>
+      <li data-retour="Rien n'est tiré au hasard ici : les trois couleurs sont fixées.">On tire au hasard, à chaque partie, la couleur du joueur et de l'objet.</li>
+      <li data-retour="Il n'y a qu'un objet, créé lignes 25 et 26.">On crée trois objets qui tombent en même temps.</li>
+    </ul>
+    <div class="td-correction"><p><code>BLANC = (255, 255, 255)</code>, <code>ROUGE = (255, 0, 0)</code>, <code>VERT = (0, 255, 0)</code> : trois couleurs, chacune donnée par ses quantités de rouge, de vert et de bleu.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q12-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que fait-on des lignes 14 à 17 ?</p>
+    <div class="td-correction"><p>On définit trois couleurs (blanc, rouge, vert) par leurs quantités de rouge, de vert et de bleu.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q13" data-reponse="joueur_x" data-comparer="code">
+    <p class="td-consigne">Quelle variable permet de déplacer le joueur ?</p>
+    <p class="td-retour" data-si="VITESSE_JOUEUR">VITESSE_JOUEUR dit de combien il se déplace ; quelle variable change, elle ?</p>
+    <p class="td-aide">Regarde ce qui se passe lignes 41 à 44, quand une flèche est appuyée.</p>
+    <div class="td-correction"><p><code>joueur_x</code> : la flèche gauche lui enlève <code>VITESSE_JOUEUR</code>, la flèche droite lui en ajoute.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q14" data-support="ecran">
+    <p class="td-consigne">Comment l'objet tombe-t-il ?</p>
+    <ul class="td-options">
+      <li data-juste>À chaque tour, <code>objet_y</code> augmente de <code>VITESSE_OBJET</code>.</li>
+      <li data-retour="objet_x ne change pas pendant la chute : l'objet tombe tout droit.">À chaque tour, <code>objet_x</code> augmente de <code>VITESSE_OBJET</code>.</li>
+      <li data-retour="y = 0 est en haut : pour descendre, y doit augmenter.">À chaque tour, <code>objet_y</code> diminue de <code>VITESSE_OBJET</code>.</li>
+      <li data-retour="Pygame ne fait rien tout seul : c'est la ligne 47 qui déplace l'objet.">Pygame le fait tomber tout seul, comme la pesanteur.</li>
+    </ul>
+    <div class="td-correction"><p>Ligne 47 : <code>objet_y += VITESSE_OBJET</code>. La boucle tourne environ 30 fois par seconde : l'objet descend de 3 pixels à chaque fois.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q14-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Comment l'objet tombe-t-il ?</p>
+    <div class="td-correction"><p>À chaque tour de boucle, <code>objet_y</code> augmente de <code>VITESSE_OBJET</code> (ligne 47).</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q15" data-support="ecran">
+    <p class="td-consigne">Comment le jeu sait-il que l'objet a été attrapé ?</p>
+    <ul class="td-options">
+      <li data-juste>Quand le bas de l'objet atteint le joueur et qu'ils se chevauchent.</li>
+      <li data-retour="Il suffit que les carrés se chevauchent : objet_x et joueur_x sont rarement égaux.">Quand <code>objet_x</code> est exactement égal à <code>joueur_x</code>, au même moment.</li>
+      <li data-retour="objet_y > HAUTEUR, c'est la fin du jeu (ligne 58) : l'objet a été raté.">Quand <code>objet_y</code> devient plus grand que <code>HAUTEUR</code>, en bas de l'écran.</li>
+      <li data-retour="Les flèches déplacent le joueur, elles ne testent pas la collision.">Quand le joueur appuie sur une flèche pour aller vers l'objet.</li>
+    </ul>
+    <p class="td-aide">Le jeu compare les positions de l'objet et du joueur : c'est un test de collision.</p>
+    <div class="td-correction"><p>Il compare leurs positions : <code>objet_y + TAILLE_OBJET &gt;= HAUTEUR - TAILLE_JOUEUR</code> (le bas de l'objet touche le haut du joueur), et les intervalles en x se chevauchent. Alors le score augmente et un nouvel objet repart du haut.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q15-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Comment le jeu sait-il que l'objet a été attrapé ?</p>
+    <div class="td-correction"><p>Lignes 50 à 52, il compare les positions : le bas de l'objet touche le haut du joueur et les carrés se chevauchent en x.</p></div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q16" data-support="ecran">
+    <p class="td-consigne">Quelles conditions mettent fin au jeu ? Coche-les toutes.</p>
+    <ul class="td-options">
+      <li data-juste>L'objet sort par le bas : <code>objet_y &gt; HAUTEUR</code>.</li>
+      <li data-juste>On ferme la fenêtre : l'événement <code>pygame.QUIT</code>.</li>
+      <li data-retour="Le score n'a pas de limite dans ce programme.">Le score atteint 10.</li>
+      <li data-retour="Lignes 41 et 43, les conditions empêchent seulement le joueur de sortir de la fenêtre.">Le joueur touche le bord.</li>
+    </ul>
+    <p class="td-aide">Cherche les lignes où <code>jeu_en_cours</code> devient <code>False</code>.</p>
+    <div class="td-correction"><p>Deux lignes mettent <code>jeu_en_cours</code> à <code>False</code> : la ligne 37 (clic sur la croix de la fenêtre) et la ligne 60 (l'objet est sorti par le bas, après le message « Game Over »).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q16-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quelle condition met fin au jeu ?</p>
+    <div class="td-correction"><p>Deux lignes mettent <code>jeu_en_cours</code> à <code>False</code> : la ligne 37 (clic sur la croix de la fenêtre) et la ligne 60 (l'objet est sorti par le bas, après le message « Game Over »).</p></div>
+  </section>
+
+  <h2 class="td-partie">3. Compléter le programme</h2>
+  <section class="td-q" data-type="trous" id="q17">
+    <p class="td-consigne">Complète : l'objet part du haut, à une place tirée au hasard, puis il tombe.</p>
+    <pre class="td-code">
+import random
+LARGEUR, TAILLE_OBJET, VITESSE_OBJET = 800, 20, 3
+# Position de départ de l'objet
+objet_x = [[random.randint(0, LARGEUR - TAILLE_OBJET)|random.randint(0,LARGEUR-TAILLE_OBJET)|random.randint(0, 780)|random.randint(0,780)]]
+objet_y = [[0]]
+# L'objet tombe
+objet_y += [[VITESSE_OBJET|3]]</pre>
+    <p class="td-aide">L'objet doit rester dans la fenêtre : son x va de 0 à <code>LARGEUR - TAILLE_OBJET</code>.</p>
+    <p class="td-aide">En haut de la fenêtre, y vaut 0.</p>
+    <div class="td-correction"><p><code>objet_x = random.randint(0, LARGEUR - TAILLE_OBJET)</code>, <code>objet_y = 0</code>, puis <code>objet_y += VITESSE_OBJET</code> à chaque tour de boucle.</p></div>
+  </section>
+  <section class="td-q" data-type="trous" id="q18">
+    <p class="td-consigne">Complète la condition : l'objet est attrapé.</p>
+    <pre class="td-code">
+HAUTEUR, TAILLE_JOUEUR, TAILLE_OBJET = 600, 50, 20
+joueur_x, objet_x, objet_y, score = 400, 410, 540, 0
+if ([[objet_y + TAILLE_OBJET|objet_y+TAILLE_OBJET|TAILLE_OBJET + objet_y|TAILLE_OBJET+objet_y]] &gt;= HAUTEUR - TAILLE_JOUEUR and
+        joueur_x &lt; [[objet_x + TAILLE_OBJET|objet_x+TAILLE_OBJET|TAILLE_OBJET + objet_x|TAILLE_OBJET+objet_x]] and
+        joueur_x + TAILLE_JOUEUR &gt; [[objet_x]]):
+    score += 1
+    objet_y = 0</pre>
+    <p class="td-aide">Le bas de l'objet est à <code>objet_y + TAILLE_OBJET</code> ; son bord droit à <code>objet_x + TAILLE_OBJET</code>.</p>
+    <p class="td-aide">Les deux carrés se chevauchent en x si le bord gauche du joueur est avant le bord droit de l'objet, et le bord droit du joueur après le bord gauche de l'objet.</p>
+    <div class="td-correction"><p>Le bas de l'objet (<code>objet_y + TAILLE_OBJET</code>) a atteint le haut du joueur, et les intervalles [<code>joueur_x</code>, <code>joueur_x + TAILLE_JOUEUR</code>] et [<code>objet_x</code>, <code>objet_x + TAILLE_OBJET</code>] se chevauchent. C'est la condition des lignes 50 à 52.</p></div>
+  </section>
+
+  <h2 class="td-partie">4. Les fonctions</h2>
+  <p><b>Sur l'ordinateur :</b> ligne 32, remplace <code>pygame.time.delay(30)</code> par <code>pygame.time.delay(60)</code>, relance le jeu et observe.</p>
+  <section class="td-q" data-type="qcu" id="q19">
+    <p class="td-consigne">Avec <code>pygame.time.delay(60)</code>, que se passe-t-il ?</p>
+    <ul class="td-options">
+      <li data-juste>Le jeu ralentit : une pause de 60 ms à chaque tour.</li>
+      <li data-retour="delay fait attendre : plus le nombre est grand, plus la pause est longue.">Le jeu accélère, car 60 est plus grand que 30.</li>
+      <li data-retour="La taille de l'objet, c'est TAILLE_OBJET : delay ne dessine rien.">L'objet devient deux fois plus grand.</li>
+      <li data-retour="delay est dans la boucle (ligne 32) : il agit à chaque tour.">Rien : <code>delay</code> ne sert qu'une fois, au début du jeu.</li>
+    </ul>
+    <div class="td-correction"><p><code>delay(60)</code> met le programme en pause 60 millisecondes à chaque tour : il y a moins de tours par seconde, donc l'objet et le joueur vont moins vite à l'écran.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q20" data-support="ecran">
+    <p class="td-consigne">Rappel : à quoi reconnaît-on l'appel d'une fonction ?</p>
+    <ul class="td-options">
+      <li data-juste>À son nom suivi de parenthèses (paramètres dedans).</li>
+      <li data-retour="Les majuscules signalent des constantes, comme LARGEUR.">À son nom écrit tout en majuscules, comme LARGEUR.</li>
+      <li data-retour="= est une affectation : il range une valeur dans une variable.">Au signe <code>=</code> qui la suit, avant la valeur rangée.</li>
+      <li data-retour="random.randint n'a pas pygame devant, et pygame.K_LEFT n'est pas une fonction.">Au mot <code>pygame</code> écrit devant son nom, avec un point.</li>
+    </ul>
+    <div class="td-correction"><p>Un appel de fonction, c'est un nom suivi de parenthèses : <code>pygame.time.delay(30)</code>, <code>pygame.quit()</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q20-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Rappel : à quoi reconnaît-on une fonction ?</p>
+    <div class="td-correction"><p>À son nom suivi de parenthèses, qui contiennent ses paramètres (parfois aucun) : <code>delay(30)</code>, <code>quit()</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q21" data-support="ecran">
+    <p class="td-consigne">Pour chaque rôle, écris le nom de la fonction du programme qui le remplit.</p>
+    <pre class="td-code">
+# démarre Pygame : [[init|pygame.init|init()|pygame.init()]]
+# tire un nombre entier au hasard : [[randint|random.randint]]
+# ouvre la fenêtre, à la taille donnée : [[set_mode|pygame.display.set_mode|display.set_mode]]
+# écrit le titre de la fenêtre : [[set_caption|pygame.display.set_caption|display.set_caption]]
+# fait une pause de quelques millisecondes : [[delay|pygame.time.delay|time.delay]]
+# récupère les événements (un clic sur la croix…) : [[event.get|pygame.event.get|get]]
+# donne les touches du clavier enfoncées : [[get_pressed|pygame.key.get_pressed|key.get_pressed]]
+# remplit toute la fenêtre d'une couleur : [[fill|fenetre.fill]]
+# dessine un rectangle : [[draw.rect|pygame.draw.rect|rect]]
+# montre à l'écran ce qui vient d'être dessiné : [[display.update|pygame.display.update|update]]
+# ferme Pygame : [[quit|pygame.quit|quit()|pygame.quit()]]</pre>
+    <p class="td-aide">Les fonctions sont appelées lignes 5, 20, 21, 25, 32, 35, 40, 63, 64, 66 et 68.</p>
+    <p class="td-aide">Le nom d'une fonction dit souvent son rôle en anglais : <i>fill</i> (remplir), <i>draw</i> (dessiner), <i>update</i> (mettre à jour).</p>
+    <div class="td-correction"><p>Dans l'ordre : <code>init</code> (ligne 5), <code>randint</code> (25), <code>set_mode</code> (20), <code>set_caption</code> (21), <code>delay</code> (32), <code>event.get</code> (35), <code>get_pressed</code> (40), <code>fill</code> (63), <code>draw.rect</code> (64), <code>display.update</code> (66), <code>quit</code> (68).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q21-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">À ton avis, que fait chacune de ces fonctions ?</p>
+    <div class="td-table"><table width="100%">
+      <colgroup><col><col><col width="62%"></colgroup>
+      <thead><tr><th>Fonction</th><th>Appel</th><th>Rôle</th></tr></thead>
+      <tbody>
+        <tr><td><code>init</code></td><td class="td-nb">ligne 5</td><td>&#160;</td></tr>
+        <tr><td><code>randint</code></td><td class="td-nb">ligne 25</td><td>&#160;</td></tr>
+        <tr><td><code>set_mode</code></td><td class="td-nb">ligne 20</td><td>&#160;</td></tr>
+        <tr><td><code>set_caption</code></td><td class="td-nb">ligne 21</td><td>&#160;</td></tr>
+        <tr><td><code>delay</code></td><td class="td-nb">ligne 32</td><td>&#160;</td></tr>
+        <tr><td><code>event.get</code></td><td class="td-nb">ligne 35</td><td>&#160;</td></tr>
+        <tr><td><code>get_pressed</code></td><td class="td-nb">ligne 40</td><td>&#160;</td></tr>
+        <tr><td><code>fill</code></td><td class="td-nb">ligne 63</td><td>&#160;</td></tr>
+        <tr><td><code>draw.rect</code></td><td class="td-nb">ligne 64</td><td>&#160;</td></tr>
+        <tr><td><code>display.update</code></td><td class="td-nb">ligne 66</td><td>&#160;</td></tr>
+        <tr><td><code>quit</code></td><td class="td-nb">ligne 68</td><td>&#160;</td></tr>
+      </tbody>
+    </table></div>
+    <div class="td-correction"><p><code>init</code> démarre Pygame ; <code>randint</code> tire un entier au hasard ; <code>set_mode</code> ouvre la fenêtre ; <code>set_caption</code> écrit son titre ; <code>delay</code> fait une pause ; <code>event.get</code> récupère les événements ; <code>get_pressed</code> donne les touches enfoncées ; <code>fill</code> remplit la fenêtre d'une couleur ; <code>draw.rect</code> dessine un rectangle ; <code>display.update</code> montre le dessin ; <code>quit</code> ferme Pygame.</p></div>
+  </section>
+
+  <p><b>Sur l'ordinateur :</b> change les paramètres de <code>set_mode</code> et de <code>set_caption</code> (lignes 20 et 21), relance le jeu et observe.</p>
+  <section class="td-q" data-type="qcu" id="q22">
+    <p class="td-consigne">Ligne 20, tu écris <code>set_mode((400, 300))</code>. Que se passe-t-il ?</p>
+    <ul class="td-options">
+      <li data-juste>La fenêtre rétrécit, mais le jeu garde 800 × 600 : le joueur sort de la vue.</li>
+      <li data-retour="set_mode change seulement la fenêtre : les constantes LARGEUR et HAUTEUR, elles, ne changent pas.">Tout le jeu se réduit de moitié, joueur et objet compris, pour bien tenir.</li>
+      <li data-retour="Le titre, c'est set_caption.">Rien ne change : <code>set_mode</code> sert seulement au titre de la fenêtre.</li>
+      <li data-retour="Le programme se lance : seule la fenêtre change de taille.">Le programme s'arrête avec un message d'erreur sur la taille.</li>
+    </ul>
+    <p class="td-aide">Le joueur est dessiné en <code>HAUTEUR - TAILLE_JOUEUR</code>, et <code>HAUTEUR</code> vaut toujours 600.</p>
+    <div class="td-correction"><p>La fenêtre fait 400 × 300, mais <code>LARGEUR</code> et <code>HAUTEUR</code> valent encore 800 et 600 : le joueur est dessiné hors de la fenêtre. Pour changer la taille du jeu, on change les constantes de la ligne 8.</p></div>
+  </section>
+  <section class="td-q" data-type="qcu" id="q23">
+    <p class="td-consigne">Ligne 21, tu écris <code>set_caption("Mon jeu")</code>. Que se passe-t-il ?</p>
+    <ul class="td-options">
+      <li data-juste>Le titre de la fenêtre devient « Mon jeu ».</li>
+      <li data-retour="Pour écrire dans la fenêtre, il faut une police et blit (défi 5 de la feuille 2).">« Mon jeu » s'écrit au milieu de la fenêtre.</li>
+      <li data-retour="Ce qui s'écrit dans la console, c'est print.">« Mon jeu » s'affiche dans la console.</li>
+      <li data-retour="Le nom du fichier ne change pas : set_caption agit sur la fenêtre.">Le fichier du programme s'appelle « Mon jeu ».</li>
+    </ul>
+    <div class="td-correction"><p><i>Caption</i> veut dire « légende » : <code>set_caption</code> écrit le titre, dans la barre de la fenêtre.</p></div>
+  </section>
+
+  <p>Bravo, tu maîtrises maintenant le programme qui t'a été fourni. Vas-tu relever les défis qui t'attendent ?</p>
+  <p data-support="ecran"><b>La suite :</b> <a href="feuille-2.html">feuille 2 sur 2, les défis</a>.</p>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Dans une fenêtre Pygame, (0, 0) est en haut à gauche et y augmente vers le bas.</p>
+    <p>Un jeu est une boucle : à chaque tour, on lit le clavier, on déplace, on teste les collisions, on dessine.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:-1"></span>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-premiere/fichiers/tp-python-premiere/tp-pygame">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
