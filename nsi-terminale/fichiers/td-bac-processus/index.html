@@ -1,0 +1,178 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Processus · TD type bac (1/3)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : priorités et interblocage (bac 2021, Métropole, mars, jour 1, exercice 2).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-processus-1" data-td-version="3" data-code="obligatoire" data-ordre="melange">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Processus et ordonnancement</span></p>
+        <h1>Processus</h1>
+        <p class="td-accroche">Type bac · feuille 1/3</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=processus" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM14 3h5v1h-5zM22 3h5v1h-5zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h2v1h-2zM17 4h8v1h-8zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM17 5h1v1h-1zM20 5h2v1h-2zM25 5h1v1h-1zM27 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h3v1h-3zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h1v1h-1zM25 8h2v1h-2zM30 8h5v1h-5zM1 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h2v1h-2zM4 10h1v1h-1zM6 10h2v1h-2zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM7 11h3v1h-3zM11 11h1v1h-1zM14 11h2v1h-2zM19 11h4v1h-4zM24 11h1v1h-1zM26 11h1v1h-1zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM4 13h1v1h-1zM9 13h2v1h-2zM12 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h2v1h-2zM5 14h3v1h-3zM9 14h1v1h-1zM13 14h4v1h-4zM18 14h1v1h-1zM22 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h4v1h-4zM5 15h1v1h-1zM7 15h5v1h-5zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h2v1h-2zM12 16h1v1h-1zM18 16h9v1h-9zM28 16h3v1h-3zM32 16h1v1h-1zM34 16h2v1h-2zM4 17h2v1h-2zM7 17h2v1h-2zM10 17h1v1h-1zM12 17h5v1h-5zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM6 18h2v1h-2zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h5v1h-5zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h2v1h-2zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h2v1h-2zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h3v1h-3zM27 19h1v1h-1zM29 19h2v1h-2zM36 19h1v1h-1zM3 20h5v1h-5zM9 20h2v1h-2zM17 20h1v1h-1zM22 20h6v1h-6zM29 20h2v1h-2zM32 20h3v1h-3zM2 21h1v1h-1zM4 21h2v1h-2zM7 21h4v1h-4zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h2v1h-2zM4 22h1v1h-1zM6 22h2v1h-2zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM1 23h1v1h-1zM7 23h1v1h-1zM11 23h2v1h-2zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h7v1h-7zM14 24h3v1h-3zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h8v1h-8zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM7 25h5v1h-5zM13 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM24 25h3v1h-3zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM3 26h5v1h-5zM9 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM4 27h2v1h-2zM7 27h2v1h-2zM11 27h2v1h-2zM15 27h1v1h-1zM19 27h6v1h-6zM27 27h2v1h-2zM31 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h2v1h-2zM15 28h3v1h-3zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h3v1h-3zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h2v1h-2zM11 29h4v1h-4zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h3v1h-3zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h1v1h-1zM12 30h1v1h-1zM15 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h4v1h-4zM14 31h2v1h-2zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h2v1h-2zM11 32h4v1h-4zM18 32h5v1h-5zM25 32h8v1h-8zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h3v1h-3zM15 33h2v1h-2zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h4v1h-4zM17 34h1v1h-1zM20 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h1v1h-1zM11 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h5v1h-5zM14 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les processus (le plus guidé).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>citer les commandes <code>ps</code> et <code>kill</code> et ce qu'est un PID ;</li>
+        <li>dérouler à la main un ordonnancement par priorité ;</li>
+        <li>reconnaître un interblocage.</li>
+      </ul>
+      <p class="td-duree">30 minutes · 1 exercice de bac (4 points) · 6 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord. Réponds sur ta feuille, avec ton brouillon, puis vérifie ici chaque réponse.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 3 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. priorités et interblocage (ici) ; 2. <a href="feuille-2.html">le tourniquet en Python</a> ; 3. <a href="feuille-3.html">simuler un ordonnanceur</a>.</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 1 : priorités et interblocage</h2>
+  <p>Sujet du bac 2021, Métropole, mars, jour 1, exercice 2 (4 points), <b>parties A et B</b>. La partie C (opérateur XOR) relève d'un autre chapitre : elle n'est pas reprise ici. <a href="https://aeif.fr/wp-content/uploads/2025/07/metropole_mars_2021_1.pdf">Le sujet d'origine (PDF)</a>.</p>
+  <p><i>Cet exercice porte sur la gestion des processus par les systèmes d'exploitation et sur les opérateurs booléens.</i></p>
+  <h3>Partie A</h3>
+  <p>Cette partie est un questionnaire à choix multiples (QCM). Pour chacune des questions, une seule des quatre réponses est exacte.</p>
+
+  <section class="td-q" data-type="qcu" id="q1" data-ordre="fixe">
+    <p class="td-consigne">1. Parmi les commandes ci-dessous, laquelle permet d'afficher les processus en cours d'exécution ?</p>
+    <ul class="td-options">
+      <li data-retour="dir liste le contenu d'un répertoire (sous Windows).">a. <code>dir</code></li>
+      <li data-juste>b. <code>ps</code></li>
+      <li data-retour="man affiche le manuel d'une commande.">c. <code>man</code></li>
+      <li data-retour="ls liste les fichiers d'un répertoire, pas les processus.">d. <code>ls</code></li>
+    </ul>
+    <p class="td-aide"><code>ps</code> vient de l'anglais <i>process status</i>.</p>
+    <div class="td-correction"><p>b. <code>ps</code> (<i>process status</i>) affiche les processus et leur PID.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q2" data-ordre="fixe">
+    <p class="td-consigne">2. Quelle abréviation désigne l'identifiant d'un processus dans un système d'exploitation de type UNIX ?</p>
+    <ul class="td-options">
+      <li data-retour="Cette abréviation n'est pas utilisée pour les processus.">a. PIX</li>
+      <li data-retour="SIG désigne un signal (SIGKILL, SIGTERM…), pas un identifiant.">b. SIG</li>
+      <li data-juste>c. PID</li>
+      <li data-retour="SID désigne un identifiant de session, pas celui d'un processus.">d. SID</li>
+    </ul>
+    <p class="td-aide">En anglais, identifiant de processus se dit <i>process identifier</i>.</p>
+    <div class="td-correction"><p>c. PID, pour <i>process identifier</i>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3" data-ordre="fixe">
+    <p class="td-consigne">3. Comment s'appelle la gestion du partage du processeur entre différents processus ?</p>
+    <ul class="td-options">
+      <li data-retour="L'interblocage est un problème : des processus qui s'attendent les uns les autres.">a. L'interblocage</li>
+      <li data-juste>b. L'ordonnancement</li>
+      <li data-retour="Ce mot existe, mais le terme du programme est un autre mot.">c. La planification</li>
+      <li data-retour="La priorité est un critère possible, pas le nom de la gestion du partage.">d. La priorisation</li>
+    </ul>
+    <p class="td-aide">C'est le travail de l'ordonnanceur du système d'exploitation.</p>
+    <div class="td-correction"><p>b. L'ordonnancement, réalisé par l'ordonnanceur.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4" data-ordre="fixe">
+    <p class="td-consigne">4. Quelle commande permet d'interrompre un processus dans un système d'exploitation de type UNIX ?</p>
+    <ul class="td-options">
+      <li data-retour="stop n'est pas une commande UNIX standard pour cela.">a. <code>stop</code></li>
+      <li data-retour="interrupt n'est pas une commande UNIX.">b. <code>interrupt</code></li>
+      <li data-retour="end n'est pas une commande UNIX.">c. <code>end</code></li>
+      <li data-juste>d. <code>kill</code></li>
+    </ul>
+    <p class="td-aide">On lui donne le PID du processus à arrêter, par exemple <code>kill 1234</code>.</p>
+    <div class="td-correction"><p>d. <code>kill</code>, suivi du PID du processus.</p></div>
+  </section>
+
+  <h3>Partie B</h3>
+  <p>1. Un processeur choisit à chaque cycle d'exécution le processus qui doit être exécuté. Le tableau ci-dessous donne pour trois processus P1, P2, P3 : la durée d'exécution (en nombre de cycles), l'instant d'arrivée sur le processeur (exprimé en nombre de cycles à partir de 0), le numéro de priorité. Le numéro de priorité est d'autant plus petit que la priorité est grande. On suppose qu'à chaque instant, c'est le processus qui a le plus petit numéro de priorité qui est exécuté, ce qui peut provoquer la suspension d'un autre processus, lequel reprendra lorsqu'il sera le plus prioritaire.</p>
+  <table border="1">
+    <caption>Durée d'exécution (en cycles), instant d'arrivée et numéro de priorité</caption>
+    <thead><tr><th scope="col">Processus</th><th scope="col">Durée</th><th scope="col">Arrivée</th><th scope="col">Priorité</th></tr></thead>
+    <tbody>
+      <tr><td>P1</td><td>3</td><td>3</td><td>1</td></tr>
+      <tr><td>P2</td><td>3</td><td>2</td><td>2</td></tr>
+      <tr><td>P3</td><td>4</td><td>0</td><td>3</td></tr>
+    </tbody>
+  </table>
+
+  <section class="td-q" data-type="trous" id="q5">
+    <p class="td-consigne">1. Reproduire le tableau sur la copie et indiquer dans chacune des cases le processus exécuté à chaque cycle.</p>
+    <p>Ici, le tableau des cycles 0 à 9 est une liste Python : la case du cycle 0 est donnée.</p>
+    <pre class="td-code">
+#        cycle 0  cycle 1     cycle 2     cycle 3     cycle 4
+cycles = ["P3", "[[P3|p3]]", "[[P2|p2]]", "[[P1|p1]]", "[[P1|p1]]",
+          "[[P1|p1]]", "[[P2|p2]]", "[[P2|p2]]", "[[P3|p3]]", "[[P3|p3]]"]
+#        cycle 5      cycle 6     cycle 7     cycle 8     cycle 9</pre>
+    <p class="td-aide">À chaque cycle, regarde quels processus sont arrivés et pas encore finis. Parmi eux, c'est le plus petit numéro de priorité qui s'exécute.</p>
+    <p class="td-aide">Au cycle 3, P1 arrive : il a la meilleure priorité, il prend la main tout de suite, même si P2 n'a pas fini.</p>
+    <div class="td-correction">
+      <p>P3, P3 (seul arrivé), P2 (arrivé au cycle 2, plus prioritaire), P1, P1, P1 (arrivé au cycle 3, le plus prioritaire), P2, P2 (il lui restait 2 cycles), P3, P3 (il lui restait 2 cycles).</p>
+    </div>
+  </section>
+
+  <p>2. On suppose maintenant que les trois processus précédents s'exécutent et utilisent une ou plusieurs ressources parmi R1, R2 et R3.</p>
+  <table border="1">
+    <thead><tr><th scope="col">Scénario 1</th><th scope="col">Scénario 2</th><th scope="col">Scénario 3</th></tr></thead>
+    <tbody>
+      <tr><td>P1 acquiert R1</td><td>P1 acquiert R1</td><td>P1 acquiert R1</td></tr>
+      <tr><td>P2 acquiert R2</td><td>P2 acquiert R3</td><td>P2 acquiert R2</td></tr>
+      <tr><td>P3 attend R1</td><td>P3 acquiert R2</td><td>P3 attend R2</td></tr>
+      <tr><td>P2 libère R2</td><td>P1 attend R2</td><td>P1 attend R2</td></tr>
+      <tr><td>P2 attend R1</td><td>P2 libère R3</td><td>P2 libère R2</td></tr>
+      <tr><td>P1 libère R1</td><td>P3 attend R1</td><td>P3 acquiert R2</td></tr>
+    </tbody>
+  </table>
+
+  <section class="td-q" data-type="qcu" id="q6" data-support="ecran">
+    <p class="td-consigne">2. Parmi les scénarios suivants, lequel provoque un interblocage ? Justifier.</p>
+    <p>Choisis ici ; la justification va sur ta feuille.</p>
+    <ul class="td-options">
+      <li data-retour="À la fin du scénario 1, P1 libère R1 : P3 et P2 pourront l'obtenir l'un après l'autre.">Scénario 1</li>
+      <li data-juste>Scénario 2</li>
+      <li data-retour="Dans le scénario 3, P2 libère R2 : P3 l'obtient, et P1 l'aura quand P3 la libérera.">Scénario 3</li>
+    </ul>
+    <p class="td-aide">Pour chaque scénario, note qui détient chaque ressource, et qui attend quoi, à la fin.</p>
+    <p class="td-aide">Un interblocage, c'est une attente en cercle : X attend une ressource que détient Y, et Y attend une ressource que détient X.</p>
+    <div class="td-correction">
+      <p><b>Scénario 2.</b> P1 détient R1 et attend R2 ; P3 détient R2 et attend R1. Chacun attend une ressource que l'autre détient et ne libérera pas : aucun des deux n'avance, c'est un interblocage. Mots attendus : détient, attend, attente circulaire (ou en cercle).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q6-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">2. Parmi les scénarios suivants, lequel provoque un interblocage ? Justifier.</p>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Processus</b> : un programme en cours d'exécution, avec un PID. États : <b>prêt</b>, <b>élu</b>, <b>bloqué</b>. <code>ps</code> les liste, <code>kill</code> en arrête un.</p>
+    <p><b>Ordonnancement</b> : par priorité, le plus prioritaire s'exécute (et peut en suspendre un autre) ; par <b>tourniquet</b>, chacun son tour pendant un quantum, puis retour au bout de la file. Fais toujours un tableau : cycle, file, élu.</p>
+    <p><b>Interblocage</b> : une attente en cercle. X détient R1 et attend R2, Y détient R2 et attend R1. Pour l'éviter : demander les ressources toujours dans le même ordre.</p>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, le tourniquet en Python</a>.</p>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Métropole, mars 2021, jour 1, exercice 2, parties A et B (la partie C, sur l'opérateur XOR, n'est pas reprise). <a href="https://aeif.fr/wp-content/uploads/2025/07/metropole_mars_2021_1.pdf">Le PDF du sujet</a>, diffusé par l'AEIF (<a href="https://aeif.fr/">aeif.fr</a> : CC BY-SA 4.0, relevée sur ses pages annuelles). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_Metropole_mars_2021_1.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document).</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-processus">Code source sur GitHub</a></p><span class="td-margouillat" data-cachette="pied" style="--x:84%;--r:5deg;--s:1"></span>
+  </footer>
+</main>
+</body>
+</html>
