@@ -7,6 +7,7 @@ toute seule à l'écran et, imprimée, elle est la feuille papier. Le PDF est fa
 | TD | Feuilles (adresses) | PDF |
 |---|---|---|
 | Boucle fermée : `for` | `td-for.html`, `td-for-2.html`, `td-for-3.html` | `td-for.pdf` |
+| Boucle ouverte : `while` | `td-while.html`, `td-while-2.html`, `td-while-3.html` | `td-while.pdf` |
 
 Les anciennes pages statiques (police embarquée) sont remplacées à la même adresse ; elles restent
 dans l'historique Git.
@@ -21,7 +22,9 @@ Le robot est celui des fiches d'origine (décision de l'enseignant·e) : mêmes 
   `charte/verifier-td.py` seul signale donc les questions dont le code appelle `nord()`, `est()`… (NameError).
   Ce script vérifie aussi chaque case d'arrivée (`data-verifier="robot"`) et chaque affichage
   (`data-verifier="robot-sortie"`) par exécution réelle.
-- `td-for-calculs.py` : les autres réponses calculées (choix justifiés, fonctions, tests du moteur).
+- `td-for-calculs.py`, `td-while-calculs.py`… (avec `calculs.py`) : les autres réponses calculées
+  (choix justifiés, nombres de tours, fonctions, tests du moteur lancés sur les corrections).
+- `verifier.py` donne aussi à `input()` des réponses toutes prêtes (5, oui, non…), pour les programmes qui demandent une saisie.
 
 ```
 python3 -I nsi-premiere/fichiers/bases-python/source/verifier.py --grille for nsi-premiere/fichiers/bases-python/td-for.html nsi-premiere/fichiers/bases-python/td-for-2.html nsi-premiere/fichiers/bases-python/td-for-3.html
