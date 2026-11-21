@@ -1,247 +1,277 @@
-<!DOCTYPE html>
-<html lang="fr"><head>
-<meta content="width=device-width, initial-scale=1" name="viewport"><meta charset="utf-8">
-<title>Fiche : commandes et système Linux, à compléter</title>
-<style>
-
-        :root {
-            --primary: #1a2a6c;
-            --secondary: #b21f1f;
-            --text: #2c3e50;
-            --light-gray: #f8f9fa;
-            --border: #d1d8e0;
-        }
-
-        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
-
-        body { 
-            background: #515151; 
-            font-family: 'Roboto', sans-serif; 
-            margin: 0; padding: 0; 
-            color: var(--text);
-        }
-
-        .page {
-            width: 210mm; min-height: 297mm;
-            padding: 10mm; margin: 10mm auto;
-            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column;
-        }
-
-        header {
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 5px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: flex-end;
-        }
-
-        h1 { margin: 0; font-size: 1.6rem; color: var(--primary); letter-spacing: -1px; }
-        
-        h2 { 
-            font-size: 1rem; background: var(--light-gray); 
-            padding: 4px 10px; border-left: 5px solid var(--primary);
-            margin: 12px 0 8px 0; text-transform: uppercase;
-        }
-
-        h3 { font-size: 0.9rem; margin: 8px 0 4px 0; color: var(--secondary); border-bottom: 1px dashed var(--border); }
-
-        p, li { font-size: 0.85rem; line-height: 1.3; margin: 4px 0; }
-        
-        .write-zone { border-bottom: 1px dotted #999; min-height: 20px; display: inline-block; width: 100%; }
-        .small-zone { border-bottom: 1px dotted #999; min-height: 18px; display: inline-block; width: 150px; }
-
-        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 0.8rem; }
-        th, td { border: 1px solid var(--border); padding: 6px; text-align: left; }
-        th { background: var(--primary); color: white; font-weight: 500; width: 25%; }
-        td:nth-child(2) { width: 45%; }
-
-        .code { font-family: 'Fira Code', monospace; background: #eee; padding: 2px 4px; border-radius: 3px; font-size: 0.8rem; }
-        
-        .info-box {
-            border: 1px solid var(--primary);
-            border-radius: 4px; padding: 8px;
-            margin: 5px 0; background: #f0f4ff;
-            font-size: 0.85rem;
-        }
-
-        .rights-container {
-            display: flex; gap: 10px; margin: 10px 0;
-        }
-        .rights-box {
-            flex: 1; border: 1px solid var(--border); padding: 8px; border-radius: 4px; background: #fff;
-        }
-        .rights-box strong { color: var(--primary); font-size: 0.85rem; }
-
-        @media print {
-            body { background: none; }
-            .page { margin: 0; box-shadow: none; border: none; }
-        }
-    
-        /* T67 : polices du système (aucune requête vers un autre site), pied, écran étroit, impression */
-        body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; }
-        code, pre, .code { font-family: 'Fira Code', Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; font-variant-ligatures: none; }
-        @page { size: A4; margin: 0; }
-        @media screen { .page { height: auto; min-height: 297mm; } .layer-box { transition: none; } }
-        @media print { .page { break-after: page; page-break-after: always; } .page:last-child { break-after: auto; page-break-after: auto; } }
-        footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #d1d8e0; font-size: 0.68rem; color: #565c68;
-                 display: flex; flex-wrap: wrap; justify-content: space-between; row-gap: 1px; }
-        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; overflow-wrap: anywhere; }
-        footer a { color: inherit; }
-        @media screen and (max-width: 230mm) {
-            .page { width: auto; max-width: 210mm; height: auto; min-height: 0; margin: 8px; padding: 14px; }
-            p, li, td, th, .info-box { overflow-wrap: break-word; }
-            code, .code, pre { overflow-wrap: anywhere; white-space: pre-wrap; }
-            footer { flex-direction: column; gap: 2px; }
-            footer .credit { text-align: left; }
-            header { flex-wrap: wrap; gap: 4px; }
-        }
-        @media screen and (max-width: 600px) {
-            h1 { font-size: 1.2rem; }
-            table { font-size: 0.7rem; }
-            th, td { padding: 3px 4px; overflow-wrap: anywhere; }
-            .rights-container { flex-direction: column; }
-            .small-zone, .write-zone, .fill-inline { max-width: 100%; min-width: 0; }
-            .state-diagram, .graph-container { flex-wrap: wrap; gap: 6px; }
-            .state-box { width: auto; }
-            .von-neumann { height: auto; grid-template-columns: 1fr; }
-            .vn-box { min-height: 45px; }
-        }
-        @media print { .page.z97 > :not(footer) { zoom: 0.97; } }
-        @media print { .page.z94 > :not(footer) { zoom: 0.94; } }
-        @media print { .page.z91 > :not(footer) { zoom: 0.91; } }
-        @media print { .page.z88 > :not(footer) { zoom: 0.88; } }
-        @media print { .page.z85 > :not(footer) { zoom: 0.85; } }
-        @media print { .page.z82 > :not(footer) { zoom: 0.82; } }
-    </style>
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Commandes et système Linux : TD en ligne</title>
+  <meta name="description" content="TD en ligne, auto-correctif : les commandes Linux (fiche à compléter), feuille 1 sur 2 (Tle NSI).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
 </head>
-<body>
-<div class="page">
-<header><h1>Commandes &amp; Système Linux - 1/3</h1></header>
-<h2>1. Navigation dans l'Arborescence</h2>
-<div class="info-box">
-<strong>Concepts clés :</strong><br>
-            • <code>.</code> représente <strong>le répertoire courant</strong>  | • <code>..</code> représente <strong>le répertoire parent</strong> (au-dessus) <br>
-            • <code>*</code> est un <strong>joker (wildcard)</strong> qui remplace n'importe quelle suite de caractères (ex: <code>*.txt</code> pour tous les fichiers texte).
-        </div>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>pwd</code></td><td><span class="write-zone"></span></td><td><code>pwd</code></td></tr>
-<tr><td><code>ls</code></td><td><span class="write-zone"></span></td><td><code>ls -la</code></td></tr>
-<tr><td><code>cd [dir]</code></td><td><span class="write-zone"></span></td><td><code>cd Documents/</code></td></tr>
-<tr><td><code>history</code></td><td><span class="write-zone"></span></td><td><code>history</code></td></tr>
-<tr><td><code>clear</code></td><td><span class="write-zone"></span></td><td><code>clear</code></td></tr>
-</tbody></table>
-<h2>2. Manipulation de Fichiers et Dossiers</h2>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>touch [file]</code></td><td>Créer un objet / fichier vide </td><td><code>touch notes.txt</code></td></tr>
-<tr><td><code>mkdir [nom]</code></td><td><span class="write-zone"></span></td><td><code>mkdir NSI_TP</code></td></tr>
-<tr><td><code>cp [src] [dest]</code></td><td><span class="write-zone"></span></td><td><code>cp doc.txt /tmp/</code></td></tr>
-<tr><td><code>mv [src] [dest]</code></td><td><span class="write-zone"></span></td><td><code>mv ancien.txt nouveau.txt</code></td></tr>
-<tr><td><code>rm [file]</code></td><td><span class="write-zone"></span></td><td><code>rm fichier.temp</code></td></tr>
-<tr><td><code>rmdir [nom]</code></td><td><span class="write-zone"></span></td><td><code>rmdir dossier_vide</code></td></tr>
-<tr><td><code>unzip [file]</code></td><td><span class="write-zone"></span></td><td><code>unzip archive.zip</code></td></tr>
-</tbody></table>
-<h2>3. Lecture et Recherche</h2>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>cat [file]</code></td><td><span class="write-zone"></span></td><td><code>cat config.conf</code></td></tr>
-<tr><td><code>grep [motif] [f]</code></td><td>Trouver les parties d'un texte contenant le motif </td><td><code>grep "IP" logs.txt</code></td></tr>
-<tr><td><code>find [dir] -name [n]</code></td><td><span class="write-zone"></span></td><td><code>find . -name "*.py"</code></td></tr>
-<tr><td><code>man [cmd]</code></td><td><span class="write-zone"></span></td><td><code>man grep</code></td></tr>
-<tr><td><code>help</code></td><td><span class="write-zone"></span></td><td><code>help cd</code></td></tr>
-</tbody></table>
-<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Fiche 1/3</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/commandes-terminale.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
-<div class="page z97">
-<header><h1>Commandes &amp; Système Linux - 2/3</h1></header>
-<h2>4. Gestion des Droits et Utilisateurs</h2>
-<div class="rights-container">
-<div class="rights-box">
-<strong>U : User (Propriétaire)</strong><br>
-                L'utilisateur qui possède le fichier.
-            </div>
-<div class="rights-box">
-<strong>G : Group (Groupe)</strong><br>
-                Les utilisateurs membres du groupe du fichier.
-            </div>
-<div class="rights-box">
-<strong>O : Others (Autres)</strong><br>
-                Tous les autres utilisateurs du système.
-            </div>
-</div>
-<div class="info-box">
-<strong>Modifier les droits (chmod) :</strong><br>
-            • <b>Mode Octal :</b> On additionne les valeurs r=4, w=2, x=1. (Ex: 7 = rwx, 5 = r-x).<br>
-            • <b>Mode Relatif :</b> On utilise <code>+</code> ou <code>-</code> pour ajouter/retirer un droit. (Ex: <code>g+x</code> rend le fichier exécutable pour le groupe).
-        </div>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>chmod [mode]</code></td><td><span class="write-zone"></span></td><td><code>chmod 755 script.sh</code></td></tr>
-<tr><td><code>chown [user]</code></td><td><span class="write-zone"></span></td><td><code>chown prof devoirs.py</code></td></tr>
-<tr><td><code>sudo [cmd]</code></td><td>Lancer une commande en tant que super-utilisateur </td><td><code>sudo apt update</code></td></tr>
-<tr><td><code>passwd</code></td><td><span class="write-zone"></span></td><td><code>passwd</code></td></tr>
-</tbody></table>
-<h2>5. Gestion des Processus et Système</h2>
-<p>Un <strong>processus</strong> est un programme en cours d'exécution identifié par son <strong>PID</strong>.</p>
-<div class="info-box">
-<strong>Focus sur kill :</strong><br>
-            La commande <code>kill [PID]</code> demande gentiment au processus de s'arrêter. Si le processus est bloqué, on utilise <code>kill -9 [PID]</code>. Le <b>-9</b> (SIGKILL) force l'arrêt immédiat et brutal par le noyau, sans laisser au programme le temps de sauvegarder.
-        </div>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>ps</code></td><td><span class="write-zone"></span></td><td><code>ps -ef</code></td></tr>
-<tr><td><code>top</code></td><td><span class="write-zone"></span></td><td><code>top</code></td></tr>
-<tr><td><code>kill [PID]</code></td><td><span class="write-zone"></span></td><td><code>kill 1234</code></td></tr>
-<tr><td><code>df -h</code></td><td><span class="write-zone"></span></td><td><code>df -h</code></td></tr>
-<tr><td><code>ip addr</code></td><td><span class="write-zone"></span></td><td><code>ip addr</code></td></tr>
-<tr><td><code>ping [host]</code></td><td><span class="write-zone"></span></td><td><code>ping google.com</code></td></tr>
-</tbody></table>
-<h2>6. Chemins Absolus vs Relatifs</h2>
-<p><strong>Chemin Absolu :</strong> Part toujours ..................................................................... <code>/</code>.<br>
-<strong>Chemin Relatif :</strong> Part ............................................................................................................................................</p>
-<div class="info-box" style="margin-top:20px; border-style: dashed;">
-<strong>Astuce :</strong> La touche <code>Tabulation</code> permet l'auto-complétion des noms.
-        </div>
-<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Fiche 2/3</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/commandes-terminale.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
-<div class="page z94">
-<header><h1>Feuille d'exercices : Pratique des commandes - 3/3</h1></header>
-<h2 style="font-size: 0.9rem">Exercice 1 : Navigation et déplacements (Chemins relatifs &amp; absolus)</h2>
-<p>L'arborescence est la suivante : <code>/ (racine) -&gt; home -&gt; nsi -&gt; [TP1, Projets, Images]</code>.</p>
-<table>
-<tbody><tr><th>Situation (<code>pwd</code>)</th><th>Objectif</th><th>Commande à écrire</th></tr>
-<tr><td><code>/home/nsi/TP1</code></td><td>Aller dans le dossier <code>Projets</code> (relatif)</td><td><code>$........................................</code></td></tr>
-<tr><td><code>/home/nsi/Projets</code></td><td>Aller dans <code>/home/nsi</code> (absolu)</td><td><code>$........................................</code></td></tr>
-<tr><td><code>/home/nsi/TP1</code></td><td>Lister le contenu de <code>Images</code></td><td><code>$........................................</code></td></tr>
-<tr><td><code>/home/nsi/Projets</code></td><td>Copier <code>web.html</code> vers le dossier <code>TP1</code></td><td><code>$........................................</code></td></tr>
-<tr><td><code>/home/nsi</code></td><td>Créer un dossier <code>Archives</code> dans <code>TP1</code></td><td><code>$.......................................</code></td></tr>
-</tbody></table>
-<h2 style="font-size: 0.9rem">Exercice 2 : Gestion des processus (ps, top, kill)</h2>
-<p>Voici un extrait représentatif d'une commande <code>top</code> (affichage de l'activité du système) :</p>
-<div class="info-box" style="font-family: 'Fira Code', monospace; font-size: 0.75rem;">
-<code>PID  PPID  USER  %CPU   %MEM   COMMAND</code><br>
-<code>1    0     root  0.0    0.1    systemd</code><br>
-<code>120  1     nsi   0.1    1.2    bash</code><br>
-<code>450  120   nsi   145.2  85.0   python3 calcul_fou.py</code>
-</div>
-<p>1. Quel est le rôle du processus <b>PID 1</b> (systemd) au démarrage du système ?</p>
-<div class="write-zone" style="margin-bottom:5px;"></div>
-<p>2. Le processus 450 affiche <b>145.2% CPU</b>. Comment est-il possible de dépasser les 100% ?</p>
-<div class="write-zone" style="margin-bottom:5px;"></div>
-<p>3. Si la mémoire vive (RAM) est pleine, quel mécanisme du système prend le relais pour éviter le crash ? </p>
-<div class="write-zone" style="margin-bottom:5px;"></div>
-<p>4. Quel est le nom du processus parent du processus <b>451</b> ? <span class="small-zone" style="margin-left: 5px; width: 353px"></span></p>
-<p>5. Écrivez la commande pour forcer l'arrêt immédiat du script <code>calcul_fou.py</code>: <span class="small-zone" style="margin-left: 5px; width: 225px"><code>$</code></span></p>
-<h2 style="font-size: 0.9rem">Exercice 3 : Droits et Permissions (chmod)</h2>
-<p>Résultat de <code>ls -l</code> : <code>-rwxrw-r-- 1 nsi profs 420 mars 16 20:00 script.sh</code></p>
-<p>1. Quels sont les droits du <b>groupe</b> (profs) sur ce fichier ? <span class="small-zone"></span></p>
-<p>2. Écrire la commande <b>octale</b> pour donner tous les droits à tout le monde : <code>$ chmod ........... script.sh</code></p>
-<p>3. Écrire la commande pour <b>ajouter</b> le droit d'exécution à Others : <code>$ chmod ........... script.sh</code></p>
-<p>4. Que fait la commande <code>chmod 640 secret.txt</code> ? :<span class="small-zone" style="margin-left: 5px; width: 380px">U: .............................. G: ................................ O: ............................</span></p>
-<h2 style="font-size: 0.9rem">Exercice 4 : Analyse de commandes combinées (*, |, grep)</h2>
-<p>Expliquez avec vos mots ce que tentent de faire ces utilisateurs :</p>
-<p>1. <code>$ rm *.tmp</code> <span class="small-zone" style="margin-left: 5px; width: 612px"></span></p>
-<p>2. <code>$ cat notes.txt | grep "NSI"</code>(Indice : le <code>|</code> transmet le résultat de gauche à la commande de droite)</p>
-<div class="write-zone"></div>
-<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Fiche 3/3</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/commandes-terminale.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-commandes-linux" data-auteurs="Babash - NSI Tani Malandi" data-td-version="1">
 
-</body></html>
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:66.67%;--y:49.11%;--r:-12deg;--l:3.92%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Systèmes d&#x27;exploitation</span></p>
+        <h1>Commandes Linux</h1>
+        <p class="td-accroche">Fiche : la bonne commande</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=processus" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM14 3h5v1h-5zM22 3h5v1h-5zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h2v1h-2zM17 4h8v1h-8zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM17 5h1v1h-1zM20 5h2v1h-2zM25 5h1v1h-1zM27 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h3v1h-3zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h1v1h-1zM25 8h2v1h-2zM30 8h5v1h-5zM1 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h2v1h-2zM4 10h1v1h-1zM6 10h2v1h-2zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM7 11h3v1h-3zM11 11h1v1h-1zM14 11h2v1h-2zM19 11h4v1h-4zM24 11h1v1h-1zM26 11h1v1h-1zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM4 13h1v1h-1zM9 13h2v1h-2zM12 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h2v1h-2zM5 14h3v1h-3zM9 14h1v1h-1zM13 14h4v1h-4zM18 14h1v1h-1zM22 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h4v1h-4zM5 15h1v1h-1zM7 15h5v1h-5zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h2v1h-2zM12 16h1v1h-1zM18 16h9v1h-9zM28 16h3v1h-3zM32 16h1v1h-1zM34 16h2v1h-2zM4 17h2v1h-2zM7 17h2v1h-2zM10 17h1v1h-1zM12 17h5v1h-5zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM6 18h2v1h-2zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h5v1h-5zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h2v1h-2zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h2v1h-2zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h3v1h-3zM27 19h1v1h-1zM29 19h2v1h-2zM36 19h1v1h-1zM3 20h5v1h-5zM9 20h2v1h-2zM17 20h1v1h-1zM22 20h6v1h-6zM29 20h2v1h-2zM32 20h3v1h-3zM2 21h1v1h-1zM4 21h2v1h-2zM7 21h4v1h-4zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h2v1h-2zM4 22h1v1h-1zM6 22h2v1h-2zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM1 23h1v1h-1zM7 23h1v1h-1zM11 23h2v1h-2zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h7v1h-7zM14 24h3v1h-3zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h8v1h-8zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM7 25h5v1h-5zM13 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM24 25h3v1h-3zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM3 26h5v1h-5zM9 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM4 27h2v1h-2zM7 27h2v1h-2zM11 27h2v1h-2zM15 27h1v1h-1zM19 27h6v1h-6zM27 27h2v1h-2zM31 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h2v1h-2zM15 28h3v1h-3zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h3v1h-3zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h2v1h-2zM11 29h4v1h-4zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h3v1h-3zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h1v1h-1zM12 30h1v1h-1zM15 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h4v1h-4zM14 31h2v1h-2zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h2v1h-2zM11 32h4v1h-4zM18 32h5v1h-5zM25 32h8v1h-8zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h3v1h-3zM15 33h2v1h-2zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h4v1h-4zM17 34h1v1h-1zM20 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h1v1h-1zM11 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h5v1h-5zM14 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> retrouver la commande Linux qui fait une action, pour se servir du terminal.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>me déplacer dans l'arborescence et lister son contenu ;</li>
+        <li>créer, copier, déplacer et supprimer des fichiers et des dossiers ;</li>
+        <li>lire un fichier, chercher un fichier, trouver de l'aide ;</li>
+        <li>gérer les droits, les processus et le réseau avec la bonne commande.</li>
+      </ul>
+      <p class="td-duree">45 minutes · 26 questions · fiche 1 sur 2 (la feuille 2 : les exercices) · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>Pour chaque action, écris la commande qui la fait (sans ses options ni ses arguments, sauf s'ils font partie de la commande). Une fois corrigée, cette fiche est ton aide-mémoire.</p>
+
+  <h2 class="td-partie">1. Naviguer dans l'arborescence</h2>
+  <p><b>Concepts clés :</b> <code>.</code> représente le répertoire courant ; <code>..</code> représente le répertoire parent (au-dessus) ; <code>*</code> est un joker qui remplace n'importe quelle suite de caractères (<code>*.txt</code> : tous les fichiers texte).</p>
+
+  <section class="td-q" data-type="courte" id="q1" data-comparer="exact" data-etiquette="$" data-reponse="pwd">
+    <p class="td-consigne">Quelle commande sert à afficher le chemin du répertoire de travail actuel ?</p>
+    <p class="td-retour" data-si="cd">cd change de répertoire, il n'affiche pas où tu es.</p>
+    <p class="td-aide"><i>print working directory</i> : « affiche le répertoire de travail ».</p>
+    <div class="td-correction"><p><code>pwd</code> : afficher le chemin du répertoire de travail actuel. Exemple : <code>pwd</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q2" data-comparer="exact" data-etiquette="$" data-reponse="ls|ls -la|ls -l">
+    <p class="td-consigne">Quelle commande sert à lister les fichiers et dossiers d'un répertoire ?</p>
+    <p class="td-retour" data-si="dir">Sous Linux, la commande s'écrit en deux lettres (dir est la commande de Windows).</p>
+    <p class="td-aide"><i>list</i>, en deux lettres.</p>
+    <div class="td-correction"><p><code>ls</code> : lister les fichiers et dossiers d'un répertoire. Exemple : <code>ls -la</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-comparer="exact" data-etiquette="$" data-reponse="cd">
+    <p class="td-consigne">Quelle commande sert à changer de répertoire (se déplacer) ?</p>
+    <p class="td-retour" data-si="mv">mv déplace un fichier ; toi, tu restes où tu es.</p>
+    <p class="td-aide"><i>change directory</i>.</p>
+    <div class="td-correction"><p><code>cd [dir]</code> : changer de répertoire (se déplacer). Exemple : <code>cd Documents/</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q4" data-comparer="exact" data-etiquette="$" data-reponse="history">
+    <p class="td-consigne">Quelle commande sert à afficher la liste des dernières commandes saisies ?</p>
+    <p class="td-aide">Le mot anglais pour « historique ».</p>
+    <div class="td-correction"><p><code>history</code> : afficher la liste des dernières commandes saisies. Exemple : <code>history</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-comparer="exact" data-etiquette="$" data-reponse="clear">
+    <p class="td-consigne">Quelle commande sert à effacer le contenu de l'écran du terminal ?</p>
+    <p class="td-retour" data-si="rm">rm supprime des fichiers ! Pour vider seulement l'écran, c'est une autre commande.</p>
+    <p class="td-aide">Le mot anglais pour « vider, dégager ».</p>
+    <div class="td-correction"><p><code>clear</code> : effacer le contenu de l'écran du terminal. Exemple : <code>clear</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Manipuler des fichiers et des dossiers</h2>
+  <p><code>touch notes.txt</code> crée un fichier vide (ou met à jour sa date).</p>
+
+  <section class="td-q" data-type="courte" id="q6" data-comparer="exact" data-etiquette="$" data-reponse="mkdir">
+    <p class="td-consigne">Quelle commande sert à créer un nouveau répertoire (dossier) ?</p>
+    <p class="td-retour" data-si="touch">touch crée un fichier, pas un dossier.</p>
+    <p class="td-aide"><i>make directory</i>.</p>
+    <div class="td-correction"><p><code>mkdir [nom]</code> : créer un nouveau répertoire (dossier). Exemple : <code>mkdir NSI_TP</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q7" data-comparer="exact" data-etiquette="$" data-reponse="cp">
+    <p class="td-consigne">Quelle commande sert à copier un fichier ou un répertoire ?</p>
+    <p class="td-retour" data-si="mv">mv déplace : l'original disparaît. Pour garder l'original, on copie.</p>
+    <p class="td-aide"><i>copy</i>, en deux lettres.</p>
+    <div class="td-correction"><p><code>cp [src] [dest]</code> : copier un fichier ou un répertoire. Exemple : <code>cp doc.txt /tmp/</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q8" data-comparer="exact" data-etiquette="$" data-reponse="mv">
+    <p class="td-consigne">Quelle commande sert à déplacer ou renommer un fichier ou un répertoire ?</p>
+    <p class="td-retour" data-si="cp">cp garde l'original : ici, l'ancien nom disparaît.</p>
+    <p class="td-aide"><i>move</i>, en deux lettres. La même commande sert à renommer.</p>
+    <div class="td-correction"><p><code>mv [src] [dest]</code> : déplacer ou renommer un fichier ou un répertoire. Exemple : <code>mv ancien.txt nouveau.txt</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q9" data-comparer="exact" data-etiquette="$" data-reponse="rm">
+    <p class="td-consigne">Quelle commande sert à supprimer un fichier ?</p>
+    <p class="td-retour" data-si="rmdir">rmdir supprime un dossier vide, pas un fichier.</p>
+    <p class="td-aide"><i>remove</i>, en deux lettres. Attention : pas de corbeille.</p>
+    <div class="td-correction"><p><code>rm [file]</code> : supprimer un fichier. Exemple : <code>rm fichier.temp</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q10" data-comparer="exact" data-etiquette="$" data-reponse="rmdir">
+    <p class="td-consigne">Quelle commande sert à supprimer un répertoire vide ?</p>
+    <p class="td-retour" data-si="rm">rm seul refuse de supprimer un dossier : il existe une commande pour les dossiers vides.</p>
+    <p class="td-aide"><i>remove directory</i>.</p>
+    <div class="td-correction"><p><code>rmdir [nom]</code> : supprimer un répertoire vide. Exemple : <code>rmdir dossier_vide</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q11" data-comparer="exact" data-etiquette="$" data-reponse="unzip">
+    <p class="td-consigne">Quelle commande sert à extraire les fichiers d'une archive compressée .zip ?</p>
+    <p class="td-retour" data-si="zip">zip crée une archive ; on veut l'inverse.</p>
+    <p class="td-aide">Le contraire de <i>zip</i>.</p>
+    <div class="td-correction"><p><code>unzip [file]</code> : extraire les fichiers d'une archive compressée .zip. Exemple : <code>unzip archive.zip</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">3. Lire et chercher</h2>
+  <p><code>grep "IP" logs.txt</code> trouve les lignes d'un texte qui contiennent le motif <code>IP</code>.</p>
+
+  <section class="td-q" data-type="courte" id="q12" data-comparer="exact" data-etiquette="$" data-reponse="cat">
+    <p class="td-consigne">Quelle commande sert à afficher le contenu complet d'un fichier ?</p>
+    <p class="td-retour" data-si="ls">ls affiche le nom des fichiers, pas ce qu'ils contiennent.</p>
+    <p class="td-aide"><i>concatenate</i>, en trois lettres.</p>
+    <div class="td-correction"><p><code>cat [file]</code> : afficher le contenu complet d'un fichier. Exemple : <code>cat config.conf</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q13" data-comparer="exact" data-etiquette="$" data-reponse="find">
+    <p class="td-consigne">Quelle commande sert à chercher des fichiers par leur nom dans une arborescence ?</p>
+    <p class="td-retour" data-si="grep">grep cherche dans le contenu des fichiers, pas dans leurs noms.</p>
+    <p class="td-aide">Le mot anglais pour « trouver ».</p>
+    <div class="td-correction"><p><code>find [dir] -name [n]</code> : chercher des fichiers par leur nom dans une arborescence. Exemple : <code>find . -name &quot;*.py&quot;</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q14" data-comparer="exact" data-etiquette="$" data-reponse="man">
+    <p class="td-consigne">Quelle commande sert à afficher le manuel d'utilisation d'une commande ?</p>
+    <p class="td-retour" data-si="help">help donne une aide courte sur les commandes intégrées au shell ; le manuel complet, c'est une autre commande.</p>
+    <p class="td-aide"><i>manual</i>, en trois lettres.</p>
+    <div class="td-correction"><p><code>man [cmd]</code> : afficher le manuel d'utilisation d'une commande. Exemple : <code>man grep</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q15" data-comparer="exact" data-etiquette="$" data-reponse="help">
+    <p class="td-consigne">Quelle commande sert à obtenir une aide rapide sur une commande intégrée au shell ?</p>
+    <p class="td-retour" data-si="man">man ouvre le manuel complet. Pour une aide rapide sur cd, c'est une autre commande.</p>
+    <p class="td-aide">Le mot anglais pour « aide ».</p>
+    <div class="td-correction"><p><code>help</code> : obtenir une aide rapide sur une commande intégrée au shell. Exemple : <code>help cd</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">4. Gérer les droits et les utilisateurs</h2>
+  <p><b>U</b> (<i>User</i>) : le propriétaire ; <b>G</b> (<i>Group</i>) : les membres du groupe du fichier ; <b>O</b> (<i>Others</i>) : tous les autres. <b>Mode octal</b> : on additionne r = 4, w = 2, x = 1 (7 = <code>rwx</code>, 5 = <code>r-x</code>). <b>Mode relatif</b> : <code>+</code> ou <code>-</code> ajoute ou retire un droit (<code>g+x</code> rend le fichier exécutable pour le groupe). <code>sudo [cmd]</code> lance une commande en tant que super-utilisateur (<code>sudo apt update</code>).</p>
+
+  <section class="td-q" data-type="courte" id="q16" data-comparer="exact" data-etiquette="$" data-reponse="chmod">
+    <p class="td-consigne">Quelle commande sert à modifier les permissions d'accès d'un fichier ?</p>
+    <p class="td-retour" data-si="chown">chown change le propriétaire, pas les droits.</p>
+    <p class="td-aide"><i>change mode</i>.</p>
+    <div class="td-correction"><p><code>chmod [mode]</code> : modifier les permissions d'accès d'un fichier. Exemple : <code>chmod 755 script.sh</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q17" data-comparer="exact" data-etiquette="$" data-reponse="chown">
+    <p class="td-consigne">Quelle commande sert à changer le propriétaire d'un fichier ?</p>
+    <p class="td-retour" data-si="chmod">chmod change les droits (r, w, x), pas le propriétaire.</p>
+    <p class="td-aide"><i>change owner</i>.</p>
+    <div class="td-correction"><p><code>chown [user]</code> : changer le propriétaire d'un fichier. Exemple : <code>chown prof devoirs.py</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q18" data-comparer="exact" data-etiquette="$" data-reponse="passwd">
+    <p class="td-consigne">Quelle commande sert à modifier le mot de passe de l'utilisateur ?</p>
+    <p class="td-retour" data-si="password">Presque : la commande est plus courte, sans « o » ni « r ».</p>
+    <p class="td-aide"><i>password</i>, en abrégé : six lettres.</p>
+    <div class="td-correction"><p><code>passwd</code> : modifier le mot de passe de l'utilisateur. Exemple : <code>passwd</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">5. Gérer les processus et le système</h2>
+  <p>Un processus est un programme en cours d'exécution, identifié par son PID. <code>kill [PID]</code> demande au processus de s'arrêter ; s'il est bloqué, <code>kill -9 [PID]</code> (le signal SIGKILL) le fait arrêter tout de suite par le noyau, sans lui laisser le temps de sauvegarder.</p>
+
+  <section class="td-q" data-type="courte" id="q19" data-comparer="exact" data-etiquette="$" data-reponse="ps|ps -ef|ps aux">
+    <p class="td-consigne">Quelle commande sert à lister les processus en cours d'exécution ?</p>
+    <p class="td-retour" data-si="ls">ls liste des fichiers, pas des processus.</p>
+    <p class="td-aide"><i>process status</i>, en deux lettres.</p>
+    <div class="td-correction"><p><code>ps</code> : lister les processus en cours d'exécution. Exemple : <code>ps -ef</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q20" data-comparer="exact" data-etiquette="$" data-reponse="top|htop">
+    <p class="td-consigne">Quelle commande sert à afficher les processus en temps réel (comme un gestionnaire de tâches) ?</p>
+    <p class="td-retour" data-si="ps">ps donne une photo, à un instant : pour suivre en temps réel, c'est une autre commande.</p>
+    <p class="td-aide">Elle montre en haut les processus qui consomment le plus.</p>
+    <div class="td-correction"><p><code>top</code> : afficher les processus en temps réel (comme un gestionnaire de tâches). Exemple : <code>top</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q21" data-comparer="exact" data-etiquette="$" data-reponse="kill">
+    <p class="td-consigne">Quelle commande sert à envoyer un signal pour arrêter un processus ?</p>
+    <p class="td-retour" data-si="rm">rm supprime un fichier ; un processus s'arrête avec un signal.</p>
+    <p class="td-aide">Le mot anglais pour « tuer ».</p>
+    <div class="td-correction"><p><code>kill [PID]</code> : envoyer un signal pour arrêter un processus. Exemple : <code>kill 1234</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q22" data-comparer="exact" data-etiquette="$" data-reponse="df -h|df">
+    <p class="td-consigne">Quelle commande sert à afficher l'espace disque disponible, dans un format lisible ?</p>
+    <p class="td-retour" data-si="du">du mesure la place prise par des fichiers ; l'espace libre des disques, c'est df.</p>
+    <p class="td-aide"><i>disk free</i> ; l'option <code>-h</code> : <i>human-readable</i>.</p>
+    <div class="td-correction"><p><code>df -h</code> : afficher l'espace disque disponible, dans un format lisible. Exemple : <code>df -h</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q23" data-comparer="exact" data-etiquette="$" data-reponse="ip addr|ip a|ip address">
+    <p class="td-consigne">Quelle commande sert à afficher les adresses IP et les interfaces réseau ?</p>
+    <p class="td-retour" data-si="ping">ping teste une autre machine ; on veut les adresses de son propre ordinateur.</p>
+    <p class="td-aide">La commande <code>ip</code>, suivie de <code>addr</code>.</p>
+    <div class="td-correction"><p><code>ip addr</code> : afficher les adresses IP et les interfaces réseau. Exemple : <code>ip addr</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q24" data-comparer="exact" data-etiquette="$" data-reponse="ping">
+    <p class="td-consigne">Quelle commande sert à tester la connexion réseau vers une machine ?</p>
+    <p class="td-retour" data-si="ip addr">ip addr affiche tes propres adresses ; elle ne teste pas une autre machine.</p>
+    <p class="td-aide">Comme une balle de ping-pong : un aller, un retour.</p>
+    <div class="td-correction"><p><code>ping [host]</code> : tester la connexion réseau vers une machine. Exemple : <code>ping fr.wikipedia.org</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">6. Chemins absolus et chemins relatifs</h2>
+
+  <section class="td-q" data-type="qcu" id="q25">
+    <p class="td-consigne">D'où part toujours un chemin absolu ?</p>
+    <ul class="td-options">
+      <li data-juste>De la racine du système, notée <code>/</code>.</li>
+      <li data-retour="C'est le chemin relatif qui part du répertoire courant.">Du répertoire courant, là où l'on se trouve.</li>
+      <li data-retour="~ est un raccourci du répertoire personnel ; un chemin absolu commence par /.">Du répertoire personnel de l'utilisateur, noté <code>~</code>.</li>
+      <li data-retour="Le parent (..) sert dans les chemins relatifs.">Du répertoire parent, noté <code>..</code>.</li>
+    </ul>
+    <p class="td-aide">Un chemin absolu marche quel que soit l'endroit où l'on est.</p>
+    <div class="td-correction"><p>Un chemin absolu part toujours de la racine, <code>/</code> : par exemple <code>/home/nsi/TP1</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q26">
+    <p class="td-consigne">D'où part un chemin relatif ?</p>
+    <ul class="td-options">
+      <li data-retour="C'est le chemin absolu qui part de la racine.">De la racine du système, <code>/</code>.</li>
+      <li data-juste>Du répertoire courant, là où l'utilisateur se trouve.</li>
+      <li data-retour="Il peut partir de n'importe quel dossier : celui où l'on se trouve à ce moment.">Toujours du dossier <code>/home</code>.</li>
+      <li data-retour="Un chemin relatif part de là où l'on est, pas de l'endroit du fichier cherché.">Du dossier qui contient le fichier cherché.</li>
+    </ul>
+    <p class="td-aide"><code>../Projets</code> n'a pas le même sens selon l'endroit où l'on tape la commande.</p>
+    <div class="td-correction"><p>Un chemin relatif part du répertoire courant (celui que donne <code>pwd</code>). Astuce : la touche Tabulation complète les noms tout seule.</p></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="commandes-terminale-2.html">feuille 2 sur 2, les exercices : pratique des commandes</a>.</p>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Se repérer : <code>pwd</code>, <code>ls</code>, <code>cd</code>. Fichiers : <code>touch</code>, <code>mkdir</code>, <code>cp</code>, <code>mv</code>, <code>rm</code>. Lire : <code>cat</code>, <code>grep</code>. Droits : <code>chmod</code>, <code>chown</code>. Processus : <code>ps</code>, <code>top</code>, <code>kill</code>.</p>
+    <p>En cas de doute : <code>man commande</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/architecture-os">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
