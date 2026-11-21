@@ -75,7 +75,7 @@ case $MISSION in
     1) printf "Ghost, infiltrez le dossier SQL pour préparer l'injection. Tapez check pour valider\n" ;;
     2) printf "Facile ! Le QG détecte un dossier fantôme à la racine de 'avalon_server'. Trouvez le dossier caché et entrez dedans.\n" ;;
     3) printf "C'est le moment de voler les identifiants ! Un fichier 'pass.txt' se trouve ici. Il contient le code d'accès au serveur de fichiers.\n${Y}ACTION :${NC} Lisez son contenu et tapez 'check' pour saisir le code.\n" ;;
-    4) printf "Bien joué ! Retournez dans 'données'. Il vous faut un dossier 'backdoor' et un fichier 'logs.txt' à l'intérieur pour travailler.\n" ;;
+    4) printf "Bien joué ! Retournez dans 'donnees'. Il vous faut un dossier 'backdoor' et un fichier 'logs.txt' à l'intérieur pour travailler.\n" ;;
     5) printf "Extrayons les données critiques : dupliquez (faites une copie de) 'system_id' vers 'backdoor/id_backup.txt'.\n" ;;
     6) printf "Vite ! On est sous surveillance. Renommez l'original 'system_id' en 'evidence.txt' et cachez-le dans votre 'backdoor' pour que personne ne le trouve.\n" ;;
     7) printf "Sécurisez vos logs : modifiez les permissions de 'logs.txt' pour que vous soyez le SEUL à pouvoir le lire (Lecture/Écriture).\n" ;;
