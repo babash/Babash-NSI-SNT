@@ -55,6 +55,9 @@ Le style graphique des feuilles de TD est **arrêté** : c'est « Signal pirate 
 Les décisions de l'auteur du 21 novembre 2026 complètent la feuille :
 
 - **une question ouverte a deux supports** : en ligne, un choix corrigé aussitôt ; sur papier, la question ouverte, avec des lignes à remplir. Les deux variantes portent le même numéro ;
+- **une case « à compléter » de la feuille d'origine est une question ouverte** (l'action d'une commande Linux, un mot ou une phrase à écrire) : sur papier, elle garde sa ligne ; à l'écran, un choix la corrige ;
+- **moins de papier** (« Resserrer ») : chaque question d'origine reste sur la feuille, avec juste les lignes de sa réponse, et un entraînement qui se répète reste à l'écran ; l'objectif : au plus une page de plus que la feuille d'origine ;
+- **les noms de la feuille d'origine sont gardés** : un jeu, une œuvre, un site pris en exemple ;
 - **« Écris le programme » est obligatoire** pour valider la feuille, sauf s'il est marqué comme bonus ; sur papier, il a ses lignes à remplir ;
 - **les crédits sont sur chaque page imprimée** : un TD écrit à plusieurs porte tous les noms au pied de chaque page ;
 - le mémo et « Pour aller plus loin » restent à l'écran, sauf si la page demande de les imprimer.
