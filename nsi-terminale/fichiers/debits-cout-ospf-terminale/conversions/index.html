@@ -1,0 +1,253 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Débits et coût OSPF : TD en ligne</title>
+  <meta name="description" content="TD en ligne, auto-correctif : Débits et coût OSPF (Tle NSI, Protocoles de routage).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-conversions-ospf" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:91.67%;--y:79.46%;--r:-6deg;--l:4.2%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Protocoles de routage</span></p>
+        <h1>Débits et coût OSPF</h1>
+        <p class="td-accroche">Convertir pour calculer</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=routage" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h2v1h-2zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h4v1h-4zM13 1h1v1h-1zM20 1h1v1h-1zM23 1h2v1h-2zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM12 2h5v1h-5zM22 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM11 3h1v1h-1zM13 3h2v1h-2zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM13 4h4v1h-4zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM17 5h4v1h-4zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h4v1h-4zM14 7h1v1h-1zM17 7h1v1h-1zM24 7h1v1h-1zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM9 8h3v1h-3zM17 8h3v1h-3zM21 8h4v1h-4zM26 8h1v1h-1zM29 8h1v1h-1zM31 8h2v1h-2zM0 9h1v1h-1zM2 9h1v1h-1zM5 9h1v1h-1zM7 9h2v1h-2zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM2 10h1v1h-1zM4 10h3v1h-3zM8 10h1v1h-1zM12 10h1v1h-1zM16 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM31 10h2v1h-2zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h2v1h-2zM10 11h1v1h-1zM13 11h2v1h-2zM16 11h1v1h-1zM18 11h3v1h-3zM22 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM32 11h1v1h-1zM2 12h2v1h-2zM6 12h1v1h-1zM8 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h1v1h-1zM3 13h1v1h-1zM5 13h1v1h-1zM8 13h4v1h-4zM14 13h3v1h-3zM18 13h2v1h-2zM21 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM29 13h3v1h-3zM0 14h1v1h-1zM4 14h4v1h-4zM10 14h2v1h-2zM13 14h1v1h-1zM16 14h1v1h-1zM19 14h3v1h-3zM26 14h1v1h-1zM29 14h1v1h-1zM0 15h4v1h-4zM5 15h1v1h-1zM10 15h7v1h-7zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h2v1h-2zM4 16h4v1h-4zM10 16h1v1h-1zM18 16h2v1h-2zM21 16h2v1h-2zM25 16h2v1h-2zM28 16h3v1h-3zM2 17h2v1h-2zM8 17h3v1h-3zM14 17h2v1h-2zM17 17h1v1h-1zM20 17h7v1h-7zM28 17h2v1h-2zM32 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h2v1h-2zM10 18h4v1h-4zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM0 19h2v1h-2zM4 19h1v1h-1zM12 19h1v1h-1zM14 19h1v1h-1zM16 19h3v1h-3zM20 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM1 20h2v1h-2zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h7v1h-7zM17 20h2v1h-2zM21 20h1v1h-1zM27 20h1v1h-1zM29 20h2v1h-2zM32 20h1v1h-1zM0 21h1v1h-1zM4 21h2v1h-2zM9 21h1v1h-1zM14 21h1v1h-1zM16 21h2v1h-2zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM2 22h2v1h-2zM5 22h2v1h-2zM10 22h3v1h-3zM14 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM21 22h4v1h-4zM26 22h2v1h-2zM30 22h3v1h-3zM1 23h1v1h-1zM4 23h1v1h-1zM9 23h1v1h-1zM11 23h3v1h-3zM18 23h1v1h-1zM23 23h7v1h-7zM31 23h2v1h-2zM0 24h1v1h-1zM4 24h1v1h-1zM6 24h4v1h-4zM12 24h1v1h-1zM14 24h5v1h-5zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h1v1h-1zM11 25h2v1h-2zM15 25h3v1h-3zM19 25h1v1h-1zM21 25h1v1h-1zM23 25h2v1h-2zM28 25h2v1h-2zM0 26h7v1h-7zM8 26h3v1h-3zM12 26h3v1h-3zM17 26h1v1h-1zM19 26h1v1h-1zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h4v1h-4zM14 27h2v1h-2zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h6v1h-6zM16 28h1v1h-1zM18 28h1v1h-1zM20 28h2v1h-2zM23 28h6v1h-6zM30 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM10 29h1v1h-1zM13 29h1v1h-1zM15 29h1v1h-1zM17 29h1v1h-1zM20 29h2v1h-2zM23 29h1v1h-1zM27 29h1v1h-1zM32 29h1v1h-1zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM11 30h1v1h-1zM15 30h3v1h-3zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM14 31h6v1h-6zM22 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM0 32h7v1h-7zM8 32h4v1h-4zM13 32h1v1h-1zM15 32h1v1h-1zM17 32h2v1h-2zM20 32h2v1h-2zM23 32h1v1h-1zM28 32h1v1h-1zM30 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> convertir des débits dans la même unité pour calculer le coût OSPF d'une liaison, et retrouver un débit à partir de son coût.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>convertir des bit/s en Mbit/s et en Gbit/s ;</li>
+        <li>écrire un débit avec une puissance de 10 ;</li>
+        <li>calculer un coût OSPF avec des débits dans la même unité ;</li>
+        <li>retrouver le débit réel à partir du coût ;</li>
+        <li>dire quel chemin choisissent RIP et OSPF.</li>
+      </ul>
+      <p class="td-duree">1 heure · 12 questions · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Rappel : les unités de débit</h2>
+
+  <p>En réseau, on utilise le système décimal pour les débits : le facteur de conversion est 1 000. Dans cette feuille, on écrit les puissances de 10 comme en Python : <code>10**3</code> se lit « 10 puissance 3 ».</p>
+  <ul>
+    <li>1 kbit/s (kilobit par seconde) = <code>10**3</code> bit/s ;</li>
+    <li>1 Mbit/s (mégabit par seconde) = <code>10**6</code> bit/s (1 000 kbit/s) ;</li>
+    <li>1 Gbit/s (gigabit par seconde) = <code>10**9</code> bit/s (1 000 Mbit/s).</li>
+  </ul>
+  <p><b>Le coût OSPF.</b> Le protocole RIP compte simplement le nombre de sauts ; OSPF, lui, calcule un coût qui dépend du débit : <b>coût = débit de référence / débit réel</b>.</p>
+  <p><b>Règle d'or :</b> pour que la division ait un sens, le débit de référence et le débit réel doivent être écrits <b>dans la même unité</b>.</p>
+
+  <h2 class="td-partie">1. Conversions</h2>
+
+  <section class="td-q" data-type="trous" id="q1">
+    <p class="td-consigne">Convertis ces débits pour préparer tes calculs de coût.</p>
+    <pre class="td-code">
+# Liaison Ethernet standard : 10 000 000 bit/s, en Mbit/s
+ethernet = [[10]]
+# Liaison Fast Ethernet : 100 Mbit/s, en Gbit/s
+fast_ethernet = [[0.1|0,1|.1]]
+# Liaison fibre : 10 Gbit/s, en Mbit/s
+fibre = [[10000|10_000|10 000]]
+# Liaison ADSL : 20 Mbit/s, en bit/s
+adsl = [[20000000|20_000_000|20 000 000|2*10**7]]</pre>
+    <p class="td-aide">Pour passer à l'unité plus grande (bit/s vers Mbit/s), on divise ; pour passer à l'unité plus petite, on multiplie.</p>
+    <p class="td-aide">De bit/s à Mbit/s : diviser par 1 000 000. De Mbit/s à Gbit/s : diviser par 1 000.</p>
+    <div class="td-correction"><p>10 000 000 bit/s = <b>10</b> Mbit/s ; 100 Mbit/s = <b>0,1</b> Gbit/s ; 10 Gbit/s = <b>10 000</b> Mbit/s ; 20 Mbit/s = <b>20 000 000</b> bit/s.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. La pyramide des débits</h2>
+
+  <section class="td-q" data-type="trous" id="q2">
+    <p class="td-consigne">Complète les égalités avec les puissances de 10. La première est faite.</p>
+    <pre class="td-code">
+kbit = 10**3        # 1 kbit/s en bit/s
+mbit = 10**[[6]]       # 1 Mbit/s en bit/s
+gbit = 10**[[9]]       # 1 Gbit/s en bit/s
+gbit_en_mbit = 10**[[3]]   # 1 Gbit/s en Mbit/s
+cent_mbit = 10**[[8]]  # 100 Mbit/s en bit/s
+deux_gbit = 2 * 10**[[9]]  # 2 Gbit/s en bit/s</pre>
+    <p class="td-aide">Chaque marche de la pyramide (kilo, méga, giga) multiplie par 1 000, c'est-à-dire par <code>10**3</code>.</p>
+    <p class="td-aide">100 Mbit/s = 100 × <code>10**6</code> bit/s, et 100 = <code>10**2</code>.</p>
+    <div class="td-correction"><p>1 Mbit/s = <code>10**6</code> bit/s ; 1 Gbit/s = <code>10**9</code> bit/s = <code>10**3</code> Mbit/s ; 100 Mbit/s = <code>10**8</code> bit/s ; 2 Gbit/s = 2 × <code>10**9</code> bit/s.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q3">
+    <p class="td-consigne">En résumé, calcule le coût des interfaces suivantes. Le débit de référence est 100 Mbit/s ; le coût est arrondi à l'entier supérieur. La première ligne est faite.</p>
+    <pre class="td-code">
+# coût = 100 / (débit réel en Mbit/s), arrondi à l'entier supérieur
+ethernet = 100 / 10              # 10 Mbit/s : coût 10
+fast_ethernet = 100 / [[100]]      # 100 Mbit/s : coût [[1]]
+giga_ethernet = 100 / [[1000|1 000]]     # 1 Gbit/s : coût [[1]]
+fibre = 100 / [[10000|10 000]]            # 10 Gbit/s : coût [[1]]</pre>
+    <p class="td-aide">Avant de diviser, écris le débit réel en Mbit/s : 1 Gbit/s = 1 000 Mbit/s.</p>
+    <p class="td-aide">100 / 1 000 = 0,1. Arrondi à l'entier supérieur, cela donne 1.</p>
+    <div class="td-correction">
+      <p>Fast Ethernet : 100 / 100 = <b>1</b>. Giga Ethernet : 100 / 1 000 = 0,1, arrondi à <b>1</b>. Fibre : 100 / 10 000 = 0,01, arrondi à <b>1</b>.</p>
+      <p>Avec une référence de 100 Mbit/s, toutes les liaisons à 100 Mbit/s ou plus ont le même coût, 1 : OSPF ne les distingue plus. C'est pourquoi on peut changer le débit de référence (voir le cas n° 4 de la partie 7).</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. Simplifier des fractions, le réflexe OSPF</h2>
+
+  <p>Pour calculer un coût OSPF, on divise souvent deux puissances de 10. Rappel : <code>10**a / 10**b = 10**(a - b)</code>.</p>
+
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne">Calcule sans calculatrice. La première ligne est faite.</p>
+    <pre class="td-code">
+# 10**8 / 10**7 = 10**(8 - 7) = 10**1 = 10
+# 10**8 / 10**8 = 10**[[0]] = [[1]]
+# 10**8 / 10**6 = 10**[[2]] = [[100]]
+# 10**8 / 10**9 = 10**[[-1]] = [[0.1|0,1|.1]]</pre>
+    <p class="td-aide">Calcule d'abord l'exposant a − b, puis la valeur.</p>
+    <p class="td-aide"><code>10**0</code> = 1, et <code>10**-1</code> = 1 / 10 = 0,1.</p>
+    <div class="td-correction"><p><code>10**0</code> = <b>1</b> ; <code>10**2</code> = <b>100</b> ; <code>10**-1</code> = <b>0,1</b>.</p></div>
+  </section>
+
+  <h2 class="td-partie">4. Mise en situation : unités dépareillées</h2>
+
+  <p>Pour chaque liaison, convertis le débit réel dans la même unité que le débit de référence (<code>10**8</code> bit/s), puis calcule le coût.</p>
+
+  <section class="td-q" data-type="trous" id="q5">
+    <p class="td-consigne"><b>Liaison satellite.</b> Débit de référence : <code>10**8</code> bit/s ; débit réel : 50 Mbit/s.</p>
+    <pre class="td-code">
+debit_reel = [[50000000|50_000_000|50 000 000|5*10**7]]   # en bit/s
+cout = [[2]]</pre>
+    <p class="td-aide">50 Mbit/s = 50 × <code>10**6</code> bit/s.</p>
+    <div class="td-correction"><p>50 Mbit/s = 50 000 000 bit/s = 5 × <code>10**7</code> bit/s. Coût : <code>10**8</code> / (5 × <code>10**7</code>) = 10 / 5 = <b>2</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q6">
+    <p class="td-consigne"><b>Liaison backbone</b> (le « cœur » du réseau). Débit de référence : <code>10**8</code> bit/s ; débit réel : 10 Gbit/s.</p>
+    <pre class="td-code">
+debit_reel = [[10**10|10000000000|10_000_000_000|10 000 000 000]]   # en bit/s
+cout = [[0.01|0,01|.01|10**-2|1]]</pre>
+    <p class="td-aide">10 Gbit/s = 10 × <code>10**9</code> bit/s = <code>10**10</code> bit/s.</p>
+    <div class="td-correction"><p>10 Gbit/s = <code>10**10</code> bit/s. Coût : <code>10**8</code> / <code>10**10</code> = <code>10**-2</code> = <b>0,01</b>. En pratique, un coût OSPF est un entier d'au moins 1 : le routeur l'arrondit à 1.</p></div>
+  </section>
+
+  <h2 class="td-partie">5. Défi inverse</h2>
+
+  <section class="td-q" data-type="trous" id="q7">
+    <p class="td-consigne">Le coût OSPF d'une liaison est 100. Le débit de référence est <code>10**8</code> bit/s. Trouve le débit réel en bit/s, puis convertis-le en Mbit/s.</p>
+    <pre class="td-code">
+debit_bits = [[10**6|1000000|1_000_000|1 000 000]]   # en bit/s
+debit_mbits = [[1]]   # en Mbit/s</pre>
+    <p class="td-aide">Coût = référence / débit, donc débit = référence / coût.</p>
+    <div class="td-correction"><p>Débit = <code>10**8</code> / 100 = <code>10**8</code> / <code>10**2</code> = <code>10**6</code> bit/s = <b>1 Mbit/s</b>.</p></div>
+  </section>
+
+  <h2 class="td-partie">6. Analyse et réflexion</h2>
+
+  <section class="td-q" data-type="qcu" id="q8" data-support="ecran">
+    <p class="td-consigne"><b>Problème de cohérence.</b> Un·e élève divise un débit de référence de 100 Mbit/s par un débit réel de 1 Gbit/s sans convertir : il ou elle obtient un coût de 100. Est-ce logique ?</p>
+    <ul class="td-options">
+      <li data-juste>Non : une liaison plus rapide que la référence doit coûter moins, pas plus ; 100 / 1 000 = 0,1.</li>
+      <li data-retour="Le coût n'est pas lié au nombre de mégabits : on a divisé des Mbit/s par des Gbit/s, sans convertir.">Oui : 100 / 1 = 100.</li>
+      <li data-retour="Un coût élevé désigne une liaison lente ; or 1 Gbit/s est plus rapide que 100 Mbit/s.">Oui : une liaison rapide a un coût élevé.</li>
+      <li data-retour="On peut toujours diviser, à condition d'écrire les deux débits dans la même unité.">Non : on ne peut pas diviser deux débits.</li>
+    </ul>
+    <p class="td-aide">Écris les deux débits en Mbit/s, puis refais la division.</p>
+    <div class="td-correction"><p><b>Non.</b> 1 Gbit/s = 1 000 Mbit/s, donc le coût vaut 100 / 1 000 = 0,1 (arrondi à 1). En divisant des Mbit/s par des Gbit/s, on mélange les unités : la liaison la plus rapide semblerait la plus chère.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="4">
+    <p class="td-consigne"><b>Problème de cohérence.</b> Un·e élève divise un débit de référence de 100 Mbit/s par un débit réel de 1 Gbit/s sans convertir : il ou elle obtient un coût de 100. Est-ce logique ? Pourquoi ?</p>
+    <div class="td-correction"><p>Non : 1 Gbit/s = 1 000 Mbit/s, donc le coût est 100 / 1 000 = 0,1 (arrondi à 1). Un coût de 100 ferait passer cette liaison rapide pour très lente : on a divisé des unités différentes.</p></div>
+  </section>
+
+  <p><b>Comparaison avec RIP.</b> Pour aller à destination, un paquet peut traverser 3 routeurs reliés en Giga Ethernet (1 Gbit/s), ou 2 routeurs reliés en Ethernet (10 Mbit/s). Le débit de référence est 100 Mbit/s.</p>
+
+  <section class="td-q" data-type="qcu" id="q9">
+    <p class="td-consigne">Quel chemin choisit RIP ?</p>
+    <ul class="td-options">
+      <li data-juste>Le chemin par 2 routeurs (Ethernet).</li>
+      <li data-retour="RIP ne regarde pas le débit : il compte les sauts, et 2 routeurs, c'est moins que 3.">Le chemin par 3 routeurs (Giga Ethernet).</li>
+      <li data-retour="RIP choisit toujours un seul chemin : celui qui a le moins de sauts.">Les deux à la fois.</li>
+      <li data-retour="RIP compte les sauts : il peut toujours comparer deux chemins.">Aucun : RIP ne sait pas choisir.</li>
+    </ul>
+    <p class="td-aide">RIP compte uniquement le nombre de sauts.</p>
+    <div class="td-correction"><p>RIP choisit le chemin qui a <b>le moins de sauts</b> : celui par 2 routeurs, même s'il est 100 fois plus lent.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q10">
+    <p class="td-consigne">Quel chemin choisit OSPF ?</p>
+    <ul class="td-options">
+      <li data-juste>Le chemin par 3 routeurs (Giga Ethernet) : chaque lien coûte 1, contre 10 en Ethernet.</li>
+      <li data-retour="OSPF additionne les coûts des liens : un lien Ethernet coûte déjà 10, plus que tout le chemin en Giga Ethernet.">Le chemin par 2 routeurs (Ethernet), qui a moins de liens.</li>
+      <li data-retour="Les coûts sont différents (1 par lien en Giga Ethernet, 10 en Ethernet) : OSPF prend le total le plus petit.">Les deux, car les coûts sont égaux.</li>
+      <li data-retour="OSPF calcule un coût pour tous les liens : il compare les deux chemins.">Aucun : 1 Gbit/s dépasse le débit de référence.</li>
+    </ul>
+    <p class="td-aide">Calcule le coût d'un lien de chaque type, puis additionne le long de chaque chemin.</p>
+    <div class="td-correction"><p>Coût d'un lien Giga Ethernet : 100 / 1 000 = 0,1, arrondi à 1. Coût d'un lien Ethernet : 100 / 10 = 10. Le chemin en Giga Ethernet coûte au total 2 ou 3 (selon le nombre de liens), le chemin en Ethernet au moins 10 : OSPF choisit <b>le chemin en Giga Ethernet</b>.</p></div>
+  </section>
+
+  <p><b>Pourquoi insister sur les puissances de 10 ?</b> Un coût est une valeur <i>sans unité</i>. Diviser 100 Mbit/s par 1 Gbit/s et trouver 100, c'est diviser des « pommes » par des « poires ». Avec les puissances de 10, les deux débits sont dans la même unité : <code>10**8</code> bit/s / <code>10**9</code> bit/s = <code>10**-1</code> = 0,1.</p>
+
+  <h2 class="td-partie">7. Retrouver le débit à partir du coût</h2>
+
+  <p>Le débit de référence est <code>10**8</code> bit/s (100 Mbit/s). On transforme la formule : <b>débit réel = débit de référence / coût</b>. Donne chaque débit avec une puissance de 10, puis en Mbit/s.</p>
+
+  <section class="td-q" data-type="trous" id="q11">
+    <p class="td-consigne"><b>Cas n° 1, la liaison lente</b> (coût 100) ; <b>cas n° 2, la liaison standard</b> (coût 10) ; <b>cas n° 3, la liaison « référence »</b> (coût 1).</p>
+    <pre class="td-code">
+# Cas 1 : 100 = 10**8 / débit, donc débit = 10**8 / 10**2
+cas1_bits = 10**[[6]]
+cas1_mbits = [[1]]
+# Cas 2 : coût 10
+cas2_bits = 10**[[7]]
+cas2_mbits = [[10]]
+# Cas 3 : coût 1
+cas3_bits = 10**[[8]]
+cas3_mbits = [[100]]</pre>
+    <p class="td-aide">Diviser par 10, c'est retirer 1 à l'exposant ; diviser par 100 = <code>10**2</code>, c'est retirer 2.</p>
+    <p class="td-aide">Pour passer en Mbit/s, divise par <code>10**6</code>.</p>
+    <div class="td-correction"><p>Cas 1 : <code>10**6</code> bit/s = <b>1 Mbit/s</b>. Cas 2 : <code>10**7</code> bit/s = <b>10 Mbit/s</b>. Cas 3 : <code>10**8</code> bit/s = <b>100 Mbit/s</b> : un coût de 1 correspond exactement au débit de référence.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q12">
+    <p class="td-consigne"><b>Cas n° 4, le piège du débit de référence (défi).</b> L'administrateur·rice change le débit de référence pour l'adapter aux fibres optiques : il vaut maintenant <code>10**9</code> bit/s (1 Gbit/s). Une interface affiche un coût de 50.</p>
+    <pre class="td-code">
+debit_bits = [[20000000|20_000_000|20 000 000|2*10**7]]   # en bit/s
+debit_mbits = [[20]]   # en Mbit/s</pre>
+    <p class="td-aide">Débit = <code>10**9</code> / 50. Diviser par 50, c'est diviser par 100 puis multiplier par 2.</p>
+    <div class="td-correction"><p><code>10**9</code> / 50 = 20 000 000 bit/s = 2 × <code>10**7</code> bit/s = <b>20 Mbit/s</b>. Attention : avec l'ancienne référence (<code>10**8</code>), on aurait trouvé 2 Mbit/s.</p></div>
+  </section>
+
+  <!-- MÉMO -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Coût OSPF = débit de référence / débit réel, <b>dans la même unité</b> ; débit réel = débit de référence / coût.</p>
+    <p>kilo = <code>10**3</code>, méga = <code>10**6</code>, giga = <code>10**9</code>. RIP compte les sauts ; OSPF additionne les coûts.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/debits-cout-ospf-terminale/conversions">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
