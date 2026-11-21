@@ -341,7 +341,8 @@
     });
     return { texte: out.join('\n'), suites: suites };
   }
-  var CODE_LONG = 40;       // au-delà (en lignes), un code peut être coupé entre deux lignes sur papier (T123c)
+  var CODE_LONG = 40;
+  var DEPART_MAX = 20;      // squelette imprimé jusqu'à 20 lignes (data-depart-papier="oui" pour plus)       // au-delà (en lignes), un code peut être coupé entre deux lignes sur papier (T123c)
   // code affiché (non modifiable), avec numéros de ligne
   function afficherCode(pre, opts) {
     opts = opts || {};
@@ -1301,8 +1302,13 @@
     // 10 pt (T123c), sauf s'il est déjà affiché dans la question ; dessous, les lignes d'écriture de 7 mm. data-lignes
     // donne alors la hauteur de tout le cadre (en lignes de 7 mm, squelette compris), avec 2 lignes d'écriture au
     // moins ; sans data-lignes : le squelette et 3 lignes d'écriture.
-    var lignesDepart = 0;
-    if (depart.trim()) {
+    var lignesDepart = 0, choixDepart = s.getAttribute('data-depart-papier');
+    var longDepart = depart.replace(/\s+$/, '').split('\n').length;
+    // un long squelette (plus de 20 lignes) coûte une page : sur papier, une ligne le signale à la place, sauf
+    // data-depart-papier="oui" ; data-depart-papier="non" ne l'imprime jamais (T123c)
+    if (depart.trim() && choixDepart !== 'non' && longDepart > DEPART_MAX && choixDepart !== 'oui') {
+      this.zone.appendChild(el('p', { class: 'td-depart-note td-papier-seul', 'aria-hidden': 'true', text: 'Code de départ : ' + longDepart + ' lignes, dans la page en ligne. Écris ici ce que tu ajoutes.' }));
+    } else if (depart.trim() && choixDepart !== 'non') {
       var dejaVu = Array.prototype.some.call(s.querySelectorAll('pre.td-code'), function (p) {
         return !p.closest('.td-correction') && (p.getAttribute('data-source') || p.textContent).trim() === depart.trim();
       });
@@ -1440,14 +1446,14 @@
     this.maj(false);
     this.ajusterCodes();
   };
-  // à l'écran, un code qui ne dépasse que de quelques pixels (8 % au plus) est un peu réduit au lieu de défiler
-  // (T123c) ; un code bien plus large garde son défilement (téléphone). Le papier a ses propres tailles.
+  // sur un écran large (769 px et plus), un code qui ne dépasse que de quelques pixels (8 % au plus) est un peu réduit
+  // au lieu de défiler (T123c) ; un code bien plus large, ou sur téléphone, garde son défilement. Papier inchangé.
   Feuille.prototype.ajusterCodes = function () {
     var r = this.r, minuterie = null;
     function ajuster() {
-      r.querySelectorAll('pre.td-code').forEach(function (p) {
+      r.querySelectorAll('pre.td-code, pre.td-erreur').forEach(function (p) {
         p.classList.remove('td-ajuste'); p.style.removeProperty('--td-reduc');
-        if (!p.getClientRects().length) return;
+        if (!p.getClientRects().length || window.innerWidth < 769) return;     // téléphone : le défilement reste
         var w = p.clientWidth, sw = p.scrollWidth;
         if (sw > w + 0.5 && sw - w <= 0.08 * w) {
           p.style.setProperty('--td-reduc', String(Math.floor((w - 2) / sw * 1000) / 1000));

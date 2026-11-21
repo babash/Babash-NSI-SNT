@@ -49,7 +49,7 @@ Sans rien changer aux pages :
 
 ### Le code de départ est imprimé
 
-Le squelette d'une question `code` (`pre.td-depart`) est imprimé en haut du cadre à remplir, en code de 10 pt avec ses numéros de ligne ; dessous, les lignes d'écriture de 7 mm. Avec un squelette, `data-lignes` donne la **hauteur de tout le cadre** (en lignes de 7 mm, squelette compris ; une ligne de code vaut 2/3 de ligne d'écriture), avec 2 lignes d'écriture au moins ; sans `data-lignes` : le squelette et 3 lignes d'écriture. Il n'est pas imprimé s'il est déjà affiché dans la question (même `pre.td-code`). Un long squelette coûte de la place : `imprimer-td.py` dit si la feuille dépasse ses pages. **Une ligne du squelette de plus de 80 caractères passe à la ligne** sur papier (après une virgule ou à une espace, jamais dans une chaîne) : la suite est décalée de 4 espaces et porte « → » à la place du numéro de ligne. La page ne change pas.
+Le squelette d'une question `code` (`pre.td-depart`) est imprimé en haut du cadre à remplir, en code de 10 pt avec ses numéros de ligne ; dessous, les lignes d'écriture de 7 mm. Avec un squelette, `data-lignes` donne la **hauteur de tout le cadre** (en lignes de 7 mm, squelette compris ; une ligne de code vaut 2/3 de ligne d'écriture), avec 2 lignes d'écriture au moins ; sans `data-lignes` : le squelette et 3 lignes d'écriture. Il n'est pas imprimé s'il est déjà affiché dans la question (même `pre.td-code`). Un long squelette coûte de la place : `imprimer-td.py` dit si la feuille dépasse ses pages. **Un squelette de plus de 20 lignes n'est pas imprimé** (il coûterait une page) : une ligne le dit à sa place (« Code de départ : N lignes, dans la page en ligne. Écris ici ce que tu ajoutes. »). `data-depart-papier="oui"` sur la question l'imprime quand même ; `data-depart-papier="non"` ne l'imprime jamais. **Une ligne du squelette de plus de 80 caractères passe à la ligne** sur papier (après une virgule ou à une espace, jamais dans une chaîne) : la suite est décalée de 4 espaces et porte « → » à la place du numéro de ligne. La page ne change pas.
 
 ### Tableau à remplir
 
@@ -83,7 +83,7 @@ Dans un tableau qui porte l'un de ces attributs, le texte passe à la ligne (les
 - Code à trous : des commentaires alignés en fin de ligne restent alignés malgré les cases.
 - « Je sais » sur papier : un espace entre les deux colonnes.
 - Une figure à plusieurs SVG les met côte à côte.
-- À l'écran, un code qui dépassait de quelques pixels (8 % au plus de sa largeur) est un peu réduit au lieu de défiler.
+- À l'écran (769 px et plus), un code qui dépassait de quelques pixels (8 % au plus de sa largeur) est un peu réduit au lieu de défiler.
 - Cases à trous : `t[[[i]]]` (après un nom, une parenthèse ou un crochet) est « `t[` + case `i` + `]` » ; `= [[[1, 2]]]` reste une case qui contient la liste `[1, 2]` (moteur et `verifier-td.py`).
 - `verifier-td.py` exécute aussi les **tests cachés** (`script.td-tests`) après chaque correction d'une question « code ».
 - `imprimer-td.py` voit une correction, un coup de pouce ou un retour imprimé : il les lit dans la source de la page, ligne par ligne, et contrôle qu'aucun n'est rendu sur papier. Une question « ordre » `data-support="ecran"` n'est plus cherchée dans le PDF.
