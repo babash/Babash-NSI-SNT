@@ -1,7 +1,10 @@
 """Séance de révision de Première : feuille de route, mini-contrôle croisé, atelier robot (sujets et corrigés).
 
 Les réponses des corrigés sont vérifiées par exécution (verifier_mini, verifier_defis).
-La feuille de style vient du TD récapitulatif (nsi-premiere/fichiers/bases-python/td-recapitulatif.html).
+La feuille de style est celle des anciens TD « Bases python » : style-td.html (copie de la feuille du TD
+récapitulatif avant sa conversion au style « Signal pirate », T125).
+Les exercices « trouve l'erreur » de syntaxe montrent le vrai message de Python 3.13 (décision du 20/11),
+produit ici par le compilateur de Python, au même format que « python3 fichier.py ».
 
 Régénérer, depuis ce dossier source/ :
     python3 revision.py
@@ -92,11 +95,11 @@ M1 = [
          rep="On répète 3 fois : le robot avance d'une case vers le nord. Ensuite, il avance une seule fois d'une case vers l'est."),
 ]
 M2 = [
-    dict(code='if age >= 18:\nprint("Majeur")', syntaxe=True, fix='    print("Majeur")',
+    dict(code='if age >= 18:\nprint("Majeur")', syntaxe=True, fichier="majeur.py", fix='    print("Majeur")',
          exp="La ligne sous le if doit être indentée (4 espaces).", bon='age = 20\nif age >= 18:\n    print("Majeur")', attendu=["Majeur"]),
     dict(code="for i in range(1, 5):\n    print(i)", q="Il doit afficher les nombres de 1 à 5, mais 5 n'apparaît pas.", fix="for i in range(1, 6):",
          exp="range s'arrête juste avant sa fin : pour aller jusqu'à 5, on écrit 6.", bon="for i in range(1, 6):\n    print(i)", attendu=list("12345"), faux=list("1234")),
-    dict(code='if x > 10:\n    print("Grand")\nelse x > 5:\n    print("Moyen")', syntaxe=True, fix="elif x > 5:",
+    dict(code='if x > 10:\n    print("Grand")\nelse x > 5:\n    print("Moyen")', syntaxe=True, fichier="taille.py", fix="elif x > 5:",
          exp="else ne prend jamais de condition. Pour tester une autre condition, on écrit elif.", bon='x = 7\nif x > 10:\n    print("Grand")\nelif x > 5:\n    print("Moyen")', attendu=["Moyen"]),
 ]
 M3 = [
@@ -110,6 +113,32 @@ M4 = [
     dict(code="est()\nwhile not obstacleNord():\n    nord()", arr_attendue="B1"),
     dict(etoile=True, code="while not obstacleNord():\n    nord()\n    if not obstacleEst():\n        est()", arr_attendue="D2"),
 ]
+
+def message(code, fichier):
+    """Le vrai message de Python (3.13) pour une erreur de syntaxe, comme « python3 fichier.py »."""
+    import traceback
+    assert sys.version_info[:2] == (3, 13), "le message doit venir de Python 3.13"
+    try:
+        compile(code + "\n", fichier, "exec")
+    except SyntaxError as e:
+        return "".join(traceback.format_exception_only(type(e), e)).rstrip("\n")
+    raise AssertionError("pas d'erreur de syntaxe : " + code)
+
+
+def message_html(m):
+    """Le message, coloré : l'emplacement en gris, le nom de l'erreur en gras."""
+    import html as h
+    out = []
+    for l in m.split("\n"):
+        if l.startswith("  File "):
+            out.append(f'<span class="loc">{h.escape(l)}</span>')
+        elif re.match(r"^\w+Error\b", l):
+            nomerr, _, reste = l.partition(":")
+            out.append(f'<b>{h.escape(nomerr)}</b>:{h.escape(reste)}')
+        else:
+            out.append(h.escape(l))
+    return '<pre class="err" aria-label="Message d\'erreur de Python">' + "\n".join(out) + "</pre>"
+
 
 def verifier_mini():
     for q in M2:
@@ -152,6 +181,10 @@ def page_mini(c):
         rep = f'{pre(q["fix"], cls="py fixe")}<p class="rep-t">{q["exp"]}</p>' if c else lignes(2)
         s.append(f'<div class="q3 e"><div class="ql">{lbl(i)}</div><div>{pre(q["code"])}{cap}</div><div>{rep}</div></div>')
     s.append("</div>")
+    if not c:   # sur la feuille des élèves : le vrai message de Python, sous les programmes (le corrigé donne la ligne corrigée)
+        s.append('<div class="errs">' + "".join(
+            f'<div><span class="lbl">{"abcdefgh"[i]})</span>{message_html(message(q["code"], q["fichier"]))}</div>'
+            for i, q in enumerate(M2) if q.get("syntaxe")) + '</div>')
     s.append(h2(3, "Complète le code", "2 points (2 × 1)"))
     s.append('<div class="ex5">')
     for i, q in enumerate(M3):
@@ -335,6 +368,16 @@ PLUS2 = """
 
 # Écran étroit seulement (téléphone) : la mise en page A4 imprimée ne change pas.
 PLUS3 = """
+/* le vrai message d'erreur de Python : console claire, nom de l'erreur en gras, lisible en noir et blanc */
+pre.err { margin: 2px 0 0; padding: 1px 4px; font-family: 'Fira Code', monospace; font-size: 7pt; line-height: 1.05;
+  white-space: pre-wrap; overflow-wrap: anywhere; background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--secondary); color: var(--text); }
+pre.err .loc { color: #5a6273; }
+pre.err b { color: var(--secondary); font-weight: 700; }
+.errs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 1px; }
+.errs > div { display: grid; grid-template-columns: 6mm 1fr; align-items: start; }
+.errs pre.err { margin: 0; }
+.pm .q3.e .lines i { height: 4.8mm; }
+@media screen and (max-width: 600px) { .errs { grid-template-columns: 1fr; } }
 @media screen and (max-width: 840px) {
   .coupon .cl { flex-wrap: wrap; height: auto; white-space: normal; gap: 6px 16px; margin-bottom: 8px; }
   .coupon i.l { width: 30mm; }
@@ -356,7 +399,7 @@ def doc(titre, corps):
 if __name__ == "__main__":
     ici = os.path.dirname(os.path.abspath(__file__))
     d = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(ici)
-    td = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ici, "..", "..", "bases-python", "td-recapitulatif.html")
+    td = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ici, "style-td.html")
     gen.STYLE = re.search(r"<style.*?</style>", open(td, encoding="utf-8").read(), flags=re.S).group(0)
     verifier_mini(); verifier_defis()
     open(f"{d}/seance-revision-eleves.html", "w", encoding="utf-8").write(doc("Séance de révision — documents des élèves", page_route() + page_mini(False) + pages_atelier()))
