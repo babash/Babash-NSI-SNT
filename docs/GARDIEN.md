@@ -35,7 +35,8 @@ D'autres outils du même dossier servent au cas par cas. Pour le site :
 - pour les TD en ligne (style « Signal pirate »), en plus de `charte/verifier-td.py` (qui exécute aussi les tests cachés),
   de `charte/imprimer-td.py`, de `charte/tester-outils.py` (les outils doivent voir une correction, une sortie attendue ou un
   coup de pouce imprimés sur des témoins) et de `charte/numeroter-feuilles.py --tout --verifier` (numéros des feuilles 2, 3…) ;
-  jusqu'à la passe finale des TD, un PDF publié n'est plus identique à la feuille régénérée par le moteur (pied, réponses
+  un TD passé par la passe finale a de nouveau un PDF identique à sa régénération par `charte/imprimer-td.py` (même texte,
+  mêmes pages) ; pour un TD qui n'y est pas encore passé, le PDF publié diffère de la feuille régénérée (pied, réponses
   courtes, code de départ, numéros) : on le compare au PDF régénéré avec le moteur d'avant le 21 novembre au soir, ou on
   contrôle le fond seul (réponses, questions, pages) ; `bandeau_td.py` mesure le bandeau d'une page à seize largeurs d'écran et
   sur papier (rien de coupé, rien de recouvert) ; `qcu_forme.py` dit si la bonne option d'un choix
