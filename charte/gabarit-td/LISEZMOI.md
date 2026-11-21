@@ -6,13 +6,84 @@ Un TD est **une seule page HTML** : à l'écran, elle se corrige toute seule ; i
 - Modèle : `charte/gabarit-td/modele.html` (commenté) ; exemple rendu : `charte/gabarit-td/index.html` ; TD complet : `charte/td-pilote/`.
 - Outils : `charte/nouveau-td.py` (le squelette), `charte/verifier-td.py` (le code exécuté pour de vrai), `charte/imprimer-td.py` (le PDF vierge et les contrôles de mise en page).
 
-## Nouveautés du 21/11 (T123b) : à lire d'abord
+## Nouveautés du 21/11 après-midi (T123c) : à lire d'abord
+
+Comme pour T123b : une page sans les nouveaux attributs garde son rendu à l'écran. Ce qui change pour toutes les pages : **l'impression** (plus courte, voir « Moins de papier »), et les défauts corrigés (liste à la fin).
+
+### Les numéros continuent d'une feuille à l'autre (décision du 21/11)
+
+La feuille 2 d'un TD ne recommence plus à « Question 1 ». Sur `<main>` :
+
+| Attribut | Effet |
+|---|---|
+| `data-premiere-question="13"` | la première question de la feuille porte le numéro 13 (à l'écran et sur papier) |
+| `data-premiere-question-papier="11"` | seulement si le premier numéro **sur papier** est différent (des questions d'un seul support sur les feuilles d'avant) |
+
+**Ne les écrivez pas à la main** : `charte/numeroter-feuilles.py` les calcule et les pose, dans la **passe finale** d'un lot (après le dernier ajout ou retrait de question) :
+
+```
+python3 -I charte/numeroter-feuilles.py nsi-premiere/fichiers/…/mission-fonctions     # un TD (son dossier)
+python3 -I charte/numeroter-feuilles.py --tout                                       # tous les TD à plusieurs feuilles
+python3 -I charte/numeroter-feuilles.py --tout --verifier                            # contrôle seul (sortie 1 si à refaire)
+```
+
+Les feuilles d'un dossier sont rangées par `data-feuille` (sans lui : 1), puis `index.html`, puis par nom. Le script ne touche qu'à ces deux attributs.
+
+**Une suite de numéros par support.** Une question `data-support="ecran"` ne compte qu'à l'écran, une `data-support="papier"` que sur papier : sur papier, les numéros ne sautent plus. Une paire écran/papier garde un seul numéro. Exemple : 5 questions à l'écran (`data-support="ecran"`, numéros 5 à 9) pour un seul tableau sur papier (`data-support="papier"`, numéro 5) : la question suivante est la 10 à l'écran et la 6 sur papier (le moteur écrit les deux numéros, un seul se voit).
+
+### Moins de papier (décision « Resserrer »)
+
+Sans rien changer aux pages :
+- **Réponses courtes** (`courte` avec une seule consigne, sans code, tableau ni figure, 150 caractères au plus) : sur papier, la consigne et la ligne à remplir tiennent **sur une seule ligne** ; à la suite, elles se resserrent. L'étiquette par défaut « Ta réponse : » n'est pas imprimée ; une `data-etiquette` l'est.
+- **Lignes d'écriture** : 7 mm, le minimum lisible à la main (inchangé).
+- **Le pied de la page** redit le pied de chaque page A4 (noms, licence, IA) : sur papier, il n'en reste que son trait, sans hauteur, s'il cache le margouillat (rien sinon). **Aucune page ne porte plus que le pied** (`imprimer-td.py` le refuse). Si le pied de la page nomme d'autres personnes que `data-auteurs`, il reste imprimé.
+- **Pied long** (`data-auteurs` de plus de 46 caractères) : police du texte et séparateurs simples, **sur une ligne** (jusqu'à 72 caractères de noms environ).
+- **Code de plus de 40 lignes** : il peut passer à la page suivante, coupé entre deux lignes, au lieu d'être poussé entier.
+
+### Le code de départ est imprimé
+
+Le squelette d'une question `code` (`pre.td-depart`) est imprimé en haut du cadre à remplir, en code de 10 pt avec ses numéros de ligne ; dessous, les lignes d'écriture de 7 mm. Avec un squelette, `data-lignes` donne la **hauteur de tout le cadre** (en lignes de 7 mm, squelette compris ; une ligne de code vaut 2/3 de ligne d'écriture), avec 2 lignes d'écriture au moins ; sans `data-lignes` : le squelette et 3 lignes d'écriture. Il n'est pas imprimé s'il est déjà affiché dans la question (même `pre.td-code`). Un long squelette coûte de la place : `imprimer-td.py` dit si la feuille dépasse ses pages.
+
+### Tableau à remplir
+
+```html
+<div class="td-table"><table data-case-largeur="25" data-case-hauteur="2">
+  <thead><tr><th>Mot</th><th data-case-largeur="40">En binaire</th></tr></thead>
+  <tbody><tr><td>A</td><td></td></tr></tbody>
+</table></div>
+```
+
+| Attribut | Où | Effet |
+|---|---|---|
+| `data-case-largeur="25"` | `<table>` | chaque cellule **vide** fait 25 mm de large (écran et papier) |
+| `data-case-hauteur="2"` | `<table>` | chaque cellule vide a la hauteur de 2 lignes d'écriture (7 mm chacune sur papier) |
+| `data-case-largeur="40"` | `<th>` | la largeur de cette colonne (mm) |
+
+Aucun `style` dans la page : le moteur pose les mesures. Trait noir plein (contrôlé par `imprimer-td.py`).
+
+### Le margouillat ne touche jamais le texte du bandeau
+
+`reattribuer-bandeaux.py` rend chaque page (Chromium) à 681, 768, 1024, 1440, 1920 px et en A4 : si le margouillat touche le niveau, le titre ou l'accroche, il prend une autre place du même bandeau. `nouveau-td.py` fait de même à la création. `imprimer-td.py` le signale (« Attention »). **Ne lancez pas `reattribuer-bandeaux.py --appliquer` sur vos pages** : une branche à part le fera après les lots.
+
+### Défauts corrigés
+
+- `input("Ton âge ? ")` : l'invite n'entre plus dans la sortie comparée (moteur et `verifier-td.py`) ; à l'écran, la console montre l'invite et la saisie, comme un terminal. `pre.td-attendu` ne contient que ce qu'affiche `print`.
+- Les `print` des tests cachés (`script.td-tests`) sont affichés, mais n'entrent plus dans la sortie comparée.
+- `verifier-td.py` lit `data-langage` sur le `<pre>` du code, puis sur la question et la page.
+- `imprimer-td.py` : plus de faux « texte caché imprimé » quand la consigne cite la sortie attendue ; le motif de « PDF vierge : NON » est toujours écrit (feuille trop longue comprise).
+- Une feuille sans question corrigée en ligne n'affiche plus « Feuille validée » d'office.
+- Code à trous : des commentaires alignés en fin de ligne restent alignés malgré les cases.
+- « Je sais » sur papier : un espace entre les deux colonnes.
+- Une figure à plusieurs SVG les met côte à côte.
+- Un mot insécable trop long du titre passe à la ligne ; `nouveau-td.py` prévient (mot de plus de 18 caractères, accroche dans un contrôle).
+
+## Nouveautés du 21/11 (T123b)
 
 Tout ajout passe par un **attribut nouveau** : une page écrite avant le 21/11, sans ces attributs, garde son comportement à l'écran (les options restent dans l'ordre écrit, le code reste en bonus…). Seules changent pour toutes les pages : **l'impression, plus serrée** (voir plus bas), la largeur des cases à trous, et les corrections de défauts (case `[[t[0]]]`, coloration, « n'affiche rien »).
 
 ### Décisions de l'enseignant (21/11)
 
-**1. Deux supports pour une question ouverte.** En ligne, un choix auto-corrigé ; sur papier, la question ouverte avec des lignes. Les deux variantes **se suivent** et portent le même numéro.
+**1. Deux supports pour une question ouverte.** En ligne, un choix auto-corrigé ; sur papier, la question ouverte avec des lignes. Les deux variantes **se suivent** et portent le même numéro (depuis T123c : une suite de numéros par support, voir plus haut).
 
 ```html
 <section class="td-q" data-type="qcu" id="q4" data-support="ecran"> … </section>
@@ -136,17 +207,18 @@ python3 -I charte/nouveau-td.py nsi1/fichiers/boucles-td1 \
 |---|---|
 | `--id` | identifiant **unique et stable** (minuscules, chiffres, tirets). Il sert au stockage sur l'appareil, au futur compte commun et à la cachette du margouillat. Ne le changez plus ensuite. |
 | `--titre` | le titre ; un mot entre accents graves devient du code (`` `while` ``). Court : il tient sur une ligne du bandeau (26 caractères environ, en capitales). |
-| `--niveau`, `--chapitre` | la ligne au-dessus du titre. Ensemble, **40 caractères au plus** (elle ne passe pas à la ligne sur papier). |
-| `--bandeau` | facultatif : force le paysage. Sans lui, le bandeau suivant de la rotation est attribué (voir § 2). |
+| `--niveau`, `--chapitre` | la ligne au-dessus du titre. Ensemble, **40 caractères au plus** (au-delà, elle passe à la ligne et le bandeau grandit, sur papier aussi). |
+| `--bandeau` | facultatif : force le paysage. Sans lui, le bandeau est **tiré de l'identifiant** (le même sur toutes les branches ; voir § 2). |
 | `--quiz` | l'adresse du cours-quiz du chapitre : le QR code est calculé **hors ligne** (avec `assets/qrcode-generator.js`). **Sans `--quiz`, pas de QR code** : c'est le cas d'un chapitre sans cours-quiz. |
 | `--accroche` | une ligne sous le titre, facultative (25 caractères environ). |
 
-**Textes trop longs.** Au-delà de ces longueurs, rien n'est coupé ni recouvert : le titre est imprimé plus petit (au-delà de 26 caractères), puis passe sur deux lignes (au-delà de 31), la ligne du niveau et du chapitre passe à la ligne, et **le bandeau grandit** (sur papier aussi). `nouveau-td.py` prévient (« Attention : … ») et `imprimer-td.py` signale un bandeau de plus de 28 mm (20 mm pour un contrôle) ; il refuse un texte coupé, sorti du bandeau ou qui recouvre le QR code, « Nom et prénom » ou les objectifs. Raccourcissez plutôt.
 | `--controle` | variante de contrôle : bandeau de 20 mm, puce « Contrôle ». |
 | `--genre` | la puce du bandeau : `TD` (défaut), `DM`, `TP`, `Activité`, `Séance`. |
 | `--auteurs` | tous les noms, séparés par « ; » (pied de page et pied de chaque page imprimée). |
 | `--feuille`, `--pages-max` | numéro de la feuille (2, 3… : bande de titre fine sur papier) ; pages A4 admises (4 par défaut). |
 | `--remplacer`, `--cachette` | écraser une page existante ; forcer la cachette du margouillat (`b1` à `b4`, `memo`, `pied`). |
+
+**Textes trop longs.** Au-delà de ces longueurs, rien n'est coupé ni recouvert : le titre est imprimé plus petit (au-delà de 26 caractères), puis passe sur deux lignes (au-delà de 31), la ligne du niveau et du chapitre passe à la ligne, et **le bandeau grandit** (sur papier aussi). `nouveau-td.py` prévient (« Attention : … ») et `imprimer-td.py` signale un bandeau de plus de 28 mm (20 mm pour un contrôle) ; il refuse un texte coupé, sorti du bandeau (un mot insécable trop long compris : son étendue réelle est mesurée) ou qui recouvre le QR code, « Nom et prénom » ou les objectifs. Raccourcissez plutôt.
 
 Le script écrit `index.html` dans le dossier, avec les bons chemins vers `assets/`, le lien « Code source sur GitHub » et le pied de page complet.
 
@@ -212,6 +284,7 @@ Sur papier, l'en-tête demande **« Nom et prénom » et « Classe »** (la feui
 ## 5. Liste de contrôle avant de livrer
 
 - [ ] `verifier-td.py` : « tout est juste ».
+- [ ] TD à plusieurs feuilles : `python3 -I charte/numeroter-feuilles.py <dossier>` (passe finale), puis `--verifier` : « Numéros à jour ».
 - [ ] `imprimer-td.py` : « PDF vierge : oui », **4 pages A4 au plus par feuille** (une fiche : 2 pages ; `data-pages-max` pour un exercice de bac) ; un TD à plusieurs feuilles : toutes les adresses, un seul PDF.
 - [ ] **10 pt au moins** partout sur papier (contrôlé par le script).
 - [ ] **Code : 80 caractères au plus par ligne** dans une question (mesuré : 80 colonnes de JetBrains Mono à 10 pt sur A4) ; **35 au plus** dans une option de `qcu` ou `cases` (les options s'impriment sur deux colonnes). Visez 70 pour garder de la marge ; une ligne trop longue est signalée (« ligne de code coupée »).

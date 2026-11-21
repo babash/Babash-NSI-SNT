@@ -47,8 +47,8 @@ POLICES_DU_SITE = {'AtkinsonHyperlegible-Regular', 'AtkinsonHyperlegible-Bold', 
                    'Anton-Regular', 'VT323-Regular', 'TDSymboles'}
 # le bandeau : texte entier, rien de recouvert (le QR code, « Nom et prénom », les objectifs), hauteur en mm
 BANDEAU_JS = r"""() => {
-  const bd = document.querySelector('.td-bandeau'); if (!bd) return { bandeau_h: 0, bandeau_pb: [] };
-  const pb = [], r = e => e.getBoundingClientRect(), mm = px => Math.round(px * 25.4 / 96 * 10) / 10;
+  const bd = document.querySelector('.td-bandeau'); if (!bd) return { bandeau_h: 0, bandeau_pb: [], bandeau_av: [] };
+  const pb = [], av = [], r = e => e.getBoundingClientRect(), mm = px => Math.round(px * 25.4 / 96 * 10) / 10;
   const croise = (a, b) => a.left < b.right - .5 && b.left < a.right - .5 && a.top < b.bottom - .5 && b.top < a.bottom - .5;
   const textes = [...bd.querySelectorAll('.td-sur-titre, h1, .td-accroche')];
   const qr = bd.querySelector('.td-qr'), rb = r(bd);
@@ -58,9 +58,22 @@ BANDEAU_JS = r"""() => {
     if (qr && croise(r(e), r(qr))) pb.push(nom + ' : recouvre le QR code');
     if (r(e).bottom > rb.bottom + .5 || r(e).right > rb.right + .5) pb.push(nom + ' : sort du bandeau');
     [...e.children].forEach(c => { if (r(c).right > r(e).right + 1) pb.push(nom + ' : un mot dépasse'); });
+    // l'étendue réelle du texte (un mot insécable peut sortir de la boîte de son élément) : T123c
+    const w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) {
+      if (!n.nodeValue.trim()) continue;
+      const rg = document.createRange(); rg.selectNodeContents(n);
+      [...rg.getClientRects()].forEach(t => { if (t.width < .5) return;
+        if (t.right > rb.right + .5) pb.push(nom + ' : un mot sort du bandeau');
+        if (qr && croise(t, r(qr))) pb.push(nom + ' : un mot touche le QR code');
+        const mg = bd.querySelector('.td-margouillat');
+        const pe = r(n.parentElement.closest('h1, p, .td-sur-titre > *, .td-accroche') || n.parentElement);
+        const tb = { left: t.left, right: t.right, top: Math.max(t.top, pe.top), bottom: Math.min(t.bottom, pe.bottom) };
+        if (mg && mg.getClientRects().length && croise(tb, r(mg))) av.push(nom + ' : touche le margouillat (charte/reattribuer-bandeaux.py le déplacera)'); });
+    }
   });
   document.querySelectorAll('.td-nom, .td-objectifs').forEach(e => { if (e.getClientRects().length && r(e).top < rb.bottom - .5) pb.push((e.className) + ' : recouvert par le bandeau'); });
-  return { bandeau_h: mm(rb.height), bandeau_attendu: bd.classList.contains('td-controle') ? 20 : 28, bandeau_pb: pb };
+  return { bandeau_h: mm(rb.height), bandeau_attendu: bd.classList.contains('td-controle') ? 20 : 28, bandeau_pb: [...new Set(pb)], bandeau_av: [...new Set(av)] };
 }"""
 # mesures faites en média « print », à la largeur d'une page A4 (794 px)
 MESURES = r"""() => { const BANDEAU = (BANDEAU_SRC);
@@ -88,7 +101,7 @@ MESURES = r"""() => { const BANDEAU = (BANDEAU_SRC);
   const opaque = c => !/rgba\([^)]*,\s*0(\.0+)?\)/.test(c) && c !== 'transparent';
   const rapport = c => 1.05 / (lum(c) + .05);
   const saisies = [], faibles = [];
-  document.querySelectorAll('.td input:not([type=hidden]), .td textarea:not(.td-ed-texte), .td-editeur, .td-nom span').forEach(el => {
+  document.querySelectorAll('.td input:not([type=hidden]), .td textarea:not(.td-ed-texte), .td-editeur, .td-nom span, .td td.td-vide').forEach(el => {
     if (!vus(el) && !el.classList.contains('td-editeur')) return;
     if (!el.getClientRects().length) return;
     const cs = getComputedStyle(el), traits = [];
@@ -110,6 +123,19 @@ MESURES = r"""() => { const BANDEAU = (BANDEAU_SRC);
   });
   return { petit, coupees, deborde, saisies: saisies.length, faibles, bandeau: !!document.querySelector('.td-bandeau'), pied: !!document.querySelector('.td-pied .td-ia'), ...BANDEAU() };
 }"""
+
+
+def encre_sous_le_haut(pdf, k):
+    """Une page sans texte peut porter des lignes à remplir : y a-t-il de l'encre plus bas que 25 mm sous le haut
+    de la page, au-dessus du pied de la page A4 (12 mm) ? (image en niveaux de gris, 30 points par pouce)"""
+    img = subprocess.run(['pdftoppm', '-r', '30', '-gray', '-f', str(k), '-l', str(k), pdf], capture_output=True).stdout
+    entete, _, donnees = img.partition(b'\n255\n')
+    larg, haut = (int(x) for x in entete.split()[1:3])
+    mm = 30 / 25.4
+    for y in range(int(25 * mm), haut - int(13 * mm)):
+        if min(donnees[y * larg:(y + 1) * larg]) < 160:
+            return True
+    return False
 
 
 def normal(t):
@@ -150,6 +176,7 @@ def main():
             erreurs, pages, maxi = controler(b, urls[0], sortie)
             if pages > maxi:
                 erreurs.append(f'{pages} pages : cette feuille tient sur {maxi} pages au plus (data-pages-max)')
+                print('  -', erreurs[-1])
             total = erreurs
         else:
             dossier_tmp = tempfile.mkdtemp(prefix='imprimer-td-', dir=os.path.dirname(os.path.abspath(sortie)))
@@ -158,6 +185,7 @@ def main():
                 erreurs, pages, maxi = controler(b, u, os.path.join(dossier_tmp, f'feuille-{k + 1}.pdf'))
                 if pages > maxi:
                     erreurs.append(f'feuille {k + 1} : {pages} pages, {maxi} au plus (data-pages-max)')
+                    print('  -', erreurs[-1])
                 total += erreurs
             for f in os.listdir(dossier_tmp):
                 os.remove(os.path.join(dossier_tmp, f))
@@ -166,7 +194,7 @@ def main():
             erreurs, pages, maxi = controler(b, urls[0], sortie, html=reunir(urls))
             total += erreurs
         b.close()
-    print('PDF vierge : ' + ('oui' if not total else 'NON'))
+    print('PDF vierge : ' + ('oui' if not total else f'NON ({len(total)} problème(s), voir les lignes « - » ci-dessus)'))
     sys.exit(1 if total else 0)
 
 
@@ -186,6 +214,8 @@ def controler(b, url, sortie, html=None):
         ecran = p.evaluate(BANDEAU_JS)
         for x in ecran['bandeau_pb']:
             erreurs.append('bandeau, à l\'écran : ' + x)
+        for x in ecran['bandeau_av']:
+            print('  Attention : bandeau, à l\'écran : ' + x)
         # (le code de départ d'un éditeur n'est pas une réponse)
         pleins = p.evaluate("[...document.querySelectorAll('.td input, .td textarea:not(.td-ed-texte)')].filter(c => c.type === 'radio' || c.type === 'checkbox' ? c.checked : c.value).length")
         if pleins:
@@ -216,11 +246,14 @@ def controler(b, url, sortie, html=None):
                     pos -= 1
             if lire(qid) != sol:
                 erreurs.append(f'{qid} : les lignes n\'ont pas pu être remises dans l\'ordre de la solution')
-            num = p.locator(f'#{qid} .td-q-num').inner_text().strip()
+            num = p.locator(f'#{qid} .td-q-num').evaluate("e => (e.querySelector('.td-num-papier') || e).textContent").strip()
             ordres[qid] = (num, depart, sol)
         # textes qui ne doivent jamais être imprimés (pris avant que le moteur ne les déplace)
         caches = p.evaluate("""() => [...document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu')]
             .map(e => e.innerText.trim()).filter(t => t.length > 12)""")
+        # ces textes et leurs copies (retours, explications) : ce qui reste visible sur papier sans eux est le texte « permis »
+        p.evaluate("""() => document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu, .td-retour-zone, .td-explication')
+            .forEach(e => e.setAttribute('data-imprimer-td-cache', ''))""")
         p.evaluate("window.dispatchEvent(new Event('beforeprint'))")
         restes = p.evaluate("[...document.querySelectorAll('.td input, .td textarea')].filter(c => c.type === 'radio' || c.type === 'checkbox' ? c.checked : c.value).length")
         if restes:
@@ -230,6 +263,12 @@ def controler(b, url, sortie, html=None):
         p.set_viewport_size({'width': 794, 'height': 1123})
         p.evaluate('document.fonts.ready')
         mesures = p.evaluate(MESURES.replace('(BANDEAU_SRC)', BANDEAU_JS))
+        # le texte imprimé hors des textes cachés (pour ne pas confondre une consigne qui cite la sortie attendue)
+        permis = p.evaluate("""() => { const st = document.createElement('style');
+            st.textContent = '[data-imprimer-td-cache]:not(#z1):not(#z2):not(#z3) { display: none !important; }'; document.head.appendChild(st);
+            const t = [...document.querySelectorAll('[data-td]')].map(m => m.innerText).join(' '); st.remove(); return t; }""")
+        pied_txt = p.evaluate("[...document.querySelectorAll('.td-pied')].map(e => e.innerText).join(' ')")
+        noms = p.evaluate("(document.querySelector('[data-td]').getAttribute('data-auteurs') || 'Babash - NSI Tani Malandi')")
         maxi = p.evaluate("Math.max(...[...document.querySelectorAll('[data-td]')].map(m => +m.getAttribute('data-pages-max') || 4))")
         nb_feuilles = p.evaluate("document.querySelectorAll('[data-td]').length")
         p.pdf(path=sortie, format='A4', print_background=True, prefer_css_page_size=True)
@@ -255,6 +294,8 @@ def controler(b, url, sortie, html=None):
         erreurs.append(f"élément à remplir peu visible sur papier (il faut un trait plein de 0,5 pt et 7:1) : {mesures['faibles'][:4]}")
     for x in mesures['bandeau_pb']:
         erreurs.append('bandeau, sur papier : ' + x)
+    for x in mesures['bandeau_av']:
+        print('  Attention : bandeau, sur papier : ' + x)
     if mesures['bandeau_h'] > mesures['bandeau_attendu'] + .3:
         print(f"  Attention : bandeau de {mesures['bandeau_h']} mm au lieu de {mesures['bandeau_attendu']} : un texte du bandeau est trop long (titre, accroche ou chapitre ; voir LISEZMOI)")
     for nom in ('bandeau', 'pied'):
@@ -268,9 +309,11 @@ def controler(b, url, sortie, html=None):
     plat = normal(texte)
     if REPERE in texte:
         erreurs.append('une réponse tapée figure dans le PDF')
+    plat_permis = normal(permis)
     for c in caches:
         debut = normal(c)[:40]
-        if debut and debut in plat:
+        # imprimé plus souvent que dans les textes visibles (une consigne peut citer la sortie attendue)
+        if debut and plat.count(debut) > plat_permis.count(debut):
             erreurs.append('texte caché imprimé : ' + debut)
     # dans le PDF, les lignes de chaque question « ordre » sont dans l'ordre mélangé de départ
     for qid, (num, depart, sol) in ordres.items():
@@ -287,6 +330,13 @@ def controler(b, url, sortie, html=None):
             print(f'{qid} : imprimée dans l\'ordre de départ ({" / ".join(depart)}), pas dans celui de l\'élève')
     pages = int(next(l for l in subprocess.run(['pdfinfo', sortie], capture_output=True, text=True).stdout.splitlines()
                      if l.startswith('Pages:')).split()[1])
+    # aucune page ne porte que le pied (le pied de la page A4 et celui du TD) : T123c
+    pied_plat = normal(pied_txt)
+    for k in range(1, pages + 1):
+        tk = normal(subprocess.run(['pdftotext', '-f', str(k), '-l', str(k), sortie, '-'], capture_output=True, text=True).stdout)
+        tk = re.sub(re.escape(normal(noms)) + r" ?· ?CC BY-SA 4\.0 ?· ?conçu avec l'aide de l'IA ?· ?\d+ / \d+$", '', tk).strip()
+        if (not tk or (pied_plat and tk in pied_plat)) and not encre_sous_le_haut(sortie, k):
+            erreurs.append(f'page {k} : elle ne porte que le pied de page')
     print(f'{sortie} : {pages} page(s) A4 ; {n} champ(s) remplis puis vidés ; {len(caches)} texte(s) caché(s) contrôlé(s) ; '
           f"{mesures['saisies']} élément(s) à remplir au trait net")
     for e in erreurs:

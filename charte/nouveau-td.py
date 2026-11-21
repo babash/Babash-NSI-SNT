@@ -35,6 +35,7 @@ Le QR code est calculé avec assets/qrcode-generator.js (Node), sans aucun servi
 import argparse
 import hashlib
 import html
+import importlib.util
 import json
 import os
 import re
@@ -86,6 +87,11 @@ def longueurs(o):
         av.append(f"titre de {len(titre)} caractères : il est imprimé plus petit (26 au plus pour la taille normale)")
     if o.accroche and len(o.accroche) > 25:
         av.append(f"accroche de {len(o.accroche)} caractères (25 au plus) : elle peut passer à la ligne et agrandir le bandeau")
+    if o.accroche and o.controle:
+        av.append("accroche dans un contrôle : le bandeau de 20 mm grandit (environ 24 mm) ; mieux vaut s'en passer")
+    long_mot = max((m for m in re.split(r"[\s`]+", titre) if m), key=len, default="")
+    if len(long_mot) > 18:
+        av.append(f"le mot « {long_mot} » ({len(long_mot)} caractères) est plus large que la zone du titre : il est coupé en fin de ligne")
     lc = len(o.niveau) + len(o.chapitre)
     if lc > 40:
         av.append(f"niveau et chapitre : {lc} caractères (40 au plus) : la ligne passe à la ligne et agrandit le bandeau")
@@ -164,6 +170,40 @@ def choisir_cachette(ident, bandeau, prises, forcee=None, controle=False):
     else:
         style = f'--x:{40 + h % 45}%;--r:{[-3, 2, 5][h % 3]}deg;--s:{miroir}'
     return nom, f'<span class="td-margouillat" data-cachette="{nom}" style="{style}"></span>'
+
+
+def eviter_collision(cible, o, nom):
+    """Le margouillat ne tombe jamais sur le texte du bandeau (T123c) : la page est rendue (Playwright), et s'il
+    touche le niveau, le titre ou l'accroche, il prend une autre place du même bandeau. Sans Playwright : rien."""
+    if not nom.startswith("b") or o.cachette:
+        return nom
+    try:
+        spec = importlib.util.spec_from_file_location("reattribuer", os.path.join(ICI, "reattribuer-bandeaux.py"))
+        ra = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(ra)
+        mes = ra.Mesureur()
+    except Exception as e:      # Playwright absent : on prévient seulement
+        print(f"(collision du margouillat non contrôlée : {e.__class__.__name__})", file=sys.stderr)
+        return nom
+    places = json.load(open(os.path.join(RACINE, "assets", "td", "places-margouillat.json"), encoding="utf-8"))
+    rel = os.path.relpath(cible, RACINE)
+    try:
+        t = open(cible, encoding="utf-8").read()
+        if not mes.collisions(rel, t):
+            return nom
+        h = int(hashlib.sha256(o.id.encode()).hexdigest(), 16)
+        n = len(places[str(o.bandeau)])
+        k0 = int(nom[1:])
+        for k in [x for x in ((h + j) % n + 1 for j in range(n)) if x != k0]:
+            u = ra.placer(t, o.bandeau, k, places)
+            if not mes.collisions(rel, u):
+                open(cible, "w", encoding="utf-8").write(u)
+                print(f"Le margouillat touchait le texte du bandeau en b{k0} : il passe en b{k}.", file=sys.stderr)
+                return f"b{k}"
+        print("Attention : le margouillat touche le texte du bandeau à toutes les places (--cachette memo ou pied).", file=sys.stderr)
+        return nom
+    finally:
+        mes.fermer()
 
 
 def titre_html(t):
@@ -245,7 +285,8 @@ def main():
     if reste:
         sys.exit(f"Modèle : champs non remplacés {reste}")
     open(cible, "w", encoding="utf-8").write(t)
-    print(f"{os.path.relpath(cible, RACINE)} : bandeau {o.bandeau} ({NOMS[o.bandeau]}{', forcé' if force else ', à son tour'}), margouillat « {nom} », "
+    nom = eviter_collision(cible, o, nom)
+    print(f"{os.path.relpath(cible, RACINE)} : bandeau {o.bandeau} ({NOMS[o.bandeau]}{', forcé' if force else ', tiré de l’identifiant'}), margouillat « {nom} », "
           + ("QR code du cours-quiz" if o.quiz else "sans QR code (pas de cours-quiz)"))
 
 

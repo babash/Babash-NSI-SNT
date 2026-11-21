@@ -30,6 +30,11 @@ Ajouts du 21/11 (mêmes attributs que le moteur) :
   data-langage="texte" : rien à exécuter ;
 - « erreur » : si la ligne corrigée garde un décalage fautif (IndentationError),
   le décalage juste est cherché (0, 4, 8… espaces).
+
+Ajouts du 21/11, T123c :
+- data-langage est lu d'abord sur le <pre> du code, puis sur la question et la page ;
+- comme dans le moteur, l'invite d'input() (le texte entre les parenthèses) n'entre pas
+  dans la sortie comparée : pre.td-attendu ne contient que ce qu'affiche print.
 """
 import html.parser
 import os
@@ -45,6 +50,14 @@ src = open(fsrc, encoding="utf-8").read()
 pre = open(fpre, encoding="utf-8").read()
 linecache.cache[nom] = (len(src), None, src.splitlines(True), nom)
 g = {"__name__": "__main__"}
+# comme le moteur : l'invite d'input() n'entre pas dans la sortie comparée
+def _saisir(invite=""):
+    l = sys.stdin.readline()
+    if not l:
+        raise EOFError("EOF when reading a line")
+    return l[:-1] if l.endswith("\n") else l
+import builtins
+builtins.input = _saisir
 if pre:
     exec(compile(pre, "preambule.py", "exec"), g)
 if graine != "":
@@ -57,6 +70,12 @@ except SystemExit:
 except BaseException as e:
     sys.stdout.flush()
     tb = e.__traceback__.tb_next if e.__traceback__ else None
+    t = tb
+    while t is not None and t.tb_next is not None:
+        if t.tb_next.tb_frame.f_code is _saisir.__code__:
+            t.tb_next = None
+            break
+        t = t.tb_next
     sys.stderr.write("".join(traceback.format_exception(type(e), e, tb)))
     sys.exit(1)
 '''
@@ -205,7 +224,10 @@ def verifier(chemin):
         n += 1
         q, t = s.attrs.get('id', f'question {n}'), s.attrs['data-type']
         fichier = s.attrs.get('data-fichier', 'mon_code.py')
-        langage = attribut_herite(s, 'data-langage', 'python')
+        # data-langage : sur le <pre> du code (comme dans le moteur), sinon sur la question ou la page
+        pre_code = next((p for p in s.tous(lambda x: x.tag == 'pre' and ('td-code' in x.classes() or 'td-depart' in x.classes()))
+                         if 'data-langage' in p.attrs and not any('td-options' in a.classes() for a in ancetres(p, s))), None)
+        langage = pre_code.attrs['data-langage'] if pre_code is not None else attribut_herite(s, 'data-langage', 'python')
         pre = script(s, 'td-preambule')
         exact = s.attrs.get('data-espaces') == 'exact'
         ent, gr = s.attrs.get('data-entrees'), s.attrs.get('data-graine')

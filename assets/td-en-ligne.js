@@ -132,6 +132,64 @@
     out.push(l.slice(debut));
     return out;
   }
+  // code à trous (T123c) : des commentaires alignés en fin de ligne restent alignés malgré les cases.
+  // Un groupe = des lignes avec un commentaire précédé de 2 espaces au moins, qui se suivent ou dont le commentaire
+  // commence à la même colonne dans la source ; l'une au moins a une case avant son commentaire, une au moins
+  // 3 espaces devant le sien (alignement voulu) ; pas déjà alignées. Chaque ligne garde au moins ses
+  // espaces ; le commentaire commence à la même colonne sur tout le groupe (calcul en CSS : les cases n'ont pas la
+  // même largeur à l'écran et sur papier). Renvoie { ligne: { coupe, largeur } }.
+  var BORDS_IND = [1.6, 1.6, 2.6, 1];
+  function commentairesAlignes(lignes, largeurDe) {
+    var infos = lignes.map(function (l) {
+      var morceaux = decouperTrous(l), brut = 0, dans = null, cases = [], texte = 0;
+      for (var k = 0; k < morceaux.length; k++) {
+        var m = morceaux[k];
+        if (k % 2) { cases.push(largeurDe(m)); brut += m.length + 4; continue; }
+        for (var i = 0; i < m.length; i++) {
+          var c = m[i];
+          if (dans) { if (c === dans) dans = null; }
+          else if (c === '"' || c === "'") dans = c;
+          else if (c === '#') {
+            var av = m.slice(0, i), esp = av.match(/ *$/)[0].length;
+            var code = morceaux.slice(0, k).join('') + av;
+            if (esp < 2 || !code.trim()) return null;
+            var niv = Math.floor(decalage(l) / 4), bords = 0;
+            for (var j = 0; j < niv; j++) bords += BORDS_IND[j % 4];
+            return { coupe: brut + i - esp, esp: esp, cases: cases.slice(), texte: texte + i - esp, bords: bords };
+          }
+        }
+        brut += m.length; texte += m.length;
+      }
+      return null;
+    });
+    // groupes : des lignes qui se suivent, ou dont le commentaire commence à la même colonne dans la source
+    var chef = infos.map(function (_, i) { return i; });
+    function racine(i) { while (chef[i] !== i) i = chef[i] = chef[chef[i]]; return i; }
+    var parCol = {};
+    infos.forEach(function (x, i) {
+      if (!x) return;
+      if (i > 0 && infos[i - 1]) chef[racine(i)] = racine(i - 1);
+      var c = x.coupe + x.esp;
+      if (parCol[c] !== undefined) chef[racine(i)] = racine(parCol[c]); else parCol[c] = i;
+    });
+    var groupes = {};
+    infos.forEach(function (x, i) { if (x) { x.n = i; (groupes[racine(i)] = groupes[racine(i)] || []).push(x); } });
+    var out = {};
+    Object.keys(groupes).forEach(function (cle) {
+      var groupe = groupes[cle];
+      // un alignement voulu : 3 espaces au moins devant un des commentaires (2 espaces seuls : un commentaire ordinaire)
+      if (groupe.length < 2 || !groupe.some(function (x) { return x.cases.length; }) || !groupe.some(function (x) { return x.esp >= 3; })) return;
+      var sig = function (x) { return [x.texte, x.cases.reduce(function (a, b) { return a + b; }, 0), x.cases.length, x.esp, x.bords].join('|'); };
+      if (groupe.every(function (x) { return sig(x) === sig(groupe[0]); })) return;
+      var exprs = groupe.map(function (x) {
+        return 'calc(' + (x.texte + x.esp) + 'ch' + x.cases.map(function (w) { return ' + max(' + (w + 1) + 'ch, var(--td-trou-min, 0px))'; }).join('') +
+          (x.cases.length ? ' + ' + x.cases.length + ' * var(--td-trou-marge, .2em)' : '') + ' + ' + x.bords + 'px)';
+      });
+      var largeur = 'max(' + exprs.join(', ') + ')';
+      groupe.forEach(function (x) { out[x.n] = { coupe: x.coupe, largeur: largeur }; });
+    });
+    return out;
+  }
 
   /* ── Coloration de Python ──────────────────── */
 
@@ -253,6 +311,7 @@
     });
   }
 
+  var CODE_LONG = 40;       // au-delà (en lignes), un code peut être coupé entre deux lignes sur papier (T123c)
   // code affiché (non modifiable), avec numéros de ligne
   function afficherCode(pre, opts) {
     opts = opts || {};
@@ -265,6 +324,7 @@
     }).join('');
     pre.classList.add('td-code-pret');
     if (lignes.length < 2 || opts.sansNumeros) pre.classList.add('td-sans-num');
+    if (lignes.length > CODE_LONG) pre.classList.add('td-code-long');     // sur papier : peut passer à la page suivante
     return code;
   }
 
@@ -359,54 +419,96 @@
   /* ── Python à la demande, dans un Worker (on peut l'arrêter) ── */
 
   var python = { worker: null, pret: null, attente: {}, n: 0 };
+  // le lanceur Python du Worker (T123c) : la sortie comparée ne contient que ce qu'affiche le programme ;
+  // l'invite d'input() et la saisie (écrites comme dans un terminal) et les print des tests cachés ne sont
+  // qu'affichés. Les cadres de la fonction de saisie ne figurent pas dans le message d'erreur.
+  var PY_LANCEUR = [
+    'import sys, traceback, linecache, builtins',
+    'class _TdFlux:',
+    '    encoding = "utf-8"',
+    '    def __init__(self, seg, genre):',
+    '        self.seg, self.genre = seg, genre',
+    '    def write(self, t):',
+    '        self.seg.append((self.genre, str(t)))',
+    '        return len(t)',
+    '    def flush(self):',
+    '        pass',
+    '    def isatty(self):',
+    '        return False',
+    'def _td_lancer(src, tests, nom, pre="", graine="", saisies=False):',
+    '    linecache.cache[nom] = (len(src), None, src.splitlines(True), nom)',
+    '    g = {"__name__": "__main__"}',
+    '    seg = []',
+    '    vrais = (sys.stdout, sys.stderr, builtins.input)',
+    '    def saisir(invite=""):',
+    '        seg.append(("invite", str(invite)))',
+    '        l = sys.stdin.readline()',
+    '        if not l:',
+    '            raise EOFError("EOF when reading a line")',
+    '        l = l[:-1] if l.endswith("\\n") else l',
+    '        seg.append(("invite", l + "\\n"))',
+    '        return l',
+    '    def rapport(e):',
+    '        tb = e.__traceback__.tb_next if e.__traceback__ else None',
+    '        t = tb',
+    '        while t is not None and t.tb_next is not None:',
+    '            if t.tb_next.tb_frame.f_code is saisir.__code__:',
+    '                t.tb_next = None',
+    '                break',
+    '            t = t.tb_next',
+    '        return "".join(traceback.format_exception(type(e), e, tb))',
+    '    def fin(etat, detail):',
+    '        sys.stdout, sys.stderr, builtins.input = vrais',
+    '        return [etat, detail, "".join(t for k, t in seg if k == "prog"), "".join(t for k, t in seg)]',
+    '    sys.stdout = sys.stderr = _TdFlux(seg, "prog")',
+    '    if saisies:',
+    '        builtins.input = saisir',
+    '    try:',
+    '        if pre:',
+    '            try:',
+    '                exec(compile(pre, "preambule.py", "exec"), g)',
+    '            except BaseException as e:',
+    '                return fin("erreur", rapport(e))',
+    '        if graine != "":',
+    '            import random',
+    '            random.seed(int(graine) if graine.lstrip("-").isdigit() else graine)',
+    '        try:',
+    '            exec(compile(src, nom, "exec"), g)',
+    '        except SystemExit:',
+    '            pass',
+    '        except BaseException as e:',
+    '            return fin("erreur", rapport(e))',
+    '        if tests:',
+    '            sys.stdout = sys.stderr = _TdFlux(seg, "test")',
+    '            try:',
+    '                exec(compile(tests, "tests.py", "exec"), g)',
+    '            except AssertionError as e:',
+    '                return fin("test", str(e))',
+    '            except BaseException as e:',
+    '                return fin("test", rapport(e))',
+    '        return fin("ok", "")',
+    '    finally:',
+    '        sys.stdout, sys.stderr, builtins.input = vrais'
+  ].join('\n');
   function sourceWorker(url) {
     return [
       'importScripts(' + JSON.stringify(url) + ');',
       'var py = loadPyodide({ indexURL: ' + JSON.stringify(url.replace(/[^/]*$/, '')) + ' }).then(function (p) {',
-      '  p.runPython([',
-      '    "import sys, traceback, linecache",',
-      '    "def _td_lancer(src, tests, nom, pre=\'\', graine=\'\'):",',
-      '    "    linecache.cache[nom] = (len(src), None, src.splitlines(True), nom)",',
-      '    "    g = {\'__name__\': \'__main__\'}",',
-      '    "    def rapport(e):",',
-      '    "        tb = e.__traceback__.tb_next if e.__traceback__ else None",',
-      '    "        return \'\'.join(traceback.format_exception(type(e), e, tb))",',
-      '    "    if pre:",',
-      '    "        try:",',
-      '    "            exec(compile(pre, \'preambule.py\', \'exec\'), g)",',
-      '    "        except BaseException as e:",',
-      '    "            return [\'erreur\', rapport(e)]",',
-      '    "    if graine != \'\':",',
-      '    "        import random",',
-      '    "        random.seed(int(graine) if graine.lstrip(\'-\').isdigit() else graine)",',
-      '    "    try:",',
-      '    "        exec(compile(src, nom, \'exec\'), g)",',
-      '    "    except SystemExit:",',
-      '    "        pass",',
-      '    "    except BaseException as e:",',
-      '    "        sys.stdout.flush()",',
-      '    "        return [\'erreur\', rapport(e)]",',
-      '    "    if tests:",',
-      '    "        try:",',
-      '    "            exec(compile(tests, \'tests.py\', \'exec\'), g)",',
-      '    "        except AssertionError as e:",',
-      '    "            return [\'test\', str(e)]",',
-      '    "        except BaseException as e:",',
-      '    "            return [\'test\', rapport(e)]",',
-      '    "    return [\'ok\', \'\']"',
-      '  ].join("\\n"));',
+      '  p.runPython(' + JSON.stringify(PY_LANCEUR) + ');',
       '  p.setStdin({ error: true });',
       '  return p;',
       '});',
       'self.onmessage = function (e) {',
-      '  var d = e.data, sortie = [];',
+      '  var d = e.data, autre = [];',
       '  py.then(function (p) {',
-      '    p.setStdout({ batched: function (s) { sortie.push(s); } });',
-      '    p.setStderr({ batched: function (s) { sortie.push(s); } });',
-      '    if (typeof d.entrees === "string") { var L = d.entrees.split("\\n"), k = 0; p.setStdin({ stdin: function () { return k < L.length ? L[k++] : undefined; } }); }',
+      '    p.setStdout({ batched: function (s) { autre.push(s); } });',
+      '    p.setStderr({ batched: function (s) { autre.push(s); } });',
+      '    var saisies = typeof d.entrees === "string";',
+      '    if (saisies) { var L = d.entrees.split("\\n"), k = 0; p.setStdin({ stdin: function () { return k < L.length ? L[k++] : undefined; } }); }',
       '    else p.setStdin({ error: true });',
-      '    var r = p.globals.get("_td_lancer")(d.code, d.tests || "", d.fichier || "mon_code.py", d.pre || "", d.graine || "").toJs();',
-      '    self.postMessage({ id: d.id, etat: r[0], detail: r[1], sortie: sortie.join("\\n") });',
+      '    var r = p.globals.get("_td_lancer")(d.code, d.tests || "", d.fichier || "mon_code.py", d.pre || "", d.graine || "", saisies).toJs();',
+      '    var plus = autre.length ? "\\n" + autre.join("\\n") : "";',
+      '    self.postMessage({ id: d.id, etat: r[0], detail: r[1], sortie: r[2] + plus, vue: r[3] + plus });',
       '  }).catch(function (err) { self.postMessage({ id: d.id, etat: "indisponible", detail: String(err) }); });',
       '};'
     ].join('\n');
@@ -688,8 +790,12 @@
     var q = this, s = this.s, idTitre = nouvelId('titre');
     s.classList.add('td-q-prete');
     s.setAttribute('aria-labelledby', idTitre);
+    // une question des deux supports peut avoir un autre numéro sur papier (après des questions d'un seul support)
+    var num = this.numPapier !== null && this.numPapier !== undefined && this.numPapier !== this.rang
+      ? el('span', { class: 'td-q-num' }, [el('span', { class: 'td-num-ecran', text: 'Question ' + this.rang }), el('span', { class: 'td-num-papier', 'aria-hidden': 'true', text: 'Question ' + this.numPapier })])
+      : el('span', { class: 'td-q-num', text: 'Question ' + this.rang });
     var titre = el('h3', { class: 'td-q-titre', id: idTitre }, [
-      el('span', { class: 'td-q-num', text: 'Question ' + this.rang }),
+      num,
       this.type === 'libre' && this.support !== 'papier' ? el('span', { class: 'td-q-bonus td-ecran-seul', text: 'non corrigée en ligne' }) : null,
       this.bonus ? el('span', { class: 'td-q-bonus', text: '★ bonus' }) : null,
       el('span', { class: 'td-q-etat', 'aria-hidden': 'true' })
@@ -811,8 +917,22 @@
     this.champ.value = this.etat.valeur || '';
     this.champ.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); q.verifier(); } });
     this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
-    this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id, text: this.s.getAttribute('data-etiquette') || 'Ta réponse :' }), this.champ]));
+    var etiq = this.s.getAttribute('data-etiquette');
+    this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id, class: etiq ? null : 'td-etiquette-defaut', text: etiq || 'Ta réponse :' }), this.champ]));
     this.mettreDeCote();
+  };
+  // sur papier, une réponse courte simple (une consigne, une ligne à remplir, ni code ni tableau ni figure) tient
+  // sur une seule ligne : la consigne, puis la ligne à remplir (T123c, « Resserrer »). Écran inchangé.
+  var IMPRIME_SANS = /^(td-aide|td-correction|td-retour|td-attendu|td-q-titre|td-consigne|td-reponse)$/;
+  Question.prototype.courteSimple = function () {
+    if (this.type !== 'courte' || this.s.classList.contains('td-cote')) return false;
+    var consignes = 0, ok = true;
+    Array.prototype.forEach.call(this.s.children, function (c) {
+      if (c.matches('script, [data-support="ecran"], .td-plus-loin:not([data-support="papier"])')) return;
+      if (c.matches('p.td-consigne')) { consignes++; if (c.querySelector('pre, table, svg, img, figure, ul, ol, br') || c.textContent.replace(/\s+/g, ' ').trim().length > 150) ok = false; return; }
+      if (!Array.prototype.some.call(c.classList, function (k) { return IMPRIME_SANS.test(k); })) ok = false;
+    });
+    return ok && consignes === 1;
   };
   Question.prototype.verifier_courte = function () {
     var v = this.champ.value;
@@ -920,18 +1040,33 @@
       if (texte + n * (largeurCommune + 5) > 76) parTrou = true;
     });
     pre.innerHTML = '';
+    function largeurDe(m) { return parTrou ? Math.max.apply(null, alternatives(m).map(function (r) { return r.length; })) + 2 : largeurCommune + 2; }
+    var alignes = lang === 'python' ? commentairesAlignes(lignes, largeurDe) : {};
     lignes.forEach(function (l, n) {
       var span = el('span', { class: 'td-l' });
       span.appendChild(el('span', { class: 'td-num', 'aria-hidden': 'true', text: String(n + 1) }));
-      var morceaux = decouperTrous(l);
+      var al = alignes[n];
+      if (al) {
+        // commentaire aligné (T123c) : le code avant le commentaire prend la même largeur sur toutes les lignes
+        // du groupe, cases comprises (à l'écran comme sur papier, où les cases sont plus larges)
+        var avant = el('span', { class: 'td-avant-com' });
+        avant.style.minWidth = al.largeur;
+        span.appendChild(avant);
+        ajouter(avant, decouperTrous(l.slice(0, al.coupe)), n, false);
+        ajouter(span, decouperTrous(l.slice(al.coupe).replace(/^ +/, '')), n, true);
+      } else ajouter(span, decouperTrous(l), n, false);
+      pre.appendChild(span);
+    });
+    function ajouter(cible, morceaux, n, commentaire) {
       morceaux.forEach(function (m, k) {
         if (k % 2 === 0) {
           var h = el('span');
-          h.innerHTML = k === 0 ? colorerLigne(m, m.trim() ? decalage(m) : d[n], null, n, lang) : colorerMots(m, lang);
-          span.appendChild(h);
+          if (commentaire) h.innerHTML = k === 0 ? colorerMots(m, lang) : (m ? '<span class="tk-com">' + esc(m) + '</span>' : '');
+          else h.innerHTML = k === 0 ? colorerLigne(m, m.trim() ? decalage(m) : d[n], null, n, lang) : colorerMots(m, lang);
+          cible.appendChild(h);
         } else {
           var rep = alternatives(m), num = q.trous.length;
-          var largeur = parTrou ? Math.max.apply(null, rep.map(function (r) { return r.length; })) + 2 : largeurCommune + 2;
+          var largeur = largeurDe(m);
           var input = el('input', {
             type: 'text', class: 'td-trou', size: String(largeur), autocomplete: 'off', spellcheck: 'false', autocapitalize: 'off',
             'aria-label': 'Case ' + (num + 1) + ', ligne ' + (n + 1)
@@ -941,12 +1076,12 @@
           input.addEventListener('input', function () { q.etat.valeur = q.trous.map(function (t) { return t.input.value; }); q.enregistrer(); });
           input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); q.verifier(); } });
           q.trous.push({ input: input, rep: rep });
-          span.appendChild(input);
+          cible.appendChild(input);
         }
       });
-      pre.appendChild(span);
-    });
+    }
     pre.classList.add('td-code-pret', 'td-code-trous');
+    if (lignes.length > CODE_LONG) pre.classList.add('td-code-long');
     // largeur du code sur papier (chaque case compte pour sa largeur) : code étroit = réponse à côté
     this.sourceTrous = lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? new Array((parTrou ? Math.max.apply(null, alternatives(m).map(function (r) { return r.length; })) : largeurCommune) + 6).join('x') : m; }).join(''); }).join('\n');
     this.mettreDeCote();
@@ -1127,10 +1262,30 @@
     this.preambule = pre ? pre.textContent : '';
     this.tests = tests ? tests.textContent : '';
     this.fichier = this.s.getAttribute('data-fichier') || 'mon_code.py';
+    // sur papier, le code de départ (le squelette à compléter) est imprimé en haut du cadre à remplir, en code de
+    // 10 pt (T123c), sauf s'il est déjà affiché dans la question ; dessous, les lignes d'écriture de 7 mm. data-lignes
+    // donne alors la hauteur de tout le cadre (en lignes de 7 mm, squelette compris), avec 2 lignes d'écriture au
+    // moins ; sans data-lignes : le squelette et 3 lignes d'écriture.
+    var lignesDepart = 0;
+    if (depart.trim()) {
+      var dejaVu = Array.prototype.some.call(s.querySelectorAll('pre.td-code'), function (p) {
+        return !p.closest('.td-correction') && (p.getAttribute('data-source') || p.textContent).trim() === depart.trim();
+      });
+      if (!dejaVu) {
+        var imp = el('pre', { class: 'td-code td-depart-papier td-papier-seul', 'aria-hidden': 'true', text: depart });
+        this.zone.appendChild(imp);
+        afficherCode(imp);
+        lignesDepart = imp.querySelectorAll('.td-l').length;
+      }
+    }
     var box = el('div', { class: 'td-ed-boite' });
     this.zone.appendChild(box);
     this.ed = new Editeur(box, this.etat.valeur !== undefined ? this.etat.valeur : depart, 'Ton programme Python, question ' + this.rang, function (v) { q.etat.valeur = v; q.enregistrer(); });
-    if (s.hasAttribute('data-lignes')) this.ed.racine.style.setProperty('--td-lignes-papier', String(+s.getAttribute('data-lignes')));
+    if (lignesDepart) {
+      // une ligne de code imprimée (10 pt × 1,32) vaut 0,665 ligne d'écriture (7 mm)
+      var reste = s.hasAttribute('data-lignes') ? Math.max(2, +s.getAttribute('data-lignes') - lignesDepart * 0.665) : 3;
+      this.ed.racine.style.setProperty('--td-lignes-papier', String(Math.round(reste * 100) / 100));
+    } else if (s.hasAttribute('data-lignes')) this.ed.racine.style.setProperty('--td-lignes-papier', String(+s.getAttribute('data-lignes')));
     this.depart = depart;
     var barre = el('div', { class: 'td-actions' });
     this.bLancer = el('button', { type: 'button', class: 'td-bouton td-principal', text: 'Lancer et vérifier' });
@@ -1179,7 +1334,8 @@
       q.ed.rendre(r.etat === 'erreur' ? ligneErreur(r.detail) : null);
       q.conclure(ok, null);
       if (essais.length > 1 || r.essai.entrees !== null) q.retour.appendChild(el('p', { text: (essais.length > 1 ? 'Essai ' + (k + 1) + ' sur ' + essais.length : 'Essai') + (r.essai.entrees !== null ? ', avec les saisies : ' + r.essai.entrees.split('\n').join(' ; ') : '') }));
-      if (r.sortie && r.sortie.trim()) { q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'ta sortie' })); q.retour.appendChild(console_(r.sortie)); }
+      var vue = r.vue !== undefined ? r.vue : r.sortie;      // ce qui s'affiche : invites et saisies comprises
+      if (vue && vue.trim()) { q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'ta sortie' })); q.retour.appendChild(console_(vue)); }
       // « n'affiche rien » : seulement si c'est la cause probable (pas après un programme juste vérifié par des tests)
       else if (r.etat === 'ok' && (!ok || (!q.tests.trim() && att === null))) q.retour.appendChild(el('p', { text: 'Ton programme n\'affiche rien. As-tu utilisé print ?' }));
       if (r.etat === 'erreur') blocErreur(r.detail, q.retour);
@@ -1219,20 +1375,27 @@
     // titre long : réduction mesurée (26 caractères tiennent à la taille normale, 31 à la taille réduite)
     var h1 = this.r.querySelector('.td-bandeau h1');
     if (h1) { var lg = h1.textContent.replace(/\s+/g, ' ').trim().length; if (lg > 31) h1.classList.add('td-titre-tres-long'); else if (lg > 26) h1.classList.add('td-titre-long'); }
-    // numérotation : deux variantes d'une même question qui se suivent (data-support="ecran" puis "papier",
-    // ou l'inverse) portent le même numéro, à l'écran comme sur papier
-    var n = 0, prec = null;
+    // numérotation (T123c) : une suite de numéros pour l'écran, une pour le papier. Une question data-support="ecran"
+    // ne compte que sur l'écran, une data-support="papier" que sur le papier : les deux variantes d'une question qui
+    // se suivent portent le même numéro, et aucun support ne saute de numéro (5 questions à l'écran pour un tableau
+    // sur papier : 5 numéros à l'écran, 1 sur papier). Feuille 2, 3… d'un TD : data-premiere-question sur <main>
+    // (et data-premiere-question-papier s'il diffère), posés par charte/numeroter-feuilles.py.
+    var depart = parseInt(this.r.getAttribute('data-premiere-question'), 10) || 1;
+    var departP = parseInt(this.r.getAttribute('data-premiere-question-papier'), 10) || depart;
+    var ne = depart - 1, np = departP - 1;
     this.questions = Array.prototype.slice.call(this.r.querySelectorAll('.td-q[data-type]')).map(function (s, i) {
       var sup = s.getAttribute('data-support') || '';
-      var jumelle = !!(prec && sup && prec.sup && prec.sup !== sup && !prec.jumelle);
-      var q = new Question(f, s, jumelle ? n : ++n, i + 1);
-      prec = { sup: sup, jumelle: jumelle };
+      var e = sup !== 'papier' ? ++ne : null, p = sup !== 'ecran' ? ++np : null;
+      var q = new Question(f, s, e !== null ? e : p, i + 1);
+      q.numPapier = p;
       return q;
     });
     this.auteurs();
     this.questions.forEach(function (q) {
       try { q.monter(); } catch (e) { q.s.classList.add('td-q-cassee'); if (window.console) console.error('Question ' + q.id + ' :', e); }
     });
+    this.questions.forEach(function (q) { if (q.courteSimple()) q.s.classList.add('td-courte-ligne'); });
+    this.tableauxARemplir();
     // le code affiché hors des questions (mémo, exemples)
     this.r.querySelectorAll('pre.td-code:not(.td-code-pret)').forEach(function (p) { afficherCode(p); });
     this.r.querySelectorAll('pre.td-erreur:not(.td-code-pret)').forEach(function (p) { p.parentNode.replaceChild(blocErreur(p.textContent.replace(/^\n/, '')), p); });
@@ -1240,14 +1403,39 @@
     this.monterBarre();
     this.maj(false);
   };
+  // tableau à remplir (T123c) : data-case-largeur (mm) et data-case-hauteur (lignes d'écriture) sur <table>,
+  // data-case-largeur sur un <th> pour sa colonne ; les cellules vides deviennent des cases à remplir
+  Feuille.prototype.tableauxARemplir = function () {
+    this.r.querySelectorAll('table[data-case-largeur], table[data-case-hauteur]').forEach(function (t) {
+      var l = parseFloat(t.getAttribute('data-case-largeur')), h = parseFloat(t.getAttribute('data-case-hauteur'));
+      if (l > 0) t.style.setProperty('--td-case-l', l + 'mm');
+      if (h > 0) t.style.setProperty('--td-case-h', String(h));
+      t.querySelectorAll('td').forEach(function (c) { if (!c.textContent.trim() && !c.children.length) c.classList.add('td-vide'); });
+      t.querySelectorAll('th[data-case-largeur]').forEach(function (c) {
+        var x = parseFloat(c.getAttribute('data-case-largeur'));
+        if (x > 0) { c.style.width = x + 'mm'; c.style.minWidth = x + 'mm'; }
+      });
+    });
+  };
   // data-auteurs sur <main> : tous les noms dans le pied de chaque page imprimée (décision du 21/11)
+  var AUTEUR_DEFAUT = 'Babash - NSI Tani Malandi';
   Feuille.prototype.auteurs = function () {
-    var a = this.r.getAttribute('data-auteurs');
+    var a = this.r.getAttribute('data-auteurs'), noms = (a || AUTEUR_DEFAUT).replace(/\s+/g, ' ').trim();
+    // le pied de la page (dans le flux) redit les mêmes noms : sur papier, il est réduit à son trait (T123c)
+    var pied = this.r.querySelector('.td-pied');
+    if (pied) {
+      var tete = (pied.textContent || '').replace(/\s+/g, ' ').trim().split(' · ')[0];
+      if (tete === noms) pied.classList.add('td-pied-redondant');
+    }
     if (!a || document.getElementById('td-pied-auteurs')) return;
-    var txt = a.replace(/\s+/g, ' ').trim().replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    var txt = noms.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
     var st = document.createElement('style');
     st.id = 'td-pied-auteurs';
-    st.textContent = '@page { @bottom-center { content: "' + txt + '  ·  CC BY-SA 4.0  ·  conçu avec l\'aide de l\'IA  ·  " counter(page) " / " counter(pages); } }';
+    // un pied long tient sur une ligne : police du texte (plus étroite que la police du code), séparateurs simples (T123c)
+    var long = noms.length > 46;
+    var sep = long ? ' · ' : '  ·  ';
+    st.textContent = '@page { @bottom-center { content: "' + txt + sep + 'CC BY-SA 4.0' + sep + 'conçu avec l\'aide de l\'IA' + sep + '" counter(page) " / " counter(pages);' +
+      (long ? ' font-family: "Atkinson Hyperlegible", "TD Symboles", sans-serif;' : '') + ' } }';
     document.head.appendChild(st);
   };
   Feuille.prototype.monterBarre = function () {
@@ -1291,9 +1479,15 @@
     var txt = faites + ' question' + (faites > 1 ? 's' : '') + ' réussie' + (faites > 1 ? 's' : '') + ' sur ' + req.length;
     if (bonus.length) txt += ' · bonus : ' + bf + ' sur ' + bonus.length;
     this.texteJauge.textContent = 'Avancement : ' + faites + ' sur ' + req.length + (bonus.length ? ' · bonus ' + bf + ' sur ' + bonus.length : '');
+    // une feuille sans question corrigée en ligne (réponses rédigées, papier) n'est jamais « validée » d'office (T123c)
+    if (!req.length) {
+      txt = 'Aucune question corrigée en ligne sur cette feuille' + (bonus.length ? ' · bonus : ' + bf + ' sur ' + bonus.length : '');
+      this.texteJauge.textContent = txt;
+      this.jauge.firstChild.style.width = '0%';
+    }
     this.texteJauge.title = txt;
     this.jauge.setAttribute('aria-valuetext', txt);
-    var toutes = faites === req.length;
+    var toutes = req.length > 0 && faites === req.length;
     this.r.classList.toggle('td-feuille-validee', toutes);
     this.validee.textContent = toutes ? '✓ Feuille validée : tu as réussi toutes les questions. Tu peux être fier·e de ce que tu as appris !' : '';
     if (toutes && !this.memoire.validee) {
