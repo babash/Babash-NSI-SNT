@@ -1,0 +1,310 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Programmation objet · TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : la classe Stock (bac 2022, Asie, 22-NSIJ1JA1, exercice 4).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-poo-1" data-td-version="3" data-code="obligatoire" data-ordre="melange">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>Programmation objet</h1>
+        <p class="td-accroche">Type bac · feuille 1/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : une classe <code>Stock</code>.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>reconnaître une classe, un objet (une instance), un attribut et une méthode ;</li>
+        <li>créer une instance avec le constructeur et appeler ses méthodes ;</li>
+        <li>écrire une méthode qui lit ou modifie les attributs avec <code>self</code>.</li>
+      </ul>
+      <p class="td-duree">45 minutes · 1 exercice de bac (4 points) · 7 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord, au brouillon ou sur la feuille imprimée, puis on vérifie ici.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. le stock de la briocherie (ici) ; 2. <a href="feuille-2.html">colorier une carte</a>.</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 1 · Le stock de la briocherie (4 points)</h2>
+  <p><b>Sujet :</b> baccalauréat 2022, Asie, jour 1, sujet 22-NSIJ1JA1, exercice 4 (4 points). <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-asie-jour-1.pdf">Le sujet d'origine (PDF)</a>.</p>
+  <p><i>Thème abordé : programmation objet en langage Python.</i></p>
+  <p>Un fabricant de brioches décide d'informatiser sa gestion des stocks. Il écrit pour cela un programme en langage Python. Une partie de son travail consiste à développer une classe <code>Stock</code> dont la première version est la suivante :</p>
+  <pre class="td-code">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+</pre>
+  <section class="td-q" data-type="code" id="q1" data-fichier="stock.py" data-obligatoire data-lignes="2">
+    <p class="td-consigne"><b>1.</b> Écrire une méthode <code>ajouter_beurre(self, qt)</code> qui ajoute la quantité <code>qt</code> de beurre à un objet de la classe <code>Stock</code>.</p>
+    <pre class="td-depart">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+
+    def ajouter_beurre(self, qt):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_s = Stock()
+_s.ajouter_beurre(560)
+assert _s.qt_beurre == 560, "Après ajouter_beurre(560) sur un stock neuf, qt_beurre doit valoir 560. Il vaut : " + repr(_s.qt_beurre)
+_s.ajouter_beurre(40)
+assert _s.qt_beurre == 600, "Le beurre s'ajoute à ce qu'il y a déjà : après un 2e ajout de 40 g, on attend 600. On a : " + repr(_s.qt_beurre)
+assert _s.qt_farine == 0 and _s.nb_oeufs == 0, "ajouter_beurre ne doit changer que le beurre."
+</script>
+    <p class="td-aide">La quantité de beurre est l'attribut <code>self.qt_beurre</code>.</p>
+    <p class="td-aide">On <b>ajoute</b> : la nouvelle quantité, c'est l'ancienne plus <code>qt</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+
+    def ajouter_beurre(self, qt):
+        self.qt_beurre = self.qt_beurre + qt
+</pre>
+      <p>La méthode modifie l'attribut de l'objet avec <code>self</code>. Elle ne renvoie rien.</p>
+    </div>
+  </section>
+  <p>On admet que l'on a écrit deux autres méthodes <code>ajouter_farine</code> et <code>ajouter_oeufs</code> qui ont des fonctionnements analogues.</p>
+  <section class="td-q" data-type="code" id="q2" data-fichier="stock.py" data-obligatoire data-lignes="3">
+    <p class="td-consigne"><b>2.</b> Écrire une méthode <code>afficher(self)</code> qui affiche la quantité de farine, d'œufs et de beurre d'un objet de type <code>Stock</code>. L'exemple ci-dessous illustre l'exécution de cette méthode dans la console :</p>
+    <pre class="td-console">
+<span class="td-l">&gt;&gt;&gt; mon_stock = Stock()</span><span class="td-l">&gt;&gt;&gt; mon_stock.afficher()</span><span class="td-l">farine: 0</span><span class="td-l">oeuf: 0</span><span class="td-l">beurre: 0</span><span class="td-l">&gt;&gt;&gt; mon_stock.ajouter_beurre(560)</span><span class="td-l">&gt;&gt;&gt; mon_stock.afficher()</span><span class="td-l">farine: 0</span><span class="td-l">oeuf: 0</span><span class="td-l">beurre: 560</span></pre>
+    <pre class="td-depart">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+
+    def ajouter_beurre(self, qt):
+        self.qt_beurre = self.qt_beurre + qt
+
+    def afficher(self):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+import io, contextlib
+_s = Stock()
+_s.ajouter_beurre(560)
+_b = io.StringIO()
+with contextlib.redirect_stdout(_b):
+    _r = _s.afficher()
+_l = [x.replace(' ', '').lower().replace('oeufs', 'oeuf').replace('œuf', 'oeuf') for x in _b.getvalue().strip().split('\n')]
+assert _l == ['farine:0', 'oeuf:0', 'beurre:560'], "afficher doit écrire trois lignes, comme dans l'exemple : farine: 0, puis oeuf: 0, puis beurre: 560. Ton affichage : " + ' / '.join(_l)
+assert _r is None, "afficher affiche avec print : elle ne renvoie rien."
+</script>
+    <p class="td-aide">Trois <code>print</code>, un par ligne. Chaque ligne affiche un texte puis la valeur d'un attribut.</p>
+    <p class="td-aide">Par exemple : <code>print("farine:", self.qt_farine)</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+
+    def ajouter_beurre(self, qt):
+        self.qt_beurre = self.qt_beurre + qt
+
+    def afficher(self):
+        print("farine:", self.qt_farine)
+        print("oeuf:", self.nb_oeufs)
+        print("beurre:", self.qt_beurre)
+</pre>
+      <p>Une méthode qui <b>affiche</b> utilise <code>print</code> et ne renvoie rien : dans la console, on ne voit que les trois lignes.</p>
+    </div>
+  </section>
+  <section class="td-q" data-type="code" id="q3" data-fichier="stock.py" data-obligatoire data-lignes="2">
+    <p class="td-consigne"><b>3.</b> Pour faire une brioche, il faut 350 g de farine, 175 g de beurre et 4 œufs. Écrire une méthode <code>stock_suffisant_brioche(self)</code> qui renvoie un booléen : VRAI s'il y a assez d'ingrédients dans le stock pour faire une brioche et FAUX sinon.</p>
+    <pre class="td-depart">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+
+    def stock_suffisant_brioche(self):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+def _st(f, o, b):
+    s = Stock(); s.qt_farine = f; s.nb_oeufs = o; s.qt_beurre = b
+    return s
+assert _st(350, 4, 175).stock_suffisant_brioche() is True, "350 g de farine, 4 œufs et 175 g de beurre suffisent tout juste : on attend True (pense à >=)."
+assert _st(1000, 10, 1000).stock_suffisant_brioche() is True, "Avec un grand stock, on attend True."
+assert _st(349, 4, 175).stock_suffisant_brioche() is False, "349 g de farine ne suffisent pas : on attend False."
+assert _st(350, 3, 175).stock_suffisant_brioche() is False, "3 œufs ne suffisent pas : on attend False."
+assert _st(350, 4, 174).stock_suffisant_brioche() is False, "174 g de beurre ne suffisent pas : on attend False."
+</script>
+    <p class="td-aide">Il faut <b>les trois</b> ingrédients en quantité suffisante : trois comparaisons reliées par <code>and</code>.</p>
+    <p class="td-aide">« Assez », c'est « au moins » : <code>&gt;=</code>. Avec exactement 350 g de farine, on peut faire la brioche.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+
+    def stock_suffisant_brioche(self):
+        return self.qt_farine &gt;= 350 and self.qt_beurre &gt;= 175 and self.nb_oeufs &gt;= 4
+</pre>
+      <p>On peut renvoyer directement l'expression booléenne, sans <code>if</code>. Écrire <code>&gt;</code> au lieu de <code>&gt;=</code> est l'erreur la plus fréquente.</p>
+    </div>
+  </section>
+
+  <p><b>4.</b> On considère la méthode supplémentaire <code>produire(self)</code> de la classe <code>Stock</code> donnée par le code suivant :</p>
+  <pre class="td-code">
+    def produire(self):
+        res = 0
+        while self.stock_suffisant_brioche():
+            self.qt_beurre = self.qt_beurre - 175
+            self.qt_farine = self.qt_farine - 350
+            self.nb_oeufs = self.nb_oeufs - 4
+            res = res + 1
+        return res</pre>
+  <p>On considère un stock défini par les instructions suivantes :</p>
+  <pre class="td-console">
+<span class="td-l">&gt;&gt;&gt; mon_stock=Stock()</span><span class="td-l">&gt;&gt;&gt; mon_stock.ajouter_beurre(1000)</span><span class="td-l">&gt;&gt;&gt; mon_stock.ajouter_farine(1000)</span><span class="td-l">&gt;&gt;&gt; mon_stock.ajouter_oeufs(10)</span></pre>
+
+  <section class="td-q" data-type="courte" id="q4" data-reponse="2|deux" data-etiquette="Valeur affichée :">
+    <p class="td-consigne"><b>4.a.</b> On exécute ensuite l'instruction <code>&gt;&gt;&gt; mon_stock.produire()</code>. Quelle valeur s'affiche dans la console ?</p>
+    <p class="td-retour" data-si="3">Regarde les œufs : 10 œufs, c'est 2 brioches seulement (il en faut 4 par brioche).</p>
+    <p class="td-retour" data-si="5">Le beurre permettrait 5 brioches, mais il faut aussi assez de farine et d'œufs.</p>
+    <p class="td-aide">Fais un tableau : farine, œufs, beurre, et <code>res</code>, à chaque tour de la boucle.</p>
+    <p class="td-aide">Après 2 tours : 300 g de farine, 2 œufs. Peut-on faire une 3<sup>e</sup> brioche ?</p>
+    <div class="td-correction">
+      <p><b>2</b>. Tour 1 : 650 g de farine, 6 œufs, 825 g de beurre. Tour 2 : 300 g, 2 œufs, 650 g. Il ne reste plus assez de farine ni d'œufs : la boucle s'arrête.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
+    <p class="td-consigne"><b>4.a (suite).</b> Que représente cette valeur ?</p>
+    <ul class="td-options">
+      <li data-juste>Le nombre de brioches produites avec ce stock.</li>
+      <li data-retour="Après produire, le stock ne permet plus aucune brioche : la boucle s'arrête justement quand il n'y en a plus assez.">Le nombre de brioches qu'on peut encore faire après l'appel.</li>
+      <li data-retour="res augmente de 1 à chaque tour : il compte des brioches, pas des grammes.">La quantité de farine qui reste, en centaines de grammes.</li>
+      <li data-retour="Chaque tour enlève 4 œufs, mais res n'augmente que de 1.">Le nombre d'œufs utilisés.</li>
+    </ul>
+    <div class="td-correction">
+      <p><code>res</code> compte les tours de boucle, et chaque tour fabrique une brioche : c'est le nombre de brioches produites. Attention, <code>produire</code> <b>modifie</b> le stock (effet de bord).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>4.a (suite).</b> Que représente cette valeur ?</p>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q6">
+    <p class="td-consigne"><b>4.b.</b> On exécute ensuite l'instruction <code>&gt;&gt;&gt; mon_stock.afficher()</code>. Que s'affiche-t-il dans la console ?</p>
+    <pre class="td-code">
+farine: [[300]]
+oeuf: [[2]]
+beurre: [[650]]</pre>
+    <p class="td-aide"><code>produire</code> a retiré deux fois 350 g de farine, 4 œufs et 175 g de beurre.</p>
+    <div class="td-correction">
+      <p>1000 − 2 × 350 = <b>300</b> g de farine, 10 − 2 × 4 = <b>2</b> œufs, 1000 − 2 × 175 = <b>650</b> g de beurre. Le stock a été modifié par <code>produire</code>.</p>
+    </div>
+  </section>
+  <section class="td-q" data-type="code" id="q7" data-fichier="brioches.py" data-obligatoire data-lignes="3">
+    <p class="td-consigne"><b>5.</b> L'industriel possède <code>n</code> lieux de production distincts et donc <code>n</code> stocks distincts. On suppose que ces stocks sont dans une liste dont chaque élément est un objet de type <code>Stock</code>. Écrire une fonction Python <code>nb_brioches(liste_stocks)</code> possédant pour unique paramètre la liste des stocks et renvoie le nombre total de brioches produites.</p>
+    <pre class="td-depart">
+class Stock:
+    def __init__(self):
+        self.qt_farine = 0         # quantité de farine initialisée à 0 g
+        self.nb_oeufs = 0          # nombre d’œufs (0 à l’initialisation)
+        self.qt_beurre = 0         # quantité de beurre initialisée à 0 g
+
+    def ajouter_beurre(self, qt):
+        self.qt_beurre = self.qt_beurre + qt
+
+    def ajouter_farine(self, qt):
+        self.qt_farine = self.qt_farine + qt
+
+    def ajouter_oeufs(self, qt):
+        self.nb_oeufs = self.nb_oeufs + qt
+
+    def stock_suffisant_brioche(self):
+        return self.qt_farine &gt;= 350 and self.qt_beurre &gt;= 175 and self.nb_oeufs &gt;= 4
+
+    def produire(self):
+        res = 0
+        while self.stock_suffisant_brioche():
+            self.qt_beurre = self.qt_beurre - 175
+            self.qt_farine = self.qt_farine - 350
+            self.nb_oeufs = self.nb_oeufs - 4
+            res = res + 1
+        return res
+
+
+def nb_brioches(liste_stocks):
+    ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+def _st(f, o, b):
+    s = Stock(); s.ajouter_farine(f); s.ajouter_oeufs(o); s.ajouter_beurre(b)
+    return s
+assert nb_brioches([_st(1000, 10, 1000)]) == 2, "Un seul stock (1000 g, 10 œufs, 1000 g) : 2 brioches."
+assert nb_brioches([_st(1000, 10, 1000), _st(700, 8, 350), _st(0, 0, 0)]) == 4, "Trois stocks : 2 + 2 + 0 = 4 brioches."
+assert nb_brioches([]) == 0, "Sans aucun stock, on attend 0."
+</script>
+    <p class="td-aide">Parcours la liste : <code>for stock in liste_stocks:</code>. Chaque <code>stock</code> est un objet <code>Stock</code>.</p>
+    <p class="td-aide">Pour chaque stock, <code>stock.produire()</code> renvoie le nombre de brioches de ce lieu : additionne-les dans un accumulateur.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def nb_brioches(liste_stocks):
+    total = 0
+    for stock in liste_stocks:
+        total = total + stock.produire()
+    return total
+</pre>
+      <p><code>nb_brioches</code> est une <b>fonction</b> (en dehors de la classe), qui appelle la <b>méthode</b> <code>produire</code> de chaque objet de la liste.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Une <b>classe</b> (<code>Region</code>) est un modèle ; un <b>objet</b> ou <b>instance</b> (<code>ge = Region("Grand Est")</code>) est fabriqué par le constructeur <code>__init__</code>.</p>
+    <p>Les <b>attributs</b> sont les variables de chaque objet : <code>self.nom</code>. Les <b>méthodes</b> sont les fonctions de la classe : leur premier paramètre est <code>self</code>, mais on ne l'écrit pas à l'appel (<code>ge.renvoie_nb_voisines()</code>).</p>
+    <p>Une méthode qui <b>affiche</b> utilise <code>print</code> ; une méthode qui <b>renvoie</b> utilise <code>return</code>. Une méthode peut modifier les attributs : c'est un effet de bord.</p>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, colorier une carte</a>.</p>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Asie, mai 2022, jour 1 (22-NSIJ1JA1), exercice 4. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-asie-jour-1.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_asie_2022_1.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document).</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-poo">Code source sur GitHub</a></p><span class="td-margouillat" data-cachette="pied" style="--x:48%;--r:5deg;--s:1"></span>
+  </footer>
+</main>
+</body>
+</html>

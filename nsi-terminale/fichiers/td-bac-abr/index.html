@@ -1,0 +1,208 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arbres de recherche · TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : les billets de loterie dans un ABR (bac 2022, La Réunion et Mayotte, 22-NSIJ2LR1, exercice 4).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-abr-1" data-td-version="3" data-code="obligatoire" data-ordre="melange">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:58.1%;--y:82.14%;--r:-88deg;--l:2.8%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Arbres binaires de recherche</span></p>
+        <h1>Arbres de recherche</h1>
+        <p class="td-accroche">Type bac · feuille 1/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=abr" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h6v1h-6zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h3v1h-3zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM5 11h1v1h-1zM10 11h3v1h-3zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM0 12h4v1h-4zM6 12h1v1h-1zM8 12h3v1h-3zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h2v1h-2zM4 13h2v1h-2zM7 13h2v1h-2zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM6 14h3v1h-3zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM7 15h5v1h-5zM13 15h1v1h-1zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h1v1h-1zM5 16h2v1h-2zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM1 17h1v1h-1zM4 17h1v1h-1zM7 17h1v1h-1zM9 17h2v1h-2zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM2 18h3v1h-3zM6 18h4v1h-4zM12 18h5v1h-5zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM10 19h1v1h-1zM12 19h1v1h-1zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h1v1h-1zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h4v1h-4zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h6v1h-6zM8 21h4v1h-4zM14 21h2v1h-2zM17 21h5v1h-5zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h1v1h-1zM8 22h3v1h-3zM13 22h1v1h-1zM15 22h1v1h-1zM17 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM8 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM15 24h4v1h-4zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM11 26h1v1h-1zM14 26h3v1h-3zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM11 27h3v1h-3zM15 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h2v1h-2zM15 28h3v1h-3zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM11 29h2v1h-2zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM13 30h3v1h-3zM17 30h1v1h-1zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM11 31h1v1h-1zM13 31h2v1h-2zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM11 32h1v1h-1zM13 32h5v1h-5zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les arbres binaires de recherche (ABR).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+      <li>insérer des valeurs dans un ABR, à la main ;</li>
+      <li>choisir le parcours qui donne les valeurs triées ;</li>
+      <li>compléter une fonction récursive (la taille) et améliorer une recherche grâce à l'ordre de l'ABR.</li>
+    </ul>
+      <p class="td-duree">30 à 45 minutes · 1 exercice de bac (4 points) · 5 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. les billets de loterie (ici) ; 2. <a href="feuille-2.html">insérer et compter dans un ABR</a>.</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice : les billets de loterie (4 points)</h2>
+  <p><i>Bac 2022, La Réunion et Mayotte, jour 2 (sujet 22-NSIJ2LR1), exercice 4, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-mayotte-jour-2.pdf">Sujet d'origine (PDF)</a>.</i></p>
+  <p><i>Cet exercice porte sur les arbres binaires de recherche.</i></p>
+  <p>Un arbre binaire est soit vide, soit un nœud qui a une valeur et au plus deux fils (le sous-arbre gauche et le sous-arbre droit). Dans la représentation ci-dessous, <code>X</code> est un nœud, <code>G1</code> est le fils gauche de <code>X</code>, <code>D1</code> est le fils droit de <code>X</code>.</p>
+  <svg viewBox="0 0 240 110" width="240" height="110" role="img" aria-label="Schéma : un nœud X ; son fils gauche G1, qui a pour fils G2 et G3 ; son fils droit D1, qui a pour fils D2 et D3." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="51.9" y1="65.2" x2="38.1" y2="82.8"/><line x1="68.1" y1="65.2" x2="81.9" y2="82.8"/><line x1="109.0" y1="24.0" x2="71.0" y2="48.0"/><line x1="171.9" y1="65.2" x2="158.1" y2="82.8"/><line x1="188.1" y1="65.2" x2="201.9" y2="82.8"/><line x1="131.0" y1="24.0" x2="169.0" y2="48.0"/><circle cx="30.0" cy="93.0" r="13"/><circle cx="90.0" cy="93.0" r="13"/><circle cx="60.0" cy="55.0" r="13"/><circle cx="150.0" cy="93.0" r="13"/><circle cx="210.0" cy="93.0" r="13"/><circle cx="180.0" cy="55.0" r="13"/><circle cx="120.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="30.0" y="97.3">G2</text><text x="90.0" y="97.3">G3</text><text x="60.0" y="59.3">G1</text><text x="150.0" y="97.3">D2</text><text x="210.0" y="97.3">D3</text><text x="180.0" y="59.3">D1</text><text x="120.0" y="21.3">X</text></g></svg>
+  <p>Un arbre binaire de recherche est ordonné de la manière suivante :</p>
+  <p>Pour <b>chaque</b> nœud,</p>
+  <ul>
+    <li>les valeurs de <b>tous les nœuds</b> du sous-arbre gauche sont <b>strictement inférieures</b> à la valeur du nœud</li>
+    <li>les valeurs de <b>tous les nœuds</b> du sous-arbre droit sont <b>supérieures ou égales</b> à la valeur du nœud</li>
+  </ul>
+  <p>Ainsi, par exemple, toutes les valeurs des nœuds <code>G1</code>, <code>G2</code> et <code>G3</code> sont strictement inférieures à la valeur du nœud <code>X</code> et toutes les valeurs des nœuds <code>D1</code>, <code>D2</code> et <code>D3</code> sont supérieures ou égales à la valeur du nœud <code>X</code>.</p>
+  <p>Au fur et à mesure que les billets d'une loterie sont vendus, les numéros inscrits sur les billets sont insérés dans un arbre binaire de recherche. Chaque nœud de l'arbre est un couple, la 1<sup>ère</sup> valeur correspond au numéro du billet et la seconde est une référence permettant de connaître le lieu de vente du billet.</p>
+  <p>Par exemple au couple <code>(45,'AZ60')</code> correspond le billet n°45 vendu par le commerçant <code>'AZ60'</code>. Seul le numéro du billet est utilisé pour positionner le nœud dans l'arbre.</p>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="45 22 70 65 58 67|45, 22, 70, 65, 58, 67|45,22,70,65,58,67|45 - 22 - 70 - 65 - 58 - 67|45-22-70-65-58-67|45 ; 22 ; 70 ; 65 ; 58 ; 67|45;22;70;65;58;67" data-etiquette="Ton arbre, niveau par niveau :" data-support="ecran">
+    <p class="td-consigne"><b>1. a.</b> Dessiner l'arbre binaire de recherche dont la racine est <code>(45,'AZ60')</code> et dans lequel on insère dans cet ordre les nœuds <code>(70,'AZ60')</code>, <code>(22,'AZ60')</code>, <code>(65,'BB54')</code>, <code>(58,'BC25')</code> et <code>(67,'BC25')</code></p>
+    <p class="td-ecran-seul">Dessine l'arbre au brouillon. Pour le vérifier ici, écris ses numéros de billet <b>niveau par niveau</b>, de haut en bas et de gauche à droite (un parcours en largeur), séparés par des espaces.</p>
+    <p class="td-retour" data-si="45 22 70 58 65 67|45, 22, 70, 58, 65, 67|45,22,70,58,65,67">65 est plus petit que 70 : il va à <b>gauche</b> de 70, pas à droite.</p>
+    <p class="td-retour" data-si="45 22 70 65 67 58|45, 22, 70, 65, 67, 58|45,22,70,65,67,58">58 est plus petit que 65 : il va à gauche de 65 ; 67 est plus grand : à droite.</p>
+    <p class="td-retour" data-si="22 45 58 65 67 70|22, 45, 58, 65, 67, 70|22,45,58,65,67,70">Ce sont les numéros triés. On demande l'arbre niveau par niveau : la racine (45) d'abord.</p>
+    <p class="td-aide">On insère toujours en partant de la racine. Plus petit : on descend à gauche ; plus grand ou égal : à droite. On s'arrête sur une place vide.</p>
+    <p class="td-aide">70 &gt; 45 : à droite de 45. 22 &lt; 45 : à gauche. 65 &gt; 45 puis 65 &lt; 70 : à gauche de 70. Continue avec 58 et 67.</p>
+    <div class="td-correction">
+      <svg viewBox="0 0 280 148" width="280" height="148" role="img" aria-label="L'arbre corrigé : racine 45 ; 22 à gauche ; 70 à droite ; 65 fils gauche de 70 ; 58 et 67 fils gauche et droit de 65." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="128.6" y1="23.2" x2="81.4" y2="48.8"/><line x1="169.6" y1="104.8" x2="162.9" y2="119.2"/><line x1="180.4" y1="104.8" x2="187.1" y2="119.2"/><line x1="201.2" y1="64.6" x2="183.8" y2="83.4"/><line x1="151.4" y1="23.2" x2="198.6" y2="48.8"/><circle cx="70.0" cy="55.0" r="13"/><circle cx="157.5" cy="131.0" r="13"/><circle cx="192.5" cy="131.0" r="13"/><circle cx="175.0" cy="93.0" r="13"/><circle cx="210.0" cy="55.0" r="13"/><circle cx="140.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="70.0" y="60.0">22</text><text x="157.5" y="136.0">58</text><text x="192.5" y="136.0">67</text><text x="175.0" y="98.0">65</text><text x="210.0" y="60.0">70</text><text x="140.0" y="22.0">45</text></g></svg>
+      <p>Niveau par niveau : <b>45 22 70 65 58 67</b>. 58 descend 45 → 70 → 65, à gauche de 65 ; 67 descend 45 → 70 → 65, à droite de 65.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="4">
+    <p class="td-consigne"><b>1. a.</b> Dessiner l'arbre binaire de recherche dont la racine est <code>(45,'AZ60')</code> et dans lequel on insère dans cet ordre les nœuds <code>(70,'AZ60')</code>, <code>(22,'AZ60')</code>, <code>(65,'BB54')</code>, <code>(58,'BC25')</code> et <code>(67,'BC25')</code></p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q2" data-ordre="fixe">
+    <p class="td-consigne"><b>1. b.</b> Pour construire <b>la liste triée</b> de tous les numéros de billets vendus, préciser quel type de parcours de cet arbre faut-il programmer parmi les propositions ci-dessous :</p>
+    <ul class="td-options">
+      <li data-retour="En largeur, on obtient 45 22 70 65 58 67 : ce n'est pas trié.">un parcours en largeur ;</li>
+      <li data-juste>un parcours en profondeur infixe ;</li>
+      <li data-retour="En préfixe, la racine passe avant son sous-arbre gauche : 45 arrive avant 22.">un parcours en profondeur préfixe ;</li>
+      <li data-retour="En suffixe, la racine passe après son sous-arbre droit : 45 arrive en dernier, après 70.">un parcours en profondeur suffixe.</li>
+    </ul>
+    <p class="td-aide">Dans un ABR, les plus petits sont à gauche du nœud, les plus grands à droite. Où faut-il placer le nœud dans la liste ?</p>
+    <div class="td-correction">
+      <p>Le parcours <b>infixe</b> (gauche, nœud, droit) d'un ABR donne les valeurs dans l'ordre croissant : 22 45 58 65 67 70.</p>
+    </div>
+  </section>
+
+  <p>La fonction <code>filsgauche(a)</code> retourne le sous arbre gauche du nœud <code>a</code> et <code>null</code> si le nœud <code>a</code> n'a pas de fils gauche. Il en est de même pour la fonction <code>filsdroit(a)</code> avec le fils droit.</p>
+
+  <p><b>2.</b> On rappelle que la taille d’un arbre est le nombre de nœuds. Recopier et compléter les ………… de l’algorithme suivant pour que la fonction <code>taille(a)</code> renvoie la taille d’un arbre <code>a</code>.</p>
+  <pre class="td-code td-sans-num">
+fonction taille(a)
+    si a est null
+        alors renvoyer …………
+    sinon
+        renvoyer 1 + ……………………… + ……………………………</pre>
+
+  <section class="td-q" data-type="trous" id="q3" data-support="ecran">
+    <p class="td-consigne"><b>2.</b> Complète les ………… de l'algorithme <code>taille</code> ci-dessus.</p>
+    <p class="td-ecran-seul">Sur machine, complète la même fonction écrite en Python (<code>null</code> s'écrit <code>None</code>).</p>
+    <pre class="td-code">
+def taille(a):
+    if a is None:
+        return [[0]]
+    else:
+        return 1 + [[taille(filsgauche(a))|taille(filsdroit(a))]] + [[taille(filsdroit(a))|taille(filsgauche(a))]]</pre>
+    <p class="td-aide">Combien de nœuds a l'arbre vide ?</p>
+    <p class="td-aide">Un arbre non vide : son nœud (le « 1 + »), plus les nœuds de ses deux sous-arbres. On rappelle la fonction <code>taille</code> sur chacun d'eux.</p>
+    <div class="td-correction">
+      <pre class="td-code td-sans-num">
+fonction taille(a)
+    si a est null
+        alors renvoyer 0
+    sinon
+        renvoyer 1 + taille(filsgauche(a)) + taille(filsdroit(a))</pre>
+      <p>Le cas de base (l'arbre vide, 0 nœud) arrête la récursivité ; chaque appel porte sur un sous-arbre plus petit.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>2.</b> Complète les ………… de l'algorithme <code>taille</code> ci-dessus (écris ici les deux expressions de la dernière ligne).</p>
+  </section>
+
+  <p>Si <code>a</code> n'est pas <code>null</code>, la fonction <code>billet(a)</code> retourne la première valeur du nœud <code>a</code> (c'est-à-dire le numéro du billet) et <code>reference(a)</code> retourne la deuxième valeur du nœud <code>a</code> (c'est-à-dire le lieu de vente du billet <code>billet(a)</code>).</p>
+
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
+    <p class="td-consigne"><b>3. a.</b> Que fait la fonction récursive écrite en pseudo-langage suivante, où le paramètre <code>a</code> est un nœud et <code>n</code> un nombre entier ?</p>
+    <pre class="td-code td-sans-num">
+fonction mystere(a, n)
+    si a est null
+        alors renvoyer Faux
+    sinon, si billet(a) vaut n
+        alors renvoyer Vrai
+    sinon
+        renvoyer mystere(filsgauche(a)) OU mystere(filsdroit(a))</pre>
+    <p class="td-ecran-seul">Sur la copie, on rédige sa réponse. Ici, choisis la bonne description.</p>
+    <ul class="td-options">
+      <li data-retour="La fonction ne renvoie pas un nombre : elle renvoie Vrai ou Faux.">Elle renvoie le nombre de billets de l'arbre <code>a</code> qui portent le numéro <code>n</code>.</li>
+      <li data-juste>Elle renvoie Vrai si un billet de numéro <code>n</code> est dans l'arbre <code>a</code>, et Faux sinon.</li>
+      <li data-retour="Elle ne s'arrête pas à la racine : si la racine n'a pas le numéro n, elle cherche dans les deux sous-arbres.">Elle renvoie Vrai seulement si la racine de <code>a</code> porte le numéro <code>n</code>, et Faux sinon.</li>
+      <li data-retour="Elle ne modifie pas l'arbre : aucune ligne n'insère de nœud.">Elle insère un billet de numéro <code>n</code> dans l'arbre <code>a</code>, à la place d'un arbre vide.</li>
+    </ul>
+    <p class="td-aide">Regarde ce que renvoie la fonction : un nombre, un arbre, ou Vrai / Faux ?</p>
+    <p class="td-aide">Quand renvoie-t-elle Vrai ? Et si le billet n'est pas à la racine, où cherche-t-elle ?</p>
+    <div class="td-correction">
+      <p>Elle <b>recherche</b> le billet n° <code>n</code> : Vrai s'il est dans l'arbre, Faux sinon. Elle explore les deux sous-arbres : elle marche pour tout arbre binaire, même s'il n'est pas un ABR.</p>
+      <p><b>Remarque sur le sujet :</b> les appels récursifs oublient le paramètre <code>n</code>. Il faut lire <code>mystere(filsgauche(a), n) OU mystere(filsdroit(a), n)</code>. Même oubli dans la question 3. b.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>3. a.</b> Que fait la fonction récursive écrite en pseudo-langage suivante, où le paramètre <code>a</code> est un nœud et <code>n</code> un nombre entier ?</p>
+    <pre class="td-code td-sans-num">
+fonction mystere(a, n)
+    si a est null
+        alors renvoyer Faux
+    sinon, si billet(a) vaut n
+        alors renvoyer Vrai
+    sinon
+        renvoyer mystere(filsgauche(a)) OU mystere(filsdroit(a))</pre>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-comparer="code" data-reponse="n &lt; billet(a)|billet(a) &gt; n|n &lt; billet(a) alors|billet(a) &gt; n alors|billet(a) &gt; n:|n &lt; billet(a):|n&lt;billet(a)|billet(a)&gt;n|n &lt;= billet(a)|billet(a) &gt;= n" data-etiquette="Ligne 6 : sinon si">
+    <p class="td-consigne"><b>3. b.</b> La fonction précédente est applicable à tout arbre binaire. L’arbre construit à la première question est un arbre binaire de recherche. Recopier et compléter le …………………… de la ligne 6 de l’algorithme ci-dessous pour améliorer la fonction <code>mystere</code> en tenant compte de cette remarque.</p>
+    <pre class="td-code">
+fonction mystereABR(a, n)
+    si a est null
+        alors renvoyer Faux
+    sinon, si billet(a) vaut n
+        alors renvoyer Vrai
+    sinon si ……………………
+        renvoyer mystereABR(filsgauche(a))
+    sinon
+        renvoyer mystereABR(filsdroit(a))</pre>
+    <p class="td-retour" data-si="n &gt; billet(a)|billet(a) &lt; n|n&gt;billet(a)|billet(a)&lt;n">C'est l'inverse : si <code>n</code> est plus <b>petit</b> que le billet du nœud, il ne peut être qu'à gauche.</p>
+    <p class="td-aide">Dans un ABR, où sont les numéros plus petits que celui du nœud ?</p>
+    <p class="td-aide">La ligne 7 descend à gauche. Il faut donc la condition « <code>n</code> est plus petit que <code>billet(a)</code> ».</p>
+    <div class="td-correction">
+      <p>Ligne 6 : <b>sinon si n &lt; billet(a)</b>. Si <code>n</code> est plus petit que le billet du nœud, il ne peut être que dans le sous-arbre gauche ; sinon, dans le droit. On ne visite qu'un seul chemin, au lieu de tout l'arbre.</p>
+      <p>Comme à la question 3. a., les appels doivent recevoir <code>n</code> : <code>mystereABR(filsgauche(a), n)</code>. Comme <code>n</code> est différent de <code>billet(a)</code> à cette ligne, <code>n &lt;= billet(a)</code> est juste aussi.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Dans un ABR, pour chaque nœud : à gauche les valeurs plus petites, à droite les plus grandes (ou égales, selon le sujet).</p>
+    <p>Insérer : on part de la racine et on descend à gauche ou à droite jusqu'à une place vide. Le parcours <b>infixe</b> donne les valeurs triées.</p>
+    <p>Rechercher dans un ABR : on compare à la racine, puis on ne descend que d'<b>un seul</b> côté.</p>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, insérer et compter dans un ABR</a>.</p>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : La Réunion et Mayotte, mai 2022, jour 2 (22-NSIJ2LR1), exercice 4. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-mayotte-jour-2.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Aucun corrigé de l'AEIF n'est publié pour ce sujet : corrections de la mise en TD, vérifiées par exécution. Arbres redessinés.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-abr">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
