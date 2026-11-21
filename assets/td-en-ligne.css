@@ -222,6 +222,7 @@ body.td-page {
 }
 .td-bandeau h1 {
   margin: .55cqw 0 0; font-size: 4.6cqw; line-height: 1.02; text-transform: uppercase; width: max-content; max-width: 50cqw;
+  overflow-wrap: anywhere;   /* un mot plus large que la zone du titre passe à la ligne au lieu de passer sous le QR code (T123c) */
   text-shadow: -.28cqw .12cqw 0 var(--td-neon-2), .28cqw -.12cqw 0 var(--td-neon-1);
 }
 /* titre long (le moteur compte ses caractères) : réduction mesurée, puis retour à la ligne */
@@ -229,7 +230,7 @@ body.td-page {
 .td-bandeau h1.td-titre-tres-long { font-size: 3.2cqw; max-width: 51.8cqw; }
 .td-bandeau .td-accroche {
   margin: .45cqw 0 0; font: 400 2.25cqw/1.1 var(--td-signal); width: max-content; max-width: 46cqw;
-  background: var(--td-fond); padding-right: .6cqw;
+  background: var(--td-fond); padding-right: .6cqw; overflow-wrap: anywhere;
 }
 .td-bandeau .td-accroche::before { content: "> "; font-weight: 700; }
 .td-qr {
@@ -338,6 +339,8 @@ body.td-page {
   font-family: var(--td-titres); font-size: 1.05rem; letter-spacing: .04em; text-transform: uppercase; line-height: 1.25;
   padding: .05rem .5rem; color: var(--td-fond); background: var(--td-encre); box-shadow: 3px 3px 0 var(--td-neon-2);
 }
+/* une question des deux supports dont le numéro diffère sur papier (T123c) : les deux numéros, un seul visible */
+.td-num-papier { display: none; }
 .td-q-bonus { font-family: var(--td-mono); font-size: .85rem; font-weight: 700; padding: 0 .45rem; border: var(--td-trait-ep) solid var(--td-encre); }
 .td-q-etat { margin-left: auto; font-family: var(--td-texte); font-size: .88rem; font-weight: 700; }
 .td-est-juste .td-q-etat { color: var(--td-juste); }
@@ -423,6 +426,8 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   white-space: pre;
 }
 .td pre.td-code:not(.td-code-pret) { padding-left: .7rem; }
+/* à l'écran, un code qui dépassait de quelques pixels est réduit d'autant par le moteur (T123c) */
+@media screen { .td pre.td-code.td-ajuste, .td pre.td-erreur.td-ajuste { font-size: calc(var(--td-taille-code) * var(--td-reduc, 1)); } }
 .td-l { display: block; min-height: calc(var(--td-interligne-code) * 1em); }
 .td-num {
   display: inline-block; width: 2.6em; padding-right: .7em; margin-right: .6em;
@@ -455,6 +460,10 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   border-radius: 0; padding: 0 .2em; margin: 0 .1em; height: 1.45em; vertical-align: baseline;
 }
 .td-trou[aria-invalid="true"] { border: 3px solid var(--td-encore); }
+/* commentaires alignés dans un code à trous (T123c) : le code avant le commentaire a la largeur du groupe,
+   calculée par le moteur avec ces deux mesures des cases (marge et largeur minimale, autres sur papier) */
+.td-avant-com { display: inline-block; }
+:root { --td-trou-marge: .2em; --td-trou-min: 0px; }
 
 /* consoles compactes : une ligne de sortie par ligne de texte, petite étiquette posée sur le cadre */
 .td pre.td-console, .td pre.td-erreur {
@@ -568,6 +577,14 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
 .td td.td-nb, .td th.td-nb { text-align: right; font-variant-numeric: tabular-nums; }
 .td table code { font-size: 1em; }
 
+/* ── Tableau à remplir (T123c) : <table data-case-largeur="25" data-case-hauteur="2"> : les cellules vides font
+   25 mm de large et 2 lignes d'écriture de haut (7 mm chacune sur papier) ; data-case-largeur sur un <th> règle sa
+   colonne. Le moteur pose les mesures : aucun style dans la page. ── */
+.td table .td-vide { width: var(--td-case-l, auto); min-width: var(--td-case-l, 0); height: calc(var(--td-case-h, 1) * 1.6em); }
+/* un tableau à remplir répartit sa largeur (le texte passe à la ligne) ; data-pleine-largeur : toute la largeur */
+.td-table table.td-a-remplir th, .td-table table.td-a-remplir td { white-space: normal; }
+.td table.td-a-remplir[data-pleine-largeur] { width: 100%; }
+
 /* ── Schémas SVG : <figure class="td-schema"><svg viewBox="…" role="img" aria-label="…">…</svg><figcaption>…</figcaption></figure>
    Le dessin s'adapte à la largeur ; tracez en currentColor : il suit l'encre (claire en obscur, noire sur papier).
    Un dessin aux couleurs fixes garde un fond blanc en obscur (data-couleurs="fixes"). ── */
@@ -575,6 +592,8 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
 .td-schema figcaption { font-size: .92rem; color: var(--td-encre-douce); margin-top: .2rem; }
 .td-q svg:not(.td-qr svg), .td-schema svg, .td p > svg { max-width: 100%; height: auto; }
 .td-schema svg { display: block; color: var(--td-encre); }
+/* plusieurs dessins dans une figure : côte à côte, sur une ligne si la place le permet (T123c) */
+.td-schema svg:not(:only-of-type) { display: inline-block; vertical-align: middle; margin-right: .6rem; }
 .td-schema[data-couleurs="fixes"] svg { background: #FFFFFF; color: #121016; padding: .3rem; }
 
 /* ── Réponse libre (data-type="libre") ── */
@@ -619,6 +638,7 @@ textarea.td-libre { width: 100%; resize: vertical; }
     --td-console-fond: #fff; --td-console-trait: #121016; --td-erreur: #A1001C; --td-accent: #121016;
     --td-marg-img: url("td/margouillat.svg");
     --td-taille-code: 10pt; --td-interligne-code: 1.32;
+    --td-trou-marge: 1.2mm; --td-trou-min: 12mm;
     color-scheme: light;
   }
   body.td-page { background: #fff; color: #121016; font-size: 10pt; line-height: 1.3; }
@@ -646,6 +666,10 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-erreur-bloc > button, .td-ed-info, .td-ed-aide, .td-ac, .td-fin, .td-ordre-btn, .td-indic, .td-py-note,
   .td-q-etat, .td-ecran-seul, .td-lignes-choix, .td-pied .td-ecran-seul { display: none !important; }
   .td-papier-seul { display: block; }
+  /* une mention imprimée dans une phrase : <span class="td-papier-seul"> reste dans la ligne (T123c) */
+  :is(span, b, i, em, strong, code, a, small).td-papier-seul { display: inline; }
+  .td-num-ecran { display: none; }
+  .td-num-papier { display: inline; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .td :focus, .td :focus-visible { outline: none !important; }
   .td a { color: #121016; text-decoration: none; }
@@ -661,7 +685,9 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-nom span:last-child { flex: 0 0 52mm; }
   .td-objectifs { margin: 0 0 2mm; padding: 1.4mm 3mm 1.2mm; box-shadow: .8mm .8mm 0 var(--td-neon-1); break-inside: avoid; }
   .td-objectifs p, .td-criteres { margin: .4mm 0; }
-  .td-criteres { columns: 2; column-gap: 6mm; padding-left: 4.5mm; }
+  /* deux colonnes : la puce de la seconde colonne reste dans sa colonne (T123c) */
+  .td-criteres { columns: 2; column-gap: 7mm; padding-left: 0; }
+  .td-criteres li { margin-left: 4.5mm; break-inside: avoid; }
   .td-duree { margin: .6mm 0 0; font-size: 10pt; }
   .td h2.td-partie { font-size: 14pt; margin: 3mm 0 1.6mm; padding-bottom: .4mm; border-bottom-width: 1.5px; box-shadow: 0 .7mm 0 var(--td-neon-2); break-after: avoid; }
 
@@ -733,10 +759,52 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-editeur { border: var(--td-saisie-ep) solid var(--td-saisie); border-left-width: 3px; min-height: calc(var(--td-lignes-papier, 4.3) * 7mm); height: calc(var(--td-lignes-papier, 4.3) * 7mm);
     background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1.2px), var(--td-saisie) calc(7mm - 1.2px) 7mm) !important; }
   .td-ed-texte, .td-ed-rendu, .td-gouttiere { visibility: hidden; }
+  /* le code de départ (squelette à compléter) : en haut du cadre à remplir, en code de 10 pt ; dessous, les lignes d'écriture (T123c) */
+  /* squelette et lignes d'écriture restent ensemble (break-after) ; s'ils sont séparés malgré tout, le cadre garde son trait du haut */
+  .td pre.td-depart-papier { margin: .7mm 0 0; border: var(--td-saisie-ep) solid var(--td-saisie); border-left-width: 3px; border-bottom: 0; break-after: avoid; }
+  .td pre.td-depart-papier ~ .td-ed-boite { margin-top: 0; }
+  .td pre.td-depart-papier ~ .td-ed-boite .td-editeur { border-top: 1px dashed var(--td-saisie); }
+  /* un code de plus de 40 lignes peut passer d'une page à l'autre, entre deux lignes (jamais au milieu d'une ligne) */
+  .td pre.td-code-long { break-inside: auto; }
+  .td pre.td-code-long .td-l { break-inside: avoid; }
+  .td-q:has(pre.td-code-long) { break-inside: auto; }
+  /* tableau à remplir : la hauteur en lignes d'écriture de 7 mm */
+  .td table .td-vide { height: calc(var(--td-case-h, 1) * 7mm); }
+  /* réponses courtes : la consigne et la ligne à remplir sur une seule ligne ; à la suite, elles se resserrent (T123c) */
+  .td-q.td-courte-ligne { display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 3mm; }
+  .td-q.td-courte-ligne > .td-q-titre { float: none; margin: 0; flex: none; }
+  .td-q.td-courte-ligne > .td-consigne { flex: 1 1 60mm; min-width: 0; min-height: 0; margin: 0; }
+  .td-q.td-courte-ligne > .td-reponse { flex: 0 1 auto; min-width: 64mm; margin: 0; align-self: flex-end; }
+  .td-q.td-courte-ligne .td-ligne-champ { margin: 0; flex-wrap: nowrap; }
+  .td-q.td-courte-ligne .td-ligne-champ > label { white-space: nowrap; }
+  .td-q.td-courte-ligne .td-ligne-champ > label.td-etiquette-defaut { display: none; }
+  .td-q.td-courte-ligne input.td-champ { flex: 1 1 36mm; width: 36mm; min-width: 30mm; }
+  .td-q.td-courte-ligne + .td-q.td-courte-ligne { padding-top: .5mm; margin-top: -.4mm; }
+  /* data-lignes="0" : aucune ligne à remplir (réponse dans un tableau, sur le code) */
+  textarea.td-libre.td-sans-ligne { display: none; }
+  /* une grande question peut passer d'une page à l'autre entre ses blocs (code, tableau, figure, lignes),
+     qui restent entiers : moins de blanc en bas de page (T123c) */
+  .td-q:has(> pre.td-code ~ .td-reponse textarea, > .td-table, > figure, > .td-schema) { break-inside: auto; }
+  /* « Trouve l'erreur » et réponses rédigées à côté d'un code étroit (data-cote) */
+  .td-q.td-cote > pre.td-code ~ .td-erreur-bloc { display: flow-root; clear: none !important; }
+  /* data-cote-reponse="gauche" : la ligne à remplir sous le code, à gauche (la grille ou le schéma reste à droite) */
+  .td-q.td-cote[data-cote-reponse="gauche"] > pre.td-code ~ :is(svg, figure, .td-schema, .td-table, p:not(.td-consigne)) { float: right; max-width: calc(50% - 3mm); margin-top: .7mm; }
+  .td-q.td-cote[data-cote-reponse="gauche"] > .td-reponse { float: left; clear: left !important; width: calc(50% - 3mm); }
+  /* réponse rédigée : l'étiquette par défaut n'est pas imprimée (la consigne dit quoi écrire) */
+  .td-q[data-type="libre"] .td-bloc-champ > label.td-etiquette-defaut { display: none; }
   .td-memo { break-inside: avoid; border-width: 1.5px; margin: 2mm 0 1.5mm; padding: 1.6mm 3mm; box-shadow: .8mm .8mm 0 var(--td-neon-2); }
   .td-memo h2 { font-size: 13pt; }
   .td-memo .td-margouillat { --l: 9mm; }
-  .td-pied { margin-top: 2mm; padding-top: 1.2mm; font-size: 10pt; break-inside: avoid; }
+  .td-pied { margin-top: 2mm; padding-top: 1.2mm; font-size: 10pt; break-inside: avoid; break-before: avoid; }
+  /* le pied de la page redit ce que porte le pied de chaque page A4 (noms, licence, IA) : sur papier, il n'en reste
+     que le trait (s'il cache le margouillat), sans hauteur : jamais de page qui ne porte que lui (T123c) */
+  .td-pied.td-pied-redondant { padding-top: 1mm; margin-top: 3mm; }
+  .td-pied.td-pied-redondant > :not(.td-margouillat):not(.td-source-papier) { display: none; }
+  /* « Code source sur GitHub » et son adresse, une ligne en fin de feuille ; ailleurs, l'adresse suit le lien */
+  .td-pied .td-source-papier { margin: 0; font-size: 10pt; }
+  .td-pied:not(.td-pied-redondant) .td-source-papier { display: none; }
+  .td-pied:not(.td-pied-redondant) a.td-lien-source::after { content: " : " attr(href); overflow-wrap: anywhere; }
+  .td-pied .td-adresse { font-family: var(--td-mono); overflow-wrap: anywhere; }
 
   /* TD à plusieurs feuilles, en un seul PDF continu (imprimer-td.py, ou data-feuille="2" et suivantes) :
      une bande de titre fine au lieu du bandeau ; « Nom et prénom » et le pied de page une seule fois */
@@ -751,6 +819,13 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td.td-suite .td-bandeau h1, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau h1 { font-size: 14pt; margin: 0; max-width: none; text-shadow: -.4mm .2mm 0 var(--td-neon-2); }
   .td.td-suite .td-bandeau .td-accroche, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau .td-accroche { font-size: 13pt; margin: 0; max-width: none; }
   .td.td-suite .td-nom { display: none !important; }
+  /* PDF réuni : les objectifs ne sont imprimés qu'une fois, sur la première feuille (T123c) */
+  .td.td-suite .td-objectifs { display: none !important; }
+  /* data-nouvelle-page sur <main> : la feuille commence une nouvelle page dans le PDF réuni, avec « Nom et prénom »
+     (un mini-contrôle que les élèves s'échangent) */
+  .td.td-suite[data-nouvelle-page] { break-before: page; }
+  .td.td-suite[data-nouvelle-page] .td-bandeau { margin-top: 0; }
+  .td.td-suite[data-nouvelle-page] .td-nom { display: flex !important; }
   .td.td-suite-avant .td-pied { display: none; }
   .td-pied .td-margouillat { --l: 9mm; }
   .td-pied .td-ia { font-size: 10pt; }
