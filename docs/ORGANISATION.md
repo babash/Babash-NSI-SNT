@@ -18,6 +18,9 @@ snt/
   ressources.js             l'ancienne liste de la rubrique SNT, plus lue depuis le 17/11/2026
   fichiers/                 ← les PDF et fiches de la rubrique SNT
     capytale/<id>/          les activités Capytale : notebook (.ipynb), page de lecture, fichiers à joindre
+    <dossier>/<td>/         un TD au style « Signal pirate » : sa page en ligne (index.html, feuille-2.html…) ;
+                            son PDF, à côté (<td>.pdf), est sa feuille vierge ; source/ garde le LaTeX
+                            d'origine et le script qui calcule les réponses
   index.html                (ne pas toucher)
 nsi-premiere/   …           même organisation pour chaque rubrique
 nsi-terminale/  …
