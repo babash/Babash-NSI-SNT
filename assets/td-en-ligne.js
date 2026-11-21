@@ -1133,13 +1133,15 @@
   /* réponse libre (data-type="libre", data-lignes="4") : des lignes à remplir sur papier ; à l'écran, une zone
      de brouillon non corrigée (la question ne compte jamais dans l'avancement) */
   Question.prototype.monter_libre = function () {
-    var q = this, id = nouvelId('libre'), n = Math.max(1, +this.s.getAttribute('data-lignes') || 3);
-    this.champ = el('textarea', { id: id, class: 'td-champ td-libre', rows: String(n), spellcheck: 'true' });
+    // data-lignes="0" : aucune ligne sur papier (réponse dans un tableau, « entoure sur le code ») ; sans attribut : 3 (T123c)
+    var q = this, id = nouvelId('libre'), a = this.s.getAttribute('data-lignes'), n = a !== null && a.trim() !== '' && !isNaN(+a) ? Math.max(0, Math.round(+a)) : 3;
+    this.champ = el('textarea', { id: id, class: 'td-champ td-libre' + (n ? '' : ' td-sans-ligne'), rows: String(Math.max(1, n)), spellcheck: 'true' });
     this.champ.style.setProperty('--td-lignes', String(n));
     this.champ.value = this.etat.valeur || '';
     this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
     this.zone.appendChild(el('div', { class: 'td-ligne-champ td-bloc-champ' }, [
-      el('label', { for: id, class: this.support === 'papier' ? 'td-invisible' : null, text: this.s.getAttribute('data-etiquette') || 'Ta réponse (rédigée, non corrigée ici : compare avec la correction) :' }), this.champ]));
+      el('label', { for: id, class: this.support === 'papier' ? 'td-invisible' : (this.s.getAttribute('data-etiquette') ? null : 'td-etiquette-defaut'), text: this.s.getAttribute('data-etiquette') || 'Ta réponse (rédigée, non corrigée ici : compare avec la correction) :' }), this.champ]));
+    this.mettreDeCote();       // data-cote : le code à gauche, les lignes à droite (T123c)
   };
   Question.prototype.verifier_libre = function () { };
 
@@ -1232,6 +1234,7 @@
       this.champ.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); q.verifier(); } });
       this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id, text: 'Écris cette ligne corrigée :' }), this.champ]));
     }
+    if (this.s.getAttribute('data-cote') === 'oui') this.mettreDeCote();     // « trouve l'erreur » : sur demande seulement (T123c)
   };
   Question.prototype.verifier_erreur = function () {
     var choisie = this.radios.filter(function (r) { return r.checked; })[0];
@@ -1406,10 +1409,11 @@
   // tableau à remplir (T123c) : data-case-largeur (mm) et data-case-hauteur (lignes d'écriture) sur <table>,
   // data-case-largeur sur un <th> pour sa colonne ; les cellules vides deviennent des cases à remplir
   Feuille.prototype.tableauxARemplir = function () {
-    this.r.querySelectorAll('table[data-case-largeur], table[data-case-hauteur]').forEach(function (t) {
+    this.r.querySelectorAll('table[data-case-largeur], table[data-case-hauteur], table[data-pleine-largeur]').forEach(function (t) {
       var l = parseFloat(t.getAttribute('data-case-largeur')), h = parseFloat(t.getAttribute('data-case-hauteur'));
       if (l > 0) t.style.setProperty('--td-case-l', l + 'mm');
       if (h > 0) t.style.setProperty('--td-case-h', String(h));
+      t.classList.add('td-a-remplir');
       t.querySelectorAll('td').forEach(function (c) { if (!c.textContent.trim() && !c.children.length) c.classList.add('td-vide'); });
       t.querySelectorAll('th[data-case-largeur]').forEach(function (c) {
         var x = parseFloat(c.getAttribute('data-case-largeur'));
@@ -1425,7 +1429,8 @@
     var pied = this.r.querySelector('.td-pied');
     if (pied) {
       var tete = (pied.textContent || '').replace(/\s+/g, ' ').trim().split(' · ')[0];
-      if (tete === noms) pied.classList.add('td-pied-redondant');
+      var memes = function (x) { return x.replace(/\s*(;|,| et )\s*/g, '|').toLowerCase(); };     // « ; » ou « et » : mêmes noms
+      if (memes(tete) === memes(noms)) pied.classList.add('td-pied-redondant');
     }
     if (!a || document.getElementById('td-pied-auteurs')) return;
     var txt = noms.replace(/\\/g, '\\\\').replace(/"/g, '\\"');

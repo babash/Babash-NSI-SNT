@@ -39,6 +39,12 @@ Sans rien changer aux pages :
 - **Le pied de la page** redit le pied de chaque page A4 (noms, licence, IA) : sur papier, il n'en reste que son trait, sans hauteur, s'il cache le margouillat (rien sinon). **Aucune page ne porte plus que le pied** (`imprimer-td.py` le refuse). Si le pied de la page nomme d'autres personnes que `data-auteurs`, il reste imprimé.
 - **Pied long** (`data-auteurs` de plus de 46 caractères) : police du texte et séparateurs simples, **sur une ligne** (jusqu'à 72 caractères de noms environ).
 - **Code de plus de 40 lignes** : il peut passer à la page suivante, coupé entre deux lignes, au lieu d'être poussé entier.
+- **Grandes questions** (un code, un tableau ou une figure, et des lignes à remplir) : elles peuvent passer d'une page à l'autre **entre leurs blocs**, qui restent entiers (moins de blanc en bas de page).
+- **PDF réuni** (plusieurs feuilles) : les objectifs ne sont imprimés qu'une fois, sur la première feuille.
+- **`data-cote`** marche aussi sur une question `libre` (le code à gauche, les lignes à droite ; automatique pour un code de 34 caractères au plus) et, avec `data-cote="oui"` seulement, sur `erreur`.
+- **`data-cote-reponse="gauche"`** (avec `data-cote`) : la ligne à remplir passe **sous le code, à gauche**, et la grille ou le schéma reste à droite (question robot : « Case d'arrivée »).
+- **`data-lignes="0"`** sur une question `libre` : **aucune ligne** sur papier (réponse dans un tableau, « entoure sur le code »). Sans `data-lignes` : 3 lignes.
+- **Une mention imprimée dans une phrase** : `<span class="td-papier-seul">(sur ta feuille)</span>` reste dans la ligne (aussi `b`, `i`, `em`, `strong`, `code`, `a`, `small`) ; un bloc (`p`, `div`) reste un bloc.
 
 ### Le code de départ est imprimé
 
@@ -58,8 +64,9 @@ Le squelette d'une question `code` (`pre.td-depart`) est imprimé en haut du cad
 | `data-case-largeur="25"` | `<table>` | chaque cellule **vide** fait 25 mm de large (écran et papier) |
 | `data-case-hauteur="2"` | `<table>` | chaque cellule vide a la hauteur de 2 lignes d'écriture (7 mm chacune sur papier) |
 | `data-case-largeur="40"` | `<th>` | la largeur de cette colonne (mm) |
+| `data-pleine-largeur` | `<table>` | le tableau prend toute la largeur (les colonnes sans largeur se partagent le reste) |
 
-Aucun `style` dans la page : le moteur pose les mesures. Trait noir plein (contrôlé par `imprimer-td.py`).
+Dans un tableau qui porte l'un de ces attributs, le texte passe à la ligne (les autres tableaux restent sur une ligne par cellule). Aucun `style` dans la page, ni `width`, ni `<col width>`, ni espaces cadratins : retirez-les au passage, le moteur pose les mesures. Trait noir plein (contrôlé par `imprimer-td.py`).
 
 ### Le margouillat ne touche jamais le texte du bandeau
 
@@ -106,7 +113,7 @@ Les attributs `data-support` valent aussi pour tout autre élément (un paragrap
 <main class="td" data-td="nsi1-boucles-td1" data-td-version="1" data-ordre="melange" data-code="obligatoire">
 ```
 
-**3. Tous les noms sur chaque page imprimée** : `data-auteurs` sur `<main>` (rempli par `nouveau-td.py --auteurs`). Le pied de chaque page A4 devient « Noms · CC BY-SA 4.0 · conçu avec l'aide de l'IA · page / pages » (sans l'attribut : « Babash - NSI Tani Malandi »). Mettez les mêmes noms dans le pied de la page (`footer.td-pied`) : `nouveau-td.py` le fait.
+**3. Tous les noms sur chaque page imprimée** (forme fixée le 21/11, T123c : les noms **séparés par « ; »** ; « et » reste accepté, mais ne l'écrivez plus) : `data-auteurs` sur `<main>` (rempli par `nouveau-td.py --auteurs`). Le pied de chaque page A4 devient « Noms · CC BY-SA 4.0 · conçu avec l'aide de l'IA · page / pages » (sans l'attribut : « Babash - NSI Tani Malandi »). Mettez les mêmes noms dans le pied de la page (`footer.td-pied`) : `nouveau-td.py` le fait.
 
 ```html
 <main class="td" … data-auteurs="Babash - NSI Tani Malandi ; Etienne Clave ; Marion Dufour">

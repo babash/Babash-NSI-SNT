@@ -579,6 +579,9 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
    25 mm de large et 2 lignes d'écriture de haut (7 mm chacune sur papier) ; data-case-largeur sur un <th> règle sa
    colonne. Le moteur pose les mesures : aucun style dans la page. ── */
 .td table .td-vide { width: var(--td-case-l, auto); min-width: var(--td-case-l, 0); height: calc(var(--td-case-h, 1) * 1.6em); }
+/* un tableau à remplir répartit sa largeur (le texte passe à la ligne) ; data-pleine-largeur : toute la largeur */
+.td-table table.td-a-remplir th, .td-table table.td-a-remplir td { white-space: normal; }
+.td table.td-a-remplir[data-pleine-largeur] { width: 100%; }
 
 /* ── Schémas SVG : <figure class="td-schema"><svg viewBox="…" role="img" aria-label="…">…</svg><figcaption>…</figcaption></figure>
    Le dessin s'adapte à la largeur ; tracez en currentColor : il suit l'encre (claire en obscur, noire sur papier).
@@ -661,6 +664,8 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-erreur-bloc > button, .td-ed-info, .td-ed-aide, .td-ac, .td-fin, .td-ordre-btn, .td-indic, .td-py-note,
   .td-q-etat, .td-ecran-seul, .td-lignes-choix, .td-pied .td-ecran-seul { display: none !important; }
   .td-papier-seul { display: block; }
+  /* une mention imprimée dans une phrase : <span class="td-papier-seul"> reste dans la ligne (T123c) */
+  :is(span, b, i, em, strong, code, a, small).td-papier-seul { display: inline; }
   .td-num-ecran { display: none; }
   .td-num-papier { display: inline; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -772,6 +777,18 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-q.td-courte-ligne .td-ligne-champ > label.td-etiquette-defaut { display: none; }
   .td-q.td-courte-ligne input.td-champ { flex: 1 1 36mm; width: 36mm; min-width: 30mm; }
   .td-q.td-courte-ligne + .td-q.td-courte-ligne { padding-top: .5mm; margin-top: -.4mm; }
+  /* data-lignes="0" : aucune ligne à remplir (réponse dans un tableau, sur le code) */
+  textarea.td-libre.td-sans-ligne { display: none; }
+  /* une grande question peut passer d'une page à l'autre entre ses blocs (code, tableau, figure, lignes),
+     qui restent entiers : moins de blanc en bas de page (T123c) */
+  .td-q:has(> pre.td-code ~ .td-reponse textarea, > .td-table, > figure, > .td-schema) { break-inside: auto; }
+  /* « Trouve l'erreur » et réponses rédigées à côté d'un code étroit (data-cote) */
+  .td-q.td-cote > pre.td-code ~ .td-erreur-bloc { display: flow-root; clear: none !important; }
+  /* data-cote-reponse="gauche" : la ligne à remplir sous le code, à gauche (la grille ou le schéma reste à droite) */
+  .td-q.td-cote[data-cote-reponse="gauche"] > pre.td-code ~ :is(svg, figure, .td-schema, .td-table, p:not(.td-consigne)) { float: right; max-width: calc(50% - 3mm); margin-top: .7mm; }
+  .td-q.td-cote[data-cote-reponse="gauche"] > .td-reponse { float: left; clear: left !important; width: calc(50% - 3mm); }
+  /* réponse rédigée : l'étiquette par défaut n'est pas imprimée (la consigne dit quoi écrire) */
+  .td-q[data-type="libre"] .td-bloc-champ > label.td-etiquette-defaut { display: none; }
   .td-memo { break-inside: avoid; border-width: 1.5px; margin: 2mm 0 1.5mm; padding: 1.6mm 3mm; box-shadow: .8mm .8mm 0 var(--td-neon-2); }
   .td-memo h2 { font-size: 13pt; }
   .td-memo .td-margouillat { --l: 9mm; }
@@ -795,6 +812,8 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td.td-suite .td-bandeau h1, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau h1 { font-size: 14pt; margin: 0; max-width: none; text-shadow: -.4mm .2mm 0 var(--td-neon-2); }
   .td.td-suite .td-bandeau .td-accroche, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau .td-accroche { font-size: 13pt; margin: 0; max-width: none; }
   .td.td-suite .td-nom { display: none !important; }
+  /* PDF réuni : les objectifs ne sont imprimés qu'une fois, sur la première feuille (T123c) */
+  .td.td-suite .td-objectifs { display: none !important; }
   .td.td-suite-avant .td-pied { display: none; }
   .td-pied .td-margouillat { --l: 9mm; }
   .td-pied .td-ia { font-size: 10pt; }
