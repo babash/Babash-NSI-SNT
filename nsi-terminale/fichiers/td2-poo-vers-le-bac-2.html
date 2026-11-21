@@ -1,0 +1,395 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La POO : penser en objets : TD en ligne</title>
+  <meta name="description" content="TD en ligne auto-correctif : La POO : penser en objets (Tle NSI, Programmation objet).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../assets/td-en-ligne.css">
+  <script src="../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-poo-td2-2" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-feuille="2">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:14.29%;--y:91.96%;--r:-8deg;--l:5.04%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La POO : penser en objets</h1>
+        <p class="td-accroche">TD 2 · feuille 2 sur 2</p>
+      </div>
+      
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+        <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> faire interagir plusieurs objets : une liste d'objets, un objet rangé dans l'attribut d'un autre.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>parcourir une liste d'objets et appeler leurs méthodes ;</li>
+        <li>écrire deux classes dont les objets interagissent ;</li>
+        <li>suivre un attribut qui référence un autre objet ;</li>
+        <li>dire si deux attributs référencent le même objet.</li>
+      </ul>
+      <p class="td-duree">Feuille 2 sur 2 · 50 minutes · 13 questions · type bac · après la feuille 1</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p class="td-ecran-seul">Cette feuille fait suite à la <a href="td2-poo-vers-le-bac.html">feuille 1 (l'ENIAC, les microprocesseurs)</a>.</p>
+
+  <h2 class="td-partie">Exercice 3 · ARPANET et le premier message (1969)</h2>
+  <p><i>Cet exercice porte sur la programmation orientée objet, les listes et leur parcours.</i> <b>ARPANET</b> est le précurseur d'Internet (1969). Il a permis la communication entre différents <b>hôtes</b> (ordinateurs). Chaque hôte est connecté au <b>réseau</b>, qui gère l'envoi des messages. Cet exercice simule des hôtes et un réseau qui interagissent.</p>
+  <h3>A. Lire le code</h3>
+  <pre class="td-code">
+class Hote:
+    def __init__(self, adresse_ip):
+        self.adresse_ip = adresse_ip
+        self.messages_recus = []
+
+    def recevoir_message(self, message):
+        self.messages_recus.append(message)
+        print(f"Hôte {self.adresse_ip} a reçu : '{message[:10]}...'")
+
+    def lire_boite_reception(self):
+        return self.messages_recus</pre>
+
+  <section class="td-q" data-type="qcu" id="q1">
+    <p class="td-consigne">Dans la classe <code>Hote</code>, l'attribut <code>self.messages_recus</code> est une collection. Quel est son type ?</p>
+    <ul class="td-options">
+      <li data-juste>une liste (<code>list</code>)</li>
+      <li data-retour="Un dictionnaire s'écrit avec des accolades { }. Ici, ce sont des crochets.">un dictionnaire (<code>dict</code>)</li>
+      <li data-retour="Un tuple ne se modifie pas : on ne pourrait pas y faire append.">un tuple (<code>tuple</code>)</li>
+      <li data-retour="Les messages sont des chaînes, mais ils sont rangés dans une collection.">une chaîne (<code>str</code>)</li>
+    </ul>
+    <p class="td-aide">Regarde comment l'attribut est créé dans le constructeur, et la méthode qu'on lui applique.</p>
+    <div class="td-correction"><p><code>[]</code> crée une liste vide, et <code>append</code> lui ajoute un message : c'est une <code>list</code>.</p></div>
+  </section>
+
+  <p>On donne la classe <code>Reseau</code>, dont la méthode <code>envoyer_message</code> est à compléter :</p>
+  <pre class="td-code">
+class Reseau:
+    def __init__(self):
+        self.participants = []
+
+    def connecter(self, hote):
+        self.participants.append(hote)
+        print(f"Réseau : Hôte {hote.adresse_ip} connecté.")
+
+    def envoyer_message(self, emetteur_ip, destinataire_ip, message):
+        print(f"Réseau : Tentative d'envoi de {emetteur_ip}"
+              f" vers {destinataire_ip}.")
+        # 1. parcours des hôtes connectés au réseau
+        for hote in ...:
+            # 2. recherche de l'hôte destinataire
+            if ... == destinataire_ip:
+                # 3. appel de la méthode de l'objet cible
+                ...
+                return True   # message envoyé
+        return False          # destinataire non trouvé</pre>
+
+  <section class="td-q" data-type="qcu" id="q2">
+    <p class="td-consigne">Dans la classe <code>Reseau</code>, l'attribut <code>self.participants</code> est une collection d'objets. Quel est le type des objets qu'elle contient ?</p>
+    <ul class="td-options">
+      <li data-juste>des objets de la classe <code>Hote</code></li>
+      <li data-retour="Ce sont les objets eux-mêmes qui sont rangés : connecter fait append(hote), pas append(hote.adresse_ip).">des chaînes : les adresses IP</li>
+      <li data-retour="Un réseau ne se contient pas lui-même : on y range les hôtes connectés.">des objets de la classe <code>Reseau</code></li>
+      <li data-retour="Les messages sont rangés dans chaque hôte, pas dans le réseau.">des messages (<code>str</code>)</li>
+    </ul>
+    <p class="td-aide">Que reçoit <code>connecter</code>, et que range-t-il dans la liste ?</p>
+    <div class="td-correction"><p><code>connecter(self, hote)</code> range l'objet <code>hote</code> lui-même : la liste contient des objets <code>Hote</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-reponse="3">
+    <p class="td-consigne">Si l'on ajoute 3 hôtes au réseau (<code>reseau.connecter(h1)</code>, puis <code>h2</code>, puis <code>h3</code>), quelle est la longueur de <code>reseau.participants</code> ?</p>
+    <p class="td-aide">Chaque appel à <code>connecter</code> fait un <code>append</code>.</p>
+    <div class="td-correction"><p>Trois appels, trois <code>append</code> : <code>len(reseau.participants)</code> vaut <b>3</b>.</p></div>
+  </section>
+
+  <h3>B. Compléter la méthode <code>envoyer_message</code></h3>
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne">Complète la méthode <code>envoyer_message</code>.</p>
+    <script type="text/x-python" class="td-preambule">
+class Hote:
+    def __init__(self, adresse_ip):
+        self.adresse_ip = adresse_ip
+        self.messages_recus = []
+
+    def recevoir_message(self, message):
+        self.messages_recus.append(message)
+        print(f"Hôte {self.adresse_ip} a reçu : '{message[:10]}...'")
+
+    def lire_boite_reception(self):
+        return self.messages_recus
+</script>
+    <pre class="td-code">
+class Reseau:
+    def __init__(self):
+        self.participants = []
+
+    def connecter(self, hote):
+        self.participants.append(hote)
+        print(f"Réseau : Hôte {hote.adresse_ip} connecté.")
+
+    def envoyer_message(self, emetteur_ip, destinataire_ip, message):
+        print(f"Réseau : Tentative d'envoi de {emetteur_ip}"
+              f" vers {destinataire_ip}.")
+        for hote in [[self.participants]]:
+            if [[hote.adresse_ip]] == destinataire_ip:
+                [[hote.recevoir_message(message)]]
+                return True
+        return False
+
+r = Reseau()
+r.connecter(Hote("10.0.0.1"))
+print(r.envoyer_message("10.0.0.2", "10.0.0.1", "Bonjour"))</pre>
+    <pre class="td-attendu">
+Réseau : Hôte 10.0.0.1 connecté.
+Réseau : Tentative d'envoi de 10.0.0.2 vers 10.0.0.1.
+Hôte 10.0.0.1 a reçu : 'Bonjour...'
+True</pre>
+    <p class="td-aide">Quelle liste contient les hôtes connectés ? Comment lire l'adresse d'un hôte ? Quelle méthode de <code>Hote</code> permet de recevoir un message ?</p>
+    <div class="td-correction"><p><code>for hote in self.participants:</code> parcourt les hôtes ; <code>if hote.adresse_ip == destinataire_ip:</code> trouve le destinataire ; <code>hote.recevoir_message(message)</code> lui remet le message.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q5">
+    <p class="td-consigne">Si le message est envoyé, quelle action le réseau réalise-t-il sur l'objet destinataire ?</p>
+    <ul class="td-options">
+      <li data-juste>il appelle sa méthode <code>recevoir_message</code>, qui ajoute le message à la liste <code>messages_recus</code> du destinataire</li>
+      <li data-retour="Le réseau ne modifie pas l'attribut directement : il passe par une méthode de l'hôte.">il écrit directement <code>hote.messages_recus = message</code></li>
+      <li data-retour="lire_boite_reception renvoie la liste ; elle ne reçoit rien.">il appelle sa méthode <code>lire_boite_reception</code></li>
+      <li data-retour="connecter range un hôte dans le réseau ; c'est fait avant l'envoi.">il appelle sa méthode <code>connecter</code></li>
+    </ul>
+    <p class="td-aide">Regarde la troisième case que tu as complétée.</p>
+    <div class="td-correction"><p>Le réseau appelle <code>recevoir_message(message)</code> sur l'hôte destinataire : le message est ajouté à sa liste <code>messages_recus</code> (et un message s'affiche).</p></div>
+  </section>
+
+  <h3>C. Tester</h3>
+  <p>On complète <code>envoyer_message</code>, puis on exécute ce programme de test :</p>
+  <pre class="td-code">
+reseau_arpa = Reseau()
+h1 = Hote("192.168.1.1")
+h2 = Hote("192.168.1.2")
+reseau_arpa.connecter(h1)
+reseau_arpa.connecter(h2)
+reseau_arpa.envoyer_message("192.168.1.1", "192.168.1.2", "LOG=LOGIN")
+reseau_arpa.envoyer_message("192.168.1.1", "192.168.1.3", "ERROR")
+resultat = h2.lire_boite_reception()</pre>
+
+  <section class="td-q" data-type="courte" id="q6" data-comparer="code" data-reponse="['LOG=LOGIN']">
+    <p class="td-consigne">Quel est le contenu final de la variable <code>resultat</code> ?</p>
+    <p class="td-retour" data-si="['LOG=LOGIN', 'ERROR']">Le message « ERROR » est envoyé à 192.168.1.3, qui n'est pas <code>h2</code>.</p>
+    <p class="td-retour" data-si="'LOG=LOGIN'">lire_boite_reception renvoie toute la liste <code>messages_recus</code>, crochets compris.</p>
+    <p class="td-aide"><code>h2</code> a l'adresse 192.168.1.2. Quels messages lui sont destinés ?</p>
+    <div class="td-correction"><p><code>resultat</code> vaut <b><code>['LOG=LOGIN']</code></b> : une liste qui contient le seul message reçu par <code>h2</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q7" data-support="ecran">
+    <p class="td-consigne">Pourquoi le deuxième appel à <code>reseau_arpa.envoyer_message()</code> renvoie-t-il <code>False</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>aucun hôte connecté n'a l'adresse 192.168.1.3 : la boucle se termine sans trouver le destinataire</li>
+      <li data-retour="La méthode accepte n'importe quel texte : le contenu du message n'est pas vérifié.">parce que le message « ERROR » est refusé</li>
+      <li data-retour="L'émetteur 192.168.1.1 est bien connecté, mais la méthode ne vérifie même pas l'émetteur.">parce que l'émetteur n'est pas connecté</li>
+      <li data-retour="Un hôte peut recevoir plusieurs messages : sa liste grandit.">parce que h2 a déjà reçu un message</li>
+    </ul>
+    <p class="td-aide">Quelles adresses sont dans <code>reseau_arpa.participants</code> ?</p>
+    <div class="td-correction"><p>Seuls <code>h1</code> (192.168.1.1) et <code>h2</code> (192.168.1.2) sont connectés. Aucun hôte n'a l'adresse 192.168.1.3 : la boucle parcourt tout, ne trouve rien, et on arrive au <code>return False</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q7-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Pourquoi le deuxième appel à <code>reseau_arpa.envoyer_message()</code> renvoie-t-il <code>False</code> ?</p>
+    <div class="td-correction"><p>Aucun hôte connecté n'a l'adresse 192.168.1.3.</p></div>
+  </section>
+
+  <h2 class="td-partie">Exercice 4 · Le protocole TCP/IP de Vint Cerf et Bob Kahn (1974)</h2>
+  <p><i>Interaction de deux classes : écrire puis suivre le code.</i> Vint Cerf et Bob Kahn ont mis au point le protocole TCP/IP, l'ensemble de règles qui régissent Internet et permettent aux ordinateurs de communiquer. De 1972 à 1989, l'équipe d'Elizabeth Feinler tient l'annuaire du réseau : le nom et l'adresse de chaque ordinateur. Elle crée aussi WHOIS (« qui est-ce ? »), le premier serveur qui répond aux recherches dans cet annuaire.</p>
+  <h3>A. Écrire les classes <code>Client</code> et <code>Serveur</code></h3>
+  <p><b>Cahier des charges.</b> Un <code>Client</code> doit pouvoir se connecter à un <code>Serveur</code>.</p>
+  <ul>
+    <li>La classe <code>Serveur</code> a un attribut <code>nb_clients_connectes</code> (initialisé à 0).</li>
+    <li>La classe <code>Client</code> a un attribut <code>connecte_a</code> (initialisé à <code>None</code> : au départ, le client n'est connecté à aucun serveur).</li>
+    <li>La méthode <code>se_connecter_a(self, serveur)</code> de la classe <code>Client</code> fait deux choses : elle modifie son propre attribut <code>self.connecte_a</code> pour qu'il référence l'objet <code>serveur</code> ; elle appelle une méthode du serveur qui ajoute 1 à son nombre de clients connectés (un objet peut appeler la méthode d'un autre objet reçu en paramètre : <code>serveur.nom_methode()</code>).</li>
+  </ul>
+  <section class="td-q" data-type="code" id="q8" data-fichier="tcp.py" data-lignes="12">
+    <p class="td-consigne">Complète la classe <code>Serveur</code> : son constructeur, puis une méthode qui ajoute 1 à <code>nb_clients_connectes</code> (choisis-lui un nom explicite). Complète ensuite la classe <code>Client</code> : son constructeur et la méthode <code>se_connecter_a</code>. <span class="td-ecran-seul">Des tests cachés vérifient tes classes.</span></p>
+    <pre class="td-depart">
+class Serveur:
+    def __init__(self):
+        ...
+
+    def ...(self):
+        ...
+
+
+class Client:
+    def __init__(self):
+        ...
+
+    def se_connecter_a(self, serveur):
+        ...  # 1. référencer le serveur
+        ...  # 2. prévenir le serveur
+</pre>
+    <script type="text/x-python" class="td-tests">
+s = Serveur()
+assert s.nb_clients_connectes == 0, "Un nouveau serveur a 0 client connecté (attribut nb_clients_connectes)."
+c = Client()
+assert c.connecte_a is None, "Un nouveau client n'est connecté à rien : connecte_a vaut None."
+c.se_connecter_a(s)
+assert c.connecte_a is s, "Après se_connecter_a(s), connecte_a doit référencer l'objet serveur lui-même."
+assert s.nb_clients_connectes == 1, "Après une connexion, le serveur doit compter 1 client : se_connecter_a doit appeler une méthode du serveur."
+Client().se_connecter_a(s)
+assert s.nb_clients_connectes == 2, "Deux connexions : 2 clients."
+assert Serveur().nb_clients_connectes == 0, "Chaque serveur a son propre compteur."
+</script>
+    <p class="td-aide">Dans le constructeur de <code>Serveur</code> : <code>self.nb_clients_connectes = 0</code>. Dans celui de <code>Client</code> : <code>self.connecte_a = None</code>.</p>
+    <p class="td-aide">La méthode du serveur, par exemple <code>ajouter_client(self)</code>, fait <code>self.nb_clients_connectes += 1</code>.</p>
+    <p class="td-aide">Dans <code>se_connecter_a</code> : <code>self.connecte_a = serveur</code>, puis <code>serveur.ajouter_client()</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+class Serveur:
+    def __init__(self):
+        self.nb_clients_connectes = 0
+
+    def ajouter_client(self):
+        self.nb_clients_connectes += 1
+
+
+class Client:
+    def __init__(self):
+        self.connecte_a = None
+
+    def se_connecter_a(self, serveur):
+        self.connecte_a = serveur
+        serveur.ajouter_client()</pre></div>
+  </section>
+
+  <h3>B. Synthèse : suivre le code</h3>
+  <p>On exécute ce programme, avec les classes écrites dans la partie A.</p>
+  <pre class="td-code">
+s1 = Serveur()
+c1 = Client()
+c2 = Client()
+c1.se_connecter_a(s1)
+c2.se_connecter_a(s1)
+c3 = Client()
+c3.se_connecter_a(s1)
+nb = s1.nb_clients_connectes
+type_c1 = type(c1.connecte_a)</pre>
+
+  <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
+    <p class="td-consigne">Quelle méthode la ligne <code>c1.se_connecter_a(s1)</code> appelle-t-elle sur l'objet <code>s1</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>la méthode du serveur qui ajoute 1 au compteur (dans la correction : <code>ajouter_client</code>)</li>
+      <li data-retour="se_connecter_a est appelée sur c1, un client. On cherche la méthode que c1 appelle ensuite sur s1.">la méthode <code>se_connecter_a</code></li>
+      <li data-retour="Le constructeur de s1 a été appelé à sa création, à la ligne 1, pas ici.">le constructeur <code>__init__</code> de <code>Serveur</code></li>
+      <li data-retour="Le cahier des charges demande de passer par une méthode du serveur, pas de modifier son attribut de l'extérieur.">aucune : <code>c1</code> modifie <code>s1.nb_clients_connectes</code> directement</li>
+    </ul>
+    <p class="td-aide">Relis la deuxième ligne de <code>se_connecter_a</code>.</p>
+    <div class="td-correction"><p>Dans <code>se_connecter_a</code>, <code>serveur</code> désigne <code>s1</code> : la ligne <code>serveur.ajouter_client()</code> appelle la méthode du serveur qui ajoute 1 (le nom que tu lui as choisi).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quel est le nom de la méthode que la ligne <code>c1.se_connecter_a(s1)</code> appelle sur l'objet <code>s1</code> ?</p>
+    <div class="td-correction"><p>La méthode du serveur qui ajoute 1, par exemple <code>ajouter_client</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q10">
+    <p class="td-consigne">Suis l'évolution de <code>s1.nb_clients_connectes</code> : complète les commentaires. Que vaut <code>nb</code> à la fin ?</p>
+    <script type="text/x-python" class="td-preambule">
+class Serveur:
+    def __init__(self):
+        self.nb_clients_connectes = 0
+
+    def ajouter_client(self):
+        self.nb_clients_connectes += 1
+
+
+class Client:
+    def __init__(self):
+        self.connecte_a = None
+
+    def se_connecter_a(self, serveur):
+        self.connecte_a = serveur
+        serveur.ajouter_client()
+</script>
+    <pre class="td-code">
+s1 = Serveur()           # s1.nb_clients_connectes : 0
+c1 = Client()
+c2 = Client()
+c1.se_connecter_a(s1)    # s1.nb_clients_connectes : [[1]]
+c2.se_connecter_a(s1)    # s1.nb_clients_connectes : [[2]]
+c3 = Client()
+c3.se_connecter_a(s1)    # s1.nb_clients_connectes : [[3]]
+nb = s1.nb_clients_connectes
+print(nb)</pre>
+    <pre class="td-attendu">
+3</pre>
+    <p class="td-aide">Chaque appel à <code>se_connecter_a(s1)</code> ajoute 1 au compteur du même serveur.</p>
+    <div class="td-correction"><p>Trois clients se connectent au même serveur : 1, 2, puis 3. <code>nb</code> vaut <b>3</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q11">
+    <p class="td-consigne">Que contient la variable <code>type_c1</code> ? Autrement dit, de quel type est <code>c1.connecte_a</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>la classe <code>Serveur</code> : <code>c1.connecte_a</code> référence l'objet <code>s1</code></li>
+      <li data-retour="connecte_a valait None au départ, mais se_connecter_a l'a changé.">la classe <code>NoneType</code></li>
+      <li data-retour="c1 est un Client, mais on demande le type de son attribut connecte_a.">la classe <code>Client</code></li>
+      <li data-retour="connecte_a référence un objet, pas un nombre : le nombre de clients est dans le serveur.">la classe <code>int</code></li>
+    </ul>
+    <p class="td-aide">Après <code>c1.se_connecter_a(s1)</code>, que vaut <code>c1.connecte_a</code> ?</p>
+    <div class="td-correction"><p><code>c1.connecte_a</code> est l'objet <code>s1</code> : <code>type_c1</code> est la classe <code>Serveur</code> (Python l'affiche <code>&lt;class '__main__.Serveur'&gt;</code>).</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q12" data-support="ecran">
+    <p class="td-consigne">Les attributs <code>c1.connecte_a</code> et <code>c2.connecte_a</code> référencent-ils le même objet <code>Serveur</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Oui : tous deux référencent <code>s1</code>, le seul serveur créé ; <code>c1.connecte_a is c2.connecte_a</code> vaut <code>True</code></li>
+      <li data-retour="On n'a créé qu'un serveur, avec Serveur() : se_connecter_a ne fait pas de copie, il range la référence à s1.">Non : chaque client a sa propre copie du serveur</li>
+      <li data-retour="Après se_connecter_a, connecte_a n'est plus None.">Non : ils valent tous deux <code>None</code></li>
+      <li data-retour="Ils référencent le même objet : son compteur vaut 3 pour les deux, pas 1.">Oui, mais le compteur vaut 1 pour <code>c1</code> et 2 pour <code>c2</code></li>
+    </ul>
+    <p class="td-aide">Combien de fois a-t-on écrit <code>Serveur()</code> ?</p>
+    <div class="td-correction"><p>Oui : <code>c1.connecte_a</code>, <code>c2.connecte_a</code> et <code>c3.connecte_a</code> référencent le même objet, <code>s1</code>. On n'a appelé <code>Serveur()</code> qu'une fois.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q12-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Les attributs <code>c1.connecte_a</code> et <code>c2.connecte_a</code> référencent-ils le même objet <code>Serveur</code> ? Justifie.</p>
+    <div class="td-correction"><p>Oui : tous deux référencent <code>s1</code>, le seul serveur créé.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q13">
+    <p class="td-consigne">Et l'objet <code>c2</code> lui-même : référence-t-il le même objet que <code>c1.connecte_a</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Non : <code>c2</code> est un objet <code>Client</code>, alors que <code>c1.connecte_a</code> est le serveur <code>s1</code></li>
+      <li data-retour="c2 est connecté à s1, mais c2 n'est pas s1 : c'est c2.connecte_a qui référence s1.">Oui : <code>c2</code> est connecté à <code>s1</code>, donc <code>c2</code> est <code>s1</code></li>
+      <li data-retour="c1.connecte_a référence le serveur, pas un autre client.">Oui : les deux sont des clients</li>
+      <li data-retour="On peut toujours comparer deux objets avec is : ici, le résultat est False.">On ne peut pas le savoir</li>
+    </ul>
+    <p class="td-aide">Quel est le type de <code>c2</code> ? Et celui de <code>c1.connecte_a</code> ?</p>
+    <div class="td-correction"><p>Non : <code>c2</code> est un <code>Client</code> et <code>c1.connecte_a</code> est le <code>Serveur</code> <code>s1</code>. <code>c2 is c1.connecte_a</code> vaut <code>False</code>.</p></div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Un attribut peut contenir une liste d'objets, ou un autre objet : il en garde une <b>référence</b>, pas une copie. Un objet appelle la méthode d'un autre objet avec <code>autre.methode()</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
