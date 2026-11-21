@@ -4,7 +4,7 @@
 # Usage (depuis la copie du dépôt ; il faut l'outil gh, connecté) :
 #   bash .github/gardien/depots.sh attendre DELAI DEPOT=SHA [DEPOT=SHA …]
 #       attend la fin des workflows de ces commits (toutes les 30 s, DELAI secondes au plus),
-#       puis affiche chaque run : identifiant, nom, état, conclusion, heures. Pour FichesNSI, suit
+#       puis affiche chaque run : identifiant, nom, état, conclusion, heures. Pour fiches-nsi (ex-FichesNSI), suit
 #       aussi la publication sur gh-pages qui suit « Deploy Production ». SHA complet ou court.
 #   bash .github/gardien/depots.sh etat DEPOT [DEPOT …]
 #       le commit de main, la licence reconnue par GitHub, Pages ou non, et le dernier
@@ -35,7 +35,7 @@ attendre() {
         [ -n "$complet" ] && lignes=$(gh api "repos/$proprio/$depot/actions/runs?head_sha=$complet&per_page=20" \
           --jq '.workflow_runs[] | [.id, .name, .status, (.conclusion // "-"), .created_at, .updated_at] | @tsv' 2>&1)
       fi
-      if [ "$depot" = "FichesNSI" ]; then
+      if [ "$depot" = "fiches-nsi" ] || [ "$depot" = "FichesNSI" ]; then
         local depuis; depuis=$(date -u -d @"$debut" +%Y-%m-%dT%H:%M:%SZ)
         lignes="$lignes"$'\n'$(gh api "repos/$proprio/$depot/actions/runs?branch=gh-pages&per_page=1" \
           --jq '.workflow_runs[] | select(.created_at > "'"$depuis"'") | [.id, .name + " (gh-pages " + .head_sha[0:7] + ")", .status, (.conclusion // "-"), .created_at, .updated_at] | @tsv' 2>&1)

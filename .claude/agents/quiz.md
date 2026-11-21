@@ -50,7 +50,7 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
   - le document principal : le fichier XML à importer dans Pronote ;
   - l'usage « Pronote ».
 
-### 4. Les cours-quiz (dépôt `babash/QuizzNSI`)
+### 4. Les cours-quiz (dépôt `babash/quizz-nsi`)
 - Le cours-quiz vient **en tête de séquence** : avant le cours ou le TD, les TP, le TD type bac et la fiche de révision. On apprend par la question, avec peu de texte ; l'enseignant·e présente.
 - Deux gabarits, contrôlés par le vérificateur du dépôt (`cours/FORMAT.md`, « Les gabarits ») :
   - `introduction` : la première rencontre avec la notion. 15 minutes, 12 questions, dont 2 au plus de type relier, puzzle ou ligne fautive ; pas de nuage de mots ; 8 écrans de cours au plus, 25 mots par écran au plus ;

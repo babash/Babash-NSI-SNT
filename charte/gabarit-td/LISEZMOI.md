@@ -128,7 +128,7 @@ Avec Playwright : `context.add_init_script("window.TD_PYODIDE='http://localhost:
 python3 -I charte/nouveau-td.py nsi1/fichiers/boucles-td1 \
   --id nsi1-boucles-td1 --titre "Les boucles \`for\` et \`while\`" \
   --niveau "1re NSI" --chapitre "Programmer en Python" \
-  --quiz "https://babash.github.io/QuizzNSI/revision.html?cours=conditions-boucles" \
+  --quiz "https://babash.github.io/quizz-nsi/revision.html?cours=conditions-boucles" \
   --accroche "Répéter des instructions"
 ```
 

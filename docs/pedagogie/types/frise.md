@@ -31,8 +31,8 @@
 
 **[Timeline de l'histoire de l'informatique](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=timeline-histoire-informatique)** (première et terminale) : la frise interactive, les cartes à imprimer et l'onglet « Jeu ».
 
-- Le site : [babash.github.io/TimelineNSI](https://babash.github.io/TimelineNSI/) ; le jeu : [babash.github.io/TimelineNSI/jeu.html](https://babash.github.io/TimelineNSI/jeu.html).
-- Le code source : [babash/TimelineNSI](https://github.com/babash/TimelineNSI). Contenus sous CC BY-SA 4.0, code sous MIT.
+- Le site : [babash.github.io/timeline-nsi](https://babash.github.io/timeline-nsi/) ; le jeu : [babash.github.io/timeline-nsi/jeu.html](https://babash.github.io/timeline-nsi/jeu.html).
+- Le code source : [babash/timeline-nsi](https://github.com/babash/timeline-nsi). Contenus sous CC BY-SA 4.0, code sous MIT.
 
 L'histoire apparaît aussi dans d'autres ressources : les exercices du [TD 2 de POO](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=td2-poo) racontent l'ENIAC, ARPANET et TCP/IP.
 

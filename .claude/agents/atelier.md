@@ -23,7 +23,7 @@ Le détail est dans `CLAUDE.md` (§ 4 et § 5).
 - **Clins d'œil aux œuvres connues** : par le nom et l'idée, avec un jeu de mots, jamais par la forme ; aucun nom d'œuvre ni de personnage (`CLAUDE.md`, § 4).
 - **Ni classement, ni rang, ni score visible, ni « série de jours »**, et aucune question de genre. Seule exception : le podium et les points du jeu en direct de QuizzNSI restent (17:00).
 - **Style** : celui du site aujourd'hui. Le style « Signal pirate » n'est pas encore appliqué ; une feuille n'a ni personnage ni récit de l'univers.
-- **Cours-quiz** (dépôt `babash/QuizzNSI`) : en tête de séquence ; gabarits `introduction` et `revision` (`cours/FORMAT.md` du dépôt).
+- **Cours-quiz** (dépôt `babash/quizz-nsi`) : en tête de séquence ; gabarits `introduction` et `revision` (`cours/FORMAT.md` du dépôt).
 - **Calendrier des vacances** : si ta tâche est un thème d'exercices, tes fichiers sont `calendrier/exercices/<thème>.json` ; le reste de `calendrier/` est à l'Architecte.
 
 ## Tes fichiers

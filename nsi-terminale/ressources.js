@@ -40,12 +40,12 @@ theme("Rentrée : reprendre la première", { court: "Rentrée", couleur: "gris" 
 
 ressource({
   titre: "Expédition Gombessa",
-  lien: "https://babash.github.io/Rappel-1er/",
+  lien: "https://babash.github.io/gombessa/",
   texte: "Une plongée en Python à la recherche du cœlacanthe, racontée comme un manga, pour réviser les listes, les dictionnaires et les algorithmes de base de première. Parcours principal de 13 missions (environ 1 h 15), puis 5 expéditions bonus. Activités variées, souvent sans coder, et suivi de 7 compétences.",
   tags: ["En ligne", "Python", "Jeu"],
   annexes: {
-    "Tableau de bord de l'enseignant·e": "https://babash.github.io/Rappel-1er/prof.html",
-    "Code source": "https://github.com/babash/Rappel-1er",
+    "Tableau de bord de l'enseignant·e": "https://babash.github.io/gombessa/prof.html",
+    "Code source": "https://github.com/babash/gombessa",
   },
 });
 
@@ -59,11 +59,11 @@ groupe("Événements clés de l'histoire de l'informatique");
 
 ressource({
   titre: "Timeline de l'histoire de l'informatique",
-  lien: "https://babash.github.io/TimelineNSI/",
+  lien: "https://babash.github.io/timeline-nsi/",
   texte: "Frise interactive de l'histoire de l'informatique, de l'Antiquité à nos jours, filtrable par catégorie, période et date. Chaque événement existe aussi en carte A5 à imprimer pour construire une fresque en classe.",
   tags: ["En ligne", "À imprimer"],
   annexes: {
-    "Code source et générateur de cartes": "https://github.com/babash/TimelineNSI",
+    "Code source et générateur de cartes": "https://github.com/babash/timeline-nsi",
   },
 });
 
@@ -86,7 +86,7 @@ ressource({
   texte: "Cours complet du premier chapitre du thème « Structures de données » : interface et implémentation, puis les listes avec 8 exercices, puis les files FIFO et les piles LIFO avec 3 exercices. 9 pages A4.",
   tags: ["À imprimer", "Cours"],
   annexes: {
-    "Code source : sources LaTeX": "https://github.com/babash/NSI-Terminale/tree/main/Th%C3%A8me%201%20%E2%80%93%20Structures%20de%20donn%C3%A9es",
+    "Code source : sources LaTeX": "https://github.com/babash/nsi-terminale/tree/main/Th%C3%A8me%201%20%E2%80%93%20Structures%20de%20donn%C3%A9es",
   },
 });
 
@@ -116,24 +116,24 @@ ressource({
 
 ressource({
   titre: "TP de programmation objet : le Pokédex",
-  lien: "https://nbviewer.org/github/babash/NSI-Terminale/blob/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
+  lien: "https://nbviewer.org/github/babash/nsi-terminale/blob/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
   texte: "Notebook Jupyter : créer une classe `Pokemon`, instancier des pokémons avec leurs attributs et les faire interagir. Les données des pokémons sont fournies en JSON.",
   tags: ["Python", "Notebook"],
   annexes: {
-    "Code source : notebook à télécharger (.ipynb)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
-    "Code source : données des pokémons (JSON)": "https://raw.githubusercontent.com/babash/NSI-Terminale/main/tp-poo-pokemons/pokemon_data_light.json",
-    "Code source": "https://github.com/babash/NSI-Terminale/tree/main/tp-poo-pokemons",
+    "Code source : notebook à télécharger (.ipynb)": "https://raw.githubusercontent.com/babash/nsi-terminale/main/tp-poo-pokemons/tp-poo-pokemons.ipynb",
+    "Code source : données des pokémons (JSON)": "https://raw.githubusercontent.com/babash/nsi-terminale/main/tp-poo-pokemons/pokemon_data_light.json",
+    "Code source": "https://github.com/babash/nsi-terminale/tree/main/tp-poo-pokemons",
   },
 });
 
 ressource({
   titre: "Fiche : la programmation orientée objet",
-  lien: "https://babash.github.io/FichesNSI/fiches/poo/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/poo/",
   texte: "Classe, constructeur, instanciation, attributs, méthodes et rôle de `self`.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/poo.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/poo.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -148,12 +148,12 @@ groupe("Listes, piles, files, dictionnaires");
 
 ressource({
   titre: "Fiche : piles et files",
-  lien: "https://babash.github.io/FichesNSI/fiches/piles-files/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/piles-files/",
   texte: "Pile (LIFO), file (FIFO) et leurs opérations usuelles.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/piles-files.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/piles-files.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -168,12 +168,12 @@ groupe("Arbres");
 
 ressource({
   titre: "Fiche : les arbres",
-  lien: "https://babash.github.io/FichesNSI/fiches/arbres/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/arbres/",
   texte: "Vocabulaire (taille, hauteur…), implémentation d'un arbre binaire, parcours préfixe, infixe, suffixe et en largeur.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/arbres.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/arbres.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -181,12 +181,12 @@ groupe("Graphes");
 
 ressource({
   titre: "Fiche : les graphes",
-  lien: "https://babash.github.io/FichesNSI/fiches/graphes/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/graphes/",
   texte: "Vocabulaire, représentations (matrice d'adjacence…), parcours en largeur et en profondeur.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/graphes.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/graphes.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -225,12 +225,12 @@ ressource({
 
 ressource({
   titre: "Fiche : le langage SQL",
-  lien: "https://babash.github.io/FichesNSI/fiches/sql/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/sql/",
   texte: "Consultation avec `SELECT`, mise à jour avec `INSERT`, `UPDATE` et `DELETE`, agrégation avec `COUNT` et jointures.",
   tags: ["À imprimer", "SQL"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/sql.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/sql.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -257,19 +257,19 @@ ressource({
     "Fiches processus, activité 1": "fichiers/os-humain/fiches-activite-1.pdf",
     "Fiches processus, activité 2": "fichiers/os-humain/fiches-activite-2.pdf",
     "Fiches processus, activité 3": "fichiers/os-humain/fiches-activite-3.pdf",
-    "Code source": "https://github.com/babash/Ex-cution-d-branch-e",
+    "Code source": "https://github.com/babash/os-humain",
   },
 });
 
 ressource({
   titre: "Opération MIRAGE : TP de commandes Linux",
-  lien: "https://babash.github.io/TP-commandes-hacker/fiche_eleve_mirage.html",
+  lien: "https://babash.github.io/mirage/fiche_eleve_mirage.html",
   texte: "Quinze missions d'infiltration dans un terminal Linux qui tourne dans le navigateur : arborescence, fichiers, droits, puis repérer un processus espion avec `ps` et l'arrêter avec `kill`. Correction automatique et indices progressifs.",
   tags: ["En ligne", "Rien à installer"],
   annexes: {
-    "Fiche de l'enseignant·e": "https://babash.github.io/TP-commandes-hacker/fiche_prof_mirage.html",
+    "Fiche de l'enseignant·e": "https://babash.github.io/mirage/fiche_prof_mirage.html",
     "Terminal JSLinux": "https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&mem=192",
-    "Code source": "https://github.com/babash/TP-commandes-hacker",
+    "Code source": "https://github.com/babash/mirage",
   },
 });
 
