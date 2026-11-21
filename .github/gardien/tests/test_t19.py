@@ -1,14 +1,20 @@
-"""T19 : le pied de page suit-il ses réglages ? (5 variantes de reglages.js, test du Gardien)
+"""T19 : le pied de page suit-il ses réglages ? (6 variantes de reglages.js, test du Gardien)
 
 Usage (depuis la copie du dépôt) :
   python3 -I -B .github/gardien/tests/test_t19.py COPIE_DU_SITE DOSSIER_DE_TRAVAIL
 
 Pour chaque variante de reglages.js (telle quelle, mention_ia vide, invitation_ia vide, autre
-auteur, réglages absents comme dans un ancien reglages.js), le test copie le site, le sert en
-local, affiche l'accueil et la page SNT dans Chrome, et vérifie dans le pied de page (p.mentions)
-les textes présents et absents et le nom en gras, puis l'absence d'erreur JavaScript et de bloc
-d'erreur (.alerte). Depuis T51b, l'accueil et les rubriques lisent la bibliothèque construite : chaque
-copie l'a (cadre.bibliotheque). Les textes attendus sont ceux que l'enseignant a validés le 07/11/2026 : s'ils
+auteur, pied_ia vide, réglages absents comme dans un ancien reglages.js), le test copie le site, le
+sert en local, affiche l'accueil et la page SNT dans Chrome, et vérifie dans le pied de page :
+  - la ligne courte (p.pied-ligne, depuis le nouveau design du site, T126b) : l'auteur, les deux
+    licences et leurs liens, « Code source sur GitHub » vers le dépôt, puis la mention courte de l'IA
+    (pied_ia, « conçu avec l'aide de l'IA ») ;
+  - les mentions (p.mentions) : les textes présents et absents et le nom en gras ; la phrase des
+    licences n'y est plus (elle est dans la ligne courte depuis T126b) ;
+puis l'absence d'erreur JavaScript et de bloc d'erreur (.alerte). Depuis T51b, l'accueil et les
+rubriques lisent la bibliothèque construite : chaque copie l'a (cadre.bibliotheque). Les textes
+attendus sont ceux que l'enseignant a validés le 07/11/2026 (mentions), le 20/11 (mention courte
+de l'IA, avec le nouveau style) et le 21/11 (pied de page compact de la maquette T126) : s'ils
 changent dans assets/site.js ou dans reglages.js, mettre à jour les constantes ci-dessous.
 Il faut Playwright et Chrome (voir commun.lancer).
 """
@@ -30,16 +36,24 @@ INSECABLE = chr(0x00A0)   # assets/site.js colle le tiret du nom à ses voisins 
 
 AUTEUR = "Babash - NSI Tani Malandi"
 C = "Ces ressources sont conçues par Babash - NSI Tani Malandi ; beaucoup le sont avec l'aide de l'IA."
-LIC = "Documents sous licence CC BY-SA 4.0, code des applications sous licence MIT."
+LIC = "Documents sous licence CC BY-SA 4.0, code des applications sous licence MIT."   # avant T126b
+IA = "conçu avec l'aide de l'IA"
+LIGNE = "Babash - NSI Tani Malandi · documents CC BY-SA 4.0 · code MIT · Code source sur GitHub"   # puis « · » + IA
+LICENCES_LIGNE = [("CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0/deed.fr", "license"),
+                  ("MIT", "https://opensource.org/license/mit", "license"),
+                  ("Code source sur GitHub", "https://github.com/babash/Babash-NSI-SNT", "")]
 REU = ("Tu peux les réutiliser et les modifier en mentionnant Babash - NSI Tani Malandi et la licence ; "
        "un document modifié se partage sous la même licence.")
 INV = "Si tu utilises l'IA pour les modifier, merci de le préciser."
 EXT = ("Les ressources externes restent la propriété de leurs auteurs et autrices : leur site d'origine est "
        "indiqué sur chaque ressource. Décor du site : dessin original.")
 
-LIRE = """() => { const p = document.querySelector('p.mentions');
+LIRE = """() => { const p = document.querySelector('footer.pied p.mentions');
+  const l = document.querySelector('footer.pied p.pied-ligne');
   return { texte: p ? p.innerText : null, gras: p ? [...p.querySelectorAll('strong')].map(s => s.textContent) : [],
            liens: p ? [...p.querySelectorAll('a')].map(a => a.textContent + ' -> ' + a.href + ' [' + a.rel + ']') : [],
+           ligne: l ? l.textContent.replace(/\\s+/g, ' ').trim() : null,
+           liens_ligne: l ? [...l.querySelectorAll('a')].map(a => [a.textContent.trim(), a.href.replace(/\\/$/, ''), a.rel]) : [],
            alerte: !!document.querySelector('.alerte') }; }"""
 
 
@@ -76,7 +90,7 @@ def lire(d, nav):
     return resultats
 
 
-def verifier(titre, nav, nom, remplacements, doit, ne_doit_pas=(), gras=None, montrer_liens=False):
+def verifier(titre, nav, nom, remplacements, doit, ne_doit_pas=(), gras=None, montrer_liens=False, ligne=LIGNE + " · " + IA):
     d, introuvable = variante(nom, remplacements)
     if introuvable:
         bilan.verifier(titre, ["motif introuvable dans reglages.js : " + introuvable])
@@ -97,7 +111,16 @@ def verifier(titre, nav, nom, remplacements, doit, ne_doit_pas=(), gras=None, mo
             pb.append("gras : %r au lieu de %r" % (infos["gras"], gras))
         if infos["erreurs"] or infos["alerte"]:
             pb.append("erreurs : %r, alerte : %r" % (infos["erreurs"], infos["alerte"]))
-        bilan.verifier("%s (%s)" % (titre, page), pb, "texte relevé : " + texte.replace("\n", " / ") if pb else "")
+        # la ligne courte du pied de page (T126b) : texte exact et liens (adresse, rel="license")
+        texte_ligne = (infos["ligne"] or "").replace(INSECABLE, " ")
+        if infos["ligne"] is None:
+            pb.append("pas de ligne courte (p.pied-ligne) dans le pied de page")
+        elif texte_ligne != ligne:
+            pb.append("ligne courte %r au lieu de %r" % (texte_ligne, ligne))
+        attendus = [list(x) for x in LICENCES_LIGNE]
+        if [list(x) for x in infos["liens_ligne"]] != attendus:
+            pb.append("liens de la ligne courte %r au lieu de %r" % (infos["liens_ligne"], attendus))
+        bilan.verifier("%s (%s)" % (titre, page), pb, "texte relevé : " + texte.replace("\n", " / ") + " ; ligne : " + texte_ligne if pb else "")
         if montrer_liens:
             print("        liens (%s) : %s" % (page, " ; ".join(infos["liens"])))
     shutil.rmtree(d, ignore_errors=True)
@@ -106,20 +129,24 @@ def verifier(titre, nav, nom, remplacements, doit, ne_doit_pas=(), gras=None, mo
 with sync_playwright() as p:
     nav = commun.lancer(p)
     verifier("réglages de la copie : les textes validés", nav, "telle-quelle", [],
-             [C, LIC, REU + " " + INV, EXT], gras=[AUTEUR], montrer_liens=True)
+             [C, REU + " " + INV, EXT], ne_doit_pas=[LIC], gras=[AUTEUR], montrer_liens=True)
     verifier("mention_ia vide : la phrase disparaît, l'auteur passe en gras dans la réutilisation", nav, "sans-mention",
              [(r'^  mention_ia: ".*",$', '  mention_ia: "",')],
-             [LIC, REU, INV, EXT], ne_doit_pas=["Ces ressources sont conçues"], gras=[AUTEUR])
+             [REU, INV, EXT], ne_doit_pas=["Ces ressources sont conçues", LIC], gras=[AUTEUR])
     verifier("invitation_ia vide : l'invitation disparaît", nav, "sans-invitation",
              [(r'^  invitation_ia: ".*",$', '  invitation_ia: "",')],
-             [C, LIC, REU, EXT], ne_doit_pas=[INV], gras=[AUTEUR])
-    verifier("auteur changé : il remplace {auteur} partout", nav, "autre-auteur",
+             [C, REU, EXT], ne_doit_pas=[INV, LIC], gras=[AUTEUR])
+    verifier("auteur changé : il remplace {auteur} partout, ligne courte comprise", nav, "autre-auteur",
              [(r'^  auteur: ".*",$', '  auteur: "Autre Nom - Essai",')],
              ["Ces ressources sont conçues par Autre Nom - Essai ;", "en mentionnant Autre Nom - Essai et la licence"],
-             ne_doit_pas=[AUTEUR], gras=["Autre Nom - Essai"])
+             ne_doit_pas=[AUTEUR], gras=["Autre Nom - Essai"],
+             ligne=LIGNE.replace(AUTEUR, "Autre Nom - Essai") + " · " + IA)
+    verifier("pied_ia vide : la mention courte de l'IA disparaît de la ligne courte", nav, "sans-pied-ia",
+             [(r'^  pied_ia: ".*",$', '  pied_ia: "",')],
+             [C, REU + " " + INV, EXT], ne_doit_pas=[LIC], gras=[AUTEUR], ligne=LIGNE)
     verifier("réglages absents (ancien reglages.js) : les textes validés de assets/site.js", nav, "sans-reglages",
-             [(r'^  // En bas de chaque page.*\n(?:  .*\n)*?  invitation_ia: ".*",\n', '')],
-             [C, LIC, REU + " " + INV, EXT], gras=[AUTEUR])
+             [(r'^  // En bas de chaque page.*\n(?:  .*\n)*?  invitation_ia: ".*",\n(?:  // La mention courte.*\n)?(?:  pied_ia: ".*",\n)?', '')],
+             [C, REU + " " + INV, EXT], ne_doit_pas=[LIC], gras=[AUTEUR])
     nav.close()
 
 bilan.terminer()

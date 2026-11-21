@@ -20,8 +20,9 @@ servies en local et affichées dans Chrome (accueil et SNT) :
     page (code 1, les 6 pages citées), lien vers un autre dépôt (code 1). Depuis T50, la
     bibliothèque (donnees/bibliotheque.json, jamais commitée) est d'abord construite dans chaque
     copie par scripts/construire_bibliotheque.py, comme le fait « Publier le site » (cadre.bibliotheque).
-Les motifs remplacés dans assets/site.js et reglages.js sont ceux de la version du 11/11/2026 :
-s'ils changent, le cas le dit (« motif introuvable »), et il faut mettre ce test à jour.
+Les motifs remplacés dans assets/site.js et reglages.js sont ceux de la version du 11/11/2026, et,
+pour le lien du pied de page, celui du pied compact du nouveau design (T126b, 21/11/2026) : s'ils
+changent, le cas le dit (« motif introuvable »), et il faut mettre ce test à jour.
 Il faut Playwright et Chrome (voir commun.lancer). Compter quelques minutes : verifier-site.py
 affiche chaque page dans Chrome.
 """
@@ -197,7 +198,7 @@ for titre, nom, modifs, code_attendu, motifs in [
     ("verifier-site.py sur la copie telle quelle : code 0", "verif-tel-quel", [], 0,
      [r"Lien « Code source sur GitHub » : \d+ / \d+ pages déposées", r"Tout s'affiche correctement"]),
     ("verifier-site.py, lien retiré du pied de page : code 1, les 6 pages citées", "verif-sans-lien",
-     [("assets/site.js", re.escape("'Code source sur GitHub'), '.');"), "'Code source'), '.');")], 1,
+     [("assets/site.js", re.escape("}, 'Code source sur GitHub'));"), "}, 'Code source'));")], 1,   # pied compact (T126b)
      [r"^ - %s : pas de lien « Code source sur GitHub » vers %s$" % (p, re.escape(D)) for p in PAGES]),
     ("verifier-site.py, lien vers un autre dépôt : code 1", "verif-autre-depot",
      [("assets/site.js", re.escape("return 'https://github.com/' + (depotSite || DEPOT);"),
