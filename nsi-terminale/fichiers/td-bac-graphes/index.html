@@ -1,35 +1,52 @@
 <!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Graphes : TD type bac</title>
-  <meta name="description" content="TD type bac de terminale NSI sur les graphes : deux exercices de l'épreuve écrite (Amérique du Nord 2024, Polynésie 2024), auto-correctifs : matrice et listes d'adjacence, parcours en profondeur et en largeur, distances.">
+  <title>Graphes · TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : un groupe d&#x27;amis, matrice et listes d&#x27;adjacence (bac 2024, Amérique du Nord, 24-NSIJ1AN1, exercice 2).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
   <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
   <script src="../../../assets/td-en-ligne.js" defer></script>
 </head>
 <body class="td-page">
-<main class="td" data-td="nsi-tle-td-bac-graphes" data-td-version="1">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-graphes-1" data-td-version="2">
 
   <header class="td-entete">
-    <p class="td-sur-titre">Terminale NSI · Structures de données et algorithmique · TD type bac</p>
-    <h1>Les graphes : TD type bac</h1>
-    <p class="td-objectif"><b>Objectif :</b> traiter deux exercices de l'épreuve écrite sur les graphes, du plus guidé au plus proche de l'épreuve.</p>
-    <p><b>Je sais :</b></p>
-    <ul class="td-criteres">
-      <li>représenter un graphe par une matrice d'adjacence et par un dictionnaire de listes d'adjacence ;</li>
-      <li>compter les voisins d'un sommet dans chacune des deux représentations ;</li>
-      <li>dérouler un parcours en profondeur et un parcours en largeur dans l'ordre des voisins donné ;</li>
-      <li>utiliser une file pour calculer la distance (en nombre d'arêtes) depuis un sommet.</li>
-    </ul>
-    <p class="td-duree">1 h 45 · 2 exercices de bac (6 points chacun) · 19 questions</p>
-    <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
-    <p>Les énoncés reprennent fidèlement les sujets officiels. Quand le sujet demande un dessin ou une phrase, la page te pose une question courte ou un choix pour vérifier ta réponse écrite.</p>
+    <!-- BANDEAU : paysage n° 2 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Graphes</span></p>
+        <h1>Graphes</h1>
+        <p class="td-accroche">Type bac · feuille 1/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=graphes" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h1v1h-1zM20 1h1v1h-1zM23 1h2v1h-2zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h2v1h-2zM12 2h5v1h-5zM22 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h5v1h-5zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h2v1h-2zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM11 5h1v1h-1zM16 5h5v1h-5zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h3v1h-3zM14 7h1v1h-1zM17 7h1v1h-1zM24 7h1v1h-1zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM9 8h3v1h-3zM15 8h1v1h-1zM17 8h3v1h-3zM21 8h4v1h-4zM26 8h1v1h-1zM29 8h1v1h-1zM31 8h2v1h-2zM2 9h1v1h-1zM5 9h1v1h-1zM7 9h2v1h-2zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM12 10h3v1h-3zM16 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM31 10h2v1h-2zM0 11h2v1h-2zM3 11h1v1h-1zM7 11h2v1h-2zM10 11h1v1h-1zM13 11h2v1h-2zM16 11h1v1h-1zM18 11h3v1h-3zM22 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM32 11h1v1h-1zM1 12h2v1h-2zM6 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h3v1h-3zM5 13h1v1h-1zM9 13h1v1h-1zM14 13h3v1h-3zM18 13h2v1h-2zM21 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM29 13h3v1h-3zM0 14h1v1h-1zM2 14h1v1h-1zM4 14h4v1h-4zM10 14h4v1h-4zM16 14h1v1h-1zM19 14h3v1h-3zM26 14h1v1h-1zM29 14h1v1h-1zM0 15h3v1h-3zM5 15h1v1h-1zM7 15h2v1h-2zM10 15h1v1h-1zM13 15h3v1h-3zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h3v1h-3zM4 16h3v1h-3zM10 16h1v1h-1zM18 16h2v1h-2zM21 16h2v1h-2zM25 16h2v1h-2zM28 16h3v1h-3zM0 17h1v1h-1zM2 17h2v1h-2zM8 17h3v1h-3zM14 17h2v1h-2zM17 17h1v1h-1zM20 17h7v1h-7zM28 17h2v1h-2zM32 17h1v1h-1zM1 18h2v1h-2zM4 18h1v1h-1zM6 18h2v1h-2zM11 18h2v1h-2zM14 18h3v1h-3zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h1v1h-1zM5 19h1v1h-1zM9 19h2v1h-2zM12 19h2v1h-2zM16 19h3v1h-3zM20 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM0 20h4v1h-4zM5 20h2v1h-2zM10 20h3v1h-3zM14 20h1v1h-1zM17 20h2v1h-2zM21 20h1v1h-1zM27 20h1v1h-1zM29 20h2v1h-2zM32 20h1v1h-1zM0 21h2v1h-2zM4 21h1v1h-1zM8 21h5v1h-5zM16 21h6v1h-6zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM2 22h2v1h-2zM5 22h2v1h-2zM8 22h1v1h-1zM10 22h3v1h-3zM14 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM21 22h4v1h-4zM26 22h2v1h-2zM30 22h3v1h-3zM1 23h4v1h-4zM8 23h2v1h-2zM11 23h3v1h-3zM16 23h1v1h-1zM18 23h1v1h-1zM23 23h7v1h-7zM31 23h2v1h-2zM0 24h1v1h-1zM4 24h1v1h-1zM6 24h4v1h-4zM12 24h1v1h-1zM14 24h5v1h-5zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h2v1h-2zM11 25h2v1h-2zM15 25h3v1h-3zM19 25h1v1h-1zM21 25h1v1h-1zM23 25h2v1h-2zM28 25h2v1h-2zM0 26h7v1h-7zM8 26h2v1h-2zM12 26h2v1h-2zM17 26h3v1h-3zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM10 27h2v1h-2zM13 27h1v1h-1zM15 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM14 28h1v1h-1zM18 28h1v1h-1zM20 28h2v1h-2zM23 28h6v1h-6zM30 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM12 29h2v1h-2zM15 29h1v1h-1zM17 29h2v1h-2zM20 29h2v1h-2zM23 29h1v1h-1zM27 29h1v1h-1zM32 29h1v1h-1zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM15 30h1v1h-1zM17 30h1v1h-1zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM11 31h2v1h-2zM14 31h2v1h-2zM17 31h3v1h-3zM22 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM0 32h7v1h-7zM8 32h4v1h-4zM13 32h1v1h-1zM17 32h2v1h-2zM20 32h2v1h-2zM23 32h1v1h-1zM28 32h1v1h-1zM30 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les graphes (le plus guidé).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>représenter un graphe par une matrice d'adjacence et par un dictionnaire de listes d'adjacence ;</li>
+        <li>compter les voisins d'un sommet dans chacune des deux représentations ;</li>
+        <li>dérouler un parcours en profondeur dans l'ordre des voisins donné.</li>
+      </ul>
+      <p class="td-duree">50 minutes · 1 exercice de bac (6 points) · 10 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
+      <p>Les énoncés reprennent fidèlement les sujets officiels. Quand le sujet demande un dessin ou une phrase, la page te pose une question courte ou un choix pour vérifier ta réponse écrite.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. un groupe d'amis (ici) ; 2. <a href="feuille-2.html">visiter toutes les villes</a>.</p>
+    </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
@@ -83,7 +100,7 @@
 <circle cx="270" cy="110" r="14"/>
 <circle cx="262" cy="30" r="14"/>
 </g>
-<g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">
+<g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">
 <text x="165" y="122">Y</text>
 <text x="165" y="34">J</text>
 <text x="72" y="62">G</text>
@@ -285,274 +302,16 @@ def parcours_en_profondeur(d, s, visites = []):
     </div>
   </section>
 
-  <h2 class="td-partie">Exercice 2 · Visiter toutes les villes (6 points)</h2>
-  <p><b>Sujet :</b> baccalauréat 2024, Polynésie, jour 2 (24-NSIJ2PO1), exercice 1, partie B (questions 3 à 11), pages 2 à 5. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-polynesie-jour-2.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Polynesie_juin_2024_2.pdf">version de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_polynesie_2024_2.pdf">corrigé de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/24nsij2po1.pdf">second corrigé de l'AEIF</a>.</p>
-  <p><i>Cet exercice porte sur les structures de données file et pile, sur les graphes et sur les algorithmes de parcours.</i> La partie A (questions 1 et 2 : plus court chemin dans le graphe pondéré des distances) est dans le PDF d'origine : elle n'est pas reprise ici.</p>
-  <p>Une agence de voyages veut proposer un itinéraire qui permet de visiter toutes les villes. On utilise le graphe <code>G</code> ci-dessous, non pondéré. On l'implémente par listes d'adjacence, avec un dictionnaire : les clés sont les sommets (de type <code>str</code>), la valeur associée à une clé est la liste de ses voisins. <b>Dans ce TD</b>, on écrit les voisins dans l'ordre alphabétique (le sujet ne fixe pas l'ordre ; il en faut un pour corriger les parcours).</p>
-<svg viewBox="0 0 340 250" width="340" height="250" role="img" aria-label="Graphe G, non pondéré, de 9 villes. Ar est relié à Ax, Mp, Mr et Ni ; Av à Ax, Mr et Ni ; Ax à Ar, Av, Di, Mr, Nc et To ; Di à Ax et Nc ; Mp à Ar et Ni ; Mr à Ar, Av, Ax, Nc et To ; Nc à Ax, Di, Mr et To ; Ni à Ar, Av et Mp ; To à Ax, Mr et Nc." style="display:block;max-width:100%;height:auto;margin:.4rem auto;color:var(--td-encre)">
-<g fill="none" stroke="currentColor" stroke-width="1.8">
-<line x1="237" y1="228" x2="318" y2="107"/>
-<line x1="237" y1="228" x2="78" y2="227"/>
-<line x1="237" y1="228" x2="177" y2="195"/>
-<line x1="237" y1="228" x2="35" y2="198"/>
-<line x1="150" y1="22" x2="318" y2="107"/>
-<line x1="150" y1="22" x2="177" y2="195"/>
-<line x1="150" y1="22" x2="35" y2="198"/>
-<line x1="318" y1="107" x2="244" y2="128"/>
-<line x1="318" y1="107" x2="177" y2="195"/>
-<line x1="318" y1="107" x2="202" y2="104"/>
-<line x1="318" y1="107" x2="179" y2="61"/>
-<line x1="244" y1="128" x2="202" y2="104"/>
-<line x1="177" y1="195" x2="202" y2="104"/>
-<line x1="177" y1="195" x2="179" y2="61"/>
-<line x1="202" y1="104" x2="179" y2="61"/>
-<line x1="78" y1="227" x2="35" y2="198"/>
-</g>
-<g stroke="currentColor" stroke-width="1.8" style="fill:var(--td-panneau)">
-<circle cx="35" cy="198" r="16"/>
-<circle cx="150" cy="22" r="16"/>
-<circle cx="318" cy="107" r="16"/>
-<circle cx="237" cy="228" r="16"/>
-<circle cx="78" cy="227" r="16"/>
-<circle cx="177" cy="195" r="16"/>
-<circle cx="179" cy="61" r="16"/>
-<circle cx="202" cy="104" r="16"/>
-<circle cx="244" cy="128" r="16"/>
-</g>
-<g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">
-<text x="35" y="203">Ni</text>
-<text x="150" y="27">Av</text>
-<text x="318" y="112">Ax</text>
-<text x="237" y="233">Ar</text>
-<text x="78" y="232">Mp</text>
-<text x="177" y="200">Mr</text>
-<text x="179" y="66">To</text>
-<text x="202" y="109">Nc</text>
-<text x="244" y="133">Di</text>
-</g></svg>
-  <p><i>Figure 2 : le graphe G (redessiné ; les sommets et les arêtes sont ceux du sujet).</i></p>
-
-  <section class="td-q" data-type="trous" id="q11">
-    <p class="td-consigne">Écris le dictionnaire représentant le graphe de la figure 2, stocké dans la variable <code>G</code>. Écris chaque couple clé : valeur sur une nouvelle ligne.</p>
-    <pre class="td-code">
-G = {'Ar': [[ ['Ax', 'Mp', 'Mr', 'Ni'] ]],
-     'Av': [[ ['Ax', 'Mr', 'Ni'] ]],
-     'Ax': [[ ['Ar', 'Av', 'Di', 'Mr', 'Nc', 'To'] ]],
-     'Di': [[ ['Ax', 'Nc'] ]],
-     'Mp': [[ ['Ar', 'Ni'] ]],
-     'Mr': [[ ['Ar', 'Av', 'Ax', 'Nc', 'To'] ]],
-     'Nc': [[ ['Ax', 'Di', 'Mr', 'To'] ]],
-     'Ni': [[ ['Ar', 'Av', 'Mp'] ]],
-     'To': [[ ['Ax', 'Mr', 'Nc'] ]]}</pre>
-    <p class="td-aide">Pour chaque ville, suis les arêtes qui partent de son cercle. Range les voisins dans l'ordre alphabétique : Ar, Av, Ax, Di, Mp, Mr, Nc, Ni, To.</p>
-    <p class="td-aide">Le graphe est non orienté : si Mp est dans la liste de Ar, alors Ar est dans la liste de Mp. Au total, les listes contiennent 32 noms (16 arêtes, comptées deux fois).</p>
-    <div class="td-correction">
-      <p>Ax a le plus de voisins (6). Les deux corrigés de l'AEIF donnent les mêmes listes, dans des ordres différents : les deux sont justes pour le sujet.</p>
-    </div>
-  </section>
-
-  <p>On considère une <b>file</b>, avec : <code>creerFile()</code> qui renvoie une file vide ; <code>estVide(F)</code> qui renvoie <code>True</code> si la file <code>F</code> est vide, <code>False</code> sinon ; <code>enfiler(F, e)</code> qui ajoute <code>e</code> dans la file ; <code>defiler(F)</code> qui renvoie l'élément en tête de la file et le retire.</p>
-  <p>On considère une <b>pile</b>, avec : <code>creerPile()</code> ; <code>estVide(P)</code> ; <code>empiler(P, e)</code> qui ajoute <code>e</code> au sommet de la pile ; <code>depiler(P)</code> qui renvoie le sommet de la pile et le retire.</p>
-
-  <section class="td-q" data-type="qcu" id="q12">
-    <p class="td-consigne">Donne la signification des lettres des acronymes LIFO et FIFO.</p>
-    <ul class="td-options">
-      <li data-juste>LIFO : <i>Last In, First Out</i> (dernier entré, premier sorti) ; FIFO : <i>First In, First Out</i> (premier entré, premier sorti).</li>
-      <li data-retour="Les deux sont inversés : dans LIFO, la première lettre L vient de Last.">LIFO : <i>First In, Last Out</i> ; FIFO : <i>Last In, First Out</i>.</li>
-      <li data-retour="I et O signifient In et Out : entré et sorti.">LIFO : <i>Last Input, Final Output</i> ; FIFO : <i>First Input, Final Output</i>.</li>
-    </ul>
-    <div class="td-correction">
-      <p>LIFO : <b>Last In, First Out</b>, le dernier entré est le premier sorti. FIFO : <b>First In, First Out</b>, le premier entré est le premier sorti.</p>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="qcu" id="q13">
-    <p class="td-consigne">Donne l'acronyme désignant la structure de file.</p>
-    <ul class="td-options">
-      <li data-juste>FIFO</li>
-      <li data-retour="LIFO, c'est la pile : le dernier posé sur la pile est le premier repris.">LIFO</li>
-    </ul>
-    <div class="td-correction">
-      <p>Une file d'attente (à la barge, au taxi) : le premier arrivé est le premier servi. C'est <b>FIFO</b>.</p>
-    </div>
-  </section>
-
-  <p>On donne la fonction <code>parcours</code> :</p>
-  <pre class="td-code">
-def parcours(graphe, sommet):
-    f = creerFile()
-    enfiler(f, sommet)
-    visite = [sommet]
-    while not estVide(f):
-        s = defiler(f)
-        for v in graphe[s]:
-            if not (v in visite):
-                visite.append(v)
-                enfiler(f, v)
-    return visite</pre>
-
-  <section class="td-q" data-type="courte" id="q14" data-comparer="code" data-reponse="['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']|Av, Ax, Mr, Ni, Ar, Di, Nc, To, Mp|Av Ax Mr Ni Ar Di Nc To Mp" data-etiquette="La liste renvoyée :">
-    <p class="td-consigne">Donne le résultat de l'appel <code>parcours(G, 'Av')</code>.</p>
-    <p class="td-retour" data-si="['Av', 'Mr', 'Ni', 'Ax', 'Ar', 'To', 'Nc', 'Mp', 'Di']">C'est la réponse du corrigé de l'AEIF, qui écrit les voisins dans un autre ordre. Ici, les voisins sont dans l'ordre alphabétique : ceux de Av sont Ax, Mr, Ni.</p>
-    <p class="td-retour" data-si="['Av', 'Ax', 'Ar', 'Mp', 'Ni', 'Mr', 'Nc', 'Di', 'To']">Tu as suivi un chemin le plus loin possible (profondeur). Avec une file, on visite d'abord <b>tous</b> les voisins de Av, puis les voisins de ces voisins.</p>
-    <p class="td-aide">Écris l'état de la file et de la liste <code>visite</code> à chaque tour. Au départ : file = [Av], visite = [Av].</p>
-    <p class="td-aide">Tour 1 : on défile Av, on enfile ses voisins Ax, Mr, Ni. Tour 2 : on défile Ax, on enfile ses voisins pas encore vus (Ar, Di, Nc, To)…</p>
-    <div class="td-correction">
-      <p><code>['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']</code> : d'abord Av, puis ses voisins (distance 1 : Ax, Mr, Ni), puis les sommets à distance 2. Tous les sommets du graphe sont visités.</p>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="qcu" id="q15">
-    <p class="td-consigne">Indique si la fonction <code>parcours</code> réalise un parcours en largeur ou en profondeur.</p>
-    <ul class="td-options">
-      <li data-juste>Proposition A : parcours en largeur.</li>
-      <li data-retour="Le parcours en profondeur utilise une pile (ou la récursivité). Ici, c'est une file : on traite les sommets dans l'ordre où on les a découverts.">Proposition B : parcours en profondeur.</li>
-    </ul>
-    <div class="td-correction">
-      <p><b>Parcours en largeur</b> : la file fait traiter les sommets par distance croissante depuis le départ.</p>
-    </div>
-  </section>
-
-  <p>La distance entre deux sommets est le nombre minimal d'arêtes d'un chemin qui les relie. Par exemple, la distance entre Mp et Nc vaut 3.</p>
-
-  <section class="td-q" data-type="code" id="q16" data-fichier="distance.py" data-obligatoire>
-    <p class="td-consigne">Modifie la fonction <code>parcours</code> pour écrire une fonction <code>distance(graphe, sommet)</code> : <code>graphe</code> est un dictionnaire en listes d'adjacence, <code>sommet</code> une chaîne de caractères. Elle renvoie un dictionnaire dont les clés sont les sommets du graphe, et la valeur de chaque clé la distance entre ce sommet et <code>sommet</code>.</p>
-    <pre class="td-depart">
-# La file est fournie (ne la modifie pas).
-def creerFile(): return []
-def estVide(F): return len(F) == 0
-def enfiler(F, e): F.append(e)
-def defiler(F): return F.pop(0)
-
-def distance(graphe, sommet):
-    </pre>
-    <script type="text/x-python" class="td-tests">
-if 'creerFile' not in globals():
-    def creerFile(): return []
-    def estVide(F): return len(F) == 0
-    def enfiler(F, e): F.append(e)
-    def defiler(F): return F.pop(0)
-G = {'Ar': ['Ax', 'Mp', 'Mr', 'Ni'], 'Av': ['Ax', 'Mr', 'Ni'],
-     'Ax': ['Ar', 'Av', 'Di', 'Mr', 'Nc', 'To'], 'Di': ['Ax', 'Nc'], 'Mp': ['Ar', 'Ni'],
-     'Mr': ['Ar', 'Av', 'Ax', 'Nc', 'To'], 'Nc': ['Ax', 'Di', 'Mr', 'To'],
-     'Ni': ['Ar', 'Av', 'Mp'], 'To': ['Ax', 'Mr', 'Nc']}
-d = distance(G, 'Mp')
-assert type(d) == dict, "distance doit renvoyer un dictionnaire."
-assert d['Mp'] == 0, "La distance d'un sommet à lui-même vaut 0."
-assert d['Nc'] == 3, "La distance entre Mp et Nc vaut 3."
-assert d == {'Mp': 0, 'Ar': 1, 'Ni': 1, 'Ax': 2, 'Mr': 2, 'Av': 2, 'Di': 3, 'Nc': 3, 'To': 3}, "distance(G, 'Mp') : une des distances est fausse."
-assert distance(G, 'Av') == {'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}, "distance(G, 'Av') : une des distances est fausse."
-print("Tous les tests passent.")
-</script>
-    <p class="td-aide">Remplace la liste <code>visite</code> par un dictionnaire : au départ, <code>{sommet: 0}</code>. « Être visité » devient « être une clé du dictionnaire ».</p>
-    <p class="td-aide">Quand on découvre un voisin <code>v</code> du sommet <code>s</code> qu'on vient de défiler, sa distance est celle de <code>s</code> plus 1.</p>
-    <div class="td-correction">
-      <pre class="td-code" data-verifier="correction">
-def distance(graphe, sommet):
-    f = creerFile()
-    enfiler(f, sommet)
-    dist = {sommet: 0}
-    while not estVide(f):
-        s = defiler(f)
-        for v in graphe[s]:
-            if not (v in dist):
-                dist[v] = dist[s] + 1
-                enfiler(f, v)
-    return dist</pre>
-      <p>Le parcours en largeur découvre les sommets par distance croissante : la première fois qu'on atteint <code>v</code>, c'est par un plus court chemin. Piège : augmenter un compteur à chaque sommet défilé ne donne pas la distance.</p>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q17" data-comparer="code" data-reponse="{'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}|{'Ar': 2, 'Av': 0, 'Ax': 1, 'Di': 2, 'Mp': 2, 'Mr': 1, 'Nc': 2, 'Ni': 1, 'To': 2}" data-etiquette="Le dictionnaire renvoyé :">
-    <p class="td-consigne">Donne le résultat de l'appel <code>distance(G, 'Av')</code>.</p>
-    <p class="td-aide">Les sommets visités par <code>parcours(G, 'Av')</code> à la question 14 arrivent par distance croissante.</p>
-    <p class="td-aide">Av est à distance 0 ; ses voisins à distance 1 ; tous les autres sommets sont voisins d'un voisin de Av.</p>
-    <div class="td-correction">
-      <p><code>{'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}</code>. Les distances ne dépendent pas de l'ordre des voisins (seul l'ordre des clés en dépend).</p>
-    </div>
-  </section>
-
-  <p>On considère l'algorithme suivant, écrit en pseudo-code :</p>
-  <pre class="td-sortie-exemple">
-créer une pile p
-empiler s dans p
-créer une liste visite vide
-tant que p n'est pas vide
-    x = dépiler p
-    si x n'est pas dans la liste visite
-        ajouter x à la liste visite
-        pour chaque voisin v de x
-            empiler v dans p
-renvoyer visite</pre>
-
-  <section class="td-q" data-type="code" id="q18" data-fichier="parcours2.py" data-obligatoire>
-    <p class="td-consigne">Traduis cet algorithme dans le corps d'une fonction Python <code>parcours2(G, s)</code>, qui prend en paramètres un dictionnaire en listes d'adjacence <code>G</code> et une chaîne de caractères <code>s</code> représentant un sommet.</p>
-    <pre class="td-depart">
-# La pile est fournie (ne la modifie pas).
-def creerPile(): return []
-def estVide(P): return len(P) == 0
-def empiler(P, e): P.append(e)
-def depiler(P): return P.pop()
-
-def parcours2(G, s):
-    </pre>
-    <script type="text/x-python" class="td-tests">
-if 'creerPile' not in globals():
-    def creerPile(): return []
-    def estVide(P): return len(P) == 0
-    def empiler(P, e): P.append(e)
-    def depiler(P): return P.pop()
-G = {'Ar': ['Ax', 'Mp', 'Mr', 'Ni'], 'Av': ['Ax', 'Mr', 'Ni'],
-     'Ax': ['Ar', 'Av', 'Di', 'Mr', 'Nc', 'To'], 'Di': ['Ax', 'Nc'], 'Mp': ['Ar', 'Ni'],
-     'Mr': ['Ar', 'Av', 'Ax', 'Nc', 'To'], 'Nc': ['Ax', 'Di', 'Mr', 'To'],
-     'Ni': ['Ar', 'Av', 'Mp'], 'To': ['Ax', 'Mr', 'Nc']}
-r = parcours2(G, 'Av')
-assert type(r) == list, "parcours2 doit renvoyer une liste."
-assert sorted(r) == sorted(G), "parcours2(G, 'Av') doit contenir chaque sommet une fois."
-assert r == ['Av', 'Ni', 'Mp', 'Ar', 'Mr', 'To', 'Nc', 'Di', 'Ax'], "parcours2(G, 'Av') : l'ordre ne suit pas le pseudo-code."
-assert parcours2({'A': ['B'], 'B': ['A'], 'C': []}, 'A') == ['A', 'B'], "Seuls les sommets atteignables depuis s sont visités."
-print("Tous les tests passent.")
-</script>
-    <p class="td-aide">« Tant que p n'est pas vide » se traduit par <code>while not estVide(p):</code>. « x n'est pas dans la liste visite » : <code>if not (x in visite):</code>.</p>
-    <p class="td-aide">Les voisins de <code>x</code> sont dans <code>G[x]</code>. Respecte l'indentation du pseudo-code : chaque bloc décalé est un bloc Python.</p>
-    <div class="td-correction">
-      <pre class="td-code" data-verifier="correction">
-def parcours2(G, s):
-    p = creerPile()
-    empiler(p, s)
-    visite = []
-    while not estVide(p):
-        x = depiler(p)
-        if not (x in visite):
-            visite.append(x)
-            for v in G[x]:
-                empiler(p, v)
-    return visite</pre>
-      <p>Ici, on teste « déjà visité » au moment où l'on dépile : un sommet peut être empilé plusieurs fois, mais il n'est ajouté qu'une fois à <code>visite</code>.</p>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q19" data-comparer="code" data-reponse="['Av', 'Ni', 'Mp', 'Ar', 'Mr', 'To', 'Nc', 'Di', 'Ax']|Av, Ni, Mp, Ar, Mr, To, Nc, Di, Ax|Av Ni Mp Ar Mr To Nc Di Ax" data-etiquette="La liste renvoyée :">
-    <p class="td-consigne">Donne un résultat possible renvoyé par l'appel <code>parcours2(G, 'Av')</code>.</p>
-    <p class="td-retour" data-si="['Av', 'Ax', 'Ar', 'Mp', 'Ni', 'Mr', 'Nc', 'Di', 'To']">Avec une pile, le <b>dernier</b> empilé sort en premier : après Av, on empile Ax, Mr, Ni ; c'est Ni qui est dépilé d'abord.</p>
-    <p class="td-retour" data-si="['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']">C'est le parcours en largeur de la question 14. Avec une pile, on part loin avant de revenir.</p>
-    <p class="td-aide">Écris la pile à chaque tour, le sommet à droite. Après le premier tour : pile = [Ax, Mr, Ni], visite = [Av].</p>
-    <p class="td-aide">On dépile Ni, on empile ses voisins Ar, Av, Mp : pile = [Ax, Mr, Ar, Av, Mp]. On dépile Mp…</p>
-    <div class="td-correction">
-      <p><code>['Av', 'Ni', 'Mp', 'Ar', 'Mr', 'To', 'Nc', 'Di', 'Ax']</code> : un parcours en profondeur. Le sujet dit « un résultat possible » car l'ordre dépend de celui des voisins : avec l'ordre du premier corrigé de l'AEIF, on obtient <code>['Av', 'Ax', 'Di', 'Nc', 'To', 'Mr', 'Ar', 'Mp', 'Ni']</code>.</p>
-    </div>
-  </section>
-
   <section class="td-memo">
     <h2>Mémo</h2>
     <p><b>Représenter</b> : matrice d'adjacence (<code>m[i][j]</code> vaut 1 si i et j sont voisins) ou dictionnaire <code>{sommet: liste des voisins}</code>. Non orienté : chaque arête dans les deux sens.</p>
     <p><b>Parcourir</b> : en largeur avec une <b>file</b> (FIFO), qui donne les distances ; en profondeur avec une <b>pile</b> (LIFO) ou la récursivité. Toujours marquer les sommets visités.</p>
-    <p><b>À l'épreuve</b> : déroule le parcours dans l'ordre des voisins donné, en écrivant la file ou la pile à chaque tour.</p>
+    <p><b>À l'épreuve</b> : déroule le parcours dans l'ordre des voisins donné, en écrivant la file ou la pile à chaque tour.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:1"></span>
   </section>
-
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, visiter toutes les villes</a>.</p>
   <footer class="td-pied">
-    <p>Énoncés : sujets du baccalauréat NSI 2024 (ministère de l'Éducation nationale), d'après les versions recomposées et les corrigés de l'<a href="https://aeif.fr/index.php/annales-2024/">AEIF</a> (Association des enseignantes et enseignants d'informatique de France, licence CC BY-SA 4.0 ; les auteur·rices des corrigés ne sont pas nommé·es dans les documents). Figures redessinées.</p>
-    <p>Mise en TD : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-graphes">Code source sur GitHub</a></p>
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Amérique du Nord, mai 2024, jour 1 (24-NSIJ1AN1), exercice 2. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-amerique-nord-jour-1.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_amerique_nord_2024_1.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document). Graphe redessiné.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-graphes">Code source sur GitHub</a></p>
   </footer>
 </main>
 </body>
