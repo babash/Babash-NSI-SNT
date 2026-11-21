@@ -1,0 +1,297 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les conditions : if : TD en ligne</title>
+  <meta name="description" content="TD en ligne auto-correctif, feuille 3 sur 3 : des fonctions avec des conditions (1re NSI), avec le robot.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="nsi1-conditions-3" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+
+  <!-- le robot des fiches (grille sans obstacle de 8 colonnes A à H et 6 lignes, départ en A6) : il permet
+       à Python d'exécuter, dans la page et dans verifier-td.py, les programmes qui appellent nord(), est()… -->
+  <script type="text/x-python" class="td-preambule">
+_COL = "ABCDEFGH"
+_pos = [0, 6]
+def _libre(dx, dy):
+    x, y = _pos[0] + dx, _pos[1] + dy
+    return 0 <= x < 8 and 1 <= y <= 6
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _COL[_pos[0]] + str(_pos[1]) + ".")
+    _pos[0], _pos[1] = _pos[0] + dx, _pos[1] + dy
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+</script>
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Langages et programmation</span></p>
+        <h1>Les conditions : <code>if</code></h1>
+        <p class="td-accroche">Si… sinon… · feuille 3</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=conditions-boucles" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h2v1h-2zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM22 0h1v1h-1zM25 0h2v1h-2zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h1v1h-1zM13 1h2v1h-2zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h3v1h-3zM24 1h1v1h-1zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM13 2h1v1h-1zM15 2h1v1h-1zM20 2h2v1h-2zM23 2h4v1h-4zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM16 3h6v1h-6zM24 3h2v1h-2zM27 3h2v1h-2zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM16 4h4v1h-4zM22 4h1v1h-1zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h5v1h-5zM17 5h2v1h-2zM20 5h2v1h-2zM23 5h1v1h-1zM26 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM9 7h3v1h-3zM13 7h4v1h-4zM20 7h1v1h-1zM22 7h2v1h-2zM25 7h4v1h-4zM0 8h1v1h-1zM3 8h9v1h-9zM15 8h2v1h-2zM18 8h3v1h-3zM23 8h2v1h-2zM26 8h1v1h-1zM28 8h2v1h-2zM32 8h1v1h-1zM34 8h3v1h-3zM2 9h1v1h-1zM4 9h2v1h-2zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM17 9h1v1h-1zM20 9h1v1h-1zM23 9h1v1h-1zM25 9h3v1h-3zM29 9h1v1h-1zM31 9h2v1h-2zM35 9h1v1h-1zM2 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM10 10h3v1h-3zM21 10h1v1h-1zM23 10h1v1h-1zM26 10h6v1h-6zM33 10h1v1h-1zM36 10h1v1h-1zM0 11h1v1h-1zM7 11h1v1h-1zM13 11h3v1h-3zM17 11h1v1h-1zM23 11h1v1h-1zM26 11h2v1h-2zM29 11h1v1h-1zM31 11h6v1h-6zM1 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h3v1h-3zM16 12h1v1h-1zM19 12h1v1h-1zM24 12h1v1h-1zM28 12h1v1h-1zM30 12h2v1h-2zM36 12h1v1h-1zM0 13h1v1h-1zM2 13h3v1h-3zM12 13h1v1h-1zM15 13h3v1h-3zM22 13h2v1h-2zM27 13h1v1h-1zM32 13h2v1h-2zM1 14h6v1h-6zM9 14h2v1h-2zM14 14h2v1h-2zM17 14h1v1h-1zM19 14h1v1h-1zM21 14h1v1h-1zM25 14h1v1h-1zM27 14h4v1h-4zM32 14h5v1h-5zM2 15h4v1h-4zM8 15h5v1h-5zM14 15h1v1h-1zM16 15h4v1h-4zM24 15h1v1h-1zM28 15h4v1h-4zM33 15h2v1h-2zM0 16h1v1h-1zM3 16h4v1h-4zM9 16h2v1h-2zM13 16h2v1h-2zM16 16h2v1h-2zM19 16h2v1h-2zM22 16h1v1h-1zM24 16h2v1h-2zM30 16h1v1h-1zM34 16h1v1h-1zM0 17h1v1h-1zM3 17h2v1h-2zM9 17h2v1h-2zM12 17h2v1h-2zM16 17h3v1h-3zM20 17h1v1h-1zM22 17h1v1h-1zM24 17h1v1h-1zM26 17h2v1h-2zM31 17h1v1h-1zM33 17h2v1h-2zM0 18h1v1h-1zM2 18h2v1h-2zM5 18h3v1h-3zM11 18h1v1h-1zM14 18h2v1h-2zM18 18h1v1h-1zM20 18h2v1h-2zM23 18h1v1h-1zM25 18h1v1h-1zM27 18h1v1h-1zM29 18h2v1h-2zM33 18h2v1h-2zM36 18h1v1h-1zM5 19h1v1h-1zM7 19h1v1h-1zM13 19h1v1h-1zM18 19h1v1h-1zM22 19h6v1h-6zM29 19h5v1h-5zM36 19h1v1h-1zM2 20h2v1h-2zM5 20h2v1h-2zM11 20h2v1h-2zM14 20h4v1h-4zM24 20h1v1h-1zM26 20h8v1h-8zM8 21h3v1h-3zM12 21h4v1h-4zM18 21h2v1h-2zM22 21h2v1h-2zM26 21h2v1h-2zM32 21h1v1h-1zM34 21h1v1h-1zM2 22h1v1h-1zM6 22h1v1h-1zM8 22h2v1h-2zM12 22h1v1h-1zM14 22h5v1h-5zM23 22h2v1h-2zM27 22h5v1h-5zM33 22h1v1h-1zM35 22h2v1h-2zM7 23h3v1h-3zM11 23h2v1h-2zM14 23h4v1h-4zM20 23h1v1h-1zM27 23h3v1h-3zM31 23h5v1h-5zM0 24h1v1h-1zM2 24h5v1h-5zM8 24h1v1h-1zM10 24h1v1h-1zM13 24h1v1h-1zM15 24h4v1h-4zM20 24h1v1h-1zM27 24h2v1h-2zM30 24h2v1h-2zM0 25h1v1h-1zM2 25h1v1h-1zM4 25h2v1h-2zM7 25h1v1h-1zM14 25h1v1h-1zM16 25h1v1h-1zM19 25h3v1h-3zM23 25h1v1h-1zM26 25h4v1h-4zM32 25h3v1h-3zM0 26h2v1h-2zM4 26h3v1h-3zM9 26h2v1h-2zM12 26h2v1h-2zM16 26h1v1h-1zM19 26h4v1h-4zM24 26h2v1h-2zM27 26h1v1h-1zM30 26h1v1h-1zM32 26h1v1h-1zM34 26h3v1h-3zM0 27h1v1h-1zM4 27h2v1h-2zM8 27h2v1h-2zM14 27h2v1h-2zM19 27h2v1h-2zM23 27h1v1h-1zM26 27h1v1h-1zM31 27h1v1h-1zM33 27h4v1h-4zM0 28h1v1h-1zM2 28h2v1h-2zM6 28h2v1h-2zM11 28h2v1h-2zM16 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM24 28h2v1h-2zM28 28h8v1h-8zM8 29h1v1h-1zM11 29h3v1h-3zM15 29h1v1h-1zM19 29h1v1h-1zM21 29h1v1h-1zM24 29h5v1h-5zM32 29h1v1h-1zM34 29h2v1h-2zM0 30h7v1h-7zM8 30h4v1h-4zM13 30h3v1h-3zM19 30h3v1h-3zM23 30h4v1h-4zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM36 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM10 31h2v1h-2zM13 31h2v1h-2zM17 31h2v1h-2zM20 31h1v1h-1zM23 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h3v1h-3zM12 32h3v1h-3zM20 32h1v1h-1zM24 32h1v1h-1zM26 32h7v1h-7zM35 32h1v1h-1zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h5v1h-5zM16 33h1v1h-1zM18 33h2v1h-2zM21 33h3v1h-3zM26 33h5v1h-5zM33 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM9 34h1v1h-1zM11 34h1v1h-1zM15 34h2v1h-2zM23 34h1v1h-1zM27 34h1v1h-1zM29 34h1v1h-1zM32 34h2v1h-2zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM10 35h1v1h-1zM12 35h1v1h-1zM14 35h1v1h-1zM16 35h3v1h-3zM20 35h1v1h-1zM22 35h1v1h-1zM26 35h2v1h-2zM29 35h2v1h-2zM32 35h1v1h-1zM34 35h3v1h-3zM0 36h7v1h-7zM8 36h1v1h-1zM11 36h1v1h-1zM15 36h2v1h-2zM19 36h1v1h-1zM24 36h1v1h-1zM27 36h2v1h-2zM31 36h1v1h-1zM36 36h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+<p class="td-objectif"><b>Objectif :</b> suivre un programme avec des tests, puis écrire une fonction qui en utilise.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>suivre le robot dans des tests emboîtés ;</li>
+        <li>compléter une fonction avec <code>if</code>, <code>elif</code>, <code>else</code> ;</li>
+        <li>renvoyer directement une condition ;</li>
+        <li>écrire une fonction qui fait déplacer le robot.</li>
+      </ul>
+      <p class="td-duree">Feuille 3 sur 3 · 40 minutes · 7 questions et 4 bonus ★ · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+<p class="td-ecran-seul"><b>Le robot.</b> <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:middle"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5.0" y="8.0" width="14.0" height="11.0" rx="2.5"/><path d="M12.0 8.0V4.0"/></g><g fill="currentColor"><circle cx="12.0" cy="3.5" r="1.6"/><circle cx="9.3" cy="12.6" r="1.5"/><circle cx="14.7" cy="12.6" r="1.5"/><rect x="9.0" y="15.6" width="6.0" height="1.4"/></g></svg> Dans les questions marquées <b>Robot</b>, un robot se déplace sur une grille : <code>nord()</code>, <code>sud()</code>, <code>est()</code>, <code>ouest()</code> le déplacent d'<b>une case</b> ; <code>obstacleNord()</code>, <code>obstacleSud()</code>, <code>obstacleEst()</code>, <code>obstacleOuest()</code> renvoient <code>True</code> si la case voisine est un <b>obstacle</b> <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:middle"><rect x="1.5" y="1.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M5 5L19 19M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> ou le <b>bord</b>, <code>False</code> sinon. S'il avance vers un obstacle ou le bord, il <b>s'écrase</b> : le programme s'arrête avec une erreur. Le nord est en haut de la grille.</p>
+
+  <h2 class="td-partie">1. Où se trouve le robot ? (suite)</h2>
+  <p class="td-ecran-seul">Le robot part de <b>A3</b>. Sur papier, trace son trajet sur la grille. Écris la case d'arrivée.</p>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="D4" data-verifier="robot" data-etiquette="Case d&#x27;arrivée :">
+    <p class="td-consigne"><b>Robot.</b> Où arrive le robot ?</p>
+    <pre class="td-code">
+est()
+if obstacleEst():
+    sud()
+    if obstacleSud():
+        ouest()
+    else:
+        est()
+        est()
+else:
+    nord()</pre>
+    <svg class="td-grille-robot" width="166" height="142" viewBox="0 0 166 142" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A3. Obstacles en B1, E2, C3, D5." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="76.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 76.0V72.0"/></g><g fill="currentColor"><circle cx="32.0" cy="71.5" r="1.6"/><circle cx="29.3" cy="80.6" r="1.5"/><circle cx="34.7" cy="80.6" r="1.5"/><rect x="29.0" y="83.6" width="6.0" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    <p class="td-aide">En B3, C3 est un obstacle : le robot descend en B4. Puis le deuxième test.</p>
+    <div class="td-correction"><p>B3 ; C3 bloque : B4 ; au sud, B5 est libre : <code>else</code>, donc C4 puis <b>D4</b>.</p></div>
+  </section>
+  <section class="td-q" data-type="courte" id="q2" data-reponse="A2" data-verifier="robot" data-etiquette="Case d&#x27;arrivée :">
+    <p class="td-consigne"><b>Robot.</b> Où arrive le robot ?</p>
+    <pre class="td-code">
+nord()
+nord()
+if not obstacleNord():
+    nord()
+elif obstacleEst():
+    sud()
+else:
+    est()</pre>
+    <svg class="td-grille-robot" width="166" height="142" viewBox="0 0 166 142" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A3. Obstacles en B1, E2, C3, D5." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="76.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 76.0V72.0"/></g><g fill="currentColor"><circle cx="32.0" cy="71.5" r="1.6"/><circle cx="29.3" cy="80.6" r="1.5"/><circle cx="34.7" cy="80.6" r="1.5"/><rect x="29.0" y="83.6" width="6.0" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    <p class="td-aide">Après deux <code>nord()</code>, le robot est en A1, en haut de la grille.</p>
+    <p class="td-aide">Le bord compte comme un obstacle.</p>
+    <div class="td-correction"><p>A2, A1. Au nord : le bord. À l'est : B1, un obstacle. Donc <code>sud()</code> : <b>A2</b>.</p></div>
+  </section>
+  <section class="td-q" data-type="courte" data-bonus id="q3" data-reponse="B4" data-verifier="robot" data-etiquette="Case d&#x27;arrivée :">
+    <p class="td-consigne"><b>Robot.</b> Où arrive le robot ?</p>
+    <pre class="td-code">
+sud()
+sud()
+est()
+est()
+if obstacleEst():
+    nord()
+    if obstacleNord():
+        ouest()
+    else:
+        nord()</pre>
+    <svg class="td-grille-robot" width="166" height="142" viewBox="0 0 166 142" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A3. Obstacles en B1, E2, C3, D5." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="76.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 76.0V72.0"/></g><g fill="currentColor"><circle cx="32.0" cy="71.5" r="1.6"/><circle cx="29.3" cy="80.6" r="1.5"/><circle cx="34.7" cy="80.6" r="1.5"/><rect x="29.0" y="83.6" width="6.0" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    <p class="td-aide">Après les quatre premières lignes, le robot est en C5.</p>
+    <div class="td-correction"><p>A4, A5, B5, C5. D5 bloque : il monte en C4. C3 bloque : <code>ouest()</code>, <b>B4</b>.</p></div>
+  </section>
+  <h2 class="td-partie">2. Complète le code à partir d'un objectif</h2>
+
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne">La fonction <code>signe(n)</code> renvoie <code>"positif"</code>, <code>"négatif"</code> ou <code>"nul"</code> selon le nombre <code>n</code>.</p>
+    <pre class="td-code">
+def signe(n):
+    if [[n &gt; 0|0 &lt; n]]:
+        return "positif"
+    [[elif]] [[n &lt; 0|0 &gt; n]]:
+        return "négatif"
+    [[else]]:
+        return [["nul"]]</pre>
+    <p class="td-aide">Trois cas : plus grand que 0, plus petit que 0, et le reste.</p>
+    <p class="td-aide">Le dernier cas n'a pas besoin de condition : <code>else</code>.</p>
+    <div class="td-correction"><pre class="td-code">
+def signe(n):
+    if n &gt; 0:
+        return "positif"
+    elif n &lt; 0:
+        return "négatif"
+    else:
+        return "nul"</pre></div>
+  </section>
+  <section class="td-q" data-type="courte" id="q5" data-reponse="négatif|&quot;négatif&quot;" data-etiquette="signe(-3) renvoie :">
+    <p class="td-consigne">Que renvoie <code>signe(-3)</code> ?</p>
+    <p class="td-aide">-3 est plus petit que 0.</p>
+    <div class="td-correction"><p><code>"négatif"</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="courte" id="q6" data-reponse="nul|&quot;nul&quot;" data-etiquette="signe(0) renvoie :">
+    <p class="td-consigne">Que renvoie <code>signe(0)</code> ?</p>
+    <p class="td-aide">0 n'est ni plus grand ni plus petit que 0.</p>
+    <div class="td-correction"><p><code>0 &gt; 0</code> et <code>0 &lt; 0</code> sont faux : <code>else</code>, <code>"nul"</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="trous" id="q7">
+    <p class="td-consigne">La fonction <code>acces_manege(age, taille)</code> renvoie <code>True</code> si on a <b>au moins 8 ans</b> et si on mesure <b>au moins 1,30 m</b> (<code>taille</code> en mètres), <code>False</code> sinon.</p>
+    <pre class="td-code">
+def acces_manege(age, taille):
+    if [[age &gt;= 8 and taille &gt;= 1.3|age &gt;= 8 and taille &gt;= 1.30|taille &gt;= 1.3 and age &gt;= 8|taille &gt;= 1.30 and age &gt;= 8]]:
+        return True
+    [[else]]:
+        return [[False]]</pre>
+    <p class="td-aide">Deux conditions à la fois : <code>and</code>.</p>
+    <p class="td-aide">En Python, 1,30 s'écrit <code>1.3</code> (avec un point). « Au moins » : <code>&gt;=</code>.</p>
+    <div class="td-correction"><pre class="td-code">
+def acces_manege(age, taille):
+    if age &gt;= 8 and taille &gt;= 1.3:
+        return True
+    else:
+        return False</pre></div>
+  </section>
+  <section class="td-q" data-type="courte" id="q8" data-reponse="False" data-etiquette="acces_manege(10, 1.25) renvoie :">
+    <p class="td-consigne">Que renvoie <code>acces_manege(10, 1.25)</code> ?</p>
+    <p class="td-retour" data-si="True">L'âge suffit, mais pas la taille : avec <code>and</code>, il faut les deux.</p>
+    <p class="td-aide">10 ans suffit, mais 1,25 m ?</p>
+    <div class="td-correction"><p>1,25 m est moins que 1,30 m : <code>False</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="courte" data-bonus id="q9" data-reponse="return age &gt;= 8 and taille &gt;= 1.3|return age &gt;= 8 and taille &gt;= 1.30|return taille &gt;= 1.3 and age &gt;= 8|return (age &gt;= 8 and taille &gt;= 1.3)" data-etiquette="Le corps :" data-comparer="code">
+    <p class="td-consigne">Réécris le corps de <code>acces_manege</code> en <b>une seule ligne</b> : <code>return</code> suivi d'une condition.</p>
+    <p class="td-aide">Une condition vaut déjà <code>True</code> ou <code>False</code> : on peut la renvoyer directement.</p>
+    <div class="td-correction"><p><code>return age &gt;= 8 and taille &gt;= 1.3</code></p></div>
+  </section>
+  <section class="td-q" data-type="code" id="q10" data-fichier="plus_grand.py" data-lignes="8">
+    <p class="td-consigne">Écris la fonction <code>plus_grand(a, b, c)</code> : elle renvoie le plus grand des trois nombres, <b>sans</b> utiliser <code>max</code>.</p>
+    <pre class="td-depart">
+def plus_grand(a, b, c):
+    
+
+
+
+
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert plus_grand(3, 9, 5) == 9, "plus_grand(3, 9, 5) doit renvoyer 9."
+assert plus_grand(7, 2, 1) == 7, "plus_grand(7, 2, 1) doit renvoyer 7."
+assert plus_grand(1, 4, 8) == 8, "plus_grand(1, 4, 8) doit renvoyer 8."
+assert plus_grand(6, 6, 2) == 6, "plus_grand(6, 6, 2) doit renvoyer 6."
+assert plus_grand(-5, -2, -9) == -2, "plus_grand(-5, -2, -9) doit renvoyer -2."
+</script>
+    <p class="td-aide">Si <code>a</code> est plus grand que <code>b</code> et que <code>c</code>, c'est lui le plus grand.</p>
+    <p class="td-aide">Sinon, compare <code>b</code> et <code>c</code>. Pense aux nombres égaux : <code>&gt;=</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def plus_grand(a, b, c):
+    if a &gt;= b and a &gt;= c:
+        return a
+    elif b &gt;= c:
+        return b
+    else:
+        return c</pre>
+      <pre class="td-code" data-verifier="correction">
+def plus_grand(a, b, c):
+    grand = a
+    if b &gt; grand:
+        grand = b
+    if c &gt; grand:
+        grand = c
+    return grand</pre>
+    </div>
+  </section>
+  <section class="td-q" data-type="code" id="q11" data-fichier="contourner.py" data-lignes="10">
+    <p class="td-consigne"><b>Robot.</b> Écris la fonction <code>avancer_ou_contourner()</code> : le robot avance d'une case vers l'est. S'il y a alors un obstacle devant lui, il le <b>contourne par le nord</b> pour se placer juste derrière ; sinon, il avance encore d'une case vers l'est. Depuis A3, le robot doit arriver en <b>D3</b>.</p>
+    <svg class="td-grille-robot" width="166" height="142" viewBox="0 0 166 142" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A3. Obstacles en B1, E2, C3, D5." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="76.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 76.0V72.0"/></g><g fill="currentColor"><circle cx="32.0" cy="71.5" r="1.6"/><circle cx="29.3" cy="80.6" r="1.5"/><circle cx="34.7" cy="80.6" r="1.5"/><rect x="29.0" y="83.6" width="6.0" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    <pre class="td-depart">
+def avancer_ou_contourner():
+    est()
+
+
+
+
+
+</pre>
+    <script type="text/x-python" class="td-tests">
+COLONNES = "ABCDEFGH"
+OBSTACLES = {"B1", "C3", "D5", "E2"}
+position = [0, 3]
+def _pas(dx, dy):
+    x, y = position[0] + dx, position[1] + dy
+    if not (0 <= x < 6 and 1 <= y <= 5) or COLONNES[x] + str(y) in OBSTACLES:
+        raise AssertionError("Le robot s'écrase en partant de " + ici() + ".")
+    position[0], position[1] = x, y
+def ici():
+    return COLONNES[position[0]] + str(position[1])
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return _bloque(0, -1)
+def obstacleSud(): return _bloque(0, 1)
+def obstacleEst(): return _bloque(1, 0)
+def obstacleOuest(): return _bloque(-1, 0)
+def _bloque(dx, dy):
+    x, y = position[0] + dx, position[1] + dy
+    return not (0 <= x < 6 and 1 <= y <= 5) or COLONNES[x] + str(y) in OBSTACLES
+avancer_ou_contourner()
+assert ici() == "D3", "Depuis A3, le robot doit arriver en D3. Il est en " + ici() + "."
+position[0], position[1] = 0, 2
+avancer_ou_contourner()
+assert ici() == "C2", "Depuis A2 (rien devant B2), le robot doit avancer de deux cases, en C2. Il est en " + ici() + "."
+</script>
+    <p class="td-aide">Après <code>est()</code> : <code>if obstacleEst():</code> pour contourner, <code>else:</code> pour avancer encore.</p>
+    <p class="td-aide">Contourner par le nord : monter, avancer deux fois vers l'est, redescendre.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def avancer_ou_contourner():
+    est()
+    if obstacleEst():
+        nord()
+        est()
+        est()
+        sud()
+    else:
+        est()</pre>
+    </div>
+  </section>
+  <p class="td-ecran-seul"><b>Avant :</b> <a href="td-conditions.html">feuille 1</a> · <a href="td-conditions-2.html">feuille 2</a>.</p>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Une fonction peut renvoyer un résultat différent selon le cas : un <code>return</code> dans chaque branche. Une condition vaut <code>True</code> ou <code>False</code> : <code>return a &gt;= 8</code> est permis.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:-1"></span>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/bases-python/td-conditions-3.html">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

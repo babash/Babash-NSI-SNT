@@ -1,0 +1,228 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les conditions : if : TD en ligne</title>
+  <meta name="description" content="TD en ligne auto-correctif, feuille 2 sur 3 : compléter des conditions et suivre le robot (1re NSI).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="nsi1-conditions-2" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+
+  <!-- le robot des fiches (grille sans obstacle de 8 colonnes A à H et 6 lignes, départ en A6) : il permet
+       à Python d'exécuter, dans la page et dans verifier-td.py, les programmes qui appellent nord(), est()… -->
+  <script type="text/x-python" class="td-preambule">
+_COL = "ABCDEFGH"
+_pos = [0, 6]
+def _libre(dx, dy):
+    x, y = _pos[0] + dx, _pos[1] + dy
+    return 0 <= x < 8 and 1 <= y <= 6
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _COL[_pos[0]] + str(_pos[1]) + ".")
+    _pos[0], _pos[1] = _pos[0] + dx, _pos[1] + dy
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+</script>
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:55.12%;--y:83.04%;--r:-84deg;--l:3.08%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Langages et programmation</span></p>
+        <h1>Les conditions : <code>if</code></h1>
+        <p class="td-accroche">Si… sinon… · feuille 2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=conditions-boucles" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h2v1h-2zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM22 0h1v1h-1zM25 0h2v1h-2zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h1v1h-1zM13 1h2v1h-2zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h3v1h-3zM24 1h1v1h-1zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM13 2h1v1h-1zM15 2h1v1h-1zM20 2h2v1h-2zM23 2h4v1h-4zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM13 3h1v1h-1zM16 3h6v1h-6zM24 3h2v1h-2zM27 3h2v1h-2zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM16 4h4v1h-4zM22 4h1v1h-1zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h5v1h-5zM17 5h2v1h-2zM20 5h2v1h-2zM23 5h1v1h-1zM26 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM9 7h3v1h-3zM13 7h4v1h-4zM20 7h1v1h-1zM22 7h2v1h-2zM25 7h4v1h-4zM0 8h1v1h-1zM3 8h9v1h-9zM15 8h2v1h-2zM18 8h3v1h-3zM23 8h2v1h-2zM26 8h1v1h-1zM28 8h2v1h-2zM32 8h1v1h-1zM34 8h3v1h-3zM2 9h1v1h-1zM4 9h2v1h-2zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h2v1h-2zM17 9h1v1h-1zM20 9h1v1h-1zM23 9h1v1h-1zM25 9h3v1h-3zM29 9h1v1h-1zM31 9h2v1h-2zM35 9h1v1h-1zM2 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM10 10h3v1h-3zM21 10h1v1h-1zM23 10h1v1h-1zM26 10h6v1h-6zM33 10h1v1h-1zM36 10h1v1h-1zM0 11h1v1h-1zM7 11h1v1h-1zM13 11h3v1h-3zM17 11h1v1h-1zM23 11h1v1h-1zM26 11h2v1h-2zM29 11h1v1h-1zM31 11h6v1h-6zM1 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h3v1h-3zM16 12h1v1h-1zM19 12h1v1h-1zM24 12h1v1h-1zM28 12h1v1h-1zM30 12h2v1h-2zM36 12h1v1h-1zM0 13h1v1h-1zM2 13h3v1h-3zM12 13h1v1h-1zM15 13h3v1h-3zM22 13h2v1h-2zM27 13h1v1h-1zM32 13h2v1h-2zM1 14h6v1h-6zM9 14h2v1h-2zM14 14h2v1h-2zM17 14h1v1h-1zM19 14h1v1h-1zM21 14h1v1h-1zM25 14h1v1h-1zM27 14h4v1h-4zM32 14h5v1h-5zM2 15h4v1h-4zM8 15h5v1h-5zM14 15h1v1h-1zM16 15h4v1h-4zM24 15h1v1h-1zM28 15h4v1h-4zM33 15h2v1h-2zM0 16h1v1h-1zM3 16h4v1h-4zM9 16h2v1h-2zM13 16h2v1h-2zM16 16h2v1h-2zM19 16h2v1h-2zM22 16h1v1h-1zM24 16h2v1h-2zM30 16h1v1h-1zM34 16h1v1h-1zM0 17h1v1h-1zM3 17h2v1h-2zM9 17h2v1h-2zM12 17h2v1h-2zM16 17h3v1h-3zM20 17h1v1h-1zM22 17h1v1h-1zM24 17h1v1h-1zM26 17h2v1h-2zM31 17h1v1h-1zM33 17h2v1h-2zM0 18h1v1h-1zM2 18h2v1h-2zM5 18h3v1h-3zM11 18h1v1h-1zM14 18h2v1h-2zM18 18h1v1h-1zM20 18h2v1h-2zM23 18h1v1h-1zM25 18h1v1h-1zM27 18h1v1h-1zM29 18h2v1h-2zM33 18h2v1h-2zM36 18h1v1h-1zM5 19h1v1h-1zM7 19h1v1h-1zM13 19h1v1h-1zM18 19h1v1h-1zM22 19h6v1h-6zM29 19h5v1h-5zM36 19h1v1h-1zM2 20h2v1h-2zM5 20h2v1h-2zM11 20h2v1h-2zM14 20h4v1h-4zM24 20h1v1h-1zM26 20h8v1h-8zM8 21h3v1h-3zM12 21h4v1h-4zM18 21h2v1h-2zM22 21h2v1h-2zM26 21h2v1h-2zM32 21h1v1h-1zM34 21h1v1h-1zM2 22h1v1h-1zM6 22h1v1h-1zM8 22h2v1h-2zM12 22h1v1h-1zM14 22h5v1h-5zM23 22h2v1h-2zM27 22h5v1h-5zM33 22h1v1h-1zM35 22h2v1h-2zM7 23h3v1h-3zM11 23h2v1h-2zM14 23h4v1h-4zM20 23h1v1h-1zM27 23h3v1h-3zM31 23h5v1h-5zM0 24h1v1h-1zM2 24h5v1h-5zM8 24h1v1h-1zM10 24h1v1h-1zM13 24h1v1h-1zM15 24h4v1h-4zM20 24h1v1h-1zM27 24h2v1h-2zM30 24h2v1h-2zM0 25h1v1h-1zM2 25h1v1h-1zM4 25h2v1h-2zM7 25h1v1h-1zM14 25h1v1h-1zM16 25h1v1h-1zM19 25h3v1h-3zM23 25h1v1h-1zM26 25h4v1h-4zM32 25h3v1h-3zM0 26h2v1h-2zM4 26h3v1h-3zM9 26h2v1h-2zM12 26h2v1h-2zM16 26h1v1h-1zM19 26h4v1h-4zM24 26h2v1h-2zM27 26h1v1h-1zM30 26h1v1h-1zM32 26h1v1h-1zM34 26h3v1h-3zM0 27h1v1h-1zM4 27h2v1h-2zM8 27h2v1h-2zM14 27h2v1h-2zM19 27h2v1h-2zM23 27h1v1h-1zM26 27h1v1h-1zM31 27h1v1h-1zM33 27h4v1h-4zM0 28h1v1h-1zM2 28h2v1h-2zM6 28h2v1h-2zM11 28h2v1h-2zM16 28h1v1h-1zM20 28h1v1h-1zM22 28h1v1h-1zM24 28h2v1h-2zM28 28h8v1h-8zM8 29h1v1h-1zM11 29h3v1h-3zM15 29h1v1h-1zM19 29h1v1h-1zM21 29h1v1h-1zM24 29h5v1h-5zM32 29h1v1h-1zM34 29h2v1h-2zM0 30h7v1h-7zM8 30h4v1h-4zM13 30h3v1h-3zM19 30h3v1h-3zM23 30h4v1h-4zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM36 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM10 31h2v1h-2zM13 31h2v1h-2zM17 31h2v1h-2zM20 31h1v1h-1zM23 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h3v1h-3zM12 32h3v1h-3zM20 32h1v1h-1zM24 32h1v1h-1zM26 32h7v1h-7zM35 32h1v1h-1zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h5v1h-5zM16 33h1v1h-1zM18 33h2v1h-2zM21 33h3v1h-3zM26 33h5v1h-5zM33 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM9 34h1v1h-1zM11 34h1v1h-1zM15 34h2v1h-2zM23 34h1v1h-1zM27 34h1v1h-1zM29 34h1v1h-1zM32 34h2v1h-2zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM10 35h1v1h-1zM12 35h1v1h-1zM14 35h1v1h-1zM16 35h3v1h-3zM20 35h1v1h-1zM22 35h1v1h-1zM26 35h2v1h-2zM29 35h2v1h-2zM32 35h1v1h-1zM34 35h3v1h-3zM0 36h7v1h-7zM8 36h1v1h-1zM11 36h1v1h-1zM15 36h2v1h-2zM19 36h1v1h-1zM24 36h1v1h-1zM27 36h2v1h-2zM31 36h1v1h-1zM36 36h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+<p class="td-objectif"><b>Objectif :</b> compléter une instruction conditionnelle et suivre le robot.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire une condition avec <code>&lt;</code>, <code>&gt;</code>, <code>==</code>, <code>not</code>, <code>or</code> ;</li>
+        <li>choisir entre <code>if</code>, <code>elif</code> et <code>else</code> ;</li>
+        <li>suivre le robot et trouver sa case d'arrivée.</li>
+      </ul>
+      <p class="td-duree">Feuille 2 sur 3 · 35 minutes · 9 questions · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+<p class="td-ecran-seul"><b>Le robot.</b> <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:middle"><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="5.0" y="8.0" width="14.0" height="11.0" rx="2.5"/><path d="M12.0 8.0V4.0"/></g><g fill="currentColor"><circle cx="12.0" cy="3.5" r="1.6"/><circle cx="9.3" cy="12.6" r="1.5"/><circle cx="14.7" cy="12.6" r="1.5"/><rect x="9.0" y="15.6" width="6.0" height="1.4"/></g></svg> Dans les questions marquées <b>Robot</b>, un robot se déplace sur une grille : <code>nord()</code>, <code>sud()</code>, <code>est()</code>, <code>ouest()</code> le déplacent d'<b>une case</b> ; <code>obstacleNord()</code>, <code>obstacleSud()</code>, <code>obstacleEst()</code>, <code>obstacleOuest()</code> renvoient <code>True</code> si la case voisine est un <b>obstacle</b> <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:middle"><rect x="1.5" y="1.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M5 5L19 19M19 5L5 19" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg> ou le <b>bord</b>, <code>False</code> sinon. S'il avance vers un obstacle ou le bord, il <b>s'écrase</b> : le programme s'arrête avec une erreur. Le nord est en haut de la grille.</p>
+
+  <h2 class="td-partie">1. Complète le code</h2>
+
+  <section class="td-q" data-type="trous" id="q1">
+    <p class="td-consigne">Si la vitesse dépasse 50, afficher « Ralentis ! ».</p>
+    <pre class="td-code">
+vitesse = 72
+if vitesse [[&gt;]] 50 [[:]]
+    print("Ralentis !")</pre>
+    <pre class="td-attendu">
+Ralentis !</pre>
+    <p class="td-aide">« Dépasser 50 » : être plus grand que 50.</p>
+    <p class="td-aide">Une ligne <code>if</code> finit par deux-points.</p>
+    <div class="td-correction"><pre class="td-code">
+vitesse = 72
+if vitesse &gt; 50:
+    print("Ralentis !")</pre></div>
+  </section>
+  <section class="td-q" data-type="trous" id="q2">
+    <p class="td-consigne"><b>Robot.</b> Obstacle au nord : aller au sud, sinon au nord.</p>
+    <pre class="td-code">
+[[if]] obstacleNord():
+    [[sud()]]
+[[else:]]
+    nord()</pre>
+    <p class="td-aide">« Sinon » s'écrit <code>else:</code>.</p>
+    <div class="td-correction"><pre class="td-code">
+if obstacleNord():
+    sud()
+else:
+    nord()</pre></div>
+  </section>
+  <section class="td-q" data-type="trous" id="q3">
+    <p class="td-consigne">Si <code>mdp</code> vaut "nsi2026" : afficher « OK », sinon « Refusé ».</p>
+    <pre class="td-code">
+mdp = "nsi2026"
+[[if]] mdp [[==]] "nsi2026":
+    print("OK")
+[[else:]]
+    print("Refusé")</pre>
+    <pre class="td-attendu">
+OK</pre>
+    <p class="td-aide">Pour comparer, on utilise <code>==</code>.</p>
+    <div class="td-correction"><pre class="td-code">
+mdp = "nsi2026"
+if mdp == "nsi2026":
+    print("OK")
+else:
+    print("Refusé")</pre></div>
+  </section>
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne">Billet : 5 € (moins de 12 ans), 8 € (12 à 25 ans), 12 € sinon.</p>
+    <pre class="td-code">
+age = 15
+if age [[&lt;]] 12:
+    prix = 5
+[[elif]] age [[&lt;=]] 25:
+    prix = [[8]]
+[[else]]:
+    prix = 12
+print(prix)</pre>
+    <pre class="td-attendu">
+8</pre>
+    <p class="td-aide">Trois cas : <code>if</code>, puis <code>elif</code>, puis <code>else</code>.</p>
+    <p class="td-aide">Au <code>elif</code>, on sait déjà que l'âge est au moins 12 : il reste à tester « au plus 25 ».</p>
+    <div class="td-correction"><pre class="td-code">
+age = 15
+if age &lt; 12:
+    prix = 5
+elif age &lt;= 25:
+    prix = 8
+else:
+    prix = 12
+print(prix)</pre></div>
+  </section>
+  <section class="td-q" data-type="trous" id="q5">
+    <p class="td-consigne"><b>Robot.</b> Si la case à l'est est <b>libre</b>, avancer vers l'est.</p>
+    <pre class="td-code">
+if [[not]] [[obstacleEst()]]:
+    est()</pre>
+    <p class="td-aide">« Libre » : il n'y a <b>pas</b> d'obstacle.</p>
+    <div class="td-correction"><pre class="td-code">
+if not obstacleEst():
+    est()</pre></div>
+  </section>
+  <section class="td-q" data-type="trous" id="q6">
+    <p class="td-consigne"><b>Robot.</b> Obstacle à l'est <b>ou</b> au sud : aller vers le nord.</p>
+    <pre class="td-code">
+if obstacleEst() [[or]] [[obstacleSud()]]:
+    [[nord()]]</pre>
+    <p class="td-aide">« Ou » s'écrit <code>or</code>.</p>
+    <div class="td-correction"><pre class="td-code">
+if obstacleEst() or obstacleSud():
+    nord()</pre></div>
+  </section>
+  <h2 class="td-partie">2. Où se trouve le robot ?</h2>
+  <p>Le robot part de <b>A3</b>, sur la grille dessinée avec chaque programme. Sur papier, trace son trajet sur la grille. Écris la case d'arrivée (par exemple <code>C4</code>).</p>
+
+  <section class="td-q" data-type="courte" id="q7" data-reponse="B2" data-verifier="robot" data-etiquette="Case d&#x27;arrivée :">
+    <p class="td-consigne"><b>Robot.</b> Où arrive le robot ?</p>
+    <pre class="td-code">
+est()
+if obstacleEst():
+    nord()
+else:
+    est()</pre>
+    <svg class="td-grille-robot" width="166" height="142" viewBox="0 0 166 142" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A3. Obstacles en B1, E2, C3, D5." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="76.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 76.0V72.0"/></g><g fill="currentColor"><circle cx="32.0" cy="71.5" r="1.6"/><circle cx="29.3" cy="80.6" r="1.5"/><circle cx="34.7" cy="80.6" r="1.5"/><rect x="29.0" y="83.6" width="6.0" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    <p class="td-aide">Après <code>est()</code>, le robot est en B3. Qu'y a-t-il en C3 ?</p>
+    <div class="td-correction"><p>B3 ; C3 est un obstacle : il monte en <b>B2</b>.</p></div>
+  </section>
+  <section class="td-q" data-type="courte" id="q8" data-reponse="C2" data-verifier="robot" data-etiquette="Case d&#x27;arrivée :">
+    <p class="td-consigne"><b>Robot.</b> Où arrive le robot ?</p>
+    <pre class="td-code">
+nord()
+est()
+if obstacleEst():
+    sud()
+elif obstacleNord():
+    est()
+else:
+    nord()</pre>
+    <svg class="td-grille-robot" width="166" height="142" viewBox="0 0 166 142" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A3. Obstacles en B1, E2, C3, D5." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="76.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 76.0V72.0"/></g><g fill="currentColor"><circle cx="32.0" cy="71.5" r="1.6"/><circle cx="29.3" cy="80.6" r="1.5"/><circle cx="34.7" cy="80.6" r="1.5"/><rect x="29.0" y="83.6" width="6.0" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    <p class="td-aide">Après les deux premières lignes, le robot est en B2.</p>
+    <p class="td-aide">Teste les conditions dans l'ordre : la première vraie gagne.</p>
+    <div class="td-correction"><p>A2, B2. Est (C2) : libre. Nord (B1) : obstacle, donc <code>est()</code> : <b>C2</b>.</p></div>
+  </section>
+  <section class="td-q" data-type="courte" id="q9" data-reponse="C5" data-verifier="robot" data-etiquette="Case d&#x27;arrivée :">
+    <p class="td-consigne"><b>Robot.</b> Où arrive le robot ?</p>
+    <pre class="td-code">
+sud()
+est()
+est()
+if not obstacleNord():
+    nord()
+else:
+    sud()</pre>
+    <svg class="td-grille-robot" width="166" height="142" viewBox="0 0 166 142" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A3. Obstacles en B1, E2, C3, D5." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="76.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 76.0V72.0"/></g><g fill="currentColor"><circle cx="32.0" cy="71.5" r="1.6"/><circle cx="29.3" cy="80.6" r="1.5"/><circle cx="34.7" cy="80.6" r="1.5"/><rect x="29.0" y="83.6" width="6.0" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+    <p class="td-aide">Après les trois premières lignes, le robot est en C4.</p>
+    <div class="td-correction"><p>A4, B4, C4. Au nord, C3 est un obstacle : <code>not obstacleNord()</code> est faux, donc <code>sud()</code> : <b>C5</b>.</p></div>
+  </section>
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="td-conditions-3.html">feuille 3 sur 3, suivre le robot (suite) et écrire des fonctions</a>. <b>Avant :</b> <a href="td-conditions.html">feuille 1</a>.</p>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Pour plusieurs cas : <code>if</code>, puis autant de <code>elif</code> que nécessaire, puis <code>else</code> pour tous les autres cas. Les conditions se testent dans l'ordre.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/bases-python/td-conditions-2.html">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
