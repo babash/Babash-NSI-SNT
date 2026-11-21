@@ -1,0 +1,346 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Séance de révision : Séance en ligne</title>
+  <meta name="description" content="Séance en ligne auto-correctif : Séance de révision (1re NSI, Conditions et boucles).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsi1-seance-revision-atelier" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-feuille="3">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:66.67%;--y:49.11%;--r:-12deg;--l:3.92%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">Séance</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Conditions et boucles</span></p>
+        <h1>Séance de révision</h1>
+        <p class="td-accroche">Atelier robot</p>
+      </div>
+      
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+        <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> modéliser la solution d'un problème du robot, du dessin au code, pour qu'un seul programme marche sur trois grilles.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>tracer le trajet et le dire en français (« tant que », « répéter … fois ») ;</li>
+        <li>repérer ce qui se répète d'une grille à l'autre, et ce qui change ;</li>
+        <li>écrire une boucle, deux boucles à la suite, une boucle dans une boucle ;</li>
+        <li>tester mon programme sur plusieurs grilles.</li>
+      </ul>
+      <p class="td-duree">Feuille 3 sur 3 · 40 minutes · 4 défis et 1 bonus ★ · à deux</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">La méthode : du dessin au code</h2>
+  <ol>
+    <li><b>Trace</b> le trajet au crayon sur les trois grilles.</li>
+    <li><b>Dis-le en français</b> avec « tant que » ou « répéter … fois ».</li>
+    <li><b>Repère</b> ce qui se répète d'une grille à l'autre, et ce qui change.</li>
+    <li><b>Écris le code</b>, puis teste-le sur les trois grilles.</li>
+  </ol>
+  <p><b>À deux :</b> l'un·e écrit, l'autre <b>joue le robot</b> et exécute le programme ligne par ligne sur les trois grilles. Robot écrasé ou étoile ratée : on corrige ensemble. On échange les rôles à chaque défi.</p>
+  <div class="td-table"><table>
+    <thead><tr><th>Je dis…</th><th>J'écris…</th></tr></thead>
+    <tbody>
+      <tr><td>tant qu'il n'y a pas d'obstacle à l'est</td><td><code>while not obstacleEst():</code></td></tr>
+      <tr><td>répéter 3 fois</td><td><code>for i in range(3):</code></td></tr>
+      <tr><td>s'il y a un obstacle au nord</td><td><code>if obstacleNord():</code></td></tr>
+      <tr><td>sinon</td><td><code>else:</code></td></tr>
+      <tr><td>avancer d'une case</td><td><code>nord()</code> <code>sud()</code> <code>est()</code> <code>ouest()</code></td></tr>
+    </tbody>
+  </table></div>
+  <h2 class="td-partie">Défi 1 · Une boucle</h2>
+  <p>Un seul programme doit amener le robot à l'étoile sur les trois grilles. Le robot part de A1.</p>
+  <figure class="td-schema"><svg class="td-grille-robot" width="530" height="164" viewBox="0 0 530 164" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A1. Étoile en A3. Obstacles en A4, C2, E4. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A1. Étoile en A4. Obstacles en A5, B3, D1. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A1. Étoile en A5. Obstacles en C3, E2, D5."><svg x="0" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="21.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 97L39 111M39 97L25 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 49L87 63M87 49L73 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 97L135 111M135 97L121 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="32.0,72.0 34.4,77.8 40.6,78.2 35.8,82.2 37.3,88.3 32.0,85.0 26.7,88.3 28.2,82.2 23.4,78.2 29.6,77.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="30.0" width="14" height="11" rx="2.5"/><path d="M32.0 30.0V26.0"/></g><g fill="currentColor"><circle cx="32.0" cy="25.5" r="1.6"/><circle cx="29.3" cy="34.6" r="1.5"/><circle cx="34.7" cy="34.6" r="1.5"/><rect x="29.0" y="37.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 1</text></svg><svg x="182" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="21.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 121L39 135M39 121L25 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 73L63 87M63 73L49 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 25L111 39M111 25L97 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="32.0,96.0 34.4,101.8 40.6,102.2 35.8,106.2 37.3,112.3 32.0,109.0 26.7,112.3 28.2,106.2 23.4,102.2 29.6,101.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="30.0" width="14" height="11" rx="2.5"/><path d="M32.0 30.0V26.0"/></g><g fill="currentColor"><circle cx="32.0" cy="25.5" r="1.6"/><circle cx="29.3" cy="34.6" r="1.5"/><circle cx="34.7" cy="34.6" r="1.5"/><rect x="29.0" y="37.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 2</text></svg><svg x="364" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="32.0,120.0 34.4,125.8 40.6,126.2 35.8,130.2 37.3,136.3 32.0,133.0 26.7,136.3 28.2,130.2 23.4,126.2 29.6,125.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="30.0" width="14" height="11" rx="2.5"/><path d="M32.0 30.0V26.0"/></g><g fill="currentColor"><circle cx="32.0" cy="25.5" r="1.6"/><circle cx="29.3" cy="34.6" r="1.5"/><circle cx="34.7" cy="34.6" r="1.5"/><rect x="29.0" y="37.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 3</text></svg></svg></figure>
+  <p class="td-papier-seul">Testé par le robot : □ grille 1 · □ grille 2 · □ grille 3</p>
+  <section class="td-q" data-type="libre" id="d1a" data-lignes="2">
+    <p class="td-consigne">En français :</p>
+    <div class="td-correction"><p>Tant qu&#x27;il n&#x27;y a pas d&#x27;obstacle au sud, le robot avance vers le sud.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="d1b" data-lignes="2">
+    <p class="td-consigne">Ce qui se répète · ce qui change :</p>
+    <div class="td-correction"><p>Ce qui se répète : avancer vers le sud. Ce qui change : le nombre de cases.</p></div>
+  </section>
+  <section class="td-q" data-type="code" id="d1c" data-fichier="defi1.py" data-lignes="3">
+    <p class="td-consigne">Mon code. <span class="td-ecran-seul">« Lancer » le teste sur la grille 1, puis des tests cachés sur les grilles 2 et 3.</span></p>
+<script type="text/x-python" class="td-preambule">
+_COL = "ABCDEF"
+_etat = {}
+def _grille(depart, obstacles):
+    _etat["pos"] = [_COL.index(depart[0]), int(depart[1])]
+    _etat["obs"] = {(_COL.index(o[0]), int(o[1])) for o in obstacles}
+    _etat["n"] = 0
+def _libre(dx, dy):
+    _etat["n"] += 1
+    if _etat["n"] > 1000:
+        raise RuntimeError("Plus de 1000 actions : le programme tourne peut-être sans fin.")
+    x, y = _etat["pos"][0] + dx, _etat["pos"][1] + dy
+    return 0 <= x < 6 and 1 <= y <= 5 and (x, y) not in _etat["obs"]
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _ici() + ".")
+    _etat["pos"][0] += dx
+    _etat["pos"][1] += dy
+def _ici():
+    return _COL[_etat["pos"][0]] + str(_etat["pos"][1])
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+_grille('A1', ['A4', 'C2', 'E4'])
+</script>
+    <pre class="td-depart">
+# Le robot part de A1.
+</pre>
+<script type="text/x-python" class="td-tests">
+import linecache
+assert _ici() == 'A3', "Grille 1 : le robot finit en " + _ici() + ", l'étoile est en A3."
+_src = "".join(linecache.getlines("defi1.py"))
+for _k, (_obs, _cible) in enumerate([(['A5', 'B3', 'D1'], 'A4'), (['C3', 'E2', 'D5'], 'A5')], 2):
+    _grille('A1', _obs)
+    exec(_src, {**globals()})
+    assert _ici() == _cible, "Grille " + str(_k) + " : le robot finit en " + _ici() + ", l'étoile est en " + _cible + "."
+</script>
+    <p class="td-aide">Tant qu&#x27;il n&#x27;y a pas d&#x27;obstacle au sud, le robot avance vers le sud.</p>
+    <p class="td-aide">Attention : un nombre fixe de pas ne marche pas sur les trois grilles. Il faut « tant que ».</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+while not obstacleSud():
+    sud()</pre><p>Ce qui se répète : avancer vers le sud. Ce qui change : le nombre de cases.</p></div>
+  </section>
+  <h2 class="td-partie">Défi 2 · Deux boucles, l&#x27;une après l&#x27;autre</h2>
+  <p>Un seul programme doit amener le robot à l'étoile sur les trois grilles. Le robot part de F5.</p>
+  <figure class="td-schema"><svg class="td-grille-robot" width="530" height="164" viewBox="0 0 530 164" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en F5. Étoile en C3. Obstacles en F2, B3, D5, A1. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en F5. Étoile en E2. Obstacles en F1, D2, B4, C5. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en F5. Étoile en A1. Obstacles en C3, B4, E5."><svg x="0" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="141.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M145 49L159 63M159 49L145 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 73L63 87M63 73L49 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="21.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 25L39 39M39 25L25 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="80.0,72.0 82.4,77.8 88.6,78.2 83.8,82.2 85.3,88.3 80.0,85.0 74.7,88.3 76.2,82.2 71.4,78.2 77.6,77.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="145.0" y="126.0" width="14" height="11" rx="2.5"/><path d="M152.0 126.0V122.0"/></g><g fill="currentColor"><circle cx="152.0" cy="121.5" r="1.6"/><circle cx="149.3" cy="130.6" r="1.5"/><circle cx="154.7" cy="130.6" r="1.5"/><rect x="149.0" y="133.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 1</text></svg><svg x="182" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="141.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M145 25L159 39M159 25L145 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 49L111 63M111 49L97 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 97L63 111M63 97L49 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 121L87 135M87 121L73 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="128.0,48.0 130.4,53.8 136.6,54.2 131.8,58.2 133.3,64.3 128.0,61.0 122.7,64.3 124.2,58.2 119.4,54.2 125.6,53.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="145.0" y="126.0" width="14" height="11" rx="2.5"/><path d="M152.0 126.0V122.0"/></g><g fill="currentColor"><circle cx="152.0" cy="121.5" r="1.6"/><circle cx="149.3" cy="130.6" r="1.5"/><circle cx="154.7" cy="130.6" r="1.5"/><rect x="149.0" y="133.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 2</text></svg><svg x="364" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="69.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 73L87 87M87 73L73 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 97L63 111M63 97L49 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 121L135 135M135 121L121 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="32.0,24.0 34.4,29.8 40.6,30.2 35.8,34.2 37.3,40.3 32.0,37.0 26.7,40.3 28.2,34.2 23.4,30.2 29.6,29.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="145.0" y="126.0" width="14" height="11" rx="2.5"/><path d="M152.0 126.0V122.0"/></g><g fill="currentColor"><circle cx="152.0" cy="121.5" r="1.6"/><circle cx="149.3" cy="130.6" r="1.5"/><circle cx="154.7" cy="130.6" r="1.5"/><rect x="149.0" y="133.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 3</text></svg></svg></figure>
+  <p class="td-papier-seul">Testé par le robot : □ grille 1 · □ grille 2 · □ grille 3</p>
+  <section class="td-q" data-type="libre" id="d2a" data-lignes="2">
+    <p class="td-consigne">En français :</p>
+    <div class="td-correction"><p>Tant qu&#x27;il n&#x27;y a pas d&#x27;obstacle au nord, le robot monte. Ensuite, tant qu&#x27;il n&#x27;y a pas d&#x27;obstacle à l&#x27;ouest, il avance vers l&#x27;ouest.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="d2b" data-lignes="2">
+    <p class="td-consigne">Ce qui se répète · ce qui change :</p>
+    <div class="td-correction"><p>Ce qui se répète : monter, puis aller vers l&#x27;ouest. Ce qui change : le nombre de cases de chaque trajet.</p></div>
+  </section>
+  <section class="td-q" data-type="code" id="d2c" data-fichier="defi2.py" data-lignes="5">
+    <p class="td-consigne">Mon code. <span class="td-ecran-seul">« Lancer » le teste sur la grille 1, puis des tests cachés sur les grilles 2 et 3.</span></p>
+<script type="text/x-python" class="td-preambule">
+_COL = "ABCDEF"
+_etat = {}
+def _grille(depart, obstacles):
+    _etat["pos"] = [_COL.index(depart[0]), int(depart[1])]
+    _etat["obs"] = {(_COL.index(o[0]), int(o[1])) for o in obstacles}
+    _etat["n"] = 0
+def _libre(dx, dy):
+    _etat["n"] += 1
+    if _etat["n"] > 1000:
+        raise RuntimeError("Plus de 1000 actions : le programme tourne peut-être sans fin.")
+    x, y = _etat["pos"][0] + dx, _etat["pos"][1] + dy
+    return 0 <= x < 6 and 1 <= y <= 5 and (x, y) not in _etat["obs"]
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _ici() + ".")
+    _etat["pos"][0] += dx
+    _etat["pos"][1] += dy
+def _ici():
+    return _COL[_etat["pos"][0]] + str(_etat["pos"][1])
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+_grille('F5', ['F2', 'B3', 'D5', 'A1'])
+</script>
+    <pre class="td-depart">
+# Le robot part de F5.
+</pre>
+<script type="text/x-python" class="td-tests">
+import linecache
+assert _ici() == 'C3', "Grille 1 : le robot finit en " + _ici() + ", l'étoile est en C3."
+_src = "".join(linecache.getlines("defi2.py"))
+for _k, (_obs, _cible) in enumerate([(['F1', 'D2', 'B4', 'C5'], 'E2'), (['C3', 'B4', 'E5'], 'A1')], 2):
+    _grille('F5', _obs)
+    exec(_src, {**globals()})
+    assert _ici() == _cible, "Grille " + str(_k) + " : le robot finit en " + _ici() + ", l'étoile est en " + _cible + "."
+</script>
+    <p class="td-aide">Tant qu&#x27;il n&#x27;y a pas d&#x27;obstacle au nord, le robot monte. Ensuite, tant qu&#x27;il n&#x27;y a pas d&#x27;obstacle à l&#x27;ouest, il avance vers l&#x27;ouest.</p>
+    <p class="td-aide">Attention : un nombre fixe de pas ne marche pas sur les trois grilles. Il faut « tant que ».</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+while not obstacleNord():
+    nord()
+while not obstacleOuest():
+    ouest()</pre><p>Ce qui se répète : monter, puis aller vers l&#x27;ouest. Ce qui change : le nombre de cases de chaque trajet.</p></div>
+  </section>
+  <h2 class="td-partie">Défi 3 · Une boucle dans une boucle</h2>
+  <p>Un seul programme doit amener le robot à l'étoile sur les trois grilles. Le robot part de A1.</p>
+  <figure class="td-schema"><svg class="td-grille-robot" width="530" height="164" viewBox="0 0 530 164" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A1. Étoile en C4. Obstacles en A3, B5, D2, E4. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A1. Étoile en C5. Obstacles en D3, E1, F4. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A1. Étoile en C3. Obstacles en A2, B4, D5, E2."><svg x="0" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="21.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 73L39 87M39 73L25 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 121L63 135M63 121L49 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 49L111 63M111 49L97 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 97L135 111M135 97L121 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="80.0,96.0 82.4,101.8 88.6,102.2 83.8,106.2 85.3,112.3 80.0,109.0 74.7,112.3 76.2,106.2 71.4,102.2 77.6,101.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="30.0" width="14" height="11" rx="2.5"/><path d="M32.0 30.0V26.0"/></g><g fill="currentColor"><circle cx="32.0" cy="25.5" r="1.6"/><circle cx="29.3" cy="34.6" r="1.5"/><circle cx="34.7" cy="34.6" r="1.5"/><rect x="29.0" y="37.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 1</text></svg><svg x="182" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="93.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 73L111 87M111 73L97 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 25L135 39M135 25L121 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="141.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M145 97L159 111M159 97L145 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="80.0,120.0 82.4,125.8 88.6,126.2 83.8,130.2 85.3,136.3 80.0,133.0 74.7,136.3 76.2,130.2 71.4,126.2 77.6,125.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="30.0" width="14" height="11" rx="2.5"/><path d="M32.0 30.0V26.0"/></g><g fill="currentColor"><circle cx="32.0" cy="25.5" r="1.6"/><circle cx="29.3" cy="34.6" r="1.5"/><circle cx="34.7" cy="34.6" r="1.5"/><rect x="29.0" y="37.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 2</text></svg><svg x="364" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="21.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 49L39 63M39 49L25 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 97L63 111M63 97L49 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="117.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 121L111 135M111 121L97 135" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 49L135 63M135 49L121 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="80.0,72.0 82.4,77.8 88.6,78.2 83.8,82.2 85.3,88.3 80.0,85.0 74.7,88.3 76.2,82.2 71.4,78.2 77.6,77.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="30.0" width="14" height="11" rx="2.5"/><path d="M32.0 30.0V26.0"/></g><g fill="currentColor"><circle cx="32.0" cy="25.5" r="1.6"/><circle cx="29.3" cy="34.6" r="1.5"/><circle cx="34.7" cy="34.6" r="1.5"/><rect x="29.0" y="37.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 3</text></svg></svg></figure>
+  <p class="td-papier-seul">Testé par le robot : □ grille 1 · □ grille 2 · □ grille 3</p>
+  <section class="td-q" data-type="libre" id="d3a" data-lignes="2">
+    <p class="td-consigne">En français :</p>
+    <div class="td-correction"><p>On répète 2 fois : le robot descend jusqu&#x27;à l&#x27;obstacle, puis avance d&#x27;une case vers l&#x27;est.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="d3b" data-lignes="2">
+    <p class="td-consigne">Ce qui se répète · ce qui change :</p>
+    <div class="td-correction"><p>Ce qui se répète 2 fois : « descendre jusqu&#x27;à l&#x27;obstacle, puis une case vers l&#x27;est ». Ce qui change : la longueur de chaque descente.</p></div>
+  </section>
+  <section class="td-q" data-type="code" id="d3c" data-fichier="defi3.py" data-lignes="5">
+    <p class="td-consigne">Mon code. <span class="td-ecran-seul">« Lancer » le teste sur la grille 1, puis des tests cachés sur les grilles 2 et 3.</span></p>
+<script type="text/x-python" class="td-preambule">
+_COL = "ABCDEF"
+_etat = {}
+def _grille(depart, obstacles):
+    _etat["pos"] = [_COL.index(depart[0]), int(depart[1])]
+    _etat["obs"] = {(_COL.index(o[0]), int(o[1])) for o in obstacles}
+    _etat["n"] = 0
+def _libre(dx, dy):
+    _etat["n"] += 1
+    if _etat["n"] > 1000:
+        raise RuntimeError("Plus de 1000 actions : le programme tourne peut-être sans fin.")
+    x, y = _etat["pos"][0] + dx, _etat["pos"][1] + dy
+    return 0 <= x < 6 and 1 <= y <= 5 and (x, y) not in _etat["obs"]
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _ici() + ".")
+    _etat["pos"][0] += dx
+    _etat["pos"][1] += dy
+def _ici():
+    return _COL[_etat["pos"][0]] + str(_etat["pos"][1])
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+_grille('A1', ['A3', 'B5', 'D2', 'E4'])
+</script>
+    <pre class="td-depart">
+# Le robot part de A1.
+</pre>
+<script type="text/x-python" class="td-tests">
+import linecache
+assert _ici() == 'C4', "Grille 1 : le robot finit en " + _ici() + ", l'étoile est en C4."
+_src = "".join(linecache.getlines("defi3.py"))
+for _k, (_obs, _cible) in enumerate([(['D3', 'E1', 'F4'], 'C5'), (['A2', 'B4', 'D5', 'E2'], 'C3')], 2):
+    _grille('A1', _obs)
+    exec(_src, {**globals()})
+    assert _ici() == _cible, "Grille " + str(_k) + " : le robot finit en " + _ici() + ", l'étoile est en " + _cible + "."
+</script>
+    <p class="td-aide">On répète 2 fois : le robot descend jusqu&#x27;à l&#x27;obstacle, puis avance d&#x27;une case vers l&#x27;est.</p>
+    <p class="td-aide">Attention : un nombre fixe de pas ne marche pas sur les trois grilles. Il faut « tant que ».</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+for i in range(2):
+    while not obstacleSud():
+        sud()
+    est()</pre><p>Ce qui se répète 2 fois : « descendre jusqu&#x27;à l&#x27;obstacle, puis une case vers l&#x27;est ». Ce qui change : la longueur de chaque descente.</p></div>
+  </section>
+  <h2 class="td-partie">Défi 4 ★ · Le nombre de répétitions est inconnu</h2>
+  <p>Un seul programme doit amener le robot à l'étoile sur les trois grilles. Le robot part de A5.</p>
+  <figure class="td-schema"><svg class="td-grille-robot" width="530" height="164" viewBox="0 0 530 164" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A5. Étoile en D3. Obstacles en D4, E3, D2, B1. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A5. Étoile en F3. Obstacles en C4, F2, D1, A2. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Le robot est en A5. Étoile en D4. Obstacles en E4, D3, B2, F1."><svg x="0" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="93.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 97L111 111M111 97L97 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 73L135 87M135 73L121 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 49L111 63M111 49L97 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 25L63 39M63 25L49 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="104.0,72.0 106.4,77.8 112.6,78.2 107.8,82.2 109.3,88.3 104.0,85.0 98.7,88.3 100.2,82.2 95.4,78.2 101.6,77.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="126.0" width="14" height="11" rx="2.5"/><path d="M32.0 126.0V122.0"/></g><g fill="currentColor"><circle cx="32.0" cy="121.5" r="1.6"/><circle cx="29.3" cy="130.6" r="1.5"/><circle cx="34.7" cy="130.6" r="1.5"/><rect x="29.0" y="133.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 1</text></svg><svg x="182" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="69.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 97L87 111M87 97L73 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="141.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M145 49L159 63M159 49L145 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 25L111 39M111 25L97 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="21.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 49L39 63M39 49L25 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="152.0,72.0 154.4,77.8 160.6,78.2 155.8,82.2 157.3,88.3 152.0,85.0 146.7,88.3 148.2,82.2 143.4,78.2 149.6,77.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="126.0" width="14" height="11" rx="2.5"/><path d="M32.0 126.0V122.0"/></g><g fill="currentColor"><circle cx="32.0" cy="121.5" r="1.6"/><circle cx="29.3" cy="130.6" r="1.5"/><circle cx="34.7" cy="130.6" r="1.5"/><rect x="29.0" y="133.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 2</text></svg><svg x="364" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><rect x="117.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 97L135 111M135 97L121 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 73L111 87M111 73L97 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 49L63 63M63 49L49 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="141.5" y="21.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M145 25L159 39M159 25L145 39" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><polygon points="104.0,96.0 106.4,101.8 112.6,102.2 107.8,106.2 109.3,112.3 104.0,109.0 98.7,112.3 100.2,106.2 95.4,102.2 101.6,101.8" fill="currentColor"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="126.0" width="14" height="11" rx="2.5"/><path d="M32.0 126.0V122.0"/></g><g fill="currentColor"><circle cx="32.0" cy="121.5" r="1.6"/><circle cx="29.3" cy="130.6" r="1.5"/><circle cx="34.7" cy="130.6" r="1.5"/><rect x="29.0" y="133.6" width="6" height="1.4"/></g><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Grille 3</text></svg></svg></figure>
+  <p class="td-papier-seul">Testé par le robot : □ grille 1 · □ grille 2 · □ grille 3</p>
+  <section class="td-q" data-type="libre" id="d4a" data-lignes="2">
+    <p class="td-consigne">En français :</p>
+    <div class="td-correction"><p>Tant qu&#x27;il peut monter : le robot monte d&#x27;une case, puis avance vers l&#x27;est jusqu&#x27;à l&#x27;obstacle.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="d4b" data-lignes="2">
+    <p class="td-consigne">Ce qui se répète · ce qui change :</p>
+    <div class="td-correction"><p>Ce qui se répète : « monter d&#x27;une case, puis aller vers l&#x27;est jusqu&#x27;à l&#x27;obstacle ». Ce qui change : le nombre de répétitions et la longueur des trajets.</p></div>
+  </section>
+  <section class="td-q" data-type="code" id="d4c" data-fichier="defi4.py" data-lignes="5" data-bonus>
+    <p class="td-consigne">Mon code. <span class="td-ecran-seul">« Lancer » le teste sur la grille 1, puis des tests cachés sur les grilles 2 et 3.</span></p>
+<script type="text/x-python" class="td-preambule">
+_COL = "ABCDEF"
+_etat = {}
+def _grille(depart, obstacles):
+    _etat["pos"] = [_COL.index(depart[0]), int(depart[1])]
+    _etat["obs"] = {(_COL.index(o[0]), int(o[1])) for o in obstacles}
+    _etat["n"] = 0
+def _libre(dx, dy):
+    _etat["n"] += 1
+    if _etat["n"] > 1000:
+        raise RuntimeError("Plus de 1000 actions : le programme tourne peut-être sans fin.")
+    x, y = _etat["pos"][0] + dx, _etat["pos"][1] + dy
+    return 0 <= x < 6 and 1 <= y <= 5 and (x, y) not in _etat["obs"]
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _ici() + ".")
+    _etat["pos"][0] += dx
+    _etat["pos"][1] += dy
+def _ici():
+    return _COL[_etat["pos"][0]] + str(_etat["pos"][1])
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+_grille('A5', ['D4', 'E3', 'D2', 'B1'])
+</script>
+    <pre class="td-depart">
+# Le robot part de A5.
+</pre>
+<script type="text/x-python" class="td-tests">
+import linecache
+assert _ici() == 'D3', "Grille 1 : le robot finit en " + _ici() + ", l'étoile est en D3."
+_src = "".join(linecache.getlines("defi4.py"))
+for _k, (_obs, _cible) in enumerate([(['C4', 'F2', 'D1', 'A2'], 'F3'), (['E4', 'D3', 'B2', 'F1'], 'D4')], 2):
+    _grille('A5', _obs)
+    exec(_src, {**globals()})
+    assert _ici() == _cible, "Grille " + str(_k) + " : le robot finit en " + _ici() + ", l'étoile est en " + _cible + "."
+</script>
+    <p class="td-aide">Tant qu&#x27;il peut monter : le robot monte d&#x27;une case, puis avance vers l&#x27;est jusqu&#x27;à l&#x27;obstacle.</p>
+    <p class="td-aide">Attention : un nombre fixe de pas ne marche pas sur les trois grilles. Il faut « tant que ».</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+while not obstacleNord():
+    nord()
+    while not obstacleEst():
+        est()</pre><p>Ce qui se répète : « monter d&#x27;une case, puis aller vers l&#x27;est jusqu&#x27;à l&#x27;obstacle ». Ce qui change : le nombre de répétitions et la longueur des trajets.</p></div>
+  </section>
+  <h2 class="td-partie">À toi d'inventer</h2>
+  <p>Reprends ton programme du défi 3. Dessine les obstacles et l'étoile de deux nouvelles grilles : une où ton programme <b>réussit</b> encore, une où il <b>échoue</b>. Fais-les tester par ton ou ta camarade.</p>
+  <figure class="td-schema" data-support="papier"><svg class="td-grille-robot" width="348" height="164" viewBox="0 0 348 164" role="img" aria-label="Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Aucun obstacle. Grille du robot : 6 colonnes (A à F) et 5 lignes (1 à 5), le nord en haut. Aucun obstacle."><svg x="0" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Où il réussit</text></svg><svg x="182" width="166" height="164" viewBox="0 0 166 164" role="img"  font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="9" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9" y="133.0" text-anchor="middle" fill="currentColor">5</text><path d="M20 20V140M44 20V140M68 20V140M92 20V140M116 20V140M140 20V140M164 20V140M20 20H164M20 44H164M20 68H164M20 92H164M20 116H164M20 140H164" fill="none" stroke="currentColor" stroke-width="1"/><text x="83.0" y="158" text-anchor="middle" fill="currentColor">Où il échoue</text></svg></svg></figure>
+  <section class="td-q" data-type="libre" id="d5" data-lignes="3">
+    <p class="td-consigne">Pourquoi échoue-t-il sur la seconde ?</p>
+    <div class="td-correction"><p>Il échoue, par exemple, s'il y a un obstacle juste à l'est en bas d'une descente (le robot s'écrase) ou si l'étoile demande trois descentes.</p></div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Trace, dis, repère, écris. Un trajet de longueur inconnue : <code>while not obstacle…():</code>. Un motif répété un nombre connu de fois : <code>for i in range(n):</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-premiere/fichiers/revision-conditions-boucles">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

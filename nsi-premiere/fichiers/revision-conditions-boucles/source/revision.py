@@ -7,8 +7,9 @@ Les exercices « trouve l'erreur » de syntaxe montrent le vrai message de Pytho
 produit ici par le compilateur de Python, au même format que « python3 fichier.py ».
 
 Régénérer, depuis ce dossier source/ :
-    python3 revision.py
-    python3 pdf.py .. seance-revision-eleves seance-revision-corriges
+    python3 revision.py                  (le corrigé, ../seance-revision-corriges.html)
+    python3 pdf.py .. seance-revision-corriges
+Les documents des élèves sont les pages en ligne : voir seance-en-ligne.py.
 """
 import os, re, sys
 import outils as gen
@@ -402,5 +403,9 @@ if __name__ == "__main__":
     td = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ici, "style-td.html")
     gen.STYLE = re.search(r"<style.*?</style>", open(td, encoding="utf-8").read(), flags=re.S).group(0)
     verifier_mini(); verifier_defis()
-    open(f"{d}/seance-revision-eleves.html", "w", encoding="utf-8").write(doc("Séance de révision — documents des élèves", page_route() + page_mini(False) + pages_atelier()))
+    # Les documents des élèves sont désormais les pages en ligne (style « Signal pirate », T125), faites par
+    # seance-en-ligne.py avec les mêmes données : ../seance-revision-eleves.html, -2.html, -3.html.
+    # L'ancienne feuille (style des anciens TD) ne s'écrit plus qu'à la demande : python3 revision.py DOSSIER STYLE --ancienne
+    if "--ancienne" in sys.argv:
+        open(f"{d}/seance-revision-eleves-ancienne.html", "w", encoding="utf-8").write(doc("Séance de révision — documents des élèves", page_route() + page_mini(False) + pages_atelier()))
     open(f"{d}/seance-revision-corriges.html", "w", encoding="utf-8").write(doc("Séance de révision — corrigés", page_mini(True) + page_atelier_corrige()))
