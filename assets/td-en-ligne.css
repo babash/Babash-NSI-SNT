@@ -65,7 +65,7 @@
   /* code : fond, bande grise et filet par niveau d'indentation */
   --td-code-fond: #FFFFFF;
   --td-code-encre: #121016;
-  --td-code-num: #5E5E5E;
+  --td-code-num: #45414D;
   --td-bande: #EBEBEB;
   --td-bande-2: #E2E2E2;
   --td-g0: #0093B0;
@@ -200,12 +200,16 @@ body.td-page {
   :root[data-theme="dark"] .td-bandeau.td-controle[data-bandeau="4"] { --td-bd: url("td/bandeau-4-controle-obscur.svg"); }
 }
 .td-bandeau-decor {
-  position: absolute; inset: 0; overflow: hidden;
+  /* le dessin garde ses proportions, posé en bas : si un texte long agrandit le bandeau, le paysage descend sous le texte */
+  position: absolute; left: 0; right: 0; bottom: 0; aspect-ratio: 840 / 112; overflow: hidden;
   background: var(--td-bd) no-repeat center / 100% 100%;
 }
-.td-bandeau-texte { position: absolute; left: 6.2cqw; top: 1.5cqw; right: 42cqw; }
+.td-controle .td-bandeau-decor { aspect-ratio: 840 / 80; }
+/* le texte est dans le flux : un titre, une accroche ou un chapitre trop long fait grandir le bandeau
+   au lieu de déborder (la hauteur suit, rien n'est recouvert ni coupé) */
+.td-bandeau-texte { position: relative; margin: 0 42cqw 0 6.2cqw; padding: 1.5cqw 0 .8cqw; }
 .td-bandeau .td-sur-titre {
-  display: flex; flex-wrap: nowrap; align-items: center; gap: 0 .8cqw; margin: 0; white-space: nowrap; overflow: hidden;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0 .8cqw; margin: 0;
   font: 700 1.68cqw/1.25 var(--td-mono); text-transform: uppercase;
 }
 .td-bandeau .td-sur-titre > span:not(.td-puce) { background: var(--td-fond); }
@@ -218,6 +222,9 @@ body.td-page {
   margin: .55cqw 0 0; font-size: 4.6cqw; line-height: 1.02; text-transform: uppercase; width: max-content; max-width: 50cqw;
   text-shadow: -.28cqw .12cqw 0 var(--td-neon-2), .28cqw -.12cqw 0 var(--td-neon-1);
 }
+/* titre long (le moteur compte ses caractères) : réduction mesurée, puis retour à la ligne */
+.td-bandeau h1.td-titre-long { font-size: 3.8cqw; max-width: 51.8cqw; }
+.td-bandeau h1.td-titre-tres-long { font-size: 3.2cqw; max-width: 51.8cqw; }
 .td-bandeau .td-accroche {
   margin: .45cqw 0 0; font: 400 2.25cqw/1.1 var(--td-signal); width: max-content; max-width: 46cqw;
   background: var(--td-fond); padding-right: .6cqw;
@@ -238,17 +245,19 @@ body.td-page {
   background: var(--td-marg-img) no-repeat center / contain; pointer-events: none;
 }
 /* contrôle (20 mm) : le titre sur une ligne, le paysage réduit à droite */
-.td-controle .td-bandeau-texte { top: 1.1cqw; right: 50cqw; }
+.td-controle .td-bandeau-texte { padding-top: 1.1cqw; margin-right: 50cqw; }
 .td-controle h1 { margin: .35cqw 0 0; font-size: 3.6cqw; background: var(--td-fond); padding-right: .6cqw; }
+.td-controle h1.td-titre-long, .td-controle h1.td-titre-tres-long { font-size: 3cqw; max-width: 43.8cqw; }
 .td-controle .td-qr { top: 1.1cqw; right: 4cqw; flex-direction: row; gap: .3cqw; padding: .35cqw; }
 .td-controle .td-qr svg { width: 6cqw; height: 6cqw; }
 .td-controle .td-qr span { writing-mode: vertical-rl; transform: rotate(180deg); margin: 0; }
 
 /* téléphones et petites fenêtres : le paysage devient une bande au-dessus du titre */
 @media screen and (max-width: 680px) {
-  .td-bandeau { aspect-ratio: auto; container-type: normal; padding-top: 104px; overflow: hidden; padding-bottom: 6px; }
-  .td-bandeau-decor { inset: 0 auto auto 0; height: 96px; width: 720px; left: min(0px, calc((100% - 720px) * .72)); }
-  .td-bandeau-texte { position: static; }
+  .td-bandeau, .td-bandeau.td-controle { aspect-ratio: auto; container-type: normal; padding-top: 104px; overflow: hidden; padding-bottom: 6px; }
+  .td-bandeau-decor, .td-controle .td-bandeau-decor { inset: 0 auto auto 0; height: 96px; width: 720px; aspect-ratio: auto; left: min(0px, calc((100% - 720px) * .72)); }
+  .td-bandeau-texte, .td-controle .td-bandeau-texte { position: static; margin: 0; padding: 0; }
+  .td-bandeau h1.td-titre-long, .td-bandeau h1.td-titre-tres-long { font-size: clamp(1.5rem, 7vw, 2rem); max-width: none; }
   .td-bandeau .td-sur-titre { font-size: .8rem; gap: .2rem .5rem; flex-wrap: wrap; white-space: normal; }
   .td-puce { font-size: .95rem; padding: 0 .4rem; border-width: 2px; box-shadow: 3px 3px 0 var(--td-neon-1); }
   .td-bandeau h1 { font-size: clamp(1.7rem, 8.4vw, 2.3rem); margin-top: .45rem; width: auto; max-width: none; text-shadow: -2px 1px 0 var(--td-neon-2), 2px -1px 0 var(--td-neon-1); }
@@ -257,6 +266,9 @@ body.td-page {
   .td-qr svg { width: 2.6rem; height: 2.6rem; }
   .td-qr span { font-size: 1.25rem; margin: 0; }
   .td-controle .td-bandeau-texte { display: block; }
+  .td-controle .td-qr { padding: .3rem .6rem .3rem .3rem; gap: .6rem; }
+  .td-controle .td-qr svg { width: 2.6rem; height: 2.6rem; }
+  .td-controle .td-qr span { writing-mode: horizontal-tb; transform: none; }
 }
 
 /* en-tête : objectif, critères de réussite, durée */
@@ -592,8 +604,9 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   .td code { font-size: max(10pt, .92em); }
 
   /* bandeau : 210 x 28 mm, à fond perdu en largeur (1 cqw = 2,1 mm) */
-  .td-bandeau { margin: 0 -13mm 2mm; width: 210mm; height: 28mm; aspect-ratio: auto; break-inside: avoid; }
-  .td-bandeau.td-controle { height: 20mm; }
+  /* 28 mm (20 mm pour un contrôle) ; plus haut seulement si un texte trop long l'exige (imprimer-td.py le signale) */
+  .td-bandeau, .td-bandeau.td-controle { margin: 0 -13mm 2mm; width: 210mm; min-height: 28mm; height: auto; aspect-ratio: auto; break-inside: avoid; }
+  .td-bandeau.td-controle { min-height: 20mm; }
   .td-entete { padding: 0; }
   .td-nom { display: flex; gap: 6mm; margin: 0 0 2mm; font-size: 10.5pt; font-weight: 700; }
   .td-nom span { flex: 1; border-bottom: var(--td-saisie-ep) solid var(--td-saisie); padding-bottom: .5mm; }

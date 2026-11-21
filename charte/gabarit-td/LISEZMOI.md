@@ -26,6 +26,8 @@ python3 -I charte/nouveau-td.py nsi1/fichiers/boucles-td1 \
 | `--bandeau` | facultatif : force le paysage. Sans lui, le bandeau suivant de la rotation est attribué (voir § 2). |
 | `--quiz` | l'adresse du cours-quiz du chapitre : le QR code est calculé **hors ligne** (avec `assets/qrcode-generator.js`). **Sans `--quiz`, pas de QR code** : c'est le cas d'un chapitre sans cours-quiz. |
 | `--accroche` | une ligne sous le titre, facultative (25 caractères environ). |
+
+**Textes trop longs.** Au-delà de ces longueurs, rien n'est coupé ni recouvert : le titre est imprimé plus petit (au-delà de 26 caractères), puis passe sur deux lignes (au-delà de 31), la ligne du niveau et du chapitre passe à la ligne, et **le bandeau grandit** (sur papier aussi). `nouveau-td.py` prévient (« Attention : … ») et `imprimer-td.py` signale un bandeau de plus de 28 mm (20 mm pour un contrôle) ; il refuse un texte coupé, sorti du bandeau ou qui recouvre le QR code, « Nom et prénom » ou les objectifs. Raccourcissez plutôt.
 | `--controle` | variante de contrôle : bandeau de 20 mm, puce « Contrôle ». |
 | `--remplacer`, `--cachette` | écraser une page existante ; forcer la cachette du margouillat (`b1` à `b4`, `memo`, `pied`). |
 

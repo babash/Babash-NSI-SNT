@@ -35,8 +35,25 @@ REPERE = 'ZQXREPONSE'
 POLICES_DU_SITE = {'AtkinsonHyperlegible-Regular', 'AtkinsonHyperlegible-Bold', 'AtkinsonHyperlegible-Italic',
                    'JetBrainsMono-Regular', 'JetBrainsMono-Bold', 'JetBrainsMono-Italic', 'JetBrainsMono-BoldItalic',
                    'Anton-Regular', 'VT323-Regular', 'TDSymboles'}
+# le bandeau : texte entier, rien de recouvert (le QR code, « Nom et prénom », les objectifs), hauteur en mm
+BANDEAU_JS = r"""() => {
+  const bd = document.querySelector('.td-bandeau'); if (!bd) return { bandeau_h: 0, bandeau_pb: [] };
+  const pb = [], r = e => e.getBoundingClientRect(), mm = px => Math.round(px * 25.4 / 96 * 10) / 10;
+  const croise = (a, b) => a.left < b.right - .5 && b.left < a.right - .5 && a.top < b.bottom - .5 && b.top < a.bottom - .5;
+  const textes = [...bd.querySelectorAll('.td-sur-titre, h1, .td-accroche')];
+  const qr = bd.querySelector('.td-qr'), rb = r(bd);
+  textes.forEach(e => {
+    const nom = e.className || e.tagName.toLowerCase();
+    if (e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).overflowX !== 'visible') pb.push(nom + ' : texte coupé');
+    if (qr && croise(r(e), r(qr))) pb.push(nom + ' : recouvre le QR code');
+    if (r(e).bottom > rb.bottom + .5 || r(e).right > rb.right + .5) pb.push(nom + ' : sort du bandeau');
+    [...e.children].forEach(c => { if (r(c).right > r(e).right + 1) pb.push(nom + ' : un mot dépasse'); });
+  });
+  document.querySelectorAll('.td-nom, .td-objectifs').forEach(e => { if (e.getClientRects().length && r(e).top < rb.bottom - .5) pb.push((e.className) + ' : recouvert par le bandeau'); });
+  return { bandeau_h: mm(rb.height), bandeau_attendu: bd.classList.contains('td-controle') ? 20 : 28, bandeau_pb: pb };
+}"""
 # mesures faites en média « print », à la largeur d'une page A4 (794 px)
-MESURES = r"""() => {
+MESURES = r"""() => { const BANDEAU = (BANDEAU_SRC);
   const pt = px => Math.round(px * 72 / 96 * 10) / 10, vus = el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
   const petit = [], coupees = [], deborde = [];
   document.querySelectorAll('.td *').forEach(el => {
@@ -77,7 +94,7 @@ MESURES = r"""() => {
     const mauvais = traits.filter(t => !(t.w >= 0.66 && t.st !== 'dotted' && rapport(t.c) >= 7));
     if (!bons.length || mauvais.length) faibles.push(nom + ' : ' + (traits.map(t => t.w.toFixed(2) + 'px ' + t.st + ' ' + t.c + ' (' + rapport(t.c).toFixed(1) + ':1)').join(' / ') || 'aucun trait'));
   });
-  return { petit, coupees, deborde, saisies: saisies.length, faibles, bandeau: !!document.querySelector('.td-bandeau'), pied: !!document.querySelector('.td-pied .td-ia') };
+  return { petit, coupees, deborde, saisies: saisies.length, faibles, bandeau: !!document.querySelector('.td-bandeau'), pied: !!document.querySelector('.td-pied .td-ia'), ...BANDEAU() };
 }"""
 
 
@@ -101,6 +118,9 @@ def main():
         p.goto(url)
         p.wait_for_selector('.td-barre')
         p.evaluate('document.fonts.ready')
+        ecran = p.evaluate(BANDEAU_JS)
+        for x in ecran['bandeau_pb']:
+            erreurs.append('bandeau, à l\'écran : ' + x)
         # (le code de départ d'un éditeur n'est pas une réponse)
         pleins = p.evaluate("[...document.querySelectorAll('.td input, .td textarea:not(.td-ed-texte)')].filter(c => c.type === 'radio' || c.type === 'checkbox' ? c.checked : c.value).length")
         if pleins:
@@ -142,7 +162,7 @@ def main():
         # mise en page A4 : la largeur de la page (210 mm, marges latérales dans la page)
         p.set_viewport_size({'width': 794, 'height': 1123})
         p.evaluate('document.fonts.ready')
-        mesures = p.evaluate(MESURES)
+        mesures = p.evaluate(MESURES.replace('(BANDEAU_SRC)', BANDEAU_JS))
         p.pdf(path=sortie, format='A4', print_background=True, prefer_css_page_size=True)
         p.set_viewport_size({'width': 1440, 'height': 900})
         p.emulate_media(media='screen')
@@ -164,6 +184,10 @@ def main():
         erreurs.append(f"débordement hors de la page : {mesures['deborde'][:4]}")
     if mesures['faibles']:
         erreurs.append(f"élément à remplir peu visible sur papier (il faut un trait plein de 0,5 pt et 7:1) : {mesures['faibles'][:4]}")
+    for x in mesures['bandeau_pb']:
+        erreurs.append('bandeau, sur papier : ' + x)
+    if mesures['bandeau_h'] > mesures['bandeau_attendu'] + .3:
+        print(f"  Attention : bandeau de {mesures['bandeau_h']} mm au lieu de {mesures['bandeau_attendu']} : un texte du bandeau est trop long (titre, accroche ou chapitre ; voir LISEZMOI)")
     for nom in ('bandeau', 'pied'):
         if not mesures[nom]:
             erreurs.append(f'{nom} absent')

@@ -1038,6 +1038,9 @@
   Feuille.prototype.monter = function () {
     var f = this;
     this.r.classList.add('td-pret');
+    // titre long : réduction mesurée (26 caractères tiennent à la taille normale, 31 à la taille réduite)
+    var h1 = this.r.querySelector('.td-bandeau h1');
+    if (h1) { var lg = h1.textContent.replace(/\s+/g, ' ').trim().length; if (lg > 31) h1.classList.add('td-titre-tres-long'); else if (lg > 26) h1.classList.add('td-titre-long'); }
     this.questions = Array.prototype.slice.call(this.r.querySelectorAll('.td-q[data-type]')).map(function (s, i) { return new Question(f, s, i + 1); });
     this.questions.forEach(function (q) {
       try { q.monter(); } catch (e) { q.s.classList.add('td-q-cassee'); if (window.console) console.error('Question ' + q.id + ' :', e); }

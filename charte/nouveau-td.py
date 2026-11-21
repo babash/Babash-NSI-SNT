@@ -62,11 +62,35 @@ def qr_svg(url):
             f'<path d="{"".join(d)}" fill="#121016"/></svg>')
 
 
+def ignorer(dossier):
+    """Dossiers qui ne comptent pas : Git, modules, copies des agents (.claude/) et démonstrations (charte/)."""
+    rel = os.path.relpath(dossier, RACINE).replace(os.sep, "/")
+    premier = rel.split("/")[0]
+    return premier in (".git", ".claude", "charte", "node_modules") or "/node_modules" in rel or "/.git" in rel
+
+
+def longueurs(o):
+    """Avertit quand un texte du bandeau dépasse ce qui tient (le bandeau grandit alors, sur papier aussi)."""
+    av = []
+    titre = o.titre.replace("`", "")
+    if len(titre) > 31:
+        av.append(f"titre de {len(titre)} caractères : il passe sur deux lignes, en petit (31 au plus, 26 pour la taille normale)")
+    elif len(titre) > 26:
+        av.append(f"titre de {len(titre)} caractères : il est imprimé plus petit (26 au plus pour la taille normale)")
+    if o.accroche and len(o.accroche) > 25:
+        av.append(f"accroche de {len(o.accroche)} caractères (25 au plus) : elle peut passer à la ligne et agrandir le bandeau")
+    lc = len(o.niveau) + len(o.chapitre)
+    if lc > 40:
+        av.append(f"niveau et chapitre : {lc} caractères (40 au plus) : la ligne passe à la ligne et agrandit le bandeau")
+    for a in av:
+        print("Attention :", a, file=sys.stderr)
+
+
 def cachettes_prises(bandeau, sauf):
     """Cachettes déjà utilisées par les autres TD du dépôt qui ont le même bandeau."""
     prises = set()
     for dossier, _, fichiers in os.walk(RACINE):
-        if "/.git" in dossier or "/node_modules" in dossier:
+        if ignorer(dossier):
             continue
         for f in fichiers:
             if not f.endswith(".html"):
@@ -86,7 +110,7 @@ def cachettes_prises(bandeau, sauf):
 def pages_td(sauf):
     """Les pages de TD du dépôt (hors modèle et hors la page visée) : (identifiant, bandeau)."""
     for dossier, _, fichiers in os.walk(RACINE):
-        if "/.git" in dossier or "/node_modules" in dossier:
+        if ignorer(dossier):
             continue
         for f in fichiers:
             chemin = os.path.join(dossier, f)
@@ -165,6 +189,7 @@ def main():
     if os.path.exists(cible) and not o.remplacer:
         sys.exit(f"{cible} existe déjà (--remplacer pour l'écraser).")
     os.makedirs(dossier, exist_ok=True)
+    longueurs(o)
 
     assets = os.path.relpath(os.path.join(RACINE, "assets"), dossier).replace(os.sep, "/")
     chemin_depot = os.path.relpath(dossier, RACINE).replace(os.sep, "/")
