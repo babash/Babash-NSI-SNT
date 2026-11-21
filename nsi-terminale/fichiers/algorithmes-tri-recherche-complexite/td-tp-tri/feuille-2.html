@@ -87,10 +87,10 @@ print(tri_fusion([7, 5, 3, 0, 1, 6, 4, 2]))</pre>
   <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
     <p class="td-consigne">La stratégie. Que veut dire « diviser pour régner », appliqué ici ?</p>
     <ul class="td-options">
-      <li data-juste>on coupe le tableau en deux moitiés, on trie chaque moitié de la même façon (récursivement), puis on fusionne les deux moitiés triées</li>
+      <li data-juste>on coupe en deux, on trie chaque moitié de la même façon, puis on fusionne les deux</li>
       <li data-retour="On ne cherche pas le minimum : c'est la stratégie du tri par sélection.">on cherche le minimum de chaque moitié, puis on l'échange avec la première case</li>
-      <li data-retour="Une moitié seule n'est pas triée ; on trie les deux, puis on les fusionne.">on coupe le tableau en deux et on ne trie que la moitié gauche</li>
-      <li data-retour="La division s'arrête aux listes d'un élément, déjà triées : c'est le cas de base de la récursivité.">on divise le tableau en deux sans fin, jusqu'à ce qu'il soit vide</li>
+      <li data-retour="Une moitié seule n'est pas triée ; on trie les deux, puis on les fusionne.">on coupe le tableau en deux et on ne trie que la moitié gauche, la droite suit</li>
+      <li data-retour="La division s'arrête aux listes d'un élément, déjà triées : c'est le cas de base de la récursivité.">on divise le tableau en deux sans fin, jusqu'à ce qu'il soit complètement vide</li>
     </ul>
     <p class="td-aide">Relis les trois commentaires de <code>tri_fusion</code> : cas de base, appels récursifs, recoller.</p>
     <div class="td-correction"><p><b>Diviser</b> : couper le tableau en deux. <b>Régner</b> : trier chaque moitié par le même algorithme (appels récursifs), jusqu'aux listes d'un élément. <b>Combiner</b> : fusionner les deux moitiés triées.</p></div>
@@ -113,10 +113,10 @@ niveau 2 : [[[4]]]  [[[1]]]  [[[7]]]  [[[3]]]</pre>
   <section class="td-q" data-type="qcu" id="q3">
     <p class="td-consigne">La fusion. Une fois les éléments isolés, on remonte. Si on fusionne <code>[1, 4]</code> et <code>[3, 7]</code>, quel est le premier élément placé dans le tableau final, et pourquoi ?</p>
     <ul class="td-options">
-      <li data-juste>1 : on compare les premiers éléments des deux listes triées, 1 et 3, et on prend le plus petit</li>
-      <li data-retour="La fusion ne prend pas tout le côté gauche d'abord : elle compare les deux têtes de liste.">1 : la fusion recopie toujours la liste de gauche en premier</li>
-      <li data-retour="3 est la tête de la liste de droite, mais 1 est plus petit.">3 : on commence par la liste de droite</li>
-      <li data-retour="On ne cherche pas le maximum : on construit le résultat du plus petit au plus grand.">7 : on place d'abord le plus grand</li>
+      <li data-juste>1 : on compare les têtes des deux listes, 1 et 3, et on prend la plus petite</li>
+      <li data-retour="La fusion ne prend pas tout le côté gauche d'abord : elle compare les deux têtes de liste.">1 : la fusion recopie toujours la liste de gauche en entier, avant celle de droite</li>
+      <li data-retour="3 est la tête de la liste de droite, mais 1 est plus petit.">3 : on commence toujours par la tête de la liste de droite, puis on alterne</li>
+      <li data-retour="On ne cherche pas le maximum : on construit le résultat du plus petit au plus grand.">7 : on place d'abord le plus grand, puis on redescend vers le plus petit</li>
     </ul>
     <p class="td-aide">Les deux listes sont triées : leur plus petit élément est en tête.</p>
     <div class="td-correction"><p><b>1</b> : les deux listes sont triées, donc le plus petit de tous est l'une des deux têtes. On compare 1 et 3 : 1 est le plus petit.</p></div>
@@ -135,10 +135,10 @@ résultat final de la fusion : [[[1, 2, 5, 8]]]</pre>
   <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
     <p class="td-consigne">Performance. Pourquoi ce tri est-il plus long à écrire, mais beaucoup plus rapide pour de très grandes listes ?</p>
     <ul class="td-options">
-      <li data-juste>il demande la récursivité et une fonction de fusion, mais il ne compare pas tout le monde à tout le monde : environ log₂(n) niveaux de n comparaisons</li>
-      <li data-retour="Le tri fusion fait des comparaisons, comme les autres : il en fait beaucoup moins.">parce qu'il ne fait aucune comparaison</li>
-      <li data-retour="Python n'a pas de règle spéciale pour la récursivité : c'est le nombre d'opérations qui compte.">parce que Python exécute plus vite les fonctions récursives</li>
-      <li data-retour="Au contraire, il crée des copies (tab[:milieu]) : il utilise plus de mémoire.">parce qu'il utilise moins de mémoire que les autres tris</li>
+      <li data-juste>parce qu'il faut écrire récursivité et fusion, mais il fait bien moins de comparaisons</li>
+      <li data-retour="Le tri fusion fait des comparaisons, comme les autres : il en fait beaucoup moins.">parce qu'il ne fait aucune comparaison : il se contente de couper et de recoller</li>
+      <li data-retour="Python n'a pas de règle spéciale pour la récursivité : c'est le nombre d'opérations qui compte.">parce que Python exécute plus vite les fonctions récursives que les boucles</li>
+      <li data-retour="Au contraire, il crée des copies (tab[:milieu]) : il utilise plus de mémoire.">parce qu'il utilise moins de mémoire que les autres tris, donc il va plus vite</li>
     </ul>
     <div class="td-correction"><p>Il est plus long à écrire (récursivité, fusion), mais l'arbre a environ log₂(n) niveaux, et chaque niveau coûte de l'ordre de n comparaisons : n log₂(n) en tout, bien moins que n².</p></div>
   </section>
@@ -157,10 +157,10 @@ résultat final de la fusion : [[[1, 2, 5, 8]]]</pre>
   <section class="td-q" data-type="qcu" id="q7" data-support="ecran">
     <p class="td-consigne">Comparaison. Pourquoi cet algorithme est-il le « sauveur » de nos serveurs face à 100 000 données ?</p>
     <ul class="td-options">
-      <li data-juste>pour n = 100 000, il fait de l'ordre de 1,7 million de comparaisons (n log₂ n), contre 5 milliards (n²/2) pour le tri par sélection</li>
-      <li data-retour="Le tri fusion n'est pas en O(n) : il fait environ n log₂ n comparaisons, mais c'est déjà très peu à côté de n².">parce qu'il fait exactement 100 000 comparaisons</li>
-      <li data-retour="Tous les tris donnent le même résultat ; c'est le temps mis qui change.">parce que c'est le seul qui trie correctement</li>
-      <li data-retour="Le tri fusion garde le même comportement sur toutes les données : il ne profite pas spécialement d'un tableau presque trié.">parce qu'il est le plus rapide sur les petites listes presque triées</li>
+      <li data-juste>parce qu'il fait environ 1,7 million de comparaisons, contre 5 milliards pour la sélection</li>
+      <li data-retour="Le tri fusion n'est pas en O(n) : il fait environ n log₂ n comparaisons, mais c'est déjà très peu à côté de n².">parce qu'il fait exactement 100 000 comparaisons, une seule par donnée à trier</li>
+      <li data-retour="Tous les tris donnent le même résultat ; c'est le temps mis qui change.">parce que c'est le seul qui trie correctement une liste de 100 000 données</li>
+      <li data-retour="Le tri fusion garde le même comportement sur toutes les données : il ne profite pas spécialement d'un tableau presque trié.">parce qu'il est le plus rapide sur les petites listes presque triées, comme celles-ci</li>
     </ul>
     <div class="td-correction"><p>n log₂ n ≈ 100 000 × 17 ≈ 1,7 million, contre n(n − 1)/2 ≈ 5 milliards pour la sélection : environ 3 000 fois moins de comparaisons.</p></div>
   </section>
@@ -203,9 +203,9 @@ philosophie C : tri [[par insertion|insertion]]</pre>
     <p class="td-consigne">Pour n = 10 000, combien de comparaisons le programme compte-t-il pour le tri par sélection ?</p>
     <ul class="td-options">
       <li data-juste>49 995 000, quelle que soit la liste : n(n − 1)/2</li>
-      <li data-retour="La boucle j parcourt tout le reste du tableau à chaque tour de i : beaucoup plus que n.">10 000 : une comparaison par élément</li>
-      <li data-retour="n log₂ n, c'est l'ordre de grandeur du tri fusion, pas de la sélection.">environ 133 000 : n log₂ n</li>
-      <li data-retour="On ne compare pas chaque élément à tous les autres dans les deux sens : (n − 1) + (n − 2) + … + 1 = n(n − 1)/2.">100 000 000 : n²</li>
+      <li data-retour="La boucle j parcourt tout le reste du tableau à chaque tour de i : beaucoup plus que n.">10 000 : une comparaison par élément de la liste</li>
+      <li data-retour="n log₂ n, c'est l'ordre de grandeur du tri fusion, pas de la sélection.">environ 133 000 : n log₂ n comparaisons</li>
+      <li data-retour="On ne compare pas chaque élément à tous les autres dans les deux sens : (n − 1) + (n − 2) + … + 1 = n(n − 1)/2.">100 000 000 : n², chaque élément comparé à tous</li>
     </ul>
     <p class="td-aide">(n − 1) + (n − 2) + … + 1 = n(n − 1)/2.</p>
     <div class="td-correction"><p>10 000 × 9 999 / 2 = <b>49 995 000</b> comparaisons, pour toute liste de 10 000 nombres (mesuré par le programme).</p></div>
@@ -214,10 +214,10 @@ philosophie C : tri [[par insertion|insertion]]</pre>
   <section class="td-q" data-type="qcu" id="q10" data-support="ecran">
     <p class="td-consigne">Sur un poste, le tri par sélection met environ 11 s pour n = 10 000. Que se passe-t-il pour n = 100 000 ?</p>
     <ul class="td-options">
-      <li data-juste>environ 100 fois plus long, soit près de 20 minutes : le programme l'arrête, « ÉCHEC »</li>
-      <li data-retour="Le temps n'est pas proportionnel à n mais à n² : n × 10 donne un temps × 100.">environ 110 s : 10 fois plus long</li>
-      <li data-retour="Le tri par sélection fait le même travail quelles que soient les données : son temps croît comme n².">à peu près 11 s : le temps ne dépend pas de n</li>
-      <li data-retour="Il finirait, mais trop tard : plus de 5 minutes, donc il est arrêté.">il ne s'arrête jamais</li>
+      <li data-juste>environ 100 fois plus long, près de 20 minutes : arrêté, « ÉCHEC »</li>
+      <li data-retour="Le temps n'est pas proportionnel à n mais à n² : n × 10 donne un temps × 100.">environ 110 s : 10 fois plus long, car n est 10 fois plus grand</li>
+      <li data-retour="Le tri par sélection fait le même travail quelles que soient les données : son temps croît comme n².">à peu près 11 s : le temps ne dépend pas du nombre de données</li>
+      <li data-retour="Il finirait, mais trop tard : plus de 5 minutes, donc il est arrêté.">il ne s'arrête jamais : les boucles tournent à l'infini</li>
     </ul>
     <div class="td-correction"><p>Quadratique : n multiplié par 10, temps multiplié par 100, soit environ 1 100 s (18 minutes) : au-delà de 5 minutes, « ÉCHEC ». Le tri par insertion échoue aussi ; le tri fusion met moins d'une seconde.</p></div>
   </section>
@@ -238,36 +238,36 @@ philosophie C : tri [[par insertion|insertion]]</pre>
   <section class="td-q" data-type="qcu" id="q12" data-support="ecran">
     <p class="td-consigne">Tu reçois une liste de 10 dossiers chaque seconde : la liste est très petite, mais cela arrive très souvent. Quel tri ?</p>
     <ul class="td-options">
-      <li data-juste>le tri par insertion : simple et très rapide sur les petites listes, sans copie</li>
-      <li data-retour="Pour 10 éléments, la récursivité et les copies du tri fusion coûtent plus qu'elles ne rapportent.">le tri fusion, toujours le plus rapide</li>
-      <li data-retour="Le tri par sélection marcherait, mais il fait toujours toutes ses comparaisons ; l'insertion s'arrête plus tôt.">le tri par sélection</li>
-      <li data-retour="Il faut bien trier : chaque petite liste arrive dans le désordre.">aucun : 10 dossiers ne se trient pas</li>
+      <li data-juste>le tri par insertion : simple et très rapide sur les petites listes</li>
+      <li data-retour="Pour 10 éléments, la récursivité et les copies du tri fusion coûtent plus qu'elles ne rapportent.">le tri fusion, toujours le plus rapide quelle que soit la taille</li>
+      <li data-retour="Le tri par sélection marcherait, mais il fait toujours toutes ses comparaisons ; l'insertion s'arrête plus tôt.">le tri par sélection : simple à écrire, il trie sans aucune copie</li>
+      <li data-retour="Il faut bien trier : chaque petite liste arrive dans le désordre.">aucun : 10 dossiers sont trop peu pour avoir besoin d'un tri</li>
     </ul>
     <div class="td-correction"><p>Le <b>tri par insertion</b> : sur une très petite liste, n² reste minuscule, et il est simple, sans copie ni appel récursif.</p></div>
   </section>
   <section class="td-q" data-type="qcu" id="q13" data-support="ecran">
     <p class="td-consigne">Tu travailles sur une base de 1 000 000 d'utilisateurs ; la mémoire vive du serveur est limitée. Quel tri ?</p>
     <ul class="td-options">
-      <li data-juste>le tri fusion : le seul assez rapide pour un million de données (environ 2 × 10⁷ comparaisons), à condition de prévoir la mémoire de ses copies</li>
-      <li data-retour="Il trie sans copie, mais il ferait environ 5 × 10¹¹ comparaisons : des heures, voire des jours.">le tri par sélection, parce qu'il trie sans copie</li>
-      <li data-retour="Sur une liste en désordre, l'insertion reste en O(n²) : beaucoup trop lent pour un million de données.">le tri par insertion, parce qu'il trie sans copie</li>
-      <li data-retour="Les trois tris donnent le même résultat, mais pas dans le même temps.">n'importe lequel : ils se valent</li>
+      <li data-juste>le tri fusion, en prévoyant de la mémoire pour ses copies</li>
+      <li data-retour="C'est tout le compromis : la sélection trie sur place, sans mémoire en plus, mais elle ferait environ 5 × 10¹¹ comparaisons, des heures voire des jours. Le tri fusion dépense de la mémoire pour ses copies (de l'ordre de n cases) et ne fait qu'environ 2 × 10⁷ comparaisons : on le choisit, en prévoyant cette mémoire.">le tri par sélection : il trie sans copie, donc il ménage la mémoire</li>
+      <li data-retour="C'est tout le compromis : l'insertion trie sur place, sans mémoire en plus, mais sur une liste en désordre elle reste en O(n²), de l'ordre de 2,5 × 10¹¹ comparaisons pour un million de données. Le tri fusion demande de la mémoire pour ses copies, mais il va des milliers de fois plus vite : on le choisit, en prévoyant cette mémoire.">le tri par insertion : il trie sans copie, donc il ménage la mémoire</li>
+      <li data-retour="Les trois tris donnent le même résultat, mais pas au même prix : sélection et insertion économisent la mémoire et perdent des heures ; le tri fusion dépense de la mémoire pour ses copies et gagne énormément de temps. Avec un million de données, c'est le temps qui décide, à condition d'avoir la mémoire.">n'importe lequel : avec peu de mémoire, ils se valent</li>
     </ul>
-    <div class="td-correction"><p>Les tris en O(n²) feraient environ 5 × 10¹¹ comparaisons : beaucoup trop. Le <b>tri fusion</b> (n log₂ n ≈ 2 × 10⁷) est le seul envisageable, mais ses copies demandent de la mémoire : il faut la prévoir.</p></div>
+    <div class="td-correction"><p>C'est un <b>compromis entre le temps et la mémoire</b>. Les tris en O(n²) trient sur place, sans mémoire en plus, mais feraient de l'ordre de 10¹¹ comparaisons : beaucoup trop. Le <b>tri fusion</b> (n log₂ n ≈ 2 × 10⁷) est le seul assez rapide, mais ses copies demandent de la mémoire (de l'ordre de n cases) : il faut la prévoir. Un autre choix bien justifié se discute avec ton enseignant·e.</p></div>
   </section>
   <section class="td-q" data-type="qcu" id="q14" data-support="ecran">
     <p class="td-consigne">Un fichier de 50 000 lignes est déjà <i>presque</i> entièrement trié : seules les deux dernières lignes sont mal placées. Quel tri ?</p>
     <ul class="td-options">
-      <li data-juste>le tri par insertion : presque tout est en place, la boucle <code>while</code> ne tourne que pour les deux dernières lignes</li>
-      <li data-retour="Le tri fusion ferait tout son travail (n log n), alors que l'insertion n'a presque rien à faire ici.">le tri fusion</li>
-      <li data-retour="La sélection ferait ses 1,25 milliard de comparaisons, même sur un fichier presque trié.">le tri par sélection</li>
-      <li data-retour="Deux lignes mal placées suffisent à rendre le fichier faux : il faut trier.">aucun : le fichier est déjà trié</li>
+      <li data-juste>le tri par insertion : seules les deux dernières lignes reculent</li>
+      <li data-retour="Le tri fusion ferait tout son travail (n log n), alors que l'insertion n'a presque rien à faire ici.">le tri fusion : c'est le plus rapide dès que la liste est grande</li>
+      <li data-retour="La sélection ferait ses 1,25 milliard de comparaisons, même sur un fichier presque trié.">le tri par sélection : il repère vite les deux lignes mal placées</li>
+      <li data-retour="Deux lignes mal placées suffisent à rendre le fichier faux : il faut trier.">aucun : le fichier est presque trié, cela suffit pour l'utiliser</li>
     </ul>
     <div class="td-correction"><p>Le <b>tri par insertion</b> : sur une liste presque triée, son coût est proche de O(n).</p></div>
   </section>
   <section class="td-q" data-type="libre" id="q12-papier" data-support="papier" data-lignes="6">
     <p class="td-consigne">Relie chaque situation à l'algorithme le plus adapté et justifie ton choix. (1) Tu reçois une liste de 10 dossiers chaque seconde : très petite, mais très souvent. (2) Une base de 1 000 000 d'utilisateurs ; la mémoire vive du serveur est limitée. (3) Un fichier de 50 000 lignes déjà <i>presque</i> trié (seules les deux dernières lignes sont mal placées).</p>
-    <div class="td-correction"><p>(1) insertion ; (2) fusion, en prévoyant la mémoire ; (3) insertion.</p></div>
+    <div class="td-correction"><p>(1) insertion ; (2) question ouverte, à relire : réponse attendue, le tri fusion, seul assez rapide, en prévoyant la mémoire de ses copies (compromis temps/mémoire) ; (3) insertion.</p></div>
   </section>
 
   <section class="td-q" data-type="trous" data-langage="texte" id="q15">

@@ -140,11 +140,11 @@ def route():
       <p class="td-objectif"><b>Objectif :</b> savoir où j'en suis en conditions, boucles et fonctions, et faire mon plan de révision avant le contrôle.</p>
       <p><b>Je sais :</b></p>
       <ul class="td-criteres">
-        <li>repérer, bloc par bloc, ce qui est acquis, fragile ou à revoir ;</li>
-        <li>dire l'étape où je bloque : tracer, dire, repérer ou écrire ;</li>
+        <li>repérer ce qui est acquis, fragile ou à revoir ;</li>
+        <li>dire l'étape où je bloque ;</li>
         <li>choisir mes deux priorités de révision.</li>
       </ul>
-      <p class="td-duree">Feuille 1 sur 3 · toute la séance · la feuille de route, puis le <a class="td-ecran-seul" href="seance-revision-eleves-2.html">mini-contrôle croisé</a> et l'<a class="td-ecran-seul" href="seance-revision-eleves-3.html">atelier robot</a></p>
+      <p class="td-duree">Feuille 1 sur 3 · toute la séance · ensuite : <a href="seance-revision-eleves-2.html">feuille 2</a>, <a href="seance-revision-eleves-3.html">feuille 3</a></p>
     </div>''', '@@CORPS']
     o.append("  <p>Cette feuille te suit pendant toute la séance, puis <b>tu la gardes</b> : c'est ton plan de révision pour le contrôle. Tu rends seulement le coupon du bas.</p>")
     o.append('  <h2 class="td-partie">1. Le quiz : où j\'en suis</h2>\n  <p>Après chaque question : ✓ si j\'ai juste, ✗ sinon.</p>')
@@ -154,8 +154,10 @@ def route():
         cel = []
         for c in comp:
             n += 1
-            cel.append(f'{case} <b>{n}.</b> {E(c)}')
-        t.append(f'      <tr><th>{b}. {E(nomb)}</th><td>{"<br>".join(cel)}</td><td class="td-nb">… / 5</td><td>acquis<br>fragile<br>à revoir</td></tr>')
+            cel.append(f'{case}&nbsp;<b>{n}.</b>&nbsp;{E(c)}')
+        # moins de papier (T125b) : deux questions par ligne (les cellules ne passent pas à la ligne d'elles-mêmes)
+        cel = ['<br>'.join(' &ensp; '.join(cel[k:k + 2]) for k in range(0, len(cel), 2))]
+        t.append(f'      <tr><th>{b}. {E(nomb)}</th><td>{cel[0]}</td><td class="td-nb">… / 5</td><td>acquis<br>fragile · à revoir</td></tr>')
     t += ['    </tbody>', '  </table></div>']
     o += t
     o.append('  <p>4 ou 5 : acquis · 3 : fragile · 0, 1 ou 2 : à revoir en priorité. Les cases ✗ te disent exactement quoi retravailler.</p>')
@@ -164,10 +166,8 @@ def route():
     <thead><tr><th>Traduire</th><th>Erreurs</th><th>Compléter</th><th>Robot</th><th>Total</th></tr></thead>
     <tbody><tr><td class="td-nb">… / 2</td><td class="td-nb">… / 3</td><td class="td-nb">… / 2</td><td class="td-nb">… / 3</td><td class="td-nb">… / 10</td></tr></tbody>
   </table></div>
-  <section class="td-q" data-type="libre" id="r1" data-lignes="2">
-    <p class="td-consigne">L'erreur que mon ou ma camarade m'a expliquée, et que je ne referai plus :</p>
-    <div class="td-correction"><p>Écris-la avec tes mots : l'erreur, puis la bonne façon de faire.</p></div>
-  </section>''')
+''' + libre2('r1', "L'erreur que mon ou ma camarade m'a expliquée, et que je ne referai plus :", 2,
+                "Écris-la avec tes mots : l'erreur, puis la bonne façon de faire."))
     o.append('  <h2 class="td-partie">3. L\'atelier robot</h2>\n  <div class="td-table"><table>\n    <thead><tr><th>Défi</th><th>Tracé</th><th>Dit en français</th><th>Code écrit</th><th>Réussi sur les 3 grilles</th></tr></thead>\n    <tbody>')
     for k in ('1', '2', '3', '4 ★'):
         o.append(f'      <tr><th>{k}</th><td>{case}</td><td>{case}</td><td>{case}</td><td>{case}</td></tr>')
@@ -177,10 +177,8 @@ def route():
         o.append(f'      <tr><td>{E(nomb)}</td><td>{E(res)}</td></tr>')
     o.append('      <tr><td>Le robot, le problème</td><td>TD récapitulatif, exercices 5 et 6 · les 4 défis de l\'atelier, sans regarder</td></tr>\n    </tbody>\n  </table></div>')
     o.append('  <p><b>Le contrôle : 1 h 30, sur 20.</b> Traduire 1,5 · Erreurs 1,5 · Compléter 4 · Robot 5 · <b>Problème 8</b> (écrire du code : une condition, une boucle, deux boucles à la suite, une boucle dans une boucle).</p>')
-    o.append('''  <section class="td-q" data-type="libre" id="r2" data-lignes="2">
-    <p class="td-consigne">Mes deux priorités :</p>
-    <div class="td-correction"><p>Pars des blocs « à revoir », puis des « fragiles » : le tableau du 4 te dit quoi refaire.</p></div>
-  </section>''')
+    o.append(libre2('r2', 'Mes deux priorités :', 2,
+                    'Pars des blocs « à revoir », puis des « fragiles » : le tableau du 4 te dit quoi refaire.'))
     o.append('''  <div class="td-papier-seul">
   <p><b>Coupon à découper et à rendre en fin de séance</b></p>
   <div class="td-table"><table>
@@ -209,12 +207,12 @@ TRAD = [
       "else ne s'exécute que si aucune condition n'est vraie, pas dans tous les cas."),
      ("On donne la valeur 0 au stock, puis on affiche « Rupture ».",
       "== compare ; il ne donne pas de valeur. C'est = qui affecte une valeur.")],
-    [("On répète 3 fois : le robot avance d'une case vers le nord. Ensuite, il avance une seule fois d'une case vers l'est.", None),
+    [("Il avance 3 fois d'une case vers le nord, puis une seule fois d'une case vers l'est.", None),
      ("On répète 3 fois : le robot avance d'une case vers le nord, puis d'une case vers l'est.",
       "est() n'est pas décalée : elle est après la boucle, donc exécutée une seule fois."),
-     ("Le robot avance d'une case vers le nord, puis 3 fois vers l'est.",
+     ("Le robot avance d'une case vers le nord, puis 3 fois d'une case vers l'est.",
       "C'est nord() qui est dans la boucle : elle est répétée 3 fois."),
-     ("Le robot avance 3 fois en diagonale, vers le nord-est.",
+     ("Le robot avance 3 fois en diagonale, d'une case vers le nord-est à chaque fois.",
       "Le robot n'avance jamais en diagonale : nord() puis est() font deux déplacements séparés.")],
 ]
 
@@ -233,6 +231,12 @@ def libre(id_, consigne, c, lignes, corr, support='papier'):
             f'    <p class="td-consigne">{consigne}</p>\n' + (code(c) + '\n' if c else '') + f'    <div class="td-correction"><p>{corr}</p></div>\n  </section>')
 
 
+def libre2(id_, consigne, lignes, corr):
+    """Une question rédigée : à l'écran avec sa zone de brouillon ; sur papier, la question seule avec ses lignes
+    (sans l'étiquette « Ta réponse… » : moins de papier, T125b)."""
+    return libre(id_, consigne, None, lignes, corr, support='ecran') + '\n' + libre(id_ + '-papier', consigne, None, lignes, corr)
+
+
 def trous(id_, consigne, c, attendu, aide, corr):
     t = E(c).replace('⟦', '[[').replace('⟧', ']]')
     return (f'  <section class="td-q" data-type="trous" id="{id_}">\n    <p class="td-consigne">{consigne}</p>\n    <pre class="td-code">\n{t}</pre>\n'
@@ -247,14 +251,14 @@ def mini():
       <p class="td-objectif"><b>Objectif :</b> vérifier, seul·e et sans aide, que je sais traduire, corriger, compléter un programme et suivre le robot.</p>
       <p><b>Je sais :</b></p>
       <ul class="td-criteres">
-        <li>dire en français ce que fait une condition ou une boucle ;</li>
-        <li>trouver et corriger une erreur, à l'aide du message de Python ;</li>
-        <li>compléter une boucle for et une boucle while ;</li>
+        <li>dire en français ce que fait un code ;</li>
+        <li>corriger une erreur grâce au message de Python ;</li>
+        <li>compléter une boucle for ou while ;</li>
         <li>trouver la case d'arrivée du robot.</li>
       </ul>
-      <p class="td-duree">Feuille 2 sur 3 · 15 minutes · 10 questions · seul·e, sans aide ; sur papier, on échange ensuite les copies et chacun·e corrige celle de l'autre avec le corrigé</p>
+      <p class="td-duree">Feuille 2 sur 3 · 15 minutes · 10 questions · seul·e, sans aide</p>
     </div>''', '@@CORPS']
-    o.append('  <p class="td-papier-seul"><b>Copie corrigée par :</b> ………………………… · <b>Note :</b> …… / 10 · <b>La question que je refais :</b> ……</p>')
+    o.append('  <p class="td-papier-seul">Ensuite, on échange les copies : chacun·e corrige celle de l\'autre avec le corrigé. <b>Copie corrigée par :</b> ……………………… · <b>Note :</b> …… / 10 · <b>La question que je refais :</b> ……</p>')
     o.append('  <h2 class="td-partie">1. Que veut dire ce code ? (2 points)</h2>')
     a, b = R.M1
     o.append(qcu('m1', 'a) Que veut dire ce code ?', a['code'], TRAD[0], 'Lis « elif » comme « sinon, si » et « else » comme « sinon ».', E(a['rep'])))
@@ -328,42 +332,35 @@ def atelier():
       <p class="td-objectif"><b>Objectif :</b> modéliser la solution d'un problème du robot, du dessin au code, pour qu'un seul programme marche sur trois grilles.</p>
       <p><b>Je sais :</b></p>
       <ul class="td-criteres">
-        <li>tracer le trajet et le dire en français (« tant que », « répéter … fois ») ;</li>
-        <li>repérer ce qui se répète d'une grille à l'autre, et ce qui change ;</li>
-        <li>écrire une boucle, deux boucles à la suite, une boucle dans une boucle ;</li>
+        <li>tracer le trajet et le dire en français ;</li>
+        <li>repérer ce qui se répète et ce qui change ;</li>
+        <li>écrire des boucles, à la suite ou imbriquées ;</li>
         <li>tester mon programme sur plusieurs grilles.</li>
       </ul>
       <p class="td-duree">Feuille 3 sur 3 · 40 minutes · 4 défis et 1 bonus ★ · à deux</p>
     </div>''', '@@CORPS']
     o.append('''  <h2 class="td-partie">La méthode : du dessin au code</h2>
-  <ol>
-    <li><b>Trace</b> le trajet au crayon sur les trois grilles.</li>
-    <li><b>Dis-le en français</b> avec « tant que » ou « répéter … fois ».</li>
-    <li><b>Repère</b> ce qui se répète d'une grille à l'autre, et ce qui change.</li>
-    <li><b>Écris le code</b>, puis teste-le sur les trois grilles.</li>
-  </ol>
+  <p>1. <b>Trace</b> le trajet au crayon sur les trois grilles. 2. <b>Dis-le en français</b> avec « tant que » ou « répéter … fois ». 3. <b>Repère</b> ce qui se répète d'une grille à l'autre, et ce qui change. 4. <b>Écris le code</b>, puis teste-le sur les trois grilles.</p>
   <p><b>À deux :</b> l'un·e écrit, l'autre <b>joue le robot</b> et exécute le programme ligne par ligne sur les trois grilles. Robot écrasé ou étoile ratée : on corrige ensemble. On échange les rôles à chaque défi.</p>
   <div class="td-table"><table>
-    <thead><tr><th>Je dis…</th><th>J'écris…</th></tr></thead>
+    <thead><tr><th>Je dis…</th><th>J'écris…</th><th>Je dis…</th><th>J'écris…</th></tr></thead>
     <tbody>
-      <tr><td>tant qu'il n'y a pas d'obstacle à l'est</td><td><code>while not obstacleEst():</code></td></tr>
-      <tr><td>répéter 3 fois</td><td><code>for i in range(3):</code></td></tr>
-      <tr><td>s'il y a un obstacle au nord</td><td><code>if obstacleNord():</code></td></tr>
-      <tr><td>sinon</td><td><code>else:</code></td></tr>
-      <tr><td>avancer d'une case</td><td><code>nord()</code> <code>sud()</code> <code>est()</code> <code>ouest()</code></td></tr>
+      <tr><td>tant qu'il n'y a pas d'obstacle à l'est</td><td><code>while not obstacleEst():</code></td><td>répéter 3 fois</td><td><code>for i in range(3):</code></td></tr>
+      <tr><td>s'il y a un obstacle au nord</td><td><code>if obstacleNord():</code></td><td>sinon</td><td><code>else:</code></td></tr>
+      <tr><td>avancer d'une case</td><td colspan="3"><code>nord()</code> <code>sud()</code> <code>est()</code> <code>ouest()</code></td></tr>
     </tbody>
   </table></div>''')
     for i, d in enumerate(R.DEFIS, 1):
         et = ' ★' if d.get('etoile') else ''
         gr = grilles(*[grille(d['depart'], obs, cible, f'Grille {k}') for k, (obs, cible) in enumerate(d['grilles'], 1)])
         o.append(f'''  <h2 class="td-partie">Défi {i}{et} · {E(d['titre'])}</h2>
-  <p>Un seul programme doit amener le robot à l'étoile sur les trois grilles. Le robot part de {d['depart']}.</p>
-  <figure class="td-schema">{gr}</figure>
-  <p class="td-papier-seul">Testé par le robot : □ grille 1 · □ grille 2 · □ grille 3</p>''')
-        o.append(libre(f'd{i}a', 'En français :', None, 2, E(d['phrase']), support=None))
-        o.append(libre(f'd{i}b', 'Ce qui se répète · ce qui change :', None, 2, E(d['repete']), support=None))
-        o.append(f'''  <section class="td-q" data-type="code" id="d{i}c" data-fichier="defi{i}.py" data-lignes="{len(d['sol'].splitlines()) + 1}"{' data-bonus' if d.get('etoile') else ''}>
-    <p class="td-consigne">Mon code. <span class="td-ecran-seul">« Lancer » le teste sur la grille 1, puis des tests cachés sur les grilles 2 et 3.</span></p>
+  <p{'' if i == 1 else ' class="td-ecran-seul"'}>Un seul programme doit amener le robot à l'étoile sur les trois grilles. Le robot part de {d['depart']}.</p>
+  <figure class="td-schema">{gr}</figure>''')
+        # moins de papier (T125b) : une ligne quand la réponse modèle est courte (110 caractères au plus), deux sinon
+        o.append(libre2(f'd{i}a', 'En français :', 1 + (len(d['phrase']) > 110), E(d['phrase'])))
+        o.append(libre2(f'd{i}b', 'Ce qui se répète · ce qui change :', 1 + (len(d['repete']) > 110), E(d['repete'])))
+        o.append(f'''  <section class="td-q" data-type="code" id="d{i}c" data-fichier="defi{i}.py" data-lignes="{len(d['sol'].splitlines())}"{' data-bonus' if d.get('etoile') else ''}>
+    <p class="td-consigne">Mon code · testé par le robot : □ grille 1 · □ grille 2 · □ grille 3. <span class="td-ecran-seul">« Lancer » le teste sur la grille 1, puis des tests cachés sur les grilles 2 et 3.</span></p>
 {preambule(d['depart'], d['grilles'][0][0])}
     <pre class="td-depart">
 # Le robot part de {d['depart']}.
@@ -378,8 +375,8 @@ def atelier():
     o.append(f'''  <h2 class="td-partie">À toi d'inventer</h2>
   <p>Reprends ton programme du défi 3. Dessine les obstacles et l'étoile de deux nouvelles grilles : une où ton programme <b>réussit</b> encore, une où il <b>échoue</b>. Fais-les tester par ton ou ta camarade.</p>
   <figure class="td-schema" data-support="papier">{vides}</figure>
-''' + libre('d5', 'Pourquoi échoue-t-il sur la seconde ?', None, 3,
-            "Il échoue, par exemple, s'il y a un obstacle juste à l'est en bas d'une descente (le robot s'écrase) ou si l'étoile demande trois descentes.", support=None))
+''' + libre2('d5', 'Pourquoi échoue-t-il sur la seconde ?', 2,
+            "Il échoue, par exemple, s'il y a un obstacle juste à l'est en bas d'une descente (le robot s'écrase) ou si l'étoile demande trois descentes."))
     o.append('@@MEMO')
     o.append('''  <section class="td-memo">
     <h2>Mémo</h2>

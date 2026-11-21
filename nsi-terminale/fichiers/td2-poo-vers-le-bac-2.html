@@ -171,10 +171,10 @@ True</pre>
   <section class="td-q" data-type="qcu" id="q5">
     <p class="td-consigne">Si le message est envoyé, quelle action le réseau réalise-t-il sur l'objet destinataire ?</p>
     <ul class="td-options">
-      <li data-juste>il appelle sa méthode <code>recevoir_message</code>, qui ajoute le message à la liste <code>messages_recus</code> du destinataire</li>
-      <li data-retour="Le réseau ne modifie pas l'attribut directement : il passe par une méthode de l'hôte.">il écrit directement <code>hote.messages_recus = message</code></li>
-      <li data-retour="lire_boite_reception renvoie la liste ; elle ne reçoit rien.">il appelle sa méthode <code>lire_boite_reception</code></li>
-      <li data-retour="connecter range un hôte dans le réseau ; c'est fait avant l'envoi.">il appelle sa méthode <code>connecter</code></li>
+      <li data-juste>il appelle sa méthode <code>recevoir_message</code>, qui range le message</li>
+      <li data-retour="Le réseau ne modifie pas l'attribut directement : il passe par une méthode de l'hôte.">il écrit lui-même dans l'attribut : <code>hote.messages_recus = message</code></li>
+      <li data-retour="lire_boite_reception renvoie la liste ; elle ne reçoit rien.">il appelle sa méthode <code>lire_boite_reception</code>, qui renvoie ses messages</li>
+      <li data-retour="connecter range un hôte dans le réseau ; c'est fait avant l'envoi.">il appelle sa méthode <code>connecter</code>, qui le relie au réseau</li>
     </ul>
     <p class="td-aide">Regarde la troisième case que tu as complétée.</p>
     <div class="td-correction"><p>Le réseau appelle <code>recevoir_message(message)</code> sur l'hôte destinataire : le message est ajouté à sa liste <code>messages_recus</code> (et un message s'affiche).</p></div>
@@ -203,10 +203,10 @@ resultat = h2.lire_boite_reception()</pre>
   <section class="td-q" data-type="qcu" id="q7" data-support="ecran">
     <p class="td-consigne">Pourquoi le deuxième appel à <code>reseau_arpa.envoyer_message()</code> renvoie-t-il <code>False</code> ?</p>
     <ul class="td-options">
-      <li data-juste>aucun hôte connecté n'a l'adresse 192.168.1.3 : la boucle se termine sans trouver le destinataire</li>
-      <li data-retour="La méthode accepte n'importe quel texte : le contenu du message n'est pas vérifié.">parce que le message « ERROR » est refusé</li>
-      <li data-retour="L'émetteur 192.168.1.1 est bien connecté, mais la méthode ne vérifie même pas l'émetteur.">parce que l'émetteur n'est pas connecté</li>
-      <li data-retour="Un hôte peut recevoir plusieurs messages : sa liste grandit.">parce que h2 a déjà reçu un message</li>
+      <li data-juste>parce qu'aucun hôte connecté n'a l'adresse 192.168.1.3</li>
+      <li data-retour="La méthode accepte n'importe quel texte : le contenu du message n'est pas vérifié.">parce que le message « ERROR » est refusé par la méthode</li>
+      <li data-retour="L'émetteur 192.168.1.1 est bien connecté, mais la méthode ne vérifie même pas l'émetteur.">parce que l'émetteur 192.168.1.1 n'est pas connecté au réseau</li>
+      <li data-retour="Un hôte peut recevoir plusieurs messages : sa liste grandit.">parce que h2 a déjà reçu un message et que sa boîte est pleine</li>
     </ul>
     <p class="td-aide">Quelles adresses sont dans <code>reseau_arpa.participants</code> ?</p>
     <div class="td-correction"><p>Seuls <code>h1</code> (192.168.1.1) et <code>h2</code> (192.168.1.2) sont connectés. Aucun hôte n'a l'adresse 192.168.1.3 : la boucle parcourt tout, ne trouve rien, et on arrive au <code>return False</code>.</p></div>
@@ -225,7 +225,7 @@ resultat = h2.lire_boite_reception()</pre>
     <li>La classe <code>Client</code> a un attribut <code>connecte_a</code> (initialisé à <code>None</code> : au départ, le client n'est connecté à aucun serveur).</li>
     <li>La méthode <code>se_connecter_a(self, serveur)</code> de la classe <code>Client</code> fait deux choses : elle modifie son propre attribut <code>self.connecte_a</code> pour qu'il référence l'objet <code>serveur</code> ; elle appelle une méthode du serveur qui ajoute 1 à son nombre de clients connectés (un objet peut appeler la méthode d'un autre objet reçu en paramètre : <code>serveur.nom_methode()</code>).</li>
   </ul>
-  <section class="td-q" data-type="code" id="q8" data-fichier="tcp.py" data-lignes="12">
+  <section class="td-q" data-type="code" id="q8" data-fichier="tcp.py" data-lignes="11">
     <p class="td-consigne">Complète la classe <code>Serveur</code> : son constructeur, puis une méthode qui ajoute 1 à <code>nb_clients_connectes</code> (choisis-lui un nom explicite). Complète ensuite la classe <code>Client</code> : son constructeur et la méthode <code>se_connecter_a</code>. <span class="td-ecran-seul">Des tests cachés vérifient tes classes.</span></p>
     <pre class="td-depart">
 class Serveur:
@@ -293,9 +293,9 @@ type_c1 = type(c1.connecte_a)</pre>
   <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
     <p class="td-consigne">Quelle méthode la ligne <code>c1.se_connecter_a(s1)</code> appelle-t-elle sur l'objet <code>s1</code> ?</p>
     <ul class="td-options">
-      <li data-juste>la méthode du serveur qui ajoute 1 au compteur (dans la correction : <code>ajouter_client</code>)</li>
-      <li data-retour="se_connecter_a est appelée sur c1, un client. On cherche la méthode que c1 appelle ensuite sur s1.">la méthode <code>se_connecter_a</code></li>
-      <li data-retour="Le constructeur de s1 a été appelé à sa création, à la ligne 1, pas ici.">le constructeur <code>__init__</code> de <code>Serveur</code></li>
+      <li data-juste>la méthode du serveur qui ajoute 1 au compteur (<code>ajouter_client</code>)</li>
+      <li data-retour="se_connecter_a est appelée sur c1, un client. On cherche la méthode que c1 appelle ensuite sur s1.">la méthode <code>se_connecter_a</code>, puisque c'est elle qu'on lit sur la ligne</li>
+      <li data-retour="Le constructeur de s1 a été appelé à sa création, à la ligne 1, pas ici.">le constructeur <code>__init__</code> de <code>Serveur</code>, qui crée la connexion</li>
       <li data-retour="Le cahier des charges demande de passer par une méthode du serveur, pas de modifier son attribut de l'extérieur.">aucune : <code>c1</code> modifie <code>s1.nb_clients_connectes</code> directement</li>
     </ul>
     <p class="td-aide">Relis la deuxième ligne de <code>se_connecter_a</code>.</p>
@@ -344,7 +344,7 @@ print(nb)</pre>
   <section class="td-q" data-type="qcu" id="q11">
     <p class="td-consigne">Que contient la variable <code>type_c1</code> ? Autrement dit, de quel type est <code>c1.connecte_a</code> ?</p>
     <ul class="td-options">
-      <li data-juste>la classe <code>Serveur</code> : <code>c1.connecte_a</code> référence l'objet <code>s1</code></li>
+      <li data-juste>la classe <code>Serveur</code></li>
       <li data-retour="connecte_a valait None au départ, mais se_connecter_a l'a changé.">la classe <code>NoneType</code></li>
       <li data-retour="c1 est un Client, mais on demande le type de son attribut connecte_a.">la classe <code>Client</code></li>
       <li data-retour="connecte_a référence un objet, pas un nombre : le nombre de clients est dans le serveur.">la classe <code>int</code></li>
@@ -356,9 +356,9 @@ print(nb)</pre>
   <section class="td-q" data-type="qcu" id="q12" data-support="ecran">
     <p class="td-consigne">Les attributs <code>c1.connecte_a</code> et <code>c2.connecte_a</code> référencent-ils le même objet <code>Serveur</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Oui : tous deux référencent <code>s1</code>, le seul serveur créé ; <code>c1.connecte_a is c2.connecte_a</code> vaut <code>True</code></li>
+      <li data-juste>Oui : tous deux référencent <code>s1</code>, le seul serveur créé</li>
       <li data-retour="On n'a créé qu'un serveur, avec Serveur() : se_connecter_a ne fait pas de copie, il range la référence à s1.">Non : chaque client a sa propre copie du serveur</li>
-      <li data-retour="Après se_connecter_a, connecte_a n'est plus None.">Non : ils valent tous deux <code>None</code></li>
+      <li data-retour="Après se_connecter_a, connecte_a n'est plus None.">Non : après la connexion, ils valent tous deux <code>None</code></li>
       <li data-retour="Ils référencent le même objet : son compteur vaut 3 pour les deux, pas 1.">Oui, mais le compteur vaut 1 pour <code>c1</code> et 2 pour <code>c2</code></li>
     </ul>
     <p class="td-aide">Combien de fois a-t-on écrit <code>Serveur()</code> ?</p>
@@ -372,10 +372,10 @@ print(nb)</pre>
   <section class="td-q" data-type="qcu" id="q13">
     <p class="td-consigne">Et l'objet <code>c2</code> lui-même : référence-t-il le même objet que <code>c1.connecte_a</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Non : <code>c2</code> est un objet <code>Client</code>, alors que <code>c1.connecte_a</code> est le serveur <code>s1</code></li>
-      <li data-retour="c2 est connecté à s1, mais c2 n'est pas s1 : c'est c2.connecte_a qui référence s1.">Oui : <code>c2</code> est connecté à <code>s1</code>, donc <code>c2</code> est <code>s1</code></li>
-      <li data-retour="c1.connecte_a référence le serveur, pas un autre client.">Oui : les deux sont des clients</li>
-      <li data-retour="On peut toujours comparer deux objets avec is : ici, le résultat est False.">On ne peut pas le savoir</li>
+      <li data-juste>Non : <code>c2</code> est un client, alors que <code>c1.connecte_a</code> est le serveur</li>
+      <li data-retour="c2 est connecté à s1, mais c2 n'est pas s1 : c'est c2.connecte_a qui référence s1.">Oui : <code>c2</code> est connecté à <code>s1</code>, donc <code>c2</code> et <code>s1</code> sont le même objet</li>
+      <li data-retour="c1.connecte_a référence le serveur s1, pas un autre client.">Oui : <code>c1.connecte_a</code> et <code>c2</code> sont tous les deux des clients</li>
+      <li data-retour="is compare deux objets quelconques, pas seulement des nombres : ici, c2 is c1.connecte_a vaut False.">On ne peut pas le savoir : <code>is</code> ne compare que des nombres</li>
     </ul>
     <p class="td-aide">Quel est le type de <code>c2</code> ? Et celui de <code>c1.connecte_a</code> ?</p>
     <div class="td-correction"><p>Non : <code>c2</code> est un <code>Client</code> et <code>c1.connecte_a</code> est le <code>Serveur</code> <code>s1</code>. <code>c2 is c1.connecte_a</code> vaut <code>False</code>.</p></div>
