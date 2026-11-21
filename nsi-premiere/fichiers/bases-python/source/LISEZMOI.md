@@ -36,3 +36,10 @@ python3 -I nsi-premiere/fichiers/bases-python/source/td-for-calculs.py
 
 Dans une question « code » du robot, les tests (`script.td-tests`) redéfinissent le robot et sa grille
 avant d'appeler la fonction de l'élève : la question s'exécute donc aussi dans la page, avec Python.
+
+## Passe finale (T125c, 22/11)
+
+- Numéros qui continuent d'une feuille à l'autre (`charte/numeroter-feuilles.py`) ; `data-feuille` sur les feuilles 2 et 3.
+- « Où se trouve le robot ? » : comme dans l'exercice d'origine, la consigne demande d'**expliquer pas à pas** (déplacements, tests). À l'écran, la case d'arrivée est corrigée ; sur papier, la question d'origine est reprise (`data-support="papier"`) : le code et la grille dans un tableau, avec une case d'écriture sous le code pour l'explication et la case d'arrivée. Le tableau évite que la question soit coupée d'une page à l'autre.
+- Récapitulatif, feuille 2 : le tableau de suivi de l'original (Programme A : tour, `x < 20`, `x`, `n` ; Programme B : tour, `i`, `s`, affichage) est imprimé à remplir ; à l'écran, les questions restent corrigées une à une.
+- Moins de papier : questions « trouve l'erreur » et robot avec le code à gauche (`data-cote`), lignes des sorties ramenées à celles de l'original (4), tableau « for ou while » en attributs (`data-case-largeur`).
