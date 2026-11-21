@@ -42,23 +42,25 @@
         <li>mêler une liste et un dictionnaire dans un même calcul.</li>
       </ul>
       <p class="td-duree">45 minutes · 1 exercice de bac (8 points, partie A) · 6 questions · seul·e ou en binôme</p>
-      <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
-      <p>Les énoncés reprennent fidèlement les sujets officiels. Le numéro de la question du sujet est rappelé entre crochets.</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés. Ce qui est propre au TD (« Pour répondre ici », coups de pouce) est écrit à part.</p>
       <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. <a href="index.html">chiffrer avec un dictionnaire</a> ; 2. le stock de la scierie (ici).</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
   <h2 class="td-partie">Exercice 2 · Le stock de la scierie (8 points, partie A)</h2>
-  <p><b>Sujet :</b> baccalauréat 2026, Antilles-Guyane, jour 2 (26-NSIJ2AG1), exercice 3, partie A (questions 1 à 6), pages 11 à 15. <a href="https://aeif.fr/wp-content/uploads/2026/06/Antilles-Guyane_juin_2026_sujet_2.pdf">Sujet (version de l'AEIF)</a>. Les parties B et C (récursivité, programmation dynamique) sont dans le PDF : elles relèvent d'un autre chapitre.</p>
-  <p><i>Cet exercice traite de tableaux, de dictionnaires, de récursivité et de programmation dynamique.</i></p>
-  <p>Une scierie possède un stock de planches. Chaque planche a une longueur entière, en mètres, comprise entre 1 et 10, et un prix entier, en euros, qui dépend de sa longueur. La variable globale <code>prix</code> est une liste telle que <code>prix[n]</code> est le prix de vente d'une planche de longueur <code>n</code> (l'élément d'indice 0 n'est jamais utilisé) :</p>
+  <p><b>Sujet :</b> baccalauréat 2026, Antilles-Guyane, jour 2 (26-NSIJ2AG1), exercice 3, partie A (questions 1 à 6), pages 7 à 9 de la version de l'AEIF. <a href="https://aeif.fr/wp-content/uploads/2026/06/Antilles-Guyane_juin_2026_sujet_2.pdf">Sujet (version de l'AEIF)</a>. Les parties B et C (récursivité, programmation dynamique) sont dans le PDF : elles relèvent d'un autre chapitre.</p>
+  <p><i>Exercice 3 (Tableaux, dictionnaires, récursivité et programmation dynamique - 8 points)</i></p>
+  <p>Une scierie possède un stock de planches. Chacune des planches du stock a une longueur entière (en mètre) comprise entre 1 m et 10 m et un prix entier (en euro) qui dépend de cette longueur. Le propriétaire de la scierie souhaite estimer la valeur marchande de son stock.</p>
+  <p>On utilise dans tout le problème la variable globale <code>prix</code> du type <code>list</code> telle que pour tout entier <code>n</code> compris entre 1 et 10, <code>prix[n]</code> est le prix de vente en euro d'une planche de longueur <code>n</code> (en mètre). On suppose ici que la liste <code>prix</code> est :</p>
   <pre class="td-code">
 prix = [0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30]</pre>
-  <p>Le dictionnaire <code>effectif</code> associe à chaque longueur de planche présente dans le stock son effectif, c'est-à-dire le nombre de planches de cette longueur. Par exemple, s'il y a 3 planches de 2 m, <code>effectif[2]</code> vaut 3 ; s'il n'y a aucune planche de 3 m, <code>effectif</code> n'a pas de clé 3.</p>
+  <p>On remarque que l'élément d'indice 0 de <code>prix</code> est fixé à 0 mais ne sera jamais utilisé car une planche ne peut mesurer 0 m.</p>
+  <p><b>Partie A</b></p>
+  <p>Pour gérer son stock, la scierie utilise un dictionnaire <code>effectif</code> qui associe à chaque longueur de planche présente dans le stock son effectif, c'est-à-dire le nombre de planches de cette longueur dans le stock : s'il y a 3 planches de 2 m dans le stock alors <code>effectif[2]</code> vaut 3 ; s'il n'y a aucune planche de 3 m dans le stock alors <code>effectif</code> n'a pas de clé égale à 3.</p>
 
   <section class="td-q" data-type="courte" id="q9" data-comparer="code" data-reponse="effectif = {1: 3, 2: 4, 4: 1}|effectif = {1: 3, 4: 1, 2: 4}|effectif = {2: 4, 1: 3, 4: 1}|effectif = {2: 4, 4: 1, 1: 3}|effectif = {4: 1, 1: 3, 2: 4}|effectif = {4: 1, 2: 4, 1: 3}|{1: 3, 2: 4, 4: 1}|{1: 3, 4: 1, 2: 4}|{2: 4, 1: 3, 4: 1}|{2: 4, 4: 1, 1: 3}|{4: 1, 1: 3, 2: 4}|{4: 1, 2: 4, 1: 3}" data-etiquette="L'instruction :">
-    <p class="td-consigne">[1] Le stock contient trois planches de 1 m, quatre planches de 2 m et une planche de 4 m. Donne une instruction Python qui déclare et initialise <code>effectif</code> pour ce stock.</p>
+    <p class="td-consigne"><b>1.</b> Donner une instruction Python qui permet de déclarer et d'initialiser le dictionnaire <code>effectif</code> qui correspond à un stock constitué de trois planches de 1 m, de quatre planches de 2 m et d'une planche de 4 m.</p>
     <p class="td-retour" data-si="effectif = {1: 3, 2: 4, 3: 0, 4: 1}|{1: 3, 2: 4, 3: 0, 4: 1}">Une longueur absente du stock n'est pas une clé du dictionnaire : pas de <code>3: 0</code>.</p>
     <p class="td-retour" data-si="effectif = {3: 1, 4: 2, 1: 4}|{3: 1, 4: 2, 1: 4}">Les clés sont les <b>longueurs</b>, les valeurs les nombres de planches.</p>
     <p class="td-aide">Clé : la longueur. Valeur : le nombre de planches de cette longueur.</p>
@@ -66,22 +68,25 @@ prix = [0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30]</pre>
   </section>
 
   <section class="td-q" data-type="courte" id="q10" data-comparer="code" data-reponse="prix[10] * effectif[10]|effectif[10] * prix[10]|30 * effectif[10]|effectif[10] * 30" data-etiquette="L'expression :">
-    <p class="td-consigne">[2] Donne une expression Python qui calcule la valeur totale, en euros, des planches de 10 m d'un stock qui en contient au moins une. Utilise la liste <code>prix</code>.</p>
+    <p class="td-consigne"><b>2.</b> Donner une expression en Python qui calcule la valeur totale en euro de l'ensemble des planches de 10 m d'un stock représenté par le dictionnaire <code>effectif</code> contenant au moins une planche de 10 m. On rappelle que la variable <code>prix</code> contient l'ensemble des prix de vente en euro des planches.</p>
     <p class="td-retour" data-si="prix[10]|effectif[10]">Il faut le prix d'une planche <b>multiplié</b> par le nombre de planches de 10 m.</p>
     <p class="td-aide">Le prix d'une planche de 10 m est <code>prix[10]</code> ; le nombre de ces planches est <code>effectif[10]</code>.</p>
     <div class="td-correction"><p><code>prix[10] * effectif[10]</code> : un indice de liste (<code>prix[10]</code>) et une clé de dictionnaire (<code>effectif[10]</code>) s'écrivent de la même façon, mais ne sont pas la même chose.</p></div>
   </section>
 
   <section class="td-q" data-type="courte" id="q11" data-comparer="code" data-reponse="5 in effectif|5 in effectif.keys()|(5 in effectif)" data-etiquette="L'expression :">
-    <p class="td-consigne">[3] Donne une expression Python qui vaut <code>True</code> si le stock contient des planches de 5 m, et <code>False</code> sinon.</p>
+    <p class="td-consigne"><b>3.</b> Donner une expression en Python qui vaut <code>True</code> si le stock représenté par le dictionnaire <code>effectif</code> contient des planches de 5 m et <code>False</code> sinon.</p>
     <p class="td-retour" data-si="effectif[5] &gt; 0|effectif[5] != 0|effectif[5] &gt;= 1">S'il n'y a pas de planche de 5 m, la clé 5 n'existe pas : <code>effectif[5]</code> provoque une erreur <code>KeyError</code>.</p>
     <p class="td-retour" data-si="5 in prix">La liste <code>prix</code> donne les prix de toutes les longueurs : elle ne dit rien du stock.</p>
     <p class="td-aide">Une longueur est en stock si, et seulement si, elle est une clé du dictionnaire.</p>
     <div class="td-correction"><p><code>5 in effectif</code> teste si 5 est une <b>clé</b> du dictionnaire.</p></div>
   </section>
 
+  <p>On souhaite disposer d'une fonction <code>valeur_stock</code> en Python qui prend en paramètre le dictionnaire <code>effectif</code> et qui renvoie la valeur, en euro, du stock représenté par <code>effectif</code> si l'on vend toutes les planches stockées dans la scierie selon les prix de la variable globale <code>prix</code>.</p>
+
   <section class="td-q" data-type="trous" id="q12">
-    <p class="td-consigne">[4] Recopie et complète les lignes 2, 3 et 4 de la fonction <code>valeur_stock</code>, qui renvoie la valeur en euros du stock si toutes ses planches sont vendues au prix de la liste <code>prix</code>.</p>
+    <p class="td-consigne"><b>4.</b> Recopier et compléter les lignes 2, 3 et 4 du code de la fonction <code>valeur_stock</code> ci-après.</p>
+    <p><b>Pour répondre ici :</b> les deux dernières lignes, ajoutées pour le TD, exécutent la fonction.</p>
     <pre class="td-code">
 def valeur_stock(effectif):
     valeur_totale = [[0]]
@@ -106,9 +111,18 @@ def valeur_stock(effectif):
     </div>
   </section>
 
+  <p>Un camion apporte de nouvelles planches à la scierie.</p>
+
   <section class="td-q" data-type="code" id="q13" data-fichier="camion.py" data-obligatoire>
-    <p class="td-consigne">[5] Un camion livre de nouvelles planches, décrites par le dictionnaire <code>autre_effectif</code>. Écris la fonction <code>mise_a_jour(effectif, autre_effectif)</code>, qui met à jour le dictionnaire <code>effectif</code> avec le stock du camion.</p>
-    <p>Exemple : si, avant l'appel, <code>effectif = {1: 3, 5: 5}</code> et <code>autre_effectif = {1: 2, 2: 2}</code>, alors après l'appel <code>mise_a_jour(effectif, autre_effectif)</code>, l'expression <code>effectif == {1: 5, 2: 2, 5: 5}</code> vaut <code>True</code>.</p>
+    <p class="td-consigne"><b>5.</b> Écrire une fonction <code>mise_a_jour</code> qui prend en paramètre l'effectif du stock déjà présent dans la scierie nommé <code>effectif</code> et l'effectif du stock contenu dans le camion nommé <code>autre_effectif</code> et qui met à jour le dictionnaire <code>effectif</code>.</p>
+    <p>Exemple :</p>
+    <pre class="td-sortie-exemple">
+effectif = {1: 3, 5: 5}
+# le camion apporte deux planches de longueur 1
+# et deux planches de longueur 2 :
+autre_effectif = {1: 2, 2: 2}
+mise_a_jour(effectif, autre_effectif)
+# L'expression effectif == {1: 5, 2: 2, 5: 5} vaut alors True.</pre>
     <pre class="td-depart">
 def mise_a_jour(effectif, autre_effectif):
     </pre>
@@ -137,9 +151,19 @@ def mise_a_jour(effectif, autre_effectif):
     </div>
   </section>
 
+  <p>Un client achète une planche et on a déjà vérifié qu'il y avait bien une planche de cette longueur dans le stock de la scierie.</p>
+
   <section class="td-q" data-type="code" id="q14" data-fichier="vente.py" data-obligatoire>
-    <p class="td-consigne">[6] Un client achète une planche dont la longueur est présente dans le stock. Écris la fonction <code>vendre(effectif, longueur)</code>, qui modifie <code>effectif</code> en conséquence. Si le stock de cette longueur devient nul, la clé doit être supprimée (tu peux utiliser <code>del</code>).</p>
-    <p>Exemple : si, avant l'appel, <code>effectif = {1: 3, 5: 1}</code>, alors après <code>vendre(effectif, 1)</code>, <code>effectif == {1: 2, 5: 1}</code> vaut <code>True</code> ; puis après <code>vendre(effectif, 5)</code>, <code>effectif == {1: 2}</code> vaut <code>True</code>.</p>
+    <p class="td-consigne"><b>6.</b> Écrire une fonction <code>vendre</code> qui prend en paramètre l'effectif du stock nommé <code>effectif</code> et une longueur de planche nommée <code>longueur</code> et qui modifie le dictionnaire <code>effectif</code> en conséquence. Si le stock de planches de cette longueur devient nul, l'association devra être supprimée du dictionnaire <code>effectif</code>. On pourra utiliser <code>del d[c]</code> qui supprime la clé <code>c</code> du dictionnaire <code>d</code>.</p>
+    <p>Exemple :</p>
+    <pre class="td-sortie-exemple">
+effectif = {1: 3, 5: 1}
+longueur = 1
+vendre(effectif, longueur)
+# L'expression effectif == {1: 2, 5: 1} vaut alors True
+longueur = 5
+vendre(effectif, longueur)
+# L'expression effectif == {1: 2} vaut alors True</pre>
     <pre class="td-depart">
 def vendre(effectif, longueur):
     </pre>

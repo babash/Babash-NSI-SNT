@@ -43,8 +43,7 @@
         <li>utiliser une file pour calculer la distance (en nombre d'arêtes) depuis un sommet.</li>
       </ul>
       <p class="td-duree">50 minutes · 1 exercice de bac (6 points, partie B) · 9 questions · seul·e ou en binôme</p>
-      <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
-      <p>Les énoncés reprennent fidèlement les sujets officiels. Quand le sujet demande un dessin ou une phrase, la page te pose une question courte ou un choix pour vérifier ta réponse écrite.</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés. Ce qui est propre au TD (« Pour répondre ici », coups de pouce) est écrit à part.</p>
       <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. <a href="index.html">un groupe d'amis</a> ; 2. visiter toutes les villes (ici).</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
@@ -52,8 +51,10 @@
 
   <h2 class="td-partie">Exercice 2 · Visiter toutes les villes (6 points)</h2>
   <p><b>Sujet :</b> baccalauréat 2024, Polynésie, jour 2 (24-NSIJ2PO1), exercice 1, partie B (questions 3 à 11), pages 2 à 5. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-polynesie-jour-2.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Polynesie_juin_2024_2.pdf">version de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_polynesie_2024_2.pdf">corrigé de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/24nsij2po1.pdf">second corrigé de l'AEIF</a>.</p>
-  <p><i>Cet exercice porte sur les structures de données file et pile, sur les graphes et sur les algorithmes de parcours.</i> La partie A (questions 1 et 2 : plus court chemin dans le graphe pondéré des distances) est dans le PDF d'origine : elle n'est pas reprise ici.</p>
-  <p>Une agence de voyages veut proposer un itinéraire qui permet de visiter toutes les villes. On utilise le graphe <code>G</code> ci-dessous, non pondéré. On l'implémente par listes d'adjacence, avec un dictionnaire : les clés sont les sommets (de type <code>str</code>), la valeur associée à une clé est la liste de ses voisins. <b>Dans ce TD</b>, on écrit les voisins dans l'ordre alphabétique (le sujet ne fixe pas l'ordre ; il en faut un pour corriger les parcours).</p>
+  <p><i>Cet exercice porte sur les structures de données FILE et PILE, les graphes et les algorithmes de parcours.</i></p>
+  <p>La partie A (questions 1 et 2 : une agence de voyages organise des excursions ; plus court chemin dans le graphe pondéré des distances) est dans le PDF d'origine : elle n'est pas reprise ici.</p>
+  <p><b>Partie B</b></p>
+  <p>L'agence souhaite proposer un itinéraire permettant de visiter toutes les villes. On appelle G le graphe non pondéré ci-dessous.</p>
 <svg viewBox="0 0 340 250" width="340" height="250" role="img" aria-label="Graphe G, non pondéré, de 9 villes. Ar est relié à Ax, Mp, Mr et Ni ; Av à Ax, Mr et Ni ; Ax à Ar, Av, Di, Mr, Nc et To ; Di à Ax et Nc ; Mp à Ar et Ni ; Mr à Ar, Av, Ax, Nc et To ; Nc à Ax, Di, Mr et To ; Ni à Ar, Av et Mp ; To à Ax, Mr et Nc." style="display:block;max-width:100%;height:auto;margin:.4rem auto;color:var(--td-encre)">
 <g fill="none" stroke="currentColor" stroke-width="1.8">
 <line x1="237" y1="228" x2="318" y2="107"/>
@@ -96,9 +97,16 @@
 <text x="244" y="133">Di</text>
 </g></svg>
   <p><i>Figure 2 : le graphe G (redessiné ; les sommets et les arêtes sont ceux du sujet).</i></p>
+  <p>On choisit d'implémenter un graphe par listes d'adjacence, à l'aide d'un dictionnaire, en langage Python, dont :</p>
+  <ul>
+    <li>les clés sont les sommets du graphe ;</li>
+    <li>la valeur associée à une clé est la liste des voisins de ce sommet clé.</li>
+  </ul>
+  <p>Les sommets sont de type <code>str</code>.</p>
 
   <section class="td-q" data-type="trous" id="q11">
-    <p class="td-consigne">Écris le dictionnaire représentant le graphe de la figure 2, stocké dans la variable <code>G</code>. Écris chaque couple clé : valeur sur une nouvelle ligne.</p>
+    <p class="td-consigne"><b>3.</b> Donner l'implémentation, en langage Python, du graphe de la figure 2. Le dictionnaire obtenu sera stocké dans une variable nommée <code>G</code>. Afin de faciliter la notation manuscrite ainsi que la lisibilité, écrire chaque couple clé/valeur sur une nouvelle ligne.</p>
+    <p><b>Pour répondre ici :</b> le sujet ne fixe pas l'ordre des voisins, mais il en faut un pour corriger les parcours. Dans ce TD, on les écrit dans l'ordre alphabétique.</p>
     <pre class="td-code">
 G = {'Ar': [[ ['Ax', 'Mp', 'Mr', 'Ni'] ]],
      'Av': [[ ['Ax', 'Mr', 'Ni'] ]],
@@ -116,11 +124,10 @@ G = {'Ar': [[ ['Ax', 'Mp', 'Mr', 'Ni'] ]],
     </div>
   </section>
 
-  <p>On considère une <b>file</b>, avec : <code>creerFile()</code> qui renvoie une file vide ; <code>estVide(F)</code> qui renvoie <code>True</code> si la file <code>F</code> est vide, <code>False</code> sinon ; <code>enfiler(F, e)</code> qui ajoute <code>e</code> dans la file ; <code>defiler(F)</code> qui renvoie l'élément en tête de la file et le retire.</p>
-  <p>On considère une <b>pile</b>, avec : <code>creerPile()</code> ; <code>estVide(P)</code> ; <code>empiler(P, e)</code> qui ajoute <code>e</code> au sommet de la pile ; <code>depiler(P)</code> qui renvoie le sommet de la pile et le retire.</p>
+  <p>On considère une file.</p>
 
   <section class="td-q" data-type="qcu" id="q12">
-    <p class="td-consigne">Donne la signification des lettres des acronymes LIFO et FIFO.</p>
+    <p class="td-consigne"><b>4.</b> Indiquer la signification des lettres dans les acronymes LIFO et FIFO.</p>
     <ul class="td-options">
       <li data-juste>LIFO : <i>Last In, First Out</i> (dernier entré, premier sorti) ; FIFO : <i>First In, First Out</i> (premier entré, premier sorti).</li>
       <li data-retour="Les deux sont inversés : dans LIFO, la première lettre L vient de Last.">LIFO : <i>First In, Last Out</i> ; FIFO : <i>Last In, First Out</i>.</li>
@@ -132,7 +139,7 @@ G = {'Ar': [[ ['Ax', 'Mp', 'Mr', 'Ni'] ]],
   </section>
 
   <section class="td-q" data-type="qcu" id="q13">
-    <p class="td-consigne">Donne l'acronyme désignant la structure de file.</p>
+    <p class="td-consigne"><b>5.</b> Indiquer l'acronyme utilisé pour désigner la structure de file.</p>
     <ul class="td-options">
       <li data-juste>FIFO</li>
       <li data-retour="LIFO, c'est la pile : le dernier posé sur la pile est le premier repris.">LIFO</li>
@@ -142,7 +149,14 @@ G = {'Ar': [[ ['Ax', 'Mp', 'Mr', 'Ni'] ]],
     </div>
   </section>
 
-  <p>On donne la fonction <code>parcours</code> :</p>
+  <p>Voici, en langage Python, les opérations pouvant être effectuées sur une telle file :</p>
+  <ul>
+    <li><code>creerFile()</code> : renvoie une file vide ;</li>
+    <li><code>estVide(F)</code> : renvoie <code>True</code> si la file <code>F</code> est vide et <code>False</code> sinon ;</li>
+    <li><code>enfiler(F, e)</code> : ajoute l'élément <code>e</code> dans la file <code>F</code> ;</li>
+    <li><code>defiler(F)</code> : renvoie l'élément à la tête de la file <code>F</code> en le retirant de la file <code>F</code>.</li>
+  </ul>
+  <p>On donne la fonction <code>parcours</code> ci-dessous. Cette fonction prend en paramètres un dictionnaire <code>graphe</code> représentant un graphe sous la forme de listes d'adjacence, et une chaîne de caractères <code>sommet</code> représentant un sommet du graphe.</p>
   <pre class="td-code">
 def parcours(graphe, sommet):
     f = creerFile()
@@ -157,7 +171,7 @@ def parcours(graphe, sommet):
     return visite</pre>
 
   <section class="td-q" data-type="courte" id="q14" data-comparer="code" data-reponse="['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']|Av, Ax, Mr, Ni, Ar, Di, Nc, To, Mp|Av Ax Mr Ni Ar Di Nc To Mp" data-etiquette="La liste renvoyée :">
-    <p class="td-consigne">Donne le résultat de l'appel <code>parcours(G, 'Av')</code>.</p>
+    <p class="td-consigne"><b>6.</b> Donner le résultat renvoyé par l'appel <code>parcours(G, 'Av')</code>.</p>
     <p class="td-retour" data-si="['Av', 'Mr', 'Ni', 'Ax', 'Ar', 'To', 'Nc', 'Mp', 'Di']">C'est la réponse du corrigé de l'AEIF, qui écrit les voisins dans un autre ordre. Ici, les voisins sont dans l'ordre alphabétique : ceux de Av sont Ax, Mr, Ni.</p>
     <p class="td-retour" data-si="['Av', 'Ax', 'Ar', 'Mp', 'Ni', 'Mr', 'Nc', 'Di', 'To']">Tu as suivi un chemin le plus loin possible (profondeur). Avec une file, on visite d'abord <b>tous</b> les voisins de Av, puis les voisins de ces voisins.</p>
     <p class="td-aide">Écris l'état de la file et de la liste <code>visite</code> à chaque tour. Au départ : file = [Av], visite = [Av].</p>
@@ -168,7 +182,7 @@ def parcours(graphe, sommet):
   </section>
 
   <section class="td-q" data-type="qcu" id="q15">
-    <p class="td-consigne">Indique si la fonction <code>parcours</code> réalise un parcours en largeur ou en profondeur.</p>
+    <p class="td-consigne"><b>7.</b> Recopier, parmi les deux propositions ci-dessous, celle qui correspond au type de parcours de graphe réalisé par la fonction <code>parcours</code> :</p>
     <ul class="td-options">
       <li data-juste>Proposition A : parcours en largeur.</li>
       <li data-retour="Le parcours en profondeur utilise une pile (ou la récursivité). Ici, c'est une file : on traite les sommets dans l'ordre où on les a découverts.">Proposition B : parcours en profondeur.</li>
@@ -178,10 +192,10 @@ def parcours(graphe, sommet):
     </div>
   </section>
 
-  <p>La distance entre deux sommets est le nombre minimal d'arêtes d'un chemin qui les relie. Par exemple, la distance entre Mp et Nc vaut 3.</p>
+  <p>Dans la suite de l'exercice, la distance entre deux sommets désignera le nombre d'arêtes séparant ces deux sommets. Ainsi définie, la distance entre les sommets Mp et Nc du graphe de la figure 2 est 3.</p>
 
   <section class="td-q" data-type="code" id="q16" data-fichier="distance.py" data-obligatoire>
-    <p class="td-consigne">Modifie la fonction <code>parcours</code> pour écrire une fonction <code>distance(graphe, sommet)</code> : <code>graphe</code> est un dictionnaire en listes d'adjacence, <code>sommet</code> une chaîne de caractères. Elle renvoie un dictionnaire dont les clés sont les sommets du graphe, et la valeur de chaque clé la distance entre ce sommet et <code>sommet</code>.</p>
+    <p class="td-consigne"><b>8.</b> En modifiant la fonction <code>parcours</code>, écrire une fonction <code>distance</code> ayant pour paramètres <code>graphe</code>, un dictionnaire représentant un graphe sous la forme de listes d'adjacence, et une chaîne de caractères <code>sommet</code> représentant un sommet du graphe. Cette fonction renvoie un dictionnaire tel que : les clés sont les sommets du graphe ; la valeur associée à une clé est la distance entre ce sommet clé et le sommet d'origine <code>sommet</code>.</p>
     <pre class="td-depart">
 # La file est fournie (ne la modifie pas).
 def creerFile(): return []
@@ -229,29 +243,41 @@ def distance(graphe, sommet):
   </section>
 
   <section class="td-q" data-type="courte" id="q17" data-comparer="code" data-reponse="{'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}|{'Ar': 2, 'Av': 0, 'Ax': 1, 'Di': 2, 'Mp': 2, 'Mr': 1, 'Nc': 2, 'Ni': 1, 'To': 2}" data-etiquette="Le dictionnaire renvoyé :">
-    <p class="td-consigne">Donne le résultat de l'appel <code>distance(G, 'Av')</code>.</p>
-    <p class="td-aide">Les sommets visités par <code>parcours(G, 'Av')</code> à la question 14 arrivent par distance croissante.</p>
+    <p class="td-consigne"><b>9.</b> Donner le résultat renvoyé par l'appel <code>distance(G, 'Av')</code>.</p>
+    <p class="td-aide">Les sommets visités par <code>parcours(G, 'Av')</code> à la question 6 arrivent par distance croissante.</p>
     <p class="td-aide">Av est à distance 0 ; ses voisins à distance 1 ; tous les autres sommets sont voisins d'un voisin de Av.</p>
     <div class="td-correction">
       <p><code>{'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}</code>. Les distances ne dépendent pas de l'ordre des voisins (seul l'ordre des clés en dépend).</p>
     </div>
   </section>
 
-  <p>On considère l'algorithme suivant, écrit en pseudo-code :</p>
+  <p>On considère une pile.</p>
+  <p>Voici, en langage Python, les opérations pouvant être effectuées sur une telle pile :</p>
+  <ul>
+    <li><code>creerPile()</code> : renvoie une pile vide ;</li>
+    <li><code>estVide(P)</code> : renvoie <code>True</code> si la pile <code>P</code> est vide et <code>False</code> sinon ;</li>
+    <li><code>empiler(P, e)</code> : ajoute l'élément <code>e</code> au sommet de la pile <code>P</code> ;</li>
+    <li><code>depiler(P)</code> : renvoie le sommet de la pile <code>P</code> en le retirant de la pile <code>P</code>.</li>
+  </ul>
+  <p>On donne, ci-dessous, le pseudo-code d'un algorithme de parcours d'un graphe G à partir d'un sommet s :</p>
   <pre class="td-sortie-exemple">
-créer une pile p
-empiler s dans p
-créer une liste visite vide
-tant que p n'est pas vide
-    x = dépiler p
-    si x n'est pas dans la liste visite
-        ajouter x à la liste visite
-        pour chaque voisin v de x
-            empiler v dans p
-renvoyer visite</pre>
+1  créer une pile p
+2  empiler s dans p
+3  créer une liste visite contenant s
+4  tant que p n'est pas vide
+5      x = depiler p
+6      si x n'est pas dans la liste visite
+7          ajouter x à la liste visite
+8          pour chaque voisin v de x
+9              empiler v dans p
+10         fin pour
+11     fin si
+12 fin tant que
+13 renvoyer visite</pre>
+  <p><b>Remarque sur le sujet :</b> sa ligne 3 met déjà <code>s</code> dans <code>visite</code>. Au premier tour, on dépile <code>s</code>, qui est déjà dans la liste : ses voisins ne sont jamais empilés et l'algorithme renvoie seulement <code>[s]</code>. Pour obtenir un parcours, il faut lire « créer une liste visite <b>vide</b> » : c'est ce que font la correction et les tests de ce TD.</p>
 
   <section class="td-q" data-type="code" id="q18" data-fichier="parcours2.py" data-obligatoire>
-    <p class="td-consigne">Traduis cet algorithme dans le corps d'une fonction Python <code>parcours2(G, s)</code>, qui prend en paramètres un dictionnaire en listes d'adjacence <code>G</code> et une chaîne de caractères <code>s</code> représentant un sommet.</p>
+    <p class="td-consigne"><b>10.</b> Traduire, dans le corps d'une fonction Python nommée <code>parcours2</code>, l'algorithme en pseudo-code donné précédemment. Cette fonction prendra pour paramètres <code>G</code>, un dictionnaire représentant un graphe sous la forme de listes d'adjacence, et une chaîne de caractères <code>s</code> représentant un sommet du graphe.</p>
     <pre class="td-depart">
 # La pile est fournie (ne la modifie pas).
 def creerPile(): return []
@@ -298,9 +324,9 @@ def parcours2(G, s):
   </section>
 
   <section class="td-q" data-type="courte" id="q19" data-comparer="code" data-reponse="['Av', 'Ni', 'Mp', 'Ar', 'Mr', 'To', 'Nc', 'Di', 'Ax']|Av, Ni, Mp, Ar, Mr, To, Nc, Di, Ax|Av Ni Mp Ar Mr To Nc Di Ax" data-etiquette="La liste renvoyée :">
-    <p class="td-consigne">Donne un résultat possible renvoyé par l'appel <code>parcours2(G, 'Av')</code>.</p>
+    <p class="td-consigne"><b>11.</b> Donner un résultat possible renvoyé par l'appel <code>parcours2(G, 'Av')</code>.</p>
     <p class="td-retour" data-si="['Av', 'Ax', 'Ar', 'Mp', 'Ni', 'Mr', 'Nc', 'Di', 'To']">Avec une pile, le <b>dernier</b> empilé sort en premier : après Av, on empile Ax, Mr, Ni ; c'est Ni qui est dépilé d'abord.</p>
-    <p class="td-retour" data-si="['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']">C'est le parcours en largeur de la question 14. Avec une pile, on part loin avant de revenir.</p>
+    <p class="td-retour" data-si="['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']">C'est le parcours en largeur de la question 6. Avec une pile, on part loin avant de revenir.</p>
     <p class="td-aide">Écris la pile à chaque tour, le sommet à droite. Après le premier tour : pile = [Ax, Mr, Ni], visite = [Av].</p>
     <p class="td-aide">On dépile Ni, on empile ses voisins Ar, Av, Mp : pile = [Ax, Mr, Ar, Av, Mp]. On dépile Mp…</p>
     <div class="td-correction">
