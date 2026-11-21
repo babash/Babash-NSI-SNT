@@ -181,7 +181,7 @@ def _barge(L=210):
     s.append(trait(f"M{m - 32} {y}V{y - 20}H{m + 32}V{y}", 1.4, BLANC))
     s.append(trait("".join(f"M{m - 27 + k * 9} {y - 15}h5v6h-5z" for k in range(7)), .8))
     s.append(trait(f"M{m - 15} {y - 20}V{y - 33}H{m + 15}V{y - 20}M{m - 11} {y - 28}H{m + 11}", 1.4, BLANC))
-    s.append(trait(f"M{m} {y - 33}V{y - 45}M{m - 7} {y - 45}h11", 1) + f'<circle cx="{m + 6}" cy="{y - 45}" r="1.6" fill="{EN}"/>')
+    s.append(trait(f"M{m} {y - 33}V{y - 44}M{m - 5} {y - 40}h10", 1))                          # le mât et sa vergue
     s.append(trait(f"M{x + 18} {y - 5}H{m - 32}M{m + 32} {y - 5}H{x + L - 18}", .6, extra='stroke-dasharray="1.5 2"'))
     return "".join(s)
 

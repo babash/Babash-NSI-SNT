@@ -569,8 +569,11 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
 @media print {
   :root, :root[data-theme="dark"], :root:not([data-theme="light"]) {
     --td-fond: #fff; --td-panneau: #fff; --td-panneau-2: #fff; --td-encre: #121016; --td-encre-douce: #45414D;
-    --td-trait: #8C8796; --td-trait-fort: #121016; --td-code-fond: #fff; --td-code-encre: #121016; --td-code-num: #5E5E5E;
-    --td-bande: #EBEBEB; --td-bande-2: #E2E2E2; --td-g0: #0093B0; --td-g1: #D4006E; --td-g2: #A88400; --td-g3: #4A8A00;
+    --td-trait: #8C8796; --td-trait-fort: #121016; --td-code-fond: #fff; --td-code-encre: #121016; --td-code-num: #45414D;
+    /* sur papier, les filets d'indentation sont foncés (7:1 au moins) : le tracé (plein, tirets, points, fin) les distingue */
+    --td-bande: #EBEBEB; --td-bande-2: #E2E2E2; --td-g0: #005266; --td-g1: #8C004F; --td-g2: #5C4600; --td-g3: #2E5500;
+    /* tout ce que l'élève remplit : trait noir plein, 0,9 pt (jamais de couleur claire, jamais de pointillé clair) */
+    --td-saisie: #121016; --td-saisie-ep: 1.2px;
     --td-tk-mot: #9C0057; --td-tk-fn: #00566E; --td-tk-ch: #245400; --td-tk-nb: #704400; --td-tk-com: #525252; --td-tk-op: #121016;
     --td-console-fond: #fff; --td-console-trait: #121016; --td-erreur: #A1001C; --td-accent: #121016;
     --td-marg-img: url("td/margouillat.svg");
@@ -593,7 +596,7 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   .td-bandeau.td-controle { height: 20mm; }
   .td-entete { padding: 0; }
   .td-nom { display: flex; gap: 6mm; margin: 0 0 2mm; font-size: 10.5pt; font-weight: 700; }
-  .td-nom span { flex: 1; border-bottom: 1px dotted #121016; padding-bottom: .5mm; }
+  .td-nom span { flex: 1; border-bottom: var(--td-saisie-ep) solid var(--td-saisie); padding-bottom: .5mm; }
   .td-nom span:last-child { flex: 0 0 52mm; }
   .td-objectifs { margin: 0 0 2mm; padding: 1.4mm 3mm 1.2mm; box-shadow: .8mm .8mm 0 var(--td-neon-1); break-inside: avoid; }
   .td-objectifs p, .td-criteres { margin: .4mm 0; }
@@ -618,20 +621,23 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   .td-num { width: 2.4em; padding-right: .55em; margin-right: .5em; }
 
   /* les champs deviennent des lignes à remplir au stylo (vidés par le moteur avant l'impression) */
-  .td-champ, .td-trou { color: #121016 !important; background: #fff !important; border: 0 !important; border-bottom: 1px dotted #121016 !important; border-radius: 0; }
-  .td-trou { border: 1px solid #121016 !important; }
+  .td-champ, .td-trou { color: #121016 !important; background: #fff !important; border: 0 !important; border-bottom: var(--td-saisie-ep) solid var(--td-saisie) !important; border-radius: 0; }
+  /* case à compléter dans le code : cadre noir net, assez large pour écrire à la main */
+  .td-trou { border: var(--td-saisie-ep) solid var(--td-saisie) !important; min-width: 16mm; height: 6mm; margin: .3mm .6mm; vertical-align: middle; }
+  .td pre.td-code-trous .td-l { min-height: 7mm; line-height: 7mm; }
+  .td pre.td-code-trous .td-ind, .td pre.td-code-trous .td-num { height: 7mm; vertical-align: top; }
   input.td-champ { min-height: 6mm; padding: 0 1mm; }
   .td-ligne-champ { margin: .6mm 0; }
   textarea.td-sortie {
     resize: none; border: 0 !important; padding: 0 1mm; line-height: 7mm; min-height: 14mm; overflow: hidden;
-    background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1px), #6B6773 calc(7mm - 1px) 7mm) !important;
+    background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1.2px), var(--td-saisie) calc(7mm - 1.2px) 7mm) !important;
   }
   .td-bloc-champ label { margin-bottom: 0; }
   .td-choix { display: grid; grid-template-columns: 1fr 1fr; gap: .2mm 6mm; }
   .td-choix:has(pre) { grid-template-columns: 1fr 1fr; }
   .td-choix legend, .td-choix .td-indic { grid-column: 1 / -1; }
   .td-opt { border: 0; padding: .2mm 0; margin: 0; box-shadow: none !important; }
-  .td-opt input { appearance: none; -webkit-appearance: none; width: 3.6mm; height: 3.6mm; border: 1.3px solid #121016; border-radius: 0; background: #fff; margin-top: .6mm; }
+  .td-opt input { appearance: none; -webkit-appearance: none; width: 3.8mm; height: 3.8mm; border: 1.4px solid var(--td-saisie); border-radius: 0; background: #fff; margin-top: .6mm; }
   .td-opt input[type="radio"] { border-radius: 50%; }
   .td-choix-lignes { display: block; }
   .td-choix-lignes legend { font-weight: 400; }
@@ -640,8 +646,8 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   .td-ordre-ligne { border: 0; border-radius: 0; background: #fff; margin: 0; padding: .1mm 0; }
   .td-ordre-num { width: 4.4em; text-align: left; white-space: nowrap; font-size: 10pt; color: #121016; }
   .td-ordre-num::after { content: " → n° ……"; }
-  .td-editeur { border: 1px solid #121016; border-left-width: 3px; min-height: 30mm;
-    background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1px), #B9B5C0 calc(7mm - 1px) 7mm) !important; }
+  .td-editeur { border: var(--td-saisie-ep) solid var(--td-saisie); border-left-width: 3px; min-height: 30mm;
+    background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1.2px), var(--td-saisie) calc(7mm - 1.2px) 7mm) !important; }
   .td-ed-texte, .td-ed-rendu, .td-gouttiere { visibility: hidden; }
   .td-memo { break-inside: avoid; border-width: 1.5px; margin: 3mm 0 2mm; padding: 1.6mm 3mm; box-shadow: .8mm .8mm 0 var(--td-neon-2); }
   .td-memo h2 { font-size: 13pt; }

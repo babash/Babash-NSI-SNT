@@ -3,14 +3,17 @@
 
 Usage (à la racine du dépôt) :
   python3 -I charte/nouveau-td.py DOSSIER --id IDENTIFIANT --titre "Titre" --niveau "1re NSI" \\
-      --chapitre "Programmer en Python" --bandeau 1 [--quiz URL] [--accroche "Une ligne"] [--controle] [--remplacer]
+      --chapitre "Programmer en Python" [--bandeau N] [--quiz URL] [--accroche "Une ligne"] [--controle] [--remplacer]
 
   DOSSIER      dossier du TD, créé s'il n'existe pas (ex. nsi1/fichiers/boucles-td1) ; le script y écrit index.html
   --id         identifiant unique et stable (minuscules, chiffres, tirets), ex. nsi1-boucles-td1
   --titre      le titre ; `for` entre accents graves devient du code
   --niveau     ex. « SNT », « 1re NSI », « Tle NSI »
   --chapitre   ex. « Programmer en Python »
-  --bandeau    1 : le cône et la baie · 2 : l'îlot et le lagon · 3 : la ville et la barge · 4 : le baobab
+  --bandeau    facultatif : force le paysage (1 : le cône et la baie · 2 : l'îlot et le lagon · 3 : la ville et la barge ·
+               4 : le baobab). Sans lui, les bandeaux TOURNENT : le nouveau TD prend le bandeau le moins utilisé
+               par les TD du dépôt (à égalité, l'ordre est tiré de l'identifiant) ; un TD qui existe déjà
+               (même identifiant) garde son bandeau. Aucune correspondance avec le chapitre.
   --quiz       adresse du cours-quiz du chapitre (QR code fabriqué ici, hors ligne) ; sans --quiz, pas de QR code
   --accroche   une ligne sous le titre (facultatif)
   --controle   bandeau de 20 mm et puce « Contrôle » (le margouillat va alors sur le mémo ou le pied)
@@ -80,6 +83,42 @@ def cachettes_prises(bandeau, sauf):
     return prises
 
 
+def pages_td(sauf):
+    """Les pages de TD du dépôt (hors modèle et hors la page visée) : (identifiant, bandeau)."""
+    for dossier, _, fichiers in os.walk(RACINE):
+        if "/.git" in dossier or "/node_modules" in dossier:
+            continue
+        for f in fichiers:
+            chemin = os.path.join(dossier, f)
+            if not f.endswith(".html") or os.path.abspath(chemin) == os.path.abspath(sauf):
+                continue
+            try:
+                t = open(chemin, encoding="utf-8").read()
+            except (OSError, UnicodeDecodeError):
+                continue
+            if "{{" in t:
+                continue
+            i, b = re.search(r'data-td="([^"]+)"', t), re.search(r'class="td-bandeau[^"]*" data-bandeau="([1-4])"', t)
+            if i and b:
+                yield i.group(1), int(b.group(1))
+
+
+def bandeau_suivant(ident, cible):
+    """Rotation équilibrée et stable : le bandeau le moins utilisé ; à égalité, l'ordre vient de l'identifiant."""
+    if os.path.exists(cible):
+        b = re.search(r'class="td-bandeau[^"]*" data-bandeau="([1-4])"', open(cible, encoding="utf-8").read())
+        if b:
+            return int(b.group(1))
+    compte = {n: 0 for n in (1, 2, 3, 4)}
+    for i, b in pages_td(cible):
+        if i == ident:
+            return b
+        compte[b] += 1
+    h = int(hashlib.sha256(ident.encode()).hexdigest(), 16)
+    ordre = [(h + k) % 4 + 1 for k in range(4)]
+    return min(ordre, key=lambda n: (compte[n], ordre.index(n)))
+
+
 def choisir_cachette(ident, bandeau, prises, forcee=None, controle=False):
     places = json.load(open(os.path.join(RACINE, "assets", "td", "places-margouillat.json"), encoding="utf-8"))
     # le bandeau de 20 mm (contrôle) n'a pas de cachette : le margouillat va sur le mémo ou le pied
@@ -109,7 +148,7 @@ def main():
     a.add_argument("--titre", required=True)
     a.add_argument("--niveau", required=True)
     a.add_argument("--chapitre", required=True)
-    a.add_argument("--bandeau", type=int, choices=(1, 2, 3, 4), required=True)
+    a.add_argument("--bandeau", type=int, choices=(1, 2, 3, 4))
     a.add_argument("--quiz")
     a.add_argument("--accroche")
     a.add_argument("--controle", action="store_true")
@@ -129,6 +168,9 @@ def main():
 
     assets = os.path.relpath(os.path.join(RACINE, "assets"), dossier).replace(os.sep, "/")
     chemin_depot = os.path.relpath(dossier, RACINE).replace(os.sep, "/")
+    force = bool(o.bandeau)
+    if not o.bandeau:
+        o.bandeau = bandeau_suivant(o.id, cible)
     nom, marg = choisir_cachette(o.id, o.bandeau, cachettes_prises(o.bandeau, cible), o.cachette, o.controle)
     titre_txt = o.titre.replace("`", "")
     qr = ""
@@ -163,7 +205,7 @@ def main():
     if reste:
         sys.exit(f"Modèle : champs non remplacés {reste}")
     open(cible, "w", encoding="utf-8").write(t)
-    print(f"{os.path.relpath(cible, RACINE)} : bandeau {o.bandeau} ({NOMS[o.bandeau]}), margouillat « {nom} », "
+    print(f"{os.path.relpath(cible, RACINE)} : bandeau {o.bandeau} ({NOMS[o.bandeau]}{', forcé' if force else ', à son tour'}), margouillat « {nom} », "
           + ("QR code du cours-quiz" if o.quiz else "sans QR code (pas de cours-quiz)"))
 
 

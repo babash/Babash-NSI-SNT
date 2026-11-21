@@ -13,7 +13,7 @@ Un TD est **une seule page HTML** : à l'écran, elle se corrige toute seule ; i
 ```
 python3 -I charte/nouveau-td.py nsi1/fichiers/boucles-td1 \
   --id nsi1-boucles-td1 --titre "Les boucles \`for\` et \`while\`" \
-  --niveau "1re NSI" --chapitre "Programmer en Python" --bandeau 1 \
+  --niveau "1re NSI" --chapitre "Programmer en Python" \
   --quiz "https://babash.github.io/QuizzNSI/revision.html?cours=conditions-boucles" \
   --accroche "Répéter des instructions"
 ```
@@ -23,7 +23,7 @@ python3 -I charte/nouveau-td.py nsi1/fichiers/boucles-td1 \
 | `--id` | identifiant **unique et stable** (minuscules, chiffres, tirets). Il sert au stockage sur l'appareil, au futur compte commun et à la cachette du margouillat. Ne le changez plus ensuite. |
 | `--titre` | le titre ; un mot entre accents graves devient du code (`` `while` ``). Court : il tient sur une ligne du bandeau (26 caractères environ, en capitales). |
 | `--niveau`, `--chapitre` | la ligne au-dessus du titre. Ensemble, **40 caractères au plus** (elle ne passe pas à la ligne sur papier). |
-| `--bandeau` | le paysage, choisi selon le chapitre (voir § 2). |
+| `--bandeau` | facultatif : force le paysage. Sans lui, le bandeau suivant de la rotation est attribué (voir § 2). |
 | `--quiz` | l'adresse du cours-quiz du chapitre : le QR code est calculé **hors ligne** (avec `assets/qrcode-generator.js`). **Sans `--quiz`, pas de QR code** : c'est le cas d'un chapitre sans cours-quiz. |
 | `--accroche` | une ligne sous le titre, facultative (25 caractères environ). |
 | `--controle` | variante de contrôle : bandeau de 20 mm, puce « Contrôle ». |
@@ -31,18 +31,18 @@ python3 -I charte/nouveau-td.py nsi1/fichiers/boucles-td1 \
 
 Le script écrit `index.html` dans le dossier, avec les bons chemins vers `assets/`, le lien « Code source sur GitHub » et le pied de page complet.
 
-## 2. Choisir le bandeau
+## 2. Le bandeau : il tourne
 
-Les quatre bandeaux tournent selon les chapitres (un chapitre garde le même bandeau pour tous ses TD) :
+**Aucune correspondance entre bandeau et chapitre** : les quatre bandeaux tournent. Sans `--bandeau`, `nouveau-td.py` donne au nouveau TD **le bandeau le moins utilisé** par les TD du dépôt ; à égalité, l'ordre est tiré de l'identifiant. La répartition reste donc équilibrée, et elle est **stable** : relancer le script pour un TD qui existe déjà (même identifiant) lui rend son bandeau. `--bandeau N` le force, si besoin.
 
-| N° | Paysage (aucun nom de lieu : les élèves devinent) | Chapitres conseillés |
+| N° | Paysage (aucun nom de lieu : les élèves devinent) | Fichiers |
 |---|---|---|
-| 1 | le cône vu de la baie, et son téléphérique de pirogues | programmer en Python : variables, conditions, boucles, fonctions |
-| 2 | l'îlot de sable blanc, et le feu rouge dans le lagon | données : représentation, tables, bases de données, SQL |
-| 3 | la ville, le mont et la barge-drone | réseaux, Internet, web, architecture, systèmes |
-| 4 | le baobab de plage, ses paraboles et ses lampions | algorithmes, structures (listes, piles, arbres, graphes) |
+| 1 | le cône vu de la baie, et son téléphérique de pirogues | `assets/td/bandeau-1.svg` |
+| 2 | l'îlot de sable blanc, et le feu rouge dans le lagon | `assets/td/bandeau-2.svg` |
+| 3 | la ville, le mont et la barge-drone | `assets/td/bandeau-3.svg` |
+| 4 | le baobab de plage, ses paraboles et ses lampions | `assets/td/bandeau-4.svg` |
 
-En SNT, on suit le thème : 1 (Python, photo numérique), 2 (données structurées, localisation), 3 (Internet, web, réseaux sociaux), 4 (objets connectés). Les fichiers : `assets/td/bandeau-N.svg` (28 mm), `bandeau-N-controle.svg` (20 mm) et leurs versions `-obscur`. Ils se refont avec `python3 -I charte/bandeaux-td.py`.
+Chaque bandeau a sa variante de 20 mm pour les contrôles (`bandeau-N-controle.svg`) et ses versions `-obscur` pour l'écran obscur. Ils se refont avec `python3 -I charte/bandeaux-td.py`.
 
 **Le margouillat** (vert, petite turbine au bout de la queue) se cache tout seul : dans le bandeau, sur le cadre du mémo ou sur le trait du pied de page, à une place tirée de l'identifiant ; le script évite une cachette déjà prise par un autre TD du même bandeau. Il n'entre jamais dans un exercice. Ne le supprimez pas.
 
@@ -85,7 +85,9 @@ python3 -m http.server 8000            # à la racine du dépôt, dans un autre 
 python3 -I charte/imprimer-td.py http://localhost:8000/nsi1/fichiers/boucles-td1/index.html nsi1/fichiers/boucles-td1/td.pdf
 ```
 
-`verifier-td.py` exécute chaque programme et compare (sorties, messages d'erreur mot pour mot, corrections). `imprimer-td.py` imprime **la feuille vierge** (il remplit tout, déclenche l'impression et vérifie qu'aucune réponse, aucun coup de pouce ni aucune correction n'est dans le PDF), puis contrôle la mise en page : 4 pages au plus, aucun texte sous 10 pt, aucune ligne de code coupée, rien hors de la page, aucune requête hors du site, seules les polices du site dans le PDF.
+`verifier-td.py` exécute chaque programme et compare (sorties, messages d'erreur mot pour mot, corrections). `imprimer-td.py` imprime **la feuille vierge** (il remplit tout, déclenche l'impression et vérifie qu'aucune réponse, aucun coup de pouce ni aucune correction n'est dans le PDF), puis contrôle la mise en page : 4 pages au plus, aucun texte sous 10 pt, aucune ligne de code coupée, rien hors de la page, aucune requête hors du site, seules les polices du site dans le PDF, et chaque élément à remplir tracé d'un trait plein d'au moins 0,5 pt et 7:1.
+
+Sur papier, l'en-tête demande **« Nom et prénom » et « Classe »** (la feuille se rend à l'enseignant·e). La page en ligne ne demande rien.
 
 ## 5. Liste de contrôle avant de livrer
 
@@ -96,7 +98,8 @@ python3 -I charte/imprimer-td.py http://localhost:8000/nsi1/fichiers/boucles-td1
 - [ ] Pas de débordement : la page à **320 px** sans défilement horizontal, en clair et en obscur ; puis 768 et 1440 px.
 - [ ] Contraste : ne changez aucune couleur dans la page ; tout est dans `assets/td-en-ligne.css` (7:1 pour le texte et le code, vérifié).
 - [ ] Rien d'essentiel par la couleur seule (une consigne ne dit jamais « la ligne rouge »).
-- [ ] Le **margouillat** est présent (`data-cachette`), le **bandeau** est le bon pour le chapitre, le **QR code** pointe vers le bon cours-quiz (ou il n'y en a pas).
+- [ ] Le **margouillat** est présent (`data-cachette`) ; le **QR code** pointe vers le bon cours-quiz (ou il n'y en a pas).
+- [ ] **Sur papier, tout ce que l'élève remplit se voit nettement**, même en noir et blanc sur une imprimante fatiguée : lignes de réponse, cases du code, cases à cocher et ronds, cadre de l'éditeur, « Nom et prénom » et « Classe » ont un trait **plein, noir, de 0,5 pt au moins** (contrôlé par `imprimer-td.py`). Le rose et le cyan ne servent qu'au décor, jamais à une case à remplir ni à une information.
 - [ ] Le **pied de page** : auteur, licence CC BY-SA 4.0, « conçu avec l'aide de l'IA », « Code source sur GitHub ».
 - [ ] La **feuille imprimée est vierge** : ouvrez le PDF et regardez-le.
 - [ ] `python3 -I .github/gardien/caracteres.py --diff origin/main...HEAD` : aucun caractère invisible.

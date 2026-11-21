@@ -18,8 +18,9 @@ Le script :
 4. après l'impression (afterprint), vérifie que les réponses (et l'ordre de l'élève) sont remises à l'écran ;
 5. contrôle la mise en page A4 (style « Signal pirate », T123) : aucune requête hors du site (polices
    comprises), aucun texte imprimé sous 10 pt, aucune ligne de code coupée en deux (trop longue pour
-   la page), rien qui déborde de la page, le bandeau et le pied présents, et seules les polices du site
-   dans le PDF (pdffonts).
+   la page), rien qui déborde de la page, le bandeau et le pied présents, seules les polices du site
+   dans le PDF (pdffonts), et tout ce que l'élève remplit (lignes, cases du code, cases à cocher,
+   ronds, cadres) tracé d'un trait plein d'au moins 0,5 pt et de contraste 7:1 au moins.
 Il dit le nombre de pages (4 au plus pour un TD).
 """
 import glob
@@ -35,7 +36,7 @@ POLICES_DU_SITE = {'AtkinsonHyperlegible-Regular', 'AtkinsonHyperlegible-Bold', 
                    'JetBrainsMono-Regular', 'JetBrainsMono-Bold', 'JetBrainsMono-Italic', 'JetBrainsMono-BoldItalic',
                    'Anton-Regular', 'VT323-Regular', 'TDSymboles'}
 # mesures faites en média « print », à la largeur d'une page A4 (794 px)
-MESURES = """() => {
+MESURES = r"""() => {
   const pt = px => Math.round(px * 72 / 96 * 10) / 10, vus = el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
   const petit = [], coupees = [], deborde = [];
   document.querySelectorAll('.td *').forEach(el => {
@@ -50,7 +51,33 @@ MESURES = """() => {
     const h = parseFloat(getComputedStyle(l).lineHeight) || 20;
     if (l.getBoundingClientRect().height > h * 1.5) coupees.push(l.textContent.replace(/^[0-9]+/, '').trim().slice(0, 40));
   });
-  return { petit, coupees, deborde, bandeau: !!document.querySelector('.td-bandeau'), pied: !!document.querySelector('.td-pied .td-ia') };
+  // tout ce que l'élève remplit : un trait d'au moins 0,5 pt (0,67 px) et de contraste 7:1 au moins sur le papier blanc
+  const lum = c => { const v = (c.match(/[\d.]+/g) || [255, 255, 255]).slice(0, 3).map(x => { x = x / 255; return x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4; });
+    return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; };
+  const opaque = c => !/rgba\([^)]*,\s*0(\.0+)?\)/.test(c) && c !== 'transparent';
+  const rapport = c => 1.05 / (lum(c) + .05);
+  const saisies = [], faibles = [];
+  document.querySelectorAll('.td input:not([type=hidden]), .td textarea:not(.td-ed-texte), .td-editeur, .td-nom span').forEach(el => {
+    if (!vus(el) && !el.classList.contains('td-editeur')) return;
+    if (!el.getClientRects().length) return;
+    const cs = getComputedStyle(el), traits = [];
+    for (const cote of ['Top', 'Right', 'Bottom', 'Left']) {
+      const w = parseFloat(cs['border' + cote + 'Width']), st = cs['border' + cote + 'Style'], c = cs['border' + cote + 'Color'];
+      if (w > 0 && st !== 'none' && st !== 'hidden' && opaque(c)) traits.push({ w, st, c });
+    }
+    // lignes d'écriture dessinées en fond (dégradé répété) : leur couleur et leur épaisseur
+    const fond = cs.backgroundImage;
+    if (fond && fond.includes('gradient')) {
+      const cols = (fond.match(/rgba?\([^)]*\)/g) || []).filter(opaque);
+      cols.forEach(c => traits.push({ w: 1.2, st: 'solid', c }));
+    }
+    const nom = (el.className || el.type || el.tagName) + '';
+    saisies.push(nom);
+    const bons = traits.filter(t => t.w >= 0.66 && t.st !== 'dotted' && rapport(t.c) >= 7);
+    const mauvais = traits.filter(t => !(t.w >= 0.66 && t.st !== 'dotted' && rapport(t.c) >= 7));
+    if (!bons.length || mauvais.length) faibles.push(nom + ' : ' + (traits.map(t => t.w.toFixed(2) + 'px ' + t.st + ' ' + t.c + ' (' + rapport(t.c).toFixed(1) + ':1)').join(' / ') || 'aucun trait'));
+  });
+  return { petit, coupees, deborde, saisies: saisies.length, faibles, bandeau: !!document.querySelector('.td-bandeau'), pied: !!document.querySelector('.td-pied .td-ia') };
 }"""
 
 
@@ -135,6 +162,8 @@ def main():
         erreurs.append(f"ligne(s) de code trop longue(s) pour la page : {mesures['coupees'][:4]}")
     if mesures['deborde']:
         erreurs.append(f"débordement hors de la page : {mesures['deborde'][:4]}")
+    if mesures['faibles']:
+        erreurs.append(f"élément à remplir peu visible sur papier (il faut un trait plein de 0,5 pt et 7:1) : {mesures['faibles'][:4]}")
     for nom in ('bandeau', 'pied'):
         if not mesures[nom]:
             erreurs.append(f'{nom} absent')
@@ -165,7 +194,8 @@ def main():
             print(f'{qid} : imprimée dans l\'ordre de départ ({" / ".join(depart)}), pas dans celui de l\'élève')
     pages = int(next(l for l in subprocess.run(['pdfinfo', sortie], capture_output=True, text=True).stdout.splitlines()
                      if l.startswith('Pages:')).split()[1])
-    print(f'{sortie} : {pages} page(s) A4 ; {n} champ(s) remplis puis vidés ; {len(caches)} texte(s) caché(s) contrôlé(s)')
+    print(f'{sortie} : {pages} page(s) A4 ; {n} champ(s) remplis puis vidés ; {len(caches)} texte(s) caché(s) contrôlé(s) ; '
+          f"{mesures['saisies']} élément(s) à remplir au trait net")
     if pages > 4:
         erreurs.append(f'{pages} pages : un TD tient sur 4 pages au plus')
     for e in erreurs:
