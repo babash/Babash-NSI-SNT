@@ -68,8 +68,10 @@ charte/                     les pages de démonstration du Designer, sans lien d
                             feuilles d'un TD en un seul PDF), celui qui dessine les bandeaux
                             (bandeaux-td.py), celui qui les répartit entre tous les TD
                             (reattribuer-bandeaux.py), celui qui refait la police « TD Symboles »
-                            (symboles-td.py) et la démonstration du moteur d'avatars
-                            (avatars.html)
+                            (symboles-td.py), celui qui fait continuer les numéros des questions
+                            d'une feuille à l'autre (numeroter-feuilles.py), celui qui essaie les
+                            outils des TD sur des témoins de fuite (tester-outils.py) et la
+                            démonstration du moteur d'avatars (avatars.html)
 qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
                             nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu
                             élève et le corrigé enseignant·e de chaque quiz, liés depuis sa fiche de la

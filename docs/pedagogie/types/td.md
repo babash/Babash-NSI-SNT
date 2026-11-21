@@ -61,6 +61,9 @@ Les décisions de l'auteur du 21 novembre 2026 complètent la feuille :
 - **« Écris le programme » est obligatoire** pour valider la feuille, sauf s'il est marqué comme bonus ; sur papier, il a ses lignes à remplir ;
 - **les crédits sont sur chaque page imprimée** : un TD écrit à plusieurs porte tous les noms au pied de chaque page ;
 - le mémo et « Pour aller plus loin » restent à l'écran, sauf si la page demande de les imprimer.
+- **les numéros des questions continuent d'une feuille à l'autre** d'un même TD (feuille 2 : la question qui suit la dernière de la feuille 1) ;
+- sur papier, la feuille se termine par une ligne **« Code source sur GitHub »** avec l'adresse lisible ; les noms, la licence et la mention de l'IA sont au pied de chaque page ;
+- le **code de départ** d'un programme à compléter est imprimé en haut de son cadre ; au-delà de 20 lignes, une ligne dit qu'il est dans la page en ligne.
 
 Le modèle est le gabarit du site, `charte/gabarit-td/`, avec son mode d'emploi, et son TD pilote sur les boucles, `charte/td-pilote/`. L'objectif reste **le même style** pour toutes les feuilles (contrôles, fiches de séance) : pour elles, il n'est pas encore appliqué.
 
@@ -72,4 +75,4 @@ Autres exemples : [Les conditions en Python : cours et TD](https://babash.github
 
 ## Où on en est
 
-En novembre 2026, les TD du site existaient en PDF et en page web, mais **la page web n'était pas auto-corrective** : elle reprenait la feuille à l'écran, sans formulaire. La conversion des TD au style « Signal pirate » a commencé le 21 novembre, lot par lot : un TD converti a sa page auto-corrective, et son PDF, à la même adresse qu'avant, est imprimé depuis la feuille vierge ; les autres gardent pour l'instant leur forme d'origine. La fiche de chaque TD, dans la bibliothèque, dit où il en est. Avant d'être publié, un TD converti passe aussi un contrôle des choix uniques : la bonne option ne doit se repérer ni à sa place ni à sa forme (sa longueur, du code ou un premier mot à part). Il est prévu ensuite d'associer un TD à chaque fiche de révision.
+En novembre 2026, les TD du site existaient en PDF et en page web, mais **la page web n'était pas auto-corrective** : elle reprenait la feuille à l'écran, sans formulaire. La conversion des TD au style « Signal pirate » a commencé le 21 novembre, lot par lot : un TD converti a sa page auto-corrective, et son PDF, à la même adresse qu'avant, est imprimé depuis la feuille vierge ; les autres gardent pour l'instant leur forme d'origine. La fiche de chaque TD, dans la bibliothèque, dit où il en est. Les PDF des TD convertis seront régénérés une dernière fois après les compléments du moteur (passe finale) : d'ici là, la feuille imprimée depuis la page peut différer un peu du PDF publié. Avant d'être publié, un TD converti passe aussi un contrôle des choix uniques : la bonne option ne doit se repérer ni à sa place ni à sa forme (sa longueur, du code ou un premier mot à part). Il est prévu ensuite d'associer un TD à chaque fiche de révision.
