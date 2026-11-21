@@ -40,6 +40,7 @@ Ajouts du 21/11, T123c :
 """
 import html.parser
 import os
+import re
 import sqlite3
 import subprocess
 import sys
@@ -214,6 +215,21 @@ def sortie_norm(t, exact=False):
     return '\n'.join(l for l in lignes if l.strip())
 
 
+def sur_depart(depart, correction):
+    """Le code de départ sans ses blocs de premier niveau (def, class) que la correction réécrit, puis la correction."""
+    noms = set(re.findall(r'^(?:def|class)\s+(\w+)', correction, re.M))
+    blocs, cur = [], []
+    for l in depart.split('\n'):
+        if l and not l[0].isspace() and cur:
+            blocs.append(cur)
+            cur = []
+        cur.append(l)
+    if cur:
+        blocs.append(cur)
+    garde = [b for b in blocs if not (re.match(r'(?:def|class)\s+(\w+)', b[0]) and re.match(r'(?:def|class)\s+(\w+)', b[0]).group(1) in noms)]
+    return '\n'.join('\n'.join(b) for b in garde) + '\n' + correction
+
+
 def classe(c):
     return lambda n: c in n.classes()
 
@@ -320,6 +336,13 @@ def verifier(chemin):
                     src = code_de(c.texte())
                     tests_q = next((code_de(x.texte()) for x in s.tous(classe('td-tests'))), '') if langage == 'python' else ''
                     rc, out, err = lancer_q(src, fichier, entrees=e_, graine=g_, tests=tests_q)
+                    dep = next((code_de(x.texte()) for x in s.tous(classe('td-depart'))), '')
+                    if rc not in (0, None) and dep.strip() and tests_q:
+                        # une correction qui ne donne que la partie à compléter : on la pose sur le code de départ
+                        # (sans les blocs qu'elle réécrit), comme l'élève qui complète le squelette
+                        rc2, out2, err2 = lancer_q(sur_depart(dep, src), fichier, entrees=e_, graine=g_, tests=tests_q)
+                        if rc2 == 0:
+                            rc, out, err = rc2, out2, err2
                     if rc == 2:
                         ko(q, 'la correction ne passe pas les tests cachés : ' + err.strip()[-300:])
                     elif rc != 0 or (att is not None and sortie_norm(out, exact) != sortie_norm(att, exact)):

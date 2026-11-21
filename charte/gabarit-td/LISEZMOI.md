@@ -85,7 +85,7 @@ Dans un tableau qui porte l'un de ces attributs, le texte passe à la ligne (les
 - Une figure à plusieurs SVG les met côte à côte.
 - À l'écran (769 px et plus), un code qui dépassait de quelques pixels (8 % au plus de sa largeur) est un peu réduit au lieu de défiler.
 - Cases à trous : `t[[[i]]]` (après un nom, une parenthèse ou un crochet) est « `t[` + case `i` + `]` » ; `= [[[1, 2]]]` reste une case qui contient la liste `[1, 2]` (moteur et `verifier-td.py`).
-- `verifier-td.py` exécute aussi les **tests cachés** (`script.td-tests`) après chaque correction d'une question « code ».
+- `verifier-td.py` exécute aussi les **tests cachés** (`script.td-tests`) après chaque correction d'une question « code » ; une correction qui ne donne que la partie à compléter est posée sur le code de départ (sans les blocs qu'elle réécrit), comme le fait l'élève.
 - `imprimer-td.py` voit une correction, un coup de pouce ou un retour imprimé : il les lit dans la source de la page, ligne par ligne, et contrôle qu'aucun n'est rendu sur papier. Une question « ordre » `data-support="ecran"` n'est plus cherchée dans le PDF.
 - Un mot insécable trop long du titre passe à la ligne ; `nouveau-td.py` prévient (mot de plus de 18 caractères, accroche dans un contrôle).
 
