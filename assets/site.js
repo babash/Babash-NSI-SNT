@@ -8,14 +8,8 @@
 (function () {
   'use strict';
 
-  /* Couleurs de surligneur utilisables dans les listes : theme("…", "vert") */
-  var COULEURS = {
-    bleu: '#38BDF8', vert: '#34D399', violet: '#A78BFA', rose: '#F472B6',
-    orange: '#FB923C', citron: '#A3E635', cyan: '#22D3EE', jaune: '#FACC15',
-    lavande: '#818CF8', corail: '#F87171', gris: '#94A3B8'
-  };
-  /* Ordre des couleurs quand un thème n'en précise pas */
-  var CYCLE = ['cyan', 'rose', 'violet', 'vert', 'orange', 'bleu', 'jaune', 'lavande', 'citron', 'corail'];
+  /* T126b : plus de couleur par rubrique ni par thème (style « Signal pirate », validé le 21/11).
+     Le champ « couleur » de la vitrine et des anciennes listes est accepté, mais n'est plus lu. */
 
   var CHAMPS = ['titre', 'lien', 'texte', 'tags', 'annexes'];
   var TYPES = {
@@ -37,6 +31,7 @@
   var reglagesSite = {};
   var depotSite = null; // celui de reglages.js, vérifié ; null s'il manque ou s'il est mal écrit
   var rubriques = {};
+  var nbRessources = null; // les ressources de la bibliothèque vues de l'extérieur (repère du bandeau de l'accueil)
   var erreurs = [];
 
   /* ── Erreurs dans les listes : on les affiche sur la page ─────── */
@@ -62,12 +57,6 @@
 
   function slug(s) {
     return sansAccents(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'theme';
-  }
-
-  function couleur(nom, rang) {
-    if (typeof nom === 'string' && nom.charAt(0) === '#') return nom;
-    if (nom && COULEURS[nom]) return COULEURS[nom];
-    return COULEURS[CYCLE[(rang || 0) % CYCLE.length]];
   }
 
   function liste(x) {
@@ -140,7 +129,7 @@
       niveau: infos.niveau || '',
       presentation: infos.presentation || '',
       programme: infos.programme || null,
-      couleur: couleur(infos.couleur, Object.keys(rubriques).length),
+      puce: infos.puce || '',
       themes: []
     };
     rubriques[d.id] = rub;
@@ -155,7 +144,7 @@
 
   function themeEnCours(rub) {
     if (!rub.themes.length) {
-      rub.themes.push({ nom: null, court: null, id: 'ressources', couleur: rub.couleur, programme: [], blocs: [{ groupe: null, ressources: [] }] });
+      rub.themes.push({ nom: null, court: null, id: 'ressources', programme: [], blocs: [{ groupe: null, ressources: [] }] });
     }
     return rub.themes[rub.themes.length - 1];
   }
@@ -195,6 +184,7 @@
     }).then(function (b) {
       var refs = b.referentiels || {};
       var r2 = rubriquesDeVitrine({ vitrine: b.vitrine, ressources: b.ressources, programmes: refs.programmes, valeurs: refs.valeurs });
+      nbRessources = liste(b.ressources).length;
       rubriques = r2.rubriques;
       reglagesSite.rubriques = r2.ordre;
       if (ici && !rubriques[ici]) {
@@ -219,17 +209,14 @@
   window.theme = function (nom, options) {
     var rub = rubriqueEnCours();
     if (!rub) return;
-    if (typeof options === 'string') options = { couleur: options };
-    options = options || {};
+    if (typeof options !== 'object' || !options) options = {}; // theme("…", "vert") : la couleur n'est plus lue
     var court = options.court || nom;
-    var rang = rub.themes.filter(function (t) { return t.nom; }).length;
     var id = slug(court), base = id, k = 2;
     while (rub.themes.some(function (t) { return t.id === id; })) id = base + '-' + (k++);
     rub.themes.push({
       nom: nom,
       court: court,
       id: id,
-      couleur: couleur(options.couleur, rang),
       programme: liste(options.programme),
       blocs: [{ groupe: null, ressources: [] }]
     });
@@ -333,6 +320,27 @@
   window.deduireFormatDocument = deduireFormat; // pour le test de parité avec le script (test_admin_donnees.js)
 
 
+  /* La puce de niveau d'une rubrique (accueil, bandeau) : celle de la vitrine (« puce », facultatif),
+     sinon tirée de son programme ou de son texte de référence ; « Tous » pour une rubrique sans niveau. */
+  function puceDe(programme) {
+    var p = String(programme || '');
+    if (/^snt/.test(p)) return 'SNT';
+    if (/^nsi-1re|^nsi-premiere/.test(p)) return '1re';
+    if (/^nsi-tle|^nsi-terminale/.test(p)) return 'Tle';
+    if (/^pp/.test(p)) return 'PP';
+    return 'Tous';
+  }
+
+  /* Une ressource est un cours-quiz (cadre et étiquette « Cours-quiz ») si sa fiche le dit : le type
+     « cours-quiz » (à créer dans le référentiel, après validation) ou, en attendant, le mot-clé « cours-quiz ».
+     Jamais d'après le titre. */
+  var COURS_QUIZ = 'cours-quiz';
+  function estCoursQuiz(f) {
+    if (!f) return false;
+    if (liste(f.types).indexOf(COURS_QUIZ) >= 0 || liste(f.usages).indexOf(COURS_QUIZ) >= 0) return true;
+    return liste(f.mots_cles).some(function (m) { return String(m).trim().toLowerCase() === COURS_QUIZ; });
+  }
+
   function rubriquesDeVitrine(donnees) {
     var fiches = {};
     liste(donnees.ressources).forEach(function (f) { if (f && f.id) fiches[f.id] = f; });
@@ -371,7 +379,7 @@
       });
       return {
         id: f.id, titre: f.titre, lien: principal ? adresse(principal) : '', texte: f.accroche || f.resume || '',
-        tags: tags, annexes: annexes, theme: t, groupe: groupe, rubrique: rub
+        tags: tags, annexes: annexes, theme: t, groupe: groupe, rubrique: rub, coursQuiz: estCoursQuiz(f)
       };
     }
     /* L'étiquette de « À la une » (« Ressource du mois »), en tête des étiquettes de la ressource, partout où
@@ -384,7 +392,7 @@
     });
     var faites = {};
     var ordre = [];
-    liste((donnees.vitrine || {}).rubriques).forEach(function (rv, rang) {
+    liste((donnees.vitrine || {}).rubriques).forEach(function (rv) {
       var prog = rv.programme ? noeuds[rv.programme] : null;
       var ref = rv.reference_officielle ? noeuds[rv.reference_officielle] : null;
       var texte = prog || ref;
@@ -392,9 +400,8 @@
         id: rv.id, base: RACINE + rv.id + '/', nom: rv.titre, court: rv.court || rv.titre, niveau: rv.niveau || '',
         presentation: rv.presentation || '',
         programme: texte && texte.texte_officiel ? { texte: texte.texte_officiel.titre, lien: texte.texte_officiel.lien } : null,
-        couleur: couleur(rv.couleur, rang), themes: []
+        puce: rv.puce || puceDe(rv.programme || rv.reference_officielle || ''), themes: []
       };
-      var nommes = 0;
       liste(rv.sections).forEach(function (s) {
         var n = s.programme ? noeuds[s.programme] : null;
         var nom = n ? n.intitule : s.titre;
@@ -402,7 +409,7 @@
         var id = s.id || slug(court), base = id, k = 2;
         while (rub.themes.some(function (x) { return x.id === id; })) id = base + '-' + (k++);
         var t = {
-          nom: nom, court: court, id: id, couleur: couleur(s.couleur, nommes++),
+          nom: nom, court: court, id: id,
           /* « Au programme » : les contenus du thème ; pour une section libre, les titres de ses sous-sections
              sans ressource (Professeur principal › Orientation), comme dans les anciennes listes */
           programme: n ? liste(n.contenus).map(function (c) { return c.intitule; })
@@ -442,6 +449,7 @@
       var d = JSON.parse(sessionStorage.getItem('apercu-admin') || 'null');
       if (!d || !d.vitrine) return null;
       var r = rubriquesDeVitrine(d);
+      nbRessources = liste(d.ressources).length;
       rubriques = r.rubriques;
       reglagesSite.rubriques = r.ordre;
       donneesApercu = d;
@@ -564,8 +572,8 @@
 
   /* Décision de l'enseignant du 07/11/2026 : documents en CC BY-SA 4.0, code des applications en MIT */
   var LICENCES = [
-    { nom: 'CC BY-SA 4.0', quoi: 'documents', lien: 'https://creativecommons.org/licenses/by-sa/4.0/deed.fr' },
-    { nom: 'MIT', quoi: 'code des applications', lien: 'https://opensource.org/license/mit' }
+    { nom: 'CC BY-SA 4.0', quoi: 'documents', court: 'documents', lien: 'https://creativecommons.org/licenses/by-sa/4.0/deed.fr' },
+    { nom: 'MIT', quoi: 'code des applications', court: 'code', lien: 'https://opensource.org/license/mit' }
   ];
   /* Textes validés par l'enseignant (07/11/2026). reglages.js peut les remplacer ; un texte vide ("") les retire.
      {auteur} est remplacé par le nom de l'auteur. */
@@ -573,7 +581,9 @@
     auteur: 'Babash - NSI Tani Malandi',
     mention_ia: 'Ces ressources sont conçues par {auteur} ; beaucoup le sont avec l\'aide de l\'IA.',
     reutilisation: 'Tu peux les réutiliser et les modifier en mentionnant {auteur} et la licence ; un document modifié se partage sous la même licence.',
-    invitation_ia: 'Si tu utilises l\'IA pour les modifier, merci de le préciser.'
+    invitation_ia: 'Si tu utilises l\'IA pour les modifier, merci de le préciser.',
+    /* la mention courte de la ligne du pied (décision du 20/11 : « conçu avec l'aide de l'IA », avec le nouveau style) */
+    pied_ia: 'conçu avec l\'aide de l\'IA'
   };
 
   function mention(cle) {
@@ -597,15 +607,7 @@
     var lignes = [];
     var ia = mention('mention_ia');
     if (ia) lignes.push(avecAuteur(ia, auteur, true));
-
-    var licences = [];
-    LICENCES.forEach(function (l, i) {
-      licences.push(i ? ', ' + l.quoi : l.quoi.charAt(0).toUpperCase() + l.quoi.slice(1));
-      licences.push(' sous licence ', el('a', { href: l.lien, rel: 'license' }, l.nom));
-    });
-    /* Décision du 10/11/2026 (22:58) : le lien vers le dépôt, à côté de l'auteur et de la licence */
-    licences.push('. ', el('a', { href: urlDepot() }, 'Code source sur GitHub'), '.');
-    lignes.push(licences);
+    /* Les licences et « Code source sur GitHub » sont dans la ligne du pied (piedDePage), à côté de l'auteur */
 
     var reutiliser = [mention('reutilisation'), mention('invitation_ia')].filter(Boolean).join(' ');
     if (reutiliser) lignes.push(avecAuteur(reutiliser, auteur, !ia));
@@ -646,8 +648,10 @@
 
   function blocRessource(r, avecChemin) {
     var info = r.lien ? analyser(r.lien, r.rubrique.base) : null;
-    var li = el('li', { class: 'res', style: avecChemin ? '--hl:' + r.theme.couleur : null });
+    var li = el('li', { class: 'res' + (r.coursQuiz ? ' res-cours-quiz' : '') });
 
+    /* Le cours-quiz, qui ouvre la séquence (décision du 20/11) : cadre et mot « Cours-quiz » avant le titre */
+    if (r.coursQuiz) li.appendChild(etiquetteCoursQuiz());
     li.appendChild(info ? lienVers(info, r.titre, 'titre') : el('span', { class: 'titre sans-lien' }, r.titre));
 
     if (avecChemin) {
@@ -691,6 +695,14 @@
     return li;
   }
 
+  /* le mot, suivi d'une espace (lu « Cours-quiz QuizzNSI… », pas « Cours-quizQuizzNSI… ») */
+  function etiquetteCoursQuiz() {
+    var f = document.createDocumentFragment();
+    f.appendChild(el('span', { class: 'etiquette-signal' }, 'Cours-quiz'));
+    f.appendChild(document.createTextNode(' '));
+    return f;
+  }
+
   function idGroupe(t, nom) {
     return t.id + '--' + slug(nom);
   }
@@ -709,7 +721,7 @@
   }
 
   function sectionTheme(t, filtre) {
-    var s = el('section', { class: 'theme', id: t.id, style: '--hl:' + t.couleur });
+    var s = el('section', { class: 'theme', id: t.id });
     if (t.nom) s.appendChild(el('h2', null, el('span', { class: 'surligne' }, t.nom)));
     if (t.programme.length && !filtre) s.appendChild(lignePrograme(t));
     var n = 0;
@@ -730,19 +742,25 @@
 
   /* ── Affichage clair / obscur ─────────────────────────────────── */
 
-  var ICONES = {
-    auto: '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 2a6 6 0 0 1 0 12z" fill="currentColor"/></svg>',
-    light: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3 3l1.1 1.1M11.9 11.9 13 13M3 13l1.1-1.1M11.9 4.1 13 3"/></svg>',
-    dark: '<svg viewBox="0 0 16 16"><path d="M13.6 10.2A6 6 0 0 1 5.8 2.4a6 6 0 1 0 7.8 7.8z" fill="currentColor"/></svg>'
-  };
+  /* Les icônes : des caractères de la police « TD Symboles » (assets/fonts/), comme dans les TD */
   var MODES = [
-    { id: 'auto', nom: 'Auto', aide: 'Suivre le réglage de l\'appareil' },
-    { id: 'light', nom: 'Clair', aide: 'Affichage clair' },
-    { id: 'dark', nom: 'Obscur', aide: 'Affichage obscur' }
+    { id: 'auto', nom: 'Auto', aide: 'Suivre le réglage de l\'appareil', ico: String.fromCharCode(0x25C6) },
+    { id: 'light', nom: 'Clair', aide: 'Affichage clair', ico: String.fromCharCode(0x25A1) },
+    { id: 'dark', nom: 'Obscur', aide: 'Affichage obscur', ico: String.fromCharCode(0x25A0) }
   ];
+  /* La couleur de la barre du navigateur (meta theme-color) : celle du fond, en clair et en obscur */
+  var FOND = { light: '#FFFFFF', dark: '#0E0C14' };
 
   function lireMode() {
     try { return localStorage.getItem('theme') || 'auto'; } catch (e) { return 'auto'; }
+  }
+
+  function couleurBarre(m) {
+    Array.prototype.forEach.call(document.querySelectorAll('meta[name="theme-color"]'), function (meta) {
+      var media = meta.getAttribute('media') || '';
+      var propre = /dark/.test(media) ? FOND.dark : FOND.light;
+      meta.setAttribute('content', m === 'light' || m === 'dark' ? FOND[m] : propre);
+    });
   }
 
   function appliquerMode(m) {
@@ -753,17 +771,19 @@
       if (m === 'light' || m === 'dark') localStorage.setItem('theme', m);
       else localStorage.removeItem('theme');
     } catch (e) { /* navigation privée : le choix vaut pour cette page */ }
+    couleurBarre(m);
   }
 
   function choixMode() {
     var actuel = lireMode();
+    couleurBarre(actuel);
     var groupe = el('div', { class: 'mode', role: 'group', 'aria-label': 'Affichage' });
     MODES.forEach(function (m) {
       var b = el('button', {
-        type: 'button', class: 'mode-btn', title: m.aide,
+        type: 'button', class: 'mode-btn', title: m.aide, 'data-theme': m.id,
         'aria-pressed': m.id === actuel ? 'true' : 'false'
       }, [
-        el('span', { class: 'mode-ico', 'aria-hidden': 'true', html: ICONES[m.id] }),
+        el('span', { class: 'mode-ico', 'aria-hidden': 'true' }, m.ico),
         el('span', { class: 'mode-nom' }, m.nom)
       ]);
       b.addEventListener('click', function () {
@@ -777,71 +797,70 @@
     return groupe;
   }
 
-  /* ── Décor : la ville et sa liaison montante (dessin original) ── */
+  /* ── Le bandeau : un paysage de Mayotte des TD (assets/td/), en rotation ──
+     Décisions de l'enseignant du 21/11 : 150 px au plus ; les quatre paysages tournent partout (accueil,
+     rubriques, bibliothèque, annales, espaces élève et enseignant·e) et changent d'une visite à l'autre :
+     chaque page tire un paysage, jamais le même que la page vue juste avant. « ?bandeau=1 » à « 4 » en
+     force un (vérifications). Le margouillat vert à turbine se cache à l'une des places prévues pour ce
+     paysage (assets/td/places-margouillat.json, écrit par charte/bandeaux-td.py). Rien dans le bandeau
+     n'est porteur de sens : le décor est aria-hidden, le titre est le h1 de la page. */
+  var NB_BANDEAUX = 4;
+  var PLACES = null; // promesse des places du margouillat, chargées une fois
 
-  var LOGO = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><path d="M12 2.2 20.5 7v10L12 21.8 3.5 17V7z"/><path d="M7.5 12h4l2.2-3.2h2.3M11.5 12l2.2 3.2h2.3"/><circle cx="17.4" cy="8.8" r="1.2" fill="currentColor"/><circle cx="17.4" cy="15.2" r="1.2" fill="currentColor"/></svg>';
+  function numeroBandeau() {
+    var force = /[?&]bandeau=([1-4])(&|$)/.exec(location.search);
+    if (force) return +force[1];
+    var avant = 0;
+    try { avant = +localStorage.getItem('bandeau') || 0; } catch (e) { /* sans importance */ }
+    var n = 1 + Math.floor(Math.random() * (avant ? NB_BANDEAUX - 1 : NB_BANDEAUX));
+    if (avant && n >= avant) n++;
+    try { localStorage.setItem('bandeau', String(n)); } catch (e) { /* sans importance */ }
+    return n;
+  }
 
-  function scene(couleur, graine) {
-    var W = 1200, H = 420, horizon = 318, ux = 858;
-    var r = graine || 11;
-    function alea() { r = (r * 9301 + 49297) % 233280; return r / 233280; }
-    function n(x) { return Math.round(x * 10) / 10; }
-    var s = [];
-    s.push('<svg class="scene" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">');
-    s.push('<defs>' +
-      '<linearGradient id="sc-ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#04060E"/><stop offset=".6" stop-color="#110F30"/><stop offset="1" stop-color="#2A1046"/></linearGradient>' +
-      '<radialGradient id="sc-halo" cx=".71" cy=".76" r=".5"><stop offset="0" stop-color="' + couleur + '" stop-opacity=".38"/><stop offset="1" stop-color="' + couleur + '" stop-opacity="0"/></radialGradient>' +
-      '<linearGradient id="sc-sol" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#170A2B"/><stop offset="1" stop-color="#03050B"/></linearGradient>' +
-      '<filter id="sc-flou" x="-200%" y="-10%" width="500%" height="120%"><feGaussianBlur stdDeviation="5"/></filter>' +
-      '</defs>');
-    s.push('<rect width="' + W + '" height="' + H + '" fill="url(#sc-ciel)"/>');
-    s.push('<rect width="' + W + '" height="' + H + '" fill="url(#sc-halo)"/>');
-
-    // Pluie de données
-    for (var i = 0; i < 80; i++) {
-      s.push('<rect x="' + n(alea() * W) + '" y="' + n(alea() * horizon * 0.85) + '" width="1.2" height="' +
-        n(6 + alea() * 42) + '" fill="' + (alea() < 0.25 ? '#FF3D9A' : couleur) + '" opacity="' + n(0.06 + alea() * 0.28) + '"/>');
+  function cacherMargouillat(m, n) {
+    if (!PLACES) {
+      PLACES = typeof fetch === 'function'
+        ? fetch(RACINE + 'assets/td/places-margouillat.json').then(function (r) { return r.ok ? r.json() : {}; }).catch(function () { return {}; })
+        : Promise.resolve({});
     }
+    PLACES.then(function (toutes) {
+      var places = liste(toutes && toutes[String(n)]);
+      if (!places.length) return; // sans place connue, il reste caché
+      var p = places[Math.floor(Math.random() * places.length)];
+      m.style.setProperty('--x', p.x + '%');
+      m.style.setProperty('--y', p.y + '%');
+      m.style.setProperty('--r', (p.r || 0) + 'deg');
+      m.style.setProperty('--l', p.l + '%');
+      if (p.s) m.style.setProperty('--s', p.s);
+      m.hidden = false;
+    });
+  }
 
-    // Liaison montante
-    s.push('<line x1="' + ux + '" y1="0" x2="' + ux + '" y2="' + horizon + '" stroke="' + couleur + '" stroke-width="9" opacity=".45" filter="url(#sc-flou)"/>');
-    s.push('<line x1="' + ux + '" y1="0" x2="' + ux + '" y2="' + horizon + '" stroke="#F2FDFF" stroke-width="1.6" opacity=".9"/>');
-    s.push('<rect class="impulsion" x="' + (ux - 2) + '" y="' + (horizon - 40) + '" width="4" height="30" fill="#FFFFFF"/>');
-
-    // Tours et fenêtres allumées
-    var x = -10, teintes = [couleur, '#FF3D9A', '#FFD166'];
-    while (x < W) {
-      var w = 24 + alea() * 64;
-      var proche = Math.abs(x + w / 2 - ux) < 170;
-      var h = 26 + alea() * 104 + (proche ? 70 : 0);
-      var y = horizon - h;
-      s.push('<rect x="' + n(x) + '" y="' + n(y) + '" width="' + n(w) + '" height="' + n(h) + '" fill="#03050C"/>');
-      if (h > 120 && alea() < 0.6) {
-        s.push('<line x1="' + n(x + w / 2) + '" y1="' + n(y) + '" x2="' + n(x + w / 2) + '" y2="' + n(y - 14 - alea() * 18) + '" stroke="#03050C" stroke-width="2"/>');
-      }
-      for (var fy = y + 8; fy < horizon - 6; fy += 9) {
-        for (var fx = x + 5; fx < x + w - 6; fx += 8) {
-          if (alea() < 0.13) {
-            s.push('<rect x="' + n(fx) + '" y="' + n(fy) + '" width="3" height="4" fill="' +
-              teintes[Math.floor(alea() * 3)] + '" opacity="' + n(0.5 + alea() * 0.5) + '"/>');
-          }
-        }
-      }
-      x += w + 1 + alea() * 6;
+  /* o : { puce, surTitre: [texte ou nœud…], titre, long (titre long : plus petit), compact,
+           repere: { nombre, texte, href } } ; rend <header class="bandeau"> */
+  function bandeau(o) {
+    o = o || {};
+    var n = numeroBandeau();
+    var marg = el('span', { class: 'margouillat', hidden: true });
+    cacherMargouillat(marg, n);
+    var sur = el('p', { class: 'sur-titre' }, o.puce ? el('span', { class: 'puce' }, o.puce) : null);
+    liste(o.surTitre).forEach(function (x) {
+      if (x == null || x === '') return;
+      sur.appendChild(typeof x === 'object' ? x : el('span', null, x));
+    });
+    var h = el('header', { class: 'bandeau' + (o.compact ? ' compact' : ''), 'data-bandeau': String(n) }, [
+      el('div', { class: 'bandeau-decor', 'aria-hidden': 'true' }, marg),
+      el('div', { class: 'bandeau-texte' }, [
+        sur.childNodes.length ? sur : null,
+        el('h1', { class: o.long ? 'long' : null }, el('span', null, o.titre || titreSite()))
+      ])
+    ]);
+    if (o.repere && o.repere.nombre != null) {
+      h.appendChild(el(o.repere.href ? 'a' : 'p', { class: 'bandeau-repere', href: o.repere.href || null },
+        [el('b', null, String(o.repere.nombre)), o.repere.texte || '']));
     }
-
-    // Sol quadrillé
-    s.push('<rect y="' + horizon + '" width="' + W + '" height="' + (H - horizon) + '" fill="url(#sc-sol)"/>');
-    s.push('<line x1="0" y1="' + horizon + '" x2="' + W + '" y2="' + horizon + '" stroke="' + couleur + '" stroke-width="1.6" opacity=".85"/>');
-    for (var k = 1; k <= 8; k++) {
-      var gy = horizon + Math.pow(k / 8, 2) * (H - horizon);
-      s.push('<line x1="0" y1="' + n(gy) + '" x2="' + W + '" y2="' + n(gy) + '" stroke="' + couleur + '" stroke-width="1" opacity=".22"/>');
-    }
-    for (var v = -16; v <= 16; v++) {
-      s.push('<line x1="' + (600 + v * 7) + '" y1="' + horizon + '" x2="' + (600 + v * 95) + '" y2="' + H + '" stroke="' + couleur + '" stroke-width="1" opacity=".18"/>');
-    }
-    s.push('</svg>');
-    return s.join('');
+    return h;
   }
 
   /* ── Barre du haut ────────────────────────────────────────────── */
@@ -849,17 +868,17 @@
   function barreHaut(active) {
     return el('header', { class: 'barre-haut' }, el('div', { class: 'barre-int' }, [
       el('a', { class: 'marque', href: urlAccueil() }, [
-        el('span', { class: 'marque-logo', 'aria-hidden': 'true', html: LOGO }),
+        el('span', { class: 'marque-logo', 'aria-hidden': 'true' }, '>_'),
         el('span', { class: 'marque-nom' }, titreSite())
       ]),
       el('nav', { class: 'nav', 'aria-label': 'Rubriques' }, el('ul', null, ordreRubriques().map(function (r) {
-        return el('li', { style: '--hl:' + r.couleur }, el('a', {
+        return el('li', null, el('a', {
           href: urlRubrique(r),
           'aria-current': r === active ? 'page' : null
         }, r.court));
       }).concat(
         /* Toute la bibliothèque, avec ses filtres (cahier des charges, § 2) */
-        el('li', { style: '--hl:' + COULEURS.cyan }, el('a', {
+        el('li', null, el('a', {
           href: urlBibliotheque(),
           'aria-current': active === 'bibliotheque' ? 'page' : null
         }, 'Bibliothèque'))
@@ -868,10 +887,22 @@
     ]));
   }
 
-  /* Le pied de page commun : auteur, licences, code source sur GitHub, mention de l'IA.
-     « Ajouter une ressource » n'y est plus (N13) : ce mode d'emploi ira dans l'admin (T51). */
+  /* Le pied de page commun, compact (T126b) : une ligne (auteur, licences, « Code source sur GitHub »,
+     « conçu avec l'aide de l'IA »), puis les mentions. Décisions du 07/11 (licences), du 10/11 (lien vers le
+     dépôt) et du 20/11 (mention de l'IA avec le nouveau style). */
   function piedDePage() {
-    return el('footer', { class: 'pied' }, mentions());
+    var nbsp = String.fromCharCode(0xA0);
+    var auteur = (mention('auteur') || MENTIONS.auteur).replace(/ - /g, nbsp + '-' + nbsp);
+    var ligne = el('p', { class: 'pied-ligne' }, [auteur]);
+    LICENCES.forEach(function (l) {
+      ligne.appendChild(document.createTextNode(' · ' + l.court + ' '));
+      ligne.appendChild(el('a', { href: l.lien, rel: 'license' }, l.nom));
+    });
+    ligne.appendChild(document.createTextNode(' · '));
+    ligne.appendChild(el('a', { href: urlDepot() }, 'Code source sur GitHub'));
+    var ia = mention('pied_ia');
+    if (ia) ligne.appendChild(document.createTextNode(' · ' + ia));
+    return el('footer', { class: 'pied' }, [ligne, mentions()]);
   }
 
   /* ── Sommaire des thèmes (colonne de gauche sur grand écran) ──── */
@@ -881,7 +912,7 @@
       el('summary', null, ['Thèmes ', el('span', { class: 'nb' }, String(themes.length))]),
       el('ul', null, themes.map(function (t) {
         var nb = compterTheme(t);
-        return el('li', { style: '--hl:' + t.couleur }, el('a', {
+        return el('li', null, el('a', {
           href: '#' + t.id,
           class: nb ? null : 'est-vide',
           'data-theme-id': t.id
@@ -945,7 +976,7 @@
     return {
       bloc: el('div', { class: 'cherche', role: 'search' }, [
         el('label', { for: 'recherche', class: 'invisible' }, texte),
-        el('span', { class: 'cherche-ico', 'aria-hidden': 'true', html: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="7" cy="7" r="4.6"/><path d="m10.5 10.5 3.6 3.6"/></svg>' }),
+        el('span', { class: 'cherche-ico', 'aria-hidden': 'true' }, '>'),
         input, statut
       ]),
       input: input,
@@ -985,16 +1016,16 @@
     var n = ressourcesDe(r).length;
     var themes = r.themes.filter(function (t) { return t.nom; });
     var infos = [r.niveau, n ? pluriel(n, 'ressource', 'ressources') : 'à venir'].filter(Boolean).join(', ');
-    return el('section', { class: 'noeud' + (n ? '' : ' est-vide'), style: '--hl:' + r.couleur }, [
-      el('p', { class: 'noeud-meta' }, infos),
+    /* T126b : le niveau se lit dans une puce de texte (SNT, 1re, Tle, PP, Tous), plus dans une couleur */
+    return el('section', { class: 'noeud' + (n ? '' : ' est-vide') }, [
+      el('p', { class: 'noeud-meta' }, [r.puce ? el('span', { class: 'puce' }, r.puce) : null, infos]),
       el('h2', null, el('a', { class: 'noeud-nom', href: urlRubrique(r) }, r.nom)),
       r.presentation ? el('p', { class: 'noeud-texte', html: mettreEnForme(r.presentation) }) : null,
       themes.length ? el('ul', { class: 'themes-mini' }, themes.map(function (t) {
-        return el('li', null, el('a', {
-          href: urlRubrique(r, t.id),
-          class: compterTheme(t) ? null : 'est-vide',
-          style: '--hl:' + t.couleur
-        }, t.court));
+        var vide = !compterTheme(t);
+        /* un thème sans ressource : pointillés, et le mot pour les lecteurs d'écran */
+        return el('li', null, el('a', { href: urlRubrique(r, t.id), class: vide ? 'est-vide' : null },
+          [t.court, vide ? el('span', { class: 'invisible' }, ' (pas encore de ressource)') : null]));
       })) : null
     ]);
   }
@@ -1007,11 +1038,15 @@
     racine.appendChild(page);
 
     var recherche = champRecherche('Chercher une ressource', maj);
-    page.appendChild(el('header', { class: 'hero', style: '--hl:#22D3EE', html: scene('#22D3EE', 11) }));
-    var hero = page.lastChild;
-    hero.appendChild(el('div', { class: 'hero-contenu' }, [
-      el('p', { class: 'invite', 'aria-hidden': 'true' }, '~/ressources'),
-      el('h1', null, titreSite()),
+    /* Décision du 21/11 (direction A) : un paysage en haut, qui change d'une visite à l'autre ; à droite, le
+       nombre de ressources de la bibliothèque, qui y mène */
+    page.appendChild(bandeau({
+      puce: reglagesSite.puce || 'SNT · NSI',
+      surTitre: [reglagesSite.sur_titre || 'Seconde · Première · Terminale'],
+      titre: titreSite(),
+      repere: nbRessources ? { nombre: nbRessources, texte: nbRessources > 1 ? 'ressources' : 'ressource', href: urlBibliotheque() } : null
+    }));
+    page.appendChild(el('div', { class: 'intro' }, [
       reglagesSite.presentation ? el('p', { class: 'chapo', html: mettreEnForme(reglagesSite.presentation) }) : null,
       recherche.bloc
     ]));
@@ -1070,15 +1105,12 @@
 
     var nommes = rub.themes.filter(function (t) { return t.nom; });
     var total = ressourcesDe(rub).length;
-    var graine = rub.id.split('').reduce(function (a, c) { return a + c.charCodeAt(0); }, 0);
 
-    var bandeau = el('header', { class: 'hero hero-rubrique', style: '--hl:' + rub.couleur, html: scene(rub.couleur, graine) });
-    bandeau.appendChild(el('div', { class: 'hero-contenu' }, [
-      el('p', { class: 'invite', 'aria-hidden': 'true' }, '~/ressources/' + rub.id),
-      el('h1', null, rub.nom),
-      rub.niveau ? el('p', { class: 'niveau' }, rub.niveau) : null
-    ]));
-    page.appendChild(bandeau);
+    page.appendChild(bandeau({
+      puce: rub.puce || puceDe(''),
+      surTitre: [rub.niveau, total ? pluriel(total, 'ressource', 'ressources') : 'à venir'],
+      titre: rub.nom
+    }));
 
     var intro = el('div', { class: 'intro' }, [
       rub.presentation ? el('p', { class: 'chapo', html: mettreEnForme(rub.presentation) }) : null,
@@ -1133,8 +1165,9 @@
   /* Ce que site.js prête aux pages à part (la bibliothèque, bientôt l'admin) */
   var OUTILS = {
     el: el, vider: vider, liste: liste, pluriel: pluriel, echapper: echapper, mettreEnForme: mettreEnForme,
-    sansAccents: sansAccents, slug: slug, couleur: couleur, analyser: analyser, lienVers: lienVers,
-    barreHaut: barreHaut, scene: scene, piedDePage: piedDePage, blocAlertes: blocAlertes,
+    sansAccents: sansAccents, slug: slug, analyser: analyser, lienVers: lienVers,
+    barreHaut: barreHaut, bandeau: bandeau, piedDePage: piedDePage, blocAlertes: blocAlertes,
+    estCoursQuiz: estCoursQuiz, etiquetteCoursQuiz: etiquetteCoursQuiz,
     urlAccueil: urlAccueil, urlRubrique: urlRubrique, urlBibliotheque: urlBibliotheque, urlDepot: urlDepot,
     ordreRubriques: ordreRubriques, titreSite: titreSite, reglages: function () { return reglagesSite; },
     signaler: signaler, racine: RACINE, surDisque: SUR_DISQUE,

@@ -235,7 +235,7 @@ def main():
                 ctx.close()
         if une:
             ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
-            page.fill(".hero .recherche", une[0]["etiquette"].lower())
+            page.fill(".intro .recherche", une[0]["etiquette"].lower())
             page.wait_for_timeout(200)
             verifier(f"accueil : la recherche « {une[0]['etiquette'].lower()} » trouve la ressource", page.locator("li.res").count() >= 1)
             ctx.close()
@@ -246,7 +246,7 @@ def main():
         nav_ = page.locator(".nav a").all_inner_texts()
         verifier("accueil : le menu suit la vitrine, puis Bibliothèque",
                  [x.strip() for x in nav_] == [r.get("court") or r["titre"] for r in v["rubriques"]] + ["Bibliothèque"], nav_)
-        page.fill(".hero .recherche", "cybercase")
+        page.fill(".intro .recherche", "cybercase")
         page.wait_for_timeout(200)
         verifier("accueil : la recherche trouve dans les rubriques, avec « En savoir plus »",
                  page.locator("li.res").count() >= 1 and page.locator("li.res a.en-savoir-plus").count() == page.locator("li.res").count())

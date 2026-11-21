@@ -21,7 +21,6 @@
   'use strict';
 
   var O = null;
-  var COULEUR = '#22D3EE';
   var A_CLASSER = 'a-classer';
   var PAR_PAGE = 40;
 
@@ -333,7 +332,7 @@
 
   function blocExercice(x) {
     var s = x.sujet;
-    var li = el('li', { class: 'res exercice', id: x.ancre, style: '--hl:' + COULEUR });
+    var li = el('li', { class: 'res exercice', id: x.ancre });
     var titre = s.annee + ' · ' + nomSujet(s) + ' · exercice ' + x.n;
     li.appendChild(x.lien ? lienExterne(x.lien.url, titre, 'titre') : el('span', { class: 'titre sans-lien' }, titre));
 
@@ -578,7 +577,6 @@
     racine.appendChild(O.barreHaut('bibliotheque'));
     var page = el('div', { class: 'page bibliotheque annales' });
     racine.appendChild(page);
-    var bandeau = el('header', { class: 'hero hero-rubrique', style: '--hl:' + COULEUR, html: O.scene(COULEUR, 11) });
     ui.chapo = el('p', { class: 'chapo' }, 'Pour chaque chapitre, les exercices de bac qui le travaillent, avec le sujet officiel et son corrigé.');
     ui.recherche = O.champRecherche('Chercher dans les en-têtes des exercices (ex. Huffman, RIP, pile)', function (q) {
       etat.q = q;
@@ -586,13 +584,10 @@
       ecrireAdresse();
       rendre();
     });
-    bandeau.appendChild(el('div', { class: 'hero-contenu' }, [
-      el('p', { class: 'invite', 'aria-hidden': 'true' }, '~/bibliotheque/annales'),
-      el('h1', null, 'Annales du bac NSI par notion'),
-      ui.chapo,
-      ui.recherche.bloc
-    ]));
-    page.appendChild(bandeau);
+    /* T126b : le bandeau en rotation ; le chapo et la recherche passent dessous, dans .intro */
+    page.appendChild(O.bandeau({ puce: 'Bac', surTitre: ['Bibliothèque', 'NSI Terminale', 'épreuve écrite'],
+      titre: 'Annales du bac NSI par notion', long: true }));
+    page.appendChild(el('div', { class: 'intro' }, [ui.chapo, ui.recherche.bloc]));
     ui.alerte = el('div');
     page.appendChild(ui.alerte);
 
