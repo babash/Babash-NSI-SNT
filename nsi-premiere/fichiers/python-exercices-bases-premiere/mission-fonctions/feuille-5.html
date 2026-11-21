@@ -1,0 +1,214 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interception des pirates : TD en ligne</title>
+  <meta name="description" content="Mission « interception des pirates », feuille 5 sur 5 (bonus) : codes de César et de Vigenère (1re NSI). TD en ligne auto-correctif et imprimable.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsi1-mission-fonctions-5" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-ordre="melange" data-code="obligatoire" data-feuille="5">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:14.29%;--y:91.96%;--r:-8deg;--l:5.04%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Les fonctions</span></p>
+        <h1>Interception des pirates</h1>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=fonctions" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h5v1h-5zM15 0h2v1h-2zM19 0h2v1h-2zM22 0h2v1h-2zM25 0h2v1h-2zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM12 1h2v1h-2zM18 1h2v1h-2zM21 1h4v1h-4zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM11 2h6v1h-6zM19 2h1v1h-1zM21 2h1v1h-1zM23 2h1v1h-1zM25 2h2v1h-2zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h3v1h-3zM15 3h1v1h-1zM17 3h2v1h-2zM20 3h2v1h-2zM23 3h3v1h-3zM27 3h2v1h-2zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h2v1h-2zM15 5h2v1h-2zM20 5h1v1h-1zM22 5h2v1h-2zM25 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM10 7h2v1h-2zM13 7h2v1h-2zM17 7h2v1h-2zM20 7h1v1h-1zM22 7h2v1h-2zM25 7h1v1h-1zM27 7h2v1h-2zM0 8h1v1h-1zM3 8h7v1h-7zM14 8h2v1h-2zM19 8h1v1h-1zM21 8h3v1h-3zM26 8h1v1h-1zM28 8h2v1h-2zM32 8h1v1h-1zM34 8h3v1h-3zM3 9h2v1h-2zM8 9h1v1h-1zM10 9h1v1h-1zM13 9h1v1h-1zM16 9h3v1h-3zM24 9h2v1h-2zM27 9h1v1h-1zM29 9h1v1h-1zM31 9h2v1h-2zM35 9h1v1h-1zM0 10h3v1h-3zM4 10h4v1h-4zM10 10h3v1h-3zM14 10h3v1h-3zM19 10h3v1h-3zM23 10h1v1h-1zM26 10h6v1h-6zM33 10h1v1h-1zM36 10h1v1h-1zM4 11h2v1h-2zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM16 11h2v1h-2zM19 11h2v1h-2zM23 11h2v1h-2zM26 11h2v1h-2zM29 11h1v1h-1zM31 11h6v1h-6zM1 12h2v1h-2zM5 12h9v1h-9zM15 12h2v1h-2zM23 12h2v1h-2zM28 12h1v1h-1zM30 12h2v1h-2zM36 12h1v1h-1zM0 13h1v1h-1zM2 13h3v1h-3zM7 13h2v1h-2zM10 13h1v1h-1zM12 13h5v1h-5zM21 13h3v1h-3zM25 13h1v1h-1zM27 13h1v1h-1zM32 13h2v1h-2zM1 14h3v1h-3zM5 14h2v1h-2zM10 14h1v1h-1zM14 14h2v1h-2zM18 14h2v1h-2zM25 14h6v1h-6zM32 14h5v1h-5zM7 15h1v1h-1zM10 15h2v1h-2zM13 15h2v1h-2zM16 15h1v1h-1zM19 15h1v1h-1zM21 15h2v1h-2zM24 15h1v1h-1zM26 15h1v1h-1zM28 15h4v1h-4zM33 15h2v1h-2zM3 16h5v1h-5zM9 16h4v1h-4zM14 16h1v1h-1zM17 16h3v1h-3zM21 16h2v1h-2zM24 16h2v1h-2zM30 16h1v1h-1zM34 16h1v1h-1zM1 17h2v1h-2zM9 17h1v1h-1zM11 17h1v1h-1zM13 17h2v1h-2zM17 17h1v1h-1zM22 17h2v1h-2zM27 17h1v1h-1zM31 17h1v1h-1zM33 17h2v1h-2zM1 18h2v1h-2zM4 18h3v1h-3zM10 18h1v1h-1zM13 18h1v1h-1zM16 18h1v1h-1zM18 18h2v1h-2zM21 18h1v1h-1zM24 18h2v1h-2zM27 18h4v1h-4zM33 18h2v1h-2zM36 18h1v1h-1zM0 19h1v1h-1zM7 19h7v1h-7zM15 19h2v1h-2zM18 19h3v1h-3zM22 19h2v1h-2zM25 19h9v1h-9zM36 19h1v1h-1zM1 20h1v1h-1zM3 20h1v1h-1zM5 20h3v1h-3zM9 20h1v1h-1zM11 20h1v1h-1zM13 20h1v1h-1zM16 20h2v1h-2zM19 20h1v1h-1zM23 20h2v1h-2zM26 20h8v1h-8zM3 21h1v1h-1zM5 21h1v1h-1zM7 21h1v1h-1zM9 21h1v1h-1zM12 21h4v1h-4zM17 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM32 21h1v1h-1zM34 21h1v1h-1zM1 22h1v1h-1zM4 22h1v1h-1zM6 22h5v1h-5zM12 22h5v1h-5zM21 22h1v1h-1zM23 22h2v1h-2zM26 22h6v1h-6zM33 22h1v1h-1zM35 22h2v1h-2zM0 23h1v1h-1zM3 23h2v1h-2zM7 23h1v1h-1zM9 23h2v1h-2zM12 23h1v1h-1zM14 23h3v1h-3zM18 23h1v1h-1zM20 23h1v1h-1zM26 23h4v1h-4zM31 23h5v1h-5zM0 24h4v1h-4zM6 24h1v1h-1zM8 24h1v1h-1zM10 24h1v1h-1zM15 24h1v1h-1zM17 24h1v1h-1zM20 24h3v1h-3zM24 24h1v1h-1zM27 24h2v1h-2zM30 24h2v1h-2zM0 25h4v1h-4zM5 25h1v1h-1zM8 25h1v1h-1zM14 25h1v1h-1zM18 25h2v1h-2zM21 25h2v1h-2zM24 25h1v1h-1zM26 25h4v1h-4zM32 25h3v1h-3zM0 26h3v1h-3zM5 26h2v1h-2zM9 26h2v1h-2zM12 26h4v1h-4zM21 26h2v1h-2zM25 26h1v1h-1zM27 26h1v1h-1zM30 26h1v1h-1zM32 26h1v1h-1zM34 26h3v1h-3zM0 27h1v1h-1zM2 27h1v1h-1zM5 27h1v1h-1zM7 27h1v1h-1zM9 27h4v1h-4zM14 27h1v1h-1zM16 27h1v1h-1zM19 27h1v1h-1zM23 27h2v1h-2zM26 27h1v1h-1zM31 27h1v1h-1zM33 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h4v1h-4zM10 28h1v1h-1zM14 28h3v1h-3zM19 28h2v1h-2zM22 28h4v1h-4zM28 28h9v1h-9zM8 29h1v1h-1zM10 29h1v1h-1zM12 29h4v1h-4zM17 29h1v1h-1zM19 29h1v1h-1zM21 29h1v1h-1zM24 29h5v1h-5zM32 29h1v1h-1zM34 29h2v1h-2zM0 30h7v1h-7zM8 30h1v1h-1zM10 30h4v1h-4zM15 30h1v1h-1zM17 30h4v1h-4zM23 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM36 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM10 31h2v1h-2zM13 31h1v1h-1zM20 31h2v1h-2zM23 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h4v1h-4zM13 32h1v1h-1zM16 32h1v1h-1zM18 32h1v1h-1zM20 32h2v1h-2zM26 32h7v1h-7zM35 32h1v1h-1zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h4v1h-4zM13 33h1v1h-1zM20 33h4v1h-4zM26 33h5v1h-5zM33 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM9 34h2v1h-2zM12 34h1v1h-1zM14 34h1v1h-1zM23 34h2v1h-2zM27 34h1v1h-1zM29 34h1v1h-1zM32 34h2v1h-2zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM10 35h2v1h-2zM14 35h2v1h-2zM17 35h2v1h-2zM22 35h1v1h-1zM26 35h2v1h-2zM29 35h2v1h-2zM32 35h1v1h-1zM34 35h3v1h-3zM0 36h7v1h-7zM8 36h2v1h-2zM11 36h3v1h-3zM16 36h1v1h-1zM19 36h1v1h-1zM24 36h1v1h-1zM27 36h2v1h-2zM31 36h1v1h-1zM36 36h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> généraliser une fonction en ajoutant un paramètre, et utiliser le modulo pour rester dans l'alphabet.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>décoder un message en faisant le calcul inverse ;</li>
+        <li>utiliser <code>% 26</code> pour revenir au début de l'alphabet ;</li>
+        <li>suivre un compteur qui revient à 0 au bout d'une liste ;</li>
+        <li>écrire une fonction à deux paramètres.</li>
+      </ul>
+      <p class="td-duree">Feuille 5 sur 5 (bonus) · 50 minutes · 7 questions · seul·e ou en binôme · après la feuille 4</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p class="td-ecran-seul">Cette feuille fait suite à la <a href="feuille-4.html">feuille 4 de la mission « interception des pirates »</a>.</p>
+  <p><b>Rappel :</b> <code>alphabet = "abcdefghijklmnopqrstuvwxyz"</code> ; <code>alphabet.index("c")</code> vaut 2 et <code>alphabet[2]</code> vaut <code>"c"</code>. Le reste de la division par 26 s'écrit <code>% 26</code> : <code>27 % 26</code> vaut 1.</p>
+
+  <h2 class="td-partie">Bonus : protocoles de haute sécurité</h2>
+
+  <p><b>Bonus 1 : le grand décalage de César</b> (complexe). C'est une version améliorée du code précédent. Au lieu de décaler toujours de 1, on choisit la valeur du décalage <code>n</code>. Si on dépasse la lettre <code>z</code>, on recommence au début de l'alphabet (modulo 26). Les espaces restent des espaces.</p>
+
+  <section class="td-q" data-type="qcu" id="i1" data-support="ecran">
+    <p class="td-consigne">Bonus 1. Quelles sont les deux entrées de la fonction ?</p>
+    <ul class="td-options">
+      <li data-juste>le mot (<code>str</code>) et la valeur du décalage <code>n</code> (<code>int</code>)</li>
+      <li data-retour="L'alphabet ne change jamais : il est écrit dans la fonction. Ce qui change, c'est le décalage.">le mot (<code>str</code>) et l'alphabet (<code>str</code>)</li>
+      <li data-retour="Le mot codé est la sortie : la fonction le renvoie.">le mot (<code>str</code>) et le mot codé (<code>str</code>)</li>
+      <li data-retour="26 est fixe : c'est le nombre de lettres de l'alphabet. On choisit le décalage n.">le décalage <code>n</code> (<code>int</code>) et le nombre 26 (<code>int</code>)</li>
+    </ul>
+    <p class="td-aide">Qu'est-ce qui change d'un appel à l'autre ?</p>
+    <div class="td-correction"><p>Le mot à coder, une chaîne, et la valeur du décalage <code>n</code>, un entier.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="i1p" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Bonus 1. Identifie les deux entrées nécessaires (le mot et la valeur du décalage).</p>
+    <div class="td-correction"><p>Le mot à coder (une chaîne) et le décalage <code>n</code> (un entier).</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="i2" data-reponse="qsp">
+    <p class="td-consigne">Bonus 1. Rétro-ingénierie : le signal de sortie est <code>"sur"</code>. La flotte pirate a utilisé un décalage <code>n = 2</code>. Quel était le message d'origine, avant le cryptage ?</p>
+    <p class="td-retour" data-si="uwt">Tu as codé <code>"sur"</code> une deuxième fois. Pour retrouver l'origine, on recule de 2 rangs.</p>
+    <p class="td-aide">Pour décoder, on recule de 2 : s redevient q.</p>
+    <div class="td-correction"><p>s → q, u → s, r → p : le message d'origine était <b><code>"qsp"</code></b>. Vérification : avec <code>n = 2</code>, <code>"qsp"</code> donne bien <code>"sur"</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="i3">
+    <p class="td-consigne">Bonus 1. La logique : complète chaque case.</p>
+    <pre class="td-code">
+# Je définis la fonction avec deux paramètres : [[mot]] et [[n|decalage]].
+# Comme précédemment, je prépare une variable pour le résultat
+# et je garde la chaîne de l'alphabet.
+# Je parcours chaque lettre du mot avec une [[boucle|for|boucle for]].
+# Pour chaque lettre, je trouve son [[indice|index|rang]], puis je lui
+# ajoute la valeur [[n|decalage]].
+# Pour éviter de sortir de l'alphabet (si on dépasse 25), j'utilise
+# l'opération mathématique [[modulo|%|% 26|modulo 26]] sur le nouvel [[indice|index|rang]].
+# Je cherche la [[lettre]] située à ce nouvel indice « sécurisé »
+# et je l'[[ajoute|concatène|concatene]] dans ma variable de sortie.
+# Je renvoie le résultat une fois la boucle terminée.</pre>
+    <p class="td-aide">L'opération qui donne le reste d'une division s'appelle le <b>modulo</b> ; en Python, elle s'écrit <code>%</code>.</p>
+    <div class="td-correction"><p>Paramètres <code>mot</code> et <code>n</code> ; une <b>boucle</b> <code>for</code> ; l'<b>indice</b> de la lettre, plus <code>n</code> ; le <b>modulo</b> 26 (<code>% 26</code>) sur le nouvel <b>indice</b> ; la <b>lettre</b> à cet indice, <b>ajoutée</b> au résultat.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="i4" data-fichier="cesar_general.py" data-lignes="9">
+    <p class="td-consigne">Bonus 1. À toi de coder : écris la fonction complète nommée <code>cesar_general</code>. Les tests l'essaient quand tu lances ton programme.</p>
+    <pre class="td-depart">
+def cesar_general(mot, n):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    # ta fonction ici
+    pass
+</pre>
+    <script type="text/x-python" class="td-tests">
+for m, n, attendu in [("qsp", 2, "sur"), ("abc", 1, "bcd"), ("xyz", 3, "abc"), ("zorro", 1, "apssp"),
+                      ("abc", 26, "abc"), ("la chance est en toi", 13, "yn punapr rfg ra gbv"), ("", 5, "")]:
+    obtenu = cesar_general(m, n)
+    assert obtenu == attendu, "cesar_general(" + repr(m) + ", " + repr(n) + ") renvoie " + repr(obtenu) + " au lieu de " + repr(attendu) + "."
+</script>
+    <p class="td-aide">Pars de ta fonction <code>code_cesar_un</code> : remplace le <code>+ 1</code> par <code>+ n</code>.</p>
+    <p class="td-aide">Pour la lettre <code>z</code> : le nouvel indice est <code>(indice + n) % 26</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+def cesar_general(mot, n):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    resultat = ""
+    for lettre in mot:
+        if lettre in alphabet:
+            indice = (alphabet.index(lettre) + n) % 26
+            resultat = resultat + alphabet[indice]
+        else:
+            resultat = resultat + lettre
+    return resultat</pre></div>
+  </section>
+
+  <p><b>Bonus 2 : le chiffre de Vigenère</b> (expert). C'est le niveau ultime. On n'utilise plus un seul nombre pour décaler, mais une liste de décalages qui tourne en boucle : avec <code>[1, 2]</code>, on décale la première lettre de 1, la deuxième de 2, la troisième de 1, etc.</p>
+  <p><b>Exemple :</b> pour le mot <code>"aaaa"</code> et la liste <code>[1, 2, 3]</code>, la sortie est <code>"bcdb"</code>.</p>
+
+  <section class="td-q" data-type="qcu" id="j1" data-support="ecran">
+    <p class="td-consigne">Bonus 2. Quelles sont les deux entrées de la fonction ?</p>
+    <ul class="td-options">
+      <li data-juste>le mot (<code>str</code>) et la liste des décalages (<code>list</code>)</li>
+      <li data-retour="Ici, il n'y a plus un seul décalage : c'est une liste de décalages, qui tourne en boucle.">le mot (<code>str</code>) et un décalage <code>n</code> (<code>int</code>)</li>
+      <li data-retour="Le compteur i est une variable locale : la fonction le crée elle-même.">le mot (<code>str</code>) et le compteur <code>i</code> (<code>int</code>)</li>
+      <li data-retour="La liste est donnée à la fonction : c'est une entrée. La sortie est le mot crypté.">la liste des décalages (<code>list</code>) et le mot crypté (<code>str</code>)</li>
+    </ul>
+    <p class="td-aide">Relis l'exemple : <code>"aaaa"</code> et <code>[1, 2, 3]</code>.</p>
+    <div class="td-correction"><p>Le mot à coder (une chaîne) et la liste des décalages (une liste d'entiers).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="j1p" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Bonus 2. Identifie les deux entrées (le mot et la liste des décalages).</p>
+    <div class="td-correction"><p>Le mot à coder (une chaîne) et la liste des décalages (une liste d'entiers).</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="j2">
+    <p class="td-consigne">Bonus 2. La logique : complète chaque case.</p>
+    <pre class="td-code">
+# Je définis la fonction avec ses deux paramètres [[mot]] et [[decalages|liste|cle]].
+# Je crée une variable locale appelée [[i]] (un compteur), initialisée
+# à [[0]], pour suivre ma position dans la liste des décalages.
+# Je parcours le mot lettre par lettre grâce à une [[boucle|for|boucle for]].
+# À chaque étape, je récupère le décalage situé à l'indice [[i]]
+# dans la [[liste|decalages|liste des décalages]].
+# J'applique ce décalage à la lettre actuelle (modulo 26).
+# Après avoir ajouté la lettre codée au résultat, j'augmente
+# mon compteur [[i]] de [[1]].
+# Si mon compteur i devient égal à la [[longueur|taille|len(decalages)]] de la liste,
+# alors je remets [[i]] à [[0]] pour recommencer au début de la clé.
+# Je renvoie le message crypté [[resultat|mot_code|message]] final.</pre>
+    <p class="td-aide">Le compteur commence à la première position d'une liste. Quel est l'indice du premier élément ?</p>
+    <p class="td-aide">Pour le message final, la correction en ligne accepte <code>resultat</code>, <code>mot_code</code> ou <code>message</code>.</p>
+    <div class="td-correction"><p>Paramètres <code>mot</code> et <code>decalages</code> ; un compteur <code>i</code> qui commence à <code>0</code> ; une <b>boucle</b> <code>for</code> ; le décalage <code>decalages[i]</code> ; <code>i</code> augmente de <code>1</code>, et revient à <code>0</code> quand il atteint la <b>longueur</b> de la liste ; on renvoie <code>resultat</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="j3" data-fichier="vigenere.py" data-lignes="10">
+    <p class="td-consigne">Bonus 2. À toi de coder : écris la fonction complète nommée <code>vigenere_liste</code> (des mots en minuscules, sans espace). Les tests l'essaient quand tu lances ton programme.</p>
+    <pre class="td-depart">
+def vigenere_liste(mot, decalages):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    # ta fonction ici
+    pass
+</pre>
+    <script type="text/x-python" class="td-tests">
+for m, d, attendu in [("aaaa", [1, 2, 3], "bcdb"), ("abc", [1], "bcd"), ("zzz", [1, 2], "aba"),
+                      ("nsi", [0], "nsi"), ("mamoudzou", [3, 1], "pbppxecpx"), ("", [4, 2], "")]:
+    obtenu = vigenere_liste(m, d)
+    assert obtenu == attendu, "vigenere_liste(" + repr(m) + ", " + repr(d) + ") renvoie " + repr(obtenu) + " au lieu de " + repr(attendu) + "."
+</script>
+    <p class="td-aide">Avant la boucle : <code>resultat = ""</code> et <code>i = 0</code>.</p>
+    <p class="td-aide">Dans la boucle : le nouvel indice est <code>(alphabet.index(lettre) + decalages[i]) % 26</code>.</p>
+    <p class="td-aide">Puis <code>i = i + 1</code>, et <code>if i == len(decalages):</code> on remet <code>i = 0</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+def vigenere_liste(mot, decalages):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    resultat = ""
+    i = 0
+    for lettre in mot:
+        indice = (alphabet.index(lettre) + decalages[i]) % 26
+        resultat = resultat + alphabet[indice]
+        i = i + 1
+        if i == len(decalages):
+            i = 0
+    return resultat</pre></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>Mission accomplie !</b> <b>Avant :</b> <a href="feuille-4.html">feuille 4</a> · <a href="./">retour à la feuille 1</a>.</p>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Le modulo <code>%</code> donne le reste d'une division : <code>(indice + n) % 26</code> reste toujours entre 0 et 25.</p>
+    <p>Un compteur qui tourne sur une liste : <code>i = i + 1</code>, puis <code>if i == len(liste): i = 0</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/python-exercices-bases-premiere/mission-fonctions/feuille-5.html">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

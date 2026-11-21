@@ -1,0 +1,229 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interception des pirates : TD en ligne</title>
+  <meta name="description" content="Mission « interception des pirates », feuille 3 sur 5 : préparer et écrire une fonction (1re NSI). TD en ligne auto-correctif et imprimable.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsi1-mission-fonctions-3" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-ordre="melange" data-code="obligatoire" data-feuille="3">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Les fonctions</span></p>
+        <h1>Interception des pirates</h1>
+        <p class="td-accroche">Mission · feuille 3 sur 5</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=fonctions" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h5v1h-5zM15 0h2v1h-2zM19 0h2v1h-2zM22 0h2v1h-2zM25 0h2v1h-2zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM12 1h2v1h-2zM18 1h2v1h-2zM21 1h4v1h-4zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM11 2h6v1h-6zM19 2h1v1h-1zM21 2h1v1h-1zM23 2h1v1h-1zM25 2h2v1h-2zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h3v1h-3zM15 3h1v1h-1zM17 3h2v1h-2zM20 3h2v1h-2zM23 3h3v1h-3zM27 3h2v1h-2zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h2v1h-2zM15 5h2v1h-2zM20 5h1v1h-1zM22 5h2v1h-2zM25 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM10 7h2v1h-2zM13 7h2v1h-2zM17 7h2v1h-2zM20 7h1v1h-1zM22 7h2v1h-2zM25 7h1v1h-1zM27 7h2v1h-2zM0 8h1v1h-1zM3 8h7v1h-7zM14 8h2v1h-2zM19 8h1v1h-1zM21 8h3v1h-3zM26 8h1v1h-1zM28 8h2v1h-2zM32 8h1v1h-1zM34 8h3v1h-3zM3 9h2v1h-2zM8 9h1v1h-1zM10 9h1v1h-1zM13 9h1v1h-1zM16 9h3v1h-3zM24 9h2v1h-2zM27 9h1v1h-1zM29 9h1v1h-1zM31 9h2v1h-2zM35 9h1v1h-1zM0 10h3v1h-3zM4 10h4v1h-4zM10 10h3v1h-3zM14 10h3v1h-3zM19 10h3v1h-3zM23 10h1v1h-1zM26 10h6v1h-6zM33 10h1v1h-1zM36 10h1v1h-1zM4 11h2v1h-2zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM16 11h2v1h-2zM19 11h2v1h-2zM23 11h2v1h-2zM26 11h2v1h-2zM29 11h1v1h-1zM31 11h6v1h-6zM1 12h2v1h-2zM5 12h9v1h-9zM15 12h2v1h-2zM23 12h2v1h-2zM28 12h1v1h-1zM30 12h2v1h-2zM36 12h1v1h-1zM0 13h1v1h-1zM2 13h3v1h-3zM7 13h2v1h-2zM10 13h1v1h-1zM12 13h5v1h-5zM21 13h3v1h-3zM25 13h1v1h-1zM27 13h1v1h-1zM32 13h2v1h-2zM1 14h3v1h-3zM5 14h2v1h-2zM10 14h1v1h-1zM14 14h2v1h-2zM18 14h2v1h-2zM25 14h6v1h-6zM32 14h5v1h-5zM7 15h1v1h-1zM10 15h2v1h-2zM13 15h2v1h-2zM16 15h1v1h-1zM19 15h1v1h-1zM21 15h2v1h-2zM24 15h1v1h-1zM26 15h1v1h-1zM28 15h4v1h-4zM33 15h2v1h-2zM3 16h5v1h-5zM9 16h4v1h-4zM14 16h1v1h-1zM17 16h3v1h-3zM21 16h2v1h-2zM24 16h2v1h-2zM30 16h1v1h-1zM34 16h1v1h-1zM1 17h2v1h-2zM9 17h1v1h-1zM11 17h1v1h-1zM13 17h2v1h-2zM17 17h1v1h-1zM22 17h2v1h-2zM27 17h1v1h-1zM31 17h1v1h-1zM33 17h2v1h-2zM1 18h2v1h-2zM4 18h3v1h-3zM10 18h1v1h-1zM13 18h1v1h-1zM16 18h1v1h-1zM18 18h2v1h-2zM21 18h1v1h-1zM24 18h2v1h-2zM27 18h4v1h-4zM33 18h2v1h-2zM36 18h1v1h-1zM0 19h1v1h-1zM7 19h7v1h-7zM15 19h2v1h-2zM18 19h3v1h-3zM22 19h2v1h-2zM25 19h9v1h-9zM36 19h1v1h-1zM1 20h1v1h-1zM3 20h1v1h-1zM5 20h3v1h-3zM9 20h1v1h-1zM11 20h1v1h-1zM13 20h1v1h-1zM16 20h2v1h-2zM19 20h1v1h-1zM23 20h2v1h-2zM26 20h8v1h-8zM3 21h1v1h-1zM5 21h1v1h-1zM7 21h1v1h-1zM9 21h1v1h-1zM12 21h4v1h-4zM17 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM32 21h1v1h-1zM34 21h1v1h-1zM1 22h1v1h-1zM4 22h1v1h-1zM6 22h5v1h-5zM12 22h5v1h-5zM21 22h1v1h-1zM23 22h2v1h-2zM26 22h6v1h-6zM33 22h1v1h-1zM35 22h2v1h-2zM0 23h1v1h-1zM3 23h2v1h-2zM7 23h1v1h-1zM9 23h2v1h-2zM12 23h1v1h-1zM14 23h3v1h-3zM18 23h1v1h-1zM20 23h1v1h-1zM26 23h4v1h-4zM31 23h5v1h-5zM0 24h4v1h-4zM6 24h1v1h-1zM8 24h1v1h-1zM10 24h1v1h-1zM15 24h1v1h-1zM17 24h1v1h-1zM20 24h3v1h-3zM24 24h1v1h-1zM27 24h2v1h-2zM30 24h2v1h-2zM0 25h4v1h-4zM5 25h1v1h-1zM8 25h1v1h-1zM14 25h1v1h-1zM18 25h2v1h-2zM21 25h2v1h-2zM24 25h1v1h-1zM26 25h4v1h-4zM32 25h3v1h-3zM0 26h3v1h-3zM5 26h2v1h-2zM9 26h2v1h-2zM12 26h4v1h-4zM21 26h2v1h-2zM25 26h1v1h-1zM27 26h1v1h-1zM30 26h1v1h-1zM32 26h1v1h-1zM34 26h3v1h-3zM0 27h1v1h-1zM2 27h1v1h-1zM5 27h1v1h-1zM7 27h1v1h-1zM9 27h4v1h-4zM14 27h1v1h-1zM16 27h1v1h-1zM19 27h1v1h-1zM23 27h2v1h-2zM26 27h1v1h-1zM31 27h1v1h-1zM33 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h4v1h-4zM10 28h1v1h-1zM14 28h3v1h-3zM19 28h2v1h-2zM22 28h4v1h-4zM28 28h9v1h-9zM8 29h1v1h-1zM10 29h1v1h-1zM12 29h4v1h-4zM17 29h1v1h-1zM19 29h1v1h-1zM21 29h1v1h-1zM24 29h5v1h-5zM32 29h1v1h-1zM34 29h2v1h-2zM0 30h7v1h-7zM8 30h1v1h-1zM10 30h4v1h-4zM15 30h1v1h-1zM17 30h4v1h-4zM23 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM36 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM10 31h2v1h-2zM13 31h1v1h-1zM20 31h2v1h-2zM23 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h4v1h-4zM13 32h1v1h-1zM16 32h1v1h-1zM18 32h1v1h-1zM20 32h2v1h-2zM26 32h7v1h-7zM35 32h1v1h-1zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h4v1h-4zM13 33h1v1h-1zM20 33h4v1h-4zM26 33h5v1h-5zM33 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM9 34h2v1h-2zM12 34h1v1h-1zM14 34h1v1h-1zM23 34h2v1h-2zM27 34h1v1h-1zM29 34h1v1h-1zM32 34h2v1h-2zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM10 35h2v1h-2zM14 35h2v1h-2zM17 35h2v1h-2zM22 35h1v1h-1zM26 35h2v1h-2zM29 35h2v1h-2zM32 35h1v1h-1zM34 35h3v1h-3zM0 36h7v1h-7zM8 36h2v1h-2zM11 36h3v1h-3zM16 36h1v1h-1zM19 36h1v1h-1zM24 36h1v1h-1zM27 36h2v1h-2zM31 36h1v1h-1zM36 36h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> préparer puis écrire une fonction à partir de sa description.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>dire quelles sont l'entrée et la sortie d'une fonction ;</li>
+        <li>calculer une sortie à partir d'une entrée, et l'inverse ;</li>
+        <li>décrire la logique d'une fonction, étape par étape ;</li>
+        <li>écrire une fonction qui renvoie un booléen.</li>
+      </ul>
+      <p class="td-duree">Feuille 3 sur 5 · 45 minutes · 10 questions · seul·e ou en binôme · après les feuilles 1 et 2</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p class="td-ecran-seul">Cette feuille fait suite aux feuilles <a href="./">1</a> et <a href="feuille-2.html">2</a> de la mission « interception des pirates ».</p>
+
+  <h2 class="td-partie">2. Protocoles de l'équipage : rédiger</h2>
+
+  <p><b>La fonction <code>calculer_carburant</code></b> (simple). L'équipage doit prévoir le ravitaillement de ses vaisseaux. Chaque moteur consomme exactement 15 litres de carburant pour parcourir un parsec. Ta mission : créer une fonction qui, à partir d'une distance donnée, calcule le volume total de carburant nécessaire.</p>
+
+  <section class="td-q" data-type="qcu" id="e1" data-support="ecran">
+    <p class="td-consigne"><code>calculer_carburant</code>. Quelles sont l'entrée et la sortie de la fonction ?</p>
+    <ul class="td-options">
+      <li data-juste>entrée : la distance (en parsecs) ; sortie : le volume de carburant (en litres)</li>
+      <li data-retour="C'est l'inverse : on connaît la distance, et on cherche le carburant.">entrée : le volume de carburant ; sortie : la distance</li>
+      <li data-retour="15 est fixe : c'est la consommation pour un parsec, écrite dans la fonction. Ce n'est pas une entrée.">entrée : le nombre 15 ; sortie : la distance</li>
+      <li data-retour="Une fonction renvoie son résultat avec return : la sortie, c'est le volume renvoyé.">entrée : la distance ; sortie : aucune, la fonction affiche le carburant</li>
+    </ul>
+    <p class="td-aide">Qu'est-ce qu'on connaît au départ ? Qu'est-ce qu'on cherche ?</p>
+    <div class="td-correction"><p>L'entrée est la <b>distance</b> à parcourir (en parsecs) ; la sortie est le <b>volume de carburant</b> nécessaire (en litres).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="e1p" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><code>calculer_carburant</code>. Explicite l'entrée et la sortie de la fonction.</p>
+    <div class="td-correction"><p>Entrée : la distance à parcourir, en parsecs (un nombre). Sortie : le volume de carburant nécessaire, en litres (un nombre).</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="e2" data-reponse="150|150 L|150 litres">
+    <p class="td-consigne"><code>calculer_carburant</code>. Si l'entrée est <code>10</code>, quelle est la sortie ?</p>
+    <p class="td-retour" data-si="25">Tu as additionné. Chaque parsec coûte 15 litres : on multiplie.</p>
+    <p class="td-aide">15 litres pour 1 parsec : combien pour 10 parsecs ?</p>
+    <div class="td-correction"><p><code>10 * 15</code> vaut <b>150</b> litres.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="e3" data-reponse="2000|2000 parsecs">
+    <p class="td-consigne"><code>calculer_carburant</code>. Donne une entrée pour laquelle la sortie est <code>30000</code>.</p>
+    <p class="td-retour" data-si="450000">Tu as multiplié la sortie par 15. Ici, on cherche la distance : on fait l'opération inverse.</p>
+    <p class="td-aide">On cherche la distance <i>d</i> telle que <i>d</i> × 15 = 30 000.</p>
+    <div class="td-correction"><p><code>30000 / 15</code> vaut <b>2000</b> : pour 2000 parsecs, il faut 30 000 litres.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="e4">
+    <p class="td-consigne"><code>calculer_carburant</code>. La logique : complète chaque case.</p>
+    <pre class="td-code">
+# Je commence par définir la fonction nommée [[calculer_carburant]].
+# Cette fonction accepte un paramètre d'entrée appelé [[distance|d|parsecs|nb_parsecs]].
+# À l'intérieur, je crée une variable locale appelée [[carburant|volume|litres|consommation]].
+# Pour calculer sa valeur, je multiplie la distance reçue en entrée
+# par le coefficient de consommation, qui est de [[15]].
+# Enfin, j'utilise l'instruction [[return]] pour renvoyer la valeur
+# contenue dans la variable [[carburant|volume|litres|consommation]].</pre>
+    <p class="td-aide">Le nom de la fonction est dans le titre de l'exercice.</p>
+    <p class="td-aide">Pour le paramètre et la variable locale, choisis des noms qui disent ce qu'ils contiennent. La correction en ligne accepte <code>distance</code> (ou <code>d</code>) et <code>carburant</code> (ou <code>volume</code>, <code>litres</code>).</p>
+    <div class="td-correction">
+      <p>La logique décrit exactement cette fonction :</p>
+      <pre class="td-code">
+def calculer_carburant(distance):
+    carburant = distance * 15
+    return carburant</pre>
+    </div>
+  </section>
+
+  <p><b>La fonction <code>est_allie</code></b> (simple). Pour éviter les tirs amis, les systèmes de défense doivent identifier les matricules des vaisseaux. Un vaisseau appartient à notre flotte si son matricule commence par les caractères <code>"RX"</code> ou <code>"CZ"</code>. La fonction répond par vrai (<code>True</code>) ou faux (<code>False</code>).</p>
+
+  <section class="td-q" data-type="qcu" id="f1" data-support="ecran">
+    <p class="td-consigne"><code>est_allie</code>. Quelles sont l'entrée et la sortie de la fonction ?</p>
+    <ul class="td-options">
+      <li data-juste>entrée : <code>matricule</code>, une chaîne (<code>str</code>) ; sortie : un booléen (<code>bool</code>)</li>
+      <li data-retour="La réponse est True ou False, sans guillemets : un booléen, pas un texte.">entrée : <code>matricule</code>, une chaîne ; sortie : le texte <code>"Vrai"</code> ou <code>"Faux"</code></li>
+      <li data-retour="Un matricule comme RXD6 contient des lettres : c'est une chaîne de caractères.">entrée : <code>matricule</code>, un entier (<code>int</code>) ; sortie : un booléen</li>
+      <li data-retour="C'est l'inverse : on donne un matricule, la fonction répond vrai ou faux.">entrée : un booléen ; sortie : <code>matricule</code>, une chaîne</li>
+    </ul>
+    <p class="td-aide">Un matricule comme <code>RXD6</code> contient des lettres. La réponse est vrai ou faux.</p>
+    <div class="td-correction"><p>Entrée : <code>matricule</code>, une chaîne de caractères. Sortie : un booléen, <code>True</code> ou <code>False</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="f1p" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><code>est_allie</code>. Explicite l'entrée (la chaîne <code>matricule</code>) et la sortie (un booléen).</p>
+    <div class="td-correction"><p>Entrée : <code>matricule</code>, une chaîne de caractères (par exemple <code>"RXD6"</code>). Sortie : un booléen, <code>True</code> si le matricule commence par <code>"RX"</code> ou <code>"CZ"</code>, <code>False</code> sinon.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="f2">
+    <p class="td-consigne"><code>est_allie</code>. Quelle est la sortie si l'entrée est <code>"RXD6"</code>, puis si l'entrée est <code>"D6F4"</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>True</code>, puis <code>False</code></li>
+      <li data-retour="RXD6 commence par RX : c'est un allié."><code>False</code>, puis <code>False</code></li>
+      <li data-retour="D6F4 commence par D6 : ni RX, ni CZ."><code>True</code>, puis <code>True</code></li>
+      <li data-retour="C'est l'inverse : regarde les deux premiers caractères de chaque matricule."><code>False</code>, puis <code>True</code></li>
+    </ul>
+    <p class="td-aide">Regarde seulement les deux premiers caractères de chaque matricule.</p>
+    <div class="td-correction"><p><code>"RXD6"</code> commence par <code>"RX"</code> : <code>True</code>. <code>"D6F4"</code> commence par <code>"D6"</code> : <code>False</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="f3" data-support="ecran">
+    <p class="td-consigne"><code>est_allie</code>. Quelle entrée donne la sortie <code>True</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>"CZ81"</code></li>
+      <li data-retour="XR n'est pas RX : l'ordre des caractères compte."><code>"XR12"</code></li>
+      <li data-retour="Python distingue les majuscules des minuscules : &quot;cz&quot; n'est pas &quot;CZ&quot;."><code>"cz81"</code></li>
+      <li data-retour="RX est dans le matricule, mais pas au début."><code>"A-RX5"</code></li>
+    </ul>
+    <p class="td-aide">Le matricule doit <b>commencer</b> par <code>RX</code> ou <code>CZ</code>, en majuscules.</p>
+    <div class="td-correction"><p><code>"CZ81"</code> commence par <code>"CZ"</code> : la fonction renvoie <code>True</code>. Toute chaîne qui commence par <code>RX</code> ou <code>CZ</code> convient.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="f3p" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code>est_allie</code>. Donne une entrée pour la sortie <code>True</code>.</p>
+    <div class="td-correction"><p>Toute chaîne qui commence par <code>RX</code> ou <code>CZ</code> : par exemple <code>"CZ81"</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="f4" data-support="ecran">
+    <p class="td-consigne"><code>est_allie</code>. Quelle entrée donne la sortie <code>False</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>"ZC07"</code></li>
+      <li data-retour="RX7 commence par RX : la fonction renvoie True."><code>"RX7"</code></li>
+      <li data-retour="CZCZ commence par CZ : la fonction renvoie True."><code>"CZCZ"</code></li>
+      <li data-retour="RX00 commence par RX : la fonction renvoie True."><code>"RX00"</code></li>
+    </ul>
+    <p class="td-aide">Il faut un matricule qui ne commence ni par <code>RX</code>, ni par <code>CZ</code>.</p>
+    <div class="td-correction"><p><code>"ZC07"</code> commence par <code>"ZC"</code> : ni <code>RX</code>, ni <code>CZ</code>, donc <code>False</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="f4p" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code>est_allie</code>. Donne une entrée pour la sortie <code>False</code>.</p>
+    <div class="td-correction"><p>Toute chaîne qui ne commence ni par <code>RX</code>, ni par <code>CZ</code> : par exemple <code>"D6F4"</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="f5">
+    <p class="td-consigne"><code>est_allie</code>. La logique : complète chaque case.</p>
+    <pre class="td-code">
+# Je définis la fonction [[est_allie]] avec pour paramètre
+# la variable [[matricule]].
+# J'utilise une structure de condition [[if]] pour vérifier
+# le début de la chaîne.
+# Le test consiste à vérifier si les deux premiers caractères du
+# matricule sont égaux à [["RX"|RX]] ou bien égaux à [["CZ"|CZ]].
+# Si le test est positif, je renvoie immédiatement la valeur [[True]].
+# Dans le cas contraire (sinon), je renvoie la valeur [[False]].</pre>
+    <p class="td-aide">Les mots à écrire sont des mots de Python : le mot de la condition, et les deux valeurs d'un booléen.</p>
+    <p class="td-aide">Écris <code>RX</code> et <code>CZ</code> dans l'ordre de l'énoncé.</p>
+    <div class="td-correction"><p>Fonction <code>est_allie</code>, paramètre <code>matricule</code> ; une structure <code>if</code> ; les deux premiers caractères comparés à <code>"RX"</code> puis à <code>"CZ"</code> ; <code>True</code> si le test est positif, <code>False</code> sinon.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="f6" data-fichier="allie.py" data-lignes="5">
+    <p class="td-consigne"><code>est_allie</code>. À toi de coder : écris la fonction complète. Les tests l'essaient avec plusieurs matricules quand tu lances ton programme.</p>
+    <pre class="td-depart">
+def est_allie(matricule):
+    # ta fonction ici
+    pass
+</pre>
+    <script type="text/x-python" class="td-tests">
+for m, attendu in [("RXD6", True), ("D6F4", False), ("CZ81", True), ("XR12", False),
+                   ("A-RX5", False), ("cz81", False), ("RX", True), ("ZC07", False)]:
+    obtenu = est_allie(m)
+    assert obtenu == attendu, "est_allie(" + repr(m) + ") renvoie " + repr(obtenu) + " au lieu de " + repr(attendu) + "."
+    assert type(obtenu) == bool, "est_allie(" + repr(m) + ") doit renvoyer un booléen, True ou False."
+</script>
+    <p class="td-aide">Les deux premiers caractères d'une chaîne : <code>matricule[0:2]</code>.</p>
+    <p class="td-aide">Deux tests réunis par <code>or</code> : <code>matricule[0:2] == "RX" or matricule[0:2] == "CZ"</code>.</p>
+    <p class="td-aide">La fonction doit <b>renvoyer</b> (<code>return</code>) <code>True</code> ou <code>False</code>, pas les afficher.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+def est_allie(matricule):
+    if matricule[0:2] == "RX" or matricule[0:2] == "CZ":
+        return True
+    else:
+        return False</pre>
+      <p>On peut aussi écrire <code>return matricule[0:2] in ("RX", "CZ")</code>.</p></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="feuille-4.html">feuille 4 sur 5, sceller les données et le code de César</a>. <b>Avant :</b> <a href="feuille-2.html">feuille 2</a>.</p>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Avant d'écrire une fonction : son <b>entrée</b>, sa <b>sortie</b>, un <b>exemple</b> calculé à la main, puis sa <b>logique</b> étape par étape.</p>
+    <p>Une fonction qui répond par oui ou non <b>renvoie</b> un booléen : <code>return True</code> ou <code>return False</code>.</p><span class="td-margouillat" data-cachette="memo" style="--r:-6deg;--s:-1"></span>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/python-exercices-bases-premiere/mission-fonctions/feuille-3.html">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

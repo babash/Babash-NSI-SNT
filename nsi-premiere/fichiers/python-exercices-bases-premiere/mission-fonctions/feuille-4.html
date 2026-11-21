@@ -1,0 +1,248 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Interception des pirates : TD en ligne</title>
+  <meta name="description" content="Mission « interception des pirates », feuille 4 sur 5 : écrire une fonction qui parcourt une liste ou une chaîne (1re NSI). TD en ligne auto-correctif et imprimable.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsi1-mission-fonctions-4" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-ordre="melange" data-code="obligatoire" data-feuille="4">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:91.67%;--y:79.46%;--r:-6deg;--l:4.2%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Les fonctions</span></p>
+        <h1>Interception des pirates</h1>
+        <p class="td-accroche">Mission · feuille 4 sur 5</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=fonctions" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h5v1h-5zM15 0h2v1h-2zM19 0h2v1h-2zM22 0h2v1h-2zM25 0h2v1h-2zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM12 1h2v1h-2zM18 1h2v1h-2zM21 1h4v1h-4zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM11 2h6v1h-6zM19 2h1v1h-1zM21 2h1v1h-1zM23 2h1v1h-1zM25 2h2v1h-2zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h3v1h-3zM15 3h1v1h-1zM17 3h2v1h-2zM20 3h2v1h-2zM23 3h3v1h-3zM27 3h2v1h-2zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h2v1h-2zM15 5h2v1h-2zM20 5h1v1h-1zM22 5h2v1h-2zM25 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM10 7h2v1h-2zM13 7h2v1h-2zM17 7h2v1h-2zM20 7h1v1h-1zM22 7h2v1h-2zM25 7h1v1h-1zM27 7h2v1h-2zM0 8h1v1h-1zM3 8h7v1h-7zM14 8h2v1h-2zM19 8h1v1h-1zM21 8h3v1h-3zM26 8h1v1h-1zM28 8h2v1h-2zM32 8h1v1h-1zM34 8h3v1h-3zM3 9h2v1h-2zM8 9h1v1h-1zM10 9h1v1h-1zM13 9h1v1h-1zM16 9h3v1h-3zM24 9h2v1h-2zM27 9h1v1h-1zM29 9h1v1h-1zM31 9h2v1h-2zM35 9h1v1h-1zM0 10h3v1h-3zM4 10h4v1h-4zM10 10h3v1h-3zM14 10h3v1h-3zM19 10h3v1h-3zM23 10h1v1h-1zM26 10h6v1h-6zM33 10h1v1h-1zM36 10h1v1h-1zM4 11h2v1h-2zM7 11h1v1h-1zM10 11h1v1h-1zM12 11h1v1h-1zM14 11h1v1h-1zM16 11h2v1h-2zM19 11h2v1h-2zM23 11h2v1h-2zM26 11h2v1h-2zM29 11h1v1h-1zM31 11h6v1h-6zM1 12h2v1h-2zM5 12h9v1h-9zM15 12h2v1h-2zM23 12h2v1h-2zM28 12h1v1h-1zM30 12h2v1h-2zM36 12h1v1h-1zM0 13h1v1h-1zM2 13h3v1h-3zM7 13h2v1h-2zM10 13h1v1h-1zM12 13h5v1h-5zM21 13h3v1h-3zM25 13h1v1h-1zM27 13h1v1h-1zM32 13h2v1h-2zM1 14h3v1h-3zM5 14h2v1h-2zM10 14h1v1h-1zM14 14h2v1h-2zM18 14h2v1h-2zM25 14h6v1h-6zM32 14h5v1h-5zM7 15h1v1h-1zM10 15h2v1h-2zM13 15h2v1h-2zM16 15h1v1h-1zM19 15h1v1h-1zM21 15h2v1h-2zM24 15h1v1h-1zM26 15h1v1h-1zM28 15h4v1h-4zM33 15h2v1h-2zM3 16h5v1h-5zM9 16h4v1h-4zM14 16h1v1h-1zM17 16h3v1h-3zM21 16h2v1h-2zM24 16h2v1h-2zM30 16h1v1h-1zM34 16h1v1h-1zM1 17h2v1h-2zM9 17h1v1h-1zM11 17h1v1h-1zM13 17h2v1h-2zM17 17h1v1h-1zM22 17h2v1h-2zM27 17h1v1h-1zM31 17h1v1h-1zM33 17h2v1h-2zM1 18h2v1h-2zM4 18h3v1h-3zM10 18h1v1h-1zM13 18h1v1h-1zM16 18h1v1h-1zM18 18h2v1h-2zM21 18h1v1h-1zM24 18h2v1h-2zM27 18h4v1h-4zM33 18h2v1h-2zM36 18h1v1h-1zM0 19h1v1h-1zM7 19h7v1h-7zM15 19h2v1h-2zM18 19h3v1h-3zM22 19h2v1h-2zM25 19h9v1h-9zM36 19h1v1h-1zM1 20h1v1h-1zM3 20h1v1h-1zM5 20h3v1h-3zM9 20h1v1h-1zM11 20h1v1h-1zM13 20h1v1h-1zM16 20h2v1h-2zM19 20h1v1h-1zM23 20h2v1h-2zM26 20h8v1h-8zM3 21h1v1h-1zM5 21h1v1h-1zM7 21h1v1h-1zM9 21h1v1h-1zM12 21h4v1h-4zM17 21h3v1h-3zM22 21h2v1h-2zM25 21h3v1h-3zM32 21h1v1h-1zM34 21h1v1h-1zM1 22h1v1h-1zM4 22h1v1h-1zM6 22h5v1h-5zM12 22h5v1h-5zM21 22h1v1h-1zM23 22h2v1h-2zM26 22h6v1h-6zM33 22h1v1h-1zM35 22h2v1h-2zM0 23h1v1h-1zM3 23h2v1h-2zM7 23h1v1h-1zM9 23h2v1h-2zM12 23h1v1h-1zM14 23h3v1h-3zM18 23h1v1h-1zM20 23h1v1h-1zM26 23h4v1h-4zM31 23h5v1h-5zM0 24h4v1h-4zM6 24h1v1h-1zM8 24h1v1h-1zM10 24h1v1h-1zM15 24h1v1h-1zM17 24h1v1h-1zM20 24h3v1h-3zM24 24h1v1h-1zM27 24h2v1h-2zM30 24h2v1h-2zM0 25h4v1h-4zM5 25h1v1h-1zM8 25h1v1h-1zM14 25h1v1h-1zM18 25h2v1h-2zM21 25h2v1h-2zM24 25h1v1h-1zM26 25h4v1h-4zM32 25h3v1h-3zM0 26h3v1h-3zM5 26h2v1h-2zM9 26h2v1h-2zM12 26h4v1h-4zM21 26h2v1h-2zM25 26h1v1h-1zM27 26h1v1h-1zM30 26h1v1h-1zM32 26h1v1h-1zM34 26h3v1h-3zM0 27h1v1h-1zM2 27h1v1h-1zM5 27h1v1h-1zM7 27h1v1h-1zM9 27h4v1h-4zM14 27h1v1h-1zM16 27h1v1h-1zM19 27h1v1h-1zM23 27h2v1h-2zM26 27h1v1h-1zM31 27h1v1h-1zM33 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h4v1h-4zM10 28h1v1h-1zM14 28h3v1h-3zM19 28h2v1h-2zM22 28h4v1h-4zM28 28h9v1h-9zM8 29h1v1h-1zM10 29h1v1h-1zM12 29h4v1h-4zM17 29h1v1h-1zM19 29h1v1h-1zM21 29h1v1h-1zM24 29h5v1h-5zM32 29h1v1h-1zM34 29h2v1h-2zM0 30h7v1h-7zM8 30h1v1h-1zM10 30h4v1h-4zM15 30h1v1h-1zM17 30h4v1h-4zM23 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM36 30h1v1h-1zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM10 31h2v1h-2zM13 31h1v1h-1zM20 31h2v1h-2zM23 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h4v1h-4zM13 32h1v1h-1zM16 32h1v1h-1zM18 32h1v1h-1zM20 32h2v1h-2zM26 32h7v1h-7zM35 32h1v1h-1zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h4v1h-4zM13 33h1v1h-1zM20 33h4v1h-4zM26 33h5v1h-5zM33 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM9 34h2v1h-2zM12 34h1v1h-1zM14 34h1v1h-1zM23 34h2v1h-2zM27 34h1v1h-1zM29 34h1v1h-1zM32 34h2v1h-2zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM10 35h2v1h-2zM14 35h2v1h-2zM17 35h2v1h-2zM22 35h1v1h-1zM26 35h2v1h-2zM29 35h2v1h-2zM32 35h1v1h-1zM34 35h3v1h-3zM0 36h7v1h-7zM8 36h2v1h-2zM11 36h3v1h-3zM16 36h1v1h-1zM19 36h1v1h-1zM24 36h1v1h-1zM27 36h2v1h-2zM31 36h1v1h-1zM36 36h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> écrire une fonction qui parcourt une liste ou une chaîne et construit son résultat.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>trouver des entrées qui donnent une sortie voulue ;</li>
+        <li>construire une nouvelle liste avec <code>append</code> dans une boucle ;</li>
+        <li>construire une chaîne par concaténation, lettre après lettre ;</li>
+        <li>utiliser la position d'une lettre dans l'alphabet.</li>
+      </ul>
+      <p class="td-duree">Feuille 4 sur 5 · 55 minutes · 11 questions · seul·e ou en binôme · après la feuille 3</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p class="td-ecran-seul">Cette feuille fait suite à la <a href="feuille-3.html">feuille 3 de la mission « interception des pirates »</a>.</p>
+
+  <h2 class="td-partie">2. Protocoles de l'équipage : rédiger (suite)</h2>
+
+  <p><b>La fonction <code>sceller_donnees</code></b> (complexe). Les pirates tentent d'écouter nos fréquences radio. Pour les protéger, nous allons appliquer un « masque » numérique. La fonction prend une liste de fréquences (des nombres) et une clé secrète. Elle transforme chaque fréquence de la liste en lui ajoutant la valeur de la clé.</p>
+  <p><b>Exemple :</b> pour <code>[100, 200]</code> et une clé de <code>7</code>, la sortie est <code>[107, 207]</code>.</p>
+
+  <section class="td-q" data-type="qcu" id="g1" data-support="ecran">
+    <p class="td-consigne"><code>sceller_donnees</code>. Quelles sont les entrées et la sortie de la fonction ?</p>
+    <ul class="td-options">
+      <li data-juste>entrées : une liste de fréquences et une clé entière ; sortie : une nouvelle liste de fréquences</li>
+      <li data-retour="La clé est la même pour toutes les fréquences : c'est un seul nombre, pas une liste.">entrées : une liste de fréquences et une liste de clés ; sortie : une liste</li>
+      <li data-retour="Chaque fréquence est transformée : la sortie contient plusieurs nombres, donc c'est une liste.">entrées : une liste de fréquences et une clé ; sortie : un seul nombre, la somme</li>
+      <li data-retour="La clé est donnée à la fonction : c'est une entrée, pas une sortie.">entrée : une liste de fréquences ; sortie : la clé secrète</li>
+    </ul>
+    <p class="td-aide">Relis l'exemple : <code>[100, 200]</code> et <code>7</code> donnent <code>[107, 207]</code>.</p>
+    <div class="td-correction"><p>Deux entrées : une liste de fréquences et une clé (un entier). Une sortie : une nouvelle liste, où chaque fréquence a reçu la clé en plus.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="g1p" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><code>sceller_donnees</code>. Identifie les entrées (une liste de fréquences et une clé entière) et la sortie.</p>
+    <div class="td-correction"><p>Entrées : une liste de fréquences (des nombres) et une clé (un entier). Sortie : une nouvelle liste, où la clé est ajoutée à chaque fréquence.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="g2" data-support="ecran">
+    <p class="td-consigne"><code>sceller_donnees</code>. Quelles entrées donnent la sortie <code>[23, 33, 43, 63]</code> ? (Plusieurs entrées sont possibles : une seule est proposée ici.)</p>
+    <ul class="td-options">
+      <li data-juste><code>[20, 30, 40, 60]</code> et <code>3</code></li>
+      <li data-retour="50 + 3 donne 53, pas 63 : vérifie chaque nombre."><code>[20, 30, 40, 50]</code> et <code>3</code></li>
+      <li data-retour="La clé est ajoutée : 26 + 3 donne 29. Il fallait enlever 3, pas l'ajouter."><code>[26, 36, 46, 66]</code> et <code>3</code></li>
+      <li data-retour="20 + 13 donne 33, pas 23."><code>[20, 30, 40, 60]</code> et <code>13</code></li>
+    </ul>
+    <p class="td-aide">Pour chaque proposition, ajoute la clé à chaque nombre de la liste et compare.</p>
+    <div class="td-correction"><p>20 + 3 = 23, 30 + 3 = 33, 40 + 3 = 43, 60 + 3 = 63. D'autres entrées marchent aussi : <code>[13, 23, 33, 53]</code> et <code>10</code>, ou <code>[23, 33, 43, 63]</code> et <code>0</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="g2p" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code>sceller_donnees</code>. Donne des entrées pour la sortie <code>[23, 33, 43, 63]</code> (plusieurs réponses possibles).</p>
+    <div class="td-correction"><p>Par exemple <code>[20, 30, 40, 60]</code> et <code>3</code>, ou <code>[13, 23, 33, 53]</code> et <code>10</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="g3" data-support="ecran">
+    <p class="td-consigne"><code>sceller_donnees</code>. Quelles entrées donnent la sortie <code>[7, 14, 9]</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>[5, 12, 7]</code> et <code>2</code></li>
+      <li data-retour="5 + 7 donne 12, pas 7."><code>[5, 12, 7]</code> et <code>7</code></li>
+      <li data-retour="7 + 7 donne 14 : la clé change toutes les fréquences."><code>[7, 14, 9]</code> et <code>7</code></li>
+      <li data-retour="2 + 7 donne 9, pas 7 : vérifie le premier nombre."><code>[2, 7, 2]</code> et <code>7</code></li>
+    </ul>
+    <p class="td-aide">Ajoute la clé à chaque nombre de la liste proposée, puis compare avec <code>[7, 14, 9]</code>.</p>
+    <div class="td-correction"><p>5 + 2 = 7, 12 + 2 = 14, 7 + 2 = 9. Autres possibilités : <code>[0, 7, 2]</code> et <code>7</code>, ou <code>[7, 14, 9]</code> et <code>0</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="g3p" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code>sceller_donnees</code>. Donne des entrées pour la sortie <code>[7, 14, 9]</code> (plusieurs réponses possibles).</p>
+    <div class="td-correction"><p>Par exemple <code>[5, 12, 7]</code> et <code>2</code>, ou <code>[0, 7, 2]</code> et <code>7</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="g4">
+    <p class="td-consigne"><code>sceller_donnees</code>. La logique : complète chaque case.</p>
+    <pre class="td-code">
+# Je définis la fonction [[sceller_donnees]] avec ses deux entrées :
+# [[frequences|liste]] et [[cle|clé]].
+# Au début, je crée une variable locale nommée [[resultat|scellee|nouvelle_liste]]
+# qui contient une liste [[vide]].
+# J'installe un parcours par [[boucle|for|boucle for]] afin de parcourir un par un
+# tous les éléments de la liste [[frequences|liste]].
+# Dans la boucle, je crée une variable temporaire égale à la valeur
+# de la fréquence actuelle [[additionnée|ajoutée|additionnee|ajoutee]] à la [[clé|cle]].
+# J'utilise ensuite une méthode pour [[ajouter]] ce nouveau nombre
+# à la fin de ma liste [[resultat|scellee|nouvelle_liste]].
+# Une fois la boucle finie, je renvoie la liste [[resultat|scellee|nouvelle_liste]] complète.</pre>
+    <p class="td-aide">Les noms des entrées et de la liste sont libres. La correction en ligne accepte <code>frequences</code> (ou <code>liste</code>), <code>cle</code>, et <code>resultat</code> (ou <code>scellee</code>, <code>nouvelle_liste</code>).</p>
+    <p class="td-aide">La méthode qui ajoute un élément à la fin d'une liste s'appelle <code>append</code> : en français, « ajouter ».</p>
+    <div class="td-correction"><p>Fonction <code>sceller_donnees</code>, entrées <code>frequences</code> et <code>cle</code> ; une liste <code>resultat</code> d'abord <b>vide</b> ; une <b>boucle</b> <code>for</code> sur <code>frequences</code> ; chaque fréquence <b>additionnée</b> à la <b>clé</b> ; <code>append</code> pour l'<b>ajouter</b> à <code>resultat</code>, renvoyée à la fin.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="g5" data-fichier="sceller.py" data-lignes="6">
+    <p class="td-consigne"><code>sceller_donnees</code>. À toi de coder : écris la fonction complète. Les tests l'essaient quand tu lances ton programme.</p>
+    <pre class="td-depart">
+def sceller_donnees(frequences, cle):
+    # ta fonction ici
+    pass
+</pre>
+    <script type="text/x-python" class="td-tests">
+for f, c, attendu in [([100, 200], 7, [107, 207]), ([20, 30, 40, 60], 3, [23, 33, 43, 63]),
+                      ([5, 12, 7], 2, [7, 14, 9]), ([1, 2, 3], 0, [1, 2, 3]), ([], 5, [])]:
+    copie = list(f)
+    obtenu = sceller_donnees(copie, c)
+    assert obtenu == attendu, "sceller_donnees(" + repr(f) + ", " + repr(c) + ") renvoie " + repr(obtenu) + " au lieu de " + repr(attendu) + "."
+    assert copie == f, "La liste reçue a changé : la fonction doit construire une nouvelle liste."
+</script>
+    <p class="td-aide">Commence par <code>resultat = []</code>, puis une boucle <code>for frequence in frequences:</code>.</p>
+    <p class="td-aide">Dans la boucle : <code>resultat.append(frequence + cle)</code>. Après la boucle : <code>return resultat</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+def sceller_donnees(frequences, cle):
+    resultat = []
+    for frequence in frequences:
+        nouvelle = frequence + cle
+        resultat.append(nouvelle)
+    return resultat</pre></div>
+  </section>
+
+  <p><b>La fonction <code>code_cesar_un</code></b> (complexe). Pour crypter un texte simple, nous utilisons le décalage d'un rang : chaque lettre est remplacée par la lettre suivante dans l'alphabet (le <code>a</code> devient <code>b</code>, le <code>b</code> devient <code>c</code>, etc.). Les textes sont en minuscules, sans accents ; les espaces restent des espaces.</p>
+  <p><b>Entrée :</b> <code>mot</code>, une chaîne (<code>str</code>). <b>Sortie :</b> <code>mot_code</code>, une chaîne (<code>str</code>).</p>
+
+  <section class="td-q" data-type="courte" id="h1" data-reponse="cpokpvs upvu mf npoef">
+    <p class="td-consigne"><code>code_cesar_un</code>. Si l'entrée est <code>"bonjour tout le monde"</code>, quelle est la sortie ?</p>
+    <p class="td-retour" data-si="anmintq snts kd lnmcd">Tu as décalé vers la gauche (b devient a). Ici, chaque lettre devient la <b>suivante</b>.</p>
+    <p class="td-aide">b devient c, o devient p, n devient o… Les espaces ne bougent pas.</p>
+    <div class="td-correction"><p><b><code>"cpokpvs upvu mf npoef"</code></b> : chaque lettre est remplacée par la suivante.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="h2" data-reponse="kf tvjt upo bnj">
+    <p class="td-consigne"><code>code_cesar_un</code>. Si l'entrée est <code>"je suis ton ami"</code>, quelle est la sortie ?</p>
+    <p class="td-aide">j devient k, e devient f… Les espaces ne bougent pas.</p>
+    <div class="td-correction"><p><b><code>"kf tvjt upo bnj"</code></b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="h3" data-reponse="la chance est en toi">
+    <p class="td-consigne"><code>code_cesar_un</code>. Le message intercepté est <code>"mb dibodf ftu fo upj"</code>. Chaque lettre a été décalée d'un rang vers la droite (a devient b). Retrouve le message original.</p>
+    <p class="td-retour" data-si="nc ejcpeg guv gp vqk">Tu as encore codé le message. Pour le décoder, on recule d'un rang : b redevient a.</p>
+    <p class="td-aide">Pour décoder, fais l'inverse : chaque lettre devient la <b>précédente</b> (m redevient l).</p>
+    <div class="td-correction"><p><b>« la chance est en toi »</b> : m redevient l, b redevient a, et ainsi de suite.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="h4" data-reponse="petit a petit l oiseau fait son nid|petit a petit l'oiseau fait son nid">
+    <p class="td-consigne"><code>code_cesar_un</code>. Donne l'entrée qui produit la sortie <code>"qfuju b qfuju m pjtfbv gbju tpo oje"</code>.</p>
+    <p class="td-aide">Comme pour la question précédente : chaque lettre devient la précédente.</p>
+    <div class="td-correction"><p><b><code>"petit a petit l oiseau fait son nid"</code></b> (le proverbe « petit à petit, l'oiseau fait son nid », sans accents ni apostrophe).</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="h5">
+    <p class="td-consigne"><code>code_cesar_un</code>. La logique : complète chaque case.</p>
+    <pre class="td-code">
+# Je définis la fonction [[code_cesar_un]] avec le paramètre [[mot]].
+# Je déclare une variable locale nommée [[alphabet]] qui contient
+# toutes les lettres de "a" à "z".
+# J'initialise une variable [[mot_code]] avec [[""|une chaîne vide|une chaine vide|chaîne vide|chaine vide]].
+# Je lance une boucle pour examiner chaque [[lettre|caractère|caractere]] présente
+# dans le [[mot]] de départ.
+# Si la lettre n'est pas dans l'alphabet (une espace), je l'ajoute
+# telle quelle à mot_code. Sinon, pour chaque lettre :
+# je cherche d'abord son [[indice|index|rang]] (sa position) dans [[alphabet]] ;
+# je calcule la position suivante en ajoutant [[1]] à cet indice ;
+# je récupère la lettre à ce nouvel indice dans l'alphabet et je
+# l'[[ajoute|concatène|concatene]] (concaténation) à ma chaîne [[mot_code]].
+# Je termine en renvoyant le [[mot_code]] final.</pre>
+    <p class="td-aide">Les noms viennent de l'énoncé : le paramètre <code>mot</code>, la sortie <code>mot_code</code>.</p>
+    <p class="td-aide">La position d'une lettre dans une chaîne s'appelle son <b>indice</b> : <code>alphabet.index("c")</code> vaut 2.</p>
+    <div class="td-correction"><p>Fonction <code>code_cesar_un</code>, paramètre <code>mot</code> ; <code>alphabet</code> ; <code>mot_code</code> initialisée avec une chaîne vide <code>""</code> ; une boucle sur chaque <b>lettre</b> du <code>mot</code> ; son <b>indice</b> dans <code>alphabet</code>, plus <b>1</b> ; la nouvelle lettre est <b>ajoutée</b> à <code>mot_code</code>, renvoyé à la fin.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="h6" data-fichier="cesar.py" data-lignes="9">
+    <p class="td-consigne"><code>code_cesar_un</code>. À toi de coder : écris la fonction complète (sans la lettre z, que le bonus traitera). Les tests l'essaient quand tu lances ton programme.</p>
+    <pre class="td-depart">
+def code_cesar_un(mot):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    # ta fonction ici
+    pass
+</pre>
+    <script type="text/x-python" class="td-tests">
+for m, attendu in [("abc", "bcd"), ("bonjour tout le monde", "cpokpvs upvu mf npoef"),
+                   ("je suis ton ami", "kf tvjt upo bnj"), ("la chance est en toi", "mb dibodf ftu fo upj"), ("", "")]:
+    obtenu = code_cesar_un(m)
+    assert obtenu == attendu, "code_cesar_un(" + repr(m) + ") renvoie " + repr(obtenu) + " au lieu de " + repr(attendu) + "."
+</script>
+    <p class="td-aide">Commence par <code>mot_code = ""</code>, puis <code>for lettre in mot:</code>.</p>
+    <p class="td-aide">Une espace n'est pas dans l'alphabet : teste <code>if lettre in alphabet:</code> avant de chercher son indice.</p>
+    <p class="td-aide">La lettre suivante : <code>alphabet[alphabet.index(lettre) + 1]</code>, que tu ajoutes avec <code>mot_code = mot_code + …</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+def code_cesar_un(mot):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    mot_code = ""
+    for lettre in mot:
+        if lettre in alphabet:
+            indice = alphabet.index(lettre)
+            mot_code = mot_code + alphabet[indice + 1]
+        else:
+            mot_code = mot_code + lettre
+    return mot_code</pre></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="feuille-5.html">feuille 5 sur 5, les protocoles de haute sécurité (bonus)</a>. <b>Avant :</b> <a href="feuille-3.html">feuille 3</a>.</p>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Construire une liste : <code>resultat = []</code> avant la boucle, <code>resultat.append(…)</code> dedans, <code>return resultat</code> après.</p>
+    <p>Construire une chaîne : <code>mot_code = ""</code> avant la boucle, <code>mot_code = mot_code + …</code> dedans.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/python-exercices-bases-premiere/mission-fonctions/feuille-4.html">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
