@@ -43,8 +43,7 @@
         <li>dérouler un parcours en profondeur dans l'ordre des voisins donné.</li>
       </ul>
       <p class="td-duree">50 minutes · 1 exercice de bac (6 points) · 10 questions · seul·e ou en binôme</p>
-      <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
-      <p>Les énoncés reprennent fidèlement les sujets officiels. Quand le sujet demande un dessin ou une phrase, la page te pose une question courte ou un choix pour vérifier ta réponse écrite.</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés. Ce qui est propre au TD (« Pour répondre ici », coups de pouce) est écrit à part.</p>
       <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. un groupe d'amis (ici) ; 2. <a href="feuille-2.html">visiter toutes les villes</a>.</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
@@ -53,7 +52,8 @@
   <h2 class="td-partie">Exercice 1 · Un groupe d'amis (6 points)</h2>
   <p><b>Sujet :</b> baccalauréat 2024, Amérique du Nord, jour 1 (24-NSIJ1AN1), exercice 2, pages 6 à 8. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-amerique-nord-jour-1.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Amerique_Nord_2024_1.pdf">version de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_amerique_nord_2024_1.pdf">corrigé de l'AEIF</a>.</p>
   <p><i>Cet exercice porte sur les graphes.</i></p>
-  <p>On modélise un groupe de huit ami·es par un graphe : chaque personne est un sommet, chaque amitié une arête. Les personnes sont Anas, Emma, Gabriel, Jade, Lou, Milo, Nina et Yanis. Leurs amitiés :</p>
+  <p>Dans cet exercice, on modélise un groupe de personnes à l'aide d'un graphe.</p>
+  <p>Le groupe est constitué de huit personnes (Anas, Emma, Gabriel, Jade, Lou, Milo, Nina et Yanis) qui possèdent entre elles les relations suivantes :</p>
   <ul>
     <li>Gabriel est ami avec Jade, Yanis, Nina et Milo ;</li>
     <li>Jade est amie avec Gabriel, Yanis, Emma et Lou ;</li>
@@ -65,10 +65,12 @@
     <li>Lou est amie avec Jade.</li>
   </ul>
 
-  <p><b>Partie A : matrice d'adjacence</b></p>
+  <p><b>Partie A : Matrice d'adjacence</b></p>
+  <p>On choisit de représenter cette situation par un graphe dont les sommets sont les personnes et les arêtes représentent les liens d'amitié.</p>
 
   <section class="td-q" data-type="courte" id="q1" data-reponse="13|treize" data-etiquette="Nombre d'arêtes :">
-    <p class="td-consigne">Dessine sur ta copie ce graphe, en représentant chaque personne par la première lettre de son prénom entourée d'un cercle. Pour vérifier ton dessin : combien d'arêtes compte-t-il ?</p>
+    <p class="td-consigne"><b>1.</b> Dessiner sur votre copie ce graphe en représentant chaque personne par la première lettre de son prénom entourée d'un cercle et où un lien d'amitié est représenté par un trait entre deux personnes.</p>
+    <p><b>Pour répondre ici :</b> combien d'arêtes compte ton dessin ?</p>
     <p class="td-retour" data-si="26|vingt-six">Chaque amitié est comptée deux fois dans la liste (Gabriel avec Jade, puis Jade avec Gabriel). Une arête relie deux sommets : divise par 2.</p>
     <p class="td-aide">Additionne les nombres d'ami·es de chaque personne : 4 + 4 + 6 + 3 + 3 + 3 + 2 + 1.</p>
     <p class="td-aide">Chaque arête a deux extrémités : elle est comptée deux fois dans cette somme.</p>
@@ -113,12 +115,11 @@
     </div>
   </section>
 
-  <p>La matrice d'adjacence est un tableau à deux entrées : les lignes et les colonnes correspondent aux sommets, dans l'ordre de la liste <code>sommets</code>. La case vaut 1 si les deux personnes sont amies, 0 sinon.</p>
-  <pre class="td-code">
-sommets = ['G', 'J', 'Y', 'E', 'N', 'M', 'A', 'L']</pre>
+  <p>Une matrice d'adjacence est un tableau à deux entrées dans lequel on trouve en lignes et en colonnes les sommets du graphe.</p>
+  <p>Un lien d'amitié sera représenté par la valeur 1 à l'intersection de la ligne et de la colonne qui représentent les deux amis alors que l'absence de lien d'amitié sera représentée par un 0.</p>
 
   <section class="td-q" data-type="trous" id="q2">
-    <p class="td-consigne">Recopie et complète la déclaration de la matrice d'adjacence du graphe.</p>
+    <p class="td-consigne"><b>2.</b> Recopier et compléter l'implémentation de la déclaration de la matrice d'adjacence du graphe.</p>
     <pre class="td-code">
 # sommets : G, J, Y, E, N, M, A, L
 matrice_adj = [[0, 1, 1, 0, 1, 1, 0, 0],   # G
@@ -136,10 +137,13 @@ matrice_adj = [[0, 1, 1, 0, 1, 1, 0, 0],   # G
     </div>
   </section>
 
-  <p>La fonction <code>position(l, s)</code> renvoie la position du sommet <code>s</code> dans la liste <code>l</code> s'il est présent, et <code>None</code> sinon. Le sujet ne donne pas son code.</p>
+  <p>On dispose de la liste suivante qui identifie les sommets du graphe :</p>
+  <pre class="td-code">
+sommets = ['G', 'J', 'Y', 'E', 'N', 'M', 'A', 'L']</pre>
+  <p>On dispose d'une fonction <code>position(l, s)</code> qui prend en paramètres une liste de sommets <code>l</code> et un nom de sommet <code>s</code> et qui renvoie la position du sommet <code>s</code> dans la liste <code>l</code> s'il est présent et <code>None</code> sinon.</p>
 
   <section class="td-q" data-type="courte" id="q3" data-reponse="0 et None|0, None|0 ; None|0;None|0 None|1 et None|1, None|1 ; None|1;None|1 None" data-etiquette="Les deux résultats, dans l'ordre :">
-    <p class="td-consigne">Indique ce que renvoie chacune des instructions suivantes.</p>
+    <p class="td-consigne"><b>3.</b> Indiquer quels seront les retours de l'exécution des instructions suivantes :</p>
     <pre class="td-code">
 position(sommets, 'G')
 position(sommets, 'Z')</pre>
@@ -152,7 +156,7 @@ position(sommets, 'Z')</pre>
   </section>
 
   <section class="td-q" data-type="trous" id="q4">
-    <p class="td-consigne">Recopie et complète le code de la fonction <code>nb_amis(L, m, s)</code>. Elle prend en paramètres une liste <code>L</code> de noms de sommets, une matrice d'adjacence <code>m</code> et un nom de sommet <code>s</code>. Elle renvoie le nombre d'ami·es de <code>s</code> s'il est dans <code>L</code>, et <code>None</code> sinon.</p>
+    <p class="td-consigne"><b>4.</b> Recopier et compléter le code de la fonction <code>nb_amis(L, m, s)</code> qui prend en paramètres une liste de noms de sommets <code>L</code>, une matrice d'adjacence <code>m</code> d'un graphe et un nom de sommet <code>s</code> et qui renvoie le nombre d'amis du sommet <code>s</code> s'il est présent dans <code>L</code> et <code>None</code> sinon.</p>
     <pre class="td-code">
 def nb_amis(L, m, s):
     pos_s = [[position(L, s)]]
@@ -179,7 +183,7 @@ def nb_amis(L, m, s):
   </section>
 
   <section class="td-q" data-type="courte" id="q5" data-reponse="4|quatre">
-    <p class="td-consigne">Indique ce que renvoie l'instruction suivante.</p>
+    <p class="td-consigne"><b>5.</b> Indiquer quel est le retour de l'exécution de la commande suivante :</p>
     <pre class="td-code">
 nb_amis(sommets, matrice_adj, 'G')</pre>
     <p class="td-aide">C'est la somme de la ligne G de la matrice : <code>[0, 1, 1, 0, 1, 1, 0, 0]</code>.</p>
@@ -188,10 +192,10 @@ nb_amis(sommets, matrice_adj, 'G')</pre>
     </div>
   </section>
 
-  <p><b>Partie B : dictionnaire de listes d'adjacence</b></p>
+  <p><b>Partie B : Dictionnaire de listes d'adjacence</b></p>
 
   <section class="td-q" data-type="qcu" id="q6">
-    <p class="td-consigne">Dans un dictionnaire Python <code>{c: v}</code>, indique ce que représentent <code>c</code> et <code>v</code>.</p>
+    <p class="td-consigne"><b>6.</b> Dans un dictionnaire Python <code>{c : v}</code>, indiquer ce que représentent <code>c</code> et <code>v</code>.</p>
     <ul class="td-options">
       <li data-juste><code>c</code> est une clé et <code>v</code> la valeur associée à cette clé.</li>
       <li data-retour="C'est l'inverse : on accède à la valeur par la clé, avec d[c]."><code>c</code> est une valeur et <code>v</code> sa clé.</li>
@@ -203,8 +207,11 @@ nb_amis(sommets, matrice_adj, 'G')</pre>
     </div>
   </section>
 
+  <p>On appelle <code>graphe</code> le dictionnaire de listes d'adjacence associé au graphe des amis. On rappelle que Gabriel est ami avec Jade, Yanis, Nina et Milo.</p>
+
   <section class="td-q" data-type="trous" id="q7">
-    <p class="td-consigne">Recopie et complète le dictionnaire de listes d'adjacence <code>graphe</code> pour qu'il modélise complètement le groupe d'ami·es. Écris les voisins dans l'ordre de la liste <code>sommets</code>, comme pour <code>'G'</code>.</p>
+    <p class="td-consigne"><b>7.</b> Recopier et compléter le dictionnaire de listes d'adjacence <code>graphe</code> sur votre copie pour qu'il modélise complètement le groupe d'amis.</p>
+    <p><b>Pour répondre ici :</b> écris les voisins dans l'ordre de la liste <code>sommets</code>, comme pour <code>'G'</code>.</p>
     <pre class="td-code">
 graphe = {'G': ['J', 'Y', 'N', 'M'],
           'J': [[ ['G', 'Y', 'E', 'L'] ]],
@@ -222,7 +229,8 @@ graphe = {'G': ['J', 'Y', 'N', 'M'],
   </section>
 
   <section class="td-q" data-type="code" id="q8" data-fichier="amis.py" data-obligatoire>
-    <p class="td-consigne">Écris le code de la fonction <code>nb_amis(d, s)</code>, qui prend en paramètres un dictionnaire de listes d'adjacence <code>d</code> et un nom de sommet <code>s</code>, et renvoie le nombre d'ami·es de <code>s</code>. On suppose que <code>s</code> est bien dans <code>d</code>.</p>
+    <p class="td-consigne"><b>8.</b> Écrire le code de la fonction <code>nb_amis(d, s)</code> qui prend en paramètres un dictionnaire d'adjacence <code>d</code> et un nom de sommet <code>s</code> et qui renvoie le nombre d'amis du nom de sommet <code>s</code>. On suppose que <code>s</code> est bien dans <code>d</code>.</p>
+    <p>Par exemple :</p>
     <pre class="td-sortie-exemple">
 &gt;&gt;&gt; nb_amis(graphe, 'L')
 1</pre>
@@ -248,7 +256,8 @@ def nb_amis(d, s):
     </div>
   </section>
 
-  <p>Milo, Gabriel et Yanis se sont fâché·es, tandis qu'Anas s'est fâché avec Yanis. Le réseau devient :</p>
+  <p>Milo s'est fâché avec Gabriel et Yanis tandis qu'Anas s'est fâché avec Yanis.</p>
+  <p>Le dictionnaire d'adjacence du graphe qui modélise cette nouvelle situation est donné ci-dessous :</p>
   <pre class="td-code">
 graphe = {'G': ['J', 'N'],
           'J': ['G', 'Y', 'E', 'L'],
@@ -258,10 +267,11 @@ graphe = {'G': ['J', 'N'],
           'M': ['A'],
           'A': ['M'],
           'L': ['J']}</pre>
-  <p>On appelle <b>cercle d'amis</b> d'une personne toute personne atteignable dans le graphe à partir d'elle.</p>
+  <p>Pour établir la liste du cercle d'amis d'un sommet, on utilise un parcours en profondeur du graphe à partir de ce sommet. On appelle <b>cercle d'amis</b> de Nom toute personne atteignable dans le graphe à partir de Nom.</p>
 
   <section class="td-q" data-type="cases" id="q9">
-    <p class="td-consigne">Donne la liste du cercle d'amis de Lou : coche toutes les personnes qui en font partie.</p>
+    <p class="td-consigne"><b>9.</b> Donner la liste du cercle d'amis de Lou.</p>
+    <p><b>Pour répondre ici :</b> coche toutes les personnes qui en font partie.</p>
     <ul class="td-options">
       <li data-juste>Jade</li>
       <li data-juste>Gabriel</li>
@@ -278,14 +288,25 @@ graphe = {'G': ['J', 'N'],
     </div>
   </section>
 
+  <p>Un algorithme possible de parcours en profondeur de graphe est donné ci-dessous :</p>
+  <pre class="td-sortie-exemple">
+visités = liste vide des sommets déjà visités
+
+fonction parcours_en_profondeur(d, s)
+    ajouter s à la liste visités
+    pour tous les sommets voisins v de s :
+        si v n'est pas dans la liste visités :
+            parcours_en_profondeur(d, v)
+    retourner la liste visités</pre>
+
   <section class="td-q" data-type="trous" id="q10">
-    <p class="td-consigne">Recopie et complète le code de la fonction <code>parcours_en_profondeur(d, s)</code>, qui renvoie la liste des sommets issue du parcours en profondeur du graphe modélisé par <code>d</code> à partir du sommet <code>s</code>.</p>
+    <p class="td-consigne"><b>10.</b> Recopier et compléter le code de la fonction <code>parcours_en_profondeur(d, s)</code> qui prend en paramètres un dictionnaire d'adjacence <code>d</code> et un sommet <code>s</code> et qui renvoie la liste des sommets issue du parcours en profondeur du graphe modélisé par <code>d</code> à partir du sommet <code>s</code>.</p>
     <pre class="td-code">
 def parcours_en_profondeur(d, s, visites = []):
     [[visites.append(s)|visites += [s] ]]
     for v in d[s]:
         [[if v not in visites:|if not v in visites:|if not (v in visites):]]
-            parcours_en_profondeur(d, v, visites)
+            parcours_en_profondeur(d, v)
     [[return visites]]</pre>
     <p class="td-aide">Ligne 2 : on marque le sommet <code>s</code> comme visité, en l'ajoutant à la liste.</p>
     <p class="td-aide">Ligne 4 : on ne relance le parcours que sur un voisin qui n'a pas encore été visité. Ligne 6 : la fonction renvoie la liste.</p>
@@ -299,6 +320,7 @@ def parcours_en_profondeur(d, s, visites = []):
     return visites</pre>
       <p>Depuis Lou, l'appel donne <code>['L', 'J', 'G', 'N', 'Y', 'E']</code> : on va le plus loin possible (L, J, G, N, Y, E), puis on revient en arrière.</p>
       <p>Attention, piège classique : la valeur par défaut <code>visites = []</code> est créée une seule fois. Un second appel sans troisième paramètre repart de la liste du premier. On écrit plutôt <code>visites=None</code>, puis <code>if visites is None: visites = []</code>.</p>
+      <p><b>Remarque sur le sujet :</b> sa ligne 5 appelle <code>parcours_en_profondeur(d, v)</code> sans transmettre <code>visites</code>. Cela marche ici seulement parce que tous les appels partagent la même liste par défaut. La correction transmet <code>visites</code>, ce qui est plus sûr.</p>
     </div>
   </section>
 

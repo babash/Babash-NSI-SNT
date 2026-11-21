@@ -42,8 +42,7 @@
         <li>parcourir un dictionnaire et construire un nouveau dictionnaire dans une boucle.</li>
       </ul>
       <p class="td-duree">45 minutes · 1 exercice de bac (4 points) · 8 questions · seul·e ou en binôme</p>
-      <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
-      <p>Les énoncés reprennent fidèlement les sujets officiels. Le numéro de la question du sujet est rappelé entre crochets.</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés. Ce qui est propre au TD (« Pour répondre ici », coups de pouce) est écrit à part.</p>
       <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. chiffrer avec un dictionnaire (ici) ; 2. <a href="feuille-2.html">le stock de la scierie</a>.</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
@@ -52,34 +51,40 @@
   <h2 class="td-partie">Exercice 1 · Chiffrer avec un dictionnaire (4 points)</h2>
   <p><b>Sujet :</b> baccalauréat 2022, Centres étrangers, jour 2 (22-NSIJ2G11), exercice 2, pages 4 et 5. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-centres-etrangers-jour-2.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Centres_etrangers_2022_2.pdf">version de l'AEIF</a>.</p>
   <p><i>Cet exercice porte sur les structures de données (dictionnaires).</i></p>
-  <p>Le chiffrement par substitution consiste à mélanger les lettres d'un alphabet, puis à réécrire le message en remplaçant chaque lettre par sa correspondante. Un dictionnaire de chiffrement associe chaque lettre à sa lettre mélangée. Par exemple, avec le dictionnaire <code>alpha = {"A": "B", "B": "D", "C": "A", "D": "C"}</code>, le mot <code>"BAC"</code> est chiffré en <code>"DBA"</code>.</p>
-  <p>Dans les questions 1 à 3, on utilise le dictionnaire :</p>
+  <p>La cryptographie est un ensemble de techniques permettant de chiffrer un message.</p>
+  <p>Une technique de cryptographie consiste à mélanger les lettres d'un alphabet et à réécrire le message avec ces permutations. En Python, on peut créer un dictionnaire dans lequel les clés sont les lettres de l'alphabet et les valeurs sont celles de l'alphabet mélangé.</p>
+  <p>Par exemple, si l'alphabet contient les 4 lettres A, B, C et D, et si le dictionnaire de l'alphabet mélangé est <code>alpha = {"A": "B", "B": "D", "C": "A", "D": "C"}</code>, la chaîne de caractères <code>"BAC"</code> sera chiffrée <code>"DBA"</code>.</p>
+  <p>Un tel dictionnaire sera appelé dictionnaire de chiffrement.</p>
+  <p><b>1.</b> On souhaite chiffrer un message écrit avec l'alphabet A, B, C, D, E, F, G à l'aide du dictionnaire :</p>
   <pre class="td-code">
 alpha = {"A": "B", "B": "D", "C": "A", "D": "C", "E": "F", "F": "G", "G": "E"}</pre>
 
   <section class="td-q" data-type="courte" id="q1" data-reponse="C|'C'" data-etiquette="La valeur :">
-    <p class="td-consigne">[1. a] Donne la valeur associée à la clé <code>"D"</code> dans le dictionnaire <code>alpha</code>…</p>
+    <p class="td-consigne"><b>1. a.</b> Quelle est la valeur associée à la clé <code>"D"</code> ?</p>
     <p class="td-retour" data-si="B">C'est la clé associée à la <b>valeur</b> "D". On cherche l'inverse : ce qui est écrit après <code>"D":</code>.</p>
     <p class="td-aide">Cherche la paire qui commence par <code>"D":</code>.</p>
     <div class="td-correction"><p>La paire est <code>"D": "C"</code> : la valeur associée à "D" est <b>"C"</b>.</p></div>
   </section>
 
   <section class="td-q" data-type="courte" id="q2" data-comparer="code" data-reponse="alpha['D']|alpha.get('D')" data-etiquette="L'instruction :">
-    <p class="td-consigne">[1. a, suite] … et indique comment l'obtenir en Python.</p>
+    <p class="td-consigne"><b>1. a.</b> (suite) En Python, comment l'obtenir ?</p>
     <p class="td-retour" data-si="alpha[3]|alpha['C']">On lit une valeur grâce à sa <b>clé</b>, pas grâce à une position : la clé est "D".</p>
     <p class="td-aide">On écrit le nom du dictionnaire, puis la clé entre crochets.</p>
     <div class="td-correction"><p><code>alpha["D"]</code> renvoie <code>"C"</code>. Un dictionnaire n'a pas d'indices : <code>alpha[3]</code> provoquerait une erreur <code>KeyError</code>.</p></div>
   </section>
 
   <section class="td-q" data-type="courte" id="q3" data-reponse="DBEBEF" data-etiquette="Le mot chiffré :">
-    <p class="td-consigne">[1. b] Chiffre le mot <code>"BAGAGE"</code> avec ce dictionnaire.</p>
+    <p class="td-consigne"><b>1. b.</b> Chiffrer la chaîne de caractères <code>"BAGAGE"</code> avec le dictionnaire <code>alpha</code>.</p>
     <p class="td-retour" data-si="AGBGBF|ACECEG">Tu as lu le dictionnaire à l'envers : on part de la lettre du mot (la clé) pour trouver sa lettre chiffrée (la valeur).</p>
     <p class="td-aide">Remplace chaque lettre par sa valeur : B devient D, A devient B…</p>
     <div class="td-correction"><p>B → D, A → B, G → E, A → B, G → E, E → F : <b>DBEBEF</b>.</p></div>
   </section>
 
+  <p><b>2.</b> On considère qu'un mot est une chaîne de caractères (un objet de type <code>str</code>) écrite uniquement avec les 26 lettres de l'alphabet en majuscule. Par exemple, <code>"ARBRE"</code> est un mot et <code>"L'ARBRE !"</code> n'est pas un mot à cause des caractères : <code>"'"</code>, <code>" "</code> (espace) et <code>"!"</code>.</p>
+
   <section class="td-q" data-type="code" id="q4" data-fichier="chiffrer.py" data-obligatoire>
-    <p class="td-consigne">[2] Écris une fonction <code>chiffrer</code> qui prend en paramètres un mot <code>mot</code> (une chaîne de caractères formée seulement des 26 lettres majuscules, sans accent, sans espace ni ponctuation) et un dictionnaire de chiffrement <code>alpha</code>, et qui renvoie le mot chiffré.</p>
+    <p class="td-consigne"><b>2.</b> Écrire une fonction <code>chiffrer(mot, alpha)</code> qui prend en paramètres <code>mot</code> un mot et <code>alpha</code> un dictionnaire de chiffrement, et qui renvoie une chaîne de caractères chiffrée avec le dictionnaire de chiffrement <code>alpha</code>.</p>
+    <p><b>Pour répondre ici :</b> un exemple d'appel.</p>
     <pre class="td-sortie-exemple">
 &gt;&gt;&gt; chiffrer("BAC", {"A": "B", "B": "D", "C": "A", "D": "C"})
 'DBA'</pre>
@@ -106,8 +111,10 @@ def chiffrer(mot, alpha):
     </div>
   </section>
 
+  <p><b>3.</b> On souhaite déchiffrer un mot chiffré avec cette méthode.</p>
+
   <section class="td-q" data-type="trous" id="q5">
-    <p class="td-consigne">[3. a] Pour un mot chiffré avec <code>alpha</code>, donne un dictionnaire qui permet de le déchiffrer.</p>
+    <p class="td-consigne"><b>3. a.</b> Si un mot est chiffré avec le dictionnaire de chiffrement <code>alpha = {"A": "B", "B": "D", "C": "A", "D": "C", "E": "F", "F": "G", "G": "E"}</code>, donner un dictionnaire permettant de le déchiffrer.</p>
     <pre class="td-code">
 dechiffrement = {"B": [["A"]], "D": [["B"]], "A": [["C"]], "C": [["D"]],
                  "F": [["E"]], "G": [["F"]], "E": [["G"]]}</pre>
@@ -117,7 +124,8 @@ dechiffrement = {"B": [["A"]], "D": [["B"]], "A": [["C"]], "C": [["D"]],
   </section>
 
   <section class="td-q" data-type="trous" id="q6">
-    <p class="td-consigne">[3. b] Recopie et complète la fonction <code>dico_dechiffrement</code>, qui prend en paramètre un dictionnaire de chiffrement <code>dico</code> et renvoie le dictionnaire de déchiffrement.</p>
+    <p class="td-consigne"><b>3. b.</b> Écrire une fonction en Python appelée <code>dico_dechiffrement(dico)</code> qui prend en paramètre <code>dico</code> un dictionnaire de chiffrement et qui renvoie un dictionnaire permettant le déchiffrement. On pourra s'inspirer du code incomplet ci-dessous ou proposer une autre solution :</p>
+    <p><b>Pour répondre ici :</b> complète le code ; les deux dernières lignes, ajoutées pour le TD, l'exécutent.</p>
     <pre class="td-code">
 def dico_dechiffrement(dico):
     nouveau = {}
@@ -145,7 +153,8 @@ def dico_dechiffrement(dico):
   </section>
 
   <section class="td-q" data-type="code" id="q7" data-fichier="dechiffre.py" data-obligatoire>
-    <p class="td-consigne">[3. c] Écris une fonction <code>dechiffre</code> qui prend en paramètres un mot chiffré <code>mot</code> et le dictionnaire de chiffrement <code>dico</code> qui a servi à le chiffrer, et qui renvoie le mot déchiffré. Utilise les fonctions précédentes (elles sont déjà écrites ci-dessous).</p>
+    <p class="td-consigne"><b>3. c.</b> Écrire une fonction <code>dechiffre(mot, dico)</code> qui reçoit un mot chiffré et un dictionnaire de chiffrement et renvoie le mot décodé. On utilisera les fonctions écrites dans les questions précédentes.</p>
+    <p><b>Pour répondre ici :</b> elles sont déjà écrites ci-dessous.</p>
     <pre class="td-depart">
 def chiffrer(mot, alpha):
     resultat = ""
@@ -177,15 +186,16 @@ def dechiffre(mot, dico):
     </div>
   </section>
 
-  <p>On pourra utiliser la fonction <code>shuffle</code> du module <code>random</code>, qui mélange <b>en place</b> un tableau :</p>
+  <p><b>4.</b> On souhaite à présent créer un dictionnaire de chiffrement.</p>
+  <p>On pourra utiliser la fonction <code>shuffle</code> du module <code>random</code> qui mélange en place un tableau. Par exemple, on a :</p>
   <pre class="td-sortie-exemple">
 &gt;&gt;&gt; tab = ["A", "B", "C", "D"]
 &gt;&gt;&gt; shuffle(tab)
 &gt;&gt;&gt; tab
-['B', 'A', 'D', 'C']</pre>
+["B", "A", "D", "C"]</pre>
 
   <section class="td-q" data-type="code" id="q8" data-fichier="melange.py" data-obligatoire>
-    <p class="td-consigne">[4] Écris une fonction <code>dico_chiffrement</code> qui prend en paramètre un tableau de lettres <code>alphabet</code> et qui renvoie un dictionnaire de chiffrement : ses clés sont les lettres de <code>alphabet</code>, ses valeurs ces mêmes lettres mélangées.</p>
+    <p class="td-consigne"><b>4.</b> Écrire une fonction <code>dico_chiffrement(alphabet)</code> qui prend en paramètre <code>alphabet</code> un tableau de lettres et qui renvoie un dictionnaire de chiffrement dont les clés sont les lettres du tableau <code>alphabet</code> et les valeurs sont les lettres du tableau <code>alphabet</code> mélangées.</p>
     <pre class="td-depart">
 from random import shuffle
 
