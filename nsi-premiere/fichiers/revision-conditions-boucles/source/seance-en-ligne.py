@@ -9,7 +9,9 @@ avec les tests cachés des pages).
     python3 -I seance-en-ligne.py --verifier  # vérifie seulement (réponses et tests des trois pages publiées)
 
 Les pages publiées (../seance-revision-eleves.html, -2.html, -3.html) sont faites avec charte/nouveau-td.py,
-puis ce corps y est inséré (objectifs, corps, mémo).
+puis ce corps y est inséré (objectifs, corps, mémo). Sur <main>, le mini-contrôle (-2.html) porte
+data-nouvelle-page : les élèves se l'échangent, il commence donc sa propre page du PDF, avec « Nom et prénom »
+et « Classe » ; data-premiere-question des feuilles 2 et 3 est posé par charte/numeroter-feuilles.py (T125c).
 """
 import html, os, re, sys
 
@@ -258,7 +260,7 @@ def mini():
       </ul>
       <p class="td-duree">Feuille 2 sur 3 · 15 minutes · 10 questions · seul·e, sans aide</p>
     </div>''', '@@CORPS']
-    o.append('  <p class="td-papier-seul"><b>Nom et prénom :</b> ………………………………………… · <b>Classe :</b> ………… · Ensuite, on échange les copies : chacun·e corrige celle de l\'autre avec le corrigé. <b>Copie corrigée par :</b> ……………………… · <b>Note :</b> …… / 10 · <b>La question que je refais :</b> ……</p>')
+    o.append('  <p class="td-papier-seul">Ensuite, on échange les copies : chacun·e corrige celle de l\'autre avec le corrigé. <b>Copie corrigée par :</b> ……………………… · <b>Note :</b> …… / 10 · <b>La question que je refais :</b> ……</p>')
     o.append('  <h2 class="td-partie">1. Que veut dire ce code ? (2 points)</h2>')
     a, b = R.M1
     o.append(qcu('m1', 'a) Que veut dire ce code ?', a['code'], TRAD[0], 'Lis « elif » comme « sinon, si » et « else » comme « sinon ».', E(a['rep'])))
@@ -360,7 +362,8 @@ def atelier():
         # moins de papier (T125b) : une ligne quand la réponse modèle est courte (110 caractères au plus), deux sinon
         o.append(libre2(f'd{i}a', 'En français :', 1 + (len(d['phrase']) > 110), E(d['phrase'])))
         o.append(libre2(f'd{i}b', 'Ce qui se répète · ce qui change :', 1 + (len(d['repete']) > 110), E(d['repete'])))
-        o.append(f'''  <section class="td-q" data-type="code" id="d{i}c" data-fichier="defi{i}.py" data-lignes="{len(d['sol'].splitlines())}"{' data-bonus' if d.get('etoile') else ''}>
+        # data-lignes : la hauteur de tout le cadre sur papier, la ligne du code de départ comprise (T123c)
+        o.append(f'''  <section class="td-q" data-type="code" id="d{i}c" data-fichier="defi{i}.py" data-lignes="{len(d['sol'].splitlines()) + 1}"{' data-bonus' if d.get('etoile') else ''}>
     <p class="td-consigne">Mon code · testé par le robot : □ grille 1 · □ grille 2 · □ grille 3. <span class="td-ecran-seul">« Lancer » le teste sur la grille 1, puis des tests cachés sur les grilles 2 et 3.</span></p>
 {preambule(d['depart'], d['grilles'][0][0])}
     <pre class="td-depart">
