@@ -1,6 +1,7 @@
 """Contrôle de Première : conditions, boucles, fonctions. Sujet et corrigé, réponses vérifiées par exécution.
 
-La feuille de style vient du TD récapitulatif (nsi-premiere/fichiers/bases-python/td-recapitulatif.html).
+La feuille de style est celle des anciens TD « Bases python » : nsi-premiere/fichiers/revision-conditions-boucles/source/style-td.html
+(copie de la feuille du TD récapitulatif avant sa conversion au style « Signal pirate », T125 ; les contrôles restent tels quels).
 Les outils (robot, code coloré, grilles) sont dans outils.py, le même fichier que pour la séance de révision.
 
 Régénérer, depuis ce dossier source/ :
@@ -270,7 +271,7 @@ STYLE = ""
 if __name__ == "__main__":
     ici = os.path.dirname(os.path.abspath(__file__))
     d = sys.argv[1] if len(sys.argv) > 1 else os.path.dirname(ici)
-    td = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ici, "..", "..", "bases-python", "td-recapitulatif.html")
+    td = sys.argv[2] if len(sys.argv) > 2 else os.path.join(ici, "..", "..", "revision-conditions-boucles", "source", "style-td.html")
     STYLE = re.search(r"<style.*?</style>", open(td, encoding="utf-8").read(), flags=re.S).group(0)
     for k, v in verifier().items():
         print(k, v)
