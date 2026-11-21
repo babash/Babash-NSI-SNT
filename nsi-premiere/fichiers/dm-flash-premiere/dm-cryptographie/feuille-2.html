@@ -1,0 +1,183 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La science du secret : TD en ligne</title>
+  <meta name="description" content="TD en ligne auto-correctif : La science du secret (1re NSI, Chaînes de caractères).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="nsi1-dm-cryptographie-2" data-td-version="1">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:58.1%;--y:82.14%;--r:-88deg;--l:2.8%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Chaînes de caractères</span></p>
+        <h1>La science du secret</h1>
+        <p class="td-accroche">2 : Vigenère et Enigma</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=chaines" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM12 1h1v1h-1zM14 1h2v1h-2zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM14 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM11 3h4v1h-4zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM12 4h3v1h-3zM16 4h2v1h-2zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h3v1h-3zM12 5h2v1h-2zM15 5h1v1h-1zM17 5h1v1h-1zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h1v1h-1zM10 7h3v1h-3zM16 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM11 8h3v1h-3zM16 8h2v1h-2zM23 8h1v1h-1zM26 8h5v1h-5zM0 9h1v1h-1zM2 9h1v1h-1zM4 9h2v1h-2zM7 9h2v1h-2zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM3 10h1v1h-1zM6 10h1v1h-1zM11 10h1v1h-1zM13 10h1v1h-1zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM1 11h1v1h-1zM8 11h2v1h-2zM12 11h1v1h-1zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h5v1h-5zM9 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM0 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM16 13h2v1h-2zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM1 14h2v1h-2zM5 14h2v1h-2zM9 14h1v1h-1zM11 14h2v1h-2zM15 14h2v1h-2zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM0 15h4v1h-4zM5 15h1v1h-1zM8 15h1v1h-1zM10 15h2v1h-2zM13 15h3v1h-3zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h4v1h-4zM6 16h5v1h-5zM12 16h1v1h-1zM14 16h1v1h-1zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h3v1h-3zM7 17h2v1h-2zM12 17h3v1h-3zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM0 18h3v1h-3zM4 18h1v1h-1zM6 18h2v1h-2zM9 18h1v1h-1zM11 18h2v1h-2zM14 18h3v1h-3zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM0 19h1v1h-1zM2 19h4v1h-4zM8 19h4v1h-4zM13 19h1v1h-1zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h1v1h-1zM2 20h1v1h-1zM4 20h1v1h-1zM6 20h2v1h-2zM10 20h3v1h-3zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM4 21h1v1h-1zM7 21h3v1h-3zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM6 22h2v1h-2zM9 22h2v1h-2zM12 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM3 23h1v1h-1zM7 23h2v1h-2zM10 23h2v1h-2zM15 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM4 24h1v1h-1zM6 24h1v1h-1zM8 24h2v1h-2zM11 24h2v1h-2zM14 24h5v1h-5zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h1v1h-1zM13 25h2v1h-2zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM9 26h2v1h-2zM13 26h6v1h-6zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h4v1h-4zM13 27h3v1h-3zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM13 28h3v1h-3zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h5v1h-5zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM12 30h1v1h-1zM15 30h1v1h-1zM17 30h1v1h-1zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM15 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h1v1h-1zM11 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> analyser un chiffrement à clé tournante et comprendre pourquoi il résiste mieux aux attaques.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>appliquer le chiffre de Vigenère à la main ;</li>
+        <li>compléter une boucle qui revient au début d'une liste ;</li>
+        <li>expliquer pourquoi l'attaque par fréquence échoue ;</li>
+        <li>estimer un temps de calcul avec des ordres de grandeur.</li>
+      </ul>
+      <p class="td-duree">Feuille 2 sur 2 · 1 heure · 8 questions · devoir maison</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <!-- PARTIES : un titre court par partie, numéroté. Le moteur numérote les questions tout seul. -->
+  <h2 class="td-partie">4. Le chiffre de Vigenère</h2>
+  <p>Au XVIe siècle, Blaise de Vigenère améliore le système avec une <b>substitution poly-alphabétique</b> : on n'utilise plus un seul décalage pour tout le message, mais une suite de décalages qui change à chaque lettre, donnée par un mot-clé. Avec la clé « BAC » (décalages 1, 0, 2) : la 1re lettre est décalée de 1, la 2e de 0, la 3e de 2, puis la 4e de nouveau de 1 (on recommence la clé). Une même lettre peut donc être codée par des lettres différentes dans un même message. Ces messages ont été considérés comme impossibles à décrypter pendant près de trois siècles.</p>
+
+  <section class="td-q" data-type="trous" id="q1">
+    <p class="td-consigne">Compréhension de l'algorithme : on crypte le mot <code>"papa"</code> avec la liste de décalages <code>[1, 2]</code>. Que devient chaque lettre ?</p>
+    <pre class="td-code">
+lettre_1 = "[[q]]"   # 'p' décalée de 1
+lettre_2 = "[[c]]"   # 'a' décalée de 2
+lettre_3 = "[[q]]"   # 'p' décalée de nouveau de 1
+lettre_4 = "[[c]]"   # 'a' décalée de nouveau de 2</pre>
+    <p class="td-aide">La lettre qui suit « p » dans l'alphabet est « q ».</p>
+    <div class="td-correction"><p>p + 1 = <b>q</b>, a + 2 = <b>c</b>, p + 1 = <b>q</b>, a + 2 = <b>c</b> : « papa » devient « qcqc ».</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q2">
+    <p class="td-consigne">Analyse de code : complète la fonction qui réalise ce chiffrement poly-alphabétique.</p>
+    <pre class="td-code">
+def crypter_vigenere(message, liste_cle):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    message_code = ""
+    i = 0  # position dans liste_cle
+    for lettre in message:
+        decalage = liste_cle[i]
+        indice = alphabet.find(lettre)
+        nouvel_indice = (indice + decalage) % 26
+        message_code = message_code + alphabet[nouvel_indice]
+        # on passe au décalage suivant pour la prochaine lettre
+        i = i + 1
+        if i == [[len]](liste_cle):  # si on arrive au bout de la liste
+            i = [[0]]  # on recommence au début
+    return message_code
+
+print(crypter_vigenere("papa", [1, 2]))</pre>
+    <pre class="td-attendu">
+qcqc</pre>
+    <p class="td-aide">Les positions d'une liste de 2 éléments sont 0 et 1. Quand <code>i</code> vaut 2, on est sorti de la liste.</p>
+    <p class="td-aide">La fonction qui donne le nombre d'éléments d'une liste est <code>len</code>.</p>
+    <div class="td-correction"><p><code>if i == len(liste_cle):</code> puis <code>i = 0</code>. Sans ce retour à 0, <code>liste_cle[i]</code> provoquerait une erreur <code>IndexError</code> dès la 3e lettre.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3">
+    <p class="td-consigne">Analyse de la sécurité : dans « papa » codé à la question 1, les deux « a » du message d'origine sont-ils remplacés par la même lettre ?</p>
+    <ul class="td-options">
+      <li data-juste>Oui : les deux deviennent « c »</li>
+      <li data-retour="Regarde ta réponse à la question 1 : la 2e et la 4e lettre.">Non : l'un devient « c », l'autre « b »</li>
+      <li data-retour="Regarde ta réponse à la question 1 : la 2e et la 4e lettre.">Non : ils deviennent « b » et « d »</li>
+      <li data-retour="Le résultat de la question 1 permet de répondre.">On ne peut pas le savoir</li>
+    </ul>
+    <p class="td-aide">Quel décalage reçoit la 2e lettre ? Et la 4e ?</p>
+    <div class="td-correction"><p><b>Oui</b>, ici les deux « a » deviennent « c » : avec une clé de 2 décalages, la 2e et la 4e lettre reçoivent le même décalage (2). Avec une clé plus longue, comme <code>[1, 2, 3]</code>, « papa » devient « qcsb » : les deux « a » deviennent « c » et « b ». Plus la clé est longue, mieux le message est protégé.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4">
+    <p class="td-consigne">Pourquoi ce système rend-il l'attaque par fréquence (feuille 1) beaucoup plus difficile, voire impossible ?</p>
+    <ul class="td-options">
+      <li data-juste>Une même lettre est codée de plusieurs façons : les fréquences se mélangent</li>
+      <li data-retour="Les lettres du message restent des lettres de l'alphabet : c'est leur codage qui change d'une position à l'autre.">Le message codé n'a plus de lettres</li>
+      <li data-retour="Le E reste fréquent dans le message d'origine : c'est sa traduction qui n'est plus toujours la même.">Le E disparaît du message</li>
+      <li data-retour="La clé est une liste de décalages : elle ne change pas la longueur du message.">Le message codé est plus long que l'original</li>
+    </ul>
+    <p class="td-aide">Avec César, tous les E deviennent la même lettre. Et avec Vigenère ?</p>
+    <div class="td-correction"><p>Avec Vigenère, les E du message deviennent des lettres <b>différentes</b> selon leur position : aucune lettre du message codé ne ressort comme « le E ». Le tableau des fréquences ne permet plus de retrouver le décalage.</p></div>
+  </section>
+
+  <h2 class="td-partie">5. La machine Enigma et Bletchley Park</h2>
+  <p>Pendant la Seconde Guerre mondiale, l'armée allemande chiffrait ses communications avec <b>Enigma</b>, une machine électromécanique. Contrairement au code de César, où le décalage reste le même pour tout le message, Enigma changeait d'alphabet à chaque pression de touche grâce à des rotors mobiles : si on tapait dix fois la lettre « A », on obtenait dix lettres différentes.</p>
+  <p>Pour déchiffrer un message, il fallait la même machine et les réglages du jour (l'ordre des rotors, leur position de départ, les branchements des câbles). Ces réglages changeaient toutes les 24 heures : il y avait des milliards de combinaisons à tester chaque jour.</p>
+  <p>Le mathématicien britannique Alan Turing travaillait dans le centre secret de Bletchley Park. Il a compris qu'on ne pouvait pas vaincre une machine à la main. En s'appuyant sur les travaux de mathématiciens polonais, il a conçu la « Bombe », une machine électromécanique capable de tester des milliers de réglages d'Enigma en quelques minutes. Elle exploitait deux failles : le <i>crib</i> (un mot probable, comme « WETTER », « météo », dans les messages allemands) et un défaut de conception : avec Enigma, <b>une lettre n'est jamais codée par elle-même</b>. Cette combinaison de puissance de calcul et d'astuce logique a permis de lire les communications allemandes et, selon de nombreux historiens, d'écourter la guerre d'environ deux ans.</p>
+
+  <section class="td-q" data-type="qcu" id="q5">
+    <p class="td-consigne">On intercepte <code>RXTTBO</code>. Peut-il s'agir du mot <code>WETTER</code> codé par Enigma ?</p>
+    <ul class="td-options">
+      <li data-juste>Non : les deux T seraient codés par eux-mêmes</li>
+      <li data-retour="Compare les lettres une par une : la 3e et la 4e sont les mêmes dans les deux mots.">Oui : les deux mots ont 6 lettres</li>
+      <li data-retour="Enigma change d'alphabet à chaque lettre : des lettres codées différentes, c'est normal. Cherche plutôt une lettre codée par elle-même.">Non : les deux E sont codés par des lettres différentes</li>
+      <li data-retour="La règle « une lettre n'est jamais codée par elle-même » permet de répondre.">On ne peut pas le savoir</li>
+    </ul>
+    <p class="td-aide">Écris les deux mots l'un sous l'autre et compare chaque colonne.</p>
+    <div class="td-correction"><p>W E T T E R au-dessus de R X T T B O : la 3e et la 4e lettre sont des T dans les deux mots. Un T serait codé par un T, ce qui est <b>impossible</b> avec Enigma. Ce n'est donc pas WETTER à cet endroit : c'est ainsi que Turing éliminait des positions du <i>crib</i>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q6">
+    <p class="td-consigne">Pour César, il n'y a que 26 clés. Pour Enigma, en comptant l'ordre des rotors et les câbles, il y a environ 158 000 000 000 000 000 000 combinaisons. Un ordinateur qui teste 1 million de combinaisons par seconde mettrait environ combien de temps pour toutes les tester ?</p>
+    <ul class="td-options">
+      <li data-retour="1,58 × 10^20 ÷ 10^6 = 1,58 × 10^14 secondes : c'est bien plus que quelques jours. Une année fait environ 3,2 × 10^7 secondes.">Environ 5 jours</li>
+      <li data-retour="Divise 1,58 × 10^14 secondes par le nombre de secondes d'une année (environ 3,2 × 10^7).">Environ 5 000 ans</li>
+      <li data-juste>Environ 5 millions d'années</li>
+      <li data-retour="Vérifie la division : 1,58 × 10^14 ÷ 3,2 × 10^7 donne environ 5 × 10^6 ans.">Environ 5 milliards d'années</li>
+    </ul>
+    <p class="td-aide">Nombre de secondes : 1,58 × 10<sup>20</sup> ÷ 10<sup>6</sup>.</p>
+    <p class="td-aide">Une année dure environ 365 × 24 × 3 600 ≈ 3,2 × 10<sup>7</sup> secondes.</p>
+    <div class="td-correction"><p>1,58 × 10<sup>20</sup> ÷ 10<sup>6</sup> = 1,58 × 10<sup>14</sup> secondes ; divisé par 3,16 × 10<sup>7</sup> secondes par an, cela fait <b>environ 5 millions d'années</b>. D'où l'importance des failles : elles évitent de tout tester.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q7">
+    <p class="td-consigne">Les réglages d'Enigma changeaient toutes les 24 heures. Pourquoi le temps était-il l'ennemi numéro 1 d'Alan Turing ?</p>
+    <ul class="td-options">
+      <li data-juste>Il fallait trouver le réglage du jour avant qu'il change</li>
+      <li data-retour="La machine marchait le jour comme la nuit : la contrainte venait du changement des réglages.">La Bombe ne pouvait marcher que la nuit</li>
+      <li data-retour="Les messages restaient lisibles une fois le réglage trouvé : c'est le réglage qui changeait chaque jour.">Les messages s'effaçaient au bout de 24 heures</li>
+      <li data-retour="Le texte ne parle d'aucune limite de ce type : relis la phrase sur les réglages.">Il n'avait le droit de travailler que 24 heures</li>
+    </ul>
+    <p class="td-aide">Que devient le travail de la journée quand les réglages changent à minuit ?</p>
+    <div class="td-correction"><p>Chaque jour, tout recommençait : un réglage trouvé trop tard ne servait plus à rien, et les messages du jour devaient être lus <b>vite</b> pour être utiles (positions des navires, attaques prévues).</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q8">
+    <p class="td-consigne">Pourquoi des rotors qui tournent rendent-ils l'attaque par fréquence inutile ?</p>
+    <ul class="td-options">
+      <li data-juste>Chaque lettre est codée avec un alphabet différent</li>
+      <li data-retour="Les rotors ne changent pas la vitesse de frappe : ils changent l'alphabet utilisé à chaque lettre.">Les rotors tapent les lettres trop vite</li>
+      <li data-retour="Le message reste écrit avec des lettres : c'est leur codage qui change à chaque frappe.">Les rotors remplacent les lettres par des chiffres</li>
+      <li data-retour="Les rotors ne retirent aucune lettre : ils changent leur codage.">Les rotors enlèvent les lettres les plus fréquentes</li>
+    </ul>
+    <p class="td-aide">Pense à Vigenère : que se passe-t-il quand le décalage change à chaque lettre ? Enigma va encore plus loin.</p>
+    <div class="td-correction"><p>Comme avec Vigenère, mais en bien plus fort : le rotor avance à chaque frappe, donc <b>chaque lettre est codée avec un alphabet différent</b>. Les E du message deviennent des lettres variées et les fréquences ne révèlent plus rien.</p></div>
+  </section>
+  <p class="td-ecran-seul"><a href="index.html">← Retour à la feuille 1 : le code de César</a></p>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Vigenère : une liste de décalages qui tourne en boucle (<code>i</code> revient à 0). Enigma : un nouvel alphabet à chaque lettre. Plus une même lettre a de codages possibles, moins l'attaque par fréquence marche ; mais une faille logique peut suffire à casser un code.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-premiere/fichiers/dm-flash-premiere/dm-cryptographie">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
