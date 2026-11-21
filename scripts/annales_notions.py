@@ -37,9 +37,9 @@ RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ANNALES = "donnees/annales/annales-bac-nsi.json"
 NOTIONS = "donnees/referentiels/notions.json"
 SORTIE = "donnees/annales/notions-par-exercice.json"
-FICHES = "https://babash.github.io/FichesNSI/fiches/"
+FICHES = "https://babash.github.io/fiches-nsi/fiches/"
 
-# Les 22 chapitres des fiches de révision (dépôt babash/fichesnsi, dossier content/), dans l'ordre
+# Les 22 chapitres des fiches de révision (dépôt babash/fiches-nsi, dossier content/), dans l'ordre
 # des fiches : SNT et première, puis terminale. « fiche » : le nom de la fiche en ligne.
 # « notions » : identifiants du thésaurus ; une notion plus étroite (« donnees.bdd.sql.jointure » pour
 # « donnees.bdd ») compte aussi. « mots » : expressions régulières sur l'en-tête sans accents, en

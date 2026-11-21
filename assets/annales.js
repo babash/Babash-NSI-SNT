@@ -444,7 +444,7 @@
     return el('div', { class: 'note' }, [
       el('p', null, [
         'Les exercices de l\'épreuve écrite de terminale depuis 2021, rangés dans les chapitres des ',
-        el('a', { href: 'https://babash.github.io/FichesNSI/' }, 'fiches de révision'),
+        el('a', { href: 'https://babash.github.io/fiches-nsi/' }, 'fiches de révision'),
         '. Le classement est déduit de l\'en-tête de chaque exercice (« Cet exercice porte sur… ») : il reste à vérifier. '
           + 'Les en-têtes ne nomment presque jamais les variables, les boucles ou les fonctions, que tous les exercices utilisent.'
       ]),

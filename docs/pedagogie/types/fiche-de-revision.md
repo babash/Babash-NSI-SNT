@@ -32,7 +32,7 @@
 
 **[Les piles et les files](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=fiche-piles-files-python)** (terminale) : une feuille A4 sur deux colonnes. L'essentiel avec les schémas de la pile et de la file, l'interface, deux implémentations de chacune, un tableau des coûts, un parenthésage tracé pas à pas, les erreurs fréquentes (dépiler une pile vide…), ce qu'il faut retenir, et un exercice éclair. C'est la fiche modèle : les autres sont alignées sur elle.
 
-Les 22 fiches de NSI sont sur le site [FichesNSI](https://babash.github.io/FichesNSI/) (code source : [babash/FichesNSI](https://github.com/babash/FichesNSI)), et chacune a sa fiche dans [la bibliothèque](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?q=fiche).
+Les 22 fiches de NSI sont sur le site [FichesNSI](https://babash.github.io/fiches-nsi/) (code source : [babash/fiches-nsi](https://github.com/babash/fiches-nsi)), et chacune a sa fiche dans [la bibliothèque](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?q=fiche).
 
 D'autres fiches du site ont une autre forme, parce qu'elles ont un autre usage : [« Déboguer en Python »](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=deboguer-en-python) (deux pages, à garder pendant les TP) et le [lexique de NSI](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=vocabulaire-nsi-lexique).
 

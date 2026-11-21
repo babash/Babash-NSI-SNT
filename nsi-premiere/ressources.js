@@ -45,11 +45,11 @@ groupe("Événements clés de l'histoire de l'informatique");
 
 ressource({
   titre: "Timeline de l'histoire de l'informatique",
-  lien: "https://babash.github.io/TimelineNSI/",
+  lien: "https://babash.github.io/timeline-nsi/",
   texte: "Frise interactive de l'histoire de l'informatique, de l'Antiquité à nos jours, filtrable par catégorie (algorithmique, cryptographie, matériel, réseaux…), par période et par date. Chaque événement existe aussi en carte A5 à imprimer pour construire une fresque en classe.",
   tags: ["En ligne", "À imprimer"],
   annexes: {
-    "Code source et générateur de cartes": "https://github.com/babash/TimelineNSI",
+    "Code source et générateur de cartes": "https://github.com/babash/timeline-nsi",
   },
 });
 
@@ -67,12 +67,12 @@ theme("Représentation des données : types et valeurs de base", {
 
 ressource({
   titre: "Fiche : les chaînes de caractères en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/chaines-de-caracteres/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/chaines-de-caracteres/",
   texte: "Création, indexation, saisie et traitement, parcours, immuabilité des chaînes.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/chaines-de-caracteres.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/chaines-de-caracteres.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -99,12 +99,12 @@ groupe("p-uplets, p-uplets nommés");
 
 ressource({
   titre: "Fiche : les tuples en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/tuple/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/tuple/",
   texte: "Création, indexation, immuabilité, parcours, test d'appartenance et affectation multiple.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/tuple.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/tuple.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -112,12 +112,12 @@ groupe("Tableau indexé, tableau donné en compréhension");
 
 ressource({
   titre: "Fiche : les listes en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/liste/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/liste/",
   texte: "Création, indexation positive et négative, tranches, modification, parcours et copie d'une liste.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/liste.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/liste.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -125,12 +125,12 @@ groupe("Dictionnaires par clés et valeurs");
 
 ressource({
   titre: "Fiche : les dictionnaires en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/dict/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/dict/",
   texte: "Création, accès, modification, parcours, copie et test de présence d'une clé.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/dict.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/dict.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -171,13 +171,13 @@ groupe("Systèmes d'exploitation");
 
 ressource({
   titre: "Opération MIRAGE : TP de commandes Linux",
-  lien: "https://babash.github.io/TP-commandes-hacker/fiche_eleve_mirage.html",
+  lien: "https://babash.github.io/mirage/fiche_eleve_mirage.html",
   texte: "Quinze missions d'infiltration dans un terminal Linux qui tourne dans le navigateur : se déplacer dans l'arborescence, manipuler des fichiers, gérer les droits, puis arrêter un processus. Correction automatique et indices progressifs. Conçu pour la terminale, il couvre les commandes et les droits du programme de première.",
   tags: ["En ligne", "Rien à installer"],
   annexes: {
-    "Fiche de l'enseignant·e": "https://babash.github.io/TP-commandes-hacker/fiche_prof_mirage.html",
+    "Fiche de l'enseignant·e": "https://babash.github.io/mirage/fiche_prof_mirage.html",
     "Terminal JSLinux": "https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&mem=192",
-    "Code source": "https://github.com/babash/TP-commandes-hacker",
+    "Code source": "https://github.com/babash/mirage",
   },
 });
 
@@ -235,23 +235,23 @@ ressource({
 
 ressource({
   titre: "Fiche : les variables et opérateurs en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/variable/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/variable/",
   texte: "Créer une variable, règles de nommage, types de base, opérateurs arithmétiques, de comparaison et d'affectation combinée.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/variable.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/variable.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
 ressource({
   titre: "Fiche : les structures de contrôle en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/ficheSNT/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/ficheSNT/",
   texte: "Conditions `if` / `elif` / `else`, boucles `for` et `while`, opérateurs logiques `not`, `and`, `or`.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/ficheSNT.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/ficheSNT.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -293,12 +293,12 @@ groupe("Parcours séquentiel d'un tableau");
 
 ressource({
   titre: "Fiche : les algorithmes usuels",
-  lien: "https://babash.github.io/FichesNSI/fiches/fonction-usuelles/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/fonction-usuelles/",
   texte: "Calculs sur une liste (maximum, moyenne), recherche d'un élément et filtrage.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/fonction-usuelles.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/fonction-usuelles.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 

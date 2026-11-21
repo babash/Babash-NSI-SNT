@@ -40,7 +40,7 @@
 
 **[QuizzNSI : « Piles et files »](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=quizznsi-piles-files)** (terminale, environ 45 minutes) : 56 diapositives, dont 20 questions. La partie « Pourquoi ? » part de la boîte de chips en tube, de la file au doukabé et du bouchon jusqu'à Mamoudzou, puis du bouton « Annuler » et de l'imprimante de la salle. Viennent ensuite les définitions, la pile, la file et Python. Les questions vont de « quel élément sort ? » à l'analyse de code.
 
-- Le site : [babash.github.io/QuizzNSI](https://babash.github.io/QuizzNSI/) ; le code source : [babash/QuizzNSI](https://github.com/babash/QuizzNSI).
+- Le site : [babash.github.io/quizz-nsi](https://babash.github.io/quizz-nsi/) ; le code source : [babash/quizz-nsi](https://github.com/babash/quizz-nsi).
 - Ce qui circule pendant une séance, et les limites acceptées, sont décrits sur la fiche de la ressource et dans [Les bases Supabase](../../SUPABASE.md).
 
 ## Où on en est
