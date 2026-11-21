@@ -1,0 +1,419 @@
+/* ─────────────────────────────────────────────
+   Ressources NSI et SNT : le site, style « Signal pirate » (T126, maquette)
+
+   À charger après signal-commun.css (polices et palette des TD).
+   Remplacera assets/style.css (site), bibliotheque/bibliotheque.css et
+   bibliotheque/annales/annales.css : les classes sont celles que produit
+   déjà assets/site.js (barre-haut, hero, rub-corps, res, annexes, tags,
+   filtres, facette, fiche-complete, synthese…). Seuls le bandeau et
+   l'étiquette « Cours-quiz » sont nouveaux (à faire produire par site.js).
+
+   Principes : sobre, compact, lisible. Fond blanc, encre foncée, trait fin,
+   trame ; deux néons (cyan, rose) en débordement, jamais porteurs de sens.
+   Pas de couleur par rubrique : le niveau se lit dans une puce de texte.
+   Rien d'essentiel par la couleur : vide = trait pointillé, courant = gras
+   et souligné épais, cours-quiz = cadre et mot.
+
+   Sommaire : 1. page  2. barre du haut  3. bandeau  4. intro et recherche
+   5. accueil  6. rubrique  7. ressource  8. bibliothèque et filtres
+   9. fiche  10. annales  11. pied  12. petits écrans  13. mouvement
+   14. impression
+   ───────────────────────────────────────────── */
+
+/* ── 1. Page ─────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; scroll-padding-top: 1rem; }
+body {
+  margin: 0;
+  background: var(--td-fond);
+  color: var(--td-encre);
+  font-family: var(--td-texte);
+  font-size: var(--td-taille);
+  line-height: 1.55;
+}
+/* le décor reste dans les marges : pistes de circuit, sur les écrans très larges seulement */
+@media screen and (min-width: 1360px) {
+  body { background-image: var(--td-marge), var(--td-marge); background-repeat: repeat-y; background-position: left 20px top 0, right 20px top 0; }
+}
+a { color: var(--td-accent); text-underline-offset: 2px; }
+a:hover { text-decoration-thickness: 2px; }
+:focus-visible { outline: 3px solid var(--td-focus); outline-offset: 2px; }
+code { font-family: var(--td-mono); font-size: .92em; }
+.invisible { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.evitement { position: absolute; left: .5rem; top: -3rem; z-index: 20; padding: .4rem .8rem; background: var(--td-principal-fond); color: var(--td-principal-encre); font-weight: 700; }
+.evitement:focus { top: .5rem; }
+.page { max-width: var(--site-largeur); margin: 0 auto; padding: 0 var(--td-gouttiere) 2rem; }
+h1, h2 { font-family: var(--td-titres); font-weight: 400; line-height: 1.1; letter-spacing: .01em; }
+.petit { font-size: .9rem; }
+
+/* ── 2. Barre du haut : une ligne, trait fin, néon rose sous le trait ── */
+.barre-haut {
+  border-bottom: var(--td-trait-ep) solid var(--td-encre);
+  box-shadow: 0 3px 0 var(--td-neon-2);
+  background: var(--td-fond);
+}
+.barre-int {
+  max-width: var(--site-largeur); margin: 0 auto; padding: 0 var(--td-gouttiere);
+  min-height: var(--site-barre); display: flex; align-items: center; gap: .4rem 1.4rem; flex-wrap: wrap;
+}
+.marque {
+  display: inline-flex; align-items: center; gap: .55rem; color: var(--td-encre); text-decoration: none;
+  font-family: var(--td-titres); font-size: 1.2rem; text-transform: uppercase; letter-spacing: .02em; line-height: 1;
+}
+.marque-logo {
+  display: inline-grid; place-items: center; width: 1.7rem; height: 1.7rem;
+  border: 2px solid var(--td-encre); box-shadow: 2px 2px 0 var(--td-neon-1);
+  font: 400 1.05rem/1 var(--td-signal);
+}
+.marque:hover .marque-nom { text-shadow: -1px 0 0 var(--td-neon-2), 1px 0 0 var(--td-neon-1); }
+.nav { flex: 1; }
+.nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: .1rem 1.1rem; margin: 0; padding: 0; }
+.nav a {
+  display: inline-block; padding: .35rem 0; color: var(--td-encre); text-decoration: none;
+  font: 700 .82rem/1.2 var(--td-mono); text-transform: uppercase; letter-spacing: .03em;
+  border-bottom: 2px solid transparent;
+}
+.nav a:hover { border-bottom-color: var(--td-trait); }
+.nav a[aria-current] { border-bottom: 3px solid var(--td-encre); box-shadow: 0 3px 0 var(--td-neon-1); }
+.mode { display: inline-flex; border: var(--td-trait-ep) solid var(--td-encre); }
+.mode-btn {
+  font: 400 .78rem/1 var(--td-mono); color: var(--td-encre); background: var(--td-fond);
+  border: 0; padding: .4rem .55rem; min-height: 2rem; cursor: pointer; display: inline-flex; align-items: center; gap: .3rem;
+}
+.mode-btn + .mode-btn { border-left: 1px solid var(--td-trait); }
+.mode-btn[aria-pressed="true"] { background: var(--td-principal-fond); color: var(--td-principal-encre); font-weight: 700; }
+.mode-ico { font-family: "TD Symboles", var(--td-mono); font-size: .8rem; }
+
+/* ── 3. Bandeau : le paysage des TD, à l'échelle (840 × 112), compact ──
+   Les tailles sont en cqw (1 cqw = 1 % de la largeur du bandeau), comme dans les TD. */
+.bandeau {
+  --bd: url("td/bandeau-1.svg");
+  position: relative; container-type: inline-size;
+  margin: 1rem 0 .6rem; aspect-ratio: 840 / 112; max-height: 150px;
+  color: var(--td-encre);
+}
+.bandeau[data-bandeau="2"] { --bd: url("td/bandeau-2.svg"); }
+.bandeau[data-bandeau="3"] { --bd: url("td/bandeau-3.svg"); }
+.bandeau[data-bandeau="4"] { --bd: url("td/bandeau-4.svg"); }
+.bandeau.compact { aspect-ratio: 840 / 80; --bd: url("td/bandeau-1-controle.svg"); }
+.bandeau.compact[data-bandeau="2"] { --bd: url("td/bandeau-2-controle.svg"); }
+.bandeau.compact[data-bandeau="3"] { --bd: url("td/bandeau-3-controle.svg"); }
+.bandeau.compact[data-bandeau="4"] { --bd: url("td/bandeau-4-controle.svg"); }
+@media screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .bandeau { --bd: url("td/bandeau-1-obscur.svg"); }
+  :root:not([data-theme="light"]) .bandeau[data-bandeau="2"] { --bd: url("td/bandeau-2-obscur.svg"); }
+  :root:not([data-theme="light"]) .bandeau[data-bandeau="3"] { --bd: url("td/bandeau-3-obscur.svg"); }
+  :root:not([data-theme="light"]) .bandeau[data-bandeau="4"] { --bd: url("td/bandeau-4-obscur.svg"); }
+  :root:not([data-theme="light"]) .bandeau.compact { --bd: url("td/bandeau-1-controle-obscur.svg"); }
+  :root:not([data-theme="light"]) .bandeau.compact[data-bandeau="2"] { --bd: url("td/bandeau-2-controle-obscur.svg"); }
+  :root:not([data-theme="light"]) .bandeau.compact[data-bandeau="3"] { --bd: url("td/bandeau-3-controle-obscur.svg"); }
+  :root:not([data-theme="light"]) .bandeau.compact[data-bandeau="4"] { --bd: url("td/bandeau-4-controle-obscur.svg"); }
+}
+@media screen {
+  :root[data-theme="dark"] .bandeau { --bd: url("td/bandeau-1-obscur.svg"); }
+  :root[data-theme="dark"] .bandeau[data-bandeau="2"] { --bd: url("td/bandeau-2-obscur.svg"); }
+  :root[data-theme="dark"] .bandeau[data-bandeau="3"] { --bd: url("td/bandeau-3-obscur.svg"); }
+  :root[data-theme="dark"] .bandeau[data-bandeau="4"] { --bd: url("td/bandeau-4-obscur.svg"); }
+  :root[data-theme="dark"] .bandeau.compact { --bd: url("td/bandeau-1-controle-obscur.svg"); }
+  :root[data-theme="dark"] .bandeau.compact[data-bandeau="2"] { --bd: url("td/bandeau-2-controle-obscur.svg"); }
+  :root[data-theme="dark"] .bandeau.compact[data-bandeau="3"] { --bd: url("td/bandeau-3-controle-obscur.svg"); }
+  :root[data-theme="dark"] .bandeau.compact[data-bandeau="4"] { --bd: url("td/bandeau-4-controle-obscur.svg"); }
+}
+.bandeau-decor { position: absolute; inset: 0; overflow: hidden; background: var(--bd) no-repeat center / 100% 100%; }
+.bandeau-texte { position: absolute; left: 0; top: 1.2cqw; right: 46cqw; }
+.sur-titre {
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 0 .8cqw; margin: 0; white-space: nowrap; overflow: hidden;
+  font: 700 1.6cqw/1.25 var(--td-mono); text-transform: uppercase;
+}
+.sur-titre > span:not(.puce) { background: var(--td-fond); padding-right: .4cqw; }
+.sur-titre > span:not(.puce) + span::before { content: "· "; }
+.puce {
+  display: inline-block; padding: 0 .6cqw; border: .2cqw solid currentColor;
+  font-family: var(--td-titres); font-weight: 400; font-size: 1.68cqw; line-height: 1.3; letter-spacing: .06em;
+  box-shadow: .4cqw .4cqw 0 var(--td-neon-1); background: var(--td-fond);
+}
+.bandeau h1 {
+  margin: .6cqw 0 0; font-size: 4.4cqw; line-height: 1.02; text-transform: uppercase; max-width: 52cqw;
+  text-shadow: -.26cqw .12cqw 0 var(--td-neon-2), .26cqw -.12cqw 0 var(--td-neon-1);
+}
+.bandeau h1 span { background: var(--td-fond); box-decoration-break: clone; -webkit-box-decoration-break: clone; padding-right: .5cqw; }
+.bandeau.compact .bandeau-texte { top: .9cqw; right: 50cqw; }
+.bandeau.compact h1 { font-size: 3.4cqw; }
+.bandeau h1.long { font-size: 3.4cqw; }
+/* à droite, comme le QR code des TD : un repère en VT323 (le nombre de ressources) */
+.bandeau-repere {
+  position: absolute; right: 2.4cqw; top: 1.4cqw; display: flex; flex-direction: column; align-items: center;
+  padding: .5cqw .9cqw .3cqw; background: var(--td-fond); color: var(--td-encre); text-decoration: none;
+  border: .2cqw solid var(--td-encre); box-shadow: .5cqw .5cqw 0 var(--td-neon-1);
+  font: 400 1.9cqw/1 var(--td-signal); text-transform: uppercase; letter-spacing: .06em;
+}
+.bandeau-repere b { font: 400 4.2cqw/1 var(--td-titres); letter-spacing: .02em; }
+a.bandeau-repere:hover { box-shadow: .5cqw .5cqw 0 var(--td-neon-2); }
+/* le margouillat vert à turbine : sa cachette change (assets/td/places-margouillat.json) */
+.margouillat {
+  position: absolute; left: var(--x, 50%); top: var(--y, 50%); width: var(--l, 4%); aspect-ratio: 47 / 19;
+  transform: translate(-50%, -50%) rotate(var(--r, 0deg)) scaleX(var(--s, 1));
+  background: var(--td-marg-img) no-repeat center / contain; pointer-events: none;
+}
+
+/* ── 4. Intro et recherche ───────────────────── */
+.intro { max-width: 52rem; margin: 0 0 1rem; }
+.chapo { margin: .2rem 0 .6rem; font-size: 1.08rem; color: var(--td-encre); }
+.chapo a { color: var(--td-accent); }
+.reference { margin: .2rem 0 .8rem; font-size: .95rem; }
+.reference-titre {
+  font: 700 .75rem/1 var(--td-mono); text-transform: uppercase; letter-spacing: .04em;
+  padding: .15rem .35rem; border: 1px solid var(--td-encre); margin-right: .4rem; vertical-align: .1em;
+}
+.reference a { color: var(--td-encre); font-weight: 700; }
+.cherche { position: relative; display: flex; align-items: center; max-width: 40rem; margin: .4rem 0 .2rem; flex-wrap: wrap; }
+.cherche-ico { position: absolute; left: .7rem; top: 0; height: 2.75rem; display: flex; align-items: center; font: 400 1.4rem/1 var(--td-signal); pointer-events: none; }
+.recherche {
+  width: 100%; min-height: 2.75rem; padding: .45rem .8rem .45rem 2.1rem;
+  font: inherit; font-size: 1rem; color: var(--td-encre); background: var(--td-panneau);
+  border: var(--td-trait-ep) solid var(--td-encre); border-radius: var(--td-rayon);
+  box-shadow: var(--td-ombre) var(--td-ombre) 0 var(--td-neon-1);
+}
+.recherche::placeholder { color: var(--td-encre-douce); opacity: 1; }
+.recherche:focus-visible { outline: 3px solid var(--td-focus); outline-offset: 2px; box-shadow: var(--td-ombre) var(--td-ombre) 0 var(--td-neon-2); }
+.statut { margin: .3rem 0 0; font: 400 .85rem/1.3 var(--td-mono); color: var(--td-encre-douce); width: 100%; }
+.statut:empty { display: none; }
+
+/* ── 5. Accueil : une carte par rubrique, trait fin ── */
+.noeuds { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr)); gap: 1.4rem 1.6rem; margin: 1.4rem 0 1rem; }
+.noeud {
+  position: relative; padding: .8rem 1rem 1rem;
+  border: var(--td-trait-ep) solid var(--td-encre); border-left: 4px solid var(--td-encre); background: var(--td-panneau);
+}
+.noeud:hover, .noeud:focus-within { box-shadow: var(--td-ombre) var(--td-ombre) 0 var(--td-neon-1); }
+.noeud-meta { margin: 0; display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; font: 700 .78rem/1.3 var(--td-mono); text-transform: uppercase; color: var(--td-encre-douce); }
+.noeud-meta .puce { font-size: .95rem; padding: 0 .35rem; border-width: 2px; box-shadow: 2px 2px 0 var(--td-neon-1); color: var(--td-encre); }
+.noeud h2 { margin: .45rem 0 .3rem; font-size: 1.75rem; text-transform: uppercase; }
+.noeud-nom { color: var(--td-encre); text-decoration: none; }
+.noeud-nom:hover { text-shadow: -2px 1px 0 var(--td-neon-2), 2px -1px 0 var(--td-neon-1); }
+.noeud-nom::after { content: ""; position: absolute; inset: 0; } /* toute la carte mène à la rubrique */
+.noeud-texte { margin: 0 0 .7rem; font-size: .98rem; }
+.themes-mini { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: .35rem; position: relative; z-index: 1; }
+.themes-mini a {
+  display: inline-block; padding: .12rem .45rem; font: 400 .8rem/1.4 var(--td-mono);
+  color: var(--td-encre); text-decoration: none; border: 1px solid var(--td-encre); background: var(--td-fond);
+}
+.themes-mini a:hover { box-shadow: 2px 2px 0 var(--td-neon-2); }
+/* thème sans ressource : pointillés et texte doux, et le mot pour les lecteurs d'écran */
+.themes-mini a.est-vide { border-style: dashed; border-color: var(--td-trait); color: var(--td-encre-douce); }
+
+/* variante B de l'accueil : un paysage par carte (la question 1 du rapport) */
+.noeud-paysage { margin: -.8rem -1rem .6rem -1rem; height: 64px; border-bottom: var(--td-trait-ep) solid var(--td-encre);
+  background: url("td/bandeau-1.svg") no-repeat; background-size: auto 100%; background-position: 63% 0; position: relative; overflow: hidden; }
+.noeud-paysage[data-bandeau="2"] { background-image: url("td/bandeau-2.svg"); }
+.noeud-paysage[data-bandeau="3"] { background-image: url("td/bandeau-3.svg"); }
+.noeud-paysage[data-bandeau="4"] { background-image: url("td/bandeau-4.svg"); }
+
+/* ── 6. Rubrique : sommaire à gauche, thèmes à droite ── */
+.rub-corps { display: grid; grid-template-columns: 17rem minmax(0, 1fr); gap: 2.2rem; align-items: start; margin-top: 1rem; }
+.cote { position: sticky; top: 1rem; max-height: calc(100vh - 2rem); overflow: auto; padding: 2px 4px 4px 2px; }
+.cote .cherche { margin: 0 0 1rem; }
+.cote .recherche { font-size: .92rem; }
+.sommaire summary, .filtres > summary {
+  font: 400 1.05rem/1.2 var(--td-titres); text-transform: uppercase; letter-spacing: .03em;
+  padding: .3rem 0; border-bottom: 2px solid var(--td-encre); cursor: pointer; list-style-position: inside;
+}
+.sommaire .nb, .filtres > summary .nb { font: 400 .8rem var(--td-mono); color: var(--td-encre-douce); }
+.sommaire ul { list-style: none; margin: .4rem 0 0; padding: 0; }
+.sommaire li a {
+  display: flex; justify-content: space-between; gap: .5rem; padding: .32rem .4rem .32rem .6rem;
+  color: var(--td-encre); text-decoration: none; border-left: 2px solid var(--td-trait); font-size: .95rem;
+}
+.sommaire li a:hover { border-left-color: var(--td-encre); background: var(--td-panneau-2); }
+.sommaire li a[aria-current] { border-left: 4px solid var(--td-encre); font-weight: 700; padding-left: .5rem; }
+.sommaire .nb { flex: none; }
+.theme { margin: 0 0 2.4rem; scroll-margin-top: 1rem; }
+.theme h2 {
+  font-size: 1.6rem; text-transform: uppercase; margin: 0 0 .9rem; padding-bottom: .25rem;
+  border-bottom: 2px solid var(--td-encre); box-shadow: 0 3px 0 var(--td-neon-2);
+}
+.theme h3 {
+  display: flex; gap: .5rem; align-items: baseline; margin: 1.5rem 0 .5rem; font-size: 1.12rem; line-height: 1.3; scroll-margin-top: 1rem;
+}
+.theme h3::before { content: "■"; font-family: "TD Symboles", var(--td-mono); font-size: .7em; }
+.programme { margin: 0 0 1rem; display: flex; flex-wrap: wrap; align-items: baseline; gap: .3rem .6rem; }
+.programme-titre { margin: 0; font: 700 .75rem/1 var(--td-mono); text-transform: uppercase; letter-spacing: .04em; padding: .2rem .4rem; border: 1px solid var(--td-encre); }
+.programme ul { list-style: none; display: contents; }
+.programme li { display: inline; }
+.programme li + li::before { content: "·"; margin-right: .6rem; color: var(--td-encre-douce); }
+.programme a { color: var(--td-encre); font-size: .93rem; }
+
+/* ── 7. Une ressource : pas de carte, un filet entre deux ressources ── */
+.ressources { list-style: none; margin: 0; padding: 0; }
+.res { padding: .75rem 0 .85rem; border-top: 1px solid var(--td-trait); }
+.res:first-child { border-top: 0; padding-top: .2rem; }
+.res > .titre { font-weight: 700; font-size: 1.12rem; line-height: 1.3; color: var(--td-encre); text-decoration-thickness: 1px; }
+.res > .titre:hover { text-decoration-thickness: 2px; text-decoration-color: var(--td-neon-2); }
+.res p { margin: .25rem 0; }
+.res .chemin { font: 400 .8rem/1.4 var(--td-mono); color: var(--td-encre-douce); margin: .15rem 0 .2rem; }
+.en-savoir-plus { white-space: nowrap; font-weight: 700; }
+.annexes { display: flex; flex-wrap: wrap; gap: .35rem .5rem; margin: .5rem 0 .3rem !important; }
+.annexe { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .1rem .35rem; padding: .18rem .5rem; border: 1px solid var(--td-encre); font-size: .9rem; }
+.annexe::before { content: "→"; font-family: "TD Symboles", var(--td-mono); font-size: .85em; }
+.annexe > a { color: var(--td-encre); font-weight: 700; text-decoration: none; }
+.annexe > a:hover { text-decoration: underline; }
+.annexe .type { font: 400 .75rem var(--td-mono); color: var(--td-encre-douce); }
+.annexe.sans-corrige { border-style: dashed; }
+.tags { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; margin-top: .4rem !important; }
+.tags span { font: 400 .76rem/1.4 var(--td-mono); padding: 0 .35rem; border: 1px solid var(--td-trait); color: var(--td-encre); }
+.tags .site { border: 0; color: var(--td-encre-douce); }
+.actions-fiche { font-size: .92rem; }
+.lien-fiche { font-weight: 700; }
+
+/* le cours-quiz, en tête de chaque thème : cadre, mot et néon (comme le QR code des TD) */
+.res.res-cours-quiz {
+  position: relative; margin: .2rem 0 1rem; padding: .7rem .9rem .8rem;
+  border: var(--td-trait-ep) solid var(--td-encre); border-left: 4px solid var(--td-encre);
+  box-shadow: var(--td-ombre) var(--td-ombre) 0 var(--td-neon-1); background: var(--td-panneau);
+}
+.res-cours-quiz + .res { border-top: 0; }
+.etiquette-signal {
+  display: inline-block; margin: 0 .5rem .25rem 0; padding: .1rem .45rem 0; vertical-align: .1em;
+  font: 400 1.15rem/1 var(--td-signal); text-transform: uppercase; letter-spacing: .08em;
+  border: 2px solid var(--td-encre); box-shadow: 2px 2px 0 var(--td-neon-2);
+}
+
+/* ── 8. Bibliothèque : filtres à gauche, liste ou cartes ── */
+.filtres > summary { margin-bottom: .3rem; }
+.facette { border-bottom: 1px solid var(--td-trait); padding: .35rem 0; }
+.facette > summary { font: 700 .82rem/1.3 var(--td-mono); text-transform: uppercase; letter-spacing: .03em; cursor: pointer; padding: .2rem 0; }
+.filtre-valeurs { list-style: none; margin: .2rem 0 .2rem; padding: 0; }
+.filtre-valeurs ul { list-style: none; padding-left: 1.2rem; margin: 0; }
+.filtre-ligne { display: flex; align-items: flex-start; gap: .2rem; }
+.filtre-case { display: flex; align-items: flex-start; gap: .45rem; padding: .18rem 0; font-size: .9rem; line-height: 1.3; cursor: pointer; flex: 1; }
+.filtre-case input { width: 1.05rem; height: 1.05rem; margin: .08rem 0 0; flex: none; accent-color: var(--td-encre); }
+.filtre-nom { flex: 1; }
+.filtre-case .nb { font: 400 .75rem var(--td-mono); color: var(--td-encre-douce); }
+.filtre-case:has(input:checked) .filtre-nom { font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.filtre-aide { margin: .2rem 0 .3rem; font-size: .82rem; color: var(--td-encre-douce); }
+.outils-resultats { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; padding: 0 0 .5rem; margin-bottom: .6rem; border-bottom: 2px solid var(--td-encre); box-shadow: 0 3px 0 var(--td-neon-2); }
+.compte { margin: 0 auto 0 0; font: 400 1.25rem/1.1 var(--td-titres); text-transform: uppercase; letter-spacing: .02em; }
+.tri { display: flex; align-items: center; gap: .4rem; font-size: .9rem; }
+.tri select, .bouton-annales {
+  font: inherit; font-size: .9rem; color: var(--td-encre); background: var(--td-panneau);
+  border: var(--td-trait-ep) solid var(--td-encre); border-radius: var(--td-rayon); min-height: 2.25rem; padding: .2rem .5rem;
+}
+.bouton-annales { cursor: pointer; font-weight: 700; }
+.bouton-annales:hover { box-shadow: 2px 2px 0 var(--td-neon-1); }
+.outils-resultats .mode .mode-btn { font-size: .8rem; min-height: 2.1rem; }
+.resultats.en-cartes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 1rem; }
+.resultats.en-cartes .res { border: var(--td-trait-ep) solid var(--td-encre); padding: .7rem .8rem; }
+.res[hidden] { display: none; }
+.aucun { padding: 1rem; border: 1px dashed var(--td-encre); }
+
+/* ── 9. Fiche d'une ressource : une page de lecture, comme un TD ── */
+.rub-corps.lecture { display: block; max-width: var(--site-lecture); }
+.retour { display: inline-block; margin: .2rem 0 .8rem; font: 700 .85rem var(--td-mono); color: var(--td-encre); }
+.fiche-titre { font-size: 2.1rem; margin: 0 0 .4rem; text-transform: uppercase; text-shadow: -2px 1px 0 var(--td-neon-2), 2px -1px 0 var(--td-neon-1); }
+.fiche-complete h3 { margin: 1.8rem 0 .5rem; font: 400 1.25rem/1.2 var(--td-titres); text-transform: uppercase; letter-spacing: .02em; padding-bottom: .2rem; border-bottom: 2px solid var(--td-encre); }
+.ouvrir { margin: 1rem 0 .4rem; }
+.bouton-ouvrir {
+  display: inline-block; padding: .55rem 1rem; font-weight: 700; text-decoration: none;
+  background: var(--td-principal-fond); color: var(--td-principal-encre); border: var(--td-trait-ep) solid var(--td-principal-fond);
+  box-shadow: var(--td-ombre) var(--td-ombre) 0 var(--td-neon-1);
+}
+.bouton-ouvrir::after { content: "  →"; font-family: "TD Symboles", var(--td-mono); }
+.bouton-ouvrir:hover { box-shadow: var(--td-ombre) var(--td-ombre) 0 var(--td-neon-2); }
+.synthese { margin: 0; border: var(--td-trait-ep) solid var(--td-encre); }
+.synthese-ligne { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: .2rem 1rem; padding: .4rem .7rem; border-top: 1px dotted var(--td-trait); }
+.synthese-ligne:first-child { border-top: 0; }
+.synthese dt { font: 700 .75rem/1.6 var(--td-mono); text-transform: uppercase; letter-spacing: .03em; color: var(--td-encre-douce); }
+.synthese dd { margin: 0; font-size: .95rem; }
+.documents { list-style: none; padding: 0; margin: 0; }
+.documents li { padding: .35rem 0 .35rem 1.3rem; border-top: 1px dotted var(--td-trait); position: relative; }
+.documents li::before { content: "→"; position: absolute; left: 0; font-family: "TD Symboles", var(--td-mono); }
+.documents a { font-weight: 700; }
+.documents .type { display: block; font: 400 .78rem var(--td-mono); color: var(--td-encre-douce); }
+.difficultes li { margin: .4rem 0; }
+.source { display: block; font-size: .85rem; color: var(--td-encre-douce); }
+
+/* ── 10. Annales ─────────────────────────────── */
+.note { margin: 0 0 1rem; padding: .6rem .9rem; border: 1px dashed var(--td-encre); background: var(--td-panneau-2); font-size: .95rem; }
+.note p { margin: .3rem 0; }
+.exercice .chemin { font-size: .78rem; }
+.puces-exercice { display: flex; flex-wrap: wrap; gap: .3rem; align-items: center; font-size: .88rem; }
+.puce-quoi { font-weight: 700; }
+.puces-exercice .puce {
+  font: 400 .85rem/1.3 var(--td-texte); letter-spacing: 0; padding: .1rem .45rem; color: var(--td-encre); cursor: pointer;
+  border: 1px solid var(--td-encre); border-radius: var(--td-rayon); box-shadow: none; background: var(--td-panneau);
+}
+.puces-exercice .puce:hover { box-shadow: 2px 2px 0 var(--td-neon-1); }
+
+/* ── 11. Pied de page (toutes les pages) ─────── */
+.pied { margin-top: 3rem; padding-top: .7rem; border-top: var(--td-trait-ep) solid var(--td-encre); position: relative; }
+.pied-ligne { margin: 0 0 .5rem; font: 400 .82rem/1.5 var(--td-mono); }
+.pied-ligne a { color: var(--td-encre); }
+.mentions { margin: 0; font-size: .82rem; color: var(--td-encre-douce); max-width: 60rem; }
+.mentions a { color: var(--td-encre-douce); }
+.pied .margouillat { position: absolute; right: 0; top: -14px; left: auto; width: 40px; transform: none; }
+
+/* ── 12. Petits écrans : le paysage devient une bande au-dessus du titre ── */
+@media (max-width: 900px) {
+  .rub-corps { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .cote { position: static; max-height: none; overflow: visible; }
+  .sommaire:not([open]) { border-bottom: 0; }
+}
+@media screen and (max-width: 680px) {
+  .barre-int { padding-top: .45rem; padding-bottom: .35rem; gap: .35rem .8rem; }
+  .marque { font-size: .98rem; flex: 1; gap: .4rem; letter-spacing: 0; white-space: nowrap; }
+  .marque-logo { width: 1.45rem; height: 1.45rem; font-size: .9rem; }
+  .nav { order: 3; flex-basis: 100%; }
+  .nav ul { gap: 0 .9rem; }
+  .nav a { font-size: .78rem; padding: .3rem 0; }
+  .mode-nom { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .mode-btn { min-width: 2rem; min-height: 2.25rem; padding: .3rem; justify-content: center; }
+  .bandeau { aspect-ratio: auto; max-height: none; container-type: normal; padding-top: 84px; overflow: hidden; margin-top: .6rem; }
+  .bandeau.compact { aspect-ratio: auto; padding-top: 70px; }
+  .bandeau-decor { inset: 0 auto auto 0; height: 78px; width: 586px; left: min(0px, calc((100% - 586px) * .78)); }
+  .bandeau.compact .bandeau-decor { height: 64px; width: 672px; left: min(0px, calc((100% - 672px) * .95)); }
+  .bandeau-texte, .bandeau.compact .bandeau-texte { position: static; }
+  .sur-titre { font-size: .76rem; gap: .2rem .5rem; flex-wrap: wrap; white-space: normal; overflow: visible; }
+  .sur-titre > span:not(.puce) { background: none; }
+  .puce { font-size: .92rem; padding: 0 .35rem; border-width: 2px; box-shadow: 2px 2px 0 var(--td-neon-1); }
+  .bandeau h1, .bandeau.compact h1, .bandeau h1.long { font-size: clamp(1.65rem, 8.6vw, 2.3rem); line-height: 1.12; margin-top: .55rem; max-width: none; text-shadow: -2px 1px 0 var(--td-neon-2), 2px -1px 0 var(--td-neon-1); }
+  .bandeau-repere { position: static; flex-direction: row; gap: .45rem; width: max-content; margin-top: .6rem; padding: .2rem .5rem; border-width: 2px; box-shadow: 3px 3px 0 var(--td-neon-1); font-size: 1.1rem; }
+  .bandeau-repere b { font-size: 1.2rem; }
+  .theme h2 { font-size: 1.4rem; }
+  .noeud h2 { font-size: 1.5rem; }
+  .synthese-ligne { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .fiche-titre { font-size: 1.6rem; }
+  .compte { font-size: 1.1rem; }
+}
+
+/* ── 13. Mouvement : aucun, sauf l'ombre au survol (retirée si l'appareil le demande) ── */
+.noeud, .themes-mini a, .bouton-ouvrir, .recherche { transition: box-shadow .15s; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
+}
+
+/* ── 14. Impression : fond blanc, encre noire, ni navigation ni filtres ── */
+@media print {
+  @page { size: A4; margin: 12mm 12mm 14mm; }
+  :root, :root:not(#imprimer) { --td-fond: #FFFFFF; --td-panneau: #FFFFFF; --td-panneau-2: #FFFFFF; --td-encre: #000000; --td-encre-douce: #333333; --td-accent: #000000; --td-neon-1: transparent; --td-neon-2: transparent; }
+  body { background: #FFFFFF !important; color: #000000; font-size: 10.5pt; }
+  .barre-haut, .cote, .cherche, .evitement, .mode, .outils-resultats .tri, .outils-resultats .mode, .bouton-annales, .noeud-paysage { display: none !important; }
+  .page { max-width: none; padding: 0; }
+  .rub-corps { display: block; }
+  .bandeau { --bd: url("td/bandeau-1.svg") !important; max-height: 28mm; }
+  .bandeau[data-bandeau="2"] { --bd: url("td/bandeau-2.svg") !important; }
+  .bandeau[data-bandeau="3"] { --bd: url("td/bandeau-3.svg") !important; }
+  .bandeau[data-bandeau="4"] { --bd: url("td/bandeau-4.svg") !important; }
+  .bandeau h1 { text-shadow: none; }
+  .res, .noeud, .synthese-ligne { break-inside: avoid; }
+  .theme h2, .fiche-complete h3 { break-after: avoid; box-shadow: none; }
+  a { color: #000000; }
+  * { box-shadow: none !important; text-shadow: none !important; }
+}
+
+/* variante B de l'accueil : un titre sans paysage (les paysages sont sur les cartes) */
+.entete-simple { margin: 1.2rem 0 .4rem; }
+.entete-simple .sur-titre { font-size: .8rem; gap: .5rem; }
+.entete-simple .puce { font-size: 1rem; padding: 0 .4rem; border-width: 2px; box-shadow: 2px 2px 0 var(--td-neon-1); }
+.entete-simple h1 { margin: .4rem 0 0; font-size: clamp(1.9rem, 5vw, 3rem); text-transform: uppercase; text-shadow: -2px 1px 0 var(--td-neon-2), 2px -1px 0 var(--td-neon-1); }
+@media screen and (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .noeud-paysage { filter: invert(1) hue-rotate(180deg); } }
+@media screen { :root[data-theme="dark"] .noeud-paysage { filter: invert(1) hue-rotate(180deg); } }
