@@ -1,0 +1,567 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP de POO, les cartes : TP en ligne</title>
+  <meta name="description" content="TP en ligne, auto-correctif : programmation orientée objet, la classe Carte et le jeu de cartes (Tle NSI).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-tp-poo-cartes" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-td-version="1">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:90.48%;--y:83.93%;--r:4deg;--l:4.48%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TP</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La classe Carte</h1>
+        <p class="td-accroche">TP : un jeu de cartes en objets</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> écrire une classe pas à pas, puis l'utiliser : attributs, instances, méthodes.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire une classe et son constructeur <code>__init__</code> ;</li>
+        <li>créer une instance, lire et modifier ses attributs ;</li>
+        <li>écrire une méthode qui compare deux objets ;</li>
+        <li>écrire une classe qui contient d'autres objets (un jeu de cartes) et s'en servir dans un programme.</li>
+      </ul>
+      <p class="td-duree">1 h 30 · 12 questions · seul·e ou en binôme · dans la page, ou dans ton éditeur Python (Spyder par exemple)</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">1. Créer une classe pas à pas</h2>
+
+  <p>On veut représenter une carte d'un jeu de 52 cartes. Une carte a trois attributs :</p>
+  <ul>
+    <li><code>valeur</code> : 2, 3, …, 10, puis 11 pour le valet, 12 pour la dame, 13 pour le roi et 14 pour l'as ;</li>
+    <li><code>couleur</code> : <code>'rouge'</code> ou <code>'noir'</code> ;</li>
+    <li><code>enseigne</code> : <code>'carreau'</code>, <code>'coeur'</code> (rouges), <code>'trèfle'</code> ou <code>'pique'</code> (noires).</li>
+  </ul>
+
+  <section class="td-q" data-type="code" id="q1" data-fichier="carte.py" data-obligatoire>
+    <p class="td-consigne">Écris la classe <code>Carte</code> et son constructeur <code>__init__(self, valeur, couleur, enseigne)</code>, qui range ses trois paramètres dans les attributs <code>valeur</code>, <code>couleur</code> et <code>enseigne</code>. <span class="td-ecran-seul">Des tests, cachés, la vérifient quand tu cliques sur « Lancer et vérifier ».</span></p>
+    <pre class="td-depart">
+# Par convention, le nom d'une classe commence par une majuscule.
+</pre>
+    <script type="text/x-python" class="td-tests">
+c = Carte(7, 'rouge', 'coeur')
+assert c.valeur == 7, "Carte(7, 'rouge', 'coeur').valeur doit valoir 7."
+assert c.couleur == 'rouge', "Carte(7, 'rouge', 'coeur').couleur doit valoir 'rouge'."
+assert c.enseigne == 'coeur', "Carte(7, 'rouge', 'coeur').enseigne doit valoir 'coeur'."
+d = Carte(14, 'noir', 'pique')
+assert (d.valeur, d.couleur, d.enseigne) == (14, 'noir', 'pique'), "Chaque carte garde ses propres attributs : Carte(14, 'noir', 'pique') est un as de pique."
+assert c.valeur == 7, "Créer une deuxième carte ne doit pas changer la première."
+</script>
+    <p class="td-aide">Le squelette : <code>class Carte:</code>, puis, en retrait, <code>def __init__(self, valeur, couleur, enseigne):</code>.</p>
+    <p class="td-aide">Dans le constructeur, une ligne par attribut : <code>self.valeur = valeur</code>…</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne</pre>
+      <p><code>self</code> est l'objet en train d'être créé : <code>self.valeur = valeur</code> range le paramètre <code>valeur</code> dans l'attribut <code>valeur</code> de cet objet.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q2" data-comparer="code" data-reponse="c1 = Carte(7, 'rouge', 'coeur')|c1 = Carte(valeur=7, couleur='rouge', enseigne='coeur')|c1 = Carte(7, couleur='rouge', enseigne='coeur')">
+    <p class="td-consigne">Dans le programme principal, crée une instance de la classe <code>Carte</code>, nommée <code>c1</code> : un 7 de coeur.</p>
+    <p class="td-retour" data-si="c1 = Carte(7, 'coeur', 'rouge')">L'ordre compte : le constructeur attend la valeur, puis la couleur, puis l'enseigne.</p>
+    <p class="td-retour" data-si="c1 = Carte(self, 7, 'rouge', 'coeur')">On ne donne pas self à l'appel : Python le passe tout seul.</p>
+    <p class="td-aide">On appelle la classe comme une fonction : <code>Carte(…)</code>, avec les trois valeurs dans l'ordre du constructeur.</p>
+    <p class="td-aide">Le coeur est une enseigne rouge.</p>
+    <div class="td-correction"><p><code>c1 = Carte(7, 'rouge', 'coeur')</code>. Quand on crée un objet, son constructeur est appelé tout seul, et l'ordinateur réserve de la mémoire pour l'objet et ses attributs. On peut voir l'adresse de cet objet avec <code>id(c1)</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3">
+    <p class="td-consigne">Qu'affiche <code>print(type(c1))</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>&lt;class '__main__.Carte'&gt;</code></li>
+      <li data-retour="type renvoie une classe, et print l'affiche sous la forme &lt;class '...'&gt;.."><code>Carte</code></li>
+      <li data-retour="c1 n'est pas un dictionnaire : c'est une instance de la classe que tu as écrite."><code>&lt;class 'dict'&gt;</code></li>
+      <li data-retour="type ne donne pas la valeur des attributs, mais la classe de l'objet."><code>7 rouge coeur</code></li>
+    </ul>
+    <p class="td-aide">Le type d'un objet, c'est sa classe. <code>__main__</code> est le nom du programme principal.</p>
+    <div class="td-correction"><p>Python affiche <code>&lt;class '__main__.Carte'&gt;</code> : <code>c1</code> est une instance de la classe <code>Carte</code>, écrite dans le programme principal (<code>__main__</code>).</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q4" data-comparer="code" data-reponse="print(c1.valeur, c1.couleur, c1.enseigne)">
+    <p class="td-consigne">Écris une instruction qui affiche la valeur, la couleur et l'enseigne de <code>c1</code>, dans cet ordre, avec un seul <code>print</code>.</p>
+    <p class="td-retour" data-si="print(valeur, couleur, enseigne)">Hors de la classe, un attribut se lit à travers son objet : c1.valeur.</p>
+    <p class="td-retour" data-si="print(self.valeur, self.couleur, self.enseigne)">self n'existe que dans les méthodes de la classe. Dans le programme principal, l'objet s'appelle c1.</p>
+    <p class="td-aide">Un attribut se lit avec un point : <code>objet.attribut</code>.</p>
+    <div class="td-correction"><p><code>print(c1.valeur, c1.couleur, c1.enseigne)</code> affiche <code>7 rouge coeur</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q5">
+    <p class="td-consigne">On veut changer le 7 de coeur <code>c1</code> en 7 de pique. Coche les instructions nécessaires.</p>
+    <ul class="td-options">
+      <li data-juste><code>c1.enseigne = 'pique'</code></li>
+      <li data-juste><code>c1.couleur = 'noir'</code></li>
+      <li data-retour="Cette instruction remplace l'objet c1 par un simple texte : ce n'est plus une carte."><code>c1 = '7 de pique'</code></li>
+      <li data-retour="La valeur reste 7 : seule l'enseigne change, et donc la couleur."><code>c1.valeur = 'pique'</code></li>
+    </ul>
+    <p class="td-aide">Le pique est une enseigne noire : deux attributs changent.</p>
+    <div class="td-correction"><p><code>c1.enseigne = 'pique'</code> et <code>c1.couleur = 'noir'</code> : on modifie les attributs de l'objet, la valeur 7 ne bouge pas.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q6" data-fichier="c2.py" data-obligatoire>
+    <p class="td-consigne">Sous la classe, écris le programme qui : crée la carte <code>c2</code>, un 4 de coeur ; change son enseigne en pique (sa couleur devient noire) ; change sa valeur en 8 ; affiche ses attributs avec <code>print(c2.valeur, c2.couleur, c2.enseigne)</code>.</p>
+    <pre class="td-depart">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+# Programme principal
+</pre>
+    <pre class="td-attendu">
+8 noir pique</pre>
+    <p class="td-aide">Quatre étapes, quatre lignes : <code>c2 = Carte(…)</code>, puis deux ou trois affectations <code>c2.attribut = …</code>, puis le <code>print</code>.</p>
+    <p class="td-aide">L'enseigne change, et la couleur avec elle : <code>c2.enseigne = 'pique'</code> et <code>c2.couleur = 'noir'</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+# Programme principal
+c2 = Carte(4, 'rouge', 'coeur')
+c2.enseigne = 'pique'
+c2.couleur = 'noir'
+c2.valeur = 8
+print(c2.valeur, c2.couleur, c2.enseigne)</pre>
+      <p>Un objet garde ses attributs, et on peut les changer un par un. Le 4 de coeur est devenu un 8 de pique.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">2. Ajouter des méthodes</h2>
+
+  <p>Voici le fichier <code>cartes.py</code>. Comme à la bataille, deux cartes sont <b>égales</b> si elles ont la même valeur, et une carte est <b>supérieure</b> à une autre si sa valeur est plus grande.</p>
+  <pre class="td-code">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+    def egalite(self, autre):
+        """Renvoie True si self et autre ont la même valeur, False sinon."""
+        ...
+
+    def estSuperieurA(self, autre):
+        """Renvoie True si self a une valeur plus grande que autre."""
+        ...
+
+    def estInferieurA(self, autre):
+        """Renvoie True si self a une valeur plus petite que autre."""
+        ...</pre>
+
+  <section class="td-q" data-type="qcu" id="q7">
+    <p class="td-consigne">Compare cette classe <code>Carte</code> à la tienne (question 1). Quelle est la différence ?</p>
+    <ul class="td-options">
+      <li data-retour="Les attributs sont les mêmes : valeur, couleur et enseigne.">Elle a d'autres attributs.</li>
+      <li data-juste>Elle a trois méthodes de plus, à compléter.</li>
+      <li data-retour="Le constructeur __init__ est bien là, en premier.">Elle n'a pas de constructeur.</li>
+      <li data-retour="Une carte ne contient pas les autres cartes : le jeu viendra dans la partie 3.">Elle crée les 52 cartes du jeu.</li>
+    </ul>
+    <p class="td-aide">Compte les <code>def</code> de chaque classe.</p>
+    <div class="td-correction"><p>Les attributs et le constructeur sont les mêmes. La classe de <code>cartes.py</code> a en plus trois <b>méthodes</b> : <code>egalite</code>, <code>estSuperieurA</code> et <code>estInferieurA</code>. Leur corps, <code>...</code>, est à écrire.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q8" data-fichier="cartes.py" data-obligatoire>
+    <p class="td-consigne">Complète les trois méthodes <code>egalite</code>, <code>estSuperieurA</code> et <code>estInferieurA</code>. Chacune renvoie <code>True</code> ou <code>False</code>. <span class="td-ecran-seul">Des tests, cachés, les vérifient quand tu cliques sur « Lancer et vérifier ».</span><span class="td-papier-seul">Sur les lignes, écris le corps de chaque méthode.</span></p>
+    <pre class="td-depart">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+    def egalite(self, autre):
+        """Renvoie True si self et autre ont la même valeur, False sinon."""
+        ...
+
+    def estSuperieurA(self, autre):
+        """Renvoie True si self a une valeur plus grande que autre."""
+        ...
+
+    def estInferieurA(self, autre):
+        """Renvoie True si self a une valeur plus petite que autre."""
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+sept = Carte(7, 'rouge', 'coeur')
+sept_pique = Carte(7, 'noir', 'pique')
+roi = Carte(13, 'noir', 'trèfle')
+assert sept.egalite(sept_pique) is True, "Deux 7 ont la même valeur : sept.egalite(sept_pique) doit renvoyer True."
+assert sept.egalite(roi) is False, "Un 7 et un roi n'ont pas la même valeur : sept.egalite(roi) doit renvoyer False."
+assert roi.estSuperieurA(sept) is True, "Le roi (13) est supérieur au 7 : roi.estSuperieurA(sept) doit renvoyer True."
+assert sept.estSuperieurA(roi) is False, "Le 7 n'est pas supérieur au roi : sept.estSuperieurA(roi) doit renvoyer False."
+assert sept.estSuperieurA(sept_pique) is False, "Deux 7 sont égaux : aucun n'est supérieur à l'autre."
+assert sept.estInferieurA(roi) is True, "Le 7 est inférieur au roi : sept.estInferieurA(roi) doit renvoyer True."
+assert roi.estInferieurA(sept) is False, "Le roi n'est pas inférieur au 7 : roi.estInferieurA(sept) doit renvoyer False."
+assert sept.estInferieurA(sept_pique) is False, "Deux 7 sont égaux : aucun n'est inférieur à l'autre."
+</script>
+    <p class="td-aide">Dans une méthode, la carte elle-même est <code>self</code> et l'autre carte est <code>autre</code> : on compare <code>self.valeur</code> et <code>autre.valeur</code>.</p>
+    <p class="td-aide">Une comparaison vaut déjà <code>True</code> ou <code>False</code> : <code>return self.valeur == autre.valeur</code> suffit.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+    def egalite(self, autre):
+        """Renvoie True si self et autre ont la même valeur, False sinon."""
+        return self.valeur == autre.valeur
+
+    def estSuperieurA(self, autre):
+        """Renvoie True si self a une valeur plus grande que autre."""
+        return self.valeur > autre.valeur
+
+    def estInferieurA(self, autre):
+        """Renvoie True si self a une valeur plus petite que autre."""
+        return self.valeur &lt; autre.valeur</pre>
+      <p>Une méthode s'écrit comme une fonction, dans la classe, avec <code>self</code> en premier paramètre. On l'appelle sur un objet : <code>roi.estSuperieurA(sept)</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q9">
+    <p class="td-consigne">On teste les méthodes sur trois cartes de valeurs différentes. Coche les appels qui renvoient <code>True</code>.</p>
+    <pre class="td-code">
+a = Carte(5, 'rouge', 'carreau')
+b = Carte(12, 'noir', 'trèfle')
+c = Carte(9, 'noir', 'pique')</pre>
+    <ul class="td-options">
+      <li data-juste><code>b.estSuperieurA(c)</code></li>
+      <li data-retour="a vaut 5 et c vaut 9 : 5 n'est pas plus grand que 9."><code>a.estSuperieurA(c)</code></li>
+      <li data-juste><code>a.estInferieurA(b)</code></li>
+      <li data-retour="La couleur ne compte pas : seules les valeurs, 9 et 12, sont comparées."><code>c.egalite(b)</code></li>
+    </ul>
+    <p class="td-aide">Remplace chaque carte par sa valeur : a = 5, b = 12, c = 9.</p>
+    <div class="td-correction"><p><code>b.estSuperieurA(c)</code> : 12 &gt; 9, vrai. <code>a.estSuperieurA(c)</code> : 5 &gt; 9, faux. <code>a.estInferieurA(b)</code> : 5 &lt; 12, vrai. <code>c.egalite(b)</code> : 9 = 12, faux.</p></div>
+  </section>
+
+  <h2 class="td-partie">3. Une nouvelle classe : le jeu de cartes</h2>
+
+  <p>Le fichier <code>jeuCartes.py</code> contient la classe <code>JeuCartes</code>. Un jeu a un seul attribut, <code>cartes</code> : la liste de ses 52 cartes, quatre enseignes de 13 cartes (valeurs 2 à 14). La classe <code>Carte</code> est celle de la partie 1.</p>
+
+  <section class="td-q" data-type="code" id="q10" data-fichier="jeuCartes.py" data-obligatoire>
+    <p class="td-consigne">Complète le constructeur : il remplit la liste <code>self.cartes</code> avec les 52 cartes du jeu. Le carreau et le coeur sont rouges, le trèfle et le pique sont noirs. <span class="td-ecran-seul">Des tests, cachés, le vérifient quand tu cliques sur « Lancer et vérifier ».</span><span class="td-papier-seul">Sur les lignes, écris la suite du constructeur.</span></p>
+    <pre class="td-code td-papier-seul">
+class JeuCartes:
+    def __init__(self):
+        self.cartes = []    # la liste des cartes du jeu
+        # à compléter : les 52 cartes</pre>
+    <pre class="td-depart">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+
+class JeuCartes:
+    def __init__(self):
+        self.cartes = []    # la liste des cartes du jeu
+        # à compléter : les 52 cartes
+</pre>
+    <script type="text/x-python" class="td-tests">
+jeu = JeuCartes()
+assert isinstance(jeu.cartes, list), "L'attribut cartes doit être une liste."
+assert len(jeu.cartes) == 52, "Le jeu doit avoir 52 cartes ; il en a " + str(len(jeu.cartes)) + "."
+assert all(isinstance(x, Carte) for x in jeu.cartes), "Chaque élément de self.cartes doit être une Carte : Carte(valeur, couleur, enseigne)."
+paires = {(x.valeur, x.enseigne) for x in jeu.cartes}
+assert len(paires) == 52, "Chaque carte doit être différente : une seule fois chaque valeur de chaque enseigne."
+assert {x.valeur for x in jeu.cartes} == set(range(2, 15)), "Les valeurs vont de 2 à 14 : range(2, 15)."
+assert {x.enseigne for x in jeu.cartes} == {'carreau', 'coeur', 'trèfle', 'pique'}, "Les enseignes sont 'carreau', 'coeur', 'trèfle' et 'pique'."
+for x in jeu.cartes:
+    attendue = 'rouge' if x.enseigne in ('carreau', 'coeur') else 'noir'
+    assert x.couleur == attendue, "Le " + str(x.valeur) + " de " + x.enseigne + " doit être " + attendue + "."
+assert len(JeuCartes().cartes) == 52, "Un deuxième jeu doit aussi avoir 52 cartes (et pas 104)."
+</script>
+    <p class="td-aide">Deux boucles imbriquées : une sur les enseignes, une sur les valeurs <code>range(2, 15)</code>.</p>
+    <p class="td-aide">La couleur dépend de l'enseigne : un <code>if</code> avant la boucle des valeurs.</p>
+    <p class="td-aide">Chaque carte s'ajoute avec <code>self.cartes.append(Carte(valeur, couleur, enseigne))</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+
+class JeuCartes:
+    def __init__(self):
+        self.cartes = []    # la liste des cartes du jeu
+        for enseigne in ['carreau', 'coeur', 'trèfle', 'pique']:
+            if enseigne == 'carreau' or enseigne == 'coeur':
+                couleur = 'rouge'
+            else:
+                couleur = 'noir'
+            for valeur in range(2, 15):
+                self.cartes.append(Carte(valeur, couleur, enseigne))</pre>
+      <p>4 enseignes × 13 valeurs = 52 cartes. Un objet <code>JeuCartes</code> contient donc 52 objets <code>Carte</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q11" data-fichier="jeuCartes.py" data-obligatoire>
+    <p class="td-consigne">Complète les méthodes <code>melanger</code> (avec la fonction <code>shuffle</code> du module <code>random</code>) et <code>distribuerCarte</code>, qui enlève la première carte du jeu et la renvoie. <span class="td-ecran-seul">Des tests, cachés, les vérifient quand tu cliques sur « Lancer et vérifier ».</span><span class="td-papier-seul">Sur les lignes, écris le corps des deux méthodes.</span></p>
+    <pre class="td-code td-papier-seul">
+    def melanger(self):
+        """Mélange les cartes du jeu."""
+        ...
+
+    def distribuerCarte(self):
+        """Enlève la première carte du jeu et la renvoie."""
+        ...</pre>
+    <pre class="td-depart">
+import random
+
+
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+
+class JeuCartes:
+    def __init__(self):
+        self.cartes = []    # la liste des cartes du jeu
+        for enseigne in ['carreau', 'coeur', 'trèfle', 'pique']:
+            if enseigne == 'carreau' or enseigne == 'coeur':
+                couleur = 'rouge'
+            else:
+                couleur = 'noir'
+            for valeur in range(2, 15):
+                self.cartes.append(Carte(valeur, couleur, enseigne))
+
+    def melanger(self):
+        """Mélange les cartes du jeu."""
+        ...
+
+    def distribuerCarte(self):
+        """Enlève la première carte du jeu et la renvoie."""
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+import random as _hasard
+_hasard.seed(1)
+jeu = JeuCartes()
+avant = [(x.valeur, x.enseigne) for x in jeu.cartes]
+jeu.melanger()
+apres = [(x.valeur, x.enseigne) for x in jeu.cartes]
+assert len(apres) == 52 and sorted(apres, key=str) == sorted(avant, key=str), "Après melanger, le jeu doit avoir les mêmes 52 cartes."
+assert apres != avant, "Après melanger, les cartes doivent avoir changé d'ordre : random.shuffle(self.cartes)."
+premiere = jeu.cartes[0]
+x = jeu.distribuerCarte()
+assert x is premiere, "distribuerCarte doit renvoyer la première carte du jeu, self.cartes[0]."
+assert len(jeu.cartes) == 51, "Après une distribution, il doit rester 51 cartes : la carte distribuée est enlevée du jeu."
+assert x not in jeu.cartes, "La carte distribuée ne doit plus être dans le jeu."
+for _ in range(51):
+    jeu.distribuerCarte()
+assert jeu.cartes == [], "Après 52 distributions, le jeu doit être vide."
+</script>
+    <p class="td-aide"><code>random.shuffle(liste)</code> mélange la liste sur place : elle ne renvoie rien.</p>
+    <p class="td-aide"><code>self.cartes.pop(0)</code> enlève l'élément d'indice 0 et le renvoie.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+import random
+
+
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+
+class JeuCartes:
+    def __init__(self):
+        self.cartes = []    # la liste des cartes du jeu
+        for enseigne in ['carreau', 'coeur', 'trèfle', 'pique']:
+            if enseigne == 'carreau' or enseigne == 'coeur':
+                couleur = 'rouge'
+            else:
+                couleur = 'noir'
+            for valeur in range(2, 15):
+                self.cartes.append(Carte(valeur, couleur, enseigne))
+
+    def melanger(self):
+        """Mélange les cartes du jeu."""
+        random.shuffle(self.cartes)
+
+    def distribuerCarte(self):
+        """Enlève la première carte du jeu et la renvoie."""
+        return self.cartes.pop(0)</pre>
+      <p>Comme dans une file, la première carte entrée est la première sortie : <code>pop(0)</code> la retire du début de la liste et la renvoie.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q12" data-fichier="partie.py" data-obligatoire>
+    <p class="td-consigne">Écris le programme principal : crée une instance de <code>JeuCartes</code>, mélange-la, puis distribue toutes les cartes ; à chaque carte distribuée, affiche <code>print(carte.valeur, carte.enseigne, carte.couleur)</code>. <span class="td-ecran-seul">La première ligne fixe le hasard : tout le monde obtient le même mélange, et la page peut vérifier.</span><span class="td-papier-seul">Les classes sont celles des questions 10 et 11.</span></p>
+    <pre class="td-depart">
+import random
+random.seed(2046)   # hasard fixé : le même mélange pour tout le monde
+
+
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+
+class JeuCartes:
+    def __init__(self):
+        self.cartes = []    # la liste des cartes du jeu
+        for enseigne in ['carreau', 'coeur', 'trèfle', 'pique']:
+            if enseigne == 'carreau' or enseigne == 'coeur':
+                couleur = 'rouge'
+            else:
+                couleur = 'noir'
+            for valeur in range(2, 15):
+                self.cartes.append(Carte(valeur, couleur, enseigne))
+
+    def melanger(self):
+        random.shuffle(self.cartes)
+
+    def distribuerCarte(self):
+        return self.cartes.pop(0)
+
+
+# Programme principal
+</pre>
+    <pre class="td-attendu">
+12 carreau rouge
+6 pique noir
+4 coeur rouge
+6 carreau rouge
+12 trèfle noir
+11 carreau rouge
+7 carreau rouge
+14 pique noir
+3 trèfle noir
+2 pique noir
+10 carreau rouge
+2 coeur rouge
+11 coeur rouge
+8 trèfle noir
+13 coeur rouge
+10 pique noir
+10 trèfle noir
+6 trèfle noir
+3 coeur rouge
+12 coeur rouge
+7 coeur rouge
+4 pique noir
+8 carreau rouge
+5 carreau rouge
+4 trèfle noir
+7 pique noir
+4 carreau rouge
+8 pique noir
+13 trèfle noir
+5 coeur rouge
+9 trèfle noir
+14 trèfle noir
+11 pique noir
+13 pique noir
+3 carreau rouge
+5 pique noir
+9 pique noir
+2 carreau rouge
+9 coeur rouge
+5 trèfle noir
+12 pique noir
+6 coeur rouge
+13 carreau rouge
+7 trèfle noir
+9 carreau rouge
+14 carreau rouge
+8 coeur rouge
+2 trèfle noir
+10 coeur rouge
+3 pique noir
+14 coeur rouge
+11 trèfle noir</pre>
+    <p class="td-aide">Trois étapes : <code>jeu = JeuCartes()</code>, puis <code>jeu.melanger()</code>, puis une boucle qui distribue.</p>
+    <p class="td-aide">Le jeu a 52 cartes : <code>for i in range(52):</code>, ou <code>while len(jeu.cartes) &gt; 0:</code>.</p>
+    <p class="td-aide">Dans la boucle : <code>carte = jeu.distribuerCarte()</code>, puis le <code>print</code>.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+import random
+random.seed(2046)   # hasard fixé : le même mélange pour tout le monde
+
+
+class Carte:
+    def __init__(self, valeur, couleur, enseigne):
+        self.valeur = valeur
+        self.couleur = couleur
+        self.enseigne = enseigne
+
+
+class JeuCartes:
+    def __init__(self):
+        self.cartes = []    # la liste des cartes du jeu
+        for enseigne in ['carreau', 'coeur', 'trèfle', 'pique']:
+            if enseigne == 'carreau' or enseigne == 'coeur':
+                couleur = 'rouge'
+            else:
+                couleur = 'noir'
+            for valeur in range(2, 15):
+                self.cartes.append(Carte(valeur, couleur, enseigne))
+
+    def melanger(self):
+        random.shuffle(self.cartes)
+
+    def distribuerCarte(self):
+        return self.cartes.pop(0)
+
+
+# Programme principal
+jeu = JeuCartes()
+jeu.melanger()
+while len(jeu.cartes) &gt; 0:
+    carte = jeu.distribuerCarte()
+    print(carte.valeur, carte.enseigne, carte.couleur)</pre>
+      <p>On crée l'objet, on appelle ses méthodes, et la boucle s'arrête quand le jeu est vide. Sans <code>random.seed</code>, le mélange change à chaque lancement.</p>
+    </div>
+  </section>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Une <b>classe</b> décrit des objets : son constructeur <code>__init__</code> crée leurs <b>attributs</b> (<code>self.valeur</code>), ses <b>méthodes</b> agissent sur eux (<code>roi.estSuperieurA(sept)</code>).</p>
+    <p>Une <b>instance</b> se crée en appelant la classe : <code>c1 = Carte(7, 'rouge', 'coeur')</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/poo-td-tp-terminale/poo-tp">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
