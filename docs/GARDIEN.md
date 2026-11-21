@@ -47,7 +47,7 @@ exemple un `git worktree`), qui liste chaque ligne où reste
 un ancien nom (adresse ou nom affiché), et compare les deux listes sans les numéros de ligne : une
 adresse ajoutée qui cite l'ancien nom d'un dépôt déjà renommé est à corriger avant la
 publication. À l'inverse, une adresse au nouveau nom d'un dépôt pas encore renommé ne répond pas
-encore : la branche attend ce renommage.
+encore (sauf quand seule la casse change, car GitHub l'ignore) : la branche attend ce renommage.
 
 Pour les autres dépôts de l'enseignant (applications, mini-sites des TD, diaporamas) :
 
