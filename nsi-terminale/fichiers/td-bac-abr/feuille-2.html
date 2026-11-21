@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les arbres binaires de recherche : TD type bac (2/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : insérer et compter dans un arbre binaire de recherche (bac 2022, Métropole, exercice 1), avec coups de pouce et corrections.">
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<main class="td" data-td="tle-td-bac-abr-2" data-td-version="1">
+
+  <header class="td-entete">
+    <p class="td-sur-titre">Terminale NSI · Algorithmique · TD type bac, feuille 2 sur 2</p>
+    <h1>Les arbres binaires de recherche : TD type bac (2/2)</h1>
+    <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : insérer et compter dans un ABR.</p>
+    <p><b>Je sais :</b></p>
+    <ul class="td-criteres">
+      <li>lire la convention de hauteur d'un sujet et l'appliquer ;</li>
+      <li>construire un ABR avec une classe <code>Noeud</code> et écrire une insertion récursive ;</li>
+      <li>compter les appels d'une fonction récursive, puis les réduire grâce à l'ordre de l'ABR.</li>
+    </ul>
+    <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (4 points), 9 questions · seul·e ou en binôme</p>
+    <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+    <p class="td-ecran-seul"><b>Ce TD a deux feuilles :</b> 1. <a href="index.html">les billets de loterie</a> (la plus guidée) ; 2. insérer et compter dans un ABR (ici).</p>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+  <h2 class="td-partie">Exercice : insérer et compter dans un ABR (4 points)</h2>
+  <p><i>Bac 2022, Métropole, jour 2 (sujet 22-NSIJ2ME1), exercice 1, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-metropole-sujet-2.pdf">Sujet d'origine (PDF)</a>.</i></p>
+  <p><i>Cet exercice porte sur les arbres binaires de recherche, la programmation orientée objet et la récursivité.</i></p>
+  <p>Dans cet exercice, la taille d’un arbre est le nombre de nœuds qu’il contient. Sa hauteur est le nombre de nœuds du plus long chemin qui joint le nœud racine à l’une des feuilles (nœuds sans sous-arbres). On convient que la hauteur d’un arbre ne contenant qu’un nœud vaut 1 et la hauteur de l’arbre vide vaut 0.</p>
+  <p><b>Attention :</b> ce n'est pas la convention du cours (un nœud seul : 0 ; l'arbre vide : −1). Ce sujet compte les <b>nœuds</b> du plus long chemin, le cours compte ses <b>arêtes</b>. Ici, on répond avec la convention du sujet.</p>
+  <p><b>1.</b> On considère l’arbre binaire représenté ci-dessous :</p>
+  <svg viewBox="0 0 300 148" width="300" height="148" role="img" aria-label="Figure 1 : racine 15 ; fils gauche 13, avec les feuilles 11 et 14 ; fils droit 21, avec 18 à gauche et la feuille 27 à droite ; 18 a un seul fils, 20, à droite." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="65.9" y1="64.3" x2="46.6" y2="83.7"/><line x1="84.1" y1="64.3" x2="103.4" y2="83.7"/><line x1="138.4" y1="22.9" x2="86.6" y2="49.1"/><line x1="193.3" y1="104.7" x2="200.5" y2="119.3"/><line x1="215.9" y1="64.3" x2="196.6" y2="83.7"/><line x1="234.1" y1="64.3" x2="253.4" y2="83.7"/><line x1="161.6" y1="22.9" x2="213.4" y2="49.1"/><circle cx="37.5" cy="93.0" r="13"/><circle cx="112.5" cy="93.0" r="13"/><circle cx="75.0" cy="55.0" r="13"/><circle cx="206.2" cy="131.0" r="13"/><circle cx="187.5" cy="93.0" r="13"/><circle cx="262.5" cy="93.0" r="13"/><circle cx="225.0" cy="55.0" r="13"/><circle cx="150.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="37.5" y="98.0">11</text><text x="112.5" y="98.0">14</text><text x="75.0" y="60.0">13</text><text x="206.2" y="136.0">20</text><text x="187.5" y="98.0">18</text><text x="262.5" y="98.0">27</text><text x="225.0" y="60.0">21</text><text x="150.0" y="22.0">15</text></g></svg>
+  <p><i>Figure 1</i></p>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="8|huit">
+    <p class="td-consigne"><b>a.</b> Donner la taille de cet arbre.</p>
+    <p class="td-retour" data-si="4">4 est la hauteur. La taille est le nombre de nœuds.</p>
+    <p class="td-retour" data-si="7">Tu as oublié un nœud : compte aussi la racine et la feuille 20.</p>
+    <p class="td-aide">Compte tous les nœuds, niveau par niveau.</p>
+    <div class="td-correction"><p>15, 13, 21, 11, 14, 18, 27, 20 : <b>8</b> nœuds.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q2" data-reponse="4|quatre">
+    <p class="td-consigne"><b>b.</b> Donner la hauteur de cet arbre.</p>
+    <p class="td-retour" data-si="3">3, c'est la hauteur avec la convention du cours (on compte les arêtes). Ce sujet compte les <b>nœuds</b> du plus long chemin.</p>
+    <p class="td-retour" data-si="8">8 est la taille (le nombre de nœuds de tout l'arbre). La hauteur ne regarde qu'un chemin, le plus long.</p>
+    <p class="td-aide">Le plus long chemin de la racine à une feuille est 15 → 21 → 18 → 20.</p>
+    <p class="td-aide">Avec la convention du sujet, on compte les nœuds de ce chemin.</p>
+    <div class="td-correction"><p>Le plus long chemin 15 → 21 → 18 → 20 a <b>4</b> nœuds : la hauteur vaut 4 (3 avec la convention du cours).</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-reponse="21 18 27 20|21, 18, 27, 20|21,18,27,20|21 - 18 - 27 - 20|21-18-27-20|21 ; 18 ; 27 ; 20|21;18;27;20" data-etiquette="Le sous-arbre, niveau par niveau :">
+    <p class="td-consigne"><b>c.</b> Représenter sur la copie le sous-arbre droit du nœud de valeur 15.</p>
+    <p class="td-ecran-seul">Dessine-le au brouillon, puis écris ici ses valeurs niveau par niveau (de haut en bas, de gauche à droite), séparées par des espaces.</p>
+    <p class="td-retour" data-si="13 11 14|13, 11, 14|13,11,14">C'est le sous-arbre gauche de 15. Le droit est à droite de la racine.</p>
+    <p class="td-retour" data-si="15 21 18 27 20|15, 21, 18, 27, 20">Le sous-arbre droit ne contient pas le nœud 15 : il commence à son fils droit.</p>
+    <p class="td-aide">Le sous-arbre droit de 15 commence à son fils droit, et contient tous ses descendants.</p>
+    <div class="td-correction">
+      <svg viewBox="0 0 160 110" width="160" height="110" role="img" aria-label="Le sous-arbre droit de 15 : racine 21 ; 18 à gauche, avec un seul fils 20 à droite ; 27 à droite." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="46.1" y1="66.5" x2="53.9" y2="81.5"/><line x1="70.6" y1="26.0" x2="49.4" y2="46.0"/><line x1="89.4" y1="26.0" x2="110.6" y2="46.0"/><circle cx="60.0" cy="93.0" r="13"/><circle cx="40.0" cy="55.0" r="13"/><circle cx="120.0" cy="55.0" r="13"/><circle cx="80.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="60.0" y="98.0">20</text><text x="40.0" y="60.0">18</text><text x="120.0" y="60.0">27</text><text x="80.0" y="22.0">21</text></g></svg>
+      <p>Le sous-arbre de racine 21 : 21, puis 18 et 27, puis 20 (fils droit de 18).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4">
+    <p class="td-consigne"><b>d.</b> Justifier que l’arbre de la figure 1 est un arbre binaire de recherche.</p>
+    <p class="td-ecran-seul">Sur la copie, on rédige la justification. Ici, choisis celle qui suffit.</p>
+    <ul class="td-options">
+      <li data-retour="C'est vrai, mais cela montre seulement que l'arbre est binaire.">Chaque nœud a au plus deux fils.</li>
+      <li data-retour="Il ne suffit pas de comparer un nœud à ses fils : il faut le comparer à tous les nœuds de ses sous-arbres (par exemple, 20 doit être plus grand que 15).">Chaque fils gauche est plus petit que son père et chaque fils droit est plus grand que son père.</li>
+      <li data-juste>Pour chaque nœud, toutes les valeurs de son sous-arbre gauche sont plus petites que la sienne, et toutes celles de son sous-arbre droit sont plus grandes.</li>
+      <li data-retour="Le parcours préfixe donne 15 13 11 14 21 18 20 27 : ce n'est pas trié. C'est le parcours infixe qui donne une liste croissante.">Son parcours préfixe donne les valeurs dans l'ordre croissant.</li>
+    </ul>
+    <p class="td-aide">Un ABR est défini par une propriété de <b>chaque</b> nœud, comparé à <b>tous</b> les nœuds de ses sous-arbres.</p>
+    <div class="td-correction">
+      <p>Pour chaque nœud, les valeurs de son sous-arbre gauche sont inférieures et celles de son sous-arbre droit supérieures. Par exemple : 11 et 14 &lt; 13 ; 18 &lt; 21 &lt; 27 ; 20 &gt; 18 ; et tout le sous-arbre gauche de 15 (11, 13, 14) est &lt; 15, tout le droit (18, 20, 21, 27) est &gt; 15.</p>
+      <p>Autre justification juste : le parcours <b>infixe</b> donne 11 13 14 15 18 20 21 27, une liste croissante.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-reponse="15 13 21 11 14 18 27 17 20|15, 13, 21, 11, 14, 18, 27, 17, 20|15,13,21,11,14,18,27,17,20|15 - 13 - 21 - 11 - 14 - 18 - 27 - 17 - 20|15-13-21-11-14-18-27-17-20" data-etiquette="Le nouvel arbre, niveau par niveau :">
+    <p class="td-consigne"><b>e.</b> On insère la valeur 17 dans l’arbre de la figure 1 de telle sorte que 17 soit une nouvelle feuille de l’arbre et que le nouvel arbre obtenu soit encore un arbre binaire de recherche. Représenter sur la copie ce nouvel arbre.</p>
+    <p class="td-ecran-seul">Écris les valeurs du nouvel arbre niveau par niveau, séparées par des espaces.</p>
+    <p class="td-retour" data-si="15 13 21 11 14 18 27 20 17|15, 13, 21, 11, 14, 18, 27, 20, 17">17 est plus petit que 18 : il devient le fils <b>gauche</b> de 18, donc il est lu avant 20.</p>
+    <p class="td-aide">Pars de la racine : 17 &gt; 15, on descend à droite. Puis compare 17 à 21.</p>
+    <p class="td-aide">17 &lt; 21 : à gauche, on arrive sur 18. 17 &lt; 18 : à gauche de 18, la place est libre.</p>
+    <div class="td-correction">
+      <svg viewBox="0 0 300 148" width="300" height="148" role="img" aria-label="L'arbre après l'insertion de 17 : comme la figure 1, et 17 est le fils gauche de 18." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="65.9" y1="64.3" x2="46.6" y2="83.7"/><line x1="84.1" y1="64.3" x2="103.4" y2="83.7"/><line x1="138.4" y1="22.9" x2="86.6" y2="49.1"/><line x1="181.7" y1="104.7" x2="174.5" y2="119.3"/><line x1="193.3" y1="104.7" x2="200.5" y2="119.3"/><line x1="215.9" y1="64.3" x2="196.6" y2="83.7"/><line x1="234.1" y1="64.3" x2="253.4" y2="83.7"/><line x1="161.6" y1="22.9" x2="213.4" y2="49.1"/><circle cx="37.5" cy="93.0" r="13"/><circle cx="112.5" cy="93.0" r="13"/><circle cx="75.0" cy="55.0" r="13"/><circle cx="168.8" cy="131.0" r="13"/><circle cx="206.2" cy="131.0" r="13"/><circle cx="187.5" cy="93.0" r="13"/><circle cx="262.5" cy="93.0" r="13"/><circle cx="225.0" cy="55.0" r="13"/><circle cx="150.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="37.5" y="98.0">11</text><text x="112.5" y="98.0">14</text><text x="75.0" y="60.0">13</text><text x="168.8" y="136.0">17</text><text x="206.2" y="136.0">20</text><text x="187.5" y="98.0">18</text><text x="262.5" y="98.0">27</text><text x="225.0" y="60.0">21</text><text x="150.0" y="22.0">15</text></g></svg>
+      <p>17 descend 15 → 21 → 18 et devient le <b>fils gauche de 18</b>. Niveau par niveau : 15 13 21 11 14 18 27 17 20.</p>
+    </div>
+  </section>
+
+  <p><b>2.</b> On considère la classe <code>Noeud</code> définie de la façon suivante en Python :</p>
+  <pre class="td-code">
+class Noeud:
+    def __init__(self, g, v, d):
+        self.gauche = g
+        self.valeur = v
+        self.droit = d</pre>
+  <p><b>Attention :</b> ici, la valeur est le <b>deuxième</b> paramètre : <code>Noeud(gauche, valeur, droit)</code>. Dans le cours, c'est le premier.</p>
+
+  <section class="td-q" data-type="qcu" id="q6">
+    <p class="td-consigne"><b>a.</b> Parmi les trois instructions (A), (B) et (C) suivantes, écrire sur la copie la lettre correspondant à celle qui construit et stocke dans la variable <code>abr</code> l’arbre représenté ci-dessous.</p>
+    <svg viewBox="0 0 120 72" width="120" height="72" role="img" aria-label="Un arbre : racine 15, fils gauche 13, fils droit 21." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="51.9" y1="27.2" x2="38.1" y2="44.8"/><line x1="68.1" y1="27.2" x2="81.9" y2="44.8"/><circle cx="30.0" cy="55.0" r="13"/><circle cx="90.0" cy="55.0" r="13"/><circle cx="60.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="30.0" y="60.0">13</text><text x="90.0" y="60.0">21</text><text x="60.0" y="22.0">15</text></g></svg>
+    <ul class="td-options">
+      <li data-retour="(A) met 13 sous 15, et 15 sous 21 : la racine serait 21, avec un seul fils."><b>(A)</b><pre class="td-code">
+abr=Noeud(Noeud(Noeud(None,13,None),15,None),21,None)</pre></li>
+      <li data-retour="(B) met 13 à la racine, et 21 à droite de 13 : ce n'est pas l'arbre dessiné."><b>(B)</b><pre class="td-code">
+abr=Noeud(None,13,Noeud(Noeud(None,15,None),21,None))</pre></li>
+      <li data-juste><b>(C)</b><pre class="td-code">
+abr=Noeud(Noeud(None,13,None),15,Noeud(None,21,None))</pre></li>
+    </ul>
+    <p class="td-aide">L'appel le plus extérieur construit la racine : sa valeur est le <b>deuxième</b> paramètre. Quelle instruction a 15 en deuxième position de l'appel extérieur ?</p>
+    <div class="td-correction">
+      <p><b>(C)</b> : l'appel extérieur <code>Noeud(…, 15, …)</code> crée la racine 15, avec la feuille 13 à gauche et la feuille 21 à droite. Une feuille s'écrit <code>Noeud(None, valeur, None)</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q7" data-obligatoire data-fichier="ins.py">
+    <p class="td-consigne"><b>b.</b> Recopier et compléter la ligne 7 du code de la fonction <code>ins</code> ci-dessous qui prend en paramètres une valeur <code>v</code> et un arbre binaire de recherche <code>abr</code> et qui renvoie l’arbre obtenu suite à l’insertion de la valeur <code>v</code> dans l’arbre <code>abr</code>. Les lignes 8 et 9 permettent de ne pas insérer la valeur <code>v</code> si celle-ci est déjà présente dans <code>abr</code>.</p>
+    <pre class="td-code">
+def ins(v, abr):
+    if abr is None:
+        return Noeud(None, v, None)
+    if v &gt; abr.valeur:
+        return Noeud(abr.gauche,abr.valeur,ins(v,abr.droit))
+    elif v &lt; abr.valeur:
+        return ............................................
+    else:
+        return abr</pre>
+    <p class="td-ecran-seul">Sur machine : complète la ligne 7 dans l'éditeur, puis lance. Les tests construisent l'arbre de la figure 1 avec ta fonction.</p>
+    <pre class="td-depart">
+class Noeud:
+    def __init__(self, g, v, d):
+        self.gauche = g
+        self.valeur = v
+        self.droit = d
+
+def ins(v, abr):
+    if abr is None:
+        return Noeud(None, v, None)
+    if v &gt; abr.valeur:
+        return Noeud(abr.gauche,abr.valeur,ins(v,abr.droit))
+    elif v &lt; abr.valeur:
+        return ...
+    else:
+        return abr
+
+def infixe(a):   # pour vérifier : les valeurs dans l'ordre infixe
+    if a is None:
+        return []
+    return infixe(a.gauche) + [a.valeur] + infixe(a.droit)
+
+abr = None
+for v in [15, 13, 21, 11, 14, 18, 27, 20]:
+    abr = ins(v, abr)
+print(infixe(abr))
+</pre>
+    <script type="text/x-python" class="td-tests">
+def _forme(n):
+    return None if n is None else (_forme(n.gauche), n.valeur, _forme(n.droit))
+assert isinstance(ins(5, None), Noeud), "ins doit renvoyer un objet Noeud."
+assert _forme(ins(13, Noeud(None, 15, None))) == ((None, 13, None), 15, None), "Insérer 13 dans l'arbre réduit à 15 : 13 doit devenir le fils gauche de 15."
+assert infixe(abr) == [11, 13, 14, 15, 18, 20, 21, 27], "L'arbre de la figure 1 doit donner 11 13 14 15 18 20 21 27 en infixe."
+assert _forme(abr.gauche) == ((None, 11, None), 13, (None, 14, None)), "Le sous-arbre gauche de 15 doit être 13, avec 11 et 14."
+assert _forme(ins(17, abr).droit.gauche.gauche) == (None, 17, None), "Insérer 17 : il doit devenir le fils gauche de 18."
+assert infixe(ins(13, abr)) == [11, 13, 14, 15, 18, 20, 21, 27], "Une valeur déjà présente (13) n'est pas insérée une deuxième fois (lignes 8 et 9)."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">La ligne 5 traite le cas « <code>v</code> plus grand » : elle reconstruit le nœud en insérant <code>v</code> à droite. La ligne 7 fait la même chose de l'autre côté.</p>
+    <p class="td-aide">Garde la valeur et le sous-arbre droit, et remplace le sous-arbre gauche par <code>ins(v, abr.gauche)</code>. L'ordre des paramètres : gauche, valeur, droit.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def ins(v, abr):
+    if abr is None:
+        return Noeud(None, v, None)
+    if v &gt; abr.valeur:
+        return Noeud(abr.gauche,abr.valeur,ins(v,abr.droit))
+    elif v &lt; abr.valeur:
+        return Noeud(ins(v, abr.gauche), abr.valeur, abr.droit)
+    else:
+        return abr</pre>
+      <p>Ligne 7 : <code>return Noeud(ins(v, abr.gauche), abr.valeur, abr.droit)</code>. On ne modifie pas l'arbre : on renvoie un nouveau nœud, dont le sous-arbre gauche a reçu <code>v</code>.</p>
+    </div>
+  </section>
+
+  <p><b>3.</b> La fonction <code>nb_sup</code> prend en paramètres une valeur <code>v</code> et un arbre binaire de recherche <code>abr</code> et renvoie le nombre de valeurs supérieures ou égales à la valeur <code>v</code> dans l’arbre <code>abr</code>. Le code de cette fonction <code>nb_sup</code> est donné ci-dessous :</p>
+  <pre class="td-code">
+def nb_sup(v, abr):
+    if abr is None:
+        return 0
+    else:
+        if abr.valeur &gt;= v:
+            return 1+nb_sup(v, abr.gauche)+nb_sup(v, abr.droit)
+        else:
+            return nb_sup(v, abr.gauche)+nb_sup(v, abr.droit)</pre>
+
+  <section class="td-q" data-type="courte" id="q8" data-reponse="17|dix-sept|dix sept">
+    <p class="td-consigne"><b>a.</b> On exécute l’instruction <code>nb_sup(16, abr)</code> dans laquelle <code>abr</code> est l’arbre initial de la figure 1. Déterminer le nombre d’appels à la fonction <code>nb_sup</code>.</p>
+    <p class="td-retour" data-si="4">4 est la valeur renvoyée (18, 20, 21 et 27). On demande le nombre d'<b>appels</b>.</p>
+    <p class="td-retour" data-si="8">Chaque nœud donne un appel, mais il y a aussi les appels sur les sous-arbres vides (<code>None</code>).</p>
+    <p class="td-retour" data-si="16">Tu as oublié le tout premier appel, <code>nb_sup(16, abr)</code> lui-même.</p>
+    <p class="td-aide">La fonction appelle toujours ses deux sous-arbres, même s'ils sont vides. Chaque appel sur un nœud en lance donc deux autres.</p>
+    <p class="td-aide">8 nœuds : 8 appels sur des nœuds. Combien d'appels sur un arbre vide ? Compte les places vides sous les nœuds.</p>
+    <div class="td-correction">
+      <p>La fonction visite tout l'arbre : un appel par nœud (8) et un appel par sous-arbre vide (9 : un arbre de 8 nœuds a 9 places vides). Total : <b>17</b> appels, soit 2 × 8 + 1. Vérifié en exécutant le code avec un compteur.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q9" data-obligatoire data-fichier="nb_sup.py">
+    <p class="td-consigne"><b>b.</b> L’arbre passé en paramètre étant un arbre binaire de recherche, on peut améliorer la fonction <code>nb_sup</code> précédente afin de réduire ce nombre d’appels. Écrire sur la copie le code modifié de cette fonction.</p>
+    <pre class="td-depart">
+class Noeud:
+    def __init__(self, g, v, d):
+        self.gauche = g
+        self.valeur = v
+        self.droit = d
+
+# L'arbre de la figure 1
+abr = Noeud(Noeud(Noeud(None, 11, None), 13, Noeud(None, 14, None)), 15,
+            Noeud(Noeud(None, 18, Noeud(None, 20, None)), 21, Noeud(None, 27, None)))
+
+def nb_sup(v, abr):
+    if abr is None:
+        return 0
+    else:
+        if abr.valeur &gt;= v:
+            return 1+nb_sup(v, abr.gauche)+nb_sup(v, abr.droit)
+        else:
+            return nb_sup(v, abr.gauche)+nb_sup(v, abr.droit)
+
+print(nb_sup(16, abr))
+</pre>
+    <script type="text/x-python" class="td-tests">
+_appels = 0
+_vraie = nb_sup
+def nb_sup(v, a):        # compte les appels, puis appelle ta fonction
+    global _appels
+    _appels = _appels + 1
+    return _vraie(v, a)
+for _v, _r in ((16, 4), (15, 5), (1, 8), (30, 0), (14, 6), (21, 2)):
+    assert nb_sup(_v, abr) == _r, f"nb_sup({_v}, abr) doit valoir {_r}."
+_appels = 0
+nb_sup(16, abr)
+assert _appels < 17, f"nb_sup(16, abr) fait encore {_appels} appels : il faut en faire moins que 17. Quand le nœud est plus petit que v, faut-il vraiment chercher à gauche ?"
+print("Tous les tests passent :", _appels, "appels au lieu de 17.")
+</script>
+    <p class="td-aide">Si la valeur du nœud est plus petite que <code>v</code>, que sait-on de toutes les valeurs de son sous-arbre gauche ?</p>
+    <p class="td-aide">Elles sont encore plus petites : aucune n'est comptée. Inutile d'appeler <code>nb_sup</code> sur le sous-arbre gauche dans ce cas.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def nb_sup(v, abr):
+    if abr is None:
+        return 0
+    else:
+        if abr.valeur &gt;= v:
+            return 1+nb_sup(v, abr.gauche)+nb_sup(v, abr.droit)
+        else:
+            return nb_sup(v, abr.droit)</pre>
+      <p>Quand <code>abr.valeur &lt; v</code>, tout le sous-arbre gauche est plus petit encore : on ne cherche qu'à droite. Pour <code>nb_sup(16, abr)</code>, on passe de 17 à 10 appels (compté par exécution).</p>
+    </div>
+  </section>
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Taille : le nombre de nœuds. Hauteur : <b>lis la convention du sujet</b> (ici un nœud seul vaut 1 ; dans le cours, 0).</p>
+    <p>Insérer récursivement : si <code>v</code> est plus petit, on insère dans le sous-arbre gauche, sinon dans le droit ; l'arbre vide devient une feuille.</p>
+    <p>Dans un ABR, si le nœud est plus petit que ce qu'on cherche, tout son sous-arbre gauche l'est aussi : inutile d'y aller.</p>
+  </section>
+  <section class="td-memo td-ecran-seul">
+    <h2>Pour aller plus loin</h2>
+    <ul>
+      <li><a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-amerique-nord-jour-1.pdf">Bac 2022, Amérique du Nord, jour 1, exercice 3</a> (4 points) : un ABR de noms de pays, recherche et taille. Hauteur d'un nœud seul : 1.</li>
+      <li><a href="https://kxs.fr/files/sujets/2021/ecrit/terminale-2021-metropole-candidat-libre-sujet-2.pdf">Bac 2021, Métropole (candidats libres), jour 2, exercice 3</a> (4 points) : classes <code>Noeud</code> et <code>Arbre</code>, insertion récursive, arbre « bien construit ».</li>
+      <li><a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-metropole-juin-sujet-1.pdf">Bac 2024, Métropole, jour 1, exercice 3</a> (8 points) : programmation orientée objet, ABR et récursivité, un exercice long comme à l'épreuve.</li>
+    </ul>
+  </section>
+  <footer class="td-pied">
+    <p>Énoncé : sujet officiel du baccalauréat de NSI, Métropole, mai 2022, jour 2 (22-NSIJ2ME1), exercice 1 (ministère de l'Éducation nationale), recopié d'après le PDF diffusé par <a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> et l'<a href="https://aeif.fr/index.php/annee-2022/">AEIF</a> ; arbres redessinés. Correction comparée au corrigé de l'AEIF (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0).</p>
+    <p>Mise en TD, coups de pouce et corrections : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-abr">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
