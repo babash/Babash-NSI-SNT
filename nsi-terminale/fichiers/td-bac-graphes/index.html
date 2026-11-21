@@ -1,0 +1,352 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Graphes · TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : un groupe d&#x27;amis, matrice et listes d&#x27;adjacence (bac 2024, Amérique du Nord, 24-NSIJ1AN1, exercice 2).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-graphes-1" data-td-version="3" data-code="obligatoire" data-ordre="melange">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Graphes</span></p>
+        <h1>Graphes</h1>
+        <p class="td-accroche">Type bac · feuille 1/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=graphes" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h1v1h-1zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h2v1h-2zM11 1h1v1h-1zM20 1h1v1h-1zM23 1h2v1h-2zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h2v1h-2zM12 2h5v1h-5zM22 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h5v1h-5zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM11 4h1v1h-1zM13 4h1v1h-1zM15 4h2v1h-2zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM11 5h1v1h-1zM16 5h5v1h-5zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h3v1h-3zM14 7h1v1h-1zM17 7h1v1h-1zM24 7h1v1h-1zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM9 8h3v1h-3zM15 8h1v1h-1zM17 8h3v1h-3zM21 8h4v1h-4zM26 8h1v1h-1zM29 8h1v1h-1zM31 8h2v1h-2zM2 9h1v1h-1zM5 9h1v1h-1zM7 9h2v1h-2zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM12 10h3v1h-3zM16 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM31 10h2v1h-2zM0 11h2v1h-2zM3 11h1v1h-1zM7 11h2v1h-2zM10 11h1v1h-1zM13 11h2v1h-2zM16 11h1v1h-1zM18 11h3v1h-3zM22 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM32 11h1v1h-1zM1 12h2v1h-2zM6 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h3v1h-3zM5 13h1v1h-1zM9 13h1v1h-1zM14 13h3v1h-3zM18 13h2v1h-2zM21 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM29 13h3v1h-3zM0 14h1v1h-1zM2 14h1v1h-1zM4 14h4v1h-4zM10 14h4v1h-4zM16 14h1v1h-1zM19 14h3v1h-3zM26 14h1v1h-1zM29 14h1v1h-1zM0 15h3v1h-3zM5 15h1v1h-1zM7 15h2v1h-2zM10 15h1v1h-1zM13 15h3v1h-3zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h3v1h-3zM4 16h3v1h-3zM10 16h1v1h-1zM18 16h2v1h-2zM21 16h2v1h-2zM25 16h2v1h-2zM28 16h3v1h-3zM0 17h1v1h-1zM2 17h2v1h-2zM8 17h3v1h-3zM14 17h2v1h-2zM17 17h1v1h-1zM20 17h7v1h-7zM28 17h2v1h-2zM32 17h1v1h-1zM1 18h2v1h-2zM4 18h1v1h-1zM6 18h2v1h-2zM11 18h2v1h-2zM14 18h3v1h-3zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h1v1h-1zM5 19h1v1h-1zM9 19h2v1h-2zM12 19h2v1h-2zM16 19h3v1h-3zM20 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM0 20h4v1h-4zM5 20h2v1h-2zM10 20h3v1h-3zM14 20h1v1h-1zM17 20h2v1h-2zM21 20h1v1h-1zM27 20h1v1h-1zM29 20h2v1h-2zM32 20h1v1h-1zM0 21h2v1h-2zM4 21h1v1h-1zM8 21h5v1h-5zM16 21h6v1h-6zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM2 22h2v1h-2zM5 22h2v1h-2zM8 22h1v1h-1zM10 22h3v1h-3zM14 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM21 22h4v1h-4zM26 22h2v1h-2zM30 22h3v1h-3zM1 23h4v1h-4zM8 23h2v1h-2zM11 23h3v1h-3zM16 23h1v1h-1zM18 23h1v1h-1zM23 23h7v1h-7zM31 23h2v1h-2zM0 24h1v1h-1zM4 24h1v1h-1zM6 24h4v1h-4zM12 24h1v1h-1zM14 24h5v1h-5zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h2v1h-2zM11 25h2v1h-2zM15 25h3v1h-3zM19 25h1v1h-1zM21 25h1v1h-1zM23 25h2v1h-2zM28 25h2v1h-2zM0 26h7v1h-7zM8 26h2v1h-2zM12 26h2v1h-2zM17 26h3v1h-3zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM10 27h2v1h-2zM13 27h1v1h-1zM15 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h1v1h-1zM11 28h1v1h-1zM14 28h1v1h-1zM18 28h1v1h-1zM20 28h2v1h-2zM23 28h6v1h-6zM30 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM12 29h2v1h-2zM15 29h1v1h-1zM17 29h2v1h-2zM20 29h2v1h-2zM23 29h1v1h-1zM27 29h1v1h-1zM32 29h1v1h-1zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM15 30h1v1h-1zM17 30h1v1h-1zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM11 31h2v1h-2zM14 31h2v1h-2zM17 31h3v1h-3zM22 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM0 32h7v1h-7zM8 32h4v1h-4zM13 32h1v1h-1zM17 32h2v1h-2zM20 32h2v1h-2zM23 32h1v1h-1zM28 32h1v1h-1zM30 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les graphes (le plus guidé).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>représenter un graphe par une matrice d'adjacence et par un dictionnaire de listes d'adjacence ;</li>
+        <li>compter les voisins d'un sommet dans chacune des deux représentations ;</li>
+        <li>dérouler un parcours en profondeur dans l'ordre des voisins donné.</li>
+      </ul>
+      <p class="td-duree">50 minutes · 1 exercice de bac (6 points) · 10 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés. Ce qui est propre au TD (« Pour répondre ici », coups de pouce) est écrit à part.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. un groupe d'amis (ici) ; 2. <a href="feuille-2.html">visiter toutes les villes</a>.</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 1 · Un groupe d'amis (6 points)</h2>
+  <p><b>Sujet :</b> baccalauréat 2024, Amérique du Nord, jour 1 (24-NSIJ1AN1), exercice 2, pages 6 à 8. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-amerique-nord-jour-1.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Amerique_Nord_2024_1.pdf">version de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_amerique_nord_2024_1.pdf">corrigé de l'AEIF</a>.</p>
+  <p><i>Cet exercice porte sur les graphes.</i></p>
+  <p>Dans cet exercice, on modélise un groupe de personnes à l'aide d'un graphe.</p>
+  <p>Le groupe est constitué de huit personnes (Anas, Emma, Gabriel, Jade, Lou, Milo, Nina et Yanis) qui possèdent entre elles les relations suivantes :</p>
+  <ul>
+    <li>Gabriel est ami avec Jade, Yanis, Nina et Milo ;</li>
+    <li>Jade est amie avec Gabriel, Yanis, Emma et Lou ;</li>
+    <li>Yanis est ami avec Gabriel, Jade, Emma, Nina, Milo et Anas ;</li>
+    <li>Emma est amie avec Jade, Yanis et Nina ;</li>
+    <li>Nina est amie avec Gabriel, Yanis et Emma ;</li>
+    <li>Milo est ami avec Gabriel, Yanis et Anas ;</li>
+    <li>Anas est ami avec Yanis et Milo ;</li>
+    <li>Lou est amie avec Jade.</li>
+  </ul>
+
+  <p><b>Partie A : Matrice d'adjacence</b></p>
+  <p>On choisit de représenter cette situation par un graphe dont les sommets sont les personnes et les arêtes représentent les liens d'amitié.</p>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="13|treize" data-etiquette="Nombre d'arêtes :" data-support="ecran">
+    <p class="td-consigne"><b>1.</b> Dessiner sur votre copie ce graphe en représentant chaque personne par la première lettre de son prénom entourée d'un cercle et où un lien d'amitié est représenté par un trait entre deux personnes.</p>
+    <p><b>Pour répondre ici :</b> combien d'arêtes compte ton dessin ?</p>
+    <p class="td-retour" data-si="26|vingt-six">Chaque amitié est comptée deux fois dans la liste (Gabriel avec Jade, puis Jade avec Gabriel). Une arête relie deux sommets : divise par 2.</p>
+    <p class="td-aide">Additionne les nombres d'ami·es de chaque personne : 4 + 4 + 6 + 3 + 3 + 3 + 2 + 1.</p>
+    <p class="td-aide">Chaque arête a deux extrémités : elle est comptée deux fois dans cette somme.</p>
+    <div class="td-correction">
+      <p>La somme des nombres d'ami·es vaut 26 : chaque arête est comptée deux fois, il y a donc <b>13 arêtes</b>. Un dessin possible :</p>
+<svg viewBox="0 0 300 235" width="300" height="235" role="img" aria-label="Graphe des amitiés : G relié à J, Y, N et M ; J relié à G, Y, E et L ; Y relié à G, J, E, N, M et A ; E relié à J, Y et N ; N relié à G, Y et E ; M relié à G, Y et A ; A relié à Y et M ; L relié à J." style="display:block;max-width:100%;height:auto;margin:.4rem auto;color:var(--td-encre)">
+<g fill="none" stroke="currentColor" stroke-width="1.8">
+<line x1="72" y1="58" x2="165" y2="30"/>
+<line x1="72" y1="58" x2="165" y2="118"/>
+<line x1="72" y1="58" x2="88" y2="140"/>
+<line x1="165" y1="30" x2="165" y2="118"/>
+<line x1="165" y1="30" x2="270" y2="110"/>
+<line x1="165" y1="30" x2="262" y2="30"/>
+<line x1="165" y1="118" x2="270" y2="110"/>
+<line x1="165" y1="118" x2="232" y2="192"/>
+<line x1="165" y1="118" x2="88" y2="140"/>
+<line x1="165" y1="118" x2="128" y2="192"/>
+<line x1="270" y1="110" x2="232" y2="192"/>
+<line x1="88" y1="140" x2="128" y2="192"/>
+<path d="M72,58 C0,140 80,290 232,192"/>
+</g>
+<g stroke="currentColor" stroke-width="1.8" style="fill:var(--td-panneau)">
+<circle cx="165" cy="118" r="14"/>
+<circle cx="165" cy="30" r="14"/>
+<circle cx="72" cy="58" r="14"/>
+<circle cx="88" cy="140" r="14"/>
+<circle cx="128" cy="192" r="14"/>
+<circle cx="232" cy="192" r="14"/>
+<circle cx="270" cy="110" r="14"/>
+<circle cx="262" cy="30" r="14"/>
+</g>
+<g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="14" font-weight="700" text-anchor="middle">
+<text x="165" y="122">Y</text>
+<text x="165" y="34">J</text>
+<text x="72" y="62">G</text>
+<text x="88" y="144">M</text>
+<text x="128" y="196">A</text>
+<text x="232" y="196">N</text>
+<text x="270" y="114">E</text>
+<text x="262" y="34">L</text>
+</g></svg>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="6">
+    <p class="td-consigne"><b>1.</b> Dessiner sur votre copie ce graphe en représentant chaque personne par la première lettre de son prénom entourée d'un cercle et où un lien d'amitié est représenté par un trait entre deux personnes.</p>
+  </section>
+
+  <p>Une matrice d'adjacence est un tableau à deux entrées dans lequel on trouve en lignes et en colonnes les sommets du graphe.</p>
+  <p>Un lien d'amitié sera représenté par la valeur 1 à l'intersection de la ligne et de la colonne qui représentent les deux amis alors que l'absence de lien d'amitié sera représentée par un 0.</p>
+
+  <section class="td-q" data-type="trous" id="q2">
+    <p class="td-consigne"><b>2.</b> Recopier et compléter l'implémentation de la déclaration de la matrice d'adjacence du graphe.</p>
+    <pre class="td-code">
+# sommets : G, J, Y, E, N, M, A, L
+matrice_adj = [[0, 1, 1, 0, 1, 1, 0, 0],   # G
+               [ [[1, 0, 1, 1, 0, 0, 0, 1]] ],   # J
+               [ [[1, 1, 0, 1, 1, 1, 1, 0]] ],   # Y
+               [ [[0, 1, 1, 0, 1, 0, 0, 0]] ],   # E
+               [ [[1, 0, 1, 1, 0, 0, 0, 0]] ],   # N
+               [ [[1, 0, 1, 0, 0, 0, 1, 0]] ],   # M
+               [ [[0, 0, 1, 0, 0, 1, 0, 0]] ],   # A
+               [ [[0, 1, 0, 0, 0, 0, 0, 0]] ]]   # L</pre>
+    <p class="td-aide">Ligne J : pour chaque sommet G, J, Y, E, N, M, A, L (dans cet ordre), écris 1 si Jade est amie avec cette personne, 0 sinon. Sépare les nombres par des virgules.</p>
+    <p class="td-aide">Personne n'est ami avec soi-même : la case de la diagonale vaut 0. Le graphe est non orienté : la matrice est symétrique (la colonne G est égale à la ligne G).</p>
+    <div class="td-correction">
+      <p>Chaque ligne contient autant de 1 que la personne a d'ami·es. Vérification : la matrice est symétrique, et la somme de tous ses nombres vaut 26 (2 × 13 arêtes).</p>
+    </div>
+  </section>
+
+  <p>On dispose de la liste suivante qui identifie les sommets du graphe :</p>
+  <pre class="td-code">
+sommets = ['G', 'J', 'Y', 'E', 'N', 'M', 'A', 'L']</pre>
+  <p>On dispose d'une fonction <code>position(l, s)</code> qui prend en paramètres une liste de sommets <code>l</code> et un nom de sommet <code>s</code> et qui renvoie la position du sommet <code>s</code> dans la liste <code>l</code> s'il est présent et <code>None</code> sinon.</p>
+
+  <section class="td-q" data-type="courte" id="q3" data-reponse="0 et None|0, None|0 ; None|0;None|0 None|1 et None|1, None|1 ; None|1;None|1 None" data-etiquette="Les deux résultats, dans l'ordre :">
+    <p class="td-consigne"><b>3.</b> Indiquer quels seront les retours de l'exécution des instructions suivantes :</p>
+    <pre class="td-code">
+position(sommets, 'G')
+position(sommets, 'Z')</pre>
+    <p class="td-retour" data-si="None et None|None, None|0 et 0|0, 0">Une seule des deux personnes est dans la liste. Laquelle ?</p>
+    <p class="td-aide">'G' est le premier élément de <code>sommets</code>. 'Z' n'y est pas.</p>
+    <div class="td-correction">
+      <p><code>position(sommets, 'G')</code> renvoie <b>0</b> (l'indice du premier élément en Python) et <code>position(sommets, 'Z')</code> renvoie <b>None</b>.</p>
+      <p>Le sujet ne précise pas si la position commence à 0 ou à 1 : le corrigé de l'AEIF répond 1 (première position) et écrit ensuite <code>m[pos_s-1][i]</code>. Les deux sont acceptés, à condition d'être cohérent·e à la question suivante.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne"><b>4.</b> Recopier et compléter le code de la fonction <code>nb_amis(L, m, s)</code> qui prend en paramètres une liste de noms de sommets <code>L</code>, une matrice d'adjacence <code>m</code> d'un graphe et un nom de sommet <code>s</code> et qui renvoie le nombre d'amis du sommet <code>s</code> s'il est présent dans <code>L</code> et <code>None</code> sinon.</p>
+    <pre class="td-code">
+def nb_amis(L, m, s):
+    pos_s = [[position(L, s)]]
+    if pos_s == None:
+        return [[None]]
+    amis = 0
+    for i in range(len(m)):
+        amis += [[ m[pos_s][i]|m[i][pos_s]|m[pos_s - 1][i] ]]
+    return [[amis]]</pre>
+    <p class="td-aide">Commence par chercher la ligne de <code>s</code> dans la matrice : c'est le rôle de <code>position</code>.</p>
+    <p class="td-aide">Le nombre d'ami·es est la somme des nombres de la ligne de <code>s</code> : on ajoute la case de la ligne <code>pos_s</code> et de la colonne <code>i</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+def nb_amis(L, m, s):
+    pos_s = position(L, s)
+    if pos_s == None:
+        return None
+    amis = 0
+    for i in range(len(m)):
+        amis += m[pos_s][i]
+    return amis</pre>
+      <p>Avec une position comptée à partir de 1 (comme dans le corrigé de l'AEIF), la ligne 7 devient <code>amis += m[pos_s - 1][i]</code>. La colonne <code>m[i][pos_s]</code> marche aussi : la matrice est symétrique.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-reponse="4|quatre">
+    <p class="td-consigne"><b>5.</b> Indiquer quel est le retour de l'exécution de la commande suivante :</p>
+    <pre class="td-code">
+nb_amis(sommets, matrice_adj, 'G')</pre>
+    <p class="td-aide">C'est la somme de la ligne G de la matrice : <code>[0, 1, 1, 0, 1, 1, 0, 0]</code>.</p>
+    <div class="td-correction">
+      <p><b>4</b> : Gabriel est ami avec Jade, Yanis, Nina et Milo.</p>
+    </div>
+  </section>
+
+  <p><b>Partie B : Dictionnaire de listes d'adjacence</b></p>
+
+  <section class="td-q" data-type="qcu" id="q6" data-support="ecran">
+    <p class="td-consigne"><b>6.</b> Dans un dictionnaire Python <code>{c : v}</code>, indiquer ce que représentent <code>c</code> et <code>v</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>c</code> est une clé et <code>v</code> la valeur associée à cette clé.</li>
+      <li data-retour="C'est l'inverse : on accède à la valeur par la clé, avec d[c]."><code>c</code> est une valeur et <code>v</code> la clé qui permet d'y accéder.</li>
+      <li data-retour="Un dictionnaire n'a pas d'indices : on y accède par les clés, qui peuvent être des chaînes."><code>c</code> est un indice (0, 1, 2…) et <code>v</code> l'élément rangé à cet indice.</li>
+      <li data-retour="Le dictionnaire peut représenter un graphe, mais en Python, c et v sont toujours une clé et sa valeur."><code>c</code> est toujours un sommet du graphe et <code>v</code> une arête qui en part.</li>
+    </ul>
+    <div class="td-correction">
+      <p><code>c</code> est une <b>clé</b> et <code>v</code> la <b>valeur</b> associée. Pour un graphe : la clé est un sommet, la valeur la liste de ses voisins.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q6-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>6.</b> Dans un dictionnaire Python <code>{c : v}</code>, indiquer ce que représentent <code>c</code> et <code>v</code>.</p>
+  </section>
+
+  <p>On appelle <code>graphe</code> le dictionnaire de listes d'adjacence associé au graphe des amis. On rappelle que Gabriel est ami avec Jade, Yanis, Nina et Milo.</p>
+
+  <section class="td-q" data-type="trous" id="q7">
+    <p class="td-consigne"><b>7.</b> Recopier et compléter le dictionnaire de listes d'adjacence <code>graphe</code> sur votre copie pour qu'il modélise complètement le groupe d'amis.</p>
+    <p><b>Pour répondre ici :</b> écris les voisins dans l'ordre de la liste <code>sommets</code>, comme pour <code>'G'</code>.</p>
+    <pre class="td-code">
+graphe = {'G': ['J', 'Y', 'N', 'M'],
+          'J': [[ ['G', 'Y', 'E', 'L'] ]],
+          'Y': [[ ['G', 'J', 'E', 'N', 'M', 'A'] ]],
+          'E': [[ ['J', 'Y', 'N'] ]],
+          'N': [[ ['G', 'Y', 'E'] ]],
+          'M': [[ ['G', 'Y', 'A'] ]],
+          'A': [[ ['Y', 'M'] ]],
+          'L': [[ ['J'] ]]}</pre>
+    <p class="td-aide">Chaque valeur est une liste entre crochets, avec les noms entre guillemets : <code>['G', 'Y', 'E', 'L']</code>.</p>
+    <p class="td-aide">Tu peux aussi lire les 1 de chaque ligne de la matrice de la question 2.</p>
+    <div class="td-correction">
+      <p>Chaque liste contient les ami·es de la clé, dans l'ordre G, J, Y, E, N, M, A, L. Vérification : chaque amitié apparaît dans les deux listes (Lou est dans la liste de Jade, Jade dans celle de Lou).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q8" data-fichier="amis.py" data-obligatoire data-lignes="2">
+    <p class="td-consigne"><b>8.</b> Écrire le code de la fonction <code>nb_amis(d, s)</code> qui prend en paramètres un dictionnaire d'adjacence <code>d</code> et un nom de sommet <code>s</code> et qui renvoie le nombre d'amis du nom de sommet <code>s</code>. On suppose que <code>s</code> est bien dans <code>d</code>.</p>
+    <p>Par exemple :</p>
+    <pre class="td-sortie-exemple">
+&gt;&gt;&gt; nb_amis(graphe, 'L')
+1</pre>
+    <pre class="td-depart">
+def nb_amis(d, s):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+graphe = {'G': ['J', 'Y', 'N', 'M'], 'J': ['G', 'Y', 'E', 'L'],
+          'Y': ['G', 'J', 'E', 'N', 'M', 'A'], 'E': ['J', 'Y', 'N'],
+          'N': ['G', 'Y', 'E'], 'M': ['G', 'Y', 'A'], 'A': ['Y', 'M'], 'L': ['J']}
+assert nb_amis(graphe, 'L') == 1, "nb_amis(graphe, 'L') doit renvoyer 1."
+assert nb_amis(graphe, 'Y') == 6, "nb_amis(graphe, 'Y') doit renvoyer 6 : Yanis a six ami·es."
+assert nb_amis({'A': []}, 'A') == 0, "Un sommet sans voisin a 0 ami·e."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">La valeur <code>d[s]</code> est la liste des ami·es de <code>s</code>.</p>
+    <p class="td-aide">La fonction <code>len</code> donne la longueur d'une liste.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def nb_amis(d, s):
+    return len(d[s])</pre>
+      <p>Avec un dictionnaire, plus besoin de parcourir une ligne : la liste des voisins est déjà là, sa longueur est le nombre d'ami·es.</p>
+    </div>
+  </section>
+
+  <p>Milo s'est fâché avec Gabriel et Yanis tandis qu'Anas s'est fâché avec Yanis.</p>
+  <p>Le dictionnaire d'adjacence du graphe qui modélise cette nouvelle situation est donné ci-dessous :</p>
+  <pre class="td-code">
+graphe = {'G': ['J', 'N'],
+          'J': ['G', 'Y', 'E', 'L'],
+          'Y': ['J', 'E', 'N'],
+          'E': ['J', 'Y', 'N'],
+          'N': ['G', 'Y', 'E'],
+          'M': ['A'],
+          'A': ['M'],
+          'L': ['J']}</pre>
+  <p>Pour établir la liste du cercle d'amis d'un sommet, on utilise un parcours en profondeur du graphe à partir de ce sommet. On appelle <b>cercle d'amis</b> de Nom toute personne atteignable dans le graphe à partir de Nom.</p>
+
+  <section class="td-q" data-type="cases" id="q9" data-support="ecran">
+    <p class="td-consigne"><b>9.</b> Donner la liste du cercle d'amis de Lou.</p>
+    <p><b>Pour répondre ici :</b> coche toutes les personnes qui en font partie.</p>
+    <ul class="td-options">
+      <li data-juste>Jade</li>
+      <li data-juste>Gabriel</li>
+      <li data-juste>Yanis</li>
+      <li data-juste>Emma</li>
+      <li data-juste>Nina</li>
+      <li data-retour="Milo n'est plus relié qu'à Anas : aucun chemin ne va de Lou à Milo.">Milo</li>
+      <li data-retour="Anas n'est plus relié qu'à Milo : aucun chemin ne va de Lou à Anas.">Anas</li>
+    </ul>
+    <p class="td-aide">Pars de Lou : son seul voisin est Jade. Puis ajoute les voisins de Jade, puis leurs voisins…</p>
+    <p class="td-aide">Milo et Anas ne sont plus reliés qu'entre eux.</p>
+    <div class="td-correction">
+      <p>Lou → Jade → Gabriel, Yanis, Emma → Nina. Le cercle d'amis de Lou : <b>Jade, Gabriel, Yanis, Emma, Nina</b>. Milo et Anas forment un autre morceau du graphe : il n'est plus connexe.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>9.</b> Donner la liste du cercle d'amis de Lou.</p>
+  </section>
+
+  <p>Un algorithme possible de parcours en profondeur de graphe est donné ci-dessous :</p>
+  <pre class="td-sortie-exemple">
+visités = liste vide des sommets déjà visités
+
+fonction parcours_en_profondeur(d, s)
+    ajouter s à la liste visités
+    pour tous les sommets voisins v de s :
+        si v n'est pas dans la liste visités :
+            parcours_en_profondeur(d, v)
+    retourner la liste visités</pre>
+
+  <section class="td-q" data-type="trous" id="q10">
+    <p class="td-consigne"><b>10.</b> Recopier et compléter le code de la fonction <code>parcours_en_profondeur(d, s)</code> qui prend en paramètres un dictionnaire d'adjacence <code>d</code> et un sommet <code>s</code> et qui renvoie la liste des sommets issue du parcours en profondeur du graphe modélisé par <code>d</code> à partir du sommet <code>s</code>.</p>
+    <pre class="td-code">
+def parcours_en_profondeur(d, s, visites = []):
+    [[visites.append(s)|visites += [s] ]]
+    for v in d[s]:
+        [[if v not in visites:|if not v in visites:|if not (v in visites):]]
+            parcours_en_profondeur(d, v)
+    [[return visites]]</pre>
+    <p class="td-aide">Ligne 2 : on marque le sommet <code>s</code> comme visité, en l'ajoutant à la liste.</p>
+    <p class="td-aide">Ligne 4 : on ne relance le parcours que sur un voisin qui n'a pas encore été visité. Ligne 6 : la fonction renvoie la liste.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+def parcours_en_profondeur(d, s, visites = []):
+    visites.append(s)
+    for v in d[s]:
+        if v not in visites:
+            parcours_en_profondeur(d, v, visites)
+    return visites</pre>
+      <p>Depuis Lou, l'appel donne <code>['L', 'J', 'G', 'N', 'Y', 'E']</code> : on va le plus loin possible (L, J, G, N, Y, E), puis on revient en arrière.</p>
+      <p>Attention, piège classique : la valeur par défaut <code>visites = []</code> est créée une seule fois. Un second appel sans troisième paramètre repart de la liste du premier. On écrit plutôt <code>visites=None</code>, puis <code>if visites is None: visites = []</code>.</p>
+      <p><b>Remarque sur le sujet :</b> sa ligne 5 appelle <code>parcours_en_profondeur(d, v)</code> sans transmettre <code>visites</code>. Cela marche ici seulement parce que tous les appels partagent la même liste par défaut. La correction transmet <code>visites</code>, ce qui est plus sûr.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Représenter</b> : matrice d'adjacence (<code>m[i][j]</code> vaut 1 si i et j sont voisins) ou dictionnaire <code>{sommet: liste des voisins}</code>. Non orienté : chaque arête dans les deux sens.</p>
+    <p><b>Parcourir</b> : en largeur avec une <b>file</b> (FIFO), qui donne les distances ; en profondeur avec une <b>pile</b> (LIFO) ou la récursivité. Toujours marquer les sommets visités.</p>
+    <p><b>À l'épreuve</b> : déroule le parcours dans l'ordre des voisins donné, en écrivant la file ou la pile à chaque tour.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:1"></span>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, visiter toutes les villes</a>.</p>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Amérique du Nord, mai 2024, jour 1 (24-NSIJ1AN1), exercice 2. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-amerique-nord-jour-1.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_amerique_nord_2024_1.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document). Graphe redessiné.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-graphes">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
