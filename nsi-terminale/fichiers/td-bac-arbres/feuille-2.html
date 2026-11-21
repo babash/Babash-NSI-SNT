@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les arbres binaires : TD type bac (2/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : la plus grande somme racine-feuille d'un arbre binaire (bac 2022, Amérique du Sud, exercice 5), avec coups de pouce et corrections.">
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<main class="td" data-td="tle-td-bac-arbres-2" data-td-version="1">
+
+  <header class="td-entete">
+    <p class="td-sur-titre">Terminale NSI · Structures de données · TD type bac, feuille 2 sur 2</p>
+    <h1>Les arbres binaires : TD type bac (2/2)</h1>
+    <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : la plus grande somme racine-feuille.</p>
+    <p><b>Je sais :</b></p>
+    <ul class="td-criteres">
+      <li>construire un arbre avec une classe <code>Noeud</code> ;</li>
+      <li>calculer à la main le niveau (la hauteur) d'un arbre et ses sommes racine-feuille ;</li>
+      <li>écrire une méthode récursive qui traite les cas : deux enfants, un seul enfant, une feuille.</li>
+    </ul>
+    <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (4 points), 6 questions · seul·e ou en binôme</p>
+    <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+    <p class="td-ecran-seul"><b>Ce TD a deux feuilles :</b> 1. <a href="index.html">la somme d'un arbre</a> (la plus guidée) ; 2. la plus grande somme racine-feuille (ici).</p>
+    <p><b>Convention du cours :</b> un nœud seul a une hauteur de 0, l'arbre vide de −1. Ce sujet appelle cette mesure le « niveau » et donne aussi 0 à une feuille.</p>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+  <!-- ═════════════ EXERCICE 2 ═════════════ -->
+  <h2 class="td-partie">Exercice 2 : la plus grande somme racine-feuille (4 points)</h2>
+  <p><i>Bac 2022, Amérique du Sud, jour 2 (sujet 22-NSIJ2AS1), exercice 5, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-amerique-sud-jour-2.pdf">Sujet d'origine (PDF)</a>.</i></p>
+  <p><i>Cet exercice porte sur les arbres binaires, la programmation orienté objet et la récursivité</i></p>
+  <p>Dans un arbre binaire, chaque nœud admet au plus deux enfants, appelés sous-arbre gauche et sous-arbre droit. On considère dans cet exercice des arbres binaires étiquetés avec des nombres entiers.</p>
+  <p>On définit un chemin racine-feuille dans un tel arbre comme une liste ordonnée de nœuds telle que</p>
+  <ul>
+    <li>le premier nœud est la racine ;</li>
+    <li>chaque nœud suivant est enfant du précédent ;</li>
+    <li>le dernier nœud est une feuille.</li>
+  </ul>
+  <p>On appellera somme d’un chemin racine-feuille la somme des étiquettes des nœuds du chemin.</p>
+  <p>Enfin, la plus grande somme racine-feuille d'un arbre est la plus grande somme qu’il est possible d’obtenir en considérant tous les chemins racine-feuille de l'arbre.</p>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="16">
+    <p class="td-consigne"><b>1.</b> Déterminer la plus grande somme racine-feuille de l’arbre représenté ci-dessous.</p>
+    <svg viewBox="0 0 300 148" width="300" height="148" role="img" aria-label="Arbre binaire : racine 2. Enfant gauche 7, qui a pour enfants 4 (lui-même avec les feuilles 2 et 3) et 1 (avec une seule feuille, 5, à droite). Enfant droit 5, qui a pour enfants 3 (avec une seule feuille, 1, à droite) et la feuille 8." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="31.7" y1="104.7" x2="24.5" y2="119.3"/><line x1="43.3" y1="104.7" x2="50.5" y2="119.3"/><line x1="65.9" y1="64.3" x2="46.6" y2="83.7"/><line x1="118.3" y1="104.7" x2="125.5" y2="119.3"/><line x1="84.1" y1="64.3" x2="103.4" y2="83.7"/><line x1="138.4" y1="22.9" x2="86.6" y2="49.1"/><line x1="193.3" y1="104.7" x2="200.5" y2="119.3"/><line x1="215.9" y1="64.3" x2="196.6" y2="83.7"/><line x1="234.1" y1="64.3" x2="253.4" y2="83.7"/><line x1="161.6" y1="22.9" x2="213.4" y2="49.1"/><circle cx="18.8" cy="131.0" r="13"/><circle cx="56.2" cy="131.0" r="13"/><circle cx="37.5" cy="93.0" r="13"/><circle cx="131.2" cy="131.0" r="13"/><circle cx="112.5" cy="93.0" r="13"/><circle cx="75.0" cy="55.0" r="13"/><circle cx="206.2" cy="131.0" r="13"/><circle cx="187.5" cy="93.0" r="13"/><circle cx="262.5" cy="93.0" r="13"/><circle cx="225.0" cy="55.0" r="13"/><circle cx="150.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="18.8" y="136.0">2</text><text x="56.2" y="136.0">3</text><text x="37.5" y="98.0">4</text><text x="131.2" y="136.0">5</text><text x="112.5" y="98.0">1</text><text x="75.0" y="60.0">7</text><text x="206.2" y="136.0">1</text><text x="187.5" y="98.0">3</text><text x="262.5" y="98.0">8</text><text x="225.0" y="60.0">5</text><text x="150.0" y="22.0">2</text></g></svg>
+    <p class="td-retour" data-si="15">15 est la somme de plusieurs chemins, mais il y en a un plus grand. As-tu essayé tous les chemins ?</p>
+    <p class="td-retour" data-si="43">C'est la somme de tous les nœuds. Un chemin va de la racine à <b>une seule</b> feuille.</p>
+    <p class="td-retour" data-si="14">Un chemin s'arrête à une <b>feuille</b> : 2, 7, 4 n'est pas un chemin complet.</p>
+    <p class="td-aide">L'arbre a 5 feuilles, donc 5 chemins racine-feuille. Calcule la somme de chacun.</p>
+    <p class="td-aide">Par exemple, le chemin 2, 5, 8 a pour somme 15. Et le chemin qui passe par 7, puis 4 ?</p>
+    <div class="td-correction">
+      <p>Les 5 chemins : 2+7+4+2 = 15 ; 2+7+4+3 = <b>16</b> ; 2+7+1+5 = 15 ; 2+5+3+1 = 11 ; 2+5+8 = 15. La plus grande somme vaut <b>16</b>.</p>
+    </div>
+  </section>
+
+  <p>La classe <code>Noeud</code> ci-dessous implémente le type abstrait d’arbre binaire.</p>
+  <pre class="td-code">
+class Noeud:
+    def __init__(self, v):
+        self.etiquette = v
+        self.sag = None
+        self.sad = None
+    def niveau(self):
+        if self.sag!=None and self.sad!=None:
+            hg = self.sag.niveau()
+            hd = self.sad.niveau()
+            return 1+max(hg, hd)
+        if self.sag!=None:
+            return self.sag.niveau()+1
+        if self.sad!=None:
+            return self.sad.niveau()+1
+        return 0
+    def modifier_sag(self, nsag) :
+        self.sag = nsag
+    def modifier_sad(self, nsad) :
+        self.sad = nsad</pre>
+
+  <section class="td-q" data-type="code" id="q2" data-obligatoire data-fichier="construire.py">
+    <p class="td-consigne"><b>2. a.</b> Écrire une suite d'instructions utilisant la classe <code>Noeud</code> permettant de représenter l’arbre ci-dessous.</p>
+    <svg viewBox="0 0 260 110" width="260" height="110" role="img" aria-label="Arbre binaire : racine 2 ; enfant gauche 7, avec les feuilles 4 et 1 ; enfant droit 5, avec une seule feuille, 8, à droite." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="56.6" y1="64.9" x2="40.9" y2="83.1"/><line x1="73.4" y1="64.9" x2="89.1" y2="83.1"/><line x1="118.8" y1="23.6" x2="76.2" y2="48.4"/><line x1="203.4" y1="64.9" x2="219.1" y2="83.1"/><line x1="141.2" y1="23.6" x2="183.8" y2="48.4"/><circle cx="32.5" cy="93.0" r="13"/><circle cx="97.5" cy="93.0" r="13"/><circle cx="65.0" cy="55.0" r="13"/><circle cx="227.5" cy="93.0" r="13"/><circle cx="195.0" cy="55.0" r="13"/><circle cx="130.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="32.5" y="98.0">4</text><text x="97.5" y="98.0">1</text><text x="65.0" y="60.0">7</text><text x="227.5" y="98.0">8</text><text x="195.0" y="60.0">5</text><text x="130.0" y="22.0">2</text></g></svg>
+    <p class="td-ecran-seul">Pour la vérification sur machine, range la racine dans une variable nommée <code>arbre</code>.</p>
+    <pre class="td-depart">
+class Noeud:
+    def __init__(self, v):
+        self.etiquette = v
+        self.sag = None
+        self.sad = None
+
+    def niveau(self):
+        if self.sag!=None and self.sad!=None:
+            hg = self.sag.niveau()
+            hd = self.sad.niveau()
+            return 1+max(hg, hd)
+        if self.sag!=None:
+            return self.sag.niveau()+1
+        if self.sad!=None:
+            return self.sad.niveau()+1
+        return 0
+
+    def modifier_sag(self, nsag) :
+        self.sag = nsag
+
+    def modifier_sad(self, nsad) :
+        self.sad = nsad
+
+# À toi : la racine dans la variable arbre
+</pre>
+    <script type="text/x-python" class="td-tests">
+def _forme(n):
+    return None if n is None else (n.etiquette, _forme(n.sag), _forme(n.sad))
+assert 'arbre' in globals(), "Range la racine (le nœud 2) dans une variable nommée arbre."
+assert isinstance(arbre, Noeud), "arbre doit être un objet de la classe Noeud."
+assert arbre.etiquette == 2, "La racine doit avoir l'étiquette 2."
+assert _forme(arbre.sag) == (7, (4, None, None), (1, None, None)), "Le sous-arbre gauche doit être 7, avec 4 à gauche et 1 à droite."
+assert _forme(arbre.sad) == (5, None, (8, None, None)), "Le sous-arbre droit doit être 5, avec 8 à droite (et rien à gauche)."
+print("L'arbre est juste.")
+</script>
+    <p class="td-aide">Crée d'abord un objet par nœud, par exemple <code>n4 = Noeud(4)</code>. Il en faut 6.</p>
+    <p class="td-aide">Puis relie-les avec les méthodes : <code>n7.modifier_sag(n4)</code> met 4 à gauche de 7.</p>
+    <p class="td-aide">Attention : 8 est l'enfant <b>droit</b> de 5. Et la racine est le nœud 2.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+class Noeud:   # la classe de l'énoncé (seulement ce qui sert ici)
+    def __init__(self, v):
+        self.etiquette = v
+        self.sag = None
+        self.sad = None
+    def modifier_sag(self, nsag) :
+        self.sag = nsag
+    def modifier_sad(self, nsad) :
+        self.sad = nsad
+
+n4 = Noeud(4)
+n1 = Noeud(1)
+n7 = Noeud(7)
+n7.modifier_sag(n4)
+n7.modifier_sad(n1)
+n8 = Noeud(8)
+n5 = Noeud(5)
+n5.modifier_sad(n8)
+arbre = Noeud(2)
+arbre.modifier_sag(n7)
+arbre.modifier_sad(n5)</pre>
+      <p>Pour construire, on crée chaque nœud, puis on le relie à son parent. L'ordre de création ne compte pas, tant que chaque nœud existe avant d'être relié.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-reponse="2" data-etiquette="arbre.niveau() renvoie :">
+    <p class="td-consigne"><b>2. b.</b> Que renvoie l’appel de la méthode <code>niveau</code> sur l’arbre ci-dessus ?</p>
+    <p class="td-retour" data-si="3">La méthode compte les <b>arêtes</b> du plus long chemin : une feuille renvoie 0, pas 1.</p>
+    <p class="td-retour" data-si="6">6 est le nombre de nœuds (la taille). Le niveau mesure la longueur du plus long chemin.</p>
+    <p class="td-aide">Une feuille (4, 1 ou 8) renvoie 0.</p>
+    <p class="td-aide">Le nœud 7 a deux enfants de niveau 0 : il renvoie 1 + max(0, 0). Continue jusqu'à la racine.</p>
+    <div class="td-correction">
+      <p>Feuilles : 0. Nœud 7 : 1 + max(0, 0) = 1. Nœud 5 (un seul enfant, 8) : 0 + 1 = 1. Racine 2 : 1 + max(1, 1) = <b>2</b>. C'est la hauteur de l'arbre, avec la convention du cours.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q4" data-obligatoire data-fichier="pgde_somme.py">
+    <p class="td-consigne"><b>3.</b> S’inspirer du code de la méthode <code>niveau</code> pour écrire une méthode récursive <code>pgde_somme</code> qui renvoie la plus grande somme racine-feuille d’un arbre.</p>
+    <pre class="td-depart">
+class Noeud:
+    def __init__(self, v):
+        self.etiquette = v
+        self.sag = None
+        self.sad = None
+
+    def modifier_sag(self, nsag) :
+        self.sag = nsag
+
+    def modifier_sad(self, nsad) :
+        self.sad = nsad
+
+    def pgde_somme(self):
+        ...
+
+# L'arbre de la question 1 (réponse attendue : 16)
+n4 = Noeud(4); n4.modifier_sag(Noeud(2)); n4.modifier_sad(Noeud(3))
+n1 = Noeud(1); n1.modifier_sad(Noeud(5))
+n7 = Noeud(7); n7.modifier_sag(n4); n7.modifier_sad(n1)
+n3 = Noeud(3); n3.modifier_sad(Noeud(1))
+n5 = Noeud(5); n5.modifier_sag(n3); n5.modifier_sad(Noeud(8))
+arbre = Noeud(2); arbre.modifier_sag(n7); arbre.modifier_sad(n5)
+print(arbre.pgde_somme())
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert Noeud(7).pgde_somme() == 7, "Une feuille d'étiquette 7 : la plus grande somme vaut 7."
+assert arbre.pgde_somme() == 16, "Sur l'arbre de la question 1, la réponse est 16."
+_a = Noeud(1); _a.modifier_sad(Noeud(4))
+assert _a.pgde_somme() == 5, "Un nœud 1 avec un seul enfant droit 4 : le seul chemin vaut 5."
+_b = Noeud(10); _b.modifier_sag(Noeud(-3)); _c = Noeud(-1); _c.modifier_sad(Noeud(-5)); _b.modifier_sad(_c)
+assert _b.pgde_somme() == 7, "Avec des étiquettes négatives (10, -3 à gauche ; -1 puis -5 à droite), la réponse est 7 : un chemin finit toujours sur une feuille."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Reprends les quatre cas de <code>niveau</code> : deux enfants, seulement un enfant gauche, seulement un enfant droit, aucun enfant (une feuille).</p>
+    <p class="td-aide">Une feuille renvoie sa propre étiquette. Dans les autres cas, on ajoute l'étiquette du nœud à la plus grande somme de ses enfants.</p>
+    <p class="td-aide">Avec deux enfants : <code>self.etiquette + max(self.sag.pgde_somme(), self.sad.pgde_somme())</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def pgde_somme(self):
+    if self.sag!=None and self.sad!=None:
+        return self.etiquette + max(self.sag.pgde_somme(), self.sad.pgde_somme())
+    if self.sag!=None:
+        return self.etiquette + self.sag.pgde_somme()
+    if self.sad!=None:
+        return self.etiquette + self.sad.pgde_somme()
+    return self.etiquette</pre>
+      <p>Même structure que <code>niveau</code> : on remplace « 1 + » par « l'étiquette + », et une feuille renvoie son étiquette au lieu de 0.</p>
+      <p>Le corrigé de l'AEIF compte 0 pour un enfant absent : <code>self.etiquette + max(somg, somd)</code>. C'est juste quand les étiquettes sont positives, comme dans le sujet ; avec des étiquettes négatives, un chemin pourrait alors s'arrêter avant une feuille.</p>
+    </div>
+  </section>
+
+  <p>On appelle arbre magique un arbre binaire dont toutes les sommes des chemins racine-feuille sont égales.</p>
+
+  <section class="td-q" data-type="trous" id="q5">
+    <p class="td-consigne"><b>4. a.</b> Recopier et compléter l’arbre ci-dessous pour qu’il soit magique.</p>
+    <svg viewBox="0 0 300 148" width="300" height="148" role="img" aria-label="Arbre à compléter : racine 5. Enfant gauche a (vide), qui a pour enfants 4 et b (vide). 4 a pour enfants 2 et d (vide) ; b a un seul enfant, 3, à droite. Enfant droit de la racine : 5, qui a pour enfants 3 (avec une seule feuille, 1, à droite) et c (vide)." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="31.7" y1="104.7" x2="24.5" y2="119.3"/><line x1="43.3" y1="104.7" x2="50.5" y2="119.3"/><line x1="65.9" y1="64.3" x2="46.6" y2="83.7"/><line x1="118.3" y1="104.7" x2="125.5" y2="119.3"/><line x1="84.1" y1="64.3" x2="103.4" y2="83.7"/><line x1="138.4" y1="22.9" x2="86.6" y2="49.1"/><line x1="193.3" y1="104.7" x2="200.5" y2="119.3"/><line x1="215.9" y1="64.3" x2="196.6" y2="83.7"/><line x1="234.1" y1="64.3" x2="253.4" y2="83.7"/><line x1="161.6" y1="22.9" x2="213.4" y2="49.1"/><circle cx="18.8" cy="131.0" r="13"/><circle cx="56.2" cy="131.0" r="13"/><circle cx="37.5" cy="93.0" r="13"/><circle cx="131.2" cy="131.0" r="13"/><circle cx="112.5" cy="93.0" r="13"/><circle cx="75.0" cy="55.0" r="13"/><circle cx="206.2" cy="131.0" r="13"/><circle cx="187.5" cy="93.0" r="13"/><circle cx="262.5" cy="93.0" r="13"/><circle cx="225.0" cy="55.0" r="13"/><circle cx="150.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="18.8" y="136.0">2</text><text x="56.2" y="136.0">d</text><text x="37.5" y="98.0">4</text><text x="131.2" y="136.0">3</text><text x="112.5" y="98.0">b</text><text x="75.0" y="60.0">a</text><text x="206.2" y="136.0">1</text><text x="187.5" y="98.0">3</text><text x="262.5" y="98.0">c</text><text x="225.0" y="60.0">5</text><text x="150.0" y="22.0">5</text></g></svg>
+    <p class="td-ecran-seul">Pour répondre en ligne, les cercles vides sont notés a, b, c et d. Écris la valeur de chacun.</p>
+    <pre class="td-code">
+a = [[3]]
+b = [[3]]
+c = [[4]]
+d = [[2]]
+print(5 + a + 4 + 2, 5 + a + 4 + d, 5 + a + b + 3, 5 + 5 + 3 + 1, 5 + 5 + c)</pre>
+    <pre class="td-attendu">
+14 14 14 14 14</pre>
+    <p class="td-aide">Un chemin est déjà complet : 5, 5, 3, 1. Sa somme donne la somme de <b>tous</b> les chemins.</p>
+    <p class="td-aide">Tous les chemins valent 14. Commence par le chemin 5, a, 4, 2 : il n'a qu'une inconnue.</p>
+    <div class="td-correction">
+      <p>Le chemin 5, 5, 3, 1 vaut 14. Donc : 5 + a + 4 + 2 = 14 donne <b>a = 3</b> ; 5 + 3 + 4 + d = 14 donne <b>d = 2</b> ; 5 + 3 + b + 3 = 14 donne <b>b = 3</b> ; 5 + 5 + c = 14 donne <b>c = 4</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q6" data-obligatoire data-fichier="est_magique.py">
+    <p class="td-consigne"><b>4. b.</b> Un arbre est magique si ses sous-arbres sont magiques et qu'ils ont de plus la même plus grande somme racine-feuille. Écrire une méthode récursive <code>est_magique</code> qui renvoie <code>True</code> si l'arbre est magique et <code>False</code> sinon.</p>
+    <p class="td-ecran-seul">Sur machine, la méthode <code>pgde_somme</code> de la question 3 du sujet est déjà écrite dans l'éditeur : tu peux l'utiliser.</p>
+    <pre class="td-depart">
+class Noeud:
+    def __init__(self, v):
+        self.etiquette = v
+        self.sag = None
+        self.sad = None
+
+    def modifier_sag(self, nsag) :
+        self.sag = nsag
+
+    def modifier_sad(self, nsad) :
+        self.sad = nsad
+
+    def pgde_somme(self):   # question 3
+        if self.sag!=None and self.sad!=None:
+            return self.etiquette + max(self.sag.pgde_somme(), self.sad.pgde_somme())
+        if self.sag!=None:
+            return self.etiquette + self.sag.pgde_somme()
+        if self.sad!=None:
+            return self.etiquette + self.sad.pgde_somme()
+        return self.etiquette
+
+    def est_magique(self):
+        ...
+
+# L'arbre magique de la question 4. a.
+n4 = Noeud(4); n4.modifier_sag(Noeud(2)); n4.modifier_sad(Noeud(2))
+nb = Noeud(3); nb.modifier_sad(Noeud(3))
+na = Noeud(3); na.modifier_sag(n4); na.modifier_sad(nb)
+n3 = Noeud(3); n3.modifier_sad(Noeud(1))
+n5 = Noeud(5); n5.modifier_sag(n3); n5.modifier_sad(Noeud(4))
+magique = Noeud(5); magique.modifier_sag(na); magique.modifier_sad(n5)
+print(magique.est_magique())
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert Noeud(8).est_magique() is True, "Une feuille seule est magique : elle n'a qu'un chemin."
+assert magique.est_magique() is True, "L'arbre complété de la question 4. a. est magique."
+_p = Noeud(2); _p.modifier_sag(Noeud(1)); _p.modifier_sad(Noeud(3))
+assert _p.est_magique() is False, "Le nœud 2 avec les feuilles 1 et 3 : chemins 3 et 5, l'arbre n'est pas magique."
+_g = Noeud(2); _g.modifier_sag(Noeud(5)); _g.modifier_sad(Noeud(3))
+_r = Noeud(1); _r.modifier_sag(_g); _r.modifier_sad(Noeud(7))
+assert _r.est_magique() is False, "Les deux sous-arbres ont la même plus grande somme (7), mais le gauche n'est pas magique : l'arbre ne l'est pas."
+_u = Noeud(1); _u.modifier_sad(Noeud(4))
+assert _u.est_magique() is True, "Un nœud qui n'a qu'un enfant, une feuille : un seul chemin, l'arbre est magique."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Commence par le cas simple : une feuille est-elle magique ?</p>
+    <p class="td-aide">Avec deux enfants : les deux doivent être magiques <b>et</b> avoir la même <code>pgde_somme()</code>.</p>
+    <p class="td-aide">Avec un seul enfant : l'arbre est magique si cet enfant l'est (il n'y a qu'un sous-arbre).</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def est_magique(self):
+    if self.sag!=None and self.sad!=None:
+        return (self.sag.est_magique() and self.sad.est_magique()
+                and self.sag.pgde_somme() == self.sad.pgde_somme())
+    if self.sag!=None:
+        return self.sag.est_magique()
+    if self.sad!=None:
+        return self.sad.est_magique()
+    return True</pre>
+      <p>Une feuille est magique (un seul chemin). Le sujet ne dit pas ce qui se passe avec un seul enfant : comme pour le corrigé de l'AEIF, l'arbre est magique si cet enfant l'est.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Une méthode récursive dans la classe <code>Noeud</code> : on teste <code>self.sag != None</code> et <code>self.sad != None</code> avant d'appeler une méthode sur un enfant.</p>
+    <p>Quatre cas : deux enfants, seulement un enfant gauche, seulement un enfant droit, une feuille.</p>
+    <p>niveau = 1 + max des niveaux des enfants, et 0 pour une feuille : c'est la hauteur du cours (−1 pour l'arbre vide).</p>
+  </section>
+  <section class="td-memo td-ecran-seul">
+    <h2>Pour aller plus loin</h2>
+    <ul>
+      <li><a href="https://aeif.fr/wp-content/uploads/2025/07/Amerique_nord_2022_2.pdf">Bac 2022, Amérique du Nord, jour 2, exercice 4</a> (4 points) : le pédigrée d'un chien, fonctions récursives sur un arbre.</li>
+      <li><a href="https://aeif.fr/wp-content/uploads/2022/11/2022_LeReunion_J1.pdf">Bac 2022, La Réunion et Mayotte, jour 1, exercice 4</a> (4 points) : un arbre généalogique, parcours préfixe et infixe. Attention : le code du sujet contient deux coquilles (<code>droite</code> au lieu de <code>droit</code>, et <code>self</code> oublié dans <code>__init__</code>).</li>
+      <li><a href="https://kxs.fr/files/sujets/2025/ecrit/terminale-2025-amerique-nord-jour-1.pdf">Bac 2025, Amérique du Nord, jour 1, exercice 1</a> (6 points) : un arbre de décision pour reconnaître des végétaux, méthodes récursives.</li>
+    </ul>
+  </section>
+
+  <footer class="td-pied">
+    <p>Énoncé : sujet officiel du baccalauréat de NSI, Amérique du Sud, septembre 2022, jour 2 (22-NSIJ2AS1), exercice 5 (ministère de l'Éducation nationale), recopié d'après le PDF diffusé par <a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> et l'<a href="https://aeif.fr/index.php/annee-2022/">AEIF</a> ; arbres redessinés. Correction comparée au corrigé de l'AEIF (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0).</p>
+    <p>Mise en TD, coups de pouce et corrections : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-arbres">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
