@@ -1,0 +1,332 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CSV et listes de listes : TD en ligne</title>
+  <meta name="description" content="Feuille d'exercices « CSV et listes de listes », feuille 1 sur 3 : lire un CSV et le manipuler en Python (1re NSI). TD en ligne auto-correctif et imprimable.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="nsi1-exercices-csv-listes-de-listes" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Listes de listes</span></p>
+        <h1>CSV et listes de listes</h1>
+        <p class="td-accroche">Feuille 1 sur 3</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=listes" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h3v1h-3zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h2v1h-2zM12 1h2v1h-2zM15 1h1v1h-1zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM14 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h2v1h-2zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM16 4h2v1h-2zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h4v1h-4zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h1v1h-1zM12 7h1v1h-1zM15 7h2v1h-2zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h5v1h-5zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM3 9h1v1h-1zM5 9h1v1h-1zM8 9h6v1h-6zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM5 10h5v1h-5zM12 10h7v1h-7zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM0 11h2v1h-2zM3 11h3v1h-3zM7 11h1v1h-1zM9 11h1v1h-1zM13 11h1v1h-1zM15 11h1v1h-1zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM0 12h2v1h-2zM4 12h1v1h-1zM6 12h1v1h-1zM10 12h2v1h-2zM14 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM0 13h3v1h-3zM4 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM16 13h2v1h-2zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM2 14h1v1h-1zM6 14h2v1h-2zM9 14h5v1h-5zM15 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM0 15h5v1h-5zM7 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM13 15h1v1h-1zM15 15h2v1h-2zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h2v1h-2zM3 16h4v1h-4zM8 16h1v1h-1zM10 16h6v1h-6zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM1 17h1v1h-1zM10 17h2v1h-2zM14 17h1v1h-1zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM3 18h1v1h-1zM5 18h2v1h-2zM9 18h2v1h-2zM12 18h1v1h-1zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM0 19h1v1h-1zM2 19h2v1h-2zM5 19h1v1h-1zM8 19h1v1h-1zM10 19h7v1h-7zM21 19h10v1h-10zM32 19h1v1h-1zM1 20h6v1h-6zM8 20h4v1h-4zM13 20h5v1h-5zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h2v1h-2zM3 21h3v1h-3zM8 21h1v1h-1zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM2 22h2v1h-2zM5 22h5v1h-5zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM3 23h1v1h-1zM10 23h1v1h-1zM12 23h3v1h-3zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h3v1h-3zM0 24h1v1h-1zM2 24h1v1h-1zM4 24h1v1h-1zM6 24h5v1h-5zM12 24h7v1h-7zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h1v1h-1zM10 25h2v1h-2zM16 25h5v1h-5zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM9 26h1v1h-1zM11 26h2v1h-2zM15 26h2v1h-2zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM15 27h1v1h-1zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h6v1h-6zM15 28h3v1h-3zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h4v1h-4zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM13 30h5v1h-5zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h4v1h-4zM15 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h3v1h-3zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> lire un fichier CSV, puis le manipuler en Python comme une liste de listes.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>retrouver une information dans un fichier CSV et repérer une donnée manquante ;</li>
+        <li>donner le type d'une liste de listes et de ses éléments ;</li>
+        <li>accéder à une valeur avec deux indices, <code>tab[ligne][colonne]</code> ;</li>
+        <li>parcourir une ligne du tableau pour calculer une somme.</li>
+      </ul>
+      <p class="td-duree">Feuille 1 sur 3 · 55 minutes · 12 questions · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>Voici un fichier CSV (<i>comma-separated values</i>, valeurs séparées par des virgules) trouvé sur le site de l'Insee : il compare les 17 communes de Mayotte. Source : <a href="https://www.insee.fr/fr/statistiques/4223807">Insee</a>, données en réutilisation libre en citant la source.</p>
+  <p>Les fichiers CSV sont de grands tableaux dans lesquels les valeurs sont séparées par des virgules. Celui-ci est assez petit : on peut le lire dans sa version brute, ci-dessous. Souvent, ils font plusieurs centaines de milliers de lignes : il faut alors les traiter par ordinateur.</p>
+  <p class="td-vocab">Ici, une ligne trop longue du fichier continue sur les lignes suivantes, décalées de deux espaces. <a class="td-ecran-seul" href="comparaisons-communes-mayotte.csv" download>Télécharger le fichier CSV</a></p>
+  <pre class="td-sortie-exemple">
+Nom de la commune,Kani-Kéli,Chirongui,Bouéni,Bandrele,Tsingoni,Sada,
+  Ouangani,M'Tsangamouji,Chiconi,Pamandzi,Dzaoudzi,Mtsamboro,Koungou,
+  Bandraboua,Acoua,Mamoudzou,Dembeni
+SIREN,200008803,200008779,200008746,200008738,200008886,200008878,
+  200008852,200008829,200008753,200008860,200008795,200008845,200008811,
+  200008720,200008712,200008837,200008787
+Insee,97609,97606,97604,97603,97617,97616,97614,97613,97605,97615,97608,
+  97612,97610,97602,97601,97611,97607
+Population totale en vigueur en 2024 (millésimée 2021),5716,9197,6503,
+  10529,14235,11619,10393,6586,8616,11802,18237,8025,32752,14211,5384,
+  72974,16116
+Population municipale en vigueur en 2024 (millésimée 2021),5507,8920,6189,
+  10282,13934,11156,10203,6432,8295,11442,17831,7705,32156,13989,5192,
+  71437,15848
+"Densité démographique en 2024 (population totale/superficie géographique,
+   en hab/km²)",268.5,304.3,440.2,282,400.9,999.6,535.6,294.5,1000.6,
+  2667.1,2677.3,562,1131.9,432.2,411.4,1703.3,408.5
+Variation annuelle de la population entre 2019 et 2024 (en %),0,0,0,0,0,0,
+  0,0,0,0,0,0,0,0,0,0,0
+Taux d’activité des 15 à 64 ans en 2019 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0
+Taux de chômage des 15 à 64 ans en 2019 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0,0
+Classement de la commune en zone de revitalisation rurale (ZRR),Non,Non,
+  Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non
+Commune possédant au moins un Quartier prioritaire de la politique de la 
+  ville (QPV),Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,
+  Oui,Oui
+Commune classée en zone de montagne,Non,Non,Non,Non,Non,Non,Non,Non,Non,
+  Non,Non,Non,Non,Non,Non,Non,Non
+Commune classée comme touristique,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,
+  Non,Non,Non,Non,Non,Non,Non
+Dotation globale de fonctionnement totale (en €),1765649,2924190,1965043,
+  3320186,4376239,3454846,3282251,2077125,2611057,3221688,5269111,2592605,
+  9922633,4749688,1678762,24692713,5289887
+Dont dotation forfaitaire (en €),1025454,1567667,1112503,1764013,2212309,
+  1851459,1541615,1125694,1345407,1726336,2724954,1458690,4535250,2270550,
+  944176,10975501,2470741
+- dotation de solidarité urbaine et de cohésion sociale (DSU) (en €),0,0,
+  0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+- dotation de solidarité rurale (DSR) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0
+- dotation de péréquation totale (DNP) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+  0,0,0
+DGF par habitant (en €),282,288.4,276,287.5,281.5,270,288.6,288.4,276.9,
+  250.1,264.4,293.9,277.4,305,285.7,309.7,300.8
+Population « DGF »,6262,10141,7120,11548,15548,12795,11373,7203,9429,
+  12883,19926,8820,35776,15571,5876,79721,17588
+Dotation élu local (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Solde net FPIC (en €),,,,,,,,,,,,,,,,,
+Dont reversement au profit de la commune (en €),,,,,,,,,,,,,,,,,
+Dont prélèvement de la commune (en €),,,,,,,,,,,,,,,,,
+FPIC par habitant (en €),,,,,,,,,,,,,,,,,
+Revenu disponible médian des ménages par unité de consommation 2020 (en 
+  €),,,,,,,,,,,,,,,,,</pre>
+
+  <h2 class="td-partie">1. Comprendre un CSV</h2>
+
+  <section class="td-q" data-type="qcu" id="k1" data-support="ecran">
+    <p class="td-consigne">Quelles sont les communes représentées dans ce fichier ?</p>
+    <ul class="td-options">
+      <li data-juste>les 17 communes de la première ligne, de Kani-Kéli à Dembeni</li>
+      <li data-retour="Ce sont les critères de comparaison : ils sont dans la première colonne.">SIREN, Insee, Population totale…</li>
+      <li data-retour="Ce sont des numéros de communes (le code Insee), pas leurs noms.">97609, 97606, 97604…</li>
+      <li data-retour="« Nom de la commune » est le titre de la ligne : les communes viennent après.">seulement « Nom de la commune »</li>
+    </ul>
+    <p class="td-aide">Lis la toute première ligne du fichier.</p>
+    <div class="td-correction"><p>La première ligne donne les 17 communes de Mayotte : Kani-Kéli, Chirongui, Bouéni, Bandrele, Tsingoni, Sada, Ouangani, M'Tsangamouji, Chiconi, Pamandzi, Dzaoudzi, Mtsamboro, Koungou, Bandraboua, Acoua, Mamoudzou et Dembeni.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="k1p" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Quelles sont les communes représentées dans ce fichier ?</p>
+    <div class="td-correction"><p>Les 17 communes de Mayotte, sur la première ligne, de Kani-Kéli à Dembeni.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="k2" data-support="ecran">
+    <p class="td-consigne">Quels sont les critères de comparaison ?</p>
+    <ul class="td-options">
+      <li data-juste>les textes du début de chaque ligne : SIREN, Insee, population totale, densité…</li>
+      <li data-retour="Les noms de communes sont ce qu'on compare : les critères sont ce qu'on mesure pour chacune.">les noms des communes</li>
+      <li data-retour="Oui et Non sont des valeurs, pour un critère donné.">les valeurs « Oui » et « Non »</li>
+      <li data-retour="Ce sont des valeurs : la population d'une commune, pour le critère « Population totale ».">les nombres 5716, 9197, 6503…</li>
+    </ul>
+    <p class="td-aide">Chaque ligne commence par le nom de ce qu'elle mesure.</p>
+    <div class="td-correction"><p>Les critères sont dans la première colonne : SIREN, code Insee, population totale, population municipale, densité, variation de la population, taux d'activité, taux de chômage, dotations…</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="k2p" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Quels sont les critères de comparaison ?</p>
+    <div class="td-correction"><p>Le premier texte de chaque ligne : SIREN, Insee, population totale, population municipale, densité, taux de chômage, dotations…</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="k3" data-reponse="97615">
+    <p class="td-consigne">Donne le numéro Insee de Pamandzi.</p>
+    <p class="td-retour" data-si="200008860">C'est le numéro SIREN. Le numéro Insee est sur la ligne « Insee ».</p>
+    <p class="td-aide">Pamandzi est la dixième commune de la première ligne : prends la dixième valeur de la ligne « Insee ».</p>
+    <div class="td-correction"><p>Le numéro Insee de Pamandzi est <b>97615</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="k4" data-reponse="11802|11 802">
+    <p class="td-consigne">Donne la population totale de Pamandzi.</p>
+    <p class="td-retour" data-si="11442">C'est la population municipale. On demande la population <b>totale</b>.</p>
+    <p class="td-aide">Même position que pour le numéro Insee, sur la ligne « Population totale… ».</p>
+    <div class="td-correction"><p>La population totale de Pamandzi est de <b>11 802</b> habitant·e·s.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="k5" data-support="ecran">
+    <p class="td-consigne">À quoi reconnaît-on les informations manquantes ?</p>
+    <ul class="td-options">
+      <li data-juste>deux virgules qui se suivent : la case entre elles est vide</li>
+      <li data-retour="Non est une vraie réponse : la commune n'est pas classée en zone de montagne.">le mot « Non »</li>
+      <li data-retour="Le tiret fait partie du nom de certains critères (« - dotation… ») : ce n'est pas une valeur.">un tiret « - » au début de la ligne</li>
+      <li data-retour="Les guillemets entourent un texte qui contient lui-même des virgules : la valeur est bien là.">des guillemets autour du texte</li>
+    </ul>
+    <p class="td-aide">Regarde les dernières lignes du fichier, comme « Solde net FPIC ».</p>
+    <div class="td-correction"><p>Une information manquante est une case vide : deux virgules qui se suivent, comme dans <code>Solde net FPIC (en €),,,,,</code>. (Les lignes remplies de 0, comme les taux de chômage, cachent aussi des données non publiées.)</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="k5p" data-support="papier" data-lignes="3">
+    <p class="td-consigne">À quoi reconnaît-on les informations manquantes ?</p>
+    <div class="td-correction"><p>À une case vide : deux virgules qui se suivent (<code>,,</code>), comme sur la ligne « Solde net FPIC ». Des lignes remplies de 0 cachent aussi des données non publiées.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Manipuler un CSV en Python</h2>
+
+  <p>En Python, on peut lire un CSV et le convertir en liste de listes grâce à la bibliothèque <code>csv</code> :</p>
+  <pre class="td-code">
+import csv
+
+csv_filename = 'comparaisons-communes-mayotte.csv'
+with open(csv_filename, encoding='utf-8') as f:
+    reader = csv.reader(f)
+    tab = list(reader)</pre>
+  <p>La variable <code>tab</code> contient alors une liste de listes. Voici ses trois premières lignes :</p>
+  <pre class="td-sortie-exemple">
+[['Nom de la commune', 'Kani-Kéli', 'Chirongui', ..., 'Dembeni'],
+ ['SIREN', '200008803', '200008779', '200008746', ..., '200008787'],
+ ['Insee', '97609', '97606', '97604', ..., '97607'],
+ ...]</pre>
+  <p><b>Pour la suite, le jeu de données est chargé dans la variable <code>tab</code>.</b></p>
+
+  <section class="td-q" data-type="qcu" id="m1">
+    <p class="td-consigne">Quel est le type de la variable <code>tab</code> ? Quelle ligne peut-on écrire en Python pour le vérifier ?</p>
+    <ul class="td-options">
+      <li data-juste>une liste (<code>list</code>), de listes ; on vérifie avec <code>print(type(tab))</code></li>
+      <li data-retour="Il n'y a pas de clés : on accède aux valeurs par des indices, entre crochets.">un dictionnaire (<code>dict</code>) ; on vérifie avec <code>print(type(tab))</code></li>
+      <li data-retour="csv.reader découpe le texte du fichier, et list(…) range les morceaux dans une liste.">une chaîne (<code>str</code>), le texte du fichier ; on vérifie avec <code>print(tab)</code></li>
+      <li data-retour="C'est bien une liste, mais len(tab) donne son nombre d'éléments, pas son type.">une liste (<code>list</code>) ; on vérifie avec <code>print(len(tab))</code></li>
+    </ul>
+    <p class="td-aide">La fonction qui donne le type d'une valeur s'appelle <code>type</code>.</p>
+    <div class="td-correction"><p><code>tab</code> est une liste (<code>list</code>) dont chaque élément est une liste. <code>print(type(tab))</code> affiche <code>&lt;class 'list'&gt;</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="m2">
+    <p class="td-consigne">Quels sont les types de <code>tab[0]</code> et de <code>tab[6][5]</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>list</code>, puis <code>str</code></li>
+      <li data-retour="Le module csv lit tout comme du texte : tab[6][5] vaut '0', une chaîne, pas le nombre 0."><code>list</code>, puis <code>int</code></li>
+      <li data-retour="tab[0] est une ligne entière du fichier : une liste de chaînes."><code>str</code>, puis <code>str</code></li>
+      <li data-retour="Avec deux indices, on arrive à une seule case : une valeur, pas une ligne."><code>list</code>, puis <code>list</code></li>
+    </ul>
+    <p class="td-aide"><code>tab[0]</code> est une ligne ; <code>tab[6][5]</code> est une case de la ligne 6.</p>
+    <p class="td-aide">Le module <code>csv</code> lit toutes les valeurs comme du texte.</p>
+    <div class="td-correction"><p><code>tab[0]</code> est la première ligne : une liste (<code>list</code>). <code>tab[6][5]</code> est une case : la chaîne <code>'0'</code> (<code>str</code>), car le module <code>csv</code> lit tout comme du texte.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="m3" data-comparer="code" data-reponse="tab[4][4]|print(tab[4][4])" data-etiquette="Ta ligne de code :">
+    <p class="td-consigne">Donne la ligne de code Python qui permet d'accéder à la population municipale en vigueur en 2024 (millésimée 2021) de Bandrele.</p>
+    <p class="td-retour" data-si="tab[3][4]|tab[4][3]|tab[5][5]|tab[5][4]|tab[4][5]">Pas tout à fait. Compte les lignes et les colonnes à partir de 0 : la ligne 0 est celle des noms, et la colonne 0 celle des critères.</p>
+    <p class="td-aide">D'abord la ligne (le critère), puis la colonne (la commune) : <code>tab[ligne][colonne]</code>.</p>
+    <p class="td-aide">On compte à partir de 0 : « Nom de la commune » est la ligne 0, « Population municipale… » la ligne 4. Bandrele est la colonne 4.</p>
+    <div class="td-correction"><p><code>tab[4][4]</code> : ligne 4 (la population municipale), colonne 4 (Bandrele). Elle vaut <code>'10282'</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="m4" data-comparer="code" data-reponse="len(tab[0]) - 1|len(tab[1]) - 1|len(tab[2]) - 1|len(tab[3]) - 1|len(tab[0][1:])|print(len(tab[0]) - 1)" data-etiquette="Ta ligne de code :">
+    <p class="td-consigne">Donne la ligne de code Python qui permet d'obtenir le nombre de communes dans le jeu de données.</p>
+    <p class="td-retour" data-si="len(tab)">Non : <code>len(tab)</code> compte les lignes du fichier, donc les critères. Les communes sont sur une ligne.</p>
+    <p class="td-retour" data-si="len(tab[0])">Presque : la première case de la ligne, « Nom de la commune », n'est pas une commune.</p>
+    <p class="td-aide">Les communes sont les éléments de la ligne <code>tab[0]</code>… sauf le premier.</p>
+    <div class="td-correction"><p><code>len(tab[0]) - 1</code> vaut 17 : la première ligne a 18 cases, dont le titre « Nom de la commune ».</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="m5">
+    <p class="td-consigne">Complète la fonction : elle affiche, pour chaque commune, son nom, son SIREN et sa population totale en vigueur en 2024 (millésimée 2021).</p>
+    <pre class="td-code">
+def stats_communes(data):
+    for i in range(1, len(data[ [[0|1|2|3]] ])):
+        commune = data[ [[0]] ][i]
+        pop = data[3][ [[i]] ]
+        siren = data[ [[1]] ][ [[i]] ]
+        print("Dans la commune de", commune, "(SIREN", siren,
+              ") il y a", pop, "habitants.")</pre>
+    <p class="td-aide">La boucle parcourt les colonnes : <code>i</code> est le numéro d'une commune.</p>
+    <p class="td-aide">Les noms sont sur la ligne 0, les SIREN sur la ligne 1, la population totale sur la ligne 3.</p>
+    <div class="td-correction"><pre class="td-code">
+def stats_communes(data):
+    for i in range(1, len(data[0])):
+        commune = data[0][i]
+        pop = data[3][i]
+        siren = data[1][i]
+        print("Dans la commune de", commune, "(SIREN", siren,
+              ") il y a", pop, "habitants.")</pre>
+      <p>La première ligne affichée : <code>Dans la commune de Kani-Kéli (SIREN 200008803 ) il y a 5716 habitants.</code></p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="m6" data-comparer="code" data-reponse="stats_communes(tab)" data-etiquette="L'appel :">
+    <p class="td-consigne">Écris la ligne qui appelle la fonction <code>stats_communes</code> pour le jeu de données.</p>
+    <p class="td-retour" data-si="stats_communes(data)|stats_communes()">Le jeu de données est rangé dans la variable <code>tab</code> : c'est elle qu'on donne à la fonction.</p>
+    <p class="td-aide">Le nom de la fonction, puis, entre parenthèses, la variable qui contient le jeu de données.</p>
+    <div class="td-correction"><p><code>stats_communes(tab)</code> : dans la fonction, le paramètre <code>data</code> reçoit <code>tab</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="m7" data-obligatoire data-fichier="population.py">
+    <p class="td-consigne">Écris une fonction <code>population_totale(data)</code> qui renvoie la population totale de Mayotte (« Population totale en vigueur en 2024 ») : la somme des populations des communes. Pense à convertir chaque valeur en <code>float</code>. Les tests l'essaient avec <code>tab</code>.</p>
+    <pre class="td-depart">
+def population_totale(data):
+    # ta fonction ici
+    pass
+</pre>
+    <script type="text/x-python" class="td-tests">
+import csv, io
+DONNEES = """Nom de la commune,Kani-Kéli,Chirongui,Bouéni,Bandrele,Tsingoni,Sada,Ouangani,M'Tsangamouji,Chiconi,Pamandzi,Dzaoudzi,Mtsamboro,Koungou,Bandraboua,Acoua,Mamoudzou,Dembeni
+SIREN,200008803,200008779,200008746,200008738,200008886,200008878,200008852,200008829,200008753,200008860,200008795,200008845,200008811,200008720,200008712,200008837,200008787
+Insee,97609,97606,97604,97603,97617,97616,97614,97613,97605,97615,97608,97612,97610,97602,97601,97611,97607
+Population totale en vigueur en 2024 (millésimée 2021),5716,9197,6503,10529,14235,11619,10393,6586,8616,11802,18237,8025,32752,14211,5384,72974,16116
+Population municipale en vigueur en 2024 (millésimée 2021),5507,8920,6189,10282,13934,11156,10203,6432,8295,11442,17831,7705,32156,13989,5192,71437,15848
+"Densité démographique en 2024 (population totale/superficie géographique, en hab/km²)",268.5,304.3,440.2,282,400.9,999.6,535.6,294.5,1000.6,2667.1,2677.3,562,1131.9,432.2,411.4,1703.3,408.5
+Variation annuelle de la population entre 2019 et 2024 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Taux d’activité des 15 à 64 ans en 2019 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Taux de chômage des 15 à 64 ans en 2019 (en %),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Classement de la commune en zone de revitalisation rurale (ZRR),Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non
+Commune possédant au moins un Quartier prioritaire de la politique de la ville (QPV),Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui,Oui
+Commune classée en zone de montagne,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non
+Commune classée comme touristique,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non,Non
+Dotation globale de fonctionnement totale (en €),1765649,2924190,1965043,3320186,4376239,3454846,3282251,2077125,2611057,3221688,5269111,2592605,9922633,4749688,1678762,24692713,5289887
+Dont dotation forfaitaire (en €),1025454,1567667,1112503,1764013,2212309,1851459,1541615,1125694,1345407,1726336,2724954,1458690,4535250,2270550,944176,10975501,2470741
+- dotation de solidarité urbaine et de cohésion sociale (DSU) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+- dotation de solidarité rurale (DSR) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+- dotation de péréquation totale (DNP) (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+DGF par habitant (en €),282,288.4,276,287.5,281.5,270,288.6,288.4,276.9,250.1,264.4,293.9,277.4,305,285.7,309.7,300.8
+Population « DGF »,6262,10141,7120,11548,15548,12795,11373,7203,9429,12883,19926,8820,35776,15571,5876,79721,17588
+Dotation élu local (en €),0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+Solde net FPIC (en €),,,,,,,,,,,,,,,,,
+Dont reversement au profit de la commune (en €),,,,,,,,,,,,,,,,,
+Dont prélèvement de la commune (en €),,,,,,,,,,,,,,,,,
+FPIC par habitant (en €),,,,,,,,,,,,,,,,,
+Revenu disponible médian des ménages par unité de consommation 2020 (en €),,,,,,,,,,,,,,,,,
+"""
+tab = list(csv.reader(io.StringIO(DONNEES)))
+
+petit = [["Nom de la commune", "A", "B"], ["SIREN", "1", "2"], ["Insee", "3", "4"], ["Population totale", "10", "2.5"]]
+assert population_totale(petit) == 12.5, "Avec un petit tableau de deux communes (10 et 2,5 habitants), ta fonction renvoie " + repr(population_totale(petit)) + " au lieu de 12.5."
+obtenu = population_totale(tab)
+assert obtenu == 262895, "population_totale(tab) renvoie " + repr(obtenu) + " au lieu de 262895.0."
+</script>
+    <p class="td-aide">La population totale est sur la ligne 3. On additionne les cases à partir de la colonne 1 (la colonne 0 est le titre).</p>
+    <p class="td-aide">Une somme : <code>total = 0</code> avant la boucle, <code>total = total + float(data[3][i])</code> dedans.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+def population_totale(data):
+    total = 0
+    for i in range(1, len(data[3])):
+        total = total + float(data[3][i])
+    return total</pre>
+      <p><code>population_totale(tab)</code> renvoie <code>262895.0</code> : 262 895 habitant·e·s.</p></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="feuille-2.html">feuille 2 sur 3, filtrer les données manquantes et les tranches</a>.</p>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Un CSV lu avec <code>csv.reader</code> devient une <b>liste de listes de chaînes</b> : <code>tab[ligne][colonne]</code>, en comptant à partir de 0.</p>
+    <p>Pour calculer, on convertit : <code>float(tab[3][1])</code>.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/python-exercices-structures-premiere/exercices-csv-listes-de-listes/index.html">Code source sur GitHub</a></p><span class="td-margouillat" data-cachette="pied" style="--x:52%;--r:-3deg;--s:-1"></span>
+  </footer>
+</main>
+</body>
+</html>
