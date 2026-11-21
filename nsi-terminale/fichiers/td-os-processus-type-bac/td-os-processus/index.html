@@ -15,11 +15,14 @@
 </head>
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
-     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="tle-td-os-processus" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-td-version="1">
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-td-os-processus" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-td-version="1" data-ordre="melange" data-code="obligatoire">
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 1 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
     <div class="td-bandeau" data-bandeau="1">
@@ -109,7 +112,7 @@ $ ls ../archives</pre>
   <pre class="td-sortie-exemple">
 -rwxrw-r-- 1 prof  enseignants  2048 Mar 24 10:00 notes.csv</pre>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q6">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q6">
     <p class="td-consigne">L'utilisateur <code>eleve</code> (qui n'est pas dans le groupe <code>enseignants</code>) peut-il modifier ce fichier ? Peut-il l'exécuter ?</p>
     <ul class="td-options">
       <li data-retour="rwx sont les droits du propriétaire, prof. eleve n'est ni le propriétaire ni dans le groupe : ses droits sont les trois derniers caractères.">Oui aux deux : le fichier a les droits <code>rwx</code>.</li>
@@ -121,7 +124,7 @@ $ ls ../archives</pre>
     <p class="td-aide"><code>eleve</code> n'est ni le propriétaire (<code>prof</code>) ni dans le groupe : ce sont les trois derniers caractères.</p>
     <div class="td-correction"><p><code>rwx</code> pour <code>prof</code>, <code>rw-</code> pour le groupe <code>enseignants</code>, <code>r--</code> pour les autres. <code>eleve</code> fait partie des autres : il peut lire le fichier, mais ni le modifier (pas de <code>w</code>) ni l'exécuter (pas de <code>x</code>).</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="4" id="q6p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="4" id="q6p">
     <p class="td-consigne">L'utilisateur <code>eleve</code> (qui n'est pas dans le groupe <code>enseignants</code>) peut-il modifier ce fichier ? Peut-il l'exécuter ? Justifie.</p>
     <div class="td-correction"><p>Non aux deux. Les droits se lisent par trois : <code>rwx</code> pour le propriétaire <code>prof</code>, <code>rw-</code> pour le groupe <code>enseignants</code>, <code>r--</code> pour les autres. <code>eleve</code> fait partie des autres : lecture seule, ni <code>w</code> ni <code>x</code>.</p></div>
   </section>
@@ -138,7 +141,7 @@ $ ls ../archives</pre>
   <pre class="td-sortie-exemple">
 $ sudo chown directeur notes.csv</pre>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q8">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q8">
     <p class="td-consigne">Quel est le rôle de cette commande, et que signifie le préfixe <code>sudo</code> ?</p>
     <ul class="td-options">
       <li data-juste><code>chown</code> fait de <code>directeur</code> le propriétaire du fichier ; <code>sudo</code> lance la commande avec les droits du super-utilisateur (root).</li>
@@ -150,7 +153,7 @@ $ sudo chown directeur notes.csv</pre>
     <p class="td-aide">Un utilisateur ordinaire ne peut pas donner son fichier à un autre : il faut les droits de l'administrateur.</p>
     <div class="td-correction"><p><code>chown directeur notes.csv</code> fait de <code>directeur</code> le nouveau propriétaire du fichier. Seul le super-utilisateur <code>root</code> peut le faire : <code>sudo</code> (<i>super user do</i>) exécute la commande avec ses droits, après avoir demandé le mot de passe de l'administrateur·rice.</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="4" id="q8p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="4" id="q8p">
     <p class="td-consigne">Explique le rôle de cette commande et la signification du préfixe <code>sudo</code>.</p>
     <div class="td-correction"><p><code>chown</code> (<i>change owner</i>) fait de <code>directeur</code> le propriétaire de <code>notes.csv</code>. <code>sudo</code> (<i>super user do</i>) lance la commande avec les droits du super-utilisateur <code>root</code>, seul autorisé à changer le propriétaire d'un fichier.</p></div>
   </section>
@@ -173,7 +176,7 @@ eleve   1215  1050  0  ps -ef</pre>
     <div class="td-correction"><p>Sur la ligne de <code>python3</code>, la colonne PPID vaut <b>1050</b> : c'est le shell <code>bash</code> qui l'a lancé.</p></div>
   </section>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q10">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q10">
     <p class="td-consigne">Quel graphe de parenté (l'arbre des processus) correspond à cet extrait ? Une flèche va du parent vers l'enfant.</p>
     <ul class="td-options">
       <li data-retour="Le PPID de 1215 est 1050, pas 1210 : ps -ef a été lancé par bash, pas par python3.">1 → 500 → 1050 → 1210 → 1215</li>
@@ -187,7 +190,7 @@ eleve   1215  1050  0  ps -ef</pre>
       <p><code>init</code> (PID 1) a lancé <code>sshd</code>, qui a lancé le <code>bash</code> de la connexion ; ce <code>bash</code> a deux enfants, <code>python3</code> et <code>ps</code>.</p>
     </div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="8" id="q10p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="8" id="q10p">
     <p class="td-consigne">Dessine le graphe de parenté (l'arbre des processus) de cet extrait.</p>
     <div class="td-correction">
       <p>Une flèche de chaque PPID vers son PID : 1 → 500 → 1050, puis 1050 → 1210 et 1050 → 1215. <code>init</code> est la racine ; <code>bash</code> a deux enfants, <code>python3</code> et <code>ps</code>.</p>
@@ -203,7 +206,7 @@ eleve   1215  1050  0  ps -ef</pre>
 
   <p>On considère la commande <code>ps -ef | grep "python3"</code>.</p>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q12">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q12">
     <p class="td-consigne">Quel est le rôle du symbole <code>|</code> ?</p>
     <ul class="td-options">
       <li data-retour="Pour lancer deux commandes l'une après l'autre, sans lien, on écrit ; entre elles.">Il lance les deux commandes l'une après l'autre, sans lien entre elles.</li>
@@ -214,7 +217,7 @@ eleve   1215  1050  0  ps -ef</pre>
     <p class="td-aide">Le symbole s'appelle un tube (<i>pipe</i>).</p>
     <div class="td-correction"><p>Le tube <code>|</code> branche la sortie de la commande de gauche sur l'entrée de la commande de droite : <code>grep</code> ne lit pas un fichier, mais le résultat de <code>ps -ef</code>, et n'en garde que les lignes qui contiennent <code>python3</code>.</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="3" id="q12p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q12p">
     <p class="td-consigne">Explique le rôle du symbole <code>|</code>.</p>
     <div class="td-correction"><p>Le tube <code>|</code> envoie la sortie de la commande de gauche (<code>ps -ef</code>) à l'entrée de la commande de droite (<code>grep</code>), qui ne garde que les lignes contenant <code>python3</code>.</p></div>
   </section>
@@ -242,7 +245,7 @@ eleve   1215  1050  0  ps -ef</pre>
 --- 8.8.8.8 ping statistics ---
 3 packets transmitted, 3 received, 0% packet loss, time 2003ms</pre>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q14">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q14">
     <p class="td-consigne">Quel est le rôle de la commande <code>ping</code> ?</p>
     <ul class="td-options">
       <li data-retour="ping n'échange aucun fichier : il envoie de petits paquets de test.">Télécharger un fichier depuis le serveur.</li>
@@ -253,12 +256,12 @@ eleve   1215  1050  0  ps -ef</pre>
     <p class="td-aide">Chaque ligne <code>64 bytes from…</code> est une réponse du serveur, avec un temps.</p>
     <div class="td-correction"><p><code>ping</code> envoie des paquets de test (ICMP) à une machine et attend ses réponses : il dit si elle est joignable et mesure le temps d'aller-retour. <code>-c 3</code> : trois paquets.</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="3" id="q14p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q14p">
     <p class="td-consigne">Quel est le rôle de la commande <code>ping</code> ?</p>
     <div class="td-correction"><p><code>ping</code> envoie des paquets de test à une machine et attend ses réponses : il vérifie qu'elle est joignable et mesure le temps d'aller-retour.</p></div>
   </section>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q15">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q15">
     <p class="td-consigne">Que peux-tu conclure sur la connexion entre l'ordinateur et le serveur 8.8.8.8 ?</p>
     <ul class="td-options">
       <li data-juste>Elle fonctionne bien : 3 paquets envoyés, 3 reçus (0 % de perte), en 13 ms environ.</li>
@@ -269,7 +272,7 @@ eleve   1215  1050  0  ps -ef</pre>
     <p class="td-aide">Lis la dernière ligne : envoyés, reçus, perte.</p>
     <div class="td-correction"><p>Les 3 paquets envoyés ont reçu une réponse (0 % de perte), avec un temps d'aller-retour d'environ 12 à 13 ms : la connexion avec ce serveur fonctionne, et elle est rapide.</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="3" id="q15p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q15p">
     <p class="td-consigne">Que peux-tu conclure sur l'état de la connexion entre l'ordinateur et le serveur 8.8.8.8 ?</p>
     <div class="td-correction"><p>La connexion fonctionne : 3 paquets envoyés, 3 reçus, 0 % de perte, et un aller-retour rapide (environ 13 ms).</p></div>
   </section>
@@ -287,7 +290,7 @@ processus_actifs = [
         "cpu": 0.1, "user": "root"}
 ]</pre>
 
-  <section class="td-q" data-type="code" id="q16" data-fichier="critiques.py" data-obligatoire>
+  <section class="td-q" data-type="code" id="q16" data-fichier="critiques.py" data-lignes="6">
     <p class="td-consigne">Écris une fonction <code>trouver_critiques(liste_proc)</code> qui renvoie la liste des <b>PID</b> des processus dont la consommation CPU est supérieure à 80 %. <span class="td-ecran-seul">Des tests, cachés, la vérifient quand tu cliques sur « Lancer et vérifier ».</span></p>
     <pre class="td-depart">
 def trouver_critiques(liste_proc):

@@ -15,14 +15,17 @@
 </head>
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
-     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="tle-rappels-morpion" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-td-version="1">
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-rappels-morpion" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-td-version="1" data-ordre="melange" data-code="obligatoire">
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 3 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="3">
+    <div class="td-bandeau" data-bandeau="1">
       <div class="td-bandeau-decor" aria-hidden="true"></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Rappels de 1re</span></p>
@@ -87,7 +90,7 @@ grille = [[" " for _ in range(3)] for _ in range(3)]  # 9 espaces " "</pre>
     <div class="td-correction"><p>Deux paramètres : <code>g</code> et <code>gagnant</code>. <code>gagnant=None</code> donne une valeur par défaut : on peut appeler la fonction sans le donner.</p></div>
   </section>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q3">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q3">
     <p class="td-consigne">Quel est le type de <code>grille</code> ? À quoi le reconnais-tu ?</p>
     <ul class="td-options">
       <li data-juste>Une liste (de trois listes) : elle est écrite entre crochets <code>[ ]</code>.</li>
@@ -98,7 +101,7 @@ grille = [[" " for _ in range(3)] for _ in range(3)]  # 9 espaces " "</pre>
     <p class="td-aide"><code>[… for _ in range(3)]</code> construit une liste par compréhension.</p>
     <div class="td-correction"><p>Une <b>liste</b> : les crochets <code>[ ]</code> la construisent (liste par compréhension). Chacun de ses trois éléments est lui-même une liste de trois <code>" "</code> : c'est une liste de listes.</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="2" id="q3p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="2" id="q3p">
     <p class="td-consigne">Quel est le type de <code>grille</code> ? À quoi le reconnais-tu ?</p>
     <div class="td-correction"><p>Une liste (de trois listes de trois <code>" "</code>) : elle est construite entre crochets <code>[ ]</code>.</p></div>
   </section>
@@ -175,7 +178,7 @@ joueurs = ("X", "O")</pre>
     <div class="td-correction"><p><code>print(joueurs[1])</code> affiche <code>O</code>.</p></div>
   </section>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q9">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q9">
     <p class="td-consigne">Peux-tu modifier le symbole du deuxième joueur, avec <code>joueurs[1] = "Z"</code> ?</p>
     <ul class="td-options">
       <li data-retour="Python refuse : TypeError: 'tuple' object does not support item assignment.">Oui, comme dans une liste.</li>
@@ -186,7 +189,7 @@ joueurs = ("X", "O")</pre>
     <p class="td-aide">Liste et tuple se lisent de la même façon. Mais l'un des deux ne se modifie pas.</p>
     <div class="td-correction"><p>Non. Un tuple est <b>immuable</b> : Python répond <code>TypeError: 'tuple' object does not support item assignment</code>. Pour changer de symbole, il faut créer un nouveau tuple : <code>joueurs = ("X", "Z")</code>.</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="3" id="q9p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q9p">
     <p class="td-consigne">Peux-tu modifier le symbole du deuxième joueur ? Justifie.</p>
     <div class="td-correction"><p>Non : un tuple est immuable. <code>joueurs[1] = "Z"</code> provoque <code>TypeError: 'tuple' object does not support item assignment</code>.</p></div>
   </section>
@@ -196,7 +199,7 @@ joueurs = ("X", "O")</pre>
     <pre class="td-code">
 def tourJoueur(joueur, grille):
     tour = [[int]](input("Sur quelle case veux-tu jouer ? (0 à 8) "))
-    grille[[[tour // 3|tour//3]]][[[tour % 3|tour%3]]] = joueur</pre>
+    grille[ [[tour // 3|tour//3]] ][ [[tour % 3|tour%3]] ] = joueur</pre>
     <p class="td-aide"><code>input</code> renvoie toujours un texte : il faut le changer en nombre entier.</p>
     <p class="td-aide">La case 5 est sur la ligne 1, colonne 2 : 5 // 3 = 1 et 5 % 3 = 2.</p>
     <div class="td-correction"><pre class="td-code">
@@ -218,14 +221,14 @@ def ligneGagnante(grille, ligne):
     else : return False
 
 def colonneGagnante(grille, colonne):
-    if grille[0][colonne] == [[grille[1][colonne] |grille[2][colonne] ]] == [[grille[2][colonne] |grille[1][colonne] ]]:
+    if grille[0][colonne] == [[grille[1][colonne]|grille[2][colonne]]] == [[grille[2][colonne]|grille[1][colonne]]]:
         return grille[0][colonne]
     else : return False
 
 def diagonalGagnante(grille):
-    if [[grille[0][0] |grille[2][2] ]] == [[grille[1][1] ]] == [[grille[2][2] |grille[0][0] ]]:
+    if [[grille[0][0]|grille[2][2]]] == [[grille[1][1]]] == [[grille[2][2]|grille[0][0]]]:
         return grille[0][0]
-    elif [[grille[2][0] |grille[0][2] ]] == [[grille[1][1] ]] == [[grille[0][2] |grille[2][0] ]]:
+    elif [[grille[2][0]|grille[0][2]]] == [[grille[1][1]]] == [[grille[0][2]|grille[2][0]]]:
         return grille[2][0]
     else : return False</pre>
     <p class="td-aide">Pour la colonne, c'est le premier indice (la ligne) qui change : 0, 1, 2.</p>
@@ -267,7 +270,7 @@ grille[1][-1] = "O"
 grille[2][0] = grille[0][1]
 grille[len(grille[0]) - 1][2] = "O"</pre>
 
-  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q13">
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q13">
     <p class="td-consigne">Quelle est la grille après l'exécution de ce code ? (Un point marque une case vide.)</p>
     <ul class="td-options">
       <li data-juste><pre class="td-code">
@@ -291,7 +294,7 @@ X | . | .</pre></li>
     <p class="td-aide"><code>len(grille[0])</code> vaut 3.</p>
     <div class="td-correction"><p>X en ligne 0, colonne 1 ; O en ligne 1, dernière colonne ; X (copié de <code>grille[0][1]</code>) en ligne 2, colonne 0 ; O en ligne 3 - 1 = 2, colonne 2.</p></div>
   </section>
-  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="4" id="q13p">
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q13p">
     <p class="td-consigne">Dessine la grille après l'exécution de ce code.</p>
     <div class="td-correction"><p>Ligne 0 : vide, X, vide. Ligne 1 : vide, vide, O. Ligne 2 : X, vide, O.</p></div>
   </section>
@@ -392,7 +395,7 @@ def meilleurRatio(joueurs):
     <div class="td-correction"><p>Avec <code>&gt;</code>, un ratio égal ne remplace pas le meilleur : la fonction garde le premier ou la première rencontré·e, dans l'ordre du dictionnaire. Avec <code>&gt;=</code>, ce serait le dernier ou la dernière.</p></div>
   </section>
 
-  <section class="td-q" data-type="code" id="q21" data-fichier="mise_a_jour.py" data-obligatoire>
+  <section class="td-q" data-type="code" id="q21" data-fichier="mise_a_jour.py" data-lignes="4">
     <p class="td-consigne">Tortue vient de gagner une partie contre Lagon. Écris les instructions qui mettent à jour le dictionnaire <code>joueurs</code>. <span class="td-ecran-seul">Des tests, cachés, le vérifient quand tu cliques sur « Lancer et vérifier ».</span></p>
     <pre class="td-depart">
 joueurs = {"Lagon": (4, 15),

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rappel : les fonctions (feuilles 1 et 2) : les réponses, obtenues par exécution.
+"""Rappel : les fonctions (feuilles 1, 2 et 3) : les réponses, obtenues par exécution.
 
 Usage : python3 -I verifier.py   (Python 3.13)
 Feuille 1 : paramètres de l'extrait (module ast), déroulés et sorties des fonctions mystère,
@@ -15,7 +15,7 @@ import re
 from math import sqrt
 
 ICI = os.path.dirname(os.path.abspath(__file__))
-P1, P2 = os.path.join(ICI, '..', 'index.html'), os.path.join(ICI, '..', 'feuille-2.html')
+P1, P2 = os.path.join(ICI, '..', 'index.html'), os.path.join(ICI, '..', 'feuille-3.html')
 
 
 def sortie(code):
@@ -31,7 +31,7 @@ extrait = html.unescape(re.search(r'<pre class="td-code">\n(def _console_log_lev
 arbre = ast.parse(extrait)
 print('q1-q2 définitions :', {n.name: len(n.args.args) for n in ast.walk(arbre) if isinstance(n, ast.FunctionDef)})
 
-# q8 : decompte corrigé
+# feuille 1, q8 : decompte corrigé
 print('q8', sortie('''
 def decompte(n):
     if n < 0:
@@ -46,12 +46,12 @@ def decompte(n):
 decompte(5)
 decompte(-2)''').replace('\n', ' / '))
 
-# q9 : déroulé de mystere(5)
+# feuille 2 (ancienne q9) : déroulé de mystere(5)
 a = 1
 for i in range(1, 6):
     a = a * i
     print('q9 tour', i, ':', (i, a))
-# q11, q13, q14, q16 : sorties
+# feuille 2 (anciennes q11, q13, q14, q16) : sorties
 print('q11', sortie('''
 def mystere(a, b):
     if a > b :
@@ -71,7 +71,7 @@ print('q14 paires comparées :', [(tab[i - 1], tab[-i]) for i in range(1, 5)], '
 pts = [[7, 9], [2, 5], [5, 2]]
 print('q16 distances :', [round(sqrt(x * x + y * y), 3) for x, y in pts])
 
-# feuille 2 : les tests des pages
+# feuille 3 : les tests des pages
 TESTS = {}
 for bloc in open(P2, encoding='utf-8').read().split('<section class="td-q')[1:]:
     bloc = bloc.split('</section>')[0]
