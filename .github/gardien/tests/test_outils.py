@@ -10,6 +10,9 @@ dossier de travail :
     propre ; l'option --diff sur une plage vide de cette copie ; un PDF lu comme du texte, ignoré (T125) ;
   - qcu_forme.py (T125) : une page où la bonne option est la plus longue dans 3 QCU sur 4 (À REVOIR),
     une page aux options équilibrées, une bonne option seule avec du code (indice à relire) ;
+  - td_papier.py (T124) : une balise de question cassée (un attribut inséré dans la valeur d'un autre),
+    une variante papier qui recopie un code à compléter avec ses réponses, une page propre (un « > »
+    dans une valeur entre guillemets n'est pas une balise cassée) ;
   - chemins_readme.py : un petit site et son README (chemins présents, absents, relatifs à un
     dossier cité, nom seul, motif, extension seule, adresse, gabarit, bloc de code) ; puis N16 :
     adresses file://, valeurs entre guillemets, chemin qui contient des espaces, commande ;
@@ -142,6 +145,36 @@ code, sortie = outil("qcu_forme.py", os.path.join(travail, "qcu", "code.html"))
 attendre("qcu_forme.py : seule option avec du code, premier mot à part : à relire (code 2)", code, sortie, 2,
          presents=[r"code\.html#q1 : seule avec du code", r"code\.html#q1 : premier mot à part \(« x » contre « avec »\)"],
          absents=[r"À REVOIR"])
+
+# ── td_papier.py (T124) ─────────────────────────────────────────────────────
+def page_q(sections):
+    return '<main class="td" data-td="essai">%s</main>' % "".join(sections)
+
+
+PROPRE = ('<section class="td-q" data-type="courte" id="q1" data-reponse="A-B|A->B" data-support="ecran">'
+          '<p class="td-consigne">Le chemin ?</p><div class="td-correction"><p>A-B</p></div></section>'
+          '<section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="1">'
+          '<p class="td-consigne">Le chemin ?</p><div class="td-correction"><p>A-B</p></div></section>'
+          '<section class="td-q" data-type="trous" id="q2"><pre class="td-code">x = [[3]]</pre></section>')
+CASSEE = ('<section class="td-q" data-type="courte" id="q3" data-reponse="A-B|A- data-support="ecran">B|a-b">'
+          '<p class="td-consigne">Le chemin ?</p></section>')
+PAPIER = ('<section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="1">'
+          '<p class="td-consigne">Compléter.</p><pre class="td-code">x = [[3]]</pre></section>')
+ecrire(os.path.join(travail, "td-papier", "propre.html"), page_q([PROPRE]))
+ecrire(os.path.join(travail, "td-papier", "cassee.html"), page_q([CASSEE]))
+ecrire(os.path.join(travail, "td-papier", "papier.html"), page_q([PAPIER]))
+code, sortie = outil("td_papier.py", os.path.join(travail, "td-papier", "propre.html"))
+attendre("td_papier.py : variantes écran et papier propres, « > » dans une valeur : rien à signaler", code, sortie, 0,
+         presents=[r"propre\.html : 3 question\(s\), 0 point\(s\)$"], absents=[r"cassée", r"papier q1"])
+code, sortie = outil("td_papier.py", os.path.join(travail, "td-papier", "cassee.html"))
+attendre("td_papier.py : balise cassée, la fin des réponses en texte visible : code 1", code, sortie, 1, presents=[
+    r"balise <section> cassée : 'ecran\"' n'est pas un nom d'attribut",
+    r"balise <section> cassée : la valeur de data-reponse contient un autre attribut",
+    r"texte visible qui finit comme une balise : 'B\|a-b\">'"])
+code, sortie = outil("td_papier.py", os.path.join(travail, "td-papier", "papier.html"))
+attendre("td_papier.py : variante papier qui recopie [[ ]] : code 1", code, sortie, 1, presents=[
+    r"question papier q4-papier : \[\[ \]\] \(une réponse peut s'imprimer\)",
+    r"\(information\) question papier q4-papier sans question écran à côté"])
 
 # ── chemins_readme.py ───────────────────────────────────────────────────────
 site = os.path.join(travail, "site-readme")

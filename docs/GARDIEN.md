@@ -39,6 +39,11 @@ D'autres outils du même dossier servent au cas par cas. Pour le site :
   elle est nettement la plus longue (10 % de plus que chacune des autres) dans au moins la moitié de
   ses QCU, et l'outil signale aussi, à relire, une bonne option seule avec du code, du gras ou un
   point final, ou au premier mot à part ;
+- `td_papier.py` (T124) cherche dans la source d'un TD ce qui ferait voir une réponse, à l'écran
+  ou sur papier, sans qu'elle soit un texte caché (que cherchent `imprimer-td.py` et le contrôle des
+  PDF) : une balise de question cassée (un attribut inséré dans la valeur d'un autre, dont la fin
+  s'affiche alors en clair), une variante papier qui recopie un code à compléter avec ses réponses
+  (`[[…]]`), une réponse attendue ou des options dans une question papier ;
 - `zones.py` situe les différences de rendu entre avant et après, pour vérifier par exemple
   qu'un changement se limite au pied de page ; `contraste_zone.py` donne le contraste le plus
   faible d'une zone de la page, le pied de page par défaut ;
