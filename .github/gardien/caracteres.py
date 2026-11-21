@@ -17,6 +17,9 @@ Lit les lignes ajoutées (« + ») d'un diff unifié et relève, avec le fichier
         (langage inclusif complet) : ce ne sont jamais des fautes ;
       - le nombre d'espaces insécables (typographie française).
 Les caractères invisibles sont affichés sous la forme ⟨U+XXXX⟩, jamais tels quels.
+Les fichiers binaires (PDF, images, polices, archives…, reconnus à leur extension) sont ignorés :
+git lit parfois un PDF comme du texte (aucun octet nul au début), et les octets de ses flux
+compressés ressembleraient à des caractères invisibles (T125). Chacun est signalé par une ligne INFO.
 Avec --diff, PLAGE est passée telle quelle à « git diff » : avec trois points, ce sont les lignes
 ajoutées par la branche depuis son point de départ.
 Code de sortie 1 si un caractère est « à relire ».
@@ -47,6 +50,8 @@ INVISIBLES = chaine(0x200B, 0x200C, 0x200D, 0x2060, 0x2061, 0x2062, 0x2063, 0x20
 BIDI = chaine(0x200E, 0x200F, 0x061C, 0x202A, 0x202B, 0x202C, 0x202D, 0x202E, 0x2066, 0x2067, 0x2068, 0x2069)
 # Espace insécable, espace fine insécable, espace tabulaire
 INSECABLES = chaine(0x00A0, 0x202F, 0x2007)
+BINAIRES = (".pdf", ".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".woff", ".woff2", ".ttf", ".otf",
+            ".zip", ".gz", ".tgz", ".wasm", ".mp3", ".mp4", ".webm", ".ogg", ".odt", ".docx", ".xlsx", ".pptx")
 LETTRE = r"[^\W\d_]"
 SUBSTITUT_ENTRE_LETTRES = re.compile("(?<=%s)[%s](?=%s)" % (LETTRE, SUBSTITUTS, LETTRE))
 BLOC = re.compile(r"^@@ -\d+(?:,(\d+))? \+(\d+)(?:,(\d+))? @@")
@@ -125,7 +130,13 @@ def main():
     if bool(o.fichier) == bool(o.diff):
         a.error("donner soit un fichier de diff, soit --diff PLAGE")
     a_relire, medians, lignes_medians, insecables, lues = 0, 0, 0, 0, 0
+    binaires = []
     for fichier, numero, texte in lignes_ajoutees(lire_diff(o)):
+        if fichier.lower().endswith(BINAIRES):
+            if fichier not in binaires:
+                binaires.append(fichier)
+                print("INFO      fichier binaire ignoré (lu comme du texte par git) : %s" % fichier)
+            continue
         lues += 1
         ou = "%s:%d" % (fichier, numero)
         vus = {}

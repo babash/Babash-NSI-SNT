@@ -7,7 +7,9 @@ Essaie les outils de .github/gardien/ (ceux de cette copie) sur des données fab
 dossier de travail :
   - caracteres.py : un diff piégé (point médian, espace sans largeur, contrôle bidirectionnel,
     puces entre deux lettres, espace insécable, ligne ajoutée qui commence par « ++ ») ; un diff
-    propre ; l'option --diff sur une plage vide de cette copie ;
+    propre ; l'option --diff sur une plage vide de cette copie ; un PDF lu comme du texte, ignoré (T125) ;
+  - qcu_forme.py (T125) : une page où la bonne option est la plus longue dans 3 QCU sur 4 (À REVOIR),
+    une page aux options équilibrées, une bonne option seule avec du code (indice à relire) ;
   - chemins_readme.py : un petit site et son README (chemins présents, absents, relatifs à un
     dossier cité, nom seul, motif, extension seule, adresse, gabarit, bloc de code) ; puis N16 :
     adresses file://, valeurs entre guillemets, chemin qui contient des espaces, commande ;
@@ -102,6 +104,44 @@ code, sortie = outil("caracteres.py", "--diff", "HEAD...HEAD")
 attendre("caracteres.py --diff : plage vide de cette copie", code, sortie, 0, presents=[r"^Bilan : 0 ligne\(s\) ajoutée"])
 code, sortie = outil("caracteres.py")
 attendre("caracteres.py sans argument : erreur d'usage", code, sortie, 2, presents=[r"donner soit un fichier de diff"])
+# T125 : un PDF que git lit comme du texte (flux compressés) est ignoré ; le HTML d'à côté, non
+code, sortie = outil("caracteres.py", "-", entree="+++ b/td.pdf\n@@ -0,0 +1,2 @@\n+%PDF" + ZWSP + "\n+flux" + RLO
+                     + "\n+++ b/td.html\n@@ -0,0 +1 @@\n+ok" + ZWSP + "\n")
+attendre("caracteres.py : fichier binaire ignoré, le texte voisin lu (T125)", code, sortie, 1, presents=[
+    r"^INFO      fichier binaire ignoré \(lu comme du texte par git\) : td\.pdf$",
+    r"^À RELIRE  invisible U\+200B .*td\.html:1 ",
+    r"^Bilan : 1 ligne\(s\) ajoutée\(s\) lue\(s\) ; 1 caractère\(s\) à relire"], absents=[r"td\.pdf:", r"U\+202E"])
+
+# ── qcu_forme.py (T125) ─────────────────────────────────────────────────────
+def page_td(qcus):
+    """Une page de TD minimale : un QCU par élément de qcus, (options, rang de la bonne)."""
+    sections = []
+    for k, (options, juste) in enumerate(qcus, 1):
+        lis = "".join('<li%s>%s</li>' % (' data-juste' if i == juste else ' data-retour="non"', o) for i, o in enumerate(options))
+        sections.append('<section class="td-q" data-type="qcu" id="q%d"><p class="td-consigne">Question %d ?</p>'
+                        '<ul class="td-options">%s</ul><div class="td-correction"><ul><li>une liste dans la correction, '
+                        'qui n\'est pas une option</li></ul></div></section>' % (k, k, lis))
+    return '<main class="td" data-td="essai">%s</main>' % "".join(sections)
+
+
+QCU_LONG = [(["La bonne réponse, nettement plus longue que les autres", "Faux un", "Faux deux", "Faux trois"], 0)] * 3 + \
+           [(["Aaaa", "Bbbb", "Cccc", "Dddd"], 2)]
+ecrire(os.path.join(travail, "qcu", "long.html"), page_td(QCU_LONG))
+code, sortie = outil("qcu_forme.py", os.path.join(travail, "qcu", "long.html"))
+attendre("qcu_forme.py : bonne option la plus longue dans 3 QCU sur 4 : À REVOIR", code, sortie, 1, presents=[
+    r"4 QCU ; bonne option nettement la plus longue : 3 \(75 %\) : À REVOIR",
+    r"long\.html#q1 : 54 caractères contre 10 au plus pour les autres \+\+"], absents=[r"#q4 :"])
+QCU_EQUILIBRE = [(["Option un", "Option de", "Option tr", "Option qu"], 1)] * 4
+ecrire(os.path.join(travail, "qcu", "equilibre.html"), page_td(QCU_EQUILIBRE))
+code, sortie = outil("qcu_forme.py", os.path.join(travail, "qcu", "equilibre.html"))
+attendre("qcu_forme.py : options de même longueur et de même forme : rien à signaler", code, sortie, 0,
+         presents=[r"4 QCU ; bonne option nettement la plus longue : 0 \(0 %\)$"], absents=[r"À REVOIR", r"indices"])
+QCU_CODE = [(["<code>x = 1</code>", "avec un", "avec deu", "avec tro"], 0)]
+ecrire(os.path.join(travail, "qcu", "code.html"), page_td(QCU_CODE))
+code, sortie = outil("qcu_forme.py", os.path.join(travail, "qcu", "code.html"))
+attendre("qcu_forme.py : seule option avec du code, premier mot à part : à relire (code 2)", code, sortie, 2,
+         presents=[r"code\.html#q1 : seule avec du code", r"code\.html#q1 : premier mot à part \(« x » contre « avec »\)"],
+         absents=[r"À REVOIR"])
 
 # ── chemins_readme.py ───────────────────────────────────────────────────────
 site = os.path.join(travail, "site-readme")

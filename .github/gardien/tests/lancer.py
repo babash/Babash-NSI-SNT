@@ -16,7 +16,8 @@ propre processus :
   t19      10 cas   pied de page de l'accueil et de SNT selon reglages.js, dans Chrome (T19)
   t45   31/33 cas   lien « Code source sur GitHub », encadré d'erreur, verifier-site.py (T45) ; 31 cas
                     quand le site lit la vitrine (T51b), 33 avec les anciennes listes
-  outils   17 cas   outils du Gardien : caracteres, chemins_readme (et N16), zones, contraste_zone (T32),
+  outils   23 cas   outils du Gardien : caracteres (et PDF lu comme du texte, T125), qcu_forme (T125),
+                    chemins_readme (et N16), zones, contraste_zone (T32),
                     contrastes (onglet coupé au bord d'une bande qui défile, T51), commun, liens et
                     annexes_code_source sur un site qui lit la vitrine (T51b),
                     sensibles (adresses masquées, T65)

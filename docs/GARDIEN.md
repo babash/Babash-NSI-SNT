@@ -29,7 +29,16 @@ l'outil `gh` de GitHub pour suivre la mise en ligne.
 D'autres outils du même dossier servent au cas par cas. Pour le site :
 
 - `caracteres.py` relève, dans les lignes qu'ajoute une branche, les caractères invisibles et
-  les points qui imitent le point médian (le vrai point médian, lui, est permis) ;
+  les points qui imitent le point médian (le vrai point médian, lui, est permis) ; il ignore les
+  fichiers binaires, car git lit parfois un PDF comme du texte, et les octets de ses flux compressés
+  passeraient pour des caractères invisibles ;
+- pour les TD en ligne (style « Signal pirate »), en plus de `charte/verifier-td.py` et de
+  `charte/imprimer-td.py` : `bandeau_td.py` mesure le bandeau d'une page à seize largeurs d'écran et
+  sur papier (rien de coupé, rien de recouvert) ; `qcu_forme.py` dit si la bonne option d'un choix
+  unique se repère à sa forme, la consigne étant qu'elle ne le soit jamais : un TD est à revoir quand
+  elle est nettement la plus longue (10 % de plus que chacune des autres) dans au moins la moitié de
+  ses QCU, et l'outil signale aussi, à relire, une bonne option seule avec du code, du gras ou un
+  point final, ou au premier mot à part ;
 - `zones.py` situe les différences de rendu entre avant et après, pour vérifier par exemple
   qu'un changement se limite au pied de page ; `contraste_zone.py` donne le contraste le plus
   faible d'une zone de la page, le pied de page par défaut ;
