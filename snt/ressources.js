@@ -132,12 +132,12 @@ groupe("Affectations, variables");
 
 ressource({
   titre: "Fiche : les variables et opérateurs en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/variable/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/variable/",
   texte: "Créer une variable, règles de nommage, types de base, opérateurs arithmétiques, de comparaison et d'affectation combinée.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/variable.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/variable.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -145,12 +145,12 @@ groupe("Instructions conditionnelles");
 
 ressource({
   titre: "Fiche : les structures de contrôle en Python",
-  lien: "https://babash.github.io/FichesNSI/fiches/ficheSNT/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/ficheSNT/",
   texte: "Conditions `if` / `elif` / `else`, boucles `for` et `while`, opérateurs logiques `not`, `and`, `or`, avec des exemples commentés.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/ficheSNT.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/ficheSNT.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 

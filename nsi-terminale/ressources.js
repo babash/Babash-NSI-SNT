@@ -128,12 +128,12 @@ ressource({
 
 ressource({
   titre: "Fiche : la programmation orientée objet",
-  lien: "https://babash.github.io/FichesNSI/fiches/poo/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/poo/",
   texte: "Classe, constructeur, instanciation, attributs, méthodes et rôle de `self`.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/poo.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/poo.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -148,12 +148,12 @@ groupe("Listes, piles, files, dictionnaires");
 
 ressource({
   titre: "Fiche : piles et files",
-  lien: "https://babash.github.io/FichesNSI/fiches/piles-files/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/piles-files/",
   texte: "Pile (LIFO), file (FIFO) et leurs opérations usuelles.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/piles-files.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/piles-files.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -168,12 +168,12 @@ groupe("Arbres");
 
 ressource({
   titre: "Fiche : les arbres",
-  lien: "https://babash.github.io/FichesNSI/fiches/arbres/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/arbres/",
   texte: "Vocabulaire (taille, hauteur…), implémentation d'un arbre binaire, parcours préfixe, infixe, suffixe et en largeur.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/arbres.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/arbres.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -181,12 +181,12 @@ groupe("Graphes");
 
 ressource({
   titre: "Fiche : les graphes",
-  lien: "https://babash.github.io/FichesNSI/fiches/graphes/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/graphes/",
   texte: "Vocabulaire, représentations (matrice d'adjacence…), parcours en largeur et en profondeur.",
   tags: ["À imprimer", "Python"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/graphes.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/graphes.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
@@ -225,12 +225,12 @@ ressource({
 
 ressource({
   titre: "Fiche : le langage SQL",
-  lien: "https://babash.github.io/FichesNSI/fiches/sql/",
+  lien: "https://babash.github.io/fiches-nsi/fiches/sql/",
   texte: "Consultation avec `SELECT`, mise à jour avec `INSERT`, `UPDATE` et `DELETE`, agrégation avec `COUNT` et jointures.",
   tags: ["À imprimer", "SQL"],
   annexes: {
-    "Version PDF": "https://babash.github.io/FichesNSI/fiches/sql.pdf",
-    "Code source": "https://github.com/babash/FichesNSI",
+    "Version PDF": "https://babash.github.io/fiches-nsi/fiches/sql.pdf",
+    "Code source": "https://github.com/babash/fiches-nsi",
   },
 });
 
