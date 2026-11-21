@@ -1,0 +1,317 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL : joindre, modifier · TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI (SQL 2), feuille 1 : une base de données sur le cinéma (bac 2022, Métropole, 22-NSIJ1ME1, exercice 2).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-sql-2-1" data-td-version="3" data-code="obligatoire" data-ordre="melange" data-langage="sql">
+
+  <!-- les tables de l'énoncé, pour vérifier les requêtes (charte/verifier-td.py) -->
+  <script type="text/x-sql" class="td-tables">
+PRAGMA foreign_keys = ON;
+CREATE TABLE individu (id_ind INTEGER PRIMARY KEY, nom TEXT, prenom TEXT, naissance TEXT);
+INSERT INTO individu VALUES
+  (105, 'Hulka', 'Daniel', '01-06-1968'),
+  (403, 'Travis', 'Daniel', '10-03-1968'),
+  (688, 'Crog', 'Daniel', '07-07-1968'),
+  (695, 'Pollock', 'Daniel', '24-08-1968');
+CREATE TABLE realisation (id_rea INTEGER PRIMARY KEY, titre TEXT, annee INTEGER, type TEXT);
+INSERT INTO realisation VALUES
+  (105, 'Casino Imperial', 2006, 'action'),
+  (325, 'Ciel tombant', 2012, 'action'),
+  (655, 'Fantôme', 2015, 'action'),
+  (950, 'Mourir pour attendre', 2021, 'action');
+CREATE TABLE emploi (id_emp INTEGER PRIMARY KEY, description TEXT, id_ind INTEGER REFERENCES individu(id_ind), id_rea INTEGER REFERENCES realisation(id_rea));
+  </script>
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:66.67%;--y:49.11%;--r:-12deg;--l:3.92%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Bases de données</span></p>
+        <h1>SQL : joindre, modifier</h1>
+        <p class="td-accroche">Type bac · feuille 1/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=sql" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h7v1h-7zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h5v1h-5zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h1v1h-1zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h2v1h-2zM13 5h1v1h-1zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h2v1h-2zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h3v1h-3zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM0 9h4v1h-4zM8 9h3v1h-3zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM1 10h1v1h-1zM4 10h1v1h-1zM6 10h1v1h-1zM8 10h1v1h-1zM10 10h3v1h-3zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM0 11h1v1h-1zM2 11h1v1h-1zM4 11h1v1h-1zM10 11h3v1h-3zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM1 12h3v1h-3zM5 12h2v1h-2zM8 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h1v1h-1zM3 13h3v1h-3zM7 13h1v1h-1zM10 13h8v1h-8zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM3 15h1v1h-1zM5 15h1v1h-1zM9 15h3v1h-3zM13 15h1v1h-1zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM9 17h2v1h-2zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h4v1h-4zM6 18h3v1h-3zM12 18h5v1h-5zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM2 19h1v1h-1zM4 19h1v1h-1zM7 19h1v1h-1zM9 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM3 20h1v1h-1zM6 20h1v1h-1zM8 20h1v1h-1zM10 20h1v1h-1zM13 20h1v1h-1zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h2v1h-2zM4 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM11 21h2v1h-2zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h1v1h-1zM17 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM3 23h2v1h-2zM8 23h1v1h-1zM12 23h1v1h-1zM15 23h2v1h-2zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM3 24h1v1h-1zM6 24h2v1h-2zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM9 26h3v1h-3zM13 26h6v1h-6zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM11 27h2v1h-2zM15 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h3v1h-3zM13 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM12 29h1v1h-1zM14 29h1v1h-1zM16 29h2v1h-2zM19 29h2v1h-2zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h4v1h-4zM13 30h5v1h-5zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM11 31h1v1h-1zM13 31h3v1h-3zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h5v1h-5zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les jointures et les modifications d'une base (le plus guidé : des requêtes à compléter).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire une requête avec une jointure (<code>JOIN … ON</code>) ;</li>
+        <li>écrire un <code>INSERT</code> ou un <code>UPDATE</code> qui modifie seulement les bonnes lignes ;</li>
+        <li>expliquer pourquoi le SGBD refuse une requête (clé primaire déjà prise, clé étrangère).</li>
+      </ul>
+      <p class="td-duree">45 minutes · 1 exercice de bac (4 points) · 8 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta feuille ; puis on vérifie ici.</p>
+      <p class="td-ecran-seul"><b>Comment la page corrige tes requêtes :</b> elle ne les exécute pas (pas encore). Elle les compare à des écritures acceptées : majuscules ou minuscules, espaces, point-virgule final, guillemets simples ou doubles, ordre des conditions. Si ta requête est juste mais écrite autrement (avec des alias, par exemple), compare-la avec la correction : elle donne le résultat calculé par SQLite sur les tables de l'énoncé. Les messages d'erreur sont ceux de SQLite.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. une base de données sur le cinéma (ici) ; 2. <a href="feuille-2.html">louer du matériel entre membres</a>.</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <!-- ═════════════ Exercice 1 : 22-NSIJ1ME1, exercice 2 ═════════════ -->
+  <h2 class="td-partie">Exercice 1 · Une base de données sur le cinéma</h2>
+  <p><b>Source :</b> Bac NSI, Métropole, mai 2022, jour 1 (sujet 22-NSIJ1ME1), exercice 2, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-metropole-sujet-1.pdf">Le sujet d'origine (PDF)</a>. Le plus guidé : des requêtes à compléter.</p>
+
+  <p><i>Cet exercice porte sur les bases de données.</i></p>
+  <p>On pourra utiliser les mots clés SQL suivants : <code>SELECT</code>, <code>FROM</code>, <code>WHERE</code>, <code>JOIN</code>, <code>ON</code>, <code>INSERT</code>, <code>INTO</code>, <code>VALUES</code>, <code>UPDATE</code>, <code>SET</code>, <code>AND</code>.</p>
+  <p>Nous allons étudier une base de données traitant du cinéma dont voici le schéma relationnel qui comporte 3 relations :</p>
+  <ul>
+    <li>la relation <b>individu</b> (<u>id_ind</u>, nom, prenom, naissance)</li>
+    <li>la relation <b>realisation</b> (<u>id_rea</u>, titre, annee, type)</li>
+    <li>la relation <b>emploi</b> (<u>id_emp</u>, description, #id_ind, #id_rea)</li>
+  </ul>
+  <p>Les clés primaires sont soulignées et les clés étrangères sont précédées d'un #. Ainsi <code>emploi.id_ind</code> est une clé étrangère faisant référence à <code>individu.id_ind</code>.</p>
+  <p>Voici un extrait des tables <code>individu</code> et <code>realisation</code> :</p>
+  <div class="td-table"><table>
+    <caption>extrait de individu</caption>
+    <thead><tr><th>id_ind</th><th>nom</th><th>prenom</th><th>naissance</th></tr></thead>
+    <tbody>
+      <tr><td>105</td><td>'Hulka'</td><td>'Daniel'</td><td>'01-06-1968'</td></tr>
+      <tr><td>403</td><td>'Travis'</td><td>'Daniel'</td><td>'10-03-1968'</td></tr>
+      <tr><td>688</td><td>'Crog'</td><td>'Daniel'</td><td>'07-07-1968'</td></tr>
+      <tr><td>695</td><td>'Pollock'</td><td>'Daniel'</td><td>'24-08-1968'</td></tr>
+    </tbody>
+  </table></div>
+  <div class="td-table"><table>
+    <caption>extrait de realisation</caption>
+    <thead><tr><th>id_rea</th><th>titre</th><th>annee</th><th>type</th></tr></thead>
+    <tbody>
+      <tr><td>105</td><td>'Casino Imperial'</td><td>2006</td><td>'action'</td></tr>
+      <tr><td>325</td><td>'Ciel tombant'</td><td>2012</td><td>'action'</td></tr>
+      <tr><td>655</td><td>'Fantôme'</td><td>2015</td><td>'action'</td></tr>
+      <tr><td>950</td><td>'Mourir pour attendre'</td><td>2021</td><td>'action'</td></tr>
+    </tbody>
+  </table></div>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="Crog, Daniel, 07-07-1968|Crog,Daniel,07-07-1968|Crog Daniel 07-07-1968|Crog ; Daniel ; 07-07-1968|Crog; Daniel; 07-07-1968|'Crog', 'Daniel', '07-07-1968'|'Crog' 'Daniel' '07-07-1968'|'Crog','Daniel','07-07-1968'" data-etiquette="Le résultat (valeurs séparées par des virgules) :">
+    <p class="td-consigne"><b>1.</b> On s'intéresse ici à la récupération de données dans une relation.</p>
+    <p><b>a.</b> Écrire ce que renvoie la requête ci-dessous :</p>
+    <pre class="td-code">
+SELECT nom, prenom, naissance
+FROM individu
+WHERE nom = 'Crog';</pre>
+    <p class="td-aide">Sur l'extrait, une seule personne s'appelle Crog. On affiche trois colonnes, dans l'ordre du <code>SELECT</code>.</p>
+    <div class="td-correction">
+      <p>Sur l'extrait donné, une seule ligne (résultat calculé par SQLite) :</p>
+      <div class="td-table"><table><thead><tr><th>nom</th><th>prenom</th><th>naissance</th></tr></thead><tbody><tr><td>Crog</td><td>Daniel</td><td>07-07-1968</td></tr></tbody></table></div>
+      <p>Le sujet ne donne qu'un extrait : dans la table complète, il pourrait y avoir d'autres Crog.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" data-comparer="code" id="q2" data-reponse="SELECT titre, id_rea FROM realisation WHERE annee &gt; 2020;|SELECT titre, id_rea FROM realisation WHERE annee &gt; 2020|selecttitre,id_reafromrealisationwhereannee&gt;2020|selecttitre,id_reafromrealisationwhereannee&gt;2020;|Selecttitre,id_reaFromrealisationWhereannee&gt;2020|Selecttitre,id_reaFromrealisationWhereannee&gt;2020;|SELECTtitre,id_reaFROMrealisationWHEREannee&gt;=2021|SELECTtitre,id_reaFROMrealisationWHEREannee&gt;=2021;|selecttitre,id_reafromrealisationwhereannee&gt;=2021|selecttitre,id_reafromrealisationwhereannee&gt;=2021;|Selecttitre,id_reaFromrealisationWhereannee&gt;=2021|Selecttitre,id_reaFromrealisationWhereannee&gt;=2021;|SELECTid_rea,titreFROMrealisationWHEREannee&gt;2020|SELECTid_rea,titreFROMrealisationWHEREannee&gt;2020;|selectid_rea,titrefromrealisationwhereannee&gt;2020|selectid_rea,titrefromrealisationwhereannee&gt;2020;|Selectid_rea,titreFromrealisationWhereannee&gt;2020|Selectid_rea,titreFromrealisationWhereannee&gt;2020;|SELECTid_rea,titreFROMrealisationWHEREannee&gt;=2021|SELECTid_rea,titreFROMrealisationWHEREannee&gt;=2021;|selectid_rea,titrefromrealisationwhereannee&gt;=2021|selectid_rea,titrefromrealisationwhereannee&gt;=2021;|Selectid_rea,titreFromrealisationWhereannee&gt;=2021|Selectid_rea,titreFromrealisationWhereannee&gt;=2021;" data-etiquette="Ta requête :">
+    <p class="td-consigne"><b>1. b.</b> Fournir une requête SQL permettant de récupérer le titre et la clé primaire de chaque film dont la date de sortie est strictement supérieure à 2020.</p>
+    <p class="td-aide">La clé primaire de <code>realisation</code> est soulignée dans le schéma. La date de sortie, c'est l'attribut <code>annee</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+SELECT titre, id_rea FROM realisation WHERE annee &gt; 2020;</pre>
+      <p>Résultat calculé par SQLite sur l'extrait :</p>
+      <div class="td-table"><table><thead><tr><th>titre</th><th>id_rea</th></tr></thead><tbody><tr><td>Mourir pour attendre</td><td>950</td></tr></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
+    <p class="td-consigne"><b>2.</b> Cette question traite de la modification de relations.</p>
+    <p><b>a.</b> Dire s'il faut utiliser la requête 1 ou la requête 2 proposées ci-dessous pour modifier la date de naissance de Daniel Crog. Justifier votre réponse en expliquant pourquoi la requête refusée ne pourra pas fonctionner.</p>
+    <p>Requête 1 :</p>
+    <pre class="td-code">
+UPDATE individu
+SET naissance = '02-03-1968'
+WHERE id_ind = 688 AND nom = 'Crog' AND prenom = 'Daniel';</pre>
+    <p>Requête 2 :</p>
+    <pre class="td-code">
+INSERT INTO individu
+VALUES (688, 'Crog', 'Daniel', '02-03-1968');</pre>
+    <p>Le message de SQLite pour la requête 2 :</p>
+    <pre class="td-sortie-exemple">
+Runtime error: UNIQUE constraint failed: individu.id_ind (19)</pre>
+    <p>Justifie sur ta feuille, puis choisis.</p>
+    <ul class="td-options">
+      <li data-juste>La requête 1 : la requête 2 ajoute une ligne avec la clé primaire 688, qui est déjà prise.</li>
+      <li data-retour="INSERT ajoute une nouvelle ligne, il ne modifie pas une ligne existante. Et la clé primaire 688 est déjà prise.">La requête 2 : elle remplace la ligne de Daniel Crog par une ligne avec la bonne date.</li>
+      <li data-retour="La liste des colonnes est facultative quand on donne une valeur pour chaque colonne, dans l'ordre de la table : ce n'est pas ce qui bloque la requête 2. Elle est refusée parce que la clé primaire 688 est déjà prise.">La requête 1 : la requête 2 est refusée car il manque la liste des colonnes de individu.</li>
+      <li data-retour="Les deux n'ont pas le même effet : l'une modifie, l'autre essaie d'ajouter une ligne.">Les deux conviennent : elles donnent toutes les deux la bonne date de naissance à Daniel Crog.</li>
+    </ul>
+    <p class="td-aide"><code>UPDATE</code> modifie des lignes qui existent ; <code>INSERT</code> ajoute une ligne. Que vaut la clé primaire de Daniel Crog ?</p>
+    <div class="td-correction">
+      <p>La requête 1 modifie la ligne existante. La requête 2 essaie d'ajouter une deuxième ligne avec <code>id_ind = 688</code> : une clé primaire est unique, le SGBD la refuse. Le message de SQLite :</p>
+      <pre class="td-sortie-exemple">
+Runtime error: UNIQUE constraint failed: individu.id_ind (19)</pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne"><b>2.</b> Cette question traite de la modification de relations.</p>
+    <p><b>a.</b> Dire s'il faut utiliser la requête 1 ou la requête 2 proposées ci-dessous pour modifier la date de naissance de Daniel Crog. Justifier votre réponse en expliquant pourquoi la requête refusée ne pourra pas fonctionner.</p>
+    <p>Requête 1 :</p>
+    <pre class="td-code">
+UPDATE individu
+SET naissance = '02-03-1968'
+WHERE id_ind = 688 AND nom = 'Crog' AND prenom = 'Daniel';</pre>
+    <p>Requête 2 :</p>
+    <pre class="td-code">
+INSERT INTO individu
+VALUES (688, 'Crog', 'Daniel', '02-03-1968');</pre>
+    <p>Le message de SQLite pour la requête 2 :</p>
+    <pre class="td-sortie-exemple">
+Runtime error: UNIQUE constraint failed: individu.id_ind (19)</pre>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
+    <p class="td-consigne"><b>2. b.</b> Expliquer si la relation <code>individu</code> peut accepter (ou pas) deux individus portant le même nom, le même prénom et la même date de naissance.</p>
+    <p>Explique sur ta feuille, puis choisis.</p>
+    <ul class="td-options">
+      <li data-retour="Rien n'impose que nom, prénom et date de naissance soient uniques : seule la clé primaire l'est.">Non : le SGBD refuse deux lignes identiques sur ces trois attributs.</li>
+      <li data-juste>Oui, s'ils ont deux id_ind différents : seule la clé primaire doit être unique.</li>
+      <li data-retour="Ces deux personnes peuvent exister : deux homonymes nés le même jour. Le schéma les accepte s'ils ont des id_ind différents.">Non, car deux personnes ne peuvent pas avoir le même nom et la même date de naissance.</li>
+      <li data-retour="Elles auraient la même clé primaire : c'est justement ce que le SGBD refuse.">Oui, même avec le même id_ind.</li>
+    </ul>
+    <p class="td-aide">Quel est le seul attribut dont les valeurs doivent toutes être différentes ?</p>
+    <div class="td-correction">
+      <p>Oui : la clé primaire est <code>id_ind</code>. Deux homonymes nés le même jour sont acceptés, à condition d'avoir deux <code>id_ind</code> différents.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>2. b.</b> Expliquer si la relation <code>individu</code> peut accepter (ou pas) deux individus portant le même nom, le même prénom et la même date de naissance.</p>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q5">
+    <p class="td-consigne"><b>3.</b> Cette question porte sur la notion de clés étrangères.</p>
+    <p><b>a.</b> Recopier sur votre copie les demandes ci-dessous, dans leur intégralité, et les compléter correctement pour qu'elles ajoutent dans la relation <code>emploi</code> les rôles de Daniel Crog en tant que James Bond dans le film nommé 'Casino Impérial' puis dans le film 'Ciel tombant'.</p>
+    <pre class="td-code">
+INSERT INTO emploi
+VALUES (5400, 'Acteur(James Bond)', [[688]], [[105]]);
+INSERT INTO emploi
+VALUES (5401, 'Acteur(James Bond)', [[688]], [[325]]);</pre>
+    <p class="td-aide">Les deux dernières valeurs sont les clés étrangères, dans l'ordre du schéma : <code>id_ind</code>, puis <code>id_rea</code>.</p>
+    <p class="td-aide">Cherche l'<code>id_ind</code> de Daniel Crog, puis l'<code>id_rea</code> de chaque film dans les extraits.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+INSERT INTO emploi
+VALUES (5400, 'Acteur(James Bond)', 688, 105);
+INSERT INTO emploi
+VALUES (5401, 'Acteur(James Bond)', 688, 325);</pre>
+      <p>688 est Daniel Crog ; 105 est « Casino Imperial » et 325 « Ciel tombant ».</p>
+      <p><b>Attention au sujet :</b> la question écrit « Casino Impérial » (avec un é), la table « Casino Imperial ».</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q6" data-support="ecran">
+    <p class="td-consigne"><b>3. b.</b> On désire rajouter un nouvel emploi de Daniel Crog en tant que James Bond dans le film 'Docteur Yes'. Expliquer si l'on doit d'abord créer l'enregistrement du film dans la relation <code>realisation</code> ou si l'on doit d'abord créer le rôle dans la relation <code>emploi</code>.</p>
+    <p>Explique sur ta feuille, puis choisis.</p>
+    <ul class="td-options">
+      <li data-juste>D'abord le film dans realisation : id_rea, clé étrangère de emploi, doit désigner un film qui existe.</li>
+      <li data-retour="Si le film n'existe pas encore, la valeur de id_rea dans emploi ne fait référence à rien : le SGBD refuse.">D'abord le rôle dans emploi : le film 'Docteur Yes' sera ajouté ensuite dans realisation.</li>
+      <li data-retour="L'ordre compte : c'est la contrainte de clé étrangère (intégrité référentielle).">L'ordre n'a pas d'importance : les deux enregistrements sont dans des tables différentes.</li>
+      <li data-retour="Un INSERT ajoute une ligne dans une seule table.">On ajoute les deux en une seule requête INSERT, qui remplit realisation et emploi à la fois.</li>
+    </ul>
+    <p class="td-aide">Dans <code>emploi</code>, <code>id_rea</code> est une clé étrangère. Que doit-il exister avant ?</p>
+    <div class="td-correction">
+      <p>D'abord le film dans <code>realisation</code>, puis le rôle dans <code>emploi</code>. Sinon, le SGBD refuse le rôle : sa clé étrangère <code>id_rea</code> ne correspond à aucun film. Par exemple, avec un film 999 qui n'existe pas, SQLite répond :</p>
+      <pre class="td-sortie-exemple">
+Runtime error: FOREIGN KEY constraint failed (19)</pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q6-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>3. b.</b> On désire rajouter un nouvel emploi de Daniel Crog en tant que James Bond dans le film 'Docteur Yes'. Expliquer si l'on doit d'abord créer l'enregistrement du film dans la relation <code>realisation</code> ou si l'on doit d'abord créer le rôle dans la relation <code>emploi</code>.</p>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q7">
+    <p class="td-consigne"><b>4.</b> Cette question traite des jointures.</p>
+    <p><b>a.</b> Recopier sur votre copie la requête SQL ci-dessous, dans son intégralité, et la compléter de façon à ce qu'elle renvoie le nom de l'acteur, le titre du film et l'année de sortie du film, à partir de tous les enregistrements de la relation <code>emploi</code> pour lesquels la description de l'emploi est 'Acteur(James Bond)'.</p>
+    <pre class="td-code">
+SELECT [[individu.nom, realisation.titre, realisation.annee|nom,titre,annee|individu.nom,titre,annee|nom,realisation.titre,realisation.annee]]
+FROM emploi
+JOIN individu ON [[emploi.id_ind = individu.id_ind|individu.id_ind=emploi.id_ind]]
+JOIN realisation ON [[emploi.id_rea = realisation.id_rea|realisation.id_rea=emploi.id_rea]]
+WHERE emploi.description = 'Acteur(James Bond)';</pre>
+    <!-- pour la vérification : les tables, avec les deux rôles de la question 3. a, et le résultat attendu -->
+    <script type="text/x-sql" class="td-tables">
+PRAGMA foreign_keys = ON;
+CREATE TABLE individu (id_ind INTEGER PRIMARY KEY, nom TEXT, prenom TEXT, naissance TEXT);
+INSERT INTO individu VALUES
+  (105, 'Hulka', 'Daniel', '01-06-1968'),
+  (403, 'Travis', 'Daniel', '10-03-1968'),
+  (688, 'Crog', 'Daniel', '07-07-1968'),
+  (695, 'Pollock', 'Daniel', '24-08-1968');
+CREATE TABLE realisation (id_rea INTEGER PRIMARY KEY, titre TEXT, annee INTEGER, type TEXT);
+INSERT INTO realisation VALUES
+  (105, 'Casino Imperial', 2006, 'action'),
+  (325, 'Ciel tombant', 2012, 'action'),
+  (655, 'Fantôme', 2015, 'action'),
+  (950, 'Mourir pour attendre', 2021, 'action');
+CREATE TABLE emploi (id_emp INTEGER PRIMARY KEY, description TEXT, id_ind INTEGER REFERENCES individu(id_ind), id_rea INTEGER REFERENCES realisation(id_rea));
+INSERT INTO emploi VALUES (5400, 'Acteur(James Bond)', 688, 105), (5401, 'Acteur(James Bond)', 688, 325);
+    </script>
+    <pre class="td-attendu">
+Crog | Casino Imperial | 2006
+Crog | Ciel tombant | 2012</pre>
+    <p class="td-aide">Après <code>SELECT</code> : trois colonnes, séparées par des virgules. On peut préciser la table : <code>individu.nom</code>.</p>
+    <p class="td-aide">Après <code>ON</code> : la clé étrangère de <code>emploi</code> = la clé primaire de l'autre table.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+SELECT individu.nom, realisation.titre, realisation.annee
+FROM emploi
+JOIN individu ON emploi.id_ind = individu.id_ind
+JOIN realisation ON emploi.id_rea = realisation.id_rea
+WHERE emploi.description = 'Acteur(James Bond)';</pre>
+      <p>Avec les deux rôles ajoutés à la question 3. a, SQLite renvoie :</p>
+      <div class="td-table"><table><thead><tr><th>nom</th><th>titre</th><th>annee</th></tr></thead><tbody><tr><td>Crog</td><td>Casino Imperial</td><td>2006</td></tr><tr><td>Crog</td><td>Ciel tombant</td><td>2012</td></tr></tbody></table></div>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" data-comparer="code" id="q8" data-reponse="SELECT description FROM emploi JOIN individu ON emploi.id_ind = individu.id_ind WHERE individu.nom = 'Johnson' AND individu.prenom = 'Denis';|SELECT description FROM emploi JOIN individu ON emploi.id_ind = individu.id_ind WHERE individu.nom = 'Johnson' AND individu.prenom = 'Denis'|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTdescriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTdescriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTdescriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTdescriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis'|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis';|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis'|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis';|SELECTdescriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTdescriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson'|selectdescriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson';|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson'|SelectdescriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson';|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis'|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis';|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis'|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis';|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis'|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis';|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTdescriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson'|selectdescriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson';|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson'|SelectdescriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson';|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis'|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis';|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis'|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis';|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis'|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis';|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTdescriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson'|selectdescriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson';|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson'|SelectdescriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson';|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis'|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis';|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis'|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis';|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis'|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis';|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTdescriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson'|selectdescriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson';|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson'|SelectdescriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson';|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis'|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis';|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis'|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis';|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis'|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis';|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTemploi.descriptionFROMemploiJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson'|selectemploi.descriptionfromemploijoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson';|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson'|Selectemploi.descriptionFromemploiJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson';|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis'|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis';|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis'|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis';|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis'|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis';|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTemploi.descriptionFROMemploiJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson'|selectemploi.descriptionfromemploijoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson';|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson'|Selectemploi.descriptionFromemploiJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis';|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis'|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwherenom='Johnson'andprenom='Denis';|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis'|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWherenom='Johnson'Andprenom='Denis';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONemploi.id_ind=individu.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson'|selectemploi.descriptionfromemploiinnerjoinindividuonemploi.id_ind=individu.id_indwhereprenom='Denis'andnom='Johnson';|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson'|Selectemploi.descriptionFromemploiInnerJoinindividuOnemploi.id_ind=individu.id_indWhereprenom='Denis'Andnom='Johnson';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.nom='Johnson'ANDindividu.prenom='Denis';|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis'|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.nom='Johnson'andindividu.prenom='Denis';|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis'|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.nom='Johnson'Andindividu.prenom='Denis';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREindividu.prenom='Denis'ANDindividu.nom='Johnson';|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson'|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereindividu.prenom='Denis'andindividu.nom='Johnson';|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson'|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereindividu.prenom='Denis'Andindividu.nom='Johnson';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREnom='Johnson'ANDprenom='Denis';|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis'|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwherenom='Johnson'andprenom='Denis';|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis'|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWherenom='Johnson'Andprenom='Denis';|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson'|SELECTemploi.descriptionFROMemploiINNERJOINindividuONindividu.id_ind=emploi.id_indWHEREprenom='Denis'ANDnom='Johnson';|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson'|selectemploi.descriptionfromemploiinnerjoinindividuonindividu.id_ind=emploi.id_indwhereprenom='Denis'andnom='Johnson';|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson'|Selectemploi.descriptionFromemploiInnerJoinindividuOnindividu.id_ind=emploi.id_indWhereprenom='Denis'Andnom='Johnson';" data-etiquette="Ta requête :" data-support="ecran">
+    <p class="td-consigne"><b>4. b.</b> Fournir une requête SQL permettant de trouver toutes les descriptions des emplois de Denis Johnson (Denis est son prénom et Johnson est son nom). On veillera à n'afficher que la description des emplois et non les films associés à ces emplois.</p>
+    <p class="td-aide">La description est dans <code>emploi</code>, le nom et le prénom dans <code>individu</code> : une seule jointure suffit.</p>
+    <p class="td-aide">Deux conditions dans le <code>WHERE</code>, reliées par <code>AND</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+SELECT emploi.description
+FROM emploi
+JOIN individu ON emploi.id_ind = individu.id_ind
+WHERE individu.nom = 'Johnson' AND individu.prenom = 'Denis';</pre>
+      <p>Denis Johnson n'est pas dans l'extrait : sur les tables de l'énoncé, le résultat est vide. La requête a été testée en ajoutant Denis Johnson et un autre Johnson.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne"><b>4. b.</b> Fournir une requête SQL permettant de trouver toutes les descriptions des emplois de Denis Johnson (Denis est son prénom et Johnson est son nom). On veillera à n'afficher que la description des emplois et non les films associés à ces emplois.</p>
+  </section>
+
+  <!-- ═════════════ Exercice 2 : 23-NSIJ2PO1, exercice 2 ═════════════ -->
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Jointure</b> : <code>FROM A JOIN B ON A.cle_etrangere = B.cle_primaire</code>. Sans <code>ON</code>, chaque ligne de A est associée à chaque ligne de B.</p>
+    <p><code>INSERT INTO table VALUES (…);</code> · <code>UPDATE table SET colonne = valeur WHERE …;</code> · <code>DELETE FROM table WHERE …;</code> Sans <code>WHERE</code>, toutes les lignes sont modifiées ou supprimées.</p>
+    <p><b>Contraintes</b> : clé primaire déjà prise, <code>UNIQUE constraint failed</code> ; clé étrangère sans ligne correspondante, <code>FOREIGN KEY constraint failed</code>. On ajoute d'abord la ligne référencée ; on supprime d'abord les lignes qui y font référence.</p>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, louer du matériel entre membres</a>.</p>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Métropole, mai 2022, jour 1 (22-NSIJ1ME1), exercice 2. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-metropole-sujet-1.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_metropole_mai_2022_1.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document).</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-sql-2">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

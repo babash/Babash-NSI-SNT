@@ -1,0 +1,283 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Routage · TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : lire des tables de routage, calculer des coûts (bac 2022, Métropole, 22-NSIJ1ME1, exercice 3).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-routage-1" data-td-version="3" data-code="obligatoire" data-ordre="melange">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:91.67%;--y:79.46%;--r:-6deg;--l:4.2%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Réseaux : le routage</span></p>
+        <h1>Routage</h1>
+        <p class="td-accroche">Type bac · feuille 1/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=routage" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h2v1h-2zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h4v1h-4zM13 1h1v1h-1zM20 1h1v1h-1zM23 1h2v1h-2zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM12 2h5v1h-5zM22 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM11 3h1v1h-1zM13 3h2v1h-2zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM13 4h4v1h-4zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM17 5h4v1h-4zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h4v1h-4zM14 7h1v1h-1zM17 7h1v1h-1zM24 7h1v1h-1zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM9 8h3v1h-3zM17 8h3v1h-3zM21 8h4v1h-4zM26 8h1v1h-1zM29 8h1v1h-1zM31 8h2v1h-2zM0 9h1v1h-1zM2 9h1v1h-1zM5 9h1v1h-1zM7 9h2v1h-2zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM2 10h1v1h-1zM4 10h3v1h-3zM8 10h1v1h-1zM12 10h1v1h-1zM16 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM31 10h2v1h-2zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h2v1h-2zM10 11h1v1h-1zM13 11h2v1h-2zM16 11h1v1h-1zM18 11h3v1h-3zM22 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM32 11h1v1h-1zM2 12h2v1h-2zM6 12h1v1h-1zM8 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h1v1h-1zM3 13h1v1h-1zM5 13h1v1h-1zM8 13h4v1h-4zM14 13h3v1h-3zM18 13h2v1h-2zM21 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM29 13h3v1h-3zM0 14h1v1h-1zM4 14h4v1h-4zM10 14h2v1h-2zM13 14h1v1h-1zM16 14h1v1h-1zM19 14h3v1h-3zM26 14h1v1h-1zM29 14h1v1h-1zM0 15h4v1h-4zM5 15h1v1h-1zM10 15h7v1h-7zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h2v1h-2zM4 16h4v1h-4zM10 16h1v1h-1zM18 16h2v1h-2zM21 16h2v1h-2zM25 16h2v1h-2zM28 16h3v1h-3zM2 17h2v1h-2zM8 17h3v1h-3zM14 17h2v1h-2zM17 17h1v1h-1zM20 17h7v1h-7zM28 17h2v1h-2zM32 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h2v1h-2zM10 18h4v1h-4zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM0 19h2v1h-2zM4 19h1v1h-1zM12 19h1v1h-1zM14 19h1v1h-1zM16 19h3v1h-3zM20 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM1 20h2v1h-2zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h7v1h-7zM17 20h2v1h-2zM21 20h1v1h-1zM27 20h1v1h-1zM29 20h2v1h-2zM32 20h1v1h-1zM0 21h1v1h-1zM4 21h2v1h-2zM9 21h1v1h-1zM14 21h1v1h-1zM16 21h2v1h-2zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM2 22h2v1h-2zM5 22h2v1h-2zM10 22h3v1h-3zM14 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM21 22h4v1h-4zM26 22h2v1h-2zM30 22h3v1h-3zM1 23h1v1h-1zM4 23h1v1h-1zM9 23h1v1h-1zM11 23h3v1h-3zM18 23h1v1h-1zM23 23h7v1h-7zM31 23h2v1h-2zM0 24h1v1h-1zM4 24h1v1h-1zM6 24h4v1h-4zM12 24h1v1h-1zM14 24h5v1h-5zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h1v1h-1zM11 25h2v1h-2zM15 25h3v1h-3zM19 25h1v1h-1zM21 25h1v1h-1zM23 25h2v1h-2zM28 25h2v1h-2zM0 26h7v1h-7zM8 26h3v1h-3zM12 26h3v1h-3zM17 26h1v1h-1zM19 26h1v1h-1zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h4v1h-4zM14 27h2v1h-2zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h6v1h-6zM16 28h1v1h-1zM18 28h1v1h-1zM20 28h2v1h-2zM23 28h6v1h-6zM30 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM10 29h1v1h-1zM13 29h1v1h-1zM15 29h1v1h-1zM17 29h1v1h-1zM20 29h2v1h-2zM23 29h1v1h-1zM27 29h1v1h-1zM32 29h1v1h-1zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM11 30h1v1h-1zM15 30h3v1h-3zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM14 31h6v1h-6zM22 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM0 32h7v1h-7zM8 32h4v1h-4zM13 32h1v1h-1zM15 32h1v1h-1zM17 32h2v1h-2zM20 32h2v1h-2zM23 32h1v1h-1zM28 32h1v1h-1zM30 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur le routage (le plus guidé).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>convertir une adresse IPv4 du binaire au décimal ;</li>
+        <li>suivre un paquet de routeur en routeur avec les tables de routage ;</li>
+        <li>relier débit et métrique avec la formule de l'énoncé.</li>
+      </ul>
+      <p class="td-duree">45 minutes · 1 exercice de bac (4 points) · 9 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord. Réponds sur ta feuille, avec ton brouillon, puis vérifie ici chaque réponse.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. lire des tables, calculer des coûts (ici) ; 2. <a href="feuille-2.html">adresses, RIP et OSPF sur un vrai réseau</a>.</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 1 (4 points) : lire des tables, calculer des coûts</h2>
+  <p>Sujet du bac 2022, Métropole, jour 1 (<b>22-NSIJ1ME1</b>), exercice 3, 4 points. <a href="https://aeif.fr/wp-content/uploads/2025/07/Metropole_2022_1.pdf">Le sujet d'origine (PDF)</a>.</p>
+  <p><i>Cet exercice porte sur les représentations binaires et les protocoles de routage.</i></p>
+
+  <p>1. Une adresse IPv4 est représentée sous la forme de 4 nombres séparés par des points. Chacun de ces 4 nombres peut être représenté sur un octet.</p>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="192.168.128.131">
+    <p class="td-consigne">1. a. Donner en écriture décimale l'adresse IPv4 correspondant à l'écriture binaire : <code>11000000.<wbr>10101000.<wbr>10000000.<wbr>10000011</code></p>
+    <p class="td-retour" data-si="192.168.128.193|192.168.128.130">Revois le dernier octet : <code>10000011</code>, ce sont les bits de valeur 128, 2 et 1.</p>
+    <p class="td-aide">Convertis chaque octet séparément. Les 8 bits valent, de gauche à droite : 128, 64, 32, 16, 8, 4, 2, 1.</p>
+    <p class="td-aide"><code>11000000</code> = 128 + 64 = 192. Fais de même pour les trois autres octets.</p>
+    <div class="td-correction">
+      <p>11000000 = 128 + 64 = 192 ; 10101000 = 128 + 32 + 8 = 168 ; 10000000 = 128 ; 10000011 = 128 + 2 + 1 = 131. L'adresse est <b>192.168.128.131</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q2" data-reponse="256|254|256 adresses|254 adresses|2^8|2**8">
+    <p class="td-consigne">1. b. Tous les ordinateurs du réseau A ont une adresse IPv4 de la forme : <code>192.168.128.___</code>, où seul le dernier octet (représenté par ___) diffère. Donner le nombre d'adresses différentes possibles du réseau A.</p>
+    <p class="td-retour" data-si="255">Le dernier octet va de 0 à 255 : compte bien la valeur 0.</p>
+    <p class="td-aide">Combien de valeurs différentes peut prendre un octet (8 bits) ?</p>
+    <div class="td-correction">
+      <p>Le dernier octet prend 2<sup>8</sup> = <b>256</b> valeurs (de 0 à 255). Deux adresses sont réservées : celle du réseau (192.168.128.0) et celle de diffusion (192.168.128.255). Il reste donc <b>254</b> adresses pour des machines. Le corrigé de l'AEIF répond 254 ; les deux réponses sont acceptées si elles sont expliquées.</p>
+    </div>
+  </section>
+
+  <p>2. On rappelle que le protocole RIP cherche à minimiser le nombre de routeurs traversés (qui correspond à la métrique). On donne les tables de routage d'un réseau informatique composé de 5 routeurs (appelés A, B, C, D et E), chacun associé directement à un réseau du même nom, obtenues avec le protocole RIP. Dans le sujet, il y a une table par routeur ; ici, chaque colonne est la table d'un routeur.</p>
+  <table border="1">
+    <caption>Métrique (RIP) vers chaque destination (ligne), dans la table du routeur A, B, C, D ou E (colonne)</caption>
+    <thead><tr><th scope="col">Destination</th><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">D</th><th scope="col">E</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">A</th><td>0</td><td>1</td><td>1</td><td>1</td><td>2</td></tr>
+      <tr><th scope="row">B</th><td>1</td><td>0</td><td>2</td><td>1</td><td>2</td></tr>
+      <tr><th scope="row">C</th><td>1</td><td>2</td><td>0</td><td>1</td><td>2</td></tr>
+      <tr><th scope="row">D</th><td>1</td><td>1</td><td>1</td><td>0</td><td>1</td></tr>
+      <tr><th scope="row">E</th><td>2</td><td>2</td><td>2</td><td>1</td><td>0</td></tr>
+    </tbody>
+  </table>
+
+  <section class="td-q" data-type="cases" id="q3" data-support="ecran">
+    <p class="td-consigne">2. a. Donner la liste des routeurs avec lesquels le routeur A est directement relié.</p>
+    <ul class="td-options">
+      <li data-juste>B</li>
+      <li data-juste>C</li>
+      <li data-juste>D</li>
+      <li data-retour="Dans la table de A, la métrique vers E vaut 2 : il faut traverser un autre routeur pour aller de A à E.">E</li>
+    </ul>
+    <p class="td-aide">Lis la colonne du routeur A. Un voisin direct est à une métrique de 1.</p>
+    <div class="td-correction">
+      <p>Dans la table de A, B, C et D sont à la métrique 1 : A est directement relié à <b>B, C et D</b>. E est à 2 : il faut passer par un autre routeur.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">2. a. Donner la liste des routeurs avec lesquels le routeur A est directement relié.</p>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q4" data-support="ecran">
+    <p class="td-consigne">2. b. Représenter graphiquement et de manière sommaire les 5 routeurs ainsi que les liaisons existantes entre ceux-ci.</p>
+    <p>Fais le schéma sur ta feuille, puis coche ici toutes les liaisons de ton schéma.</p>
+    <ul class="td-options">
+      <li data-juste>A – B</li>
+      <li data-juste>A – C</li>
+      <li data-juste>A – D</li>
+      <li data-retour="A – E n'existe pas : dans la table de A, E est à la métrique 2.">A – E</li>
+      <li data-retour="B – C n'existe pas : dans la table de B, C est à la métrique 2.">B – C</li>
+      <li data-juste>B – D</li>
+      <li data-retour="B – E n'existe pas : dans la table de B, E est à la métrique 2.">B – E</li>
+      <li data-juste>C – D</li>
+      <li data-retour="C – E n'existe pas : dans la table de C, E est à la métrique 2.">C – E</li>
+      <li data-juste>D – E</li>
+    </ul>
+    <p class="td-aide">Une liaison relie deux routeurs qui sont à la métrique 1 l'un de l'autre. Cherche tous les 1 du tableau.</p>
+    <p class="td-aide">Le tableau est symétrique : la métrique de A vers B est aussi celle de B vers A. Il y a 6 liaisons.</p>
+    <div class="td-correction">
+      <p>Les métriques égales à 1 donnent 6 liaisons : <b>A – B, A – C, A – D, B – D, C – D et D – E</b>. Vérification : B va vers C en 2 sauts (par A ou par D), E va vers A, B et C en 2 sauts (par D).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="6">
+    <p class="td-consigne">2. b. Représenter graphiquement et de manière sommaire les 5 routeurs ainsi que les liaisons existantes entre ceux-ci.</p>
+  </section>
+
+  <p>3. Le protocole OSPF est un protocole de routage qui cherche à minimiser la somme des métriques des liaisons entre routeurs. Dans le protocole de routage OSPF le débit des liaisons entre routeurs agit sur la métrique via la relation : <b>métrique = 10<sup>8</sup> / débit</b>, dans laquelle le débit est exprimé en bit par seconde (bps). On rappelle qu'un kbps est égal à 10<sup>3</sup> bps et qu'un Mbps est égal à 10<sup>6</sup> bps. Recopier sur votre copie et compléter le tableau suivant :</p>
+  <table border="1">
+    <caption>Débit et métrique OSPF associée</caption>
+    <thead><tr><th scope="col">Débit</th><th scope="col">Métrique associée</th></tr></thead>
+    <tbody>
+      <tr><td>100 kbps</td><td>1 000</td></tr>
+      <tr><td>500 kbps</td><td>?</td></tr>
+      <tr><td>?</td><td>10</td></tr>
+      <tr><td>100 Mbps</td><td>1</td></tr>
+    </tbody>
+  </table>
+
+  <section class="td-q" data-type="courte" id="q5" data-reponse="200">
+    <p class="td-consigne">3. Quelle est la métrique associée au débit de 500 kbps ?</p>
+    <p class="td-retour" data-si="2000|0,005|0.005">Attention aux unités : 500 kbps = 500 × 10<sup>3</sup> bps = 5 × 10<sup>5</sup> bps.</p>
+    <p class="td-aide">Écris d'abord le débit en bps : 500 kbps = 500 000 bps.</p>
+    <p class="td-aide">Calcule 10<sup>8</sup> / 500 000 = 100 000 000 / 500 000.</p>
+    <div class="td-correction">
+      <p>10<sup>8</sup> / (5 × 10<sup>5</sup>) = <b>200</b>. Le débit est 5 fois plus grand qu'à 100 kbps : la métrique est 5 fois plus petite (1 000 / 5).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q6" data-reponse="10 Mbps|10Mbps|10 Mbit/s|10Mbit/s|10 Mb/s|10Mb/s|10 000 000 bps|10000000 bps|10000000|10 000 000|10^7 bps|10^7|10**7|1e7|10 000 kbps|10000 kbps">
+    <p class="td-consigne">3. Quel est le débit associé à la métrique 10 ? (Donne l'unité.)</p>
+    <p class="td-retour" data-si="1 Mbps|1Mbps|1000000|1 000 000|10^6 bps|100 Mbps|10^9 bps">Refais le calcul : débit = 10<sup>8</sup> / métrique.</p>
+    <p class="td-aide">On retourne la formule : débit = 10<sup>8</sup> / métrique.</p>
+    <div class="td-correction">
+      <p>Débit = 10<sup>8</sup> / 10 = 10<sup>7</sup> bps = <b>10 Mbps</b>.</p>
+    </div>
+  </section>
+
+  <p>4. Voici la représentation d'un réseau et la table de routage incomplète du routeur F obtenue avec le protocole OSPF. Les nombres présents sur les liaisons représentent les coûts des routes avec le protocole OSPF.</p>
+  <svg viewBox="0 0 500 390" width="100%" height="260" role="img" aria-labelledby="fig1-titre fig1-desc">
+    <title id="fig1-titre">Réseau de sept routeurs F, G, H, I, J, K et L, avec le coût OSPF de chaque liaison</title>
+    <desc id="fig1-desc">Liaisons et coûts : F-G 10, F-H 5, F-I 20, H-I 10, H-J 1, G-J 2, G-L 10, L-J 5, I-J 10, I-K 5, J-K 2.</desc>
+    <g stroke="currentColor" stroke-width="2.5" fill="none">
+      <line x1="70" y1="150" x2="330" y2="45"/>
+      <line x1="70" y1="150" x2="205" y2="150"/>
+      <line x1="70" y1="150" x2="135" y2="260"/>
+      <line x1="205" y1="150" x2="135" y2="260"/>
+      <line x1="205" y1="150" x2="330" y2="260"/>
+      <line x1="330" y1="45" x2="330" y2="260"/>
+      <line x1="330" y1="45" x2="440" y2="150"/>
+      <line x1="440" y1="150" x2="330" y2="260"/>
+      <line x1="135" y1="260" x2="330" y2="260"/>
+      <line x1="135" y1="260" x2="232" y2="350"/>
+      <line x1="330" y1="260" x2="232" y2="350"/>
+    </g>
+    <g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">
+      <text x="190" y="86">10</text>
+      <text x="137" y="140">5</text>
+      <text x="80" y="214">20</text>
+      <text x="186" y="212">10</text>
+      <text x="262" y="196">1</text>
+      <text x="346" y="160">2</text>
+      <text x="402" y="88">10</text>
+      <text x="400" y="222">5</text>
+      <text x="232" y="250">10</text>
+      <text x="168" y="318">5</text>
+      <text x="296" y="318">2</text>
+    </g>
+    <g stroke="currentColor" stroke-width="2.5" fill="Canvas">
+      <circle cx="330" cy="45" r="24"/>
+      <circle cx="70" cy="150" r="24"/>
+      <circle cx="205" cy="150" r="24"/>
+      <circle cx="440" cy="150" r="24"/>
+      <circle cx="135" cy="260" r="24"/>
+      <circle cx="330" cy="260" r="24"/>
+      <circle cx="232" cy="350" r="24"/>
+    </g>
+    <g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="22" font-weight="700" text-anchor="middle">
+      <text x="330" y="53">G</text>
+      <text x="70" y="158">F</text>
+      <text x="205" y="158">H</text>
+      <text x="440" y="158">L</text>
+      <text x="135" y="268">I</text>
+      <text x="330" y="268">J</text>
+      <text x="232" y="358">K</text>
+    </g>
+  </svg>
+  <table border="1">
+    <caption>Routeur F (table incomplète)</caption>
+    <thead><tr><th scope="col">Destination</th><th scope="col">Métrique</th></tr></thead>
+    <tbody>
+      <tr><td>F</td><td>0</td></tr><tr><td>G</td><td>8</td></tr><tr><td>H</td><td>5</td></tr>
+      <tr><td>I</td><td></td></tr><tr><td>J</td><td></td></tr><tr><td>K</td><td></td></tr><tr><td>L</td><td></td></tr>
+    </tbody>
+  </table>
+
+  <section class="td-q" data-type="courte" id="q7" data-comparer="code" data-reponse="F-H-J-K-I|F,H,J,K,I|FHJKI|F→H→J→K→I|F-&gt;H-&gt;J-&gt;K-&gt;I|f-h-j-k-i|f,h,j,k,i|fhjki" data-support="ecran">
+    <p class="td-consigne">4. a. Indiquer le chemin emprunté par un message d'un ordinateur du réseau F à destination d'un ordinateur du réseau I. Justifier votre réponse.</p>
+    <p>Écris le chemin sous la forme <code>F-…-I</code>. La justification va sur ta feuille.</p>
+    <p class="td-retour" data-si="F-I|FI|F,I">La liaison directe F – I coûte 20 : cherche un chemin plus long, mais moins cher.</p>
+    <p class="td-retour" data-si="F-H-I|FHI|F,H,I">F – H – I coûte 5 + 10 = 15. Il existe un chemin encore moins cher.</p>
+    <p class="td-aide">OSPF ne compte pas les routeurs : il additionne les coûts. Calcule le coût de plusieurs chemins de F à I.</p>
+    <p class="td-aide">Essaie de passer par H puis J : la liaison H – J ne coûte que 1.</p>
+    <div class="td-correction">
+      <p>Le chemin est <b>F – H – J – K – I</b>, de coût 5 + 1 + 2 + 5 = <b>13</b>. Justification : OSPF choisit le chemin de coût total minimal, et les autres chemins coûtent plus : F – I 20, F – H – I 15, F – G – J – K – I 19, F – H – J – I 16.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q7-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">4. a. Indiquer le chemin emprunté par un message d'un ordinateur du réseau F à destination d'un ordinateur du réseau I. Justifier votre réponse.</p>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q8">
+    <p class="td-consigne">4. b. Recopier et compléter la table de routage du routeur F.</p>
+    <p>Ici, la table est écrite comme un dictionnaire Python : destination → métrique.</p>
+    <pre class="td-code">
+table_F = {"F": 0, "G": 8, "H": 5,
+           "I": [[13]],
+           "J": [[6]],
+           "K": [[8]],
+           "L": [[11]]}</pre>
+    <p class="td-aide">Pour chaque destination, cherche le chemin le moins cher depuis F. Tu as déjà trouvé I à la question 4. a.</p>
+    <p class="td-aide">Presque tous les meilleurs chemins commencent par F – H – J (coût 6).</p>
+    <div class="td-correction">
+      <p>I : 13 (F – H – J – K – I) ; J : 6 (F – H – J) ; K : 8 (F – H – J – K) ; L : 11 (F – H – J – L). On vérifie aussi G : 8 par F – H – J – G, moins que la liaison directe (10).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q9" data-reponse="F-H|H-F|FH|HF|liaison F-H|liaison H-F|la liaison F-H|la liaison H-F|lien F-H|lien H-F|le lien F-H|le lien H-F|liaison entre F et H|la liaison entre F et H|liaison entre H et F|la liaison entre H et F|câble F-H|cable F-H|H|routeur H|le routeur H|panne de H|panne du routeur H|panne de la liaison F-H|panne du lien F-H" data-support="ecran">
+    <p class="td-consigne">4. c. Citer une unique panne qui suffirait à ce que toutes les données des échanges de tout autre réseau à destination du réseau F transitent par le routeur G. Expliquer en détail votre réponse.</p>
+    <p>Écris la panne ici (une liaison comme <code>X-Y</code>, ou un routeur). L'explication va sur ta feuille.</p>
+    <p class="td-retour" data-si="F-I|I-F|liaison F-I">Sans F – I, les données de I passent par H (I – H – F coûte 15) : elles ne transitent pas par G.</p>
+    <p class="td-aide">Aujourd'hui, presque toutes les données vers F arrivent par H. Que se passe-t-il si on ne peut plus passer par H ?</p>
+    <p class="td-aide">Après la panne, il reste deux liaisons vers F : F – G (10) et F – I (20). Vérifie que, même depuis I, passer par G coûte moins de 20.</p>
+    <div class="td-correction">
+      <p>Une panne de la <b>liaison F – H</b> (ou du <b>routeur H</b>). F n'est alors relié qu'à G (coût 10) et à I (coût 20). Depuis I, le chemin I – K – J – G – F coûte 5 + 2 + 2 + 10 = 19, moins que 20 : il passe par G. Depuis J, K, L (et H si seule la liaison est en panne), les chemins vers F passent aussi par G : J – G – F (12), K – J – G – F (14), L – J – G – F (17), H – J – G – F (13). Le corrigé de l'AEIF propose la liaison F – H ; un autre corrigé publié propose le routeur H : les deux conviennent (vérifié par le calcul de tous les plus courts chemins).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">4. c. Citer une unique panne qui suffirait à ce que toutes les données des échanges de tout autre réseau à destination du réseau F transitent par le routeur G. Expliquer en détail votre réponse.</p>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Adresses :</b> avec /n, les n premiers bits sont la partie « réseau ». Adresse du réseau : bits « machine » à 0. Adresse de diffusion : bits « machine » à 1. Nombre de machines : 2<sup>(32 − n)</sup> − 2.</p>
+    <p><b>RIP</b> : la route qui traverse le moins de routeurs (sauts). <b>OSPF</b> : la route de plus petit coût total, coût d'une liaison = référence / débit. La référence (10<sup>8</sup>, 10<sup>9</sup>…) est donnée par l'énoncé : lis-la toujours.</p>
+    <p>Une table de routage donne, pour chaque destination, la <b>passerelle</b> (l'adresse du prochain routeur) et l'<b>interface</b> (l'adresse de sortie du routeur lui-même).</p>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, adresses, RIP et OSPF sur un vrai réseau</a>.</p>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Métropole, mai 2022, jour 1 (22-NSIJ1ME1), exercice 3. <a href="https://aeif.fr/wp-content/uploads/2025/07/Metropole_2022_1.pdf">Le PDF du sujet</a>, diffusé par l'AEIF (<a href="https://aeif.fr/">aeif.fr</a> : CC BY-SA 4.0, relevée sur ses pages annuelles). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_metropole_mai_2022_1.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document). Schémas redessinés ; tableaux remis en forme pour les petits écrans.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-routage">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
