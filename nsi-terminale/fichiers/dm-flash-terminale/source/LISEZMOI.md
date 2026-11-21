@@ -6,4 +6,4 @@ Compilation : `latexmk -pdf -shell-escape main-poo-fraction.tex main-poo-pile.te
 
 ## Page en ligne : conversion binaire et liste (T125, lot L7)
 
-Pour ce sujet, **la page HTML est désormais la référence** : `dm-conversion-binaire-liste/index.html` (en ligne, auto-corrective, corrigé compris). Le PDF `dm-conversion-binaire-liste.pdf` sera refait depuis la page (`charte/imprimer-td.py`) quand le moteur connaîtra les variantes écran / papier (`data-support`). Réponses obtenues par exécution : `dm-conversion-binaire-liste/source/verifier.py`.
+Pour ce sujet, **la page HTML est désormais la référence** : `dm-conversion-binaire-liste/index.html` (en ligne, auto-corrective, corrigé compris). Le PDF `dm-conversion-binaire-liste.pdf` est fait depuis la page (`charte/imprimer-td.py`, feuille vierge ; deux feuilles : un seul PDF). Réponses obtenues par exécution : `dm-conversion-binaire-liste/source/verifier.py`.

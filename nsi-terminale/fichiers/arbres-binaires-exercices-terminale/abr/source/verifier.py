@@ -40,8 +40,12 @@ n10 = [10, None, n14]
 n8 = [8, n3, n10]
 print('Q3 n8 == arbre :', n8 == arbre)
 print('Q4 infixe :', infixe(arbre), '; croissant :', infixe(arbre) == sorted(infixe(arbre)))
-exemple = [20, [7, [4, [2, None, None], None], [15, [5, None, None], None]], [53, [46, [29, None, None], None], [80, [74, None, None], None]]]
-print('arbre de l\'introduction : ABR ?', est_abr(exemple), '(5 est dans le sous-arbre droit de 7)')
+exemple_avant = [20, [7, [4, [2, None, None], None], [15, [5, None, None], None]], [53, [46, [29, None, None], None], [80, [74, None, None], None]]]
+print('arbre de l\'introduction, version d\'origine : ABR ?', est_abr(exemple_avant), '(5 est dans le sous-arbre droit de 7)')
+# corrigé (décision de l'enseignant du 21/11) : 5 devient 17, enfant droit de 15
+exemple = [20, [7, [4, [2, None, None], None], [15, None, [17, None, None]]], [53, [46, [29, None, None], None], [80, [74, None, None], None]]]
+print('arbre de l\'introduction, corrigé : ABR ?', est_abr(exemple))
+assert est_abr(exemple) and not est_abr(exemple_avant)
 
 
 def insertionABRnr(arbre, element):
@@ -50,8 +54,10 @@ def insertionABRnr(arbre, element):
         arbre = arbre_suivant
         if arbre[0] > element:
             arbre_suivant = arbre[1]
-        if arbre[0] < element:
+        elif arbre[0] < element:
             arbre_suivant = arbre[2]
+        else:
+            return
     if arbre[0] > element:
         arbre[1] = [element, None, None]
         print(element, 'ajouté à gauche de', arbre[0])
@@ -66,7 +72,9 @@ for e in (5, 12, 15, 0):
     insertionABRnr(a, e)
 print('Q5 après insertions : ABR ?', est_abr(a), infixe(a))
 
-# une valeur déjà présente : la boucle ne s'arrête pas (on le constate avec un délai)
+print('valeur déjà présente (6), version corrigée :'); insertionABRnr(a, 6); print('  la fonction s\'arrête ; arbre inchangé :', est_abr(a), infixe(a))
+
+# la version d'origine, sans else : avec une valeur déjà présente, la boucle ne s'arrête pas (constaté avec un délai)
 import subprocess, sys
 code = 'a = ' + repr(arbre) + '\n' + '''
 def ins(arbre, element):
