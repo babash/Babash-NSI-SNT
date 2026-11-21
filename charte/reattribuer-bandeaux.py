@@ -4,6 +4,11 @@
 Usage (à la racine du dépôt) :
   python3 -I charte/reattribuer-bandeaux.py             montre ce qui changerait (rien n'est écrit)
   python3 -I charte/reattribuer-bandeaux.py --appliquer écrit les pages
+  python3 -I charte/reattribuer-bandeaux.py [--appliquer] <page.html | dossier> …
+                                                        seulement ces pages, ou les pages de ces dossiers (T123d)
+
+Limité à des pages ou à des dossiers, le script calcule toujours la répartition sur tous les TD du dépôt (le
+bandeau d'une page reste celui d'un passage complet), mais ne rend, ne montre et n'écrit que les pages choisies.
 
 Les TD convertis en parallèle sur plusieurs branches ont pris les mêmes bandeaux. Ce script les répartit
 à parts égales : les pages sont rangées d'après l'empreinte de leur identifiant (SHA-256), puis reçoivent
@@ -134,9 +139,28 @@ def placer(u, b, k, places):
     return u[:m.start(1)] + str(k) + u[m.end(1):m.start(2)] + style + u[m.end(2):]
 
 
+def choisies(args):
+    """Les pages ou dossiers donnés (relatifs à la racine ou au dossier courant) ; None : tout le dépôt."""
+    if not args:
+        return None
+    vus = []
+    for a in args:
+        c = a if os.path.isabs(a) else (os.path.join(RACINE, a) if os.path.exists(os.path.join(RACINE, a)) else os.path.abspath(a))
+        if not os.path.exists(c):
+            sys.exit(f"Introuvable : {a}")
+        vus.append(os.path.realpath(c))
+    return vus
+
+
+def dedans(chemin, cibles):
+    c = os.path.realpath(chemin)
+    return cibles is None or any(c == x or c.startswith(x.rstrip(os.sep) + os.sep) for x in cibles)
+
+
 def main():
     appliquer = "--appliquer" in sys.argv
     mesurer = "--sans-mesure" not in sys.argv
+    cibles = choisies([a for a in sys.argv[1:] if not a.startswith("--")])
     places = json.load(open(os.path.join(RACINE, "assets", "td", "places-margouillat.json"), encoding="utf-8"))
     liste = sorted(pages(), key=lambda x: hashlib.sha256(x[1].encode()).hexdigest())
     nouveau, compte, par_dossier = {}, {1: 0, 2: 0, 3: 0, 4: 0}, {}
@@ -152,6 +176,8 @@ def main():
     changes, a_la_main = 0, []
     try:
         for chemin, ident, t in liste:
+            if not dedans(chemin, cibles):
+                continue
             b = nouveau[chemin]
             ancien = int(RE_BD.search(t).group(2))
             rel = os.path.relpath(chemin, RACINE)
@@ -190,6 +216,11 @@ def main():
     finally:
         if mes:
             mes.fermer()
+    if cibles is not None:
+        n_choisies = sum(1 for c, _, _ in liste if dedans(c, cibles))
+        print(f"Limité à {n_choisies} page(s) de TD sur {len(liste)} (la répartition reste celle de tout le dépôt).")
+        if not n_choisies:
+            print("Aucune page de TD dans les pages ou dossiers donnés.")
     print(f"{len(liste)} TD ; répartition : " + ", ".join(f"bandeau {n} : {compte[n]}" for n in (1, 2, 3, 4))
           + f" ; {changes} page(s) " + ("modifiée(s)" if appliquer else "à modifier (--appliquer pour écrire)")
           + ("" if mesurer else " ; collisions non mesurées (--sans-mesure)"))
