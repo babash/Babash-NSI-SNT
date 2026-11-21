@@ -16,14 +16,36 @@
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
      data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="nsi1-recapitulatif-boucles" data-td-version="1">
+<main class="td" data-td="nsi1-recapitulatif-boucles" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+
+  <!-- le robot des fiches (grille sans obstacle de 8 colonnes A à H et 6 lignes, départ en A6) : il permet
+       à Python d'exécuter, dans la page et dans verifier-td.py, les programmes qui appellent nord(), est()… -->
+  <script type="text/x-python" class="td-preambule">
+_COL = "ABCDEFGH"
+_pos = [0, 6]
+def _libre(dx, dy):
+    x, y = _pos[0] + dx, _pos[1] + dy
+    return 0 <= x < 8 and 1 <= y <= 6
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _COL[_pos[0]] + str(_pos[1]) + ".")
+    _pos[0], _pos[1] = _pos[0] + dx, _pos[1] + dy
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+</script>
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 2 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="2">
-      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:66.67%;--y:49.11%;--r:-12deg;--l:3.92%;--s:-1"></span></div>
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:83.93%;--y:76.79%;--r:176deg;--l:3.92%;--s:-1"></span></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Langages et programmation</span></p>
         <h1>Conditions et boucles</h1>
@@ -68,7 +90,7 @@ Hourra !</pre>
     <p class="td-aide">Quelles lignes sont décalées sous le <code>for</code> ?</p>
     <div class="td-correction"><p>« On affiche 3 fois "Hip hip hip", puis une fois "Hourra !". » La dernière ligne n'est pas décalée : elle est après la boucle.</p></div>
   </section>
-  <section class="td-q" data-type="qcu" id="q2">
+  <section class="td-q" data-type="qcu" id="q2" data-support="ecran">
     <p class="td-consigne"><b>Robot.</b> Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 for i in range(4):
@@ -84,7 +106,16 @@ for i in range(4):
     <p class="td-aide">Le <code>while</code> est décalé sous le <code>for</code> : il est refait à chaque tour.</p>
     <div class="td-correction"><p>Une boucle dans une boucle : à chacun des 4 tours, le robot monte le plus haut possible, puis fait un pas vers l'est.</p></div>
   </section>
-  <section class="td-q" data-type="qcu" id="q3">
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>Robot.</b> Traduis ce programme par une phrase en français.</p>
+    <pre class="td-code">
+for i in range(4):
+    while not obstacleNord():
+        nord()
+    est()</pre>
+  </section>
+  <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
     <p class="td-consigne">Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 mot = input("Mot : ")
@@ -100,7 +131,16 @@ for lettre in mot:
     <p class="td-aide">Le <code>print</code> est dans le <code>if</code>, lui-même dans le <code>for</code>.</p>
     <div class="td-correction"><p>On parcourt les lettres une par une ; à chaque « e », on affiche la phrase. Avec « banane », elle s'affiche une fois ; avec « dessert », deux fois.</p></div>
   </section>
-  <section class="td-q" data-type="qcu" id="q4">
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Traduis ce programme par une phrase en français. Indique aussi ce qui s'affiche.</p>
+    <pre class="td-code">
+mot = input("Mot : ")
+for lettre in mot:
+    if lettre == "e":
+        print("Il y a un e !")</pre>
+  </section>
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
     <p class="td-consigne">Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 total = 0
@@ -118,6 +158,17 @@ print(total)</pre>
     <p class="td-aide"><code>!=</code> veut dire « différent de ».</p>
     <p class="td-aide"><code>total</code> est un accumulateur.</p>
     <div class="td-correction"><p>Une saisie « jusqu'à 0 » : on tape 4, 7, 2, 0 et le programme affiche 13.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Traduis ce programme par une phrase en français. Indique aussi ce qui s'affiche.</p>
+    <pre class="td-code">
+total = 0
+n = int(input("Nombre : "))
+while n != 0:
+    total = total + n
+    n = int(input("Nombre : "))
+print(total)</pre>
   </section>
   <h2 class="td-partie">2. <code>for</code> ou <code>while</code> ?</h2>
 
@@ -168,7 +219,7 @@ IndentationError: expected an indented block after 'for' statement on line 1</pr
     <p class="td-aide">Sur l'écran, écris 4 espaces au début de ta ligne corrigée.</p>
     <div class="td-correction"><p>Ligne 2 : <code>    print(i * 2)</code>, décalée sous le <code>for</code>.</p></div>
   </section>
-  <section class="td-q" data-type="erreur" id="q8" data-fichier="majeur.py" data-ligne="1" data-reponse="age = int(input(&quot;Âge : &quot;))">
+  <section class="td-q" data-type="erreur" id="q8" data-entrees="17" data-fichier="majeur.py" data-ligne="1" data-reponse="age = int(input(&quot;Âge : &quot;))">
     <p class="td-consigne">On tape 17. Le programme s'arrête avec une erreur. Choisis la ligne <b>à corriger</b> (ce n'est pas forcément celle du message).</p>
     <pre class="td-code">
 age = input("Âge : ")
@@ -184,7 +235,7 @@ TypeError: '&gt;=' not supported between instances of 'str' and 'int'</pre>
     <p class="td-aide"><code>input</code> renvoie toujours un texte. Où <code>age</code> reçoit-il sa valeur ?</p>
     <div class="td-correction"><p>Python s'arrête ligne 2, mais l'erreur vient de la ligne 1 : <code>age</code> est un texte. On le convertit en entier : <code>age = int(input("Âge : "))</code>.</p></div>
   </section>
-  <section class="td-q" data-type="qcu" id="q9">
+  <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
     <p class="td-consigne">Ce programme doit afficher les nombres de 0 à 9, mais il ne s'arrête jamais. Quelle version corrigée s'arrête et affiche 0 à 9 ?</p>
     <pre class="td-code">
 n = 0
@@ -215,7 +266,15 @@ while n &lt; 10:
     <p class="td-aide">Pour que la boucle s'arrête, <code>n</code> doit changer <b>dans</b> la boucle, et aller vers 10.</p>
     <div class="td-correction"><p>Il manque <code>n = n + 1</code>, décalée dans la boucle : sans elle, <code>n</code> reste à 0 et la condition reste vraie.</p></div>
   </section>
-  <section class="td-q" data-type="qcu" data-bonus id="q10">
+
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Ce programme doit afficher les nombres de 0 à 9, mais il ne s'arrête jamais. Entoure l'erreur, réécris la ligne corrigée et explique en quelques mots.</p>
+    <pre class="td-code">
+n = 0
+while n &lt; 10:
+    print(n)</pre>
+  </section>
+  <section class="td-q" data-type="qcu" data-bonus id="q10" data-support="ecran">
     <p class="td-consigne">Ce programme doit afficher une seule fois le nombre de « a », mais il affiche 6 nombres. Pourquoi ?</p>
     <pre class="td-code">
 nb = 0
@@ -231,6 +290,16 @@ for lettre in "banane":
     </ul>
     <p class="td-aide">Combien de fois s'exécute une ligne décalée sous le <code>for</code> ?</p>
     <div class="td-correction"><p><code>print(nb)</code> est dans la boucle : 6 lettres, 6 affichages (0, 1, 1, 2, 2, 2). Sans décalage, il affiche une fois 2.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q10-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Ce programme doit afficher une seule fois le nombre de « a », mais il affiche 6 nombres. Entoure l'erreur, réécris la ligne corrigée et explique en quelques mots.</p>
+    <pre class="td-code">
+nb = 0
+for lettre in "banane":
+    if lettre == "a":
+        nb = nb + 1
+    print(nb)</pre>
   </section>
   <section class="td-q" data-type="trous" data-bonus id="q11">
     <p class="td-consigne"><b>Robot.</b> Avec <code>for i in range(4): nord()</code>, depuis A6, le robot s'écrase contre A2. Complète la version avec <code>while</code> : il monte le plus haut possible.</p>

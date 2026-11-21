@@ -16,14 +16,36 @@
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
      data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="nsi1-conditions" data-td-version="1">
+<main class="td" data-td="nsi1-conditions" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+
+  <!-- le robot des fiches (grille sans obstacle de 8 colonnes A à H et 6 lignes, départ en A6) : il permet
+       à Python d'exécuter, dans la page et dans verifier-td.py, les programmes qui appellent nord(), est()… -->
+  <script type="text/x-python" class="td-preambule">
+_COL = "ABCDEFGH"
+_pos = [0, 6]
+def _libre(dx, dy):
+    x, y = _pos[0] + dx, _pos[1] + dy
+    return 0 <= x < 8 and 1 <= y <= 6
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _COL[_pos[0]] + str(_pos[1]) + ".")
+    _pos[0], _pos[1] = _pos[0] + dx, _pos[1] + dy
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+</script>
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 1 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="1">
-      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:14.29%;--y:91.96%;--r:-8deg;--l:5.04%;--s:-1"></span></div>
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:72.86%;--y:77.68%;--r:-70deg;--l:3.36%;--s:-1"></span></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Langages et programmation</span></p>
         <h1>Les conditions : <code>if</code></h1>
@@ -59,7 +81,7 @@ if obstacleEst():
 else:
     est()</pre>
 
-  <section class="td-q" data-type="qcu" id="q1">
+  <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
     <p class="td-consigne">Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 if solde &lt; 0:
@@ -75,7 +97,16 @@ else:
     <p class="td-aide"><code>else</code> veut dire « sinon » : il s'exécute quand la condition est fausse.</p>
     <div class="td-correction"><p>Une seule des deux phrases s'affiche : « Compte à découvert » si <code>solde</code> est négatif, « Compte positif » sinon (0 compris).</p></div>
   </section>
-  <section class="td-q" data-type="qcu" id="q2">
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Traduis ce programme par une phrase en français. Indique aussi ce qui s'affiche.</p>
+    <pre class="td-code">
+if solde &lt; 0:
+    print("Compte à découvert")
+else:
+    print("Compte positif")</pre>
+  </section>
+  <section class="td-q" data-type="qcu" id="q2" data-support="ecran">
     <p class="td-consigne"><b>Robot.</b> Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 if obstacleNord():
@@ -92,7 +123,16 @@ elif obstacleEst():
     <p class="td-aide">Il n'y a pas de <code>else</code> : dans le dernier cas, le robot ne fait rien.</p>
     <div class="td-correction"><p><code>elif</code> : « sinon, si ». Sans <code>else</code>, si aucune condition n'est vraie, le robot reste sur place.</p></div>
   </section>
-  <section class="td-q" data-type="qcu" id="q3">
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>Robot.</b> Traduis ce programme par une phrase en français.</p>
+    <pre class="td-code">
+if obstacleNord():
+    est()
+elif obstacleEst():
+    sud()</pre>
+  </section>
+  <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
     <p class="td-consigne">Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 if age &gt;= 12 and age &lt;= 25:
@@ -109,7 +149,16 @@ else:
     <p class="td-aide"><code>&gt;=</code> : « supérieur ou égal ».</p>
     <div class="td-correction"><p>« Tarif jeune » pour 12 à 25 ans, bornes comprises ; « Plein tarif » pour tous les autres âges.</p></div>
   </section>
-  <section class="td-q" data-type="qcu" id="q4">
+
+  <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Traduis ce programme par une phrase en français. Indique aussi ce qui s'affiche.</p>
+    <pre class="td-code">
+if age &gt;= 12 and age &lt;= 25:
+    print("Tarif jeune")
+else:
+    print("Plein tarif")</pre>
+  </section>
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
     <p class="td-consigne"><b>Robot.</b> Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 if not obstacleSud():
@@ -124,6 +173,15 @@ if not obstacleSud():
     </ul>
     <p class="td-aide">Le deuxième <code>if</code> est décalé : il est <b>dans</b> le premier.</p>
     <div class="td-correction"><p>Deux tests emboîtés : le second n'a lieu que si le premier est vrai, après la descente.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>Robot.</b> Traduis ce programme par une phrase en français.</p>
+    <pre class="td-code">
+if not obstacleSud():
+    sud()
+    if obstacleSud():
+        est()</pre>
   </section>
   <h2 class="td-partie">2. Trouve l'erreur</h2>
   <p>Pour chaque programme : choisis la ligne fautive et réécris-la corrigée.</p>
@@ -141,7 +199,7 @@ SyntaxError: expected ':'</pre>
     <p class="td-aide"><code>expected ':'</code> veut dire « deux-points attendus ».</p>
     <div class="td-correction"><p>Ligne 1 : une ligne <code>if</code> finit par deux-points. <code>if obstacleEst():</code></p></div>
   </section>
-  <section class="td-q" data-type="erreur" id="q6" data-fichier="continuer.py" data-ligne="2" data-reponse="if reponse == &quot;oui&quot;:">
+  <section class="td-q" data-type="erreur" id="q6" data-entrees="oui" data-fichier="continuer.py" data-ligne="2" data-reponse="if reponse == &quot;oui&quot;:">
     <p class="td-consigne">Ce programme ne se lance pas.</p>
     <pre class="td-code">
 reponse = input("Continuer ? ")
@@ -200,7 +258,7 @@ IndentationError: unexpected indent</pre>
     <p class="td-aide">Dans un même bloc, toutes les lignes ont le même décalage : 4 espaces.</p>
     <div class="td-correction"><p>Ligne 3 : elle est trop décalée. Dans le bloc du <code>if</code>, on l'aligne sur la ligne 2 : <code>    est()</code></p></div>
   </section>
-  <section class="td-q" data-type="qcu" data-bonus id="q10">
+  <section class="td-q" data-type="qcu" data-bonus id="q10" data-support="ecran">
     <p class="td-consigne">Avec ce programme, « Très bien » ne s'affiche jamais. Pourquoi ?</p>
     <pre class="td-code">
 if note &gt;= 10:
@@ -215,6 +273,15 @@ elif note &gt;= 16:
     </ul>
     <p class="td-aide">Prends une note de 18 : quelle condition est testée en premier ? Est-elle vraie ?</p>
     <div class="td-correction"><p>Dès qu'une condition est vraie, Python saute les <code>elif</code> suivants. Il faut tester <code>note &gt;= 16</code> <b>avant</b> <code>note &gt;= 10</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q10-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Avec ce programme, « Très bien » ne s'affiche jamais. Entoure l'erreur, réécris la ligne corrigée et explique en quelques mots.</p>
+    <pre class="td-code">
+if note &gt;= 10:
+    print("Passable")
+elif note &gt;= 16:
+    print("Très bien")</pre>
   </section>
   <p class="td-ecran-seul"><b>La suite :</b> <a href="td-conditions-2.html">feuille 2 sur 3, compléter le code et suivre le robot</a>.</p>
 

@@ -65,7 +65,7 @@ def principal(args):
     vt.LANCEUR = avec_robot('libre')
     total = 0
     for chemin in args:
-        n, err = vt.verifier(chemin)
+        n, err = vt.verifier(chemin)[:2]   # T123b : verifier() renvoie aussi des notes
         lu = vt.Lecteur()
         lu.feed(open(chemin, encoding='utf-8').read())
         m = 0

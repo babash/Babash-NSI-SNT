@@ -16,10 +16,32 @@
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
      data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="nsi1-conditions-2" data-td-version="1">
+<main class="td" data-td="nsi1-conditions-2" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+
+  <!-- le robot des fiches (grille sans obstacle de 8 colonnes A à H et 6 lignes, départ en A6) : il permet
+       à Python d'exécuter, dans la page et dans verifier-td.py, les programmes qui appellent nord(), est()… -->
+  <script type="text/x-python" class="td-preambule">
+_COL = "ABCDEFGH"
+_pos = [0, 6]
+def _libre(dx, dy):
+    x, y = _pos[0] + dx, _pos[1] + dy
+    return 0 <= x < 8 and 1 <= y <= 6
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _COL[_pos[0]] + str(_pos[1]) + ".")
+    _pos[0], _pos[1] = _pos[0] + dx, _pos[1] + dy
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+</script>
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 1 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
     <div class="td-bandeau" data-bandeau="1">

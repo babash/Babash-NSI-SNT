@@ -16,14 +16,36 @@
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
      data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="nsi1-boucle-for-3" data-td-version="1">
+<main class="td" data-td="nsi1-boucle-for-3" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+
+  <!-- le robot des fiches (grille sans obstacle de 8 colonnes A à H et 6 lignes, départ en A6) : il permet
+       à Python d'exécuter, dans la page et dans verifier-td.py, les programmes qui appellent nord(), est()… -->
+  <script type="text/x-python" class="td-preambule">
+_COL = "ABCDEFGH"
+_pos = [0, 6]
+def _libre(dx, dy):
+    x, y = _pos[0] + dx, _pos[1] + dy
+    return 0 <= x < 8 and 1 <= y <= 6
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _COL[_pos[0]] + str(_pos[1]) + ".")
+    _pos[0], _pos[1] = _pos[0] + dx, _pos[1] + dy
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+</script>
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 3 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="3">
-      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:78.57%;--y:62.5%;--r:4deg;--l:3.08%;--s:1"></span></div>
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:72.86%;--y:77.68%;--r:-70deg;--l:3.36%;--s:1"></span></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Langages et programmation</span></p>
         <h1>Boucle fermée : <code>for</code></h1>
@@ -157,7 +179,7 @@ def somme_carres(n):
     <div class="td-correction"><p>1 + 4 + 9 = <b>14</b>.</p></div>
   </section>
 
-  <section class="td-q" data-type="code" id="q5" data-fichier="compte.py">
+  <section class="td-q" data-type="code" id="q5" data-fichier="compte.py" data-lignes="7">
     <p class="td-consigne">Écris la fonction <code>compte(mot, lettre)</code> : elle renvoie le nombre de fois où <code>lettre</code> apparaît dans <code>mot</code>. Par exemple, <code>compte("banane", "n")</code> doit renvoyer <b>2</b>.</p>
     <pre class="td-depart">
 def compte(mot, lettre):
@@ -183,7 +205,7 @@ def compte(mot, lettre):
     return n</pre></div>
   </section>
 
-  <section class="td-q" data-type="code" id="q6" data-fichier="aller.py">
+  <section class="td-q" data-type="code" id="q6" data-fichier="aller.py" data-lignes="6">
     <p class="td-consigne"><b>Robot.</b> Écris la fonction <code>aller(nb_nord, nb_est)</code> : elle fait monter le robot de <code>nb_nord</code> cases vers le nord, puis le fait avancer de <code>nb_est</code> cases vers l'est. Le programme la teste sur la grille ci-dessous, depuis A6.</p>
     <svg class="td-grille-robot" width="214" height="166" viewBox="0 0 214 166" role="img" aria-label="Grille du robot : 8 colonnes (A à H) et 6 lignes (1 à 6), le nord en haut. Le robot est en A6. Obstacles en A2, F2, G3, B4, C4, D4, G4, E6." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="176.0" y="14" text-anchor="middle" fill="currentColor">G</text><text x="200.0" y="14" text-anchor="middle" fill="currentColor">H</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><text x="9.0" y="157.0" text-anchor="middle" fill="currentColor">6</text><rect x="21.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 49L39 63M39 49L25 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="141.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M145 49L159 63M159 49L145 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="165.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M169 73L183 87M183 73L169 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 97L63 111M63 97L49 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 97L87 111M87 97L73 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 97L111 111M111 97L97 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="165.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M169 97L183 111M183 97L169 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="141.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 145L135 159M135 145L121 159" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="148.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 148.0V144.0"/></g><g fill="currentColor"><circle cx="32.0" cy="143.5" r="1.6"/><circle cx="29.3" cy="152.6" r="1.5"/><circle cx="34.7" cy="152.6" r="1.5"/><rect x="29.0" y="155.6" width="6.0" height="1.4"/></g><path d="M20 20V164M44 20V164M68 20V164M92 20V164M116 20V164M140 20V164M164 20V164M188 20V164M212 20V164M20 20H212M20 44H212M20 68H212M20 92H212M20 116H212M20 140H212M20 164H212" fill="none" stroke="currentColor" stroke-width="1"/></svg>
     <pre class="td-depart">
@@ -231,7 +253,7 @@ def aller(nb_nord, nb_est):
     <div class="td-correction"><p>3 pas vers le nord (A5, A4, A3), puis 5 pas vers l'est (B3 à F3) : <code>aller(3, 5)</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="qcu" data-bonus id="q8">
+  <section class="td-q" data-type="qcu" data-bonus id="q8" data-support="ecran">
     <p class="td-consigne"><b>Robot.</b> Que se passe-t-il avec l'appel <code>aller(2, 3)</code>, depuis A6 ? Pourquoi ?</p>
     <ul class="td-options">
       <li data-retour="Regarde la case à l'est de A4 : c'est B4.">Le robot arrive en D4.</li>
@@ -241,6 +263,10 @@ def aller(nb_nord, nb_est):
     </ul>
     <p class="td-aide">Suis le robot : deux pas vers le nord, puis le premier pas vers l'est.</p>
     <div class="td-correction"><p>A6 → A5 → A4. Le premier <code>est()</code> vise B4 : c'est un obstacle, le robot s'écrase.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne"><b>Robot.</b> Que se passe-t-il avec l'appel <code>aller(2, 3)</code>, depuis A6 ? Pourquoi ?</p>
   </section>
 
   <p class="td-ecran-seul"><b>Avant :</b> <a href="td-for.html">feuille 1</a> · <a href="td-for-2.html">feuille 2</a>.</p>
