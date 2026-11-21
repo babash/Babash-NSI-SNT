@@ -81,7 +81,9 @@ Les décisions de l'enseignant du 20 novembre 2026 s'y ajoutent (`CLAUDE.md`, §
   images (précision du 21 novembre : la présence d'un mot n'est pas un motif de refus) ;
 - l'univers « Mamoudzou 2046 » ne sert qu'aux jeux et aux avatars ; le nouveau style des
   feuilles, « Signal pirate », s'applique aux TD depuis le 21 novembre (gabarit
-  `charte/gabarit-td/`, conversion des TD en cours), pas encore aux autres documents ;
+  `charte/gabarit-td/`, conversion des TD en cours) et, depuis le même soir, au site lui-même
+  (accueil, rubriques, bibliothèque, annales, espaces élève et enseignant·e, admin : maquette
+  validée par l'enseignant), pas encore aux autres documents ;
 - le cours-quiz (dépôt QuizzNSI) vient en tête de séquence, avant le cours ou le TD ;
 - le soir : « on ne promeut aucune religion, mais on ne fait pas comme si c'était problématique
   qu'elles existent ou d'en avoir une » (un emblème national, comme le croissant et les étoiles du

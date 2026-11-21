@@ -115,8 +115,9 @@ officiel s'affiche sous la présentation de la rubrique.
 
 ## Réglages généraux
 
-`reglages.js` contient le titre du site, sa phrase de présentation, le nom du dépôt GitHub
-(pour le lien « Code source sur GitHub ») et
+`reglages.js` contient le titre du site, sa phrase de présentation, la puce et la ligne écrites
+au-dessus du titre dans le bandeau de l'accueil (`puce` et `sur_titre`, depuis le nouveau design du
+21 novembre 2026), le nom du dépôt GitHub (pour le lien « Code source sur GitHub ») et
 les textes du pied de page (voir ci-dessous). Le dépôt s'écrit `"propriétaire/nom"`, par
 exemple `"babash/Babash-NSI-SNT"` ; une adresse `https://github.com/…` est aussi acceptée. Une
 valeur mal écrite affiche une erreur sur la page (voir [Si la page affiche une erreur](#si-la-page-affiche-une-erreur)). Dans
@@ -126,14 +127,15 @@ l'ordre des rubriques viennent de la vitrine.
 
 ## Le pied de page : auteur, licences et IA
 
-En bas de l'accueil, de chaque rubrique, de la bibliothèque et de l'espace administrateur, un pied
-de page rappelle :
+En bas de l'accueil, de chaque rubrique, de la bibliothèque, des annales, des espaces élève et
+enseignant·e et de l'espace administrateur, le pied de page commence, depuis le nouveau design du
+21 novembre 2026, par une ligne courte : l'auteur, les deux licences (« documents CC BY-SA 4.0 » et
+« code MIT », chacune avec un lien vers son texte officiel), le lien « Code source sur GitHub » vers
+le dépôt du site (réglage `depot`, voir [Réglages généraux](#réglages-généraux)) et la mention
+« conçu avec l'aide de l'IA ». Dessous, il rappelle :
 
 - qui conçoit les ressources, et la place de l'IA : « Ces ressources sont conçues par
   Babash - NSI Tani Malandi ; beaucoup le sont avec l'aide de l'IA. » ;
-- les licences : les documents sous licence CC BY-SA 4.0 et le code des applications sous
-  licence MIT, chacune avec un lien vers son texte officiel, puis le lien « Code source sur
-  GitHub » vers le dépôt du site (réglage `depot`, voir [Réglages généraux](#réglages-généraux)) ;
 - la réutilisation : « Tu peux les réutiliser et les modifier en mentionnant Babash - NSI
   Tani Malandi et la licence ; un document modifié se partage sous la même licence. », suivie
   d'une invitation : « Si tu utilises l'IA pour les modifier, merci de le préciser. » C'est
@@ -141,22 +143,23 @@ de page rappelle :
 - que les ressources externes restent la propriété de leurs auteurs et autrices (leur site
   d'origine est indiqué sur chaque ressource), et que le décor du site est un dessin original.
 
-Quatre réglages de `reglages.js` changent ces textes sans toucher au code :
+Cinq réglages de `reglages.js` changent ces textes sans toucher au code :
 
 | Réglage | Contenu |
 |---|---|
-| `auteur` | le nom affiché, « Babash - NSI Tani Malandi » ; il remplace `{auteur}` dans les trois textes suivants |
+| `auteur` | le nom affiché, « Babash - NSI Tani Malandi », au début de la ligne courte ; il remplace `{auteur}` dans les trois textes suivants |
 | `mention_ia` | la phrase sur l'auteur et l'IA |
 | `reutilisation` | la phrase sur la réutilisation |
 | `invitation_ia` | l'invitation à préciser l'usage de l'IA |
+| `pied_ia` | la mention courte de la ligne, « conçu avec l'aide de l'IA » |
 
-Pour `mention_ia`, `reutilisation` et `invitation_ia`, un texte vide (`""`) retire la phrase ;
+Pour `mention_ia`, `reutilisation`, `invitation_ia` et `pied_ia`, un texte vide (`""`) retire la phrase ;
 un réglage absent reprend le texte validé par l'enseignant, écrit dans `assets/site.js`. Les
 deux licences, elles, sont fixées dans `assets/site.js`.
 
 Sans JavaScript, chaque page affiche un message (« Ce site a besoin de JavaScript pour afficher
-les ressources. ») et, dessous, l'auteur, les deux licences et le lien « Code source sur
-GitHub ». Ces textes-là sont écrits directement dans chaque page `index.html` : ils ne suivent
+les ressources. ») et, dessous, la ligne courte : l'auteur, les deux licences, le lien « Code
+source sur GitHub » et « conçu avec l'aide de l'IA ». Ces textes-là sont écrits directement dans chaque page `index.html` : ils ne suivent
 pas `reglages.js`.
 
 ---

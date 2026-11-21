@@ -30,8 +30,8 @@ la bibliothèque, qui ne sont jamais commités : l'onglet Bibliothèque afficher
 ## Tester sur ton ordinateur
 
 Télécharge le dépôt (**Code → Download ZIP**), décompresse-le et ouvre `index.html`
-dans ton navigateur. Tout fonctionne sans connexion, sauf les polices, les liens externes et
-l'onglet Bibliothèque. Celui-ci a besoin de ses fichiers, construits à la publication, et d'un
+dans ton navigateur. Tout fonctionne sans connexion (les polices sont dans le dépôt), sauf les liens
+externes et l'onglet Bibliothèque. Celui-ci a besoin de ses fichiers, construits à la publication, et d'un
 petit serveur : à la racine du dossier, lance `python3 scripts/construire_bibliotheque.py`, puis
 `python3 -m http.server`, et ouvre `http://localhost:8000/bibliotheque/`.
 
@@ -42,7 +42,7 @@ Alien Python et Court-circuit passent par Supabase. Pour leur donner ta propre b
 ## Ce que tu dois garder
 
 - **La licence** : le code reste sous licence MIT (garde le fichier [`LICENSE`](../LICENSE)), les documents sous licence CC BY-SA 4.0, en mentionnant Babash - NSI Tani Malandi ; un document modifié se partage sous la même licence (la section [Licence](../README.md#licence) du README).
-- **Ce qui vient d'ailleurs**, avec sa licence et sa notice : les exercices d'Alien Python (la notice `snt/fichiers/alien-python/LICENCE.txt`, à garder avec `data.js`), les bibliothèques et les polices de Court-circuit (`snt/fichiers/court-circuit/vendor/LICENCES-BIBLIOTHEQUES.txt` et `snt/fichiers/court-circuit/LICENCE.txt`), la page modèle de CodePen et les bibliothèques du TP des donuts (`LICENSE-modele-codepen.txt` et les notices des dossiers `vendor/` de `snt/fichiers/web-interview-donuts/`), les polices des TD (`assets/fonts/`, décrites dans `assets/fonts/LISEZMOI.md` : Atkinson Hyperlegible, JetBrains Mono, Anton et VT323 sous SIL Open Font License 1.1, et « TD Symboles », tirée de DejaVu Sans, sous la licence de DejaVu ; à garder avec leurs fichiers `assets/fonts/LICENCE-*.txt`), le crédit de Natural Earth et de GeoNames au pied du voyageur de commerce.
+- **Ce qui vient d'ailleurs**, avec sa licence et sa notice : les exercices d'Alien Python (la notice `snt/fichiers/alien-python/LICENCE.txt`, à garder avec `data.js`), les bibliothèques et les polices de Court-circuit (`snt/fichiers/court-circuit/vendor/LICENCES-BIBLIOTHEQUES.txt` et `snt/fichiers/court-circuit/LICENCE.txt`), la page modèle de CodePen et les bibliothèques du TP des donuts (`LICENSE-modele-codepen.txt` et les notices des dossiers `vendor/` de `snt/fichiers/web-interview-donuts/`), les polices du site et des TD (`assets/fonts/`, décrites dans `assets/fonts/LISEZMOI.md` : Atkinson Hyperlegible, JetBrains Mono, Anton et VT323 sous SIL Open Font License 1.1, et « TD Symboles », tirée de DejaVu Sans, sous la licence de DejaVu ; à garder avec leurs fichiers `assets/fonts/LICENCE-*.txt`), le crédit de Natural Earth et de GeoNames au pied du voyageur de commerce.
 - **Les activités Capytale** (les dossiers `fichiers/capytale/`) : chacune garde sa licence et ses crédits, donnés au pied de sa page de lecture et dans sa fiche (`donnees/ressources/`). Trois activités (Internet de David Landry, les gloutons de Germain Becker et Sébastien Point, l'escape game de Laura Fléron) et les modules `alien_python.py` et `pixel_art.py` sont sous licence non commerciale (CC BY-NC-SA) : pas d'usage commercial, et une version modifiée se partage sous la même licence. La section [Licence](../README.md#licence) du README les détaille.
 - **Les crédits en chaîne** d'une ressource reprise, comme la fiche Python de SNT, ci-dessous.
 

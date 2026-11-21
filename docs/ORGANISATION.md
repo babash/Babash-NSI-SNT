@@ -41,16 +41,20 @@ calendrier/                 le Calendrier des vacances, en service depuis le 20/
                             (exercices/, contrôlées à chaque publication) et les migrations de sa base
                             (supabase/, voir SUPABASE.md)
 assets/                     mise en page et fonctionnement (ne pas toucher)
+  signal-commun.css         la palette et les polices communes au site et aux TD (style « Signal
+                            pirate », 21/11/2026) ; style.css, chargé après lui : la mise en page
+                            du site
   td-en-ligne.js, .css      le moteur des TD en ligne auto-correctifs (Python, avec Pyodide, chargé
                             à la demande depuis jsDelivr, jamais copié dans le dépôt) et leur style
                             « Signal pirate » : une seule feuille de style pour l'écran clair,
                             l'écran obscur et le papier
-  td/                       les dessins des TD : les 4 bandeaux qui tournent (avec leurs variantes
-                            de 20 mm pour les contrôles et leurs versions obscures), la marge et le
-                            margouillat caché (places-margouillat.json : ses cachettes) ; refaits
-                            par charte/bandeaux-td.py
-  fonts/                    les polices des TD, hébergées sur le site (aucun appel à un serveur de
-                            polices), avec leurs licences (LISEZMOI.md)
+  td/                       les dessins des TD, repris par le bandeau du site : les 4 bandeaux qui
+                            tournent (avec leurs variantes de 20 mm pour les contrôles et leurs
+                            versions obscures), la marge et le margouillat caché
+                            (places-margouillat.json : ses cachettes) ; refaits par
+                            charte/bandeaux-td.py
+  fonts/                    les polices des TD et du site, hébergées sur le site (aucun appel à un
+                            serveur de polices), avec leurs licences (LISEZMOI.md)
   equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance) ; equipage/ : son contrat
                             (LISEZMOI.md) et son catalogue (catalogue.json, généré depuis le module :
                             ne pas le modifier à la main)
@@ -105,6 +109,13 @@ vitrine place (le sapin des fonctions et le Pokédex, pour l'instant).
 
 ## Le décor
 
-La ville, sa liaison montante et le sol quadrillé du bandeau sont un dessin original, généré
-par `assets/site.js` (fonction `scene`) dans la couleur de chaque rubrique. Les couleurs
-générales des deux affichages sont en haut de `assets/style.css`.
+Depuis le 21 novembre 2026, le site a le style des TD, « Signal pirate » (maquette validée par
+l'enseignant). Le bandeau de chaque page est l'un des quatre paysages de Mayotte des TD
+(`assets/td/`, dessins originaux), tiré à chaque page par `assets/site.js` (fonction `bandeau`),
+jamais deux fois de suite le même ; `?bandeau=1` à `?bandeau=4`, ajouté à l'adresse, en force un.
+Le margouillat vert s'y cache à l'une des places prévues pour ce paysage
+(`assets/td/places-margouillat.json`). Aucune couleur n'est propre à une rubrique : le niveau est
+écrit dans une puce (SNT, 1re, Tle, PP, Tous). La palette et les polices, en clair et en obscur,
+sont dans `assets/signal-commun.css`, commune au site et aux TD (ses lignes 18 à 133 sont les lignes
+19 à 134 de `assets/td-en-ligne.css`) ; la mise en page du site est dans `assets/style.css`. Le
+Calendrier des vacances garde pour l'instant sa propre feuille (`calendrier/calendrier.css`).
