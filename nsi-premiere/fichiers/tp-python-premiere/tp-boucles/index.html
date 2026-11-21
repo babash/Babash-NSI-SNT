@@ -16,14 +16,14 @@
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
      data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="nsi1-tp-boucles" data-td-version="1">
+<main class="td" data-td="nsi1-tp-boucles" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 1 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="1">
-      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:83.93%;--y:76.79%;--r:176deg;--l:3.92%;--s:-1"></span></div>
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b3" style="--x:52.38%;--y:91.07%;--r:-6deg;--l:4.2%;--s:-1"></span></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Boucles</span></p>
         <h1>TP : les boucles</h1>
@@ -56,8 +56,8 @@
   <p>Crée un fichier nommé <code>echauffement.py</code>. Dans la feuille d'exercices, tu as affiché un sapin comme celui-ci :</p>
   <pre class="td-console"><span class="td-l">   *</span><span class="td-l">   *</span><span class="td-l">  ***</span><span class="td-l"> *****</span><span class="td-l">*******</span><span class="td-l">  ***</span><span class="td-l">  ***</span></pre>
 
-  <section class="td-q" data-type="code" id="q1" data-fichier="echauffement.py" data-obligatoire>
-    <p class="td-consigne">Sur le même principe, affiche le motif suivant (la page vérifie les étoiles de chaque ligne ; aligne-les toi-même avec des espaces) :</p>
+  <section class="td-q" data-type="code" id="q1" data-fichier="echauffement.py" data-obligatoire data-lignes="5" data-espaces="exact">
+    <p class="td-consigne">Sur le même principe, affiche le motif suivant (les espaces du début de chaque ligne comptent) :</p>
     <pre class="td-console"><span class="td-l">******</span><span class="td-l"> ****</span><span class="td-l">  **</span><span class="td-l">  **</span><span class="td-l"> ****</span><span class="td-l">******</span></pre>
     <pre class="td-depart">
 # Ton programme
@@ -95,18 +95,21 @@ from random import randint
 prix = randint(1, 10)</pre><p>Plus tard, quand tout marche, remplace <code>randint(1, 10)</code> par <code>randint(1, 100)</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="code" id="q3" data-fichier="juste_prix.py" data-obligatoire>
+  <section class="td-q" data-type="code" id="q3" data-fichier="juste_prix.py" data-obligatoire data-lignes="10">
     <p class="td-consigne">Écris une boucle qui fait les 10 essais : à chaque tour, demande une proposition, puis affiche <code>Trop haut</code>, <code>Trop bas</code> ou <code>Gagné !</code>. En ligne, le prix est 7 et les propositions sont 5, 9, puis 7 à chaque fois.</p>
     <pre class="td-depart">
-# En ligne seulement : le prix et les propositions sont fixés
+from random import randint
+prix = randint(1, 10)
+</pre>
+    <script type="text/x-python" class="td-preambule">
 def randint(a, b):
     return 7
 propositions = [5, 9, 7, 7, 7, 7, 7, 7, 7, 7]
 def input(message=""):
     return str(propositions.pop(0))
-# ----- ton programme -----
-prix = randint(1, 10)
-</pre>
+import random
+random.randint = randint
+</script>
     <pre class="td-attendu">
 Trop bas
 Trop haut
@@ -123,13 +126,7 @@ Gagné !</pre>
     <p class="td-aide">Trois cas : <code>if proposition &gt; prix:</code>, <code>elif proposition &lt; prix:</code>, <code>else:</code>.</p>
     <div class="td-correction">
       <pre class="td-code" data-verifier="correction">
-# En ligne seulement : le prix et les propositions sont fixés
-def randint(a, b):
-    return 7
-propositions = [5, 9, 7, 7, 7, 7, 7, 7, 7, 7]
-def input(message=""):
-    return str(propositions.pop(0))
-# ----- ton programme -----
+from random import randint
 prix = randint(1, 10)
 for essai in range(10):
     proposition = int(input("Ta proposition : "))
@@ -143,17 +140,19 @@ for essai in range(10):
     </div>
   </section>
 
-  <section class="td-q" data-type="code" id="q4" data-fichier="juste_prix.py" data-obligatoire>
+  <section class="td-q" data-type="code" id="q4" data-fichier="juste_prix.py" data-obligatoire data-lignes="6">
     <p class="td-consigne">Tire maintenant le prix entre 1 et 100. Ajoute la ligne qui affiche <code>Perdu, le prix était</code> suivi du prix, si le prix n'est pas trouvé au bout des 10 essais. En ligne, le prix est 42 et les 10 propositions sont fausses.</p>
     <pre class="td-depart">
-# En ligne seulement : le prix et les propositions sont fixés
+</pre>
+    <script type="text/x-python" class="td-preambule">
 def randint(a, b):
     return 42
 propositions = [50, 25, 37, 43, 40, 41, 44, 30, 60, 1]
 def input(message=""):
     return str(propositions.pop(0))
-# ----- ton programme -----
-</pre>
+import random
+random.randint = randint
+</script>
     <pre class="td-attendu">
 Trop haut
 Trop bas
@@ -170,13 +169,7 @@ Perdu, le prix était 42</pre>
     <p class="td-aide">Après la boucle (sans indentation) : <code>if not trouve:</code>, puis <code>print("Perdu, le prix était", prix)</code>.</p>
     <div class="td-correction">
       <pre class="td-code" data-verifier="correction">
-# En ligne seulement : le prix et les propositions sont fixés
-def randint(a, b):
-    return 42
-propositions = [50, 25, 37, 43, 40, 41, 44, 30, 60, 1]
-def input(message=""):
-    return str(propositions.pop(0))
-# ----- ton programme -----
+from random import randint
 prix = randint(1, 100)
 trouve = False
 for essai in range(10):
@@ -194,17 +187,19 @@ if not trouve:
     </div>
   </section>
 
-  <section class="td-q" data-type="code" id="q5" data-fichier="juste_prix.py" data-obligatoire>
+  <section class="td-q" data-type="code" id="q5" data-fichier="juste_prix.py" data-obligatoire data-lignes="6">
     <p class="td-consigne">Si besoin, change ta boucle <code>for</code> en boucle <code>while</code> : le jeu doit s'arrêter dès que le prix est trouvé, même avant le dixième essai. En ligne, le prix est 42 et la sixième proposition est la bonne.</p>
     <pre class="td-depart">
-# En ligne seulement : le prix et les propositions sont fixés
+</pre>
+    <script type="text/x-python" class="td-preambule">
 def randint(a, b):
     return 42
 propositions = [50, 25, 37, 43, 40, 42, 42, 42, 42, 42]
 def input(message=""):
     return str(propositions.pop(0))
-# ----- ton programme -----
-</pre>
+import random
+random.randint = randint
+</script>
     <pre class="td-attendu">
 Trop haut
 Trop bas
@@ -216,13 +211,7 @@ Gagné !</pre>
     <p class="td-aide">La condition : on continue tant qu'il reste des essais <b>et</b> que le prix n'est pas trouvé : <code>while essai &lt; 10 and not trouve:</code>.</p>
     <div class="td-correction">
       <pre class="td-code" data-verifier="correction">
-# En ligne seulement : le prix et les propositions sont fixés
-def randint(a, b):
-    return 42
-propositions = [50, 25, 37, 43, 40, 42, 42, 42, 42, 42]
-def input(message=""):
-    return str(propositions.pop(0))
-# ----- ton programme -----
+from random import randint
 prix = randint(1, 100)
 trouve = False
 essai = 0
@@ -250,15 +239,17 @@ if not trouve:
   </ul>
   <p>On peut relancer autant de dés qu'on veut, en laissant les 1 de côté, et recalculer les points à chaque lancer. Mais attention : dès que deux dés sont à 1, on perd tout ! À toi de t'arrêter au bon moment. <b>Une manche :</b> on lance des dés tant qu'on n'a pas deux 1 et qu'on ne choisit pas de s'arrêter.</p>
 
-  <section class="td-q" data-type="code" id="q6" data-fichier="des_bloques.py" data-obligatoire>
+  <section class="td-q" data-type="code" id="q6" data-fichier="des_bloques.py" data-obligatoire data-lignes="14">
     <p class="td-consigne">Étapes 1 à 4. Crée 5 variables pour les dés et simule un premier lancer avec <code>randint(1, 6)</code>. Affiche les 5 valeurs sur une ligne. Compte les 1 : s'il y en a au moins deux, le score vaut 0 et une variable booléenne <code>stop</code> vaut <code>True</code> ; sinon, le score est la somme des dés sans les 1, et <code>stop</code> vaut <code>False</code>. Affiche <code>Score :</code> suivi du score. En ligne, les dés donnent 3, 1, 5, 6, 2.</p>
     <pre class="td-depart">
-# En ligne seulement : les dés donnent ces valeurs, dans l'ordre
+</pre>
+    <script type="text/x-python" class="td-preambule">
 des_fixes = [3, 1, 5, 6, 2]
 def randint(a, b):
     return des_fixes.pop(0)
-# ----- ton programme -----
-</pre>
+import random
+random.randint = randint
+</script>
     <pre class="td-attendu">
 3 1 5 6 2
 Score : 16</pre>
@@ -270,11 +261,7 @@ assert score == 16, "3 + 5 + 6 + 2 = 16 : le 1 ne compte pas."
     <p class="td-aide">Pour la somme sans les 1 : ajoute chaque dé seulement s'il est différent de 1 (<code>if d1 != 1:</code>).</p>
     <div class="td-correction">
       <pre class="td-code" data-verifier="correction">
-# En ligne seulement : les dés donnent ces valeurs, dans l'ordre
-des_fixes = [3, 1, 5, 6, 2]
-def randint(a, b):
-    return des_fixes.pop(0)
-# ----- ton programme -----
+from random import randint
 d1 = randint(1, 6)
 d2 = randint(1, 6)
 d3 = randint(1, 6)
@@ -298,15 +285,17 @@ print("Score :", score)</pre>
     </div>
   </section>
 
-  <section class="td-q" data-type="code" id="q7" data-fichier="des_bloques.py" data-obligatoire>
+  <section class="td-q" data-type="code" id="q7" data-fichier="des_bloques.py" data-obligatoire data-support="ecran">
     <p class="td-consigne">Teste ton programme avec un lancer perdant : les dés donnent 1, 4, 1, 6, 6. Copie ton programme sous les lignes de départ.</p>
     <pre class="td-depart">
-# En ligne seulement : les dés donnent ces valeurs, dans l'ordre
+</pre>
+    <script type="text/x-python" class="td-preambule">
 des_fixes = [1, 4, 1, 6, 6]
 def randint(a, b):
     return des_fixes.pop(0)
-# ----- ton programme -----
-</pre>
+import random
+random.randint = randint
+</script>
     <pre class="td-attendu">
 1 4 1 6 6
 Score : 0</pre>
@@ -317,11 +306,7 @@ assert stop == True, "Deux dés valent 1 : la variable stop doit valoir True."
     <div class="td-correction">
       <p>Le même programme qu'à la question 6 : seules les valeurs des dés changent. <code>nb_un</code> vaut 2, donc <code>score</code> vaut 0 et <code>stop</code> vaut <code>True</code>.</p>
       <pre class="td-code" data-verifier="correction">
-# En ligne seulement : les dés donnent ces valeurs, dans l'ordre
-des_fixes = [1, 4, 1, 6, 6]
-def randint(a, b):
-    return des_fixes.pop(0)
-# ----- ton programme -----
+from random import randint
 d1 = randint(1, 6)
 d2 = randint(1, 6)
 d3 = randint(1, 6)
