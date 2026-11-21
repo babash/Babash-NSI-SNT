@@ -8,12 +8,13 @@ grille « libre » (sans obstacle, départ en A6) : ces programmes-là sont donn
 En plus, sur la grille de la page (--grille) :
 - courte data-verifier="robot"        : la case d'arrivée réelle est une des réponses ;
 - courte data-verifier="robot-sortie" : ce qu'affiche réellement le programme est une des réponses ;
-  input() reçoit les réponses de SAISIES (5, oui, non…) : un programme qui demande une saisie s'exécute aussi ;
+  input() reçoit les réponses de SAISIES (selon l'invite : « Devine : » 10, 50, 42…) : un programme qui demande une saisie s'exécute aussi ;
   « trouve l'erreur » dont la ligne corrigée commence par des espaces : elle remplace la ligne, décalage compris ;
   sans code affiché, la question reprend le programme de la question robot précédente ;
   (data-depart="B3" change la case de départ, data-grille une autre grille, pour une question).
 
 Usage (à la racine du dépôt) :
+  python3 -I nsi-premiere/fichiers/bases-python/source/verifier.py --erreur majeur.py   (le message à copier)
   python3 -I nsi-premiere/fichiers/bases-python/source/verifier.py --grille for nsi-premiere/fichiers/bases-python/td-for.html
 """
 import importlib.util
@@ -30,8 +31,10 @@ vt = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(vt)
 
 
-# ce que « tape » l'élève quand un programme appelle input() (un nombre positif, puis « oui »…)
-SAISIES = ['5', 'oui', 'non'] * 20
+# ce que « tape » l'élève quand un programme appelle input(), selon la question posée (l'invite) ;
+# pour une autre invite : 5, puis oui, puis non, et ainsi de suite
+SAISIES = {'Devine : ': ['10', '50', '42'], 'Note : ': ['10', '14', '15'], 'Âge : ': ['17'],
+           '': ['5', 'oui', 'non']}
 
 
 def avec_robot(grille, depart=None):
@@ -40,11 +43,21 @@ def avec_robot(grille, depart=None):
         'g = {"__name__": "__main__"}',
         'g = {"__name__": "__main__"}\n_rg = {"__name__": "robot"}\nexec(' + repr(src) + ', _rg)\n'
         'g.update(_rg["Robot"](' + repr(grille) + ', ' + repr(depart) + ').fonctions())\n'
-        '_saisies = iter(' + repr(SAISIES) + ')\n'
-        'g["input"] = lambda invite="": (print(invite, end=""), next(_saisies))[1]')
+        '_S, _k = ' + repr(SAISIES) + ', {}\n'
+        'def _saisir(invite=""):\n'
+        '    print(invite, end="")\n'
+        '    l = _S.get(invite, _S[""]); _k[invite] = _k.get(invite, -1) + 1\n'
+        '    return l[_k[invite] % len(l)]\n'
+        'g["input"] = _saisir')
 
 
 def principal(args):
+    if args[:1] == ['--erreur']:
+        # le message réel, avec le robot et les saisies : à copier dans pre.td-erreur
+        vt.LANCEUR = avec_robot('libre')
+        rc, out, err = vt.lancer(open(args[1], encoding='utf-8').read(), os.path.basename(args[1]))
+        sys.stdout.write(err or 'Aucune erreur : ce programme marche.\n')
+        return 0
     grille = 'for'
     if args[:1] == ['--grille']:
         grille, args = args[1], args[2:]
