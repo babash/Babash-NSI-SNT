@@ -9,3 +9,4 @@ Compilation : `latexmk -pdf -shell-escape main-poo-fraction.tex main-poo-pile.te
 Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en ligne, auto-corrective, corrigé compris) ; le PDF à la même adresse qu'avant en est la feuille vierge imprimée (`charte/imprimer-td.py`). Les sources LaTeX restent ici pour mémoire. Les réponses sont obtenues par exécution : `source/verifier.py` dans le dossier de chaque page.
 
 - Piles et files : `dm-pile/index.html` (PDF : `dm-pile.pdf`).
+- Recherche linéaire dans un dictionnaire : `dm-recherche-lineaire-dict/index.html` (PDF : `dm-recherche-lineaire-dict.pdf`).
