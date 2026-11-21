@@ -280,7 +280,7 @@
       exp.hidden = !ouvert; bouton.setAttribute('aria-expanded', String(ouvert));
       bouton.textContent = ouvert ? 'Masquer l\'explication' : 'Expliquer en français';
     });
-    box.appendChild(el('p', { class: 'td-etiquette-console', text: 'Message de Python' }));
+    box.appendChild(el('p', { class: 'td-etiquette-console', text: 'erreur' }));
     box.appendChild(pre); box.appendChild(bouton); box.appendChild(exp);
     if (parent) parent.appendChild(box);
     return box;
@@ -837,7 +837,7 @@
     this.zone.appendChild(el('div', { class: 'td-ligne-champ td-bloc-champ' }, [
       el('label', { for: id, text: this.s.getAttribute('data-etiquette') || 'Ce que le programme affiche (une ligne par ligne d\'affichage) :' }), this.champ]));
     this.surJuste = function () {
-      this.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'Sortie du programme' }));
+      this.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'sortie' }));
       this.retour.appendChild(console_(this.attendu));
     };
   };
@@ -1002,12 +1002,12 @@
       var ok = r.etat === 'ok' && (q.attendu === null || normSortie(r.sortie) === normSortie(q.attendu));
       q.ed.rendre(r.etat === 'erreur' ? ligneErreur(r.detail) : null);
       q.conclure(ok, null);
-      if (r.sortie && r.sortie.trim()) { q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'Ce que ton programme affiche' })); q.retour.appendChild(console_(r.sortie)); }
+      if (r.sortie && r.sortie.trim()) { q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'ta sortie' })); q.retour.appendChild(console_(r.sortie)); }
       else if (r.etat === 'ok') q.retour.appendChild(el('p', { text: 'Ton programme n\'affiche rien. As-tu utilisé print ?' }));
       if (r.etat === 'erreur') blocErreur(r.detail, q.retour);
       else if (r.etat === 'test') q.retour.appendChild(el('p', { text: r.detail || 'Un test ne passe pas.' }));
       else if (!ok && q.attendu !== null) {
-        q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'Ce qui est attendu' }));
+        q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'sortie attendue' }));
         q.retour.appendChild(console_(q.attendu, 'td-console-attendu'));
       }
     });
@@ -1038,6 +1038,9 @@
   Feuille.prototype.monter = function () {
     var f = this;
     this.r.classList.add('td-pret');
+    // titre long : réduction mesurée (26 caractères tiennent à la taille normale, 31 à la taille réduite)
+    var h1 = this.r.querySelector('.td-bandeau h1');
+    if (h1) { var lg = h1.textContent.replace(/\s+/g, ' ').trim().length; if (lg > 31) h1.classList.add('td-titre-tres-long'); else if (lg > 26) h1.classList.add('td-titre-long'); }
     this.questions = Array.prototype.slice.call(this.r.querySelectorAll('.td-q[data-type]')).map(function (s, i) { return new Question(f, s, i + 1); });
     this.questions.forEach(function (q) {
       try { q.monter(); } catch (e) { q.s.classList.add('td-q-cassee'); if (window.console) console.error('Question ' + q.id + ' :', e); }
