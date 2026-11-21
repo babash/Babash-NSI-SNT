@@ -168,10 +168,10 @@ debit_mbits = [[1]]   # en Mbit/s</pre>
   <section class="td-q" data-type="qcu" id="q8" data-support="ecran">
     <p class="td-consigne"><b>Problème de cohérence.</b> Un·e élève divise un débit de référence de 100 Mbit/s par un débit réel de 1 Gbit/s sans convertir : il ou elle obtient un coût de 100. Est-ce logique ?</p>
     <ul class="td-options">
-      <li data-juste>Non : une liaison plus rapide que la référence doit coûter moins, pas plus ; 100 / 1 000 = 0,1.</li>
-      <li data-retour="Le coût n'est pas lié au nombre de mégabits : on a divisé des Mbit/s par des Gbit/s, sans convertir.">Oui : 100 / 1 = 100.</li>
-      <li data-retour="Un coût élevé désigne une liaison lente ; or 1 Gbit/s est plus rapide que 100 Mbit/s.">Oui : une liaison rapide a un coût élevé.</li>
-      <li data-retour="On peut toujours diviser, à condition d'écrire les deux débits dans la même unité.">Non : on ne peut pas diviser deux débits.</li>
+      <li data-juste>Non : plus rapide que la référence, elle doit coûter moins ; 100 / 1 000 = 0,1.</li>
+      <li data-retour="Le coût n'est pas lié au nombre de mégabits : on a divisé des Mbit/s par des Gbit/s, sans convertir.">Oui : 100 / 1 = 100, le calcul est juste et il n'y a rien à convertir.</li>
+      <li data-retour="Un coût élevé désigne une liaison lente ; or 1 Gbit/s est plus rapide que 100 Mbit/s.">Oui : une liaison rapide a un coût élevé, car elle transporte plus de données.</li>
+      <li data-retour="On peut toujours diviser, à condition d'écrire les deux débits dans la même unité.">Non : on ne peut pas diviser deux débits, seulement les comparer.</li>
     </ul>
     <p class="td-aide">Écris les deux débits en Mbit/s, puis refais la division.</p>
     <div class="td-correction"><p><b>Non.</b> 1 Gbit/s = 1 000 Mbit/s, donc le coût vaut 100 / 1 000 = 0,1 (arrondi à 1). En divisant des Mbit/s par des Gbit/s, on mélange les unités : la liaison la plus rapide semblerait la plus chère.</p></div>
@@ -187,9 +187,9 @@ debit_mbits = [[1]]   # en Mbit/s</pre>
   <section class="td-q" data-type="qcu" id="q9" data-ordre="fixe">
     <p class="td-consigne">Quel chemin choisit RIP ?</p>
     <ul class="td-options">
-      <li data-juste>Le chemin par 2 routeurs (Ethernet).</li>
       <li data-retour="RIP ne regarde pas le débit : il compte les sauts, et 2 routeurs, c'est moins que 3.">Le chemin par 3 routeurs (Giga Ethernet).</li>
-      <li data-retour="RIP choisit toujours un seul chemin : celui qui a le moins de sauts.">Les deux à la fois.</li>
+      <li data-juste>Le chemin par 2 routeurs (Ethernet).</li>
+      <li data-retour="RIP choisit toujours un seul chemin : celui qui a le moins de sauts.">Les deux à la fois, pour répartir les paquets.</li>
       <li data-retour="RIP compte les sauts : il peut toujours comparer deux chemins.">Aucun : RIP ne sait pas choisir.</li>
     </ul>
     <p class="td-aide">RIP compte uniquement le nombre de sauts.</p>
@@ -199,10 +199,10 @@ debit_mbits = [[1]]   # en Mbit/s</pre>
   <section class="td-q" data-type="qcu" id="q10" data-ordre="fixe">
     <p class="td-consigne">Quel chemin choisit OSPF ?</p>
     <ul class="td-options">
-      <li data-juste>Le chemin par 3 routeurs (Giga Ethernet) : chaque lien coûte 1, contre 10 en Ethernet.</li>
-      <li data-retour="OSPF additionne les coûts des liens : un lien Ethernet coûte déjà 10, plus que tout le chemin en Giga Ethernet.">Le chemin par 2 routeurs (Ethernet), qui a moins de liens.</li>
-      <li data-retour="Les coûts sont différents (1 par lien en Giga Ethernet, 10 en Ethernet) : OSPF prend le total le plus petit.">Les deux, car les coûts sont égaux.</li>
-      <li data-retour="OSPF calcule un coût pour tous les liens : il compare les deux chemins.">Aucun : 1 Gbit/s dépasse le débit de référence.</li>
+      <li data-retour="OSPF additionne les coûts des liens : un lien Ethernet coûte déjà 10, plus que tout le chemin en Giga Ethernet.">Le chemin par 2 routeurs (Ethernet), car il a moins de liens à traverser.</li>
+      <li data-retour="Les coûts sont différents (1 par lien en Giga Ethernet, 10 en Ethernet) : OSPF prend le total le plus petit.">Les deux, car les coûts totaux des deux chemins sont égaux.</li>
+      <li data-juste>Le chemin par 3 routeurs (Giga Ethernet) : un lien y coûte 1, contre 10 en Ethernet.</li>
+      <li data-retour="OSPF calcule un coût pour tous les liens : il compare les deux chemins.">Aucun : 1 Gbit/s dépasse le débit de référence de 100 Mbit/s.</li>
     </ul>
     <p class="td-aide">Calcule le coût d'un lien de chaque type, puis additionne le long de chaque chemin.</p>
     <div class="td-correction"><p>Coût d'un lien Giga Ethernet : 100 / 1 000 = 0,1, arrondi à 1. Coût d'un lien Ethernet : 100 / 10 = 10. Le chemin en Giga Ethernet coûte au total 2 ou 3 (selon le nombre de liens), le chemin en Ethernet au moins 10 : OSPF choisit <b>le chemin en Giga Ethernet</b>.</p></div>
