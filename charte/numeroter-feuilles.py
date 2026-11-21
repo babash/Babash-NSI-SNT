@@ -7,9 +7,12 @@ Usage (à la racine du dépôt) :
   python3 -I charte/numeroter-feuilles.py --tout                   tous les TD à plusieurs feuilles du dépôt
   Ajouter --verifier : rien n'est écrit, et le script sort en erreur si une feuille est à renuméroter.
 
-Dans un dossier, les feuilles sont les pages qui chargent assets/td-en-ligne.js, rangées par data-feuille
-(sans lui : 1), puis index.html d'abord, puis par nom. La feuille 2 commence au numéro qui suit la dernière
-question de la feuille 1, et ainsi de suite.
+Les feuilles d'un TD (pages qui chargent assets/td-en-ligne.js) sont reconnues dans les deux rangements :
+  - un dossier : index.html, feuille-2.html, feuille-3.html… ;
+  - des pages de même nom dans un dossier : td-for.html, td-for-2.html, td-for-3.html…
+Un dossier peut contenir plusieurs TD. Les feuilles sont rangées par data-feuille s'il est écrit, sinon par
+leur nom (index.html et td-for.html : feuille 1). La feuille 2 commence au numéro qui suit la dernière question
+de la feuille 1, et ainsi de suite. Un TD mal rangé est signalé sans arrêter les autres.
 
 Le compte suit le moteur : une suite de numéros pour l'écran et une pour le papier. Une question
 data-support="ecran" ne compte qu'à l'écran, une data-support="papier" que sur papier, les autres partout.
@@ -66,20 +69,49 @@ def est_td(chemin):
     return 'td-en-ligne.js' in t and re.search(r'<main\b[^>]*\bdata-td=', t) is not None and '{{' not in t
 
 
-def feuilles_du_dossier(d):
-    fichiers = [os.path.join(d, f) for f in os.listdir(d) if f.endswith('.html') and est_td(os.path.join(d, f))]
+def rang_et_groupe(chemin):
+    """Les deux rangements d'un TD à plusieurs feuilles :
+    - un dossier : index.html (feuille 1), feuille-2.html, feuille-3.html… ;
+    - des pages de même nom : td-for.html (feuille 1), td-for-2.html, td-for-3.html…
+    Renvoie (groupe, rang tiré du nom). data-feuille, s'il est écrit, l'emporte sur le rang du nom."""
+    d, nom = os.path.split(chemin)
+    base = nom[:-5]
+    if base == 'index':
+        return (d, ''), 1
+    m = re.fullmatch(r'feuille-(\d+)', base)
+    if m:
+        return (d, ''), int(m.group(1))
+    m = re.fullmatch(r'(.+)-(\d+)', base)
+    if m and os.path.exists(os.path.join(d, m.group(1) + '.html')):
+        return (d, m.group(1)), int(m.group(2))
+    return (d, base), 1
 
-    def cle(ch):
+
+def grouper(fichiers):
+    """Range des pages de TD en TD (groupes), chacun dans l'ordre de ses feuilles. Une feuille sans data-feuille
+    prend le rang de son nom (index.html, td-for.html : 1). Renvoie (groupes, problèmes)."""
+    groupes, problemes = {}, []
+    for ch in fichiers:
+        g, rang = rang_et_groupe(ch)
         _, c = lire(ch)
-        n = int(c.feuille) if c.feuille and c.feuille.isdigit() else 1
-        nom = os.path.basename(ch)
-        chiffres = [int(x) for x in re.findall(r'\d+', nom)]
-        return (n, nom != 'index.html', chiffres, nom)
-    fichiers.sort(key=cle)
-    rangs = [cle(f)[0] for f in fichiers]
-    if len(set(rangs)) != len(rangs):
-        sys.exit(f'{os.path.relpath(d, RACINE)} : deux feuilles ont le même data-feuille ({rangs}) ; donnez les fichiers dans l\'ordre')
-    return fichiers
+        if c.feuille and c.feuille.isdigit():
+            rang = int(c.feuille)
+        groupes.setdefault(g, []).append((rang, os.path.basename(ch), ch))
+    sortie = []
+    for g, l in sorted(groupes.items()):
+        l.sort()
+        rangs = [x[0] for x in l]
+        if len(set(rangs)) != len(rangs):
+            problemes.append(f'{os.path.relpath(l[0][2], RACINE)} … : deux feuilles du même TD ont le même rang {rangs} '
+                             '(data-feuille ou nom) ; donnez les fichiers dans l\'ordre')
+            continue
+        sortie.append([x[2] for x in l])
+    return sortie, problemes
+
+
+def feuilles_du_dossier(d):
+    """Les TD d'un dossier (un ou plusieurs, chacun avec ses feuilles)."""
+    return grouper([os.path.join(d, f) for f in sorted(os.listdir(d)) if f.endswith('.html') and est_td(os.path.join(d, f))])
 
 
 def poser(main_tag, attrs):
@@ -125,9 +157,8 @@ def numeroter(fichiers, verifier):
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     verifier = '--verifier' in sys.argv
-    groupes = []
+    groupes, problemes = [], []
     if '--tout' in sys.argv:
-        sys.path.insert(0, ICI)
         import importlib.util
         spec = importlib.util.spec_from_file_location('nouveau_td', os.path.join(ICI, 'nouveau-td.py'))
         nt = importlib.util.module_from_spec(spec)
@@ -137,23 +168,26 @@ def main():
                 sous[:] = []
                 continue
             sous.sort()
-            f = feuilles_du_dossier(d) if any(x.endswith('.html') for x in fs) else []
-            if len(f) > 1:
-                groupes.append(f)
+            if any(x.endswith('.html') for x in fs):
+                g, pb = feuilles_du_dossier(d)
+                groupes += [x for x in g if len(x) > 1]
+                problemes += pb
     elif args and all(os.path.isdir(a) for a in args):
-        groupes = [feuilles_du_dossier(os.path.abspath(a)) for a in args]
+        for a in args:
+            g, pb = feuilles_du_dossier(os.path.abspath(a))
+            groupes += g
+            problemes += pb
     elif args and all(a.endswith('.html') for a in args):
         groupes = [[os.path.abspath(a) for a in args]]
     else:
         sys.exit(__doc__)
     total = 0
     for g in groupes:
-        if not g:
-            print('(aucune feuille de TD dans ce dossier)')
-            continue
         total += numeroter(g, verifier)
-    print(f'{total} feuille(s) ' + ('à renuméroter' if verifier else 'renumérotée(s)') if total else 'Numéros à jour.')
-    sys.exit(1 if verifier and total else 0)
+    for x in problemes:
+        print('Problème :', x)
+    print((f'{total} feuille(s) ' + ('à renuméroter' if verifier else 'renumérotée(s)')) if total else 'Numéros à jour.')
+    sys.exit(1 if (verifier and total) or problemes else 0)
 
 
 if __name__ == '__main__':

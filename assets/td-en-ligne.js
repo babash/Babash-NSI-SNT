@@ -120,6 +120,9 @@
   function decouperTrous(l) {
     var out = [], debut = 0, k;
     while ((k = l.indexOf('[[', debut)) >= 0) {
+      // « t[[[i]]] » : après un nom, une parenthèse ou un crochet, le premier « [ » est celui du code (t[ + case + ]) ;
+      // ailleurs (« = [[[1, 2]]] »), la case contient une liste (T123c)
+      if (l[k + 2] === '[' && k > 0 && /[\w)\]]/.test(l[k - 1])) k++;
       var p = 0, fin = -1;
       for (var j = k + 2; j < l.length; j++) {
         var c = l[j];
@@ -311,6 +314,33 @@
     });
   }
 
+  // une ligne de code plus large que la page (80 caractères) passe à la ligne : coupée après « , » ou à une espace,
+  // hors d'une chaîne ; la suite est décalée de 4 espaces de plus (T123c). Renvoie { texte, suites: {indice: true} }
+  var LARGEUR_PAPIER = 80;
+  function couperLongues(code, max) {
+    var out = [], suites = {};
+    code.split('\n').forEach(function (l) {
+      var reste = l, premiere = true, dec = l.match(/^ */)[0] + '    ';
+      while (reste.length > max) {
+        var dans = null, coupe = -1;
+        for (var i = 0; i < reste.length && i < max; i++) {
+          var c = reste[i];
+          if (dans) { if (c === dans && reste[i - 1] !== '\\') dans = null; continue; }
+          if (c === '"' || c === "'") dans = c;
+          else if (c === '#') break;
+          else if (c === ' ' && i > 20) coupe = reste[i - 1] === ',' ? i : (coupe >= 0 && reste[coupe - 1] === ',' ? coupe : i);
+        }
+        if (coupe < 0) break;
+        if (!premiere) suites[out.length] = true;
+        out.push(reste.slice(0, coupe).replace(/ +$/, ''));
+        reste = dec + reste.slice(coupe).replace(/^ +/, '');
+        premiere = false;
+      }
+      if (!premiere) suites[out.length] = true;
+      out.push(reste);
+    });
+    return { texte: out.join('\n'), suites: suites };
+  }
   var CODE_LONG = 40;       // au-delà (en lignes), un code peut être coupé entre deux lignes sur papier (T123c)
   // code affiché (non modifiable), avec numéros de ligne
   function afficherCode(pre, opts) {
@@ -318,9 +348,11 @@
     if (pre.classList.contains('td-code-pret')) return pre.getAttribute('data-source');
     var code = (pre.textContent || '').replace(/^\n/, '').replace(/\s+$/, '');
     pre.setAttribute('data-source', code);
-    var lignes = colorer(code, null, langue(pre));
+    var lignes = colorer(code, null, langue(pre)), suites = opts.suites || {}, num = 0;
     pre.innerHTML = lignes.map(function (l, i) {
-      return '<span class="td-l"><span class="td-num" aria-hidden="true">' + (i + 1) + '</span>' + (l || ' ') + '</span>';
+      // une ligne trop large coupée (squelette imprimé) : sa suite porte « → » au lieu d'un numéro
+      if (suites[i]) return '<span class="td-l td-l-suite"><span class="td-num" aria-hidden="true">→</span>' + (l || ' ') + '</span>';
+      return '<span class="td-l"><span class="td-num" aria-hidden="true">' + (++num) + '</span>' + (l || ' ') + '</span>';
     }).join('');
     pre.classList.add('td-code-pret');
     if (lignes.length < 2 || opts.sansNumeros) pre.classList.add('td-sans-num');
@@ -1275,9 +1307,10 @@
         return !p.closest('.td-correction') && (p.getAttribute('data-source') || p.textContent).trim() === depart.trim();
       });
       if (!dejaVu) {
-        var imp = el('pre', { class: 'td-code td-depart-papier td-papier-seul', 'aria-hidden': 'true', text: depart });
+        var coupe = couperLongues(depart.replace(/\s+$/, ''), LARGEUR_PAPIER);
+        var imp = el('pre', { class: 'td-code td-depart-papier td-papier-seul', 'aria-hidden': 'true', text: coupe.texte });
         this.zone.appendChild(imp);
-        afficherCode(imp);
+        afficherCode(imp, { suites: coupe.suites });
         lignesDepart = imp.querySelectorAll('.td-l').length;
       }
     }
@@ -1405,6 +1438,26 @@
     this.r.querySelectorAll('pre.td-sortie-exemple').forEach(function (p) { p.parentNode.replaceChild(console_(p.textContent.replace(/^\n/, '')), p); });
     this.monterBarre();
     this.maj(false);
+    this.ajusterCodes();
+  };
+  // à l'écran, un code qui ne dépasse que de quelques pixels (8 % au plus) est un peu réduit au lieu de défiler
+  // (T123c) ; un code bien plus large garde son défilement (téléphone). Le papier a ses propres tailles.
+  Feuille.prototype.ajusterCodes = function () {
+    var r = this.r, minuterie = null;
+    function ajuster() {
+      r.querySelectorAll('pre.td-code').forEach(function (p) {
+        p.classList.remove('td-ajuste'); p.style.removeProperty('--td-reduc');
+        if (!p.getClientRects().length) return;
+        var w = p.clientWidth, sw = p.scrollWidth;
+        if (sw > w + 0.5 && sw - w <= 0.08 * w) {
+          p.style.setProperty('--td-reduc', String(Math.floor((w - 2) / sw * 1000) / 1000));
+          p.classList.add('td-ajuste');
+        }
+      });
+    }
+    var f = this;
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(ajuster);
+    window.addEventListener('resize', function () { clearTimeout(minuterie); minuterie = setTimeout(ajuster, 150); });
   };
   // tableau à remplir (T123c) : data-case-largeur (mm) et data-case-hauteur (lignes d'écriture) sur <table>,
   // data-case-largeur sur un <th> pour sa colonne ; les cellules vides deviennent des cases à remplir
@@ -1431,6 +1484,13 @@
       var tete = (pied.textContent || '').replace(/\s+/g, ' ').trim().split(' · ')[0];
       var memes = function (x) { return x.replace(/\s*(;|,| et )\s*/g, '|').toLowerCase(); };     // « ; » ou « et » : mêmes noms
       if (memes(tete) === memes(noms)) pied.classList.add('td-pied-redondant');
+      // sur papier, une ligne en fin de feuille : « Code source sur GitHub : » et l'adresse lisible (T123c)
+      var lien = Array.prototype.filter.call(pied.querySelectorAll('a[href*="github.com"]'), function (a) { return /code source/i.test(a.textContent); })[0];
+      if (lien && !pied.querySelector('.td-source-papier')) {
+        var adresse = lien.getAttribute('href').replace(/^https?:\/\//, '').replace(/\/$/, '');
+        pied.insertBefore(el('p', { class: 'td-source-papier td-papier-seul', 'aria-hidden': 'true' }, [el('span', { text: 'Code source sur GitHub : ' }), el('span', { class: 'td-adresse', text: adresse })]), pied.querySelector('.td-margouillat'));
+        lien.classList.add('td-lien-source');
+      }
     }
     if (!a || document.getElementById('td-pied-auteurs')) return;
     var txt = noms.replace(/\\/g, '\\\\').replace(/"/g, '\\"');

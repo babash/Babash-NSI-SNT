@@ -231,12 +231,15 @@ def controler(b, url, sortie, html=None):
             const doc = new DOMParser().parseFromString(await (await fetch(location.href)).text(), 'text/html');
             const sol = {};
             doc.querySelectorAll('.td-q[data-type="ordre"]').forEach(s => {
-              sol[s.id] = [...s.querySelectorAll('.td-lignes > li')].map(li => li.textContent.trim()); });
-            return sol; }""")
+              sol[s.id] = [...s.querySelectorAll('.td-lignes > li')].map(li => li.textContent.trim());
+              if (s.closest('[data-support="ecran"]')) sol[s.id].ecran = true; });
+            return Object.fromEntries(Object.entries(sol).map(([k, v]) => [k, { lignes: v, ecran: !!v.ecran }])); }""")
         ordres = {}
         lire = lambda qid: [t.strip() for t in p.locator(f'#{qid} .td-ordre-code').all_inner_texts()]
         if html is not None:
             solutions = {}          # feuilles réunies : les « ordre » ont été contrôlées feuille par feuille (identifiants en double)
+        ecran_seul = {qid for qid, x in solutions.items() if x['ecran']}
+        solutions = {qid: x['lignes'] for qid, x in solutions.items()}
         for qid, sol in solutions.items():
             depart = lire(qid)
             for cible, ligne in enumerate(sol):
@@ -248,9 +251,15 @@ def controler(b, url, sortie, html=None):
                 erreurs.append(f'{qid} : les lignes n\'ont pas pu être remises dans l\'ordre de la solution')
             num = p.locator(f'#{qid} .td-q-num').evaluate("e => (e.querySelector('.td-num-papier') || e).textContent").strip()
             ordres[qid] = (num, depart, sol)
-        # textes qui ne doivent jamais être imprimés (pris avant que le moteur ne les déplace)
-        caches = p.evaluate("""() => [...document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu')]
-            .map(e => e.innerText.trim()).filter(t => t.length > 12)""")
+        # textes qui ne doivent jamais être imprimés : lus dans la SOURCE de la page (T123c), ligne par ligne. Après le
+        # montage, le moteur colle « Correction », « Coup de pouce 1 : » ou les numéros de ligne au texte, qu'on ne
+        # retrouverait plus dans le PDF.
+        caches = p.evaluate("""async () => {
+            const doc = new DOMParser().parseFromString(await (await fetch(location.href)).text(), 'text/html');
+            const out = [];
+            doc.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu').forEach(e => {
+              e.textContent.split('\\n').map(l => l.replace(/\\s+/g, ' ').trim()).filter(l => l.length >= 16).forEach(l => out.push(l.slice(0, 40))); });
+            return [...new Set(out)]; }""")
         # ces textes et leurs copies (retours, explications) : ce qui reste visible sur papier sans eux est le texte « permis »
         p.evaluate("""() => document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu, .td-retour-zone, .td-explication')
             .forEach(e => e.setAttribute('data-imprimer-td-cache', ''))""")
@@ -263,6 +272,10 @@ def controler(b, url, sortie, html=None):
         p.set_viewport_size({'width': 794, 'height': 1123})
         p.evaluate('document.fonts.ready')
         mesures = p.evaluate(MESURES.replace('(BANDEAU_SRC)', BANDEAU_JS))
+        # un texte caché rendu sur papier (une règle d'impression qui l'affiche) : la fuite elle-même, sans lire le PDF
+        rendus = p.evaluate("""() => [...document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu, .td-retour-zone, .td-explication')]
+            .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && e.textContent.trim())
+            .map(e => (e.className || e.tagName) + ' « ' + e.textContent.replace(/\\s+/g, ' ').trim().slice(0, 30) + ' »')""")
         # le texte imprimé hors des textes cachés (pour ne pas confondre une consigne qui cite la sortie attendue)
         permis = p.evaluate("""() => { const st = document.createElement('style');
             st.textContent = '[data-imprimer-td-cache]:not(#z1):not(#z2):not(#z3) { display: none !important; }'; document.head.appendChild(st);
@@ -310,13 +323,20 @@ def controler(b, url, sortie, html=None):
     if REPERE in texte:
         erreurs.append('une réponse tapée figure dans le PDF')
     plat_permis = normal(permis)
+    if rendus:
+        erreurs.append(f'{len(rendus)} correction(s), coup(s) de pouce ou retour(s) imprimé(s) : {rendus[:3]}')
+    fuites = []
     for c in caches:
-        debut = normal(c)[:40]
+        debut = normal(c)
         # imprimé plus souvent que dans les textes visibles (une consigne peut citer la sortie attendue)
         if debut and plat.count(debut) > plat_permis.count(debut):
-            erreurs.append('texte caché imprimé : ' + debut)
+            fuites.append(debut)
+    if fuites:
+        erreurs.append(f'texte caché imprimé ({len(fuites)} ligne(s)) : ' + ' | '.join(fuites[:3]))
     # dans le PDF, les lignes de chaque question « ordre » sont dans l'ordre mélangé de départ
     for qid, (num, depart, sol) in ordres.items():
+        if qid in ecran_seul:
+            continue                  # data-support="ecran" : la question n'est pas imprimée
         debut = plat.find(num + ' ')
         suite = plat[debut:] if debut >= 0 else plat
         fin = suite.find('Question', len(num) + 1)
@@ -335,7 +355,8 @@ def controler(b, url, sortie, html=None):
     for k in range(1, pages + 1):
         tk = normal(subprocess.run(['pdftotext', '-f', str(k), '-l', str(k), sortie, '-'], capture_output=True, text=True).stdout)
         tk = re.sub(re.escape(normal(noms)) + r" ?· ?CC BY-SA 4\.0 ?· ?conçu avec l'aide de l'IA ?· ?\d+ / \d+$", '', tk).strip()
-        if (not tk or (pied_plat and tk in pied_plat)) and not encre_sous_le_haut(sortie, k):
+        sans = lambda x: re.sub(r'[\s-]', '', x)        # l'adresse passe à la ligne (« nsi- premiere »)
+        if (not tk or (pied_plat and sans(tk) in sans(pied_plat))) and not encre_sous_le_haut(sortie, k):
             erreurs.append(f'page {k} : elle ne porte que le pied de page')
     print(f'{sortie} : {pages} page(s) A4 ; {n} champ(s) remplis puis vidés ; {len(caches)} texte(s) caché(s) contrôlé(s) ; '
           f"{mesures['saisies']} élément(s) à remplir au trait net")

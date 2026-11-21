@@ -27,7 +27,7 @@ python3 -I charte/numeroter-feuilles.py --tout                                  
 python3 -I charte/numeroter-feuilles.py --tout --verifier                            # contrôle seul (sortie 1 si à refaire)
 ```
 
-Les feuilles d'un dossier sont rangées par `data-feuille` (sans lui : 1), puis `index.html`, puis par nom. Le script ne touche qu'à ces deux attributs.
+Les feuilles d'un TD sont reconnues dans **les deux rangements** : un dossier (`index.html`, `feuille-2.html`, `feuille-3.html`…) ou des pages de même nom (`td-for.html`, `td-for-2.html`, `td-for-3.html`…) ; un dossier peut contenir plusieurs TD. L'ordre : `data-feuille` s'il est écrit, sinon le nom (`index.html` et `td-for.html` sont la feuille 1). Un TD mal rangé (deux feuilles au même rang) est signalé sans arrêter les autres. Le script ne touche qu'à ces deux attributs.
 
 **Une suite de numéros par support.** Une question `data-support="ecran"` ne compte qu'à l'écran, une `data-support="papier"` que sur papier : sur papier, les numéros ne sautent plus. Une paire écran/papier garde un seul numéro. Exemple : 5 questions à l'écran (`data-support="ecran"`, numéros 5 à 9) pour un seul tableau sur papier (`data-support="papier"`, numéro 5) : la question suivante est la 10 à l'écran et la 6 sur papier (le moteur écrit les deux numéros, un seul se voit).
 
@@ -36,11 +36,12 @@ Les feuilles d'un dossier sont rangées par `data-feuille` (sans lui : 1), puis 
 Sans rien changer aux pages :
 - **Réponses courtes** (`courte` avec une seule consigne, sans code, tableau ni figure, 150 caractères au plus) : sur papier, la consigne et la ligne à remplir tiennent **sur une seule ligne** ; à la suite, elles se resserrent. L'étiquette par défaut « Ta réponse : » n'est pas imprimée ; une `data-etiquette` l'est.
 - **Lignes d'écriture** : 7 mm, le minimum lisible à la main (inchangé).
-- **Le pied de la page** redit le pied de chaque page A4 (noms, licence, IA) : sur papier, il n'en reste que son trait, sans hauteur, s'il cache le margouillat (rien sinon). **Aucune page ne porte plus que le pied** (`imprimer-td.py` le refuse). Si le pied de la page nomme d'autres personnes que `data-auteurs`, il reste imprimé.
+- **Le pied de la page** : les noms, la licence et l'IA sont déjà au pied de chaque page A4 ; sur papier, il ne reste du pied de la feuille qu'**une ligne en fin de feuille**, « Code source sur GitHub : github.com/babash/Babash-NSI-SNT/tree/main/… » (l'adresse lisible), avec son trait et le margouillat s'il s'y cache. Elle reste avec la fin de la dernière question : **aucune page ne porte que cette ligne** (`imprimer-td.py` le refuse). Si le pied nomme d'autres personnes que `data-auteurs`, il reste imprimé en entier, l'adresse après « Code source sur GitHub ».
 - **Pied long** (`data-auteurs` de plus de 46 caractères) : police du texte et séparateurs simples, **sur une ligne** (jusqu'à 72 caractères de noms environ).
 - **Code de plus de 40 lignes** : il peut passer à la page suivante, coupé entre deux lignes, au lieu d'être poussé entier.
 - **Grandes questions** (un code, un tableau ou une figure, et des lignes à remplir) : elles peuvent passer d'une page à l'autre **entre leurs blocs**, qui restent entiers (moins de blanc en bas de page).
 - **PDF réuni** (plusieurs feuilles) : les objectifs ne sont imprimés qu'une fois, sur la première feuille.
+- **`data-nouvelle-page`** sur `<main>` d'une feuille 2, 3… : dans le PDF réuni, elle commence une nouvelle page, avec « Nom et prénom » et « Classe » (un mini-contrôle que les élèves s'échangent).
 - **`data-cote`** marche aussi sur une question `libre` (le code à gauche, les lignes à droite ; automatique pour un code de 34 caractères au plus) et, avec `data-cote="oui"` seulement, sur `erreur`.
 - **`data-cote-reponse="gauche"`** (avec `data-cote`) : la ligne à remplir passe **sous le code, à gauche**, et la grille ou le schéma reste à droite (question robot : « Case d'arrivée »).
 - **`data-lignes="0"`** sur une question `libre` : **aucune ligne** sur papier (réponse dans un tableau, « entoure sur le code »). Sans `data-lignes` : 3 lignes.
@@ -48,7 +49,7 @@ Sans rien changer aux pages :
 
 ### Le code de départ est imprimé
 
-Le squelette d'une question `code` (`pre.td-depart`) est imprimé en haut du cadre à remplir, en code de 10 pt avec ses numéros de ligne ; dessous, les lignes d'écriture de 7 mm. Avec un squelette, `data-lignes` donne la **hauteur de tout le cadre** (en lignes de 7 mm, squelette compris ; une ligne de code vaut 2/3 de ligne d'écriture), avec 2 lignes d'écriture au moins ; sans `data-lignes` : le squelette et 3 lignes d'écriture. Il n'est pas imprimé s'il est déjà affiché dans la question (même `pre.td-code`). Un long squelette coûte de la place : `imprimer-td.py` dit si la feuille dépasse ses pages.
+Le squelette d'une question `code` (`pre.td-depart`) est imprimé en haut du cadre à remplir, en code de 10 pt avec ses numéros de ligne ; dessous, les lignes d'écriture de 7 mm. Avec un squelette, `data-lignes` donne la **hauteur de tout le cadre** (en lignes de 7 mm, squelette compris ; une ligne de code vaut 2/3 de ligne d'écriture), avec 2 lignes d'écriture au moins ; sans `data-lignes` : le squelette et 3 lignes d'écriture. Il n'est pas imprimé s'il est déjà affiché dans la question (même `pre.td-code`). Un long squelette coûte de la place : `imprimer-td.py` dit si la feuille dépasse ses pages. **Une ligne du squelette de plus de 80 caractères passe à la ligne** sur papier (après une virgule ou à une espace, jamais dans une chaîne) : la suite est décalée de 4 espaces et porte « → » à la place du numéro de ligne. La page ne change pas.
 
 ### Tableau à remplir
 
@@ -82,6 +83,10 @@ Dans un tableau qui porte l'un de ces attributs, le texte passe à la ligne (les
 - Code à trous : des commentaires alignés en fin de ligne restent alignés malgré les cases.
 - « Je sais » sur papier : un espace entre les deux colonnes.
 - Une figure à plusieurs SVG les met côte à côte.
+- À l'écran, un code qui dépassait de quelques pixels (8 % au plus de sa largeur) est un peu réduit au lieu de défiler.
+- Cases à trous : `t[[[i]]]` (après un nom, une parenthèse ou un crochet) est « `t[` + case `i` + `]` » ; `= [[[1, 2]]]` reste une case qui contient la liste `[1, 2]` (moteur et `verifier-td.py`).
+- `verifier-td.py` exécute aussi les **tests cachés** (`script.td-tests`) après chaque correction d'une question « code ».
+- `imprimer-td.py` voit une correction, un coup de pouce ou un retour imprimé : il les lit dans la source de la page, ligne par ligne, et contrôle qu'aucun n'est rendu sur papier. Une question « ordre » `data-support="ecran"` n'est plus cherchée dans le PDF.
 - Un mot insécable trop long du titre passe à la ligne ; `nouveau-td.py` prévient (mot de plus de 18 caractères, accroche dans un contrôle).
 
 ## Nouveautés du 21/11 (T123b)

@@ -32,6 +32,8 @@ Ajouts du 21/11 (mêmes attributs que le moteur) :
   le décalage juste est cherché (0, 4, 8… espaces).
 
 Ajouts du 21/11, T123c :
+- les tests cachés (script.td-tests) d'une question « code » sont exécutés après chaque correction,
+  comme dans le moteur (leurs print n'entrent pas dans la sortie comparée) ;
 - data-langage est lu d'abord sur le <pre> du code, puis sur la question et la page ;
 - comme dans le moteur, l'invite d'input() (le texte entre les parenthèses) n'entre pas
   dans la sortie comparée : pre.td-attendu ne contient que ce qu'affiche print.
@@ -45,7 +47,7 @@ import tempfile
 
 LANCEUR = r'''
 import sys, traceback, linecache
-nom, fsrc, fpre, graine = sys.argv[1:5]
+nom, fsrc, fpre, graine, ftests = sys.argv[1:6]
 src = open(fsrc, encoding="utf-8").read()
 pre = open(fpre, encoding="utf-8").read()
 linecache.cache[nom] = (len(src), None, src.splitlines(True), nom)
@@ -78,6 +80,20 @@ except BaseException as e:
         t = t.tb_next
     sys.stderr.write("".join(traceback.format_exception(type(e), e, tb)))
     sys.exit(1)
+# les tests cachés (script.td-tests), comme le moteur : après le programme, dans le même espace ; leurs print
+# ne vont pas dans la sortie comparée
+tests = open(ftests, encoding="utf-8").read()
+if tests:
+    sys.stdout.flush()
+    sys.stdout = sys.stderr
+    try:
+        exec(compile(tests, "tests.py", "exec"), g)
+    except AssertionError as e:
+        sys.stderr.write("TEST : " + (str(e) or "un test ne passe pas") + "\n")
+        sys.exit(2)
+    except BaseException as e:
+        sys.stderr.write("TEST : " + "".join(traceback.format_exception(type(e), e, e.__traceback__.tb_next if e.__traceback__ else None)))
+        sys.exit(2)
 '''
 
 
@@ -129,13 +145,15 @@ def code_de(t):
     return t[1:] if t.startswith('\n') else t
 
 
-def lancer(code, fichier='mon_code.py', delai=5, pre='', entrees=None, graine=None):
+def lancer(code, fichier='mon_code.py', delai=5, pre='', entrees=None, graine=None, tests=''):
     with tempfile.TemporaryDirectory() as d:
         fs, fp = os.path.join(d, 'src.py'), os.path.join(d, 'pre.py')
         open(fs, 'w', encoding='utf-8').write(code)
         open(fp, 'w', encoding='utf-8').write(pre or '')
+        ft = os.path.join(d, 'tests.py')
+        open(ft, 'w', encoding='utf-8').write(tests or '')
         try:
-            r = subprocess.run([sys.executable, '-I', '-c', LANCEUR, fichier, fs, fp, graine or ''],
+            r = subprocess.run([sys.executable, '-I', '-c', LANCEUR, fichier, fs, fp, graine or '', ft],
                                input=entrees if entrees is not None else '', capture_output=True, text=True, timeout=delai, cwd=d)
             return r.returncode, r.stdout, r.stderr
         except subprocess.TimeoutExpired:
@@ -166,6 +184,9 @@ def decouper_trous(l):
         k = l.find('[[', debut)
         if k < 0:
             break
+        # « t[[[i]]] » : après un nom, une parenthèse ou un crochet, le premier « [ » est celui du code (comme le moteur)
+        if l[k + 2:k + 3] == '[' and k > 0 and (l[k - 1].isalnum() or l[k - 1] in '_)]'):
+            k += 1
         p, fin = 0, -1
         for j in range(k + 2, len(l)):
             c = l[j]
@@ -240,7 +261,7 @@ def verifier(chemin):
                 continue
             lancer_q = lambda code, fichier=None, **k: lancer_sql(code, tables)
         else:
-            lancer_q = lambda code, fichier='mon_code.py', **k: lancer(code, fichier, pre=pre, entrees=k.get('entrees', ent), graine=k.get('graine', gr), delai=k.get('delai', 5))
+            lancer_q = lambda code, fichier='mon_code.py', **k: lancer(code, fichier, pre=pre, entrees=k.get('entrees', ent), graine=k.get('graine', gr), delai=k.get('delai', 5), tests=k.get('tests', ''))
         codes = [p for p in s.tous(lambda x: x.tag == 'pre' and 'td-code' in x.classes())
                  if not any('td-options' in a.classes() or 'td-correction' in a.classes() for a in ancetres(p, s))]
         att = next(s.tous(classe('td-attendu')), None)
@@ -297,8 +318,11 @@ def verifier(chemin):
                     e_ = a_.attrs.get('data-entrees', ent) if a_ is not None else ent
                     g_ = a_.attrs.get('data-graine', gr) if a_ is not None else gr
                     src = code_de(c.texte())
-                    rc, out, err = lancer_q(src, fichier, entrees=e_, graine=g_)
-                    if rc != 0 or (att is not None and sortie_norm(out, exact) != sortie_norm(att, exact)):
+                    tests_q = next((code_de(x.texte()) for x in s.tous(classe('td-tests'))), '') if langage == 'python' else ''
+                    rc, out, err = lancer_q(src, fichier, entrees=e_, graine=g_, tests=tests_q)
+                    if rc == 2:
+                        ko(q, 'la correction ne passe pas les tests cachés : ' + err.strip()[-300:])
+                    elif rc != 0 or (att is not None and sortie_norm(out, exact) != sortie_norm(att, exact)):
                         ko(q, f'correction : sortie {out!r} {err!r}, attendue {att!r}' + (f' (saisies {e_!r})' if e_ is not None else ''))
         for li in s.tous(lambda x: x.tag == 'li' and 'data-verifier' in x.attrs):
             v = li.attrs['data-verifier']
