@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Graphes : TD type bac</title>
+  <meta name="description" content="TD type bac de terminale NSI sur les graphes : deux exercices de l'épreuve écrite (Amérique du Nord 2024, Polynésie 2024), auto-correctifs : matrice et listes d'adjacence, parcours en profondeur et en largeur, distances.">
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<main class="td" data-td="nsi-tle-td-bac-graphes" data-td-version="1">
+
+  <header class="td-entete">
+    <p class="td-sur-titre">Terminale NSI · Structures de données et algorithmique · TD type bac</p>
+    <h1>Les graphes : TD type bac</h1>
+    <p class="td-objectif"><b>Objectif :</b> traiter deux exercices de l'épreuve écrite sur les graphes, du plus guidé au plus proche de l'épreuve.</p>
+    <p><b>Je sais :</b></p>
+    <ul class="td-criteres">
+      <li>représenter un graphe par une matrice d'adjacence et par un dictionnaire de listes d'adjacence ;</li>
+      <li>compter les voisins d'un sommet dans chacune des deux représentations ;</li>
+      <li>dérouler un parcours en profondeur et un parcours en largeur dans l'ordre des voisins donné ;</li>
+      <li>utiliser une file pour calculer la distance (en nombre d'arêtes) depuis un sommet.</li>
+    </ul>
+    <p class="td-duree">1 h 45 · 2 exercices de bac (6 points chacun) · 19 questions</p>
+    <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
+    <p>Les énoncés reprennent fidèlement les sujets officiels. Quand le sujet demande un dessin ou une phrase, la page te pose une question courte ou un choix pour vérifier ta réponse écrite.</p>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 1 · Un groupe d'amis (6 points)</h2>
+  <p><b>Sujet :</b> baccalauréat 2024, Amérique du Nord, jour 1 (24-NSIJ1AN1), exercice 2, pages 6 à 8. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-amerique-nord-jour-1.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Amerique_Nord_2024_1.pdf">version de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_amerique_nord_2024_1.pdf">corrigé de l'AEIF</a>.</p>
+  <p><i>Cet exercice porte sur les graphes.</i></p>
+  <p>On modélise un groupe de huit ami·es par un graphe : chaque personne est un sommet, chaque amitié une arête. Les personnes sont Anas, Emma, Gabriel, Jade, Lou, Milo, Nina et Yanis. Leurs amitiés :</p>
+  <ul>
+    <li>Gabriel est ami avec Jade, Yanis, Nina et Milo ;</li>
+    <li>Jade est amie avec Gabriel, Yanis, Emma et Lou ;</li>
+    <li>Yanis est ami avec Gabriel, Jade, Emma, Nina, Milo et Anas ;</li>
+    <li>Emma est amie avec Jade, Yanis et Nina ;</li>
+    <li>Nina est amie avec Gabriel, Yanis et Emma ;</li>
+    <li>Milo est ami avec Gabriel, Yanis et Anas ;</li>
+    <li>Anas est ami avec Yanis et Milo ;</li>
+    <li>Lou est amie avec Jade.</li>
+  </ul>
+
+  <p><b>Partie A : matrice d'adjacence</b></p>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="13|treize" data-etiquette="Nombre d'arêtes :">
+    <p class="td-consigne">Dessine sur ta copie ce graphe, en représentant chaque personne par la première lettre de son prénom entourée d'un cercle. Pour vérifier ton dessin : combien d'arêtes compte-t-il ?</p>
+    <p class="td-retour" data-si="26|vingt-six">Chaque amitié est comptée deux fois dans la liste (Gabriel avec Jade, puis Jade avec Gabriel). Une arête relie deux sommets : divise par 2.</p>
+    <p class="td-aide">Additionne les nombres d'ami·es de chaque personne : 4 + 4 + 6 + 3 + 3 + 3 + 2 + 1.</p>
+    <p class="td-aide">Chaque arête a deux extrémités : elle est comptée deux fois dans cette somme.</p>
+    <div class="td-correction">
+      <p>La somme des nombres d'ami·es vaut 26 : chaque arête est comptée deux fois, il y a donc <b>13 arêtes</b>. Un dessin possible :</p>
+<svg viewBox="0 0 300 235" width="300" height="235" role="img" aria-label="Graphe des amitiés : G relié à J, Y, N et M ; J relié à G, Y, E et L ; Y relié à G, J, E, N, M et A ; E relié à J, Y et N ; N relié à G, Y et E ; M relié à G, Y et A ; A relié à Y et M ; L relié à J." style="display:block;max-width:100%;height:auto;margin:.4rem auto;color:var(--td-encre)">
+<g fill="none" stroke="currentColor" stroke-width="1.8">
+<line x1="72" y1="58" x2="165" y2="30"/>
+<line x1="72" y1="58" x2="165" y2="118"/>
+<line x1="72" y1="58" x2="88" y2="140"/>
+<line x1="165" y1="30" x2="165" y2="118"/>
+<line x1="165" y1="30" x2="270" y2="110"/>
+<line x1="165" y1="30" x2="262" y2="30"/>
+<line x1="165" y1="118" x2="270" y2="110"/>
+<line x1="165" y1="118" x2="232" y2="192"/>
+<line x1="165" y1="118" x2="88" y2="140"/>
+<line x1="165" y1="118" x2="128" y2="192"/>
+<line x1="270" y1="110" x2="232" y2="192"/>
+<line x1="88" y1="140" x2="128" y2="192"/>
+<path d="M72,58 C0,140 80,290 232,192"/>
+</g>
+<g stroke="currentColor" stroke-width="1.8" style="fill:var(--td-panneau)">
+<circle cx="165" cy="118" r="14"/>
+<circle cx="165" cy="30" r="14"/>
+<circle cx="72" cy="58" r="14"/>
+<circle cx="88" cy="140" r="14"/>
+<circle cx="128" cy="192" r="14"/>
+<circle cx="232" cy="192" r="14"/>
+<circle cx="270" cy="110" r="14"/>
+<circle cx="262" cy="30" r="14"/>
+</g>
+<g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">
+<text x="165" y="122">Y</text>
+<text x="165" y="34">J</text>
+<text x="72" y="62">G</text>
+<text x="88" y="144">M</text>
+<text x="128" y="196">A</text>
+<text x="232" y="196">N</text>
+<text x="270" y="114">E</text>
+<text x="262" y="34">L</text>
+</g></svg>
+    </div>
+  </section>
+
+  <p>La matrice d'adjacence est un tableau à deux entrées : les lignes et les colonnes correspondent aux sommets, dans l'ordre de la liste <code>sommets</code>. La case vaut 1 si les deux personnes sont amies, 0 sinon.</p>
+  <pre class="td-code">
+sommets = ['G', 'J', 'Y', 'E', 'N', 'M', 'A', 'L']</pre>
+
+  <section class="td-q" data-type="trous" id="q2">
+    <p class="td-consigne">Recopie et complète la déclaration de la matrice d'adjacence du graphe.</p>
+    <pre class="td-code">
+# sommets : G, J, Y, E, N, M, A, L
+matrice_adj = [[0, 1, 1, 0, 1, 1, 0, 0],   # G
+               [ [[1, 0, 1, 1, 0, 0, 0, 1]] ],   # J
+               [ [[1, 1, 0, 1, 1, 1, 1, 0]] ],   # Y
+               [ [[0, 1, 1, 0, 1, 0, 0, 0]] ],   # E
+               [ [[1, 0, 1, 1, 0, 0, 0, 0]] ],   # N
+               [ [[1, 0, 1, 0, 0, 0, 1, 0]] ],   # M
+               [ [[0, 0, 1, 0, 0, 1, 0, 0]] ],   # A
+               [ [[0, 1, 0, 0, 0, 0, 0, 0]] ]]   # L</pre>
+    <p class="td-aide">Ligne J : pour chaque sommet G, J, Y, E, N, M, A, L (dans cet ordre), écris 1 si Jade est amie avec cette personne, 0 sinon. Sépare les nombres par des virgules.</p>
+    <p class="td-aide">Personne n'est ami avec soi-même : la case de la diagonale vaut 0. Le graphe est non orienté : la matrice est symétrique (la colonne G est égale à la ligne G).</p>
+    <div class="td-correction">
+      <p>Chaque ligne contient autant de 1 que la personne a d'ami·es. Vérification : la matrice est symétrique, et la somme de tous ses nombres vaut 26 (2 × 13 arêtes).</p>
+    </div>
+  </section>
+
+  <p>La fonction <code>position(l, s)</code> renvoie la position du sommet <code>s</code> dans la liste <code>l</code> s'il est présent, et <code>None</code> sinon. Le sujet ne donne pas son code.</p>
+
+  <section class="td-q" data-type="courte" id="q3" data-reponse="0 et None|0, None|0 ; None|0;None|0 None|1 et None|1, None|1 ; None|1;None|1 None" data-etiquette="Les deux résultats, dans l'ordre :">
+    <p class="td-consigne">Indique ce que renvoie chacune des instructions suivantes.</p>
+    <pre class="td-code">
+position(sommets, 'G')
+position(sommets, 'Z')</pre>
+    <p class="td-retour" data-si="None et None|None, None|0 et 0|0, 0">Une seule des deux personnes est dans la liste. Laquelle ?</p>
+    <p class="td-aide">'G' est le premier élément de <code>sommets</code>. 'Z' n'y est pas.</p>
+    <div class="td-correction">
+      <p><code>position(sommets, 'G')</code> renvoie <b>0</b> (l'indice du premier élément en Python) et <code>position(sommets, 'Z')</code> renvoie <b>None</b>.</p>
+      <p>Le sujet ne précise pas si la position commence à 0 ou à 1 : le corrigé de l'AEIF répond 1 (première position) et écrit ensuite <code>m[pos_s-1][i]</code>. Les deux sont acceptés, à condition d'être cohérent·e à la question suivante.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne">Recopie et complète le code de la fonction <code>nb_amis(L, m, s)</code>. Elle prend en paramètres une liste <code>L</code> de noms de sommets, une matrice d'adjacence <code>m</code> et un nom de sommet <code>s</code>. Elle renvoie le nombre d'ami·es de <code>s</code> s'il est dans <code>L</code>, et <code>None</code> sinon.</p>
+    <pre class="td-code">
+def nb_amis(L, m, s):
+    pos_s = [[position(L, s)]]
+    if pos_s == None:
+        return [[None]]
+    amis = 0
+    for i in range(len(m)):
+        amis += [[ m[pos_s][i]|m[i][pos_s]|m[pos_s - 1][i] ]]
+    return [[amis]]</pre>
+    <p class="td-aide">Commence par chercher la ligne de <code>s</code> dans la matrice : c'est le rôle de <code>position</code>.</p>
+    <p class="td-aide">Le nombre d'ami·es est la somme des nombres de la ligne de <code>s</code> : on ajoute la case de la ligne <code>pos_s</code> et de la colonne <code>i</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+def nb_amis(L, m, s):
+    pos_s = position(L, s)
+    if pos_s == None:
+        return None
+    amis = 0
+    for i in range(len(m)):
+        amis += m[pos_s][i]
+    return amis</pre>
+      <p>Avec une position comptée à partir de 1 (comme dans le corrigé de l'AEIF), la ligne 7 devient <code>amis += m[pos_s - 1][i]</code>. La colonne <code>m[i][pos_s]</code> marche aussi : la matrice est symétrique.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-reponse="4|quatre">
+    <p class="td-consigne">Indique ce que renvoie l'instruction suivante.</p>
+    <pre class="td-code">
+nb_amis(sommets, matrice_adj, 'G')</pre>
+    <p class="td-aide">C'est la somme de la ligne G de la matrice : <code>[0, 1, 1, 0, 1, 1, 0, 0]</code>.</p>
+    <div class="td-correction">
+      <p><b>4</b> : Gabriel est ami avec Jade, Yanis, Nina et Milo.</p>
+    </div>
+  </section>
+
+  <p><b>Partie B : dictionnaire de listes d'adjacence</b></p>
+
+  <section class="td-q" data-type="qcu" id="q6">
+    <p class="td-consigne">Dans un dictionnaire Python <code>{c: v}</code>, indique ce que représentent <code>c</code> et <code>v</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code>c</code> est une clé et <code>v</code> la valeur associée à cette clé.</li>
+      <li data-retour="C'est l'inverse : on accède à la valeur par la clé, avec d[c]."><code>c</code> est une valeur et <code>v</code> sa clé.</li>
+      <li data-retour="Un dictionnaire n'a pas d'indices : on y accède par les clés, qui peuvent être des chaînes."><code>c</code> est un indice (0, 1, 2…) et <code>v</code> un élément.</li>
+      <li data-retour="Le dictionnaire peut représenter un graphe, mais en Python, c et v sont toujours une clé et sa valeur.">Toujours un sommet et une arête.</li>
+    </ul>
+    <div class="td-correction">
+      <p><code>c</code> est une <b>clé</b> et <code>v</code> la <b>valeur</b> associée. Pour un graphe : la clé est un sommet, la valeur la liste de ses voisins.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q7">
+    <p class="td-consigne">Recopie et complète le dictionnaire de listes d'adjacence <code>graphe</code> pour qu'il modélise complètement le groupe d'ami·es. Écris les voisins dans l'ordre de la liste <code>sommets</code>, comme pour <code>'G'</code>.</p>
+    <pre class="td-code">
+graphe = {'G': ['J', 'Y', 'N', 'M'],
+          'J': [[ ['G', 'Y', 'E', 'L'] ]],
+          'Y': [[ ['G', 'J', 'E', 'N', 'M', 'A'] ]],
+          'E': [[ ['J', 'Y', 'N'] ]],
+          'N': [[ ['G', 'Y', 'E'] ]],
+          'M': [[ ['G', 'Y', 'A'] ]],
+          'A': [[ ['Y', 'M'] ]],
+          'L': [[ ['J'] ]]}</pre>
+    <p class="td-aide">Chaque valeur est une liste entre crochets, avec les noms entre guillemets : <code>['G', 'Y', 'E', 'L']</code>.</p>
+    <p class="td-aide">Tu peux aussi lire les 1 de chaque ligne de la matrice de la question 2.</p>
+    <div class="td-correction">
+      <p>Chaque liste contient les ami·es de la clé, dans l'ordre G, J, Y, E, N, M, A, L. Vérification : chaque amitié apparaît dans les deux listes (Lou est dans la liste de Jade, Jade dans celle de Lou).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q8" data-fichier="amis.py" data-obligatoire>
+    <p class="td-consigne">Écris le code de la fonction <code>nb_amis(d, s)</code>, qui prend en paramètres un dictionnaire de listes d'adjacence <code>d</code> et un nom de sommet <code>s</code>, et renvoie le nombre d'ami·es de <code>s</code>. On suppose que <code>s</code> est bien dans <code>d</code>.</p>
+    <pre class="td-sortie-exemple">
+&gt;&gt;&gt; nb_amis(graphe, 'L')
+1</pre>
+    <pre class="td-depart">
+def nb_amis(d, s):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+graphe = {'G': ['J', 'Y', 'N', 'M'], 'J': ['G', 'Y', 'E', 'L'],
+          'Y': ['G', 'J', 'E', 'N', 'M', 'A'], 'E': ['J', 'Y', 'N'],
+          'N': ['G', 'Y', 'E'], 'M': ['G', 'Y', 'A'], 'A': ['Y', 'M'], 'L': ['J']}
+assert nb_amis(graphe, 'L') == 1, "nb_amis(graphe, 'L') doit renvoyer 1."
+assert nb_amis(graphe, 'Y') == 6, "nb_amis(graphe, 'Y') doit renvoyer 6 : Yanis a six ami·es."
+assert nb_amis({'A': []}, 'A') == 0, "Un sommet sans voisin a 0 ami·e."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">La valeur <code>d[s]</code> est la liste des ami·es de <code>s</code>.</p>
+    <p class="td-aide">La fonction <code>len</code> donne la longueur d'une liste.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def nb_amis(d, s):
+    return len(d[s])</pre>
+      <p>Avec un dictionnaire, plus besoin de parcourir une ligne : la liste des voisins est déjà là, sa longueur est le nombre d'ami·es.</p>
+    </div>
+  </section>
+
+  <p>Milo, Gabriel et Yanis se sont fâché·es, tandis qu'Anas s'est fâché avec Yanis. Le réseau devient :</p>
+  <pre class="td-code">
+graphe = {'G': ['J', 'N'],
+          'J': ['G', 'Y', 'E', 'L'],
+          'Y': ['J', 'E', 'N'],
+          'E': ['J', 'Y', 'N'],
+          'N': ['G', 'Y', 'E'],
+          'M': ['A'],
+          'A': ['M'],
+          'L': ['J']}</pre>
+  <p>On appelle <b>cercle d'amis</b> d'une personne toute personne atteignable dans le graphe à partir d'elle.</p>
+
+  <section class="td-q" data-type="cases" id="q9">
+    <p class="td-consigne">Donne la liste du cercle d'amis de Lou : coche toutes les personnes qui en font partie.</p>
+    <ul class="td-options">
+      <li data-juste>Jade</li>
+      <li data-juste>Gabriel</li>
+      <li data-juste>Yanis</li>
+      <li data-juste>Emma</li>
+      <li data-juste>Nina</li>
+      <li data-retour="Milo n'est plus relié qu'à Anas : aucun chemin ne va de Lou à Milo.">Milo</li>
+      <li data-retour="Anas n'est plus relié qu'à Milo : aucun chemin ne va de Lou à Anas.">Anas</li>
+    </ul>
+    <p class="td-aide">Pars de Lou : son seul voisin est Jade. Puis ajoute les voisins de Jade, puis leurs voisins…</p>
+    <p class="td-aide">Milo et Anas ne sont plus reliés qu'entre eux.</p>
+    <div class="td-correction">
+      <p>Lou → Jade → Gabriel, Yanis, Emma → Nina. Le cercle d'amis de Lou : <b>Jade, Gabriel, Yanis, Emma, Nina</b>. Milo et Anas forment un autre morceau du graphe : il n'est plus connexe.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q10">
+    <p class="td-consigne">Recopie et complète le code de la fonction <code>parcours_en_profondeur(d, s)</code>, qui renvoie la liste des sommets issue du parcours en profondeur du graphe modélisé par <code>d</code> à partir du sommet <code>s</code>.</p>
+    <pre class="td-code">
+def parcours_en_profondeur(d, s, visites = []):
+    [[visites.append(s)|visites += [s] ]]
+    for v in d[s]:
+        [[if v not in visites:|if not v in visites:|if not (v in visites):]]
+            parcours_en_profondeur(d, v, visites)
+    [[return visites]]</pre>
+    <p class="td-aide">Ligne 2 : on marque le sommet <code>s</code> comme visité, en l'ajoutant à la liste.</p>
+    <p class="td-aide">Ligne 4 : on ne relance le parcours que sur un voisin qui n'a pas encore été visité. Ligne 6 : la fonction renvoie la liste.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+def parcours_en_profondeur(d, s, visites = []):
+    visites.append(s)
+    for v in d[s]:
+        if v not in visites:
+            parcours_en_profondeur(d, v, visites)
+    return visites</pre>
+      <p>Depuis Lou, l'appel donne <code>['L', 'J', 'G', 'N', 'Y', 'E']</code> : on va le plus loin possible (L, J, G, N, Y, E), puis on revient en arrière.</p>
+      <p>Attention, piège classique : la valeur par défaut <code>visites = []</code> est créée une seule fois. Un second appel sans troisième paramètre repart de la liste du premier. On écrit plutôt <code>visites=None</code>, puis <code>if visites is None: visites = []</code>.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">Exercice 2 · Visiter toutes les villes (6 points)</h2>
+  <p><b>Sujet :</b> baccalauréat 2024, Polynésie, jour 2 (24-NSIJ2PO1), exercice 1, partie B (questions 3 à 11), pages 2 à 5. <a href="https://kxs.fr/files/sujets/2024/ecrit/terminale-2024-polynesie-jour-2.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Polynesie_juin_2024_2.pdf">version de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_polynesie_2024_2.pdf">corrigé de l'AEIF</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/24nsij2po1.pdf">second corrigé de l'AEIF</a>.</p>
+  <p><i>Cet exercice porte sur les structures de données file et pile, sur les graphes et sur les algorithmes de parcours.</i> La partie A (questions 1 et 2 : plus court chemin dans le graphe pondéré des distances) est dans le PDF d'origine : elle n'est pas reprise ici.</p>
+  <p>Une agence de voyages veut proposer un itinéraire qui permet de visiter toutes les villes. On utilise le graphe <code>G</code> ci-dessous, non pondéré. On l'implémente par listes d'adjacence, avec un dictionnaire : les clés sont les sommets (de type <code>str</code>), la valeur associée à une clé est la liste de ses voisins. <b>Dans ce TD</b>, on écrit les voisins dans l'ordre alphabétique (le sujet ne fixe pas l'ordre ; il en faut un pour corriger les parcours).</p>
+<svg viewBox="0 0 340 250" width="340" height="250" role="img" aria-label="Graphe G, non pondéré, de 9 villes. Ar est relié à Ax, Mp, Mr et Ni ; Av à Ax, Mr et Ni ; Ax à Ar, Av, Di, Mr, Nc et To ; Di à Ax et Nc ; Mp à Ar et Ni ; Mr à Ar, Av, Ax, Nc et To ; Nc à Ax, Di, Mr et To ; Ni à Ar, Av et Mp ; To à Ax, Mr et Nc." style="display:block;max-width:100%;height:auto;margin:.4rem auto;color:var(--td-encre)">
+<g fill="none" stroke="currentColor" stroke-width="1.8">
+<line x1="237" y1="228" x2="318" y2="107"/>
+<line x1="237" y1="228" x2="78" y2="227"/>
+<line x1="237" y1="228" x2="177" y2="195"/>
+<line x1="237" y1="228" x2="35" y2="198"/>
+<line x1="150" y1="22" x2="318" y2="107"/>
+<line x1="150" y1="22" x2="177" y2="195"/>
+<line x1="150" y1="22" x2="35" y2="198"/>
+<line x1="318" y1="107" x2="244" y2="128"/>
+<line x1="318" y1="107" x2="177" y2="195"/>
+<line x1="318" y1="107" x2="202" y2="104"/>
+<line x1="318" y1="107" x2="179" y2="61"/>
+<line x1="244" y1="128" x2="202" y2="104"/>
+<line x1="177" y1="195" x2="202" y2="104"/>
+<line x1="177" y1="195" x2="179" y2="61"/>
+<line x1="202" y1="104" x2="179" y2="61"/>
+<line x1="78" y1="227" x2="35" y2="198"/>
+</g>
+<g stroke="currentColor" stroke-width="1.8" style="fill:var(--td-panneau)">
+<circle cx="35" cy="198" r="16"/>
+<circle cx="150" cy="22" r="16"/>
+<circle cx="318" cy="107" r="16"/>
+<circle cx="237" cy="228" r="16"/>
+<circle cx="78" cy="227" r="16"/>
+<circle cx="177" cy="195" r="16"/>
+<circle cx="179" cy="61" r="16"/>
+<circle cx="202" cy="104" r="16"/>
+<circle cx="244" cy="128" r="16"/>
+</g>
+<g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">
+<text x="35" y="203">Ni</text>
+<text x="150" y="27">Av</text>
+<text x="318" y="112">Ax</text>
+<text x="237" y="233">Ar</text>
+<text x="78" y="232">Mp</text>
+<text x="177" y="200">Mr</text>
+<text x="179" y="66">To</text>
+<text x="202" y="109">Nc</text>
+<text x="244" y="133">Di</text>
+</g></svg>
+  <p><i>Figure 2 : le graphe G (redessiné ; les sommets et les arêtes sont ceux du sujet).</i></p>
+
+  <section class="td-q" data-type="trous" id="q11">
+    <p class="td-consigne">Écris le dictionnaire représentant le graphe de la figure 2, stocké dans la variable <code>G</code>. Écris chaque couple clé : valeur sur une nouvelle ligne.</p>
+    <pre class="td-code">
+G = {'Ar': [[ ['Ax', 'Mp', 'Mr', 'Ni'] ]],
+     'Av': [[ ['Ax', 'Mr', 'Ni'] ]],
+     'Ax': [[ ['Ar', 'Av', 'Di', 'Mr', 'Nc', 'To'] ]],
+     'Di': [[ ['Ax', 'Nc'] ]],
+     'Mp': [[ ['Ar', 'Ni'] ]],
+     'Mr': [[ ['Ar', 'Av', 'Ax', 'Nc', 'To'] ]],
+     'Nc': [[ ['Ax', 'Di', 'Mr', 'To'] ]],
+     'Ni': [[ ['Ar', 'Av', 'Mp'] ]],
+     'To': [[ ['Ax', 'Mr', 'Nc'] ]]}</pre>
+    <p class="td-aide">Pour chaque ville, suis les arêtes qui partent de son cercle. Range les voisins dans l'ordre alphabétique : Ar, Av, Ax, Di, Mp, Mr, Nc, Ni, To.</p>
+    <p class="td-aide">Le graphe est non orienté : si Mp est dans la liste de Ar, alors Ar est dans la liste de Mp. Au total, les listes contiennent 32 noms (16 arêtes, comptées deux fois).</p>
+    <div class="td-correction">
+      <p>Ax a le plus de voisins (6). Les deux corrigés de l'AEIF donnent les mêmes listes, dans des ordres différents : les deux sont justes pour le sujet.</p>
+    </div>
+  </section>
+
+  <p>On considère une <b>file</b>, avec : <code>creerFile()</code> qui renvoie une file vide ; <code>estVide(F)</code> qui renvoie <code>True</code> si la file <code>F</code> est vide, <code>False</code> sinon ; <code>enfiler(F, e)</code> qui ajoute <code>e</code> dans la file ; <code>defiler(F)</code> qui renvoie l'élément en tête de la file et le retire.</p>
+  <p>On considère une <b>pile</b>, avec : <code>creerPile()</code> ; <code>estVide(P)</code> ; <code>empiler(P, e)</code> qui ajoute <code>e</code> au sommet de la pile ; <code>depiler(P)</code> qui renvoie le sommet de la pile et le retire.</p>
+
+  <section class="td-q" data-type="qcu" id="q12">
+    <p class="td-consigne">Donne la signification des lettres des acronymes LIFO et FIFO.</p>
+    <ul class="td-options">
+      <li data-juste>LIFO : <i>Last In, First Out</i> (dernier entré, premier sorti) ; FIFO : <i>First In, First Out</i> (premier entré, premier sorti).</li>
+      <li data-retour="Les deux sont inversés : dans LIFO, la première lettre L vient de Last.">LIFO : <i>First In, Last Out</i> ; FIFO : <i>Last In, First Out</i>.</li>
+      <li data-retour="I et O signifient In et Out : entré et sorti.">LIFO : <i>Last Input, Final Output</i> ; FIFO : <i>First Input, Final Output</i>.</li>
+    </ul>
+    <div class="td-correction">
+      <p>LIFO : <b>Last In, First Out</b>, le dernier entré est le premier sorti. FIFO : <b>First In, First Out</b>, le premier entré est le premier sorti.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q13">
+    <p class="td-consigne">Donne l'acronyme désignant la structure de file.</p>
+    <ul class="td-options">
+      <li data-juste>FIFO</li>
+      <li data-retour="LIFO, c'est la pile : le dernier posé sur la pile est le premier repris.">LIFO</li>
+    </ul>
+    <div class="td-correction">
+      <p>Une file d'attente (à la barge, au taxi) : le premier arrivé est le premier servi. C'est <b>FIFO</b>.</p>
+    </div>
+  </section>
+
+  <p>On donne la fonction <code>parcours</code> :</p>
+  <pre class="td-code">
+def parcours(graphe, sommet):
+    f = creerFile()
+    enfiler(f, sommet)
+    visite = [sommet]
+    while not estVide(f):
+        s = defiler(f)
+        for v in graphe[s]:
+            if not (v in visite):
+                visite.append(v)
+                enfiler(f, v)
+    return visite</pre>
+
+  <section class="td-q" data-type="courte" id="q14" data-comparer="code" data-reponse="['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']|Av, Ax, Mr, Ni, Ar, Di, Nc, To, Mp|Av Ax Mr Ni Ar Di Nc To Mp" data-etiquette="La liste renvoyée :">
+    <p class="td-consigne">Donne le résultat de l'appel <code>parcours(G, 'Av')</code>.</p>
+    <p class="td-retour" data-si="['Av', 'Mr', 'Ni', 'Ax', 'Ar', 'To', 'Nc', 'Mp', 'Di']">C'est la réponse du corrigé de l'AEIF, qui écrit les voisins dans un autre ordre. Ici, les voisins sont dans l'ordre alphabétique : ceux de Av sont Ax, Mr, Ni.</p>
+    <p class="td-retour" data-si="['Av', 'Ax', 'Ar', 'Mp', 'Ni', 'Mr', 'Nc', 'Di', 'To']">Tu as suivi un chemin le plus loin possible (profondeur). Avec une file, on visite d'abord <b>tous</b> les voisins de Av, puis les voisins de ces voisins.</p>
+    <p class="td-aide">Écris l'état de la file et de la liste <code>visite</code> à chaque tour. Au départ : file = [Av], visite = [Av].</p>
+    <p class="td-aide">Tour 1 : on défile Av, on enfile ses voisins Ax, Mr, Ni. Tour 2 : on défile Ax, on enfile ses voisins pas encore vus (Ar, Di, Nc, To)…</p>
+    <div class="td-correction">
+      <p><code>['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']</code> : d'abord Av, puis ses voisins (distance 1 : Ax, Mr, Ni), puis les sommets à distance 2. Tous les sommets du graphe sont visités.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q15">
+    <p class="td-consigne">Indique si la fonction <code>parcours</code> réalise un parcours en largeur ou en profondeur.</p>
+    <ul class="td-options">
+      <li data-juste>Proposition A : parcours en largeur.</li>
+      <li data-retour="Le parcours en profondeur utilise une pile (ou la récursivité). Ici, c'est une file : on traite les sommets dans l'ordre où on les a découverts.">Proposition B : parcours en profondeur.</li>
+    </ul>
+    <div class="td-correction">
+      <p><b>Parcours en largeur</b> : la file fait traiter les sommets par distance croissante depuis le départ.</p>
+    </div>
+  </section>
+
+  <p>La distance entre deux sommets est le nombre minimal d'arêtes d'un chemin qui les relie. Par exemple, la distance entre Mp et Nc vaut 3.</p>
+
+  <section class="td-q" data-type="code" id="q16" data-fichier="distance.py" data-obligatoire>
+    <p class="td-consigne">Modifie la fonction <code>parcours</code> pour écrire une fonction <code>distance(graphe, sommet)</code> : <code>graphe</code> est un dictionnaire en listes d'adjacence, <code>sommet</code> une chaîne de caractères. Elle renvoie un dictionnaire dont les clés sont les sommets du graphe, et la valeur de chaque clé la distance entre ce sommet et <code>sommet</code>.</p>
+    <pre class="td-depart">
+# La file est fournie (ne la modifie pas).
+def creerFile(): return []
+def estVide(F): return len(F) == 0
+def enfiler(F, e): F.append(e)
+def defiler(F): return F.pop(0)
+
+def distance(graphe, sommet):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+if 'creerFile' not in globals():
+    def creerFile(): return []
+    def estVide(F): return len(F) == 0
+    def enfiler(F, e): F.append(e)
+    def defiler(F): return F.pop(0)
+G = {'Ar': ['Ax', 'Mp', 'Mr', 'Ni'], 'Av': ['Ax', 'Mr', 'Ni'],
+     'Ax': ['Ar', 'Av', 'Di', 'Mr', 'Nc', 'To'], 'Di': ['Ax', 'Nc'], 'Mp': ['Ar', 'Ni'],
+     'Mr': ['Ar', 'Av', 'Ax', 'Nc', 'To'], 'Nc': ['Ax', 'Di', 'Mr', 'To'],
+     'Ni': ['Ar', 'Av', 'Mp'], 'To': ['Ax', 'Mr', 'Nc']}
+d = distance(G, 'Mp')
+assert type(d) == dict, "distance doit renvoyer un dictionnaire."
+assert d['Mp'] == 0, "La distance d'un sommet à lui-même vaut 0."
+assert d['Nc'] == 3, "La distance entre Mp et Nc vaut 3."
+assert d == {'Mp': 0, 'Ar': 1, 'Ni': 1, 'Ax': 2, 'Mr': 2, 'Av': 2, 'Di': 3, 'Nc': 3, 'To': 3}, "distance(G, 'Mp') : une des distances est fausse."
+assert distance(G, 'Av') == {'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}, "distance(G, 'Av') : une des distances est fausse."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Remplace la liste <code>visite</code> par un dictionnaire : au départ, <code>{sommet: 0}</code>. « Être visité » devient « être une clé du dictionnaire ».</p>
+    <p class="td-aide">Quand on découvre un voisin <code>v</code> du sommet <code>s</code> qu'on vient de défiler, sa distance est celle de <code>s</code> plus 1.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def distance(graphe, sommet):
+    f = creerFile()
+    enfiler(f, sommet)
+    dist = {sommet: 0}
+    while not estVide(f):
+        s = defiler(f)
+        for v in graphe[s]:
+            if not (v in dist):
+                dist[v] = dist[s] + 1
+                enfiler(f, v)
+    return dist</pre>
+      <p>Le parcours en largeur découvre les sommets par distance croissante : la première fois qu'on atteint <code>v</code>, c'est par un plus court chemin. Piège : augmenter un compteur à chaque sommet défilé ne donne pas la distance.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q17" data-comparer="code" data-reponse="{'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}|{'Ar': 2, 'Av': 0, 'Ax': 1, 'Di': 2, 'Mp': 2, 'Mr': 1, 'Nc': 2, 'Ni': 1, 'To': 2}" data-etiquette="Le dictionnaire renvoyé :">
+    <p class="td-consigne">Donne le résultat de l'appel <code>distance(G, 'Av')</code>.</p>
+    <p class="td-aide">Les sommets visités par <code>parcours(G, 'Av')</code> à la question 14 arrivent par distance croissante.</p>
+    <p class="td-aide">Av est à distance 0 ; ses voisins à distance 1 ; tous les autres sommets sont voisins d'un voisin de Av.</p>
+    <div class="td-correction">
+      <p><code>{'Av': 0, 'Ax': 1, 'Mr': 1, 'Ni': 1, 'Ar': 2, 'Di': 2, 'Nc': 2, 'To': 2, 'Mp': 2}</code>. Les distances ne dépendent pas de l'ordre des voisins (seul l'ordre des clés en dépend).</p>
+    </div>
+  </section>
+
+  <p>On considère l'algorithme suivant, écrit en pseudo-code :</p>
+  <pre class="td-sortie-exemple">
+créer une pile p
+empiler s dans p
+créer une liste visite vide
+tant que p n'est pas vide
+    x = dépiler p
+    si x n'est pas dans la liste visite
+        ajouter x à la liste visite
+        pour chaque voisin v de x
+            empiler v dans p
+renvoyer visite</pre>
+
+  <section class="td-q" data-type="code" id="q18" data-fichier="parcours2.py" data-obligatoire>
+    <p class="td-consigne">Traduis cet algorithme dans le corps d'une fonction Python <code>parcours2(G, s)</code>, qui prend en paramètres un dictionnaire en listes d'adjacence <code>G</code> et une chaîne de caractères <code>s</code> représentant un sommet.</p>
+    <pre class="td-depart">
+# La pile est fournie (ne la modifie pas).
+def creerPile(): return []
+def estVide(P): return len(P) == 0
+def empiler(P, e): P.append(e)
+def depiler(P): return P.pop()
+
+def parcours2(G, s):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+if 'creerPile' not in globals():
+    def creerPile(): return []
+    def estVide(P): return len(P) == 0
+    def empiler(P, e): P.append(e)
+    def depiler(P): return P.pop()
+G = {'Ar': ['Ax', 'Mp', 'Mr', 'Ni'], 'Av': ['Ax', 'Mr', 'Ni'],
+     'Ax': ['Ar', 'Av', 'Di', 'Mr', 'Nc', 'To'], 'Di': ['Ax', 'Nc'], 'Mp': ['Ar', 'Ni'],
+     'Mr': ['Ar', 'Av', 'Ax', 'Nc', 'To'], 'Nc': ['Ax', 'Di', 'Mr', 'To'],
+     'Ni': ['Ar', 'Av', 'Mp'], 'To': ['Ax', 'Mr', 'Nc']}
+r = parcours2(G, 'Av')
+assert type(r) == list, "parcours2 doit renvoyer une liste."
+assert sorted(r) == sorted(G), "parcours2(G, 'Av') doit contenir chaque sommet une fois."
+assert r == ['Av', 'Ni', 'Mp', 'Ar', 'Mr', 'To', 'Nc', 'Di', 'Ax'], "parcours2(G, 'Av') : l'ordre ne suit pas le pseudo-code."
+assert parcours2({'A': ['B'], 'B': ['A'], 'C': []}, 'A') == ['A', 'B'], "Seuls les sommets atteignables depuis s sont visités."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">« Tant que p n'est pas vide » se traduit par <code>while not estVide(p):</code>. « x n'est pas dans la liste visite » : <code>if not (x in visite):</code>.</p>
+    <p class="td-aide">Les voisins de <code>x</code> sont dans <code>G[x]</code>. Respecte l'indentation du pseudo-code : chaque bloc décalé est un bloc Python.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def parcours2(G, s):
+    p = creerPile()
+    empiler(p, s)
+    visite = []
+    while not estVide(p):
+        x = depiler(p)
+        if not (x in visite):
+            visite.append(x)
+            for v in G[x]:
+                empiler(p, v)
+    return visite</pre>
+      <p>Ici, on teste « déjà visité » au moment où l'on dépile : un sommet peut être empilé plusieurs fois, mais il n'est ajouté qu'une fois à <code>visite</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q19" data-comparer="code" data-reponse="['Av', 'Ni', 'Mp', 'Ar', 'Mr', 'To', 'Nc', 'Di', 'Ax']|Av, Ni, Mp, Ar, Mr, To, Nc, Di, Ax|Av Ni Mp Ar Mr To Nc Di Ax" data-etiquette="La liste renvoyée :">
+    <p class="td-consigne">Donne un résultat possible renvoyé par l'appel <code>parcours2(G, 'Av')</code>.</p>
+    <p class="td-retour" data-si="['Av', 'Ax', 'Ar', 'Mp', 'Ni', 'Mr', 'Nc', 'Di', 'To']">Avec une pile, le <b>dernier</b> empilé sort en premier : après Av, on empile Ax, Mr, Ni ; c'est Ni qui est dépilé d'abord.</p>
+    <p class="td-retour" data-si="['Av', 'Ax', 'Mr', 'Ni', 'Ar', 'Di', 'Nc', 'To', 'Mp']">C'est le parcours en largeur de la question 14. Avec une pile, on part loin avant de revenir.</p>
+    <p class="td-aide">Écris la pile à chaque tour, le sommet à droite. Après le premier tour : pile = [Ax, Mr, Ni], visite = [Av].</p>
+    <p class="td-aide">On dépile Ni, on empile ses voisins Ar, Av, Mp : pile = [Ax, Mr, Ar, Av, Mp]. On dépile Mp…</p>
+    <div class="td-correction">
+      <p><code>['Av', 'Ni', 'Mp', 'Ar', 'Mr', 'To', 'Nc', 'Di', 'Ax']</code> : un parcours en profondeur. Le sujet dit « un résultat possible » car l'ordre dépend de celui des voisins : avec l'ordre du premier corrigé de l'AEIF, on obtient <code>['Av', 'Ax', 'Di', 'Nc', 'To', 'Mr', 'Ar', 'Mp', 'Ni']</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Représenter</b> : matrice d'adjacence (<code>m[i][j]</code> vaut 1 si i et j sont voisins) ou dictionnaire <code>{sommet: liste des voisins}</code>. Non orienté : chaque arête dans les deux sens.</p>
+    <p><b>Parcourir</b> : en largeur avec une <b>file</b> (FIFO), qui donne les distances ; en profondeur avec une <b>pile</b> (LIFO) ou la récursivité. Toujours marquer les sommets visités.</p>
+    <p><b>À l'épreuve</b> : déroule le parcours dans l'ordre des voisins donné, en écrivant la file ou la pile à chaque tour.</p>
+  </section>
+
+  <footer class="td-pied">
+    <p>Énoncés : sujets du baccalauréat NSI 2024 (ministère de l'Éducation nationale), d'après les versions recomposées et les corrigés de l'<a href="https://aeif.fr/index.php/annales-2024/">AEIF</a> (Association des enseignantes et enseignants d'informatique de France, licence CC BY-SA 4.0 ; les auteur·rices des corrigés ne sont pas nommé·es dans les documents). Figures redessinées.</p>
+    <p>Mise en TD : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-graphes">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
