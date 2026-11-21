@@ -8,6 +8,7 @@ grille « libre » (sans obstacle, départ en A6) : ces programmes-là sont donn
 En plus, sur la grille de la page (--grille) :
 - courte data-verifier="robot"        : la case d'arrivée réelle est une des réponses ;
 - courte data-verifier="robot-sortie" : ce qu'affiche réellement le programme est une des réponses ;
+  input() reçoit les réponses de SAISIES (5, oui, non…) : un programme qui demande une saisie s'exécute aussi ;
   sans code affiché, la question reprend le programme de la question robot précédente ;
   (data-depart="B3" change la case de départ, data-grille une autre grille, pour une question).
 
@@ -28,12 +29,18 @@ vt = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(vt)
 
 
+# ce que « tape » l'élève quand un programme appelle input() (un nombre positif, puis « oui »…)
+SAISIES = ['5', 'oui', 'non'] * 20
+
+
 def avec_robot(grille, depart=None):
     src = open(os.path.join(ICI, 'robot.py'), encoding='utf-8').read()
     return vt.LANCEUR.replace(
         'g = {"__name__": "__main__"}',
         'g = {"__name__": "__main__"}\n_rg = {"__name__": "robot"}\nexec(' + repr(src) + ', _rg)\n'
-        'g.update(_rg["Robot"](' + repr(grille) + ', ' + repr(depart) + ').fonctions())')
+        'g.update(_rg["Robot"](' + repr(grille) + ', ' + repr(depart) + ').fonctions())\n'
+        '_saisies = iter(' + repr(SAISIES) + ')\n'
+        'g["input"] = lambda invite="": (print(invite, end=""), next(_saisies))[1]')
 
 
 def principal(args):
