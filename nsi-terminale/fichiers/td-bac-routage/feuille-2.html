@@ -1,0 +1,285 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Routage · TD type bac (2/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : adresses, RIP et OSPF (bac 2024, Centres étrangers, 24-NSIJ1G11, exercice 2).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+
+  <style>
+    /* Contournement (T124) : sur papier, un exposant (2<sup>8</sup>) tombait à 8,8 pt, sous les 10 pt.
+       À reprendre dans assets/td-en-ligne.css (rôle Designer). */
+    @media print { .td sup { font-size: 10pt; } }
+  </style>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-routage-2" data-td-version="2">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b1" style="--x:81.43%;--y:78.57%;--r:172deg;--l:4.48%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Réseaux : le routage</span></p>
+        <h1>Routage</h1>
+        <p class="td-accroche">Type bac · feuille 2/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=routage" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h2v1h-2zM11 0h2v1h-2zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h4v1h-4zM13 1h1v1h-1zM20 1h1v1h-1zM23 1h2v1h-2zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM9 2h1v1h-1zM12 2h5v1h-5zM22 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h2v1h-2zM11 3h1v1h-1zM13 3h2v1h-2zM17 3h1v1h-1zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h1v1h-1zM13 4h4v1h-4zM18 4h2v1h-2zM21 4h2v1h-2zM24 4h1v1h-1zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM17 5h4v1h-4zM22 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h4v1h-4zM14 7h1v1h-1zM17 7h1v1h-1zM24 7h1v1h-1zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM9 8h3v1h-3zM17 8h3v1h-3zM21 8h4v1h-4zM26 8h1v1h-1zM29 8h1v1h-1zM31 8h2v1h-2zM0 9h1v1h-1zM2 9h1v1h-1zM5 9h1v1h-1zM7 9h2v1h-2zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM2 10h1v1h-1zM4 10h3v1h-3zM8 10h1v1h-1zM12 10h1v1h-1zM16 10h1v1h-1zM22 10h3v1h-3zM27 10h3v1h-3zM31 10h2v1h-2zM1 11h1v1h-1zM3 11h1v1h-1zM7 11h2v1h-2zM10 11h1v1h-1zM13 11h2v1h-2zM16 11h1v1h-1zM18 11h3v1h-3zM22 11h1v1h-1zM27 11h1v1h-1zM29 11h1v1h-1zM32 11h1v1h-1zM2 12h2v1h-2zM6 12h1v1h-1zM8 12h1v1h-1zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM1 13h1v1h-1zM3 13h1v1h-1zM5 13h1v1h-1zM8 13h4v1h-4zM14 13h3v1h-3zM18 13h2v1h-2zM21 13h1v1h-1zM25 13h1v1h-1zM27 13h1v1h-1zM29 13h3v1h-3zM0 14h1v1h-1zM4 14h4v1h-4zM10 14h2v1h-2zM13 14h1v1h-1zM16 14h1v1h-1zM19 14h3v1h-3zM26 14h1v1h-1zM29 14h1v1h-1zM0 15h4v1h-4zM5 15h1v1h-1zM10 15h7v1h-7zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h2v1h-2zM4 16h4v1h-4zM10 16h1v1h-1zM18 16h2v1h-2zM21 16h2v1h-2zM25 16h2v1h-2zM28 16h3v1h-3zM2 17h2v1h-2zM8 17h3v1h-3zM14 17h2v1h-2zM17 17h1v1h-1zM20 17h7v1h-7zM28 17h2v1h-2zM32 17h1v1h-1zM0 18h1v1h-1zM2 18h1v1h-1zM4 18h1v1h-1zM6 18h2v1h-2zM10 18h4v1h-4zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM0 19h2v1h-2zM4 19h1v1h-1zM12 19h1v1h-1zM14 19h1v1h-1zM16 19h3v1h-3zM20 19h1v1h-1zM22 19h1v1h-1zM25 19h1v1h-1zM28 19h1v1h-1zM1 20h2v1h-2zM4 20h1v1h-1zM6 20h1v1h-1zM8 20h7v1h-7zM17 20h2v1h-2zM21 20h1v1h-1zM27 20h1v1h-1zM29 20h2v1h-2zM32 20h1v1h-1zM0 21h1v1h-1zM4 21h2v1h-2zM9 21h1v1h-1zM14 21h1v1h-1zM16 21h2v1h-2zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM2 22h2v1h-2zM5 22h2v1h-2zM10 22h3v1h-3zM14 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM21 22h4v1h-4zM26 22h2v1h-2zM30 22h3v1h-3zM1 23h1v1h-1zM4 23h1v1h-1zM9 23h1v1h-1zM11 23h3v1h-3zM18 23h1v1h-1zM23 23h7v1h-7zM31 23h2v1h-2zM0 24h1v1h-1zM4 24h1v1h-1zM6 24h4v1h-4zM12 24h1v1h-1zM14 24h5v1h-5zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h1v1h-1zM11 25h2v1h-2zM15 25h3v1h-3zM19 25h1v1h-1zM21 25h1v1h-1zM23 25h2v1h-2zM28 25h2v1h-2zM0 26h7v1h-7zM8 26h3v1h-3zM12 26h3v1h-3zM17 26h1v1h-1zM19 26h1v1h-1zM23 26h2v1h-2zM26 26h1v1h-1zM28 26h1v1h-1zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h4v1h-4zM14 27h2v1h-2zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM9 28h6v1h-6zM16 28h1v1h-1zM18 28h1v1h-1zM20 28h2v1h-2zM23 28h6v1h-6zM30 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM10 29h1v1h-1zM13 29h1v1h-1zM15 29h1v1h-1zM17 29h1v1h-1zM20 29h2v1h-2zM23 29h1v1h-1zM27 29h1v1h-1zM32 29h1v1h-1zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM11 30h1v1h-1zM15 30h3v1h-3zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM14 31h6v1h-6zM22 31h3v1h-3zM27 31h2v1h-2zM32 31h1v1h-1zM0 32h7v1h-7zM8 32h4v1h-4zM13 32h1v1h-1zM15 32h1v1h-1zM17 32h2v1h-2zM20 32h2v1h-2zM23 32h1v1h-1zM28 32h1v1h-1zM30 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les adresses IP, RIP et OSPF, plus proche de l'épreuve.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>trouver l'adresse d'un réseau, son adresse de diffusion et le nombre de machines possibles ;</li>
+        <li>trouver la route choisie par RIP (le moins de sauts) et ce qui change après une panne ;</li>
+        <li>calculer le coût OSPF d'une liaison, puis la route de plus petit coût.</li>
+      </ul>
+      <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (6 points) · 10 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord. Réponds sur ta feuille, avec ton brouillon, puis vérifie ici chaque réponse.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. <a href="index.html">lire des tables, calculer des coûts</a> ; 2. adresses, RIP et OSPF sur un vrai réseau (ici).</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 2 (6 points) : adresses, RIP et OSPF sur un vrai réseau</h2>
+  <p>Sujet du bac 2024, Centres étrangers, groupe 1, jour 1 (<b>24-NSIJ1G11</b>), exercice 2, 6 points. <a href="https://aeif.fr/wp-content/uploads/2026/04/Centres_Etrangers_juin_2024_sujet_1_v2.pdf">Le sujet d'origine (PDF)</a>.</p>
+  <p><i>Cet exercice porte sur les réseaux et les protocoles de routage.</i></p>
+  <p><b>Rappels :</b> une adresse IPv4 est composée de 4 octets, soit 32 bits. Elle est notée a.b.c.d, où a, b, c et d sont les valeurs décimales des 4 octets et nommée « notation décimale pointée ». La notation a.b.c.d/n, appelée notation CIDR (Classless Inter Domain Routing), signifie que les n premiers bits à gauche de l'adresse IP représentent la partie « réseau », les bits à droite qui suivent représentent la partie « machine ». L'adresse IPv4 dont tous les bits de la partie « machine » sont à 0 est appelée « adresse du réseau ». L'adresse IPv4 dont tous les bits de la partie « machine » sont à 1 est appelée « adresse de diffusion ».</p>
+  <p>On considère le réseau représenté ci-dessous. Le schéma montre les routeurs A à H et leurs liaisons ; les adresses IP de chaque interface sont dans la liste qui suit.</p>
+  <svg viewBox="0 0 660 500" width="100%" height="290" role="img" aria-labelledby="fig2-titre fig2-desc">
+    <title id="fig2-titre">Réseau de huit routeurs A à H entre le réseau local L1 et le réseau local L2</title>
+    <desc id="fig2-desc">Liaisons : L1 (switch S1) avec A ; A-B ; A-G ; A-H ; B-C ; G-H ; G-F ; H-C ; H-F ; H-D ; C-D ; F-E ; E-D ; D avec L2 (switch S2).</desc>
+    <g stroke="currentColor" stroke-width="2.5" fill="none">
+      <line x1="80" y1="50" x2="340" y2="70"/>
+      <line x1="340" y1="70" x2="580" y2="70"/>
+      <line x1="340" y1="70" x2="110" y2="190"/>
+      <line x1="340" y1="70" x2="340" y2="250"/>
+      <line x1="580" y1="70" x2="580" y2="250"/>
+      <line x1="110" y1="190" x2="340" y2="250"/>
+      <line x1="110" y1="190" x2="110" y2="330"/>
+      <line x1="340" y1="250" x2="580" y2="250"/>
+      <line x1="340" y1="250" x2="110" y2="330"/>
+      <line x1="340" y1="250" x2="340" y2="410"/>
+      <line x1="580" y1="250" x2="340" y2="410"/>
+      <line x1="110" y1="330" x2="140" y2="450"/>
+      <line x1="140" y1="450" x2="340" y2="410"/>
+      <line x1="340" y1="410" x2="580" y2="430"/>
+    </g>
+    <g stroke="currentColor" stroke-width="2.5" fill="Canvas">
+      <rect x="30" y="28" width="100" height="44" rx="4" stroke-dasharray="7 4"/>
+      <rect x="530" y="408" width="100" height="44" rx="4" stroke-dasharray="7 4"/>
+      <circle cx="340" cy="70" r="27"/>
+      <circle cx="580" cy="70" r="27"/>
+      <circle cx="110" cy="190" r="27"/>
+      <circle cx="340" cy="250" r="27"/>
+      <circle cx="580" cy="250" r="27"/>
+      <circle cx="110" cy="330" r="27"/>
+      <circle cx="340" cy="410" r="27"/>
+      <circle cx="140" cy="450" r="27"/>
+    </g>
+    <g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="26" font-weight="700" text-anchor="middle">
+      <text x="80" y="59">L1</text>
+      <text x="580" y="439">L2</text>
+      <text x="340" y="79">A</text>
+      <text x="580" y="79">B</text>
+      <text x="110" y="199">G</text>
+      <text x="340" y="259">H</text>
+      <text x="580" y="259">C</text>
+      <text x="110" y="339">F</text>
+      <text x="340" y="419">D</text>
+      <text x="140" y="459">E</text>
+    </g>
+  </svg>
+  <ul>
+    <li>Réseau local <b>L1</b> (switch S1) : deux machines 192.168.14.21/24 et 192.168.14.5/24.</li>
+    <li>Réseau local <b>L2</b> (switch S2) : deux machines 172.16.8.8/16 et 172.16.10.10/16.</li>
+    <li>Routeur <b>A</b> : 192.168.14.254/24 (vers L1), 193.55.24.1 (vers B), 42.4.10.1 (vers G), 53.10.10.1 (vers H).</li>
+    <li>Routeur <b>B</b> : 193.55.24.2 (vers A), 193.55.24.5 (vers C).</li>
+    <li>Routeur <b>C</b> : 193.55.24.6 (vers B), 53.10.10.10 (vers H), 193.55.24.9 (vers D).</li>
+    <li>Routeur <b>D</b> : 53.10.10.6 (vers H), 193.55.24.10 (vers C), 42.4.10.14 (vers E), 172.16.255.254/16 (vers L2).</li>
+    <li>Routeur <b>E</b> : 42.4.10.10 (vers F), 42.4.10.13 (vers D).</li>
+    <li>Routeur <b>F</b> : 42.4.10.6 (vers G), 53.10.10.18 (vers H), 42.4.10.9 (vers E).</li>
+    <li>Routeur <b>G</b> : 42.4.10.2 (vers A), 53.10.10.14 (vers H), 42.4.10.5 (vers F).</li>
+    <li>Routeur <b>H</b> : 53.10.10.2 (vers A), 53.10.10.13 (vers G), 53.10.10.9 (vers C), 53.10.10.17 (vers F), 53.10.10.5 (vers D).</li>
+  </ul>
+
+  <h3>Partie A : Adresses IP</h3>
+
+  <section class="td-q" data-type="courte" id="q10" data-reponse="255.255.0.0">
+    <p class="td-consigne">1. Les machines du réseau local L1 indiquent un masque de sous réseau sur 24 bits en notation CIDR, soit 255.255.255.0 en notation décimale pointée. Donner le masque de sous réseau en notation décimale pointée des machines du réseau L2 (masque de sous réseau de 16 bits).</p>
+    <p class="td-retour" data-si="255.255.255.0">Ça, c'est le masque de L1 (24 bits). Pour L2, seuls les 16 premiers bits valent 1.</p>
+    <p class="td-aide">16 bits à 1, c'est deux octets <code>11111111</code>, puis deux octets <code>00000000</code>.</p>
+    <div class="td-correction">
+      <p>16 bits à 1 puis 16 bits à 0 : 11111111.11111111.00000000.00000000, soit <b>255.255.0.0</b>.</p>
+    </div>
+  </section>
+
+  <p>Concernant le réseau local L2 :</p>
+
+  <section class="td-q" data-type="courte" id="q11" data-reponse="172.16.0.0|172.16.0.0/16">
+    <p class="td-consigne">2. Donner l'adresse du réseau.</p>
+    <p class="td-retour" data-si="172.16.255.254|172.16.8.0|172.16.10.0">Avec un masque /16, seuls les deux premiers octets sont la partie « réseau ». Les deux derniers sont mis à 0.</p>
+    <p class="td-aide">Prends une adresse de L2, par exemple 172.16.8.8/16. Garde les 16 premiers bits (deux octets) et mets tous les autres à 0.</p>
+    <div class="td-correction">
+      <p>On garde 172.16 et on met la partie « machine » à 0 : <b>172.16.0.0</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q12" data-reponse="172.16.255.255|172.16.255.255/16">
+    <p class="td-consigne">3. Donner l'adresse de diffusion.</p>
+    <p class="td-retour" data-si="172.16.255.254">172.16.255.254 est l'adresse du routeur D dans L2. Pour la diffusion, <b>tous</b> les bits « machine » valent 1.</p>
+    <p class="td-aide">Tous les bits de la partie « machine » à 1 : un octet dont les 8 bits valent 1 vaut 255.</p>
+    <div class="td-correction">
+      <p>On garde 172.16 et on met les 16 bits « machine » à 1 : <b>172.16.255.255</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q13" data-reponse="65534|65 534|2^16-2|2**16-2|2^16 - 2|65536-2|65536 - 2">
+    <p class="td-consigne">4. Donner le nombre maximum de machines pouvant être connectées à ce réseau.</p>
+    <p class="td-retour" data-si="65536|65 536|2^16|2**16">Presque : deux adresses ne peuvent pas être données à une machine.</p>
+    <p class="td-retour" data-si="254|256|65535|65 535">La partie « machine » a 16 bits (32 − 16). Combien d'adresses cela fait-il, et combien sont réservées ?</p>
+    <p class="td-aide">La partie « machine » a 32 − 16 = 16 bits : 2<sup>16</sup> adresses.</p>
+    <p class="td-aide">Enlève les deux adresses réservées : celle du réseau et celle de diffusion.</p>
+    <div class="td-correction">
+      <p>2<sup>16</sup> − 2 = 65 536 − 2 = <b>65 534</b> machines. (L'interface du routeur D, 172.16.255.254, en fait partie : il reste 65 533 adresses pour d'autres machines.)</p>
+    </div>
+  </section>
+
+  <h3>Partie B : Protocoles de routage</h3>
+  <p>On donne ci-dessous des extraits des tables de routage des routeurs. Pour toutes les lignes, le réseau destinataire est <b>L2</b>.</p>
+  <table border="1">
+    <caption>Extraits des tables de routage (réseau destinataire : L2)</caption>
+    <thead><tr><th scope="col">Routeur</th><th scope="col">Passerelle</th><th scope="col">Interface</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td>53.10.10.2</td><td>53.10.10.1</td></tr>
+      <tr><td>B</td><td>193.55.24.6</td><td>193.55.24.5</td></tr>
+      <tr><td>C</td><td>193.55.24.10</td><td>193.55.24.9</td></tr>
+      <tr><td>D</td><td>Connecté</td><td>172.16.255.254</td></tr>
+      <tr><td>E</td><td>42.4.10.14</td><td>42.4.10.13</td></tr>
+      <tr><td>F</td><td>42.4.10.10</td><td>42.4.10.9</td></tr>
+      <tr><td>G</td><td>53.10.10.13</td><td>53.10.10.14</td></tr>
+      <tr><td>H</td><td>53.10.10.6</td><td>53.10.10.5</td></tr>
+    </tbody>
+  </table>
+
+  <section class="td-q" data-type="courte" id="q14" data-comparer="code" data-reponse="A-H-D|A,H,D|AHD|A→H→D|A->H->D|a-h-d|a,h,d|ahd|L1-A-H-D-L2|S1-A-H-D-S2|L1-A-H-D|A-H-D-L2">
+    <p class="td-consigne">5. À l'aide des extraits des tables de routage ci-dessus, donner un chemin (c'est-à-dire nommer les routeurs traversés) suivi par un message envoyé du réseau L1 vers le réseau L2.</p>
+    <p>Écris les routeurs sous la forme <code>A-…-D</code>.</p>
+    <p class="td-retour" data-si="A-B-C-D|ABCD|A,B,C,D">Ce chemin existe sur le schéma, mais ce n'est pas celui des tables : lis la passerelle de A.</p>
+    <p class="td-aide">Le message part de L1 et arrive d'abord au routeur A. Lis la passerelle de A : à quel routeur appartient l'adresse 53.10.10.2 ?</p>
+    <p class="td-aide">53.10.10.2 est une adresse du routeur H. Continue avec la ligne de H.</p>
+    <div class="td-correction">
+      <p>A envoie vers 53.10.10.2, c'est H ; H envoie vers 53.10.10.6, c'est D ; D est connecté à L2. Chemin : <b>A – H – D</b> (L1 → A → H → D → L2).</p>
+    </div>
+  </section>
+
+  <p>La liaison entre les routeurs H et D est rompue.</p>
+
+  <section class="td-q" data-type="cases" id="q15">
+    <p class="td-consigne">6. Sachant que le protocole de routage RIP est utilisé (distance en nombre de sauts), donner les nouveaux chemins que pourra suivre un message allant de L1 vers L2.</p>
+    <p>Écris-les sur ta feuille, puis coche ici tous les chemins que RIP peut choisir.</p>
+    <ul class="td-options">
+      <li data-juste>A – B – C – D</li>
+      <li data-juste>A – H – C – D</li>
+      <li data-retour="A – G – F – E – D traverse 5 routeurs : RIP préfère un chemin plus court.">A – G – F – E – D</li>
+      <li data-retour="A – H – F – E – D traverse 5 routeurs : RIP préfère un chemin plus court.">A – H – F – E – D</li>
+      <li data-retour="La liaison H – D est rompue : ce chemin n'existe plus.">A – H – D</li>
+    </ul>
+    <p class="td-aide">Sur le schéma, barre la liaison H – D. Cherche les chemins de A à D qui traversent le moins de routeurs.</p>
+    <p class="td-aide">Il y a deux chemins qui traversent 4 routeurs (A, un ou deux intermédiaires, D). Aucun n'en traverse 3.</p>
+    <div class="td-correction">
+      <p>Sans H – D, les chemins les plus courts de A à D ont 3 liaisons : <b>A – B – C – D</b> et <b>A – H – C – D</b>. Les chemins par E (A – G – F – E – D, A – H – F – E – D) en ont 4.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q16">
+    <p class="td-consigne">7. Choisir un des chemins de la question précédente. Donner les routeurs dont la règle de routage à destination de L2 est obligatoirement modifiée. Après avoir examiné tous les routeurs, écrire sur votre copie les règles de routage modifiées en conséquence.</p>
+    <p>Pour vérifier ici, on choisit le chemin <b>A – H – C – D</b>. Complète la règle modifiée : (routeur, réseau destinataire, passerelle, interface). L'autre chemin est traité dans la correction.</p>
+    <pre class="td-code">
+regle_modifiee = ("[[H|h]]", "L2", "[[53.10.10.10]]", "[[53.10.10.9]]")</pre>
+    <p class="td-aide">A envoie déjà vers H : sa règle ne change pas. Quel routeur avait une règle qui passait par la liaison rompue ?</p>
+    <p class="td-aide">H doit maintenant envoyer vers C. La passerelle est l'adresse de C du côté de H ; l'interface est l'adresse de H du côté de C.</p>
+    <div class="td-correction">
+      <p>Avec le chemin A – H – C – D, seule la règle de <b>H</b> change : L2, passerelle <b>53.10.10.10</b> (C), interface <b>53.10.10.9</b>. A, C et D ne changent pas.</p>
+      <p>Avec le chemin A – B – C – D, la règle de <b>A</b> change : L2, passerelle 193.55.24.2 (B), interface 193.55.24.1 ; B et C envoient déjà vers C puis D. La règle de H, qui passait par la liaison rompue, doit elle aussi changer (vers C ou vers F), même si H n'est plus sur le chemin. Le corrigé de l'AEIF ne cite que A pour ce chemin.</p>
+    </div>
+  </section>
+
+  <p>La liaison entre les routeurs H et D est rétablie. Pour tenir compte du débit des liaisons, on décide d'utiliser le protocole OSPF (distance liée au coût des liaisons) pour effectuer le routage. Le coût d'une liaison est donné ici par la formule : <b>coût = 10<sup>9</sup> / BP</b>, où BP est la bande passante de la connexion en bit par seconde. Les valeurs des bandes passantes de chaque liaison entre les routeurs sont données ci-dessous :</p>
+  <table border="1">
+    <caption>Bande passante des liaisons</caption>
+    <thead><tr><th scope="col">Liaison</th><th scope="col">Bande passante</th><th scope="col">Liaison</th><th scope="col">Bande passante</th></tr></thead>
+    <tbody>
+      <tr><td>A-B</td><td>1 Gbit/s</td><td>D-H</td><td>100 Mbit/s</td></tr>
+      <tr><td>A-H</td><td>1 Gbit/s</td><td>D-E</td><td>10 Gbit/s</td></tr>
+      <tr><td>A-G</td><td>1 Gbit/s</td><td>E-F</td><td>10 Gbit/s</td></tr>
+      <tr><td>B-C</td><td>1 Gbit/s</td><td>F-H</td><td>1 Gbit/s</td></tr>
+      <tr><td>C-H</td><td>100 Mbit/s</td><td>F-G</td><td>10 Gbit/s</td></tr>
+      <tr><td>C-D</td><td>1 Gbit/s</td><td>G-H</td><td>1 Gbit/s</td></tr>
+    </tbody>
+  </table>
+
+  <section class="td-q" data-type="trous" id="q17">
+    <p class="td-consigne">8. Calculer le coût des liaisons pour les 3 valeurs de bande passante qui apparaissent dans le tableau ci-dessus.</p>
+    <pre class="td-code">
+cout = {"100 Mbit/s": [[10]],
+        "1 Gbit/s": [[1]],
+        "10 Gbit/s": [[0.1|0,1|.1|1/10|10**-1]]}</pre>
+    <p class="td-aide">Écris chaque bande passante en bit/s : 100 Mbit/s = 10<sup>8</sup> bit/s, 1 Gbit/s = 10<sup>9</sup> bit/s, 10 Gbit/s = 10<sup>10</sup> bit/s.</p>
+    <p class="td-aide">Attention : ici la formule est 10<sup>9</sup> / BP (et non 10<sup>8</sup> / débit comme dans l'exercice 1). Lis toujours la formule de l'énoncé.</p>
+    <div class="td-correction">
+      <p>10<sup>9</sup> / 10<sup>8</sup> = <b>10</b> ; 10<sup>9</sup> / 10<sup>9</sup> = <b>1</b> ; 10<sup>9</sup> / 10<sup>10</sup> = <b>0,1</b>. Plus la liaison est rapide, plus son coût est petit.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q18">
+    <p class="td-consigne">9. Déterminer alors le chemin que suivra un message allant de L1 vers L2 et donner son coût.</p>
+    <pre class="td-code">
+chemin = "[[A-G-F-E-D|A,G,F,E,D|AGFED|a-g-f-e-d|L1-A-G-F-E-D-L2|S1-A-G-F-E-D-S2]]"
+cout_total = [[1.3|1,3|13/10]]</pre>
+    <p class="td-aide">Les liaisons à 10 Gbit/s (coût 0,1) sont D-E, E-F et F-G. Peux-tu les enchaîner depuis A ?</p>
+    <p class="td-aide">De A, rejoins G (coût 1), puis suis les liaisons à 10 Gbit/s jusqu'à D.</p>
+    <div class="td-correction">
+      <p>Le chemin est <b>A – G – F – E – D</b>, de coût 1 + 0,1 + 0,1 + 0,1 = <b>1,3</b>. Il traverse plus de routeurs que A – H – D (coût 1 + 10 = 11), mais il est bien moins cher.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q19">
+    <p class="td-consigne">10. La liaison entre les routeurs G et F est rompue. Déterminer le nouveau chemin suivi par un message allant de L1 vers L2 et donner son coût.</p>
+    <pre class="td-code">
+chemin = "[[A-H-F-E-D|A,H,F,E,D|AHFED|a-h-f-e-d|L1-A-H-F-E-D-L2|S1-A-H-F-E-D-S2]]"
+cout_total = [[2.2|2,2|22/10]]</pre>
+    <p class="td-aide">Il faut toujours rejoindre E (puis D) par les liaisons rapides. Comment atteindre F sans passer par G – F ?</p>
+    <p class="td-aide">Compare A – H – F – E – D et A – B – C – D.</p>
+    <div class="td-correction">
+      <p>Le chemin est <b>A – H – F – E – D</b>, de coût 1 + 1 + 0,1 + 0,1 = <b>2,2</b>. Les suivants coûtent plus : A – B – C – D 3, A – G – H – F – E – D 3,2.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Adresses :</b> avec /n, les n premiers bits sont la partie « réseau ». Adresse du réseau : bits « machine » à 0. Adresse de diffusion : bits « machine » à 1. Nombre de machines : 2<sup>(32 − n)</sup> − 2.</p>
+    <p><b>RIP</b> : la route qui traverse le moins de routeurs (sauts). <b>OSPF</b> : la route de plus petit coût total, coût d'une liaison = référence / débit. La référence (10<sup>8</sup>, 10<sup>9</sup>…) est donnée par l'énoncé : lis-la toujours.</p>
+    <p>Une table de routage donne, pour chaque destination, la <b>passerelle</b> (l'adresse du prochain routeur) et l'<b>interface</b> (l'adresse de sortie du routeur lui-même).</p>
+  </section>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Centres étrangers (groupe 1), juin 2024, jour 1 (24-NSIJ1G11), exercice 2. <a href="https://aeif.fr/wp-content/uploads/2026/04/Centres_Etrangers_juin_2024_sujet_1_v2.pdf">Le PDF du sujet</a>, diffusé par l'AEIF (<a href="https://aeif.fr/">aeif.fr</a> : CC BY-SA 4.0, relevée sur ses pages annuelles). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2026/04/Centres_Etrangers_juin_2024_sujet_1_corr_v2.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document). Schémas redessinés ; tableaux remis en forme pour les petits écrans.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-routage">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
