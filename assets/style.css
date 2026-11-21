@@ -3,7 +3,7 @@
 
    À charger APRÈS assets/signal-commun.css (polices hébergées et palette
    --td-*, communes aux TD et au site). Remplace l'ancienne feuille « Réseau
-   la nuit », bibliotheque/bibliotheque.css et bibliotheque/annales/annales.css.
+   la nuit » et les feuilles de la bibliothèque et des annales (retirées).
    Maquette validée par l'enseignant le 21/11 (design/t126-maquette-site),
    avec ses réponses : accueil A (bandeau en haut, en rotation), les quatre
    paysages tournent partout, fiche d'une ressource avec les filtres à côté.
@@ -503,6 +503,9 @@ a.bandeau-repere:hover { box-shadow: .5cqw .5cqw 0 var(--td-neon-2); }
   .bandeau-texte, .bandeau.compact .bandeau-texte { position: static; }
   .sur-titre { font-size: .76rem; gap: .2rem .5rem; flex-wrap: wrap; white-space: normal; overflow: visible; }
   .sur-titre > span:not(.puce) { background: none; }
+  /* sur deux lignes, un « · » pourrait ouvrir la seconde : l'écart seul sépare les mentions */
+  .sur-titre { column-gap: .9rem; }
+  .sur-titre > span:not(.puce) + span::before { content: none; }
   .puce { font-size: .92rem; padding: 0 .35rem; border-width: 2px; box-shadow: 2px 2px 0 var(--td-neon-1); }
   .bandeau h1, .bandeau.compact h1, .bandeau h1.long { font-size: clamp(1.65rem, 8.6vw, 2.3rem); line-height: 1.12; margin-top: .55rem; max-width: none; text-shadow: -2px 1px 0 var(--td-neon-2), 2px -1px 0 var(--td-neon-1); }
   .bandeau-repere { position: static; flex-direction: row; gap: .45rem; width: max-content; margin-top: .6rem; padding: .4rem .55rem; border-width: 2px; box-shadow: 3px 3px 0 var(--td-neon-1); font-size: 1.1rem; }
@@ -523,8 +526,25 @@ a.bandeau-repere:hover { box-shadow: .5cqw .5cqw 0 var(--td-neon-2); }
 /* ── 14. Impression : fond blanc, encre noire, ni navigation ni filtres ── */
 @media print {
   @page { size: A4; margin: 12mm 12mm 14mm; }
-  :root, :root:not(#imprimer) { --td-fond: #FFFFFF; --td-panneau: #FFFFFF; --td-panneau-2: #FFFFFF; --td-encre: #000000; --td-encre-douce: #333333; --td-accent: #000000; --td-neon-1: transparent; --td-neon-2: transparent; }
-  body { background: #FFFFFF !important; color: #000000; font-size: 10.5pt; }
+  /* toute la palette en clair, même en affichage obscur : sans « color-scheme: light »,
+     Chrome peint les marges de la feuille en couleur nuit quand il imprime les fonds */
+  :root, :root:not(#imprimer) {
+    --td-fond: #FFFFFF; --td-panneau: #FFFFFF; --td-panneau-2: #FFFFFF; --td-encre: #000000; --td-encre-douce: #333333;
+    --td-trait: #8C8796; --td-trait-fort: #000000; --td-accent: #000000; --td-accent-encre: #FFFFFF;
+    --td-principal-fond: #FFFFFF; --td-principal-encre: #000000; --td-focus: #C2006A;
+    --td-juste: #14532D; --td-juste-fond: #FFFFFF; --td-encore: #713F00; --td-encore-fond: #FFFFFF; --td-info-fond: #FFFFFF; --td-erreur: #A1001C;
+    --td-code-fond: #FFFFFF; --td-code-encre: #000000; --td-code-num: #45414D; --td-bande: #EBEBEB; --td-bande-2: #E2E2E2;
+    --td-g0: #005266; --td-g1: #8C004F; --td-g2: #5C4600; --td-g3: #2E5500; --td-filet-actif: #00566E;
+    --td-tk-mot: #9C0057; --td-tk-fn: #00566E; --td-tk-ch: #245400; --td-tk-nb: #704400; --td-tk-com: #525252; --td-tk-op: #000000;
+    --td-console-fond: #FFFFFF; --td-console-trait: #000000;
+    --td-marge: url("td/marge.svg"); --td-marg-img: url("td/margouillat.svg");
+    --td-neon-1: transparent; --td-neon-2: transparent;
+    color-scheme: light;
+  }
+  html, body { background: #FFFFFF !important; }
+  body { color: #000000; font-size: 10.5pt; }
+  /* bouton « Ouvrir : … » : encre noire sur blanc, avec un trait (le fond ne s'imprime pas toujours) */
+  .bouton-ouvrir { background: #FFFFFF !important; color: #000000 !important; border: 1.5px solid #000000 !important; }
   .barre-haut, .cote, .cherche, .evitement, .mode, .outils-resultats .tri, .outils-resultats .mode, .bouton-annales { display: none !important; }
   .page { max-width: none; padding: 0; }
   .rub-corps { display: block; }
