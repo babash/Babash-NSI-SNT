@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Les arbres binaires : TD type bac (1/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : la somme d'un arbre binaire (bac 2022, Métropole, exercice 4), avec coups de pouce et corrections.">
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<main class="td" data-td="tle-td-bac-arbres-1" data-td-version="1">
+
+  <header class="td-entete">
+    <p class="td-sur-titre">Terminale NSI · Structures de données · TD type bac, feuille 1 sur 2</p>
+    <h1>Les arbres binaires : TD type bac (1/2)</h1>
+    <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : la somme d'un arbre binaire.</p>
+    <p><b>Je sais :</b></p>
+    <ul class="td-criteres">
+      <li>nommer la racine, un nœud, une feuille, le sous-arbre gauche (SAG) et le sous-arbre droit (SAD) ;</li>
+      <li>reconnaître un parcours en largeur ;</li>
+      <li>écrire une fonction récursive sur un arbre, avec l'arbre vide comme cas de base.</li>
+    </ul>
+    <p class="td-duree">45 minutes · 1 exercice de bac (4 points), 8 questions · seul·e ou en binôme</p>
+    <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+    <p class="td-ecran-seul"><b>Ce TD a deux feuilles :</b> 1. la somme d'un arbre (la plus guidée, ici) ; 2. <a href="feuille-2.html">la plus grande somme racine-feuille</a> (plus proche de l'épreuve).</p>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+  <!-- ═════════════ EXERCICE 1 ═════════════ -->
+  <h2 class="td-partie">Exercice 1 : la somme d'un arbre (4 points)</h2>
+  <p><i>Bac 2022, Métropole, jour 1 (sujet 22-NSIJ1ME1), exercice 4, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-metropole-sujet-1.pdf">Sujet d'origine (PDF)</a>.</i></p>
+  <p><i>Cet exercice, composé de deux parties A et B, porte sur le parcours des arbres binaires, le principe “diviser pour régner” et la récursivité.</i></p>
+  <p>Cet exercice traite du calcul de la somme d’un arbre binaire. Cette somme consiste à additionner toutes les valeurs numériques contenues dans les nœuds de l’arbre.</p>
+  <p>L’arbre utilisé dans les parties A et B est le suivant :</p>
+  <svg viewBox="0 0 260 110" width="260" height="110" role="img" aria-label="Arbre binaire : racine 3 ; enfants 6 (à gauche) et 2 (à droite) ; 6 a pour enfants 7 et 4 ; 2 a pour enfants 9 et 1." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="56.6" y1="64.9" x2="40.9" y2="83.1"/><line x1="73.4" y1="64.9" x2="89.1" y2="83.1"/><line x1="118.8" y1="23.6" x2="76.2" y2="48.4"/><line x1="186.6" y1="64.9" x2="170.9" y2="83.1"/><line x1="203.4" y1="64.9" x2="219.1" y2="83.1"/><line x1="141.2" y1="23.6" x2="183.8" y2="48.4"/><circle cx="32.5" cy="93.0" r="13"/><circle cx="97.5" cy="93.0" r="13"/><circle cx="65.0" cy="55.0" r="13"/><circle cx="162.5" cy="93.0" r="13"/><circle cx="227.5" cy="93.0" r="13"/><circle cx="195.0" cy="55.0" r="13"/><circle cx="130.0" cy="17.0" r="13"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="32.5" y="98.0">7</text><text x="97.5" y="98.0">4</text><text x="65.0" y="60.0">6</text><text x="162.5" y="98.0">9</text><text x="227.5" y="98.0">1</text><text x="195.0" y="60.0">2</text><text x="130.0" y="22.0">3</text></g></svg>
+
+  <h2 class="td-partie">Partie A : Parcours d’un arbre</h2>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="32">
+    <p class="td-consigne"><b>1.</b> Donner la somme de l’arbre précédent. Justifier la réponse en explicitant le calcul qui a permis de l’obtenir.</p>
+    <p class="td-papier-seul">Calcul : …………………………………………………………………………</p>
+    <p class="td-retour" data-si="29">Tu as oublié la racine : elle compte aussi.</p>
+    <p class="td-retour" data-si="21">Tu n'as additionné que les feuilles. La somme prend <b>tous</b> les nœuds.</p>
+    <p class="td-aide">L'arbre a 7 nœuds. Additionne les 7 valeurs, niveau par niveau.</p>
+    <p class="td-aide">Racine : 3. Niveau 1 : 6 et 2. Niveau 2 : 7, 4, 9 et 1.</p>
+    <div class="td-correction">
+      <p>3 + 6 + 2 + 7 + 4 + 9 + 1 = <b>32</b>. Pour justifier, on écrit le calcul avec toutes les valeurs.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q2">
+    <p class="td-consigne"><b>2.</b> Indiquer la lettre correspondante aux noms ‘racine’, ‘feuille’, ‘nœud’, ‘SAG’ (Sous Arbre Gauche) et ‘SAD’ (Sous Arbre Droit). Chaque lettre <b>A</b>, <b>B</b>, <b>C</b>, <b>D</b> et <b>E</b> devra être utilisée une seule fois.</p>
+    <svg viewBox="0 0 350 166" width="350" height="166" role="img" aria-label="Le même arbre avec cinq étiquettes : A désigne le nœud 3 (en haut) ; B désigne le nœud 6 ; C désigne le nœud 7 ; D entoure les nœuds 6, 7 et 4 ; E entoure les nœuds 2, 9 et 1." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="112.2" y1="74.9" x2="92.3" y2="99.1"/><line x1="129.8" y1="74.9" x2="149.7" y2="99.1"/><line x1="184.1" y1="25.3" x2="132.9" y2="56.7"/><line x1="262.2" y1="74.9" x2="242.3" y2="99.1"/><line x1="279.8" y1="74.9" x2="299.7" y2="99.1"/><line x1="207.9" y1="25.3" x2="259.1" y2="56.7"/><circle cx="83.5" cy="110.0" r="14"/><circle cx="158.5" cy="110.0" r="14"/><circle cx="121.0" cy="64.0" r="14"/><circle cx="233.5" cy="110.0" r="14"/><circle cx="308.5" cy="110.0" r="14"/><circle cx="271.0" cy="64.0" r="14"/><circle cx="196.0" cy="18.0" r="14"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="83.5" y="115.0">7</text><text x="158.5" y="115.0">4</text><text x="121.0" y="69.0">6</text><text x="233.5" y="115.0">9</text><text x="308.5" y="115.0">1</text><text x="271.0" y="69.0">2</text><text x="196.0" y="23.0">3</text></g><rect x="62" y="48" width="118" height="84" rx="6" stroke-dasharray="5 4"/><rect x="212" y="48" width="118" height="84" rx="6" stroke-dasharray="5 4"/><g stroke-width="1.4"><rect x="128" y="6" width="26" height="24" rx="3"/><line x1="154" y1="18" x2="180" y2="18"/><rect x="4" y="52" width="26" height="24" rx="3"/><line x1="30" y1="64" x2="105" y2="64"/><rect x="4" y="98" width="26" height="24" rx="3"/><line x1="30" y1="110" x2="68" y2="110"/><rect x="108" y="138" width="26" height="24" rx="3"/><line x1="121" y1="138" x2="121" y2="132"/><rect x="258" y="138" width="26" height="24" rx="3"/><line x1="271" y1="138" x2="271" y2="132"/></g><g fill="currentColor" stroke="none" font-size="15" font-weight="700" text-anchor="middle"><text x="141" y="23">A</text><text x="17" y="69">B</text><text x="17" y="115">C</text><text x="121" y="155">D</text><text x="271" y="155">E</text></g></svg>
+    <p>Écris une lettre dans chaque case.</p>
+    <pre class="td-code">
+racine  = "[[A|a]]"
+feuille = "[[C|c]]"
+noeud   = "[[B|b]]"
+SAG     = "[[D|d]]"
+SAD     = "[[E|e]]"</pre>
+    <p class="td-aide">La racine est le nœud du haut. Une feuille n'a pas d'enfant.</p>
+    <p class="td-aide">D et E entourent chacun tout un groupe de nœuds : ce sont des sous-arbres. Lequel est à gauche ?</p>
+    <div class="td-correction">
+      <p>Racine : <b>A</b> (le 3). Feuille : <b>C</b> (le 7 n'a pas d'enfant). Nœud : <b>B</b> (le 6, qui a des enfants). SAG : <b>D</b>. SAD : <b>E</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q3">
+    <p class="td-consigne"><b>3.</b> Parmi les quatre propositions A, B, C et D ci-dessous, donnant un parcours en largeur d’abord de l’arbre, une seule est correcte. Indiquer laquelle.</p>
+    <ul class="td-options">
+      <li data-retour="C'est le parcours infixe (gauche, racine, droit). En largeur, on commence par la racine.">Proposition A : 7 - 6 - 4 - 3 - 9 - 2 - 1</li>
+      <li data-retour="C'est le parcours préfixe (racine, gauche, droit) : il descend dans le sous-arbre gauche avant de voir le 2.">Proposition B : 3 - 6 - 7 - 4 - 2 - 9 - 1</li>
+      <li data-juste>Proposition C : 3 - 6 - 2 - 7 - 4 - 9 - 1</li>
+      <li data-retour="C'est le parcours suffixe (gauche, droit, racine) : la racine arrive en dernier.">Proposition D : 7 - 4 - 6 - 9 - 1 - 2 – 3</li>
+    </ul>
+    <p class="td-aide">En largeur, on lit l'arbre niveau par niveau, de haut en bas.</p>
+    <p class="td-aide">Dans chaque niveau, on lit de gauche à droite : 3, puis 6 et 2, puis…</p>
+    <div class="td-correction">
+      <p><b>Proposition C</b> : niveau 0 (3), niveau 1 (6, 2), niveau 2 (7, 4, 9, 1). Les autres propositions sont des parcours en profondeur : A infixe, B préfixe, D suffixe.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q4" data-obligatoire data-fichier="somme.py">
+    <p class="td-consigne"><b>4.</b> Écrire en langage Python la fonction <code>somme</code> qui prend en paramètre une liste de nombres et qui renvoie la somme de ses éléments.</p>
+    <p>Exemple : <code>somme([1, 2, 3, 4])</code> est égale à 10.</p>
+    <pre class="td-depart">
+def somme(liste):
+    ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert somme([1, 2, 3, 4]) == 10, "somme([1, 2, 3, 4]) doit valoir 10."
+assert somme([]) == 0, "La somme d'une liste vide vaut 0 : pense à la valeur de départ."
+assert somme([5]) == 5, "somme([5]) doit valoir 5."
+assert somme([3, -2, 7]) == 8, "somme([3, -2, 7]) doit valoir 8."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Utilise un accumulateur : une variable qui vaut 0 au départ.</p>
+    <p class="td-aide">Parcours la liste avec <code>for x in liste:</code> et ajoute chaque élément à l'accumulateur. Renvoie-le après la boucle.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def somme(liste):
+    total = 0
+    for x in liste:
+        total = total + x
+    return total</pre>
+      <p>Le <code>return</code> est <b>après</b> la boucle, sans décalage : sinon la fonction s'arrête au premier tour.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-reponse="largeur|en largeur|parcours en largeur|largeur d'abord|en largeur d'abord|parcours en largeur d'abord|parcours largeur|BFS">
+    <p class="td-consigne"><b>5.</b> La fonction <code>parcourir(arbre)</code> pourrait se traduire en langage naturel par :</p>
+    <pre class="td-code td-sans-num">
+parcourir(A):
+    L = liste_vide
+    F = file_vide
+    enfiler A dans F
+    Tant que F n’est pas vide
+        défiler S de F
+        ajouter la valeur de la racine de S dans L
+        Pour chaque sous arbre SA non vide de S
+            enfiler SA dans F
+    renvoyer L</pre>
+    <p>Donner le type de parcours obtenu grâce à la fonction <code>parcourir</code>.</p>
+    <p class="td-retour" data-si="prefixe|parcours prefixe|profondeur|en profondeur|parcours en profondeur">Regarde la structure utilisée : une <b>file</b> (premier entré, premier sorti), pas la récursivité.</p>
+    <p class="td-aide">Quelle structure de données utilise l'algorithme ? Une pile ou une file ?</p>
+    <p class="td-aide">Avec une file, on traite les nœuds dans l'ordre où on les a rencontrés : niveau par niveau.</p>
+    <div class="td-correction">
+      <p>Un <b>parcours en largeur</b> (d'abord). La file fait sortir les nœuds dans l'ordre où ils sont entrés : la racine, puis ses enfants, puis ses petits-enfants… Sur l'arbre de l'exercice, on obtient la proposition C de la question 3.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">Partie B : Méthode ‘diviser pour régner’</h2>
+
+  <section class="td-q" data-type="qcu" id="q6">
+    <p class="td-consigne"><b>6.</b> Parmi les quatre propositions A, B, C et D ci-dessous, indiquer la seule proposition correcte. En informatique, le principe diviser pour régner signifie :</p>
+    <ul class="td-options">
+      <li data-retour="Découper son code en fonctions est une bonne pratique, mais ce n'est pas « diviser pour régner », qui parle du problème.">Proposition A : diviser une fonction en deux fonctions plus petites</li>
+      <li data-retour="Les modules organisent le code. Diviser pour régner découpe le problème.">Proposition B : utiliser plusieurs modules</li>
+      <li data-retour="Trier les informations par type ne résout pas un problème plus petit.">Proposition C : séparer les informations en fonction de leur types</li>
+      <li data-juste>Proposition D : diviser un problème en deux problèmes plus petits et indépendants.</li>
+    </ul>
+    <p class="td-aide">Pense au tri fusion : on coupe la liste en deux, on trie chaque moitié, puis on fusionne.</p>
+    <div class="td-correction">
+      <p><b>Proposition D.</b> On divise le problème en sous-problèmes plus petits et indépendants, on les résout (souvent par récursivité), puis on combine leurs résultats.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q7">
+    <p class="td-consigne"><b>7.</b> L’arbre présenté dans le problème peut être décomposé en racine et sous arbres :</p>
+    <svg viewBox="0 0 320 136" width="320" height="136" role="img" aria-label="Le même arbre : la racine 3 ; un cadre SAG entoure le sous-arbre gauche (6, 7, 4) ; un cadre SAD entoure le sous-arbre droit (2, 9, 1)." style="display:block;max-width:100%;height:auto;margin:.4rem auto" fill="none" stroke="currentColor" stroke-width="1.6"><line x1="76.2" y1="74.9" x2="56.3" y2="99.1"/><line x1="93.8" y1="74.9" x2="113.7" y2="99.1"/><line x1="148.1" y1="25.3" x2="96.9" y2="56.7"/><line x1="226.2" y1="74.9" x2="206.3" y2="99.1"/><line x1="243.8" y1="74.9" x2="263.7" y2="99.1"/><line x1="171.9" y1="25.3" x2="223.1" y2="56.7"/><circle cx="47.5" cy="110.0" r="14"/><circle cx="122.5" cy="110.0" r="14"/><circle cx="85.0" cy="64.0" r="14"/><circle cx="197.5" cy="110.0" r="14"/><circle cx="272.5" cy="110.0" r="14"/><circle cx="235.0" cy="64.0" r="14"/><circle cx="160.0" cy="18.0" r="14"/><g fill="currentColor" stroke="none" font-size="14" font-weight="700" text-anchor="middle"><text x="47.5" y="115.0">7</text><text x="122.5" y="115.0">4</text><text x="85.0" y="69.0">6</text><text x="197.5" y="115.0">9</text><text x="272.5" y="115.0">1</text><text x="235.0" y="69.0">2</text><text x="160.0" y="23.0">3</text></g><rect x="27" y="48" width="116" height="84" rx="6" stroke-dasharray="5 4"/><rect x="177" y="48" width="116" height="84" rx="6" stroke-dasharray="5 4"/><g fill="currentColor" stroke="none" font-size="13" font-weight="700" text-anchor="middle"><text x="50" y="43">SAG</text><text x="270" y="43">SAD</text></g></svg>
+    <p>Indiquer dans l’esprit de ‘diviser pour régner’ l’égalité donnant la somme d’un arbre en fonction de la somme des sous arbres et de la valeur numérique de la racine.</p>
+    <p>Pour t'aider, complète d'abord l'égalité avec les nombres de cet arbre :</p>
+    <pre class="td-code">
+somme_SAG = [[17]]
+somme_SAD = [[12]]
+somme_arbre = [[3]] + somme_SAG + somme_SAD
+print(somme_arbre)</pre>
+    <pre class="td-attendu">
+32</pre>
+    <p class="td-papier-seul">Égalité générale : somme(arbre) = ……………………………………………………</p>
+    <p class="td-aide">Le SAG contient 6, 7 et 4. Le SAD contient 2, 9 et 1.</p>
+    <p class="td-aide">Il reste la racine : sa valeur s'ajoute aux deux sommes.</p>
+    <div class="td-correction">
+      <p>Ici : 32 = 3 + 17 + 12. En général :</p>
+      <p><b>somme(arbre) = valeur de la racine + somme(SAG) + somme(SAD)</b></p>
+      <p>Le problème « somme de l'arbre » est divisé en deux problèmes plus petits et indépendants : la somme du SAG et celle du SAD.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q8" data-obligatoire data-fichier="calcul_somme.py">
+    <p class="td-consigne"><b>8.</b> Écrire en langage Python une fonction récursive <code>calcul_somme(arbre)</code>. Cette fonction calcule la somme de l’arbre passé en paramètre.</p>
+    <p>Les fonctions suivantes sont disponibles :</p>
+    <ul>
+      <li><code>est_vide(arbre)</code> : renvoie <code>True</code> si <code>arbre</code> est vide et renvoie <code>False</code> sinon ;</li>
+      <li><code>valeur_racine(arbre)</code> : renvoie la valeur numérique de la racine de <code>arbre</code> ;</li>
+      <li><code>arbre_gauche(arbre)</code> : renvoie le sous arbre gauche de <code>arbre</code> ;</li>
+      <li><code>arbre_droit(arbre)</code> : renvoie le sous arbre droit de <code>arbre</code>.</li>
+    </ul>
+    <p class="td-ecran-seul">Sur machine, ces fonctions sont déjà écrites dans l'éditeur, avec la classe <code>ArbreBinaire</code> du cours (l'arbre vide est <code>None</code>). Le sujet ne dit pas comment l'arbre est construit : tu n'as besoin que des quatre fonctions.</p>
+    <pre class="td-depart">
+# Fourni pour tester sur machine (ce n'est pas dans le sujet) :
+class ArbreBinaire:
+    def __init__(self, valeur, gauche=None, droit=None):
+        self.valeur = valeur
+        self.gauche = gauche
+        self.droit = droit
+
+def est_vide(arbre):
+    return arbre is None
+
+def valeur_racine(arbre):
+    return arbre.valeur
+
+def arbre_gauche(arbre):
+    return arbre.gauche
+
+def arbre_droit(arbre):
+    return arbre.droit
+
+# L'arbre de l'exercice :
+arbre = ArbreBinaire(3, ArbreBinaire(6, ArbreBinaire(7), ArbreBinaire(4)),
+                        ArbreBinaire(2, ArbreBinaire(9), ArbreBinaire(1)))
+
+# À toi :
+def calcul_somme(arbre):
+    ...
+
+print(calcul_somme(arbre))
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert calcul_somme(None) == 0, "La somme de l'arbre vide doit valoir 0 : c'est le cas de base."
+assert calcul_somme(ArbreBinaire(5)) == 5, "Un arbre réduit à un nœud de valeur 5 a pour somme 5."
+assert calcul_somme(arbre) == 32, "La somme de l'arbre de l'exercice doit valoir 32."
+assert calcul_somme(ArbreBinaire(1, None, ArbreBinaire(2, ArbreBinaire(3)))) == 6, "Un arbre dont des nœuds n'ont qu'un enfant : 1 + 2 + 3 = 6."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Cas de base : que vaut la somme d'un arbre vide ?</p>
+    <p class="td-aide">Sinon, utilise l'égalité de la question 7 : la valeur de la racine, plus deux appels récursifs.</p>
+    <p class="td-aide">Les appels : <code>calcul_somme(arbre_gauche(arbre))</code> et <code>calcul_somme(arbre_droit(arbre))</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def calcul_somme(arbre):
+    if est_vide(arbre):
+        return 0
+    return (valeur_racine(arbre)
+            + calcul_somme(arbre_gauche(arbre))
+            + calcul_somme(arbre_droit(arbre)))</pre>
+      <p>Le cas de base (l'arbre vide, somme 0) arrête la récursivité. Chaque appel se fait sur un sous-arbre plus petit : la fonction se termine.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Une fonction récursive sur un arbre : un <b>cas de base</b> (l'arbre vide), puis des <b>appels</b> sur les deux sous-arbres, puis on <b>combine</b> leurs résultats avec la racine.</p>
+    <p>somme(arbre) = valeur de la racine + somme(SAG) + somme(SAD), et 0 pour l'arbre vide.</p>
+    <p>Parcours en largeur : une <b>file</b>, niveau par niveau. Parcours en profondeur (préfixe, infixe, suffixe) : la récursivité.</p>
+  </section>
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, la plus grande somme racine-feuille</a>.</p>
+  <footer class="td-pied">
+    <p>Énoncé : sujet officiel du baccalauréat de NSI, Métropole, mai 2022, jour 1 (22-NSIJ1ME1), exercice 4 (ministère de l'Éducation nationale), recopié d'après le PDF diffusé par <a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> et l'<a href="https://aeif.fr/index.php/annee-2022/">AEIF</a> ; arbres redessinés. Correction comparée au corrigé de l'AEIF (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0).</p>
+    <p>Mise en TD, coups de pouce et corrections : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-arbres">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
