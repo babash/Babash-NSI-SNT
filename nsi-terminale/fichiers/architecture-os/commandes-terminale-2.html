@@ -1,0 +1,271 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Commandes et système Linux, exercices : TD en ligne</title>
+  <meta name="description" content="TD en ligne, auto-correctif : pratique des commandes Linux (chemins, processus, droits, tubes), feuille 2 sur 2 (Tle NSI).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="tle-commandes-linux-2" data-auteurs="Babash - NSI Tani Malandi" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-feuille="2">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:58.1%;--y:82.14%;--r:-88deg;--l:2.8%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Systèmes d&#x27;exploitation</span></p>
+        <h1>Commandes Linux</h1>
+        <p class="td-accroche">Exercices : pratique des commandes</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=processus" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM14 3h5v1h-5zM22 3h5v1h-5zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h2v1h-2zM17 4h8v1h-8zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM17 5h1v1h-1zM20 5h2v1h-2zM25 5h1v1h-1zM27 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h3v1h-3zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h1v1h-1zM25 8h2v1h-2zM30 8h5v1h-5zM1 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h2v1h-2zM4 10h1v1h-1zM6 10h2v1h-2zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM7 11h3v1h-3zM11 11h1v1h-1zM14 11h2v1h-2zM19 11h4v1h-4zM24 11h1v1h-1zM26 11h1v1h-1zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM4 13h1v1h-1zM9 13h2v1h-2zM12 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h2v1h-2zM5 14h3v1h-3zM9 14h1v1h-1zM13 14h4v1h-4zM18 14h1v1h-1zM22 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h4v1h-4zM5 15h1v1h-1zM7 15h5v1h-5zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h2v1h-2zM12 16h1v1h-1zM18 16h9v1h-9zM28 16h3v1h-3zM32 16h1v1h-1zM34 16h2v1h-2zM4 17h2v1h-2zM7 17h2v1h-2zM10 17h1v1h-1zM12 17h5v1h-5zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM6 18h2v1h-2zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h5v1h-5zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h2v1h-2zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h2v1h-2zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h3v1h-3zM27 19h1v1h-1zM29 19h2v1h-2zM36 19h1v1h-1zM3 20h5v1h-5zM9 20h2v1h-2zM17 20h1v1h-1zM22 20h6v1h-6zM29 20h2v1h-2zM32 20h3v1h-3zM2 21h1v1h-1zM4 21h2v1h-2zM7 21h4v1h-4zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h2v1h-2zM4 22h1v1h-1zM6 22h2v1h-2zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM1 23h1v1h-1zM7 23h1v1h-1zM11 23h2v1h-2zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h7v1h-7zM14 24h3v1h-3zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h8v1h-8zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM7 25h5v1h-5zM13 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM24 25h3v1h-3zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM3 26h5v1h-5zM9 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM4 27h2v1h-2zM7 27h2v1h-2zM11 27h2v1h-2zM15 27h1v1h-1zM19 27h6v1h-6zM27 27h2v1h-2zM31 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h2v1h-2zM15 28h3v1h-3zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h3v1h-3zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h2v1h-2zM11 29h4v1h-4zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h3v1h-3zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h1v1h-1zM12 30h1v1h-1zM15 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h4v1h-4zM14 31h2v1h-2zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h2v1h-2zM11 32h4v1h-4zM18 32h5v1h-5zM25 32h8v1h-8zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h3v1h-3zM15 33h2v1h-2zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h4v1h-4zM17 34h1v1h-1zM20 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h1v1h-1zM11 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h5v1h-5zM14 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> pratiquer les commandes : se déplacer, gérer les processus et les droits, lire des commandes combinées.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire une commande avec un chemin relatif ou absolu ;</li>
+        <li>lire un extrait de <code>top</code> et arrêter un processus ;</li>
+        <li>lire et changer des droits, en octal et en relatif ;</li>
+        <li>expliquer <code>*</code> et <code>|</code>.</li>
+      </ul>
+      <p class="td-duree">45 minutes · feuille 2 sur 2 · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">1. Navigation et déplacements</h2>
+
+  <p>L'arborescence : <code>/</code> (la racine) contient <code>home</code>, qui contient <code>nsi</code>, qui contient trois dossiers : <code>TP1</code>, <code>Projets</code> et <code>Images</code>. Le fichier <code>web.html</code> est dans <code>Projets</code>. Pour chaque situation, la commande <code>pwd</code> dit où tu es.</p>
+
+  <section class="td-q" data-type="courte" id="q1" data-comparer="exact" data-etiquette="$" data-reponse="cd ../Projets|cd ../Projets/">
+    <p class="td-consigne">Tu es dans <code>/home/nsi/TP1</code>. Va dans le dossier <code>Projets</code>, avec un chemin <b>relatif</b>.</p>
+    <p class="td-retour" data-si="cd Projets">Projets n'est pas dans TP1 : il faut d'abord remonter au dossier parent.</p>
+    <p class="td-retour" data-si="cd /home/nsi/Projets">Ce chemin est absolu (il commence par /). On demande un chemin relatif.</p>
+    <p class="td-aide"><code>Projets</code> et <code>TP1</code> sont dans le même dossier, <code>nsi</code> : on remonte avec <code>..</code>.</p>
+    <div class="td-correction"><p><code>cd ../Projets</code> : <code>..</code> remonte dans <code>nsi</code>, puis on descend dans <code>Projets</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q2" data-comparer="exact" data-etiquette="$" data-reponse="cd /home/nsi|cd /home/nsi/">
+    <p class="td-consigne">Tu es dans <code>/home/nsi/Projets</code>. Va dans <code>/home/nsi</code>, avec un chemin <b>absolu</b>.</p>
+    <p class="td-retour" data-si="cd ..">C'est juste, mais .. est un chemin relatif. On demande un chemin absolu, qui part de /.</p>
+    <p class="td-aide">Un chemin absolu commence par <code>/</code>.</p>
+    <div class="td-correction"><p><code>cd /home/nsi</code> : le chemin part de la racine. (<code>cd ..</code> marche aussi, mais c'est un chemin relatif.)</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-comparer="exact" data-etiquette="$" data-reponse="ls ../Images|ls ../Images/|ls /home/nsi/Images|ls /home/nsi/Images/">
+    <p class="td-consigne">Tu es dans <code>/home/nsi/TP1</code>. Liste le contenu du dossier <code>Images</code>.</p>
+    <p class="td-retour" data-si="ls Images">Images n'est pas dans TP1 : il faut remonter d'un cran.</p>
+    <p class="td-aide"><code>ls</code>, puis le chemin du dossier à lister.</p>
+    <div class="td-correction"><p><code>ls ../Images</code> (ou, en absolu, <code>ls /home/nsi/Images</code>).</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q4" data-comparer="exact" data-etiquette="$" data-reponse="cp web.html ../TP1/|cp web.html ../TP1|cp web.html ../TP1/web.html|cp web.html /home/nsi/TP1/|cp web.html /home/nsi/TP1">
+    <p class="td-consigne">Tu es dans <code>/home/nsi/Projets</code>. Copie <code>web.html</code> dans le dossier <code>TP1</code>.</p>
+    <p class="td-retour" data-si="mv web.html ../TP1/">mv déplace le fichier : il disparaîtrait de Projets. On veut une copie.</p>
+    <p class="td-aide"><code>cp source destination</code> ; <code>TP1</code> est à côté de <code>Projets</code>.</p>
+    <div class="td-correction"><p><code>cp web.html ../TP1/</code> : la source est dans le dossier courant, la destination est <code>TP1</code>, à côté.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-comparer="exact" data-etiquette="$" data-reponse="mkdir TP1/Archives|mkdir TP1/Archives/|mkdir ./TP1/Archives|mkdir /home/nsi/TP1/Archives">
+    <p class="td-consigne">Tu es dans <code>/home/nsi</code>. Crée un dossier <code>Archives</code> dans <code>TP1</code>.</p>
+    <p class="td-retour" data-si="mkdir Archives">Ce dossier serait créé dans nsi, pas dans TP1.</p>
+    <p class="td-retour" data-si="touch TP1/Archives">touch crée un fichier ; pour un dossier, c'est mkdir.</p>
+    <p class="td-aide"><code>mkdir</code>, puis le chemin du nouveau dossier.</p>
+    <div class="td-correction"><p><code>mkdir TP1/Archives</code> : chemin relatif, depuis <code>nsi</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Gestion des processus</h2>
+
+  <p>Voici un extrait de la commande <code>top</code> (l'activité du système) :</p>
+  <pre class="td-sortie-exemple">
+PID  PPID  USER  %CPU   %MEM   COMMAND
+1    0     root  0.0    0.1    systemd
+120  1     nsi   0.1    1.2    bash
+450  120   nsi   145.2  85.0   python3 calcul_fou.py</pre>
+
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q6">
+    <p class="td-consigne">Quel est le rôle du processus de PID 1 (<code>systemd</code>) au démarrage du système ?</p>
+    <ul class="td-options">
+      <li data-juste>L'ancêtre de tous les processus : il lance les services.</li>
+      <li data-retour="Le PID 1 n'est pas le premier programme lancé par l'utilisateur : c'est le premier lancé par le noyau.">Le premier programme ouvert par l'utilisateur à sa connexion.</li>
+      <li data-retour="systemd consomme 0.0 % du processeur : il ne mesure rien, il organise.">Il mesure la consommation du processeur par chaque programme.</li>
+      <li data-retour="Son PPID est 0 : il n'a pas de parent processus, c'est le noyau qui le lance.">Un enfant de bash, qui l'a lancé au démarrage.</li>
+    </ul>
+    <p class="td-aide">Regarde son PPID (0), et qui a pour parent le PID 1.</p>
+    <div class="td-correction"><p><code>systemd</code> (le processus <code>init</code>) est lancé par le noyau au démarrage : c'est l'ancêtre de tous les processus. Il initialise le système, lance et surveille les services.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="2" id="q6p">
+    <p class="td-consigne">Quel est le rôle du processus de PID 1 (<code>systemd</code>) au démarrage du système ?</p>
+    <div class="td-correction"><p>C'est le processus « ancêtre » (<code>init</code>) : il initialise le système et gère tous les autres services.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q7">
+    <p class="td-consigne">Le processus 450 affiche 145.2 % de CPU. Comment peut-on dépasser 100 % ?</p>
+    <ul class="td-options">
+      <li data-juste>Il utilise plusieurs cœurs : 100 % = un cœur.</li>
+      <li data-retour="Ce n'est pas une erreur : top compte en pourcentage d'un cœur.">C'est une erreur d'affichage de la commande top.</li>
+      <li data-retour="La mémoire est dans la colonne %MEM : la colonne %CPU parle du processeur.">Il utilise aussi la mémoire vive, comptée en plus.</li>
+      <li data-retour="Un processeur ne travaille pas plus vite que son maximum : c'est le nombre de cœurs qui compte.">Il fait tourner le processeur plus vite que prévu.</li>
+    </ul>
+    <p class="td-aide">Un processeur moderne a plusieurs cœurs.</p>
+    <div class="td-correction"><p>Pour <code>top</code>, 100 % correspond à un cœur entier. 145,2 % : le processus utilise plusieurs cœurs en même temps (il est multi-tâche, en plusieurs fils d'exécution).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="2" id="q7p">
+    <p class="td-consigne">Le processus 450 affiche 145.2 % de CPU. Comment est-il possible de dépasser les 100 % ?</p>
+    <div class="td-correction"><p>Il utilise plusieurs cœurs du processeur en même temps : 100 % correspond à un seul cœur.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q8">
+    <p class="td-consigne">Si la mémoire vive (RAM) est pleine, quel mécanisme du système prend le relais pour éviter le plantage ?</p>
+    <ul class="td-options">
+      <li data-retour="Le cache est une petite mémoire très rapide du processeur, pas une réserve quand la RAM est pleine.">La mémoire cache du processeur, qui prend la suite.</li>
+      <li data-juste>La zone d'échange (swap), prise sur le disque.</li>
+      <li data-retour="La mémoire morte ne s'écrit pas pendant l'exécution des programmes.">La mémoire morte (ROM), qui sert de réserve.</li>
+      <li data-retour="Le système n'efface pas les fichiers de l'utilisateur pour libérer de la mémoire.">La corbeille, qui libère de la place en mémoire.</li>
+    </ul>
+    <p class="td-aide">Le système range temporairement des données sur le disque, plus lent mais plus grand.</p>
+    <div class="td-correction"><p>La partition (ou le fichier) d'échange, le <b>swap</b> : une mémoire virtuelle sur le disque, plus lente que la RAM.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="2" id="q8p">
+    <p class="td-consigne">Si la mémoire vive (RAM) est pleine, quel mécanisme du système prend le relais pour éviter le plantage ?</p>
+    <div class="td-correction"><p>L'espace d'échange, le <i>swap</i> : une mémoire virtuelle sur le disque.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q9" data-reponse="bash|120|bash (120)|120 (bash)|le processus bash|bash, PID 120">
+    <p class="td-consigne">Quel est le processus parent du processus 450 ? Donne son nom ou son PID.</p>
+    <p class="td-retour" data-si="systemd">systemd est le parent de bash (le grand-parent de 450). Lis le PPID de la ligne 450.</p>
+    <p class="td-aide">La colonne PPID donne le PID du parent.</p>
+    <div class="td-correction"><p>Le PPID de 450 est 120 : c'est <code>bash</code>, le shell depuis lequel le script a été lancé.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q10" data-comparer="exact" data-etiquette="$" data-reponse="kill -9 450|kill -KILL 450|kill -SIGKILL 450|sudo kill -9 450">
+    <p class="td-consigne">Écris la commande qui force l'arrêt immédiat du script <code>calcul_fou.py</code>.</p>
+    <p class="td-retour" data-si="kill 450">kill seul demande gentiment l'arrêt : le processus peut refuser. Pour forcer, ajoute le signal 9.</p>
+    <p class="td-retour" data-si="kill -9 calcul_fou.py">kill attend un numéro de processus (PID), pas un nom de fichier.</p>
+    <p class="td-aide"><code>kill</code> attend le PID du processus. Pour un arrêt forcé : le signal <code>-9</code>.</p>
+    <div class="td-correction"><p><code>kill -9 450</code> : le signal SIGKILL arrête le processus tout de suite, sans lui laisser le temps de sauvegarder.</p></div>
+  </section>
+
+  <h2 class="td-partie">3. Droits et permissions</h2>
+
+  <p>Le résultat de <code>ls -l</code> :</p>
+  <pre class="td-sortie-exemple">
+-rwxrw-r-- 1 nsi profs 420 mars 16 20:00 script.sh</pre>
+
+  <section class="td-q" data-type="qcu" id="q11" data-support="ecran">
+    <p class="td-consigne">Quels sont les droits du groupe <code>profs</code> sur ce fichier ?</p>
+    <ul class="td-options">
+      <li data-retour="rwx sont les droits du propriétaire, nsi : les trois premiers après le tiret.">Lecture, écriture et exécution (<code>rwx</code>).</li>
+      <li data-juste>Lecture et écriture (<code>rw-</code>).</li>
+      <li data-retour="r-- sont les droits des autres : les trois derniers.">Lecture seulement (<code>r--</code>).</li>
+      <li data-retour="Le groupe a deux droits : r et w.">Aucun droit.</li>
+    </ul>
+    <p class="td-aide">Après le premier caractère, les droits vont par trois : propriétaire, groupe, autres.</p>
+    <div class="td-correction"><p><code>-</code> (un fichier), <code>rwx</code> (propriétaire <code>nsi</code>), <code>rw-</code> (groupe <code>profs</code>), <code>r--</code> (autres). Le groupe peut lire et écrire, mais pas exécuter.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q11-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Quels sont les droits du groupe <code>profs</code> sur ce fichier ?</p>
+    <div class="td-correction"><p>Lecture et écriture (<code>rw-</code>), sans exécution.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q12" data-comparer="exact" data-etiquette="$" data-reponse="chmod 777 script.sh|chmod 0777 script.sh">
+    <p class="td-consigne">Écris la commande, en octal, qui donne tous les droits à tout le monde sur <code>script.sh</code>.</p>
+    <p class="td-retour" data-si="chmod 666 script.sh">666 donne lecture et écriture, sans l'exécution : il manque x = 1.</p>
+    <p class="td-aide">Tous les droits : r + w + x = 4 + 2 + 1, pour chacun des trois.</p>
+    <div class="td-correction"><p><code>chmod 777 script.sh</code> : 7 = 4 + 2 + 1 = <code>rwx</code>, pour le propriétaire, le groupe et les autres.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q13" data-comparer="exact" data-etiquette="$" data-reponse="chmod o+x script.sh">
+    <p class="td-consigne">Écris la commande, en mode relatif, qui ajoute le droit d'exécution aux autres (<i>Others</i>).</p>
+    <p class="td-retour" data-si="chmod +x script.sh">+x seul l'ajoute à tout le monde. Précise pour qui : o pour les autres.</p>
+    <p class="td-retour" data-si="chmod g+x script.sh">g désigne le groupe. Les autres, c'est o.</p>
+    <p class="td-aide">Qui (<code>u</code>, <code>g</code> ou <code>o</code>), puis <code>+</code>, puis le droit.</p>
+    <div class="td-correction"><p><code>chmod o+x script.sh</code> : <code>o</code> (<i>others</i>), <code>+</code> (ajouter), <code>x</code> (exécution). Les droits deviennent <code>-rwxrw-r-x</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q14" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>chmod 640 secret.txt</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Propriétaire : <code>rw-</code> ; groupe : <code>r--</code> ; autres : <code>---</code>.</li>
+      <li data-retour="6 = 4 + 2 : lecture et écriture, sans exécution.">Propriétaire : <code>rwx</code> ; groupe : <code>r--</code> ; autres : <code>---</code>.</li>
+      <li data-retour="Les chiffres se lisent dans l'ordre propriétaire, groupe, autres.">Propriétaire : <code>---</code> ; groupe : <code>r--</code> ; autres : <code>rw-</code>.</li>
+      <li data-retour="4 = lecture seule : r--. Et 0 : aucun droit.">Propriétaire : <code>rw-</code> ; groupe : <code>rw-</code> ; autres : <code>r--</code>.</li>
+    </ul>
+    <p class="td-aide">6 = 4 + 2, 4 = 4, 0 = rien.</p>
+    <div class="td-correction"><p>6 = <code>rw-</code> pour le propriétaire, 4 = <code>r--</code> pour le groupe, 0 = <code>---</code> pour les autres : le fichier n'est lisible que par son propriétaire et son groupe.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q14-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Que fait la commande <code>chmod 640 secret.txt</code> ? Écris les droits de chacun : U : …, G : …, O : ….</p>
+    <div class="td-correction"><p>U : <code>rw-</code> (lecture, écriture) ; G : <code>r--</code> (lecture) ; O : <code>---</code> (aucun droit).</p></div>
+  </section>
+
+  <h2 class="td-partie">4. Commandes combinées</h2>
+  <p>Explique ce que cherchent à faire ces utilisateur·rices. Indice : <code>|</code> transmet le résultat de la commande de gauche à la commande de droite.</p>
+
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q15">
+    <p class="td-consigne">Que fait <code>rm *.tmp</code> ?</p>
+    <ul class="td-options">
+      <li data-retour="* est un joker : il ne désigne pas un fichier nommé *.tmp.">Elle supprime le fichier dont le nom est exactement <code>*.tmp</code>.</li>
+      <li data-juste>Elle supprime les fichiers <code>.tmp</code> du répertoire courant.</li>
+      <li data-retour="rm supprime ; elle ne liste rien.">Elle liste les fichiers temporaires du répertoire.</li>
+      <li data-retour="Sans option -r, rm ne descend pas dans les sous-dossiers : seulement le répertoire courant.">Elle supprime tous les fichiers .tmp de l'ordinateur.</li>
+    </ul>
+    <p class="td-aide"><code>*</code> remplace n'importe quelle suite de caractères.</p>
+    <div class="td-correction"><p><code>*.tmp</code> désigne tous les fichiers du répertoire courant qui finissent par <code>.tmp</code> : <code>rm</code> les supprime tous, sans corbeille.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="2" id="q15p">
+    <p class="td-consigne">Explique avec tes mots ce que fait <code>rm *.tmp</code>.</p>
+    <div class="td-correction"><p>Elle supprime tous les fichiers du répertoire courant dont le nom finit par <code>.tmp</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" data-support="ecran" id="q16">
+    <p class="td-consigne">Que fait <code>cat notes.txt | grep "NSI"</code> ?</p>
+    <ul class="td-options">
+      <li data-retour="grep ne garde que certaines lignes : celles qui contiennent NSI.">Elle affiche tout le fichier notes.txt, puis le mot « NSI ».</li>
+      <li data-retour="Rien n'est écrit dans un fichier : le résultat s'affiche.">Elle écrit « NSI » à la fin du fichier notes.txt.</li>
+      <li data-juste>Elle affiche les lignes de notes.txt qui contiennent « NSI ».</li>
+      <li data-retour="grep ne compte rien : il affiche les lignes. (Même grep -c compterait les lignes qui contiennent NSI, pas ses apparitions.)">Elle compte combien de fois « NSI » apparaît dans notes.txt.</li>
+    </ul>
+    <p class="td-aide"><code>cat</code> envoie le contenu du fichier ; <code>grep</code> filtre les lignes.</p>
+    <div class="td-correction"><p><code>cat</code> envoie le contenu de <code>notes.txt</code> dans le tube <code>|</code> ; <code>grep "NSI"</code> ne garde que les lignes qui contiennent <code>NSI</code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" data-support="papier" data-lignes="2" id="q16p">
+    <p class="td-consigne">Explique avec tes mots ce que fait <code>cat notes.txt | grep "NSI"</code>.</p>
+    <div class="td-correction"><p>Elle lit le fichier <code>notes.txt</code> et n'affiche que les lignes qui contiennent le mot <code>NSI</code>.</p></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>Avant :</b> <a href="commandes-terminale.html">feuille 1 sur 2, la fiche des commandes</a>.</p>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><code>kill -9 PID</code> force l'arrêt d'un processus. Droits : r = 4, w = 2, x = 1, dans l'ordre propriétaire, groupe, autres ; <code>chmod o+x</code> ajoute un droit.</p>
+    <p><code>*</code> : n'importe quelle suite de caractères. <code>|</code> : la sortie de gauche devient l'entrée de droite.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/architecture-os">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
