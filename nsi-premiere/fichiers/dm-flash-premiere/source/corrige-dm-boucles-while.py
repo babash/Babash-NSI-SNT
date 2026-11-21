@@ -17,11 +17,11 @@ while reste - (etage + 1) ** 2 >= 0:
     print(etage, reste)
 print(f"Pour {nb_billes} billes la pyramide fait {etage} étages.")
 
-# question 5, avec une entrée fixée : 7 étages
-nb_etages = 7
-billes = 0
-etage = 1
-while etage <= nb_etages:
-    billes = billes + etage ** 2
-    etage = etage + 1
-print(billes)
+# question 5 : les deux saisies de la page (data-entrees 7, puis 3)
+for nb_etages in (7, 3):
+    billes = 0
+    etage = 1
+    while etage <= nb_etages:
+        billes = billes + etage ** 2
+        etage = etage + 1
+    print(nb_etages, "étages :", billes)
