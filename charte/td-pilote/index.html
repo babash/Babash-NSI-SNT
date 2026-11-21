@@ -1,34 +1,52 @@
 <!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Les boucles : TD en ligne</title>
+  <title>Les boucles for et while : TD en ligne</title>
   <meta name="description" content="TD auto-correctif sur les boucles for et while (SNT, début de 1re NSI). Page de démonstration du moteur des TD en ligne.">
   <meta name="robots" content="noindex">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
   <link rel="stylesheet" href="../../assets/td-en-ligne.css">
   <script src="../../assets/td-en-ligne.js" defer></script>
 </head>
 <body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
 <main class="td" data-td="pilote-boucles" data-td-version="1">
 
   <header class="td-entete">
-    <p class="td-sur-titre">SNT · Début de 1re NSI · Programmer en Python</p>
-    <h1>Les boucles <code>for</code> et <code>while</code></h1>
-    <p class="td-objectif"><b>Objectif :</b> lire et écrire une boucle qui répète des instructions.</p>
-    <p><b>Je sais :</b></p>
-    <ul class="td-criteres">
-      <li>dire quelles valeurs prend la variable dans <code>range(début, fin, pas)</code> ;</li>
-      <li>prévoir ce qu'affiche une boucle <code>for</code> ou <code>while</code> ;</li>
-      <li>lire un message d'erreur de Python et corriger la ligne ;</li>
-      <li>choisir entre <code>for</code> et <code>while</code>.</li>
-    </ul>
-    <p class="td-duree">45 minutes · 11 questions et 1 bonus ★ · seul·e ou en binôme</p>
+    <!-- BANDEAU : paysage n° 1 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">SNT · début de 1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmer en Python</span></p>
+        <h1>Les boucles <code>for</code> et <code>while</code></h1>
+        <p class="td-accroche">Répéter des instructions</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/QuizzNSI/revision.html?cours=conditions-boucles" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h1v1h-1zM13 0h4v1h-4zM19 0h2v1h-2zM25 0h2v1h-2zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h5v1h-5zM14 1h1v1h-1zM17 1h1v1h-1zM19 1h1v1h-1zM21 1h2v1h-2zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM15 2h1v1h-1zM19 2h1v1h-1zM21 2h1v1h-1zM23 2h1v1h-1zM25 2h3v1h-3zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM9 3h2v1h-2zM12 3h4v1h-4zM17 3h1v1h-1zM20 3h1v1h-1zM23 3h3v1h-3zM28 3h1v1h-1zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h4v1h-4zM19 4h4v1h-4zM24 4h3v1h-3zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM9 5h2v1h-2zM12 5h2v1h-2zM20 5h1v1h-1zM23 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM9 7h1v1h-1zM11 7h1v1h-1zM14 7h7v1h-7zM22 7h2v1h-2zM25 7h1v1h-1zM27 7h2v1h-2zM0 8h1v1h-1zM3 8h11v1h-11zM23 8h2v1h-2zM26 8h1v1h-1zM28 8h2v1h-2zM32 8h1v1h-1zM34 8h3v1h-3zM2 9h1v1h-1zM4 9h2v1h-2zM8 9h1v1h-1zM14 9h1v1h-1zM16 9h1v1h-1zM18 9h1v1h-1zM22 9h2v1h-2zM25 9h1v1h-1zM27 9h1v1h-1zM29 9h1v1h-1zM31 9h5v1h-5zM0 10h8v1h-8zM9 10h1v1h-1zM13 10h4v1h-4zM18 10h4v1h-4zM23 10h2v1h-2zM26 10h2v1h-2zM29 10h5v1h-5zM36 10h1v1h-1zM2 11h2v1h-2zM5 11h1v1h-1zM9 11h1v1h-1zM11 11h1v1h-1zM13 11h2v1h-2zM16 11h5v1h-5zM24 11h1v1h-1zM26 11h2v1h-2zM29 11h1v1h-1zM31 11h1v1h-1zM33 11h4v1h-4zM1 12h2v1h-2zM5 12h3v1h-3zM10 12h1v1h-1zM12 12h2v1h-2zM15 12h2v1h-2zM20 12h1v1h-1zM23 12h2v1h-2zM28 12h1v1h-1zM30 12h2v1h-2zM33 12h1v1h-1zM36 12h1v1h-1zM2 13h3v1h-3zM9 13h8v1h-8zM18 13h2v1h-2zM22 13h2v1h-2zM25 13h1v1h-1zM27 13h1v1h-1zM32 13h2v1h-2zM35 13h1v1h-1zM2 14h1v1h-1zM6 14h1v1h-1zM9 14h2v1h-2zM14 14h2v1h-2zM18 14h3v1h-3zM22 14h1v1h-1zM25 14h4v1h-4zM30 14h1v1h-1zM32 14h5v1h-5zM0 15h2v1h-2zM4 15h1v1h-1zM7 15h1v1h-1zM10 15h1v1h-1zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h1v1h-1zM28 15h1v1h-1zM31 15h1v1h-1zM33 15h2v1h-2zM36 15h1v1h-1zM0 16h4v1h-4zM6 16h2v1h-2zM11 16h1v1h-1zM14 16h1v1h-1zM17 16h2v1h-2zM22 16h1v1h-1zM24 16h2v1h-2zM30 16h2v1h-2zM34 16h2v1h-2zM5 17h1v1h-1zM11 17h4v1h-4zM17 17h1v1h-1zM22 17h1v1h-1zM27 17h1v1h-1zM31 17h1v1h-1zM33 17h1v1h-1zM0 18h1v1h-1zM4 18h1v1h-1zM6 18h1v1h-1zM9 18h1v1h-1zM11 18h2v1h-2zM14 18h1v1h-1zM16 18h2v1h-2zM19 18h1v1h-1zM21 18h1v1h-1zM23 18h1v1h-1zM25 18h1v1h-1zM27 18h1v1h-1zM29 18h2v1h-2zM34 18h1v1h-1zM36 18h1v1h-1zM0 19h1v1h-1zM2 19h4v1h-4zM11 19h2v1h-2zM15 19h2v1h-2zM19 19h2v1h-2zM22 19h1v1h-1zM25 19h6v1h-6zM33 19h1v1h-1zM36 19h1v1h-1zM1 20h4v1h-4zM6 20h1v1h-1zM8 20h1v1h-1zM10 20h1v1h-1zM12 20h1v1h-1zM14 20h1v1h-1zM16 20h2v1h-2zM19 20h2v1h-2zM23 20h2v1h-2zM26 20h1v1h-1zM28 20h6v1h-6zM0 21h1v1h-1zM2 21h2v1h-2zM5 21h1v1h-1zM8 21h1v1h-1zM10 21h2v1h-2zM14 21h2v1h-2zM17 21h1v1h-1zM21 21h3v1h-3zM25 21h3v1h-3zM32 21h1v1h-1zM34 21h1v1h-1zM0 22h1v1h-1zM2 22h1v1h-1zM5 22h2v1h-2zM11 22h3v1h-3zM15 22h2v1h-2zM20 22h5v1h-5zM26 22h6v1h-6zM33 22h1v1h-1zM36 22h1v1h-1zM0 23h1v1h-1zM4 23h1v1h-1zM7 23h1v1h-1zM10 23h1v1h-1zM12 23h1v1h-1zM14 23h1v1h-1zM16 23h1v1h-1zM18 23h3v1h-3zM22 23h1v1h-1zM26 23h3v1h-3zM31 23h5v1h-5zM0 24h2v1h-2zM3 24h2v1h-2zM6 24h6v1h-6zM17 24h1v1h-1zM20 24h1v1h-1zM24 24h1v1h-1zM27 24h5v1h-5zM0 25h4v1h-4zM7 25h1v1h-1zM9 25h1v1h-1zM13 25h1v1h-1zM18 25h2v1h-2zM21 25h1v1h-1zM23 25h2v1h-2zM26 25h4v1h-4zM32 25h3v1h-3zM0 26h2v1h-2zM3 26h1v1h-1zM6 26h4v1h-4zM11 26h1v1h-1zM13 26h1v1h-1zM15 26h1v1h-1zM17 26h1v1h-1zM21 26h2v1h-2zM25 26h1v1h-1zM27 26h1v1h-1zM30 26h1v1h-1zM32 26h5v1h-5zM0 27h1v1h-1zM8 27h1v1h-1zM10 27h1v1h-1zM12 27h1v1h-1zM16 27h1v1h-1zM18 27h2v1h-2zM23 27h2v1h-2zM26 27h3v1h-3zM32 27h1v1h-1zM34 27h1v1h-1zM36 27h1v1h-1zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h2v1h-2zM10 28h1v1h-1zM12 28h1v1h-1zM14 28h2v1h-2zM19 28h2v1h-2zM22 28h4v1h-4zM27 28h6v1h-6zM34 28h2v1h-2zM8 29h3v1h-3zM12 29h2v1h-2zM15 29h1v1h-1zM17 29h2v1h-2zM20 29h1v1h-1zM24 29h5v1h-5zM32 29h1v1h-1zM34 29h2v1h-2zM0 30h7v1h-7zM8 30h2v1h-2zM11 30h1v1h-1zM13 30h3v1h-3zM17 30h5v1h-5zM23 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM35 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h3v1h-3zM12 31h4v1h-4zM20 31h1v1h-1zM22 31h4v1h-4zM27 31h2v1h-2zM32 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h4v1h-4zM14 32h3v1h-3zM18 32h1v1h-1zM26 32h7v1h-7zM35 32h1v1h-1zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM10 33h1v1h-1zM12 33h3v1h-3zM17 33h1v1h-1zM20 33h2v1h-2zM23 33h1v1h-1zM26 33h5v1h-5zM33 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM9 34h2v1h-2zM17 34h2v1h-2zM23 34h2v1h-2zM27 34h1v1h-1zM29 34h1v1h-1zM32 34h1v1h-1zM34 34h1v1h-1zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h7v1h-7zM17 35h1v1h-1zM19 35h1v1h-1zM22 35h1v1h-1zM26 35h1v1h-1zM32 35h5v1h-5zM0 36h7v1h-7zM8 36h1v1h-1zM10 36h2v1h-2zM14 36h1v1h-1zM19 36h1v1h-1zM24 36h1v1h-1zM28 36h1v1h-1zM30 36h2v1h-2zM33 36h1v1h-1zM36 36h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Prénom ou pseudo :</span><span>Classe :</span></p>
+
+    <!-- objectif et critères de réussite -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> lire et écrire une boucle qui répète des instructions.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>dire quelles valeurs prend la variable dans <code>range(début, fin, pas)</code> ;</li>
+        <li>prévoir ce qu'affiche une boucle <code>for</code> ou <code>while</code> ;</li>
+        <li>lire un message d'erreur de Python et corriger la ligne ;</li>
+        <li>choisir entre <code>for</code> et <code>while</code>.</li>
+      </ul>
+      <p class="td-duree">45 minutes · 11 questions et 1 bonus ★ · seul·e ou en binôme</p>
+    </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
@@ -289,9 +307,10 @@ print("Départ !")</pre>
     <p>Le bloc répété est <b>décalé</b> de 4 espaces, après une ligne qui finit par <code>:</code>.</p>
   </section>
 
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">
     <p>Page de démonstration du moteur des TD en ligne. Elle n'est pas dans la bibliothèque.</p>
-    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/charte/td-pilote">Code source sur GitHub</a></p>
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/charte/td-pilote">Code source sur GitHub</a></p><span class="td-margouillat" data-cachette="pied" style="--x:72%;--r:5deg;--s:-1"></span>
   </footer>
 </main>
 </body>

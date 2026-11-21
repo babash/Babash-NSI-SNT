@@ -1,0 +1,209 @@
+<!doctype html>
+<!--
+  GABARIT D'UN TD EN LIGNE, style « Signal pirate » (T123)
+  ─────────────────────────────────────────────────────────
+  Ce fichier est le modèle lu par charte/nouveau-td.py : les mots entre doubles accolades
+  sont remplacés par le script. Ne le copiez pas à la main : lancez le script
+  (mode d'emploi : charte/gabarit-td/LISEZMOI.md).
+
+  Une seule page pour l'écran ET le papier : « Imprimer la feuille » (ou Ctrl+P) donne la
+  feuille A4 vierge, avec le bandeau de 28 mm, le code, les consoles, les lignes de réponse,
+  le margouillat et le pied de page. Le PDF de référence se fait avec charte/imprimer-td.py.
+
+  Règles : 4 pages A4 au plus ; tutoiement, phrases courtes, langage inclusif ; exemples
+  variés de la vie des élèves (Mayotte et d'ailleurs), prénoms variés sans nom de famille,
+  aucune marque ; ni personnage ni récit ; aucune question de genre ; aucune note.
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{TITRE_TEXTE}} : TD en ligne</title>
+  <meta name="description" content="{{DESCRIPTION}}">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="{{ASSETS}}/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="{{ASSETS}}/td-en-ligne.css">
+  <script src="{{ASSETS}}/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="{{ID}}" data-td-version="1">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° {{BANDEAU}} (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau{{CLASSE_CONTROLE}}" data-bandeau="{{BANDEAU}}">
+      <div class="td-bandeau-decor" aria-hidden="true">{{MARG_BANDEAU}}</div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">{{PUCE}}</span> <span class="td-niveau">{{NIVEAU}}</span> <span aria-hidden="true">·</span> <span class="td-chapitre">{{CHAPITRE}}</span></p>
+        <h1>{{TITRE_HTML}}</h1>
+        {{ACCROCHE}}
+      </div>
+      {{QR}}
+    </div>
+    <!-- sur papier seulement -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Prénom ou pseudo :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> À ÉCRIRE (un verbe d'action : lire, écrire, prévoir, corriger…).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>À ÉCRIRE : un critère vérifiable ;</li>
+        <li>À ÉCRIRE : un autre critère.</li>
+      </ul>
+      <p class="td-duree">45 minutes · N questions et 1 bonus ★ · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <!-- PARTIES : un titre court par partie, numéroté. Le moteur numérote les questions tout seul. -->
+  <h2 class="td-partie">1. Titre de la première partie</h2>
+
+  <!-- ═══ EXEMPLES : un par type de question du moteur. Remplacez-les par vos questions. ═══ -->
+
+  <!-- sortie : prévoir ce qu'affiche un programme. pre.td-attendu = la sortie exacte (cachée). -->
+  <section class="td-q" data-type="sortie" id="q1">
+    <p class="td-consigne">Qu'affiche ce programme ?</p>
+    <pre class="td-code">
+prix = 3
+print(prix * 2)</pre>
+    <pre class="td-attendu">
+6</pre>
+    <!-- coups de pouce : montrés un par un, à la demande -->
+    <p class="td-aide"><code>prix * 2</code> : on multiplie la valeur de <code>prix</code> par 2.</p>
+    <!-- correction : proposée après deux essais -->
+    <div class="td-correction">
+      <p><code>prix</code> vaut 3, donc <code>prix * 2</code> vaut <b>6</b>.</p>
+    </div>
+  </section>
+
+  <!-- qcu : une seule bonne réponse (data-juste) ; data-retour explique chaque mauvaise réponse -->
+  <section class="td-q" data-type="qcu" id="q2">
+    <p class="td-consigne">Que vaut <code>a</code> à la fin ?</p>
+    <pre class="td-code">
+a = 5
+a = a + 1</pre>
+    <ul class="td-options">
+      <li data-juste>6</li>
+      <li data-retour="La deuxième ligne change la valeur de a : elle ajoute 1.">5</li>
+      <li data-retour="a contient un nombre, pas un texte : 5 + 1 fait 6.">51</li>
+      <li data-retour="Python calcule a + 1 : on garde le résultat, pas l'écriture.">a + 1</li>
+    </ul>
+    <p class="td-aide">On calcule d'abord la partie droite, <code>a + 1</code>, avec l'ancienne valeur de <code>a</code>.</p>
+    <div class="td-correction"><p><code>a + 1</code> vaut 6, puis <code>a</code> reçoit 6.</p></div>
+  </section>
+
+  <!-- courte : data-reponse="10|dix" (plusieurs réponses justes) ; data-verifier="sortie" : verifier-td.py
+       contrôle que la sortie réelle est bien une des réponses. td-retour data-si : retour ciblé. -->
+  <section class="td-q" data-type="courte" id="q3" data-reponse="10" data-verifier="sortie">
+    <p class="td-consigne">Qu'affiche ce programme ?</p>
+    <pre class="td-code">
+x = 4
+x = x + 6
+print(x)</pre>
+    <p class="td-retour" data-si="4">La deuxième ligne change <code>x</code> avant l'affichage.</p>
+    <p class="td-aide">Suis la valeur de <code>x</code> ligne par ligne.</p>
+    <div class="td-correction"><p>4 + 6 = <b>10</b>.</p></div>
+  </section>
+
+  <!-- trous : [[réponse]] ou [[réponse|autre]] dans le code -->
+  <section class="td-q" data-type="trous" id="q4">
+    <p class="td-consigne">Complète pour afficher trois fois « Bonjour ».</p>
+    <pre class="td-code">
+for i in range([[3]]):
+    print("Bonjour")</pre>
+    <pre class="td-attendu">
+Bonjour
+Bonjour
+Bonjour</pre>
+    <p class="td-aide"><code>range(n)</code> donne n valeurs.</p>
+    <div class="td-correction"><pre class="td-code">
+for i in range(3):
+    print("Bonjour")</pre></div>
+  </section>
+
+  <h2 class="td-partie">2. Titre de la deuxième partie</h2>
+
+  <!-- cases : plusieurs bonnes réponses -->
+  <section class="td-q" data-type="cases" id="q5">
+    <p class="td-consigne">Coche les noms de variables possibles en Python.</p>
+    <ul class="td-options">
+      <li data-juste><code>age</code></li>
+      <li data-juste><code>mon_age</code></li>
+      <li data-retour="Un nom de variable ne commence pas par un chiffre."><code>2age</code></li>
+      <li data-retour="Le tiret se lit comme une soustraction : mon - age."><code>mon-age</code></li>
+    </ul>
+    <p class="td-aide">Lettres, chiffres et tiret bas ; pas de chiffre au début.</p>
+    <div class="td-correction"><p><code>age</code> et <code>mon_age</code>.</p></div>
+  </section>
+
+  <!-- ordre : les lignes écrites DANS L'ORDRE JUSTE ; le moteur les mélange (toujours de la même façon) -->
+  <section class="td-q" data-type="ordre" id="q6">
+    <p class="td-consigne">Remets les lignes dans l'ordre pour afficher 10.</p>
+    <ol class="td-lignes">
+      <li>a = 2</li>
+      <li>b = a * 5</li>
+      <li>print(b)</li>
+    </ol>
+    <pre class="td-attendu">
+10</pre>
+    <p class="td-aide">Une variable doit avoir une valeur avant d'être utilisée.</p>
+    <div class="td-correction"><pre class="td-code">
+a = 2
+b = a * 5
+print(b)</pre></div>
+  </section>
+
+  <!-- erreur : TOUJOURS le vrai message de Python 3.13, mot pour mot.
+       Pour l'obtenir : python3 -I charte/verifier-td.py --erreur accueil.py -->
+  <section class="td-q" data-type="erreur" id="q7" data-fichier="accueil.py" data-ligne="2" data-reponse="print(&quot;Bonjour&quot;, prenom)">
+    <p class="td-consigne">Ce programme ne se lance pas. Trouve l'erreur.</p>
+    <pre class="td-code">
+prenom = "Inaya"
+print("Bonjour", prenom</pre>
+    <pre class="td-erreur">
+  File "accueil.py", line 2
+    print("Bonjour", prenom
+         ^
+SyntaxError: '(' was never closed</pre>
+    <p class="td-aide"><code>was never closed</code> veut dire « n'a jamais été fermée ».</p>
+    <div class="td-correction"><p>Ligne 2, il manque la parenthèse fermante : <code>print("Bonjour", prenom)</code>.</p></div>
+  </section>
+
+  <!-- code : un éditeur ; exécuté par Python (chargé au clic). Bonus par défaut (data-bonus implicite) ;
+       data-obligatoire pour le compter dans la jauge. Correction vérifiée par verifier-td.py. -->
+  <section class="td-q" data-type="code" id="q8" data-fichier="compter.py">
+    <p class="td-consigne">Écris un programme qui affiche 1, 2 et 3, un nombre par ligne.</p>
+    <pre class="td-depart">
+# Ton programme
+</pre>
+    <pre class="td-attendu">
+1
+2
+3</pre>
+    <p class="td-aide"><code>range(1, 4)</code> donne 1, 2 et 3.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+for n in range(1, 4):
+    print(n)</pre></div>
+  </section>
+
+  <!-- ═══ FIN DES EXEMPLES ═══ -->
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>À ÉCRIRE : l'essentiel, en une ou deux phrases.</p>{{MARG_MEMO}}
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="{{DEPOT}}">Code source sur GitHub</a></p>{{MARG_PIED}}
+  </footer>
+</main>
+</body>
+</html>

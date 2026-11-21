@@ -2,12 +2,10 @@
 """Fait le PDF de référence d'un TD en ligne : la feuille vierge, comme le papier.
 
 Usage (serveur local lancé à la racine du dépôt : python3 -m http.server 8000) :
-  python3 -I charte/imprimer-td.py http://localhost:8000/charte/td-pilote/index.html charte/td-pilote/td-boucles.pdf \
-      [--polices DOSSIER]
+  python3 -I charte/imprimer-td.py http://localhost:8000/charte/td-pilote/index.html charte/td-pilote/td-boucles.pdf
 
---polices : un dossier contenant les paquets fontsource décompressés
-(npm pack @fontsource/atkinson-hyperlegible @fontsource/chakra-petch @fontsource/jetbrains-mono),
-pour avoir les polices du site quand Google Fonts n'est pas joignable.
+Les polices sont hébergées sur le site (assets/fonts/) : aucune option n'est nécessaire.
+(L'ancienne option --polices, pour Google Fonts, est acceptée et ignorée.)
 
 Le script :
 1. ouvre la page sans aucun stockage (aucune réponse gardée) et vérifie que tous les champs sont vides ;
@@ -17,7 +15,11 @@ Le script :
 3. imprime en A4 et extrait le texte du PDF (pdftotext) : aucun repère, aucune sortie attendue,
    aucun coup de pouce, aucun retour et aucune correction ne doit s'y trouver, et les lignes
    des questions « ordre » doivent y être dans l'ordre mélangé de départ ;
-4. après l'impression (afterprint), vérifie que les réponses (et l'ordre de l'élève) sont remises à l'écran.
+4. après l'impression (afterprint), vérifie que les réponses (et l'ordre de l'élève) sont remises à l'écran ;
+5. contrôle la mise en page A4 (style « Signal pirate », T123) : aucune requête hors du site (polices
+   comprises), aucun texte imprimé sous 10 pt, aucune ligne de code coupée en deux (trop longue pour
+   la page), rien qui déborde de la page, le bandeau et le pied présents, et seules les polices du site
+   dans le PDF (pdffonts).
 Il dit le nombre de pages (4 au plus pour un TD).
 """
 import glob
@@ -28,26 +30,28 @@ import sys
 from playwright.sync_api import sync_playwright
 
 REPERE = 'ZQXREPONSE'
-
-
-def polices(ctx, dossier):
-    familles = [('Atkinson Hyperlegible', 'atkinson-hyperlegible', [(400, 'normal'), (700, 'normal'), (400, 'italic')]),
-                ('Chakra Petch', 'chakra-petch', [(500, 'normal'), (600, 'normal'), (700, 'normal')]),
-                ('JetBrains Mono', 'jetbrains-mono', [(500, 'normal'), (700, 'normal'), (500, 'italic'), (700, 'italic')])]
-    css = ''
-    for nom, cle, styles in familles:
-        for poids, style in styles:
-            for sous in ('latin', 'latin-ext'):
-                f = f'{cle}-{sous}-{poids}-{style}.woff2'
-                if glob.glob(f'{dossier}/**/{f}', recursive=True):
-                    css += (f"@font-face{{font-family:'{nom}';font-style:{style};font-weight:{poids};font-display:block;"
-                            f"src:url(https://fonts.gstatic.com/local/{f}) format('woff2');}}\n")
-    ctx.route('https://fonts.googleapis.com/**', lambda r: r.fulfill(status=200, content_type='text/css', body=css))
-
-    def fichier(r):
-        g = glob.glob(f'{dossier}/**/' + r.request.url.rsplit('/', 1)[-1], recursive=True)
-        r.fulfill(status=200, content_type='font/woff2', body=open(g[0], 'rb').read()) if g else r.abort()
-    ctx.route('https://fonts.gstatic.com/**', fichier)
+# noms des polices du site tels que pdffonts les écrit
+POLICES_DU_SITE = {'AtkinsonHyperlegible-Regular', 'AtkinsonHyperlegible-Bold', 'AtkinsonHyperlegible-Italic',
+                   'JetBrainsMono-Regular', 'JetBrainsMono-Bold', 'JetBrainsMono-Italic', 'JetBrainsMono-BoldItalic',
+                   'Anton-Regular', 'VT323-Regular', 'TDSymboles'}
+# mesures faites en média « print », à la largeur d'une page A4 (794 px)
+MESURES = """() => {
+  const pt = px => Math.round(px * 72 / 96 * 10) / 10, vus = el => el.getClientRects().length > 0 && getComputedStyle(el).visibility !== 'hidden';
+  const petit = [], coupees = [], deborde = [];
+  document.querySelectorAll('.td *').forEach(el => {
+    if (!vus(el)) return;
+    const direct = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+    if (direct) { const t = parseFloat(getComputedStyle(el).fontSize); if (t < 13.3) petit.push(el.className + ' ' + el.textContent.trim().slice(0, 20) + ' (' + pt(t) + ' pt)'); }
+    const r = el.getBoundingClientRect();
+    if (r.width && (r.right > 794.5 || r.left < -0.5)) deborde.push(el.tagName + '.' + el.className);
+  });
+  document.querySelectorAll('.td pre .td-l').forEach(l => {
+    if (!vus(l)) return;
+    const h = parseFloat(getComputedStyle(l).lineHeight) || 20;
+    if (l.getBoundingClientRect().height > h * 1.5) coupees.push(l.textContent.replace(/^[0-9]+/, '').trim().slice(0, 40));
+  });
+  return { petit, coupees, deborde, bandeau: !!document.querySelector('.td-bandeau'), pied: !!document.querySelector('.td-pied .td-ia') };
+}"""
 
 
 def normal(t):
@@ -64,9 +68,9 @@ def main():
     with sync_playwright() as pw:
         b = pw.chromium.launch()
         ctx = b.new_context(viewport={'width': 1440, 'height': 900})
-        if dossier:
-            polices(ctx, dossier)
+        externes = []
         p = ctx.new_page()
+        p.on('request', lambda r: externes.append(r.url) if not r.url.startswith(('http://localhost', 'http://127.0.0.1', 'file:', 'data:')) else None)
         p.goto(url)
         p.wait_for_selector('.td-barre')
         p.evaluate('document.fonts.ready')
@@ -108,7 +112,12 @@ def main():
         if restes:
             erreurs.append(f'{restes} champ(s) non vidé(s) à l\'impression')
         p.emulate_media(media='print')
+        # mise en page A4 : la largeur de la page (210 mm, marges latérales dans la page)
+        p.set_viewport_size({'width': 794, 'height': 1123})
+        p.evaluate('document.fonts.ready')
+        mesures = p.evaluate(MESURES)
         p.pdf(path=sortie, format='A4', print_background=True, prefer_css_page_size=True)
+        p.set_viewport_size({'width': 1440, 'height': 900})
         p.emulate_media(media='screen')
         p.evaluate("window.dispatchEvent(new Event('afterprint'))")
         remis = p.evaluate("r => [...document.querySelectorAll('.td input, .td textarea')].filter(c => (c.value || '').startsWith(r)).length", REPERE)
@@ -118,6 +127,21 @@ def main():
             if lire(qid) != sol:
                 erreurs.append(f'{qid} : après l\'impression, l\'ordre de l\'élève n\'est pas revenu à l\'écran')
         b.close()
+    if externes:
+        erreurs.append('requête hors du site : ' + ', '.join(sorted(set(externes))[:3]))
+    if mesures['petit']:
+        erreurs.append(f"texte sous 10 pt : {mesures['petit'][:4]}")
+    if mesures['coupees']:
+        erreurs.append(f"ligne(s) de code trop longue(s) pour la page : {mesures['coupees'][:4]}")
+    if mesures['deborde']:
+        erreurs.append(f"débordement hors de la page : {mesures['deborde'][:4]}")
+    for nom in ('bandeau', 'pied'):
+        if not mesures[nom]:
+            erreurs.append(f'{nom} absent')
+    polices_pdf = [l.split()[0] for l in subprocess.run(['pdffonts', sortie], capture_output=True, text=True).stdout.splitlines()[2:]]
+    autres = sorted({f.split('+')[-1] for f in polices_pdf} - POLICES_DU_SITE)
+    if autres:
+        erreurs.append('police de remplacement dans le PDF : ' + ', '.join(autres))
     texte = subprocess.run(['pdftotext', '-layout', sortie, '-'], capture_output=True, text=True, check=True).stdout
     plat = normal(texte)
     if REPERE in texte:
