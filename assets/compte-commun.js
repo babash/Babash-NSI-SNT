@@ -119,7 +119,7 @@
       ['td', 'Feuilles de TD en ligne', 'https://babash.github.io/Babash-NSI-SNT/'],
       ['calendrier', 'Calendrier des vacances', 'https://babash.github.io/Babash-NSI-SNT/calendrier/'],
       ['quizz_nsi', 'QuizzNSI', 'https://babash.github.io/quizz-nsi/'],
-      ['gombessa', 'Expédition Gombessa', 'https://babash.github.io/Rappel-1er/'],
+      ['gombessa', 'Expédition Gombessa', 'https://babash.github.io/gombessa/'],
       ['court_circuit', 'Court-circuit', 'https://babash.github.io/court-circuit/'],
       ['grand_oral', 'Hello GO', null],
       ['lagon', 'Lagon Arena', 'https://babash.github.io/lagon-arena/'],
@@ -171,7 +171,7 @@
     var adressesProf = {
       commun: 'https://babash.github.io/Babash-NSI-SNT/enseignant/',
       calendrier: 'https://babash.github.io/Babash-NSI-SNT/calendrier/prof.html',
-      gombessa: 'https://babash.github.io/Rappel-1er/prof.html',
+      gombessa: 'https://babash.github.io/gombessa/prof.html',
       lagon: 'https://babash.github.io/lagon-arena/prof.html?demo',
       court_circuit: 'https://babash.github.io/court-circuit/prof.html?demo'
     };

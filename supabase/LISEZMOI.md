@@ -60,7 +60,7 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
 
 ## L'ordre
 
-1. **Recommandé : après l'étape 0 de Gombessa** (n° 1 du plan, `0001-espaces.sql` du dépôt `Rappel-1er`).
+1. **Recommandé : après l'étape 0 de Gombessa** (n° 1 du plan, `0001-espaces.sql` du dépôt `gombessa`, ex-`Rappel-1er`).
    - Si le n° 2 passe avant l'étape 0, tout marche aussi, mais l'étape 0 redonne le droit à `authenticated` sur ses 25 fonctions (elle les ouvre « à anon, authenticated »).
    - Il suffit alors de relancer `0002` juste après l'étape 0, sous le nom `base_unique_0002_retrait_authenticated_et_sequences_bis`. Le fichier se relance sans risque.
 2. **Puis `0001`, `0002` et `0003`, dans cet ordre.** Chacun passe aussi seul.
