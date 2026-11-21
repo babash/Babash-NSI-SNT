@@ -198,7 +198,9 @@ print('parcours2 avec l\'ordre du corrigé 1 :', parcours2(corrige1, 'Av'))
 
 # ---------- les réponses écrites dans la page sont celles calculées ici ----------
 import html, os, re
-page = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'index.html'), encoding='utf-8').read()
+# le TD a une feuille par exercice de bac (index.html, feuille-2.html) : on lit les deux
+page = ''.join(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', f), encoding='utf-8').read()
+               for f in ('index.html', 'feuille-2.html'))
 
 
 def reponse(q):
