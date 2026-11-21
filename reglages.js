@@ -5,6 +5,9 @@
 reglages({
   titre: "Ressources NSI et SNT",
   presentation: "Cours, activités et outils pour la classe, rangés par niveau et par thème.",
+  // Le bandeau de l'accueil (T126b) : la puce et la ligne au-dessus du titre
+  puce: "SNT · NSI",
+  sur_titre: "Seconde · Première · Terminale",
 
   // Le dépôt GitHub du site, sous la forme "propriétaire/nom" : sert au lien « Code source sur GitHub »
   // en bas de chaque page, et aux liens « Modifier la liste », « Déposer un fichier » et « Mode d'emploi »
@@ -17,6 +20,8 @@ reglages({
   reutilisation: "Tu peux les réutiliser et les modifier en mentionnant {auteur} et la licence ; un document modifié se partage sous la même licence.",
   // Une invitation, pas une obligation : la licence CC BY-SA 4.0 ne permet pas d'ajouter de condition.
   invitation_ia: "Si tu utilises l'IA pour les modifier, merci de le préciser.",
+  // La mention courte de la ligne du pied de page, après « Code source sur GitHub » (décision du 20/11)
+  pied_ia: "conçu avec l'aide de l'IA",
 
   // Le compte commun (pages eleve/ et enseignant/, T101b). Tant que COMPTE_COMMUN_EN_LIGNE vaut false,
   // les deux pages sont en démonstration : données fictives en mémoire, rien n'est envoyé ni gardé.

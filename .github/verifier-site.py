@@ -374,7 +374,8 @@ def main():
             page = vue.result()
             if 'class="alerte"' in page:
                 problemes.append(f"{rub} : la page affiche une erreur")
-            affiche = page.count('<li class="res"')
+            # « res » seule, ou suivie d'autres classes (T126b : « res res-cours-quiz » pour un cours-quiz)
+            affiche = len(re.findall(r'<li class="res(?:\s[^"]*)?"', page))
             etat = "ok" if affiche == attendu else "ÉCART"
             print(f"{rub:15} {affiche:3} ressources affichées / {attendu:3} dans la vitrine   {etat}")
             if affiche != attendu:

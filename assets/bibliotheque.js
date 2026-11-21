@@ -23,7 +23,6 @@
   var derive = {};            // id → valeurs de chaque filtre (calculées une fois)
   var textes = { etat: 'absent' };
   var PAR_PAGE = 30;
-  var COULEUR = '#22D3EE';
 
   var etat = { q: '', filtres: {}, tri: '', vue: 'liste', r: '', nombre: PAR_PAGE };
   var ui = {};                // éléments de la page
@@ -80,15 +79,6 @@
   /* L'adresse d'un document : un fichier du site ou un lien externe */
   function infoDocument(d) {
     return O.analyser(d.url || urlFichier(d.fichier), O.racine);
-  }
-
-  /* La couleur d'une ressource : celle de sa rubrique */
-  function couleurDe(f) {
-    var ens = f.enseignements || [], niv = f.niveaux || [];
-    if (ens.indexOf('snt') >= 0) return O.couleur('bleu');
-    if (ens.indexOf('nsi') >= 0) return O.couleur(niv.indexOf('premiere') >= 0 && niv.indexOf('terminale') < 0 ? 'violet' : 'orange');
-    if (ens.indexOf('pp') >= 0) return O.couleur('vert');
-    return O.couleur('jaune');
   }
 
   /* ── Les durées ─────────────────────────────────────────────── */
@@ -351,7 +341,7 @@
     ui.statut = el('p', { class: 'statut', id: 'recherche-statut', 'aria-live': 'polite' });
     return el('div', { class: 'cherche', role: 'search' }, [
       el('label', { for: 'recherche', class: 'invisible' }, 'Chercher dans la bibliothèque'),
-      el('span', { class: 'cherche-ico', 'aria-hidden': 'true', html: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="7" cy="7" r="4.6"/><path d="m10.5 10.5 3.6 3.6"/></svg>' }),
+      el('span', { class: 'cherche-ico', 'aria-hidden': 'true' }, '>'),
       input,
       el('p', { class: 'invisible', id: 'recherche-aide' }, 'La recherche tient compte des synonymes, des notions et des fautes de frappe. Touche « / » pour revenir ici.'),
       ui.statut
@@ -362,15 +352,12 @@
     racine.appendChild(O.barreHaut('bibliotheque'));
     var page = el('div', { class: 'page bibliotheque' });
     racine.appendChild(page);
-    var bandeau = el('header', { class: 'hero hero-rubrique', style: '--hl:' + COULEUR, html: O.scene(COULEUR, 7) });
+    /* T126b : le bandeau en rotation ; le chapo et la recherche passent dessous, dans .intro.
+       La fiche d'une ressource garde ce bandeau et les filtres à côté (décision du 21/11). */
+    ui.nbBandeau = el('span', { hidden: true });
+    page.appendChild(O.bandeau({ puce: 'Tous', surTitre: ['SNT, NSI et pour la classe', ui.nbBandeau], titre: 'Bibliothèque' }));
     ui.chapo = el('p', { class: 'chapo' });
-    bandeau.appendChild(el('div', { class: 'hero-contenu' }, [
-      el('p', { class: 'invite', 'aria-hidden': 'true' }, '~/bibliotheque'),
-      el('h1', null, 'Bibliothèque'),
-      ui.chapo,
-      champRecherche()
-    ]));
-    page.appendChild(bandeau);
+    page.appendChild(el('div', { class: 'intro' }, [ui.chapo, champRecherche()]));
     ui.alerte = el('div');
     page.appendChild(ui.alerte);
 
@@ -643,7 +630,9 @@
 
   function blocListe(f) {
     var r = resultat && resultat.parId[f.id];
-    var li = el('li', { class: 'res', style: '--hl:' + couleurDe(f) });
+    var cq = O.estCoursQuiz(f);
+    var li = el('li', { class: 'res' + (cq ? ' res-cours-quiz' : '') });
+    if (cq) li.appendChild(O.etiquetteCoursQuiz());
     li.appendChild(lienPrincipal(f, r, 'titre'));
     li.appendChild(el('p', { class: 'chemin' }, meta(f)));
     var res = el('p');
@@ -662,9 +651,11 @@
 
   function blocCarte(f) {
     var r = resultat && resultat.parId[f.id];
-    var c = el('li', { class: 'noeud carte', style: '--hl:' + couleurDe(f) });
+    var cq = O.estCoursQuiz(f);
+    var c = el('li', { class: 'noeud carte' + (cq ? ' res-cours-quiz' : '') });
     c.appendChild(el('p', { class: 'noeud-meta' }, meta(f)));
     var h = el('h3');
+    if (cq) h.appendChild(O.etiquetteCoursQuiz());
     h.appendChild(lienPrincipal(f, r, 'titre'));
     c.appendChild(h);
     var p = el('p', { class: 'noeud-texte' });
@@ -875,7 +866,7 @@
     document.title = f.titre + ' – Bibliothèque – ' + O.titreSite();
     var r = resultat && resultat.parId[f.id];
     var t = r && r.trouves;
-    var art = el('article', { class: 'fiche-complete', style: '--hl:' + couleurDe(f) });
+    var art = el('article', { class: 'fiche-complete' });
     var h = el('h2', { class: 'fiche-titre' });
     h.appendChild(surligne(f.titre, t));
     art.appendChild(h);
@@ -1018,6 +1009,8 @@
     definirFiltres();
     lireAdresse();
     ui.input.value = etat.q;
+    ui.nbBandeau.textContent = O.pluriel(fiches.length, 'ressource', 'ressources');
+    ui.nbBandeau.hidden = false;
     ui.chapo.textContent = O.pluriel(fiches.length, 'ressource', 'ressources') + ' de SNT, de NSI et pour la classe, avec leurs documents. '
       + 'Cherchez un mot ou une notion (« boucle » trouve aussi for et while), puis affinez avec les filtres. ';
     /* T116 : les exercices du bac NSI par chapitre, sur leur propre page */

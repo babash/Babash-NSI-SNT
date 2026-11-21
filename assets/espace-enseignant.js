@@ -32,7 +32,7 @@
     Prof = CC.prof;
     P.initialiser(O);
     CC.configurer(O.reglages());
-    main = P.entete(racine, { page: 'enseignant', couleur: '#22D3EE', graine: 41, invite: '> espace enseignant·e',
+    main = P.entete(racine, { page: 'enseignant', puce: 'Prof', surTitre: ['compte commun'],
       titre: 'Espace enseignant·e', chapo: 'Un seul code pour toutes les applications : tes classes, tes élèves et les tableaux de bord, rangés ensemble.' });
     main.appendChild(el('p', { class: 'vide' }, 'Chargement…'));
     Promise.all([CC.catalogue(), chargerTableaux()]).then(function (r) {

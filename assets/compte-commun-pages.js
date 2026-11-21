@@ -56,15 +56,9 @@
     var b = bandeauMode();
     var page = el('div', { class: 'page cc-page' });
     if (b) page.appendChild(b);
-    var hero = el('section', { class: 'hero hero-rubrique cc-hero', style: '--hl:' + options.couleur }, [
-      el('div', { html: O.scene(options.couleur, options.graine || 7) }).firstChild,
-      el('div', { class: 'hero-contenu' }, [
-        el('p', { class: 'invite', 'aria-hidden': 'true' }, options.invite),
-        el('h1', null, options.titre),
-        el('p', { class: 'chapo' }, options.chapo)
-      ])
-    ]);
-    page.appendChild(hero);
+    /* T126b : le bandeau du site (paysage en rotation), le chapo dessous */
+    page.appendChild(O.bandeau({ puce: options.puce, surTitre: options.surTitre, titre: options.titre }));
+    page.appendChild(el('div', { class: 'intro' }, el('p', { class: 'chapo' }, options.chapo)));
     var main = el('main', { id: 'contenu', class: 'cc-main', tabindex: '-1' });
     page.appendChild(main);
     annonces = el('div', { class: 'cc-annonces', role: 'status', 'aria-live': 'polite' });

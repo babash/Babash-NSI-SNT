@@ -190,7 +190,7 @@ def main():
                 page.keyboard.press("Enter")
                 page.wait_for_selector(".fiche-titre", timeout=10000)
                 verifier("Entrée ouvre la fiche complète de la bibliothèque (?r=…)",
-                         "/bibliotheque/?r=" in page.url and titre in page.locator(".fiche-titre").inner_text())
+                         "/bibliotheque/?r=" in page.url and titre in page.locator(".fiche-titre").text_content())
             ctx.close()
 
         print("Étiquettes (T85 : Cours, Notebook, Rien à installer)")
@@ -235,18 +235,18 @@ def main():
                 ctx.close()
         if une:
             ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
-            page.fill(".hero .recherche", une[0]["etiquette"].lower())
+            page.fill(".intro .recherche", une[0]["etiquette"].lower())
             page.wait_for_timeout(200)
             verifier(f"accueil : la recherche « {une[0]['etiquette'].lower()} » trouve la ressource", page.locator("li.res").count() >= 1)
             ctx.close()
 
         ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
-        cartes = page.locator(".noeud-nom").all_inner_texts()
+        cartes = [t.strip() for t in page.locator(".noeud-nom").all_text_contents()]  # le texte, pas la casse affichée (T126b)
         verifier("accueil : une carte par rubrique de la vitrine, dans l'ordre", cartes == [r["titre"] for r in v["rubriques"]], cartes)
-        nav_ = page.locator(".nav a").all_inner_texts()
+        nav_ = [t.strip() for t in page.locator(".nav a").all_text_contents()]
         verifier("accueil : le menu suit la vitrine, puis Bibliothèque",
                  [x.strip() for x in nav_] == [r.get("court") or r["titre"] for r in v["rubriques"]] + ["Bibliothèque"], nav_)
-        page.fill(".hero .recherche", "cybercase")
+        page.fill(".intro .recherche", "cybercase")
         page.wait_for_timeout(200)
         verifier("accueil : la recherche trouve dans les rubriques, avec « En savoir plus »",
                  page.locator("li.res").count() >= 1 and page.locator("li.res a.en-savoir-plus").count() == page.locator("li.res").count())
@@ -270,7 +270,7 @@ def main():
         r = vv["rubriques"][0]
         ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{r['id']}/")
         verifier("deux ressources inversées et une section déplacée : la page suit", titres(page) == attendu(d, r))
-        h2 = page.locator("section.theme h2").all_inner_texts()
+        h2 = [t.strip() for t in page.locator("section.theme h2").all_text_contents()]
         verifier("section libre renommée : nouveau titre", any("Section renommée dans l'admin" in x for x in h2), h2)
         ctx.close()
         srv.fermer()

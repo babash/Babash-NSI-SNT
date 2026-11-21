@@ -149,10 +149,10 @@ def main():
         page.wait_for_timeout(300)
         cas(f"filtre « {e} » : {ne} ressources", compte(page) == ne, compte(page))
         cas("l'adresse garde le filtre", f"ens={e}" in page.url, page.url)
-        cas("une puce permet de retirer le filtre", page.locator(".puce").count() == 1)
+        cas("une puce permet de retirer le filtre", page.locator(".puces .puce").count() == 1)
         txt = page.text_content(f"label[for='f-ens-{e}'] .nb")
         cas("le nombre de ressources est indiqué sur le filtre", txt == str(ne), txt)
-        page.locator(".puce").click()
+        page.locator(".puces .puce").click()
         page.wait_for_timeout(300)
         cas("retirer la puce rend toutes les ressources", compte(page) == len(fiches))
 
@@ -182,7 +182,7 @@ def main():
             cas(f"filtre « Notions travaillées » sur « {thes[nid]['libelle']} » : {len(attendues)} ressource(s)",
                 compte(page) == len(attendues), compte(page))
             ouvrir(page, "?r=" + attendues[0]["id"])
-            synthese = page.inner_text(".synthese")
+            synthese = page.text_content(".synthese")  # le texte, pas la casse affichée (T126b)
             cas("la fiche montre ses « Notions travaillées », sans les anciens rôles",
                 "Notions travaillées" in synthese and thes[nid]["libelle"] in synthese
                 and "Notions enseignées" not in synthese and "Notions évaluées" not in synthese, synthese[:300])

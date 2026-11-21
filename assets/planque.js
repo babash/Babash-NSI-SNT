@@ -42,7 +42,7 @@
     }
     P.initialiser(O);
     CC.configurer(O.reglages());
-    main = P.entete(racine, { page: 'eleve', couleur: '#A78BFA', graine: 23, invite: '> planque', titre: 'Ma planque',
+    main = P.entete(racine, { page: 'eleve', puce: 'Élève', surTitre: ['compte commun'], titre: 'Ma planque',
       chapo: 'Ton avatar, tes hauts faits et ta classe. Un seul code pour toutes les applications.' });
     classeLien = lireClasseDeLAdresse();
     main.appendChild(el('p', { class: 'vide' }, 'Chargement…'));
