@@ -42,8 +42,8 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   référentiels du dossier `donnees/` (voir [les données de la bibliothèque](BIBLIOTHEQUE.md)). Une erreur fait
   échouer le contrôle (croix rouge). Depuis le 21 novembre 2026, une fiche ou la vitrine qui cite
   l'ancienne adresse d'un dépôt renommé est une erreur : les dépôts sont renommés sans
-  redirection, et une ancienne adresse ne mène nulle part (la liste est dans
-  `scripts/depots-renommes/`). Il vérifie aussi que le classement des exercices des annales
+  redirection, et l'ancienne adresse de leur site (`babash.github.io/<ancien nom>/…`) ne mène
+  nulle part (la liste est dans `scripts/depots-renommes/`). Il vérifie aussi que le classement des exercices des annales
   du bac par chapitre (`donnees/annales/notions-par-exercice.json`) est à jour des annales
   (`scripts/annales_notions.py --verifier`, depuis le 20 novembre 2026) : après une mise à jour
   des annales, on relance `python3 scripts/annales_notions.py`, sinon le contrôle échoue. Le même

@@ -222,7 +222,9 @@ du thésaurus comprise), un document sans réglage de visibilité, et tout ce qu
 mot de passe, un identifiant ou une clé secrète. Depuis le 21 novembre 2026, il refuse aussi
 l'ancienne adresse d'un dépôt renommé (`babash.github.io/<ancien nom>/…`,
 `github.com/babash/<ancien nom>`…, en toutes casses), dans les fiches et la vitrine : les dépôts
-sont renommés sans redirection, et une ancienne adresse ne mène nulle part. Les notes datées
+sont renommés sans redirection. L'ancienne adresse de leur site ne mène nulle part, et celle du
+dépôt sur GitHub ne tient qu'à une redirection de GitHub, qui cesse si un dépôt reprend l'ancien
+nom. Les notes datées
 d'une fiche gardent les adresses de leur époque. La liste des renommages est dans
 `scripts/depots-renommes/`, un fichier par dépôt, ajouté avec le commit qui corrige ses adresses ;
 ses tests : `python3 -I -B scripts/tests/test_depots_renommes.py`. Il vérifie aussi le thésaurus lui-même :
