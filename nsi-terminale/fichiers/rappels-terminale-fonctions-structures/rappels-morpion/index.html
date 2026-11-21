@@ -1,0 +1,443 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rappel de 1re NSI, le morpion : TD en ligne</title>
+  <meta name="description" content="TD en ligne, auto-correctif : rappels de 1re NSI (fonctions, tuples, listes, dictionnaires) autour d'un morpion (Tle NSI), feuille 1 sur 2.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-rappels-morpion" data-auteurs="Babash - NSI Tani Malandi et Johanne Bakalara" data-td-version="1">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Rappels de 1re</span></p>
+        <h1>Le morpion</h1>
+        <p class="td-accroche">Rappels : fonctions et structures</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=listes" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h3v1h-3zM14 0h1v1h-1zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h2v1h-2zM12 1h2v1h-2zM15 1h1v1h-1zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h2v1h-2zM14 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h2v1h-2zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h1v1h-1zM13 4h1v1h-1zM16 4h2v1h-2zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h4v1h-4zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h1v1h-1zM12 7h1v1h-1zM15 7h2v1h-2zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h5v1h-5zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM3 9h1v1h-1zM5 9h1v1h-1zM8 9h6v1h-6zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h1v1h-1zM2 10h1v1h-1zM5 10h5v1h-5zM12 10h7v1h-7zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM0 11h2v1h-2zM3 11h3v1h-3zM7 11h1v1h-1zM9 11h1v1h-1zM13 11h1v1h-1zM15 11h1v1h-1zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM0 12h2v1h-2zM4 12h1v1h-1zM6 12h1v1h-1zM10 12h2v1h-2zM14 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM0 13h3v1h-3zM4 13h1v1h-1zM7 13h1v1h-1zM10 13h1v1h-1zM16 13h2v1h-2zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM2 14h1v1h-1zM6 14h2v1h-2zM9 14h5v1h-5zM15 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM0 15h5v1h-5zM7 15h1v1h-1zM9 15h1v1h-1zM11 15h1v1h-1zM13 15h1v1h-1zM15 15h2v1h-2zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM0 16h2v1h-2zM3 16h4v1h-4zM8 16h1v1h-1zM10 16h6v1h-6zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM1 17h1v1h-1zM10 17h2v1h-2zM14 17h1v1h-1zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM3 18h1v1h-1zM5 18h2v1h-2zM9 18h2v1h-2zM12 18h1v1h-1zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM0 19h1v1h-1zM2 19h2v1h-2zM5 19h1v1h-1zM8 19h1v1h-1zM10 19h7v1h-7zM21 19h10v1h-10zM32 19h1v1h-1zM1 20h6v1h-6zM8 20h4v1h-4zM13 20h5v1h-5zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h2v1h-2zM3 21h3v1h-3zM8 21h1v1h-1zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM2 22h2v1h-2zM5 22h5v1h-5zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM3 23h1v1h-1zM10 23h1v1h-1zM12 23h3v1h-3zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h3v1h-3zM0 24h1v1h-1zM2 24h1v1h-1zM4 24h1v1h-1zM6 24h5v1h-5zM12 24h7v1h-7zM22 24h8v1h-8zM31 24h2v1h-2zM8 25h1v1h-1zM10 25h2v1h-2zM16 25h5v1h-5zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM9 26h1v1h-1zM11 26h2v1h-2zM15 26h2v1h-2zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h1v1h-1zM15 27h1v1h-1zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h6v1h-6zM15 28h3v1h-3zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h4v1h-4zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h2v1h-2zM13 30h5v1h-5zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h4v1h-4zM15 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h3v1h-3zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> relire le programme d'un morpion pour réviser les fonctions, les tuples, les listes et les dictionnaires de 1re.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>repérer une définition de fonction, ses paramètres, et écrire un appel ;</li>
+        <li>dire pourquoi un tuple ne se modifie pas ;</li>
+        <li>lire et modifier une liste de listes avec deux indices ;</li>
+        <li>parcourir un dictionnaire et mettre à jour ses valeurs.</li>
+      </ul>
+      <p class="td-duree">1 heure · feuille 1 sur 2 · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p>On étudie le programme d'un morpion. Chaque joueur·euse joue à son tour. Le programme demande où jouer, puis met la grille à jour. Le jeu s'arrête si la grille est pleine ou si quelqu'un a gagné.</p>
+  <p>Voici la fonction qui affiche la grille du morpion :</p>
+  <pre class="td-code">
+# La fonction qui affiche la grille dans le terminal
+def afficherGrille(g, gagnant=None):
+    print(" " + g[0][0] + " | " + g[0][1] + " | " + g[0][2] + " ")
+    print("---+---+---")
+    print(" " + g[1][0] + " | " + g[1][1] + " | " + g[1][2] + " ")
+    print("---+---+---")
+    print(" " + g[2][0] + " | " + g[2][1] + " | " + g[2][2] + " \n")
+
+    if gagnant:
+        print("* Partie terminée : le joueur", gagnant, "a gagné. *")
+
+
+grille = [[" " for _ in range(3)] for _ in range(3)]  # 9 espaces " "</pre>
+
+  <h2 class="td-partie">1. Rappels sur les fonctions</h2>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="def">
+    <p class="td-consigne">Quel mot-clé de Python annonce une définition de fonction ?</p>
+    <p class="td-retour" data-si="return">return renvoie une valeur, à la fin d'une fonction. Le mot qui commence la définition est au début de la ligne 2.</p>
+    <p class="td-aide">Regarde le premier mot de la ligne 2.</p>
+    <div class="td-correction"><p><code>def</code> (pour <i>define</i>) : <code>def nom(paramètres):</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q2">
+    <p class="td-consigne">Quels sont les paramètres de la fonction <code>afficherGrille</code> ? Coche-les tous.</p>
+    <ul class="td-options">
+      <li data-juste><code>g</code></li>
+      <li data-juste><code>gagnant</code></li>
+      <li data-retour="grille est la variable du programme principal ; dans la fonction, le paramètre s'appelle g."><code>grille</code></li>
+      <li data-retour="None est la valeur par défaut du paramètre gagnant, pas un paramètre."><code>None</code></li>
+    </ul>
+    <p class="td-aide">Les paramètres sont entre les parenthèses de la ligne <code>def</code>.</p>
+    <div class="td-correction"><p>Deux paramètres : <code>g</code> et <code>gagnant</code>. <code>gagnant=None</code> donne une valeur par défaut : on peut appeler la fonction sans le donner.</p></div>
+  </section>
+
+  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q3">
+    <p class="td-consigne">Quel est le type de <code>grille</code> ? À quoi le reconnais-tu ?</p>
+    <ul class="td-options">
+      <li data-juste>Une liste (de trois listes) : elle est écrite entre crochets <code>[ ]</code>.</li>
+      <li data-retour="Un dictionnaire s'écrit entre accolades { }, avec des clés.">Un dictionnaire : il contient des espaces.</li>
+      <li data-retour="Un tuple s'écrit entre parenthèses ; ici, ce sont des crochets.">Un tuple : il a une taille fixe de 3.</li>
+      <li data-retour="Les &quot; &quot; sont à l'intérieur : la structure entière est entre crochets.">Une chaîne de caractères : elle contient des <code>" "</code>.</li>
+    </ul>
+    <p class="td-aide"><code>[… for _ in range(3)]</code> construit une liste par compréhension.</p>
+    <div class="td-correction"><p>Une <b>liste</b> : les crochets <code>[ ]</code> la construisent (liste par compréhension). Chacun de ses trois éléments est lui-même une liste de trois <code>" "</code> : c'est une liste de listes.</p></div>
+  </section>
+  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="2" id="q3p">
+    <p class="td-consigne">Quel est le type de <code>grille</code> ? À quoi le reconnais-tu ?</p>
+    <div class="td-correction"><p>Une liste (de trois listes de trois <code>" "</code>) : elle est construite entre crochets <code>[ ]</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q4" data-comparer="code" data-reponse="afficherGrille(grille)|afficherGrille(g=grille)">
+    <p class="td-consigne">Écris l'appel de <code>afficherGrille</code> avec seulement la variable <code>grille</code> en paramètre.</p>
+    <p class="td-retour" data-si="def afficherGrille(grille)">Ça, c'est une définition. Un appel s'écrit sans def, avec la valeur à donner.</p>
+    <p class="td-retour" data-si="afficherGrille(g)">g n'existe que dans la fonction. Dans le programme, la variable s'appelle grille.</p>
+    <p class="td-aide">Le nom de la fonction, puis la variable entre parenthèses.</p>
+    <div class="td-correction"><p><code>afficherGrille(grille)</code> : <code>gagnant</code> prend sa valeur par défaut, <code>None</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="sortie" id="q5">
+    <p class="td-consigne">Qu'affiche l'appel <code>afficherGrille(grille, gagnant="X")</code> ? (La grille est encore vide : neuf espaces.)</p>
+    <pre class="td-code">
+def afficherGrille(g, gagnant=None):
+    print(" " + g[0][0] + " | " + g[0][1] + " | " + g[0][2] + " ")
+    print("---+---+---")
+    print(" " + g[1][0] + " | " + g[1][1] + " | " + g[1][2] + " ")
+    print("---+---+---")
+    print(" " + g[2][0] + " | " + g[2][1] + " | " + g[2][2] + " \n")
+
+    if gagnant:
+        print("* Partie terminée : le joueur", gagnant, "a gagné. *")
+
+
+grille = [[" " for _ in range(3)] for _ in range(3)]
+afficherGrille(grille, gagnant="X")</pre>
+    <pre class="td-attendu">
+   |   |   
+---+---+---
+   |   |   
+---+---+---
+   |   |   
+
+* Partie terminée : le joueur X a gagné. *</pre>
+    <p class="td-aide">Les cases sont des espaces : il ne reste que les traits <code>|</code> et les lignes <code>---+---+---</code>.</p>
+    <p class="td-aide"><code>gagnant</code> vaut <code>"X"</code> : la condition <code>if gagnant</code> est vraie.</p>
+    <div class="td-correction"><p>Une grille vide (trois lignes <code>|   |</code> séparées par <code>---+---+---</code>), puis, comme <code>gagnant</code> n'est pas <code>None</code>, la ligne <code>* Partie terminée : le joueur X a gagné. *</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Rappels sur les tuples</h2>
+  <pre class="td-code">
+joueurs = ("X", "O")</pre>
+
+  <section class="td-q" data-type="qcu" id="q6">
+    <p class="td-consigne">Quel est le type de la variable <code>joueurs</code> ?</p>
+    <ul class="td-options">
+      <li data-retour="Une liste s'écrit entre crochets [ ].">une liste</li>
+      <li data-juste>un tuple</li>
+      <li data-retour="Il y a deux chaînes, regroupées dans une autre structure.">une chaîne de caractères</li>
+      <li data-retour="Un dictionnaire s'écrit entre accolades, avec des clés.">un dictionnaire</li>
+    </ul>
+    <p class="td-aide">Regarde les symboles autour de <code>"X", "O"</code>.</p>
+    <div class="td-correction"><p>Des parenthèses et des virgules : c'est un <b>tuple</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q7">
+    <p class="td-consigne">À ton avis, que désigne-t-elle ?</p>
+    <ul class="td-options">
+      <li data-juste>Les symboles des deux joueur·euses : X et O.</li>
+      <li data-retour="Le gagnant est donné à afficherGrille. Ici, il y a deux valeurs, une par personne.">Le gagnant de la partie.</li>
+      <li data-retour="Les cases sont dans grille, une liste de listes.">Les cases de la grille.</li>
+      <li data-retour="Rien ne compte les points : ce sont deux symboles.">Les scores des deux joueur·euses.</li>
+    </ul>
+    <p class="td-aide">Au morpion, chaque personne joue avec un symbole.</p>
+    <div class="td-correction"><p><code>joueurs</code> contient les deux symboles du jeu : <code>joueurs[0]</code> joue les X, <code>joueurs[1]</code> les O.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q8" data-comparer="code" data-reponse="print(joueurs[1])|print(joueurs[-1])">
+    <p class="td-consigne">Écris la ligne de code qui affiche le symbole du deuxième joueur.</p>
+    <p class="td-retour" data-si="print(joueurs[2])">Les indices commencent à 0 : le deuxième élément a l'indice 1.</p>
+    <p class="td-aide">Un élément d'un tuple se lit comme dans une liste : <code>joueurs[indice]</code>.</p>
+    <div class="td-correction"><p><code>print(joueurs[1])</code> affiche <code>O</code>.</p></div>
+  </section>
+
+  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q9">
+    <p class="td-consigne">Peux-tu modifier le symbole du deuxième joueur, avec <code>joueurs[1] = "Z"</code> ?</p>
+    <ul class="td-options">
+      <li data-retour="Python refuse : TypeError: 'tuple' object does not support item assignment.">Oui, comme dans une liste.</li>
+      <li data-juste>Non : un tuple ne se modifie pas (il est immuable).</li>
+      <li data-retour="Le problème n'est pas la lettre : aucun élément d'un tuple ne peut être remplacé.">Non : seule la valeur "O" est interdite.</li>
+      <li data-retour="L'indice 1 existe : c'est le deuxième élément. Le problème vient du type.">Non : l'indice 1 n'existe pas.</li>
+    </ul>
+    <p class="td-aide">Liste et tuple se lisent de la même façon. Mais l'un des deux ne se modifie pas.</p>
+    <div class="td-correction"><p>Non. Un tuple est <b>immuable</b> : Python répond <code>TypeError: 'tuple' object does not support item assignment</code>. Pour changer de symbole, il faut créer un nouveau tuple : <code>joueurs = ("X", "Z")</code>.</p></div>
+  </section>
+  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="3" id="q9p">
+    <p class="td-consigne">Peux-tu modifier le symbole du deuxième joueur ? Justifie.</p>
+    <div class="td-correction"><p>Non : un tuple est immuable. <code>joueurs[1] = "Z"</code> provoque <code>TypeError: 'tuple' object does not support item assignment</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q10">
+    <p class="td-consigne">La fonction <code>tourJoueur</code> demande le numéro d'une case, de 0 à 8 (de gauche à droite, puis de haut en bas), et y place le symbole du joueur. Complète-la.</p>
+    <pre class="td-code">
+def tourJoueur(joueur, grille):
+    tour = [[int]](input("Sur quelle case veux-tu jouer ? (0 à 8) "))
+    grille[[[tour // 3|tour//3]]][[[tour % 3|tour%3]]] = joueur</pre>
+    <p class="td-aide"><code>input</code> renvoie toujours un texte : il faut le changer en nombre entier.</p>
+    <p class="td-aide">La case 5 est sur la ligne 1, colonne 2 : 5 // 3 = 1 et 5 % 3 = 2.</p>
+    <div class="td-correction"><pre class="td-code">
+def tourJoueur(joueur, grille):
+    tour = int(input("Sur quelle case veux-tu jouer ? (0 à 8) "))
+    grille[tour // 3][tour % 3] = joueur</pre>
+      <p><code>int</code> change le texte saisi en nombre. La grille est une liste de listes : il faut deux indices, la ligne (<code>tour // 3</code>) et la colonne (<code>tour % 3</code>). Avec la saisie <code>5</code>, le X va en <code>grille[1][2]</code>.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">3. Rappels sur les listes</h2>
+
+  <section class="td-q" data-type="trous" id="q11">
+    <p class="td-consigne">Complète les trous : chaque fonction renvoie le symbole gagnant s'il y en a un, sinon <code>False</code>.</p>
+    <pre class="td-code">
+def ligneGagnante(grille, ligne):
+    if grille[ligne][0] == grille[ligne][1] == grille[ligne][2]:
+        return grille[ligne][0]
+    else : return False
+
+def colonneGagnante(grille, colonne):
+    if grille[0][colonne] == [[grille[1][colonne] |grille[2][colonne] ]] == [[grille[2][colonne] |grille[1][colonne] ]]:
+        return grille[0][colonne]
+    else : return False
+
+def diagonalGagnante(grille):
+    if [[grille[0][0] |grille[2][2] ]] == [[grille[1][1] ]] == [[grille[2][2] |grille[0][0] ]]:
+        return grille[0][0]
+    elif [[grille[2][0] |grille[0][2] ]] == [[grille[1][1] ]] == [[grille[0][2] |grille[2][0] ]]:
+        return grille[2][0]
+    else : return False</pre>
+    <p class="td-aide">Pour la colonne, c'est le premier indice (la ligne) qui change : 0, 1, 2.</p>
+    <p class="td-aide">Les deux diagonales passent par le centre, <code>grille[1][1]</code>.</p>
+    <div class="td-correction"><pre class="td-code">
+def colonneGagnante(grille, colonne):
+    if grille[0][colonne] == grille[1][colonne] == grille[2][colonne]:
+        return grille[0][colonne]
+    else : return False
+
+def diagonalGagnante(grille):
+    if grille[0][0] == grille[1][1] == grille[2][2]:
+        return grille[0][0]
+    elif grille[2][0] == grille[1][1] == grille[0][2]:
+        return grille[2][0]
+    else : return False</pre></div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q12">
+    <p class="td-consigne">Quelles valeurs la fonction <code>ligneGagnante</code> peut-elle renvoyer, avec la grille du jeu ? Coche-les toutes.</p>
+    <ul class="td-options">
+      <li data-juste><code>"X"</code></li>
+      <li data-juste><code>"O"</code></li>
+      <li data-juste><code>" "</code> (une case vide)</li>
+      <li data-juste><code>False</code></li>
+      <li data-retour="La fonction ne renvoie jamais True : quand il y a un gagnant, elle renvoie son symbole."><code>True</code></li>
+    </ul>
+    <p class="td-aide">Que se passe-t-il pour une ligne encore vide : <code>" " == " " == " "</code> ?</p>
+    <div class="td-correction"><p><code>"X"</code> ou <code>"O"</code> si la ligne est gagnante, <code>False</code> sinon… et <code>" "</code> pour une ligne encore vide, car trois espaces sont égaux ! Le programme doit donc vérifier que le symbole renvoyé n'est pas une case vide.</p></div>
+  </section>
+
+  <p>On exécute ce code :</p>
+  <pre class="td-code">
+grille = [["", "", ""],
+          ["", "", ""],
+          ["", "", ""]]
+grille[0][1] = "X"
+grille[1][-1] = "O"
+grille[2][0] = grille[0][1]
+grille[len(grille[0]) - 1][2] = "O"</pre>
+
+  <section class="td-q td-ecran-seul" data-type="qcu" data-support="ecran" id="q13">
+    <p class="td-consigne">Quelle est la grille après l'exécution de ce code ? (Un point marque une case vide.)</p>
+    <ul class="td-options">
+      <li data-juste><pre class="td-code">
+. | X | .
+. | . | O
+X | . | O</pre></li>
+      <li data-retour="grille[1][-1] : l'indice -1 désigne la dernière case de la ligne 1, pas la première."><pre class="td-code">
+. | X | .
+O | . | .
+X | . | O</pre></li>
+      <li data-retour="grille[2][0] reçoit le contenu de grille[0][1], c'est-à-dire X."><pre class="td-code">
+. | X | .
+. | . | O
+. | . | O</pre></li>
+      <li data-retour="len(grille[0]) - 1 vaut 2 : c'est la ligne 2, et non la ligne 0."><pre class="td-code">
+. | X | O
+. | . | O
+X | . | .</pre></li>
+    </ul>
+    <p class="td-aide">Le premier indice est la ligne, le second la colonne. <code>-1</code> désigne le dernier élément.</p>
+    <p class="td-aide"><code>len(grille[0])</code> vaut 3.</p>
+    <div class="td-correction"><p>X en ligne 0, colonne 1 ; O en ligne 1, dernière colonne ; X (copié de <code>grille[0][1]</code>) en ligne 2, colonne 0 ; O en ligne 3 - 1 = 2, colonne 2.</p></div>
+  </section>
+  <section class="td-q td-papier-seul" data-type="libre" data-support="papier" data-lignes="4" id="q13p">
+    <p class="td-consigne">Dessine la grille après l'exécution de ce code.</p>
+    <div class="td-correction"><p>Ligne 0 : vide, X, vide. Ligne 1 : vide, vide, O. Ligne 2 : X, vide, O.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q14">
+    <p class="td-consigne">À quoi sert la fonction <code>len</code> ?</p>
+    <ul class="td-options">
+      <li data-retour="len ne renvoie pas un élément : elle compte.">Elle renvoie le dernier élément d'une liste.</li>
+      <li data-juste>Elle renvoie le nombre d'éléments d'une liste (sa longueur).</li>
+      <li data-retour="Le dernier indice vaut len(liste) - 1 : c'est pour cela que le code retire 1.">Elle renvoie le dernier indice d'une liste.</li>
+      <li data-retour="len ne modifie rien : elle renvoie un nombre.">Elle ajoute une case à une liste.</li>
+    </ul>
+    <p class="td-aide"><code>len</code> vient de l'anglais <i>length</i>.</p>
+    <div class="td-correction"><p><code>len(grille[0])</code> vaut 3 : la ligne 0 a trois cases. Le dernier indice est donc <code>3 - 1 = 2</code>.</p></div>
+  </section>
+
+  <h2 class="td-partie">4. Rappels sur les dictionnaires</h2>
+  <pre class="td-code">
+joueurs = {"Lagon": (4, 15),
+           "Corail": (6, 15),
+           "Manta": (11, 20),
+           "Tortue": (19, 30)}
+
+def meilleurRatio(joueurs):
+    meilleur = None
+    rmax = 0
+    for n, (v, j) in joueurs.items():
+        if v/j &gt; rmax:
+            rmax = v/j
+            meilleur = n
+    return meilleur</pre>
+  <p>Le dictionnaire <code>joueurs</code> a pour clé le pseudo d'un·e joueur·euse et pour valeur un tuple (nombre de parties gagnées, nombre de parties jouées). La fonction <code>meilleurRatio</code> cherche le meilleur ratio de victoires.</p>
+
+  <section class="td-q" data-type="qcu" id="q15">
+    <p class="td-consigne">Quelles sont les clés du dictionnaire <code>joueurs</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>"Lagon"</code>, <code>"Corail"</code>, <code>"Manta"</code> et <code>"Tortue"</code></li>
+      <li data-retour="Les tuples sont les valeurs : ils sont après les deux-points.">Les tuples <code>(4, 15)</code>, <code>(6, 15)</code>…</li>
+      <li data-retour="Ce sont des nombres rangés dans les valeurs.">Les nombres 4, 6, 11 et 19</li>
+      <li data-retour="joueurs est le nom du dictionnaire, pas une de ses clés."><code>joueurs</code></li>
+    </ul>
+    <p class="td-aide">Dans <code>{clé: valeur}</code>, la clé est avant les deux-points.</p>
+    <div class="td-correction"><p>Les clés sont les quatre pseudos : <code>"Lagon"</code>, <code>"Corail"</code>, <code>"Manta"</code>, <code>"Tortue"</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q16">
+    <p class="td-consigne">Que vaut <code>joueurs["Tortue"][0]</code>, et à quoi cela correspond-il ?</p>
+    <ul class="td-options">
+      <li data-retour="30 est joueurs[&quot;Tortue&quot;][1], le deuxième nombre du tuple.">30 : le nombre de parties jouées par Tortue.</li>
+      <li data-juste>19 : le nombre de parties gagnées par Tortue.</li>
+      <li data-retour="[0] prend le premier élément du tuple, pas le premier joueur du dictionnaire.">(4, 15) : la valeur du premier joueur.</li>
+      <li data-retour="Le premier élément de la valeur est un nombre, pas une lettre.">"T" : la première lettre de la clé.</li>
+    </ul>
+    <p class="td-aide"><code>joueurs["Tortue"]</code> vaut <code>(19, 30)</code> ; puis <code>[0]</code> prend son premier élément.</p>
+    <div class="td-correction"><p><code>joueurs["Tortue"]</code> vaut <code>(19, 30)</code>, et <code>[0]</code> donne <b>19</b> : Tortue a gagné 19 parties.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q17">
+    <p class="td-consigne">À quoi correspond <code>joueurs["Lagon"][1] + joueurs["Corail"][1] + joueurs["Manta"][1] + joueurs["Tortue"][1]</code> ?</p>
+    <ul class="td-options">
+      <li data-retour="Les victoires sont les premiers nombres, [0].">Au nombre total de victoires (40).</li>
+      <li data-juste>Au total des parties jouées par les quatre (80).</li>
+      <li data-retour="On additionne, on ne cherche pas un maximum.">Au plus grand nombre de parties jouées (30).</li>
+      <li data-retour="[1] est le deuxième élément du tuple, pas le deuxième joueur.">Aux parties du deuxième joueur, Corail (15).</li>
+    </ul>
+    <p class="td-aide">Pour chaque pseudo, <code>[1]</code> est le deuxième nombre du tuple.</p>
+    <div class="td-correction"><p>15 + 15 + 20 + 30 = <b>80</b> parties jouées en tout, en additionnant celles de chacun·e. (Une partie à deux y compte deux fois, une fois pour chaque joueur·euse.)</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q18">
+    <p class="td-consigne">À quoi correspondent les variables <code>n</code>, <code>v</code> et <code>j</code> de la fonction <code>meilleurRatio</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>n</code> : le pseudo ; <code>v</code> : les parties gagnées ; <code>j</code> : les parties jouées.</li>
+      <li data-retour="items() donne des paires (clé, valeur) : n est la clé, le pseudo.">n : un numéro ; v : la valeur ; j : le joueur.</li>
+      <li data-retour="(v, j) découpe la valeur, le tuple (gagnées, jouées) : v vient en premier.">n : le pseudo ; v : les parties jouées ; j : les parties gagnées.</li>
+      <li data-retour="La boucle donne un pseudo à chaque tour, pas le dictionnaire entier.">n : le dictionnaire ; v et j : deux joueurs.</li>
+    </ul>
+    <p class="td-aide"><code>joueurs.items()</code> donne des paires <code>(clé, valeur)</code>, et la valeur est un tuple.</p>
+    <div class="td-correction"><p><code>for n, (v, j) in joueurs.items()</code> : <code>n</code> reçoit la clé (le pseudo) ; le tuple valeur est découpé en <code>v</code> (parties gagnées) et <code>j</code> (parties jouées). <code>v/j</code> est donc le ratio de victoires.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q19" data-reponse="Tortue|'Tortue'|&quot;Tortue&quot;">
+    <p class="td-consigne">Que renvoie <code>meilleurRatio(joueurs)</code> ?</p>
+    <p class="td-retour" data-si="Manta">Manta a gagné 11 parties sur 20 (0,55). Compare avec 19 sur 30.</p>
+    <p class="td-aide">Calcule le ratio de chacun·e : victoires divisées par parties jouées.</p>
+    <div class="td-correction"><p>Lagon : 4/15, environ 0,27 ; Corail : 6/15 = 0,4 ; Manta : 11/20 = 0,55 ; Tortue : 19/30, environ 0,63. La fonction renvoie <b>"Tortue"</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q20">
+    <p class="td-consigne">En cas d'égalité de ratio, quel·le joueur·euse la fonction renvoie-t-elle ?</p>
+    <ul class="td-options">
+      <li data-juste>Le premier ou la première rencontré·e dans le dictionnaire.</li>
+      <li data-retour="Avec &gt;, un ratio égal n'est pas plus grand : meilleur ne change pas.">Le dernier ou la dernière rencontré·e.</li>
+      <li data-retour="La fonction renvoie une seule clé, jamais une liste.">Tous les ex æquo, dans une liste.</li>
+      <li data-retour="Le nombre de parties n'est pas regardé : seul le ratio compte.">Celui ou celle qui a joué le plus de parties.</li>
+    </ul>
+    <p class="td-aide">La comparaison est <code>v/j &gt; rmax</code> : strictement plus grand.</p>
+    <div class="td-correction"><p>Avec <code>&gt;</code>, un ratio égal ne remplace pas le meilleur : la fonction garde le premier ou la première rencontré·e, dans l'ordre du dictionnaire. Avec <code>&gt;=</code>, ce serait le dernier ou la dernière.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q21" data-fichier="mise_a_jour.py" data-obligatoire>
+    <p class="td-consigne">Tortue vient de gagner une partie contre Lagon. Écris les instructions qui mettent à jour le dictionnaire <code>joueurs</code>. <span class="td-ecran-seul">Des tests, cachés, le vérifient quand tu cliques sur « Lancer et vérifier ».</span></p>
+    <pre class="td-depart">
+joueurs = {"Lagon": (4, 15),
+           "Corail": (6, 15),
+           "Manta": (11, 20),
+           "Tortue": (19, 30)}
+
+# Tortue gagne une partie contre Lagon
+</pre>
+    <script type="text/x-python" class="td-tests">
+assert joueurs["Tortue"] == (20, 31), "Tortue a gagné une partie de plus et joué une partie de plus : (20, 31)."
+assert joueurs["Lagon"] == (4, 16), "Lagon a joué une partie de plus, sans la gagner : (4, 16)."
+assert joueurs["Corail"] == (6, 15) and joueurs["Manta"] == (11, 20), "Corail et Manta n'ont pas joué : leurs valeurs ne changent pas."
+</script>
+    <p class="td-aide">Un tuple ne se modifie pas : on remplace toute la valeur, <code>joueurs["Tortue"] = (…, …)</code>.</p>
+    <p class="td-aide">Tortue : une victoire et une partie de plus. Lagon : une partie de plus seulement.</p>
+    <div class="td-correction"><pre class="td-code" data-verifier="correction">
+joueurs = {"Lagon": (4, 15),
+           "Corail": (6, 15),
+           "Manta": (11, 20),
+           "Tortue": (19, 30)}
+
+# Tortue gagne une partie contre Lagon
+v, j = joueurs["Tortue"]
+joueurs["Tortue"] = (v + 1, j + 1)
+v, j = joueurs["Lagon"]
+joueurs["Lagon"] = (v, j + 1)
+print(joueurs)</pre>
+      <p>On ne peut pas écrire <code>joueurs["Tortue"][0] += 1</code> : le tuple est immuable. On remplace donc la valeur par un nouveau tuple. Écrire directement <code>joueurs["Tortue"] = (20, 31)</code> marche aussi, mais seulement pour ces nombres-là.</p>
+    </div>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="feuille-2.html">feuille 2 sur 2, les médailles des Jeux de Paris 2024 (listes et dictionnaires)</a>.</p>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Liste <code>[ ]</code> : modifiable, deux indices pour une liste de listes, <code>grille[ligne][colonne]</code>. Tuple <code>( )</code> : immuable.</p>
+    <p>Dictionnaire <code>{clé: valeur}</code> : <code>for cle, valeur in d.items()</code> le parcourt ; <code>d[cle] = …</code> remplace une valeur.</p><span class="td-margouillat" data-cachette="memo" style="--r:4deg;--s:-1"></span>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi et Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/rappels-terminale-fonctions-structures/rappels-morpion">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
