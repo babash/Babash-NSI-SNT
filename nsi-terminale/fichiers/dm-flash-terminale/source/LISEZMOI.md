@@ -11,3 +11,4 @@ Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en l
 - Piles et files : `dm-pile/index.html` (PDF : `dm-pile.pdf`).
 - Recherche linéaire dans un dictionnaire : `dm-recherche-lineaire-dict/index.html` (PDF : `dm-recherche-lineaire-dict.pdf`).
 - La récursivité en famille : `dm-recursivite/index.html` (PDF : `dm-recursivite.pdf`).
+- Diviser pour régner, le tri fusion : `dm-tri-fusion/index.html` (PDF : `dm-tri-fusion.pdf`).
