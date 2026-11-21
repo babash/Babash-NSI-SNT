@@ -12,3 +12,4 @@ Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en l
 - Recherche linéaire dans un dictionnaire : `dm-recherche-lineaire-dict/index.html` (PDF : `dm-recherche-lineaire-dict.pdf`).
 - La récursivité en famille : `dm-recursivite/index.html` (PDF : `dm-recursivite.pdf`).
 - Diviser pour régner, le tri fusion : `dm-tri-fusion/index.html` (PDF : `dm-tri-fusion.pdf`).
+- Trouver le maximum : `dm-trouver-max/index.html` (PDF : `dm-trouver-max.pdf`).
