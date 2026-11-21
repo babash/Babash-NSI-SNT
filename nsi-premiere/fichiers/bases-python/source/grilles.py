@@ -36,7 +36,7 @@ def obstacle(x, y, c=C):
 
 def grille(nom, depart=None, robot_visible=True):
     g = GRILLES[nom]
-    ncol, nlig = len(COLONNES) if g.get("colonnes") is None else g["colonnes"], g["lignes"]
+    ncol, nlig = g.get("colonnes", len(COLONNES)), g["lignes"]
     cols = COLONNES[:ncol]
     d = depart or g["depart"]
     w, h = M + ncol * C + 2, M + nlig * C + 2
