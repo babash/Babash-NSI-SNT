@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dictionnaires : TD type bac</title>
+  <meta name="description" content="TD type bac de NSI sur les dictionnaires : deux exercices de l'épreuve écrite (Centres étrangers 2022, Antilles-Guyane 2026), auto-correctifs : accès, parcours, construction, inversion, mise à jour et suppression de clés.">
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<main class="td" data-td="nsi-tle-td-bac-dictionnaires" data-td-version="1">
+
+  <header class="td-entete">
+    <p class="td-sur-titre">Terminale NSI · Révision de 1re : les dictionnaires · TD type bac</p>
+    <h1>Les dictionnaires : TD type bac</h1>
+    <p class="td-objectif"><b>Objectif :</b> traiter deux exercices de l'épreuve écrite où le dictionnaire est l'outil principal, du plus guidé au plus proche de l'épreuve.</p>
+    <p><b>Je sais :</b></p>
+    <ul class="td-criteres">
+      <li>lire une valeur par sa clé, tester si une clé existe avec <code>in</code> ;</li>
+      <li>parcourir un dictionnaire et construire un nouveau dictionnaire dans une boucle ;</li>
+      <li>modifier un dictionnaire passé en paramètre : ajouter, mettre à jour, supprimer une clé (<code>del</code>) ;</li>
+      <li>mêler une liste et un dictionnaire dans un même calcul.</li>
+    </ul>
+    <p class="td-duree">1 h 30 · 2 exercices de bac · 14 questions</p>
+    <p><b>Comme à l'épreuve :</b> sans machine d'abord, sur ta copie. Puis tu vérifies ici, question par question.</p>
+    <p>Les énoncés reprennent fidèlement les sujets officiels. Le numéro de la question du sujet est rappelé entre crochets.</p>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 1 · Chiffrer avec un dictionnaire (4 points)</h2>
+  <p><b>Sujet :</b> baccalauréat 2022, Centres étrangers, jour 2 (22-NSIJ2G11), exercice 2, pages 4 et 5. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-centres-etrangers-jour-2.pdf">Sujet officiel (PDF)</a> · <a href="https://aeif.fr/wp-content/uploads/2025/07/Centres_etrangers_2022_2.pdf">version de l'AEIF</a>.</p>
+  <p><i>Cet exercice porte sur les structures de données (dictionnaires).</i></p>
+  <p>Le chiffrement par substitution consiste à mélanger les lettres d'un alphabet, puis à réécrire le message en remplaçant chaque lettre par sa correspondante. Un dictionnaire de chiffrement associe chaque lettre à sa lettre mélangée. Par exemple, avec le dictionnaire <code>alpha = {"A": "B", "B": "D", "C": "A", "D": "C"}</code>, le mot <code>"BAC"</code> est chiffré en <code>"DBA"</code>.</p>
+  <p>Dans les questions 1 à 3, on utilise le dictionnaire :</p>
+  <pre class="td-code">
+alpha = {"A": "B", "B": "D", "C": "A", "D": "C", "E": "F", "F": "G", "G": "E"}</pre>
+
+  <section class="td-q" data-type="courte" id="q1" data-reponse="C|'C'" data-etiquette="La valeur :">
+    <p class="td-consigne">[1. a] Donne la valeur associée à la clé <code>"D"</code> dans le dictionnaire <code>alpha</code>…</p>
+    <p class="td-retour" data-si="B">C'est la clé associée à la <b>valeur</b> "D". On cherche l'inverse : ce qui est écrit après <code>"D":</code>.</p>
+    <p class="td-aide">Cherche la paire qui commence par <code>"D":</code>.</p>
+    <div class="td-correction"><p>La paire est <code>"D": "C"</code> : la valeur associée à "D" est <b>"C"</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q2" data-comparer="code" data-reponse="alpha['D']|alpha.get('D')" data-etiquette="L'instruction :">
+    <p class="td-consigne">[1. a, suite] … et indique comment l'obtenir en Python.</p>
+    <p class="td-retour" data-si="alpha[3]|alpha['C']">On lit une valeur grâce à sa <b>clé</b>, pas grâce à une position : la clé est "D".</p>
+    <p class="td-aide">On écrit le nom du dictionnaire, puis la clé entre crochets.</p>
+    <div class="td-correction"><p><code>alpha["D"]</code> renvoie <code>"C"</code>. Un dictionnaire n'a pas d'indices : <code>alpha[3]</code> provoquerait une erreur <code>KeyError</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-reponse="DBEBEF" data-etiquette="Le mot chiffré :">
+    <p class="td-consigne">[1. b] Chiffre le mot <code>"BAGAGE"</code> avec ce dictionnaire.</p>
+    <p class="td-retour" data-si="AGBGBF|ACECEG">Tu as lu le dictionnaire à l'envers : on part de la lettre du mot (la clé) pour trouver sa lettre chiffrée (la valeur).</p>
+    <p class="td-aide">Remplace chaque lettre par sa valeur : B devient D, A devient B…</p>
+    <div class="td-correction"><p>B → D, A → B, G → E, A → B, G → E, E → F : <b>DBEBEF</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q4" data-fichier="chiffrer.py" data-obligatoire>
+    <p class="td-consigne">[2] Écris une fonction <code>chiffrer</code> qui prend en paramètres un mot <code>mot</code> (une chaîne de caractères formée seulement des 26 lettres majuscules, sans accent, sans espace ni ponctuation) et un dictionnaire de chiffrement <code>alpha</code>, et qui renvoie le mot chiffré.</p>
+    <pre class="td-sortie-exemple">
+&gt;&gt;&gt; chiffrer("BAC", {"A": "B", "B": "D", "C": "A", "D": "C"})
+'DBA'</pre>
+    <pre class="td-depart">
+def chiffrer(mot, alpha):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+alpha = {"A": "B", "B": "D", "C": "A", "D": "C", "E": "F", "F": "G", "G": "E"}
+assert chiffrer("BAC", alpha) == "DBA", 'chiffrer("BAC", alpha) doit renvoyer "DBA".'
+assert chiffrer("BAGAGE", alpha) == "DBEBEF", 'chiffrer("BAGAGE", alpha) doit renvoyer "DBEBEF".'
+assert chiffrer("", alpha) == "", "Le mot vide se chiffre en mot vide."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Pars d'une chaîne vide, puis parcours le mot lettre par lettre.</p>
+    <p class="td-aide">Pour chaque lettre, ajoute à la fin du résultat sa valeur <code>alpha[lettre]</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def chiffrer(mot, alpha):
+    resultat = ""
+    for lettre in mot:
+        resultat = resultat + alpha[lettre]
+    return resultat</pre>
+      <p>On parcourt la chaîne et on <b>concatène</b> les lettres chiffrées. La chaîne de départ n'est pas modifiée (une chaîne ne se modifie pas en Python).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q5">
+    <p class="td-consigne">[3. a] Pour un mot chiffré avec <code>alpha</code>, donne un dictionnaire qui permet de le déchiffrer.</p>
+    <pre class="td-code">
+dechiffrement = {"B": [["A"]], "D": [["B"]], "A": [["C"]], "C": [["D"]],
+                 "F": [["E"]], "G": [["F"]], "E": [["G"]]}</pre>
+    <p class="td-aide">Pour déchiffrer, on part de la lettre chiffrée (la valeur de <code>alpha</code>) pour retrouver la lettre d'origine (sa clé).</p>
+    <p class="td-aide">Dans <code>alpha</code>, <code>"A": "B"</code> : la lettre chiffrée B se déchiffre en A.</p>
+    <div class="td-correction"><p>On échange clés et valeurs : <code>{"B": "A", "D": "B", "A": "C", "C": "D", "F": "E", "G": "F", "E": "G"}</code>. C'est possible car deux lettres différentes ne sont jamais chiffrées par la même lettre.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q6">
+    <p class="td-consigne">[3. b] Recopie et complète la fonction <code>dico_dechiffrement</code>, qui prend en paramètre un dictionnaire de chiffrement <code>dico</code> et renvoie le dictionnaire de déchiffrement.</p>
+    <pre class="td-code">
+def dico_dechiffrement(dico):
+    nouveau = {}
+    for lettre in dico :
+        code = dico[ [[lettre]] ]
+        nouveau[ [[code]] ] = [[lettre]]
+    return nouveau
+
+alpha = {"A": "B", "B": "D", "C": "A", "D": "C", "E": "F", "F": "G", "G": "E"}
+print(dico_dechiffrement(alpha))</pre>
+    <pre class="td-attendu">
+{'B': 'A', 'D': 'B', 'A': 'C', 'C': 'D', 'F': 'E', 'G': 'F', 'E': 'G'}</pre>
+    <p class="td-aide">La boucle parcourt les <b>clés</b> de <code>dico</code> : <code>lettre</code> est une lettre d'origine, <code>code</code> sa lettre chiffrée.</p>
+    <p class="td-aide">Dans le nouveau dictionnaire, la clé est la lettre chiffrée et la valeur la lettre d'origine.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+def dico_dechiffrement(dico):
+    nouveau = {}
+    for lettre in dico :
+        code = dico[lettre]
+        nouveau[code] = lettre
+    return nouveau</pre>
+      <p><code>nouveau[code] = lettre</code> <b>ajoute</b> une paire au dictionnaire : la clé <code>code</code> n'existait pas encore.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q7" data-fichier="dechiffre.py" data-obligatoire>
+    <p class="td-consigne">[3. c] Écris une fonction <code>dechiffre</code> qui prend en paramètres un mot chiffré <code>mot</code> et le dictionnaire de chiffrement <code>dico</code> qui a servi à le chiffrer, et qui renvoie le mot déchiffré. Utilise les fonctions précédentes (elles sont déjà écrites ci-dessous).</p>
+    <pre class="td-depart">
+def chiffrer(mot, alpha):
+    resultat = ""
+    for lettre in mot:
+        resultat = resultat + alpha[lettre]
+    return resultat
+
+def dico_dechiffrement(dico):
+    nouveau = {}
+    for lettre in dico:
+        nouveau[dico[lettre]] = lettre
+    return nouveau
+
+def dechiffre(mot, dico):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+alpha = {"A": "B", "B": "D", "C": "A", "D": "C", "E": "F", "F": "G", "G": "E"}
+assert dechiffre("DBEBEF", alpha) == "BAGAGE", 'dechiffre("DBEBEF", alpha) doit renvoyer "BAGAGE".'
+assert dechiffre("DBA", alpha) == "BAC", 'dechiffre("DBA", alpha) doit renvoyer "BAC".'
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Déchiffrer, c'est chiffrer avec le dictionnaire de déchiffrement.</p>
+    <p class="td-aide">Une seule ligne suffit : <code>return chiffrer(mot, …)</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def dechiffre(mot, dico):
+    return chiffrer(mot, dico_dechiffrement(dico))</pre>
+      <p>On réutilise les deux fonctions : on construit le dictionnaire inverse, puis on chiffre avec lui.</p>
+    </div>
+  </section>
+
+  <p>On pourra utiliser la fonction <code>shuffle</code> du module <code>random</code>, qui mélange <b>en place</b> un tableau :</p>
+  <pre class="td-sortie-exemple">
+&gt;&gt;&gt; tab = ["A", "B", "C", "D"]
+&gt;&gt;&gt; shuffle(tab)
+&gt;&gt;&gt; tab
+['B', 'A', 'D', 'C']</pre>
+
+  <section class="td-q" data-type="code" id="q8" data-fichier="melange.py" data-obligatoire>
+    <p class="td-consigne">[4] Écris une fonction <code>dico_chiffrement</code> qui prend en paramètre un tableau de lettres <code>alphabet</code> et qui renvoie un dictionnaire de chiffrement : ses clés sont les lettres de <code>alphabet</code>, ses valeurs ces mêmes lettres mélangées.</p>
+    <pre class="td-depart">
+from random import shuffle
+
+def dico_chiffrement(alphabet):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+lettres = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+d = dico_chiffrement(list(lettres))
+assert type(d) == dict, "dico_chiffrement doit renvoyer un dictionnaire."
+assert sorted(d.keys()) == lettres, "Les clés doivent être les lettres du tableau."
+assert sorted(d.values()) == lettres, "Les valeurs doivent être les mêmes lettres, chacune une fois."
+assert any(dico_chiffrement(list(lettres)) != {l: l for l in lettres} for _ in range(20)), "Les lettres ne sont jamais mélangées : chaque lettre est chiffrée par elle-même."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide"><code>shuffle</code> ne renvoie rien : elle modifie le tableau qu'on lui donne. Mélange donc une <b>copie</b> du tableau, par exemple <code>melange = list(alphabet)</code>.</p>
+    <p class="td-aide">Ensuite, pour chaque indice <code>i</code>, la clé <code>alphabet[i]</code> reçoit la valeur <code>melange[i]</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+from random import shuffle
+
+def dico_chiffrement(alphabet):
+    melange = list(alphabet)
+    shuffle(melange)
+    dico = {}
+    for i in range(len(alphabet)):
+        dico[alphabet[i]] = melange[i]
+    return dico</pre>
+      <p>Deux pièges : <code>melange = shuffle(alphabet)</code> donne <code>None</code> ; et si l'on mélange <code>alphabet</code> lui-même, on associe chaque lettre à elle-même.</p>
+    </div>
+  </section>
+
+  <h2 class="td-partie">Exercice 2 · Le stock de la scierie (8 points, partie A)</h2>
+  <p><b>Sujet :</b> baccalauréat 2026, Antilles-Guyane, jour 2 (26-NSIJ2AG1), exercice 3, partie A (questions 1 à 6), pages 11 à 15. <a href="https://aeif.fr/wp-content/uploads/2026/06/Antilles-Guyane_juin_2026_sujet_2.pdf">Sujet (version de l'AEIF)</a>. Les parties B et C (récursivité, programmation dynamique) sont dans le PDF : elles relèvent d'un autre chapitre.</p>
+  <p><i>Cet exercice traite de tableaux, de dictionnaires, de récursivité et de programmation dynamique.</i></p>
+  <p>Une scierie possède un stock de planches. Chaque planche a une longueur entière, en mètres, comprise entre 1 et 10, et un prix entier, en euros, qui dépend de sa longueur. La variable globale <code>prix</code> est une liste telle que <code>prix[n]</code> est le prix de vente d'une planche de longueur <code>n</code> (l'élément d'indice 0 n'est jamais utilisé) :</p>
+  <pre class="td-code">
+prix = [0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30]</pre>
+  <p>Le dictionnaire <code>effectif</code> associe à chaque longueur de planche présente dans le stock son effectif, c'est-à-dire le nombre de planches de cette longueur. Par exemple, s'il y a 3 planches de 2 m, <code>effectif[2]</code> vaut 3 ; s'il n'y a aucune planche de 3 m, <code>effectif</code> n'a pas de clé 3.</p>
+
+  <section class="td-q" data-type="courte" id="q9" data-comparer="code" data-reponse="effectif = {1: 3, 2: 4, 4: 1}|effectif = {1: 3, 4: 1, 2: 4}|effectif = {2: 4, 1: 3, 4: 1}|effectif = {2: 4, 4: 1, 1: 3}|effectif = {4: 1, 1: 3, 2: 4}|effectif = {4: 1, 2: 4, 1: 3}|{1: 3, 2: 4, 4: 1}|{1: 3, 4: 1, 2: 4}|{2: 4, 1: 3, 4: 1}|{2: 4, 4: 1, 1: 3}|{4: 1, 1: 3, 2: 4}|{4: 1, 2: 4, 1: 3}" data-etiquette="L'instruction :">
+    <p class="td-consigne">[1] Le stock contient trois planches de 1 m, quatre planches de 2 m et une planche de 4 m. Donne une instruction Python qui déclare et initialise <code>effectif</code> pour ce stock.</p>
+    <p class="td-retour" data-si="effectif = {1: 3, 2: 4, 3: 0, 4: 1}|{1: 3, 2: 4, 3: 0, 4: 1}">Une longueur absente du stock n'est pas une clé du dictionnaire : pas de <code>3: 0</code>.</p>
+    <p class="td-retour" data-si="effectif = {3: 1, 4: 2, 1: 4}|{3: 1, 4: 2, 1: 4}">Les clés sont les <b>longueurs</b>, les valeurs les nombres de planches.</p>
+    <p class="td-aide">Clé : la longueur. Valeur : le nombre de planches de cette longueur.</p>
+    <div class="td-correction"><p><code>effectif = {1: 3, 2: 4, 4: 1}</code>. L'ordre des paires n'a pas d'importance.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q10" data-comparer="code" data-reponse="prix[10] * effectif[10]|effectif[10] * prix[10]|30 * effectif[10]|effectif[10] * 30" data-etiquette="L'expression :">
+    <p class="td-consigne">[2] Donne une expression Python qui calcule la valeur totale, en euros, des planches de 10 m d'un stock qui en contient au moins une. Utilise la liste <code>prix</code>.</p>
+    <p class="td-retour" data-si="prix[10]|effectif[10]">Il faut le prix d'une planche <b>multiplié</b> par le nombre de planches de 10 m.</p>
+    <p class="td-aide">Le prix d'une planche de 10 m est <code>prix[10]</code> ; le nombre de ces planches est <code>effectif[10]</code>.</p>
+    <div class="td-correction"><p><code>prix[10] * effectif[10]</code> : un indice de liste (<code>prix[10]</code>) et une clé de dictionnaire (<code>effectif[10]</code>) s'écrivent de la même façon, mais ne sont pas la même chose.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q11" data-comparer="code" data-reponse="5 in effectif|5 in effectif.keys()|(5 in effectif)" data-etiquette="L'expression :">
+    <p class="td-consigne">[3] Donne une expression Python qui vaut <code>True</code> si le stock contient des planches de 5 m, et <code>False</code> sinon.</p>
+    <p class="td-retour" data-si="effectif[5] &gt; 0|effectif[5] != 0|effectif[5] &gt;= 1">S'il n'y a pas de planche de 5 m, la clé 5 n'existe pas : <code>effectif[5]</code> provoque une erreur <code>KeyError</code>.</p>
+    <p class="td-retour" data-si="5 in prix">La liste <code>prix</code> donne les prix de toutes les longueurs : elle ne dit rien du stock.</p>
+    <p class="td-aide">Une longueur est en stock si, et seulement si, elle est une clé du dictionnaire.</p>
+    <div class="td-correction"><p><code>5 in effectif</code> teste si 5 est une <b>clé</b> du dictionnaire.</p></div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q12">
+    <p class="td-consigne">[4] Recopie et complète les lignes 2, 3 et 4 de la fonction <code>valeur_stock</code>, qui renvoie la valeur en euros du stock si toutes ses planches sont vendues au prix de la liste <code>prix</code>.</p>
+    <pre class="td-code">
+def valeur_stock(effectif):
+    valeur_totale = [[0]]
+    for longueur in [[effectif|effectif.keys()]] :
+        valeur_totale = valeur_totale + [[ prix[longueur] * effectif[longueur]|effectif[longueur] * prix[longueur] ]]
+    return valeur_totale
+
+prix = [0, 1, 5, 8, 9, 10, 17, 17, 20, 24, 30]
+print(valeur_stock({1: 3, 2: 4, 4: 1}))</pre>
+    <pre class="td-attendu">
+32</pre>
+    <p class="td-aide">La boucle parcourt les clés du dictionnaire : les longueurs présentes dans le stock.</p>
+    <p class="td-aide">Pour chaque longueur, on ajoute le prix d'une planche multiplié par le nombre de planches. Vérification : le stock de la question 1 vaut 3 × 1 + 4 × 5 + 1 × 9 = 32 €.</p>
+    <div class="td-correction">
+      <pre class="td-code">
+def valeur_stock(effectif):
+    valeur_totale = 0
+    for longueur in effectif :
+        valeur_totale = valeur_totale + prix[longueur] * effectif[longueur]
+    return valeur_totale</pre>
+      <p><code>for longueur in effectif</code> parcourt les <b>clés</b>. On aurait aussi pu écrire <code>for longueur, n in effectif.items()</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q13" data-fichier="camion.py" data-obligatoire>
+    <p class="td-consigne">[5] Un camion livre de nouvelles planches, décrites par le dictionnaire <code>autre_effectif</code>. Écris la fonction <code>mise_a_jour(effectif, autre_effectif)</code>, qui met à jour le dictionnaire <code>effectif</code> avec le stock du camion.</p>
+    <p>Exemple : si, avant l'appel, <code>effectif = {1: 3, 5: 5}</code> et <code>autre_effectif = {1: 2, 2: 2}</code>, alors après l'appel <code>mise_a_jour(effectif, autre_effectif)</code>, l'expression <code>effectif == {1: 5, 2: 2, 5: 5}</code> vaut <code>True</code>.</p>
+    <pre class="td-depart">
+def mise_a_jour(effectif, autre_effectif):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+effectif = {1: 3, 5: 5}
+autre_effectif = {1: 2, 2: 2}
+r = mise_a_jour(effectif, autre_effectif)
+assert effectif == {1: 5, 2: 2, 5: 5}, "Après l'appel, effectif doit valoir {1: 5, 2: 2, 5: 5} : la fonction modifie le dictionnaire reçu."
+assert autre_effectif == {1: 2, 2: 2}, "Le stock du camion ne doit pas changer."
+e = {}
+mise_a_jour(e, {4: 1})
+assert e == {4: 1}, "Avec un stock vide, on obtient le stock du camion."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Parcours les longueurs du camion. Pour chacune, deux cas : la longueur est déjà une clé de <code>effectif</code>, ou non.</p>
+    <p class="td-aide">Si elle y est, on ajoute les effectifs ; sinon, on crée la clé avec l'effectif du camion. La fonction ne renvoie rien : elle modifie <code>effectif</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def mise_a_jour(effectif, autre_effectif):
+    for longueur in autre_effectif:
+        if longueur in effectif:
+            effectif[longueur] = effectif[longueur] + autre_effectif[longueur]
+        else:
+            effectif[longueur] = autre_effectif[longueur]</pre>
+      <p>Un dictionnaire est <b>mutable</b> : modifié dans la fonction, il l'est aussi pour l'appelant. Autre écriture : <code>effectif[longueur] = effectif.get(longueur, 0) + autre_effectif[longueur]</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q14" data-fichier="vente.py" data-obligatoire>
+    <p class="td-consigne">[6] Un client achète une planche dont la longueur est présente dans le stock. Écris la fonction <code>vendre(effectif, longueur)</code>, qui modifie <code>effectif</code> en conséquence. Si le stock de cette longueur devient nul, la clé doit être supprimée (tu peux utiliser <code>del</code>).</p>
+    <p>Exemple : si, avant l'appel, <code>effectif = {1: 3, 5: 1}</code>, alors après <code>vendre(effectif, 1)</code>, <code>effectif == {1: 2, 5: 1}</code> vaut <code>True</code> ; puis après <code>vendre(effectif, 5)</code>, <code>effectif == {1: 2}</code> vaut <code>True</code>.</p>
+    <pre class="td-depart">
+def vendre(effectif, longueur):
+    </pre>
+    <script type="text/x-python" class="td-tests">
+effectif = {1: 3, 5: 1}
+vendre(effectif, 1)
+assert effectif == {1: 2, 5: 1}, "Après vendre(effectif, 1), effectif doit valoir {1: 2, 5: 1}."
+vendre(effectif, 5)
+assert effectif == {1: 2}, "Après vendre(effectif, 5), la clé 5 doit être supprimée : effectif vaut {1: 2}."
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Commence par retirer 1 à l'effectif de cette longueur.</p>
+    <p class="td-aide">Puis, si l'effectif vaut 0, supprime la clé : <code>del effectif[longueur]</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def vendre(effectif, longueur):
+    effectif[longueur] = effectif[longueur] - 1
+    if effectif[longueur] == 0:
+        del effectif[longueur]</pre>
+      <p>On garde ainsi la règle de l'énoncé : une longueur absente du stock n'est pas une clé. C'est ce qui rend juste le test <code>5 in effectif</code> de la question 3.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Lire</b> : <code>d[cle]</code> (erreur <code>KeyError</code> si la clé n'existe pas) ; <b>tester</b> : <code>cle in d</code> ; <b>parcourir</b> : <code>for cle in d</code> (les clés), <code>d.items()</code> (les paires).</p>
+    <p><b>Modifier</b> : <code>d[cle] = v</code> ajoute ou remplace ; <code>del d[cle]</code> supprime. Un dictionnaire passé à une fonction est modifié pour de bon.</p>
+    <p><b>Liste ou dictionnaire ?</b> <code>prix[10]</code> lit l'indice 10 d'une liste ; <code>effectif[10]</code> lit la clé 10 d'un dictionnaire.</p>
+  </section>
+
+  <footer class="td-pied">
+    <p>Énoncés : sujets du baccalauréat NSI 2022 et 2026 (ministère de l'Éducation nationale), d'après les versions recomposées de l'<a href="https://aeif.fr/">AEIF</a> (Association des enseignantes et enseignants d'informatique de France, licence CC BY-SA 4.0). Corrections de ce TD : vérifiées par exécution (Python 3.13).</p>
+    <p>Mise en TD : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-dictionnaires">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
