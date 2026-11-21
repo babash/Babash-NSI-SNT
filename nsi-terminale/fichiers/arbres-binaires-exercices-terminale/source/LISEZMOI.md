@@ -9,3 +9,4 @@ Compilation : `latexmk -pdf -shell-escape main-abr.tex main-arbre.tex` (pdfLaTeX
 Pour les sujets ci-dessous, **la page HTML est désormais la référence** (en ligne, auto-corrective, corrigé compris). Les arbres TikZ y sont redessinés en SVG. Les PDF à la même adresse seront refaits depuis les pages (`charte/imprimer-td.py`) quand le moteur connaîtra les variantes écran / papier (`data-support`). Réponses obtenues par exécution : `source/verifier.py` dans le dossier de chaque page.
 
 - Algorithmes et arbres binaires de recherche : `abr/index.html` (PDF : `abr.pdf`).
+- Algorithmes des parcours d'arbres binaires : `arbre/index.html` et `arbre/feuille-2.html` (deux feuilles ; PDF : `arbre.pdf`, à refaire en deux PDF `arbre.pdf` et `arbre-2.pdf`).
