@@ -1,34 +1,51 @@
 <!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Les processus et l'ordonnancement : TD type bac</title>
-  <meta name="description" content="TD type bac de terminale NSI sur les processus : trois exercices de l'épreuve écrite (Métropole 2021, Polynésie 2023, Amérique du Nord 2024), auto-correctifs, avec leur correction.">
+  <title>Processus · TD type bac (1/3)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 1 : priorités et interblocage (bac 2021, Métropole, mars, jour 1, exercice 2).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
   <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
   <script src="../../../assets/td-en-ligne.js" defer></script>
 </head>
 <body class="td-page">
-<main class="td" data-td="tle-td-bac-processus" data-td-version="1">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-processus-1" data-td-version="2">
 
   <header class="td-entete">
-    <p class="td-sur-titre">Terminale NSI · Architectures, systèmes et réseaux · TD type bac</p>
-    <h1>Les processus et l'ordonnancement</h1>
-    <p class="td-objectif"><b>Objectif :</b> réussir les questions sur les processus de l'épreuve écrite, sur trois vrais exercices du bac.</p>
-    <p><b>Je sais :</b></p>
-    <ul class="td-criteres">
-      <li>citer les états d'un processus et les commandes <code>ps</code> et <code>kill</code> ;</li>
-      <li>dérouler un ordonnancement à la main : par priorité, par tourniquet (avec le quantum de l'énoncé) ;</li>
-      <li>compléter et écrire du code Python qui simule un ordonnanceur avec une file ;</li>
-      <li>reconnaître et expliquer un interblocage.</li>
-    </ul>
-    <p class="td-duree">2 h · 3 exercices de l'épreuve écrite · 17 questions et 1 bonus ★ · seul·e ou en binôme</p>
-    <p><b>Comme à l'épreuve :</b> sans machine d'abord. Réponds sur ta feuille, avec ton brouillon, puis vérifie ici chaque réponse.</p>
+    <!-- BANDEAU : paysage n° 4 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Processus et ordonnancement</span></p>
+        <h1>Processus</h1>
+        <p class="td-accroche">Type bac · feuille 1/3</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=processus" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM14 3h5v1h-5zM22 3h5v1h-5zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h2v1h-2zM17 4h8v1h-8zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM17 5h1v1h-1zM20 5h2v1h-2zM25 5h1v1h-1zM27 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h3v1h-3zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h1v1h-1zM25 8h2v1h-2zM30 8h5v1h-5zM1 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h2v1h-2zM4 10h1v1h-1zM6 10h2v1h-2zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM7 11h3v1h-3zM11 11h1v1h-1zM14 11h2v1h-2zM19 11h4v1h-4zM24 11h1v1h-1zM26 11h1v1h-1zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM4 13h1v1h-1zM9 13h2v1h-2zM12 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h2v1h-2zM5 14h3v1h-3zM9 14h1v1h-1zM13 14h4v1h-4zM18 14h1v1h-1zM22 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h4v1h-4zM5 15h1v1h-1zM7 15h5v1h-5zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h2v1h-2zM12 16h1v1h-1zM18 16h9v1h-9zM28 16h3v1h-3zM32 16h1v1h-1zM34 16h2v1h-2zM4 17h2v1h-2zM7 17h2v1h-2zM10 17h1v1h-1zM12 17h5v1h-5zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM6 18h2v1h-2zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h5v1h-5zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h2v1h-2zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h2v1h-2zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h3v1h-3zM27 19h1v1h-1zM29 19h2v1h-2zM36 19h1v1h-1zM3 20h5v1h-5zM9 20h2v1h-2zM17 20h1v1h-1zM22 20h6v1h-6zM29 20h2v1h-2zM32 20h3v1h-3zM2 21h1v1h-1zM4 21h2v1h-2zM7 21h4v1h-4zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h2v1h-2zM4 22h1v1h-1zM6 22h2v1h-2zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM1 23h1v1h-1zM7 23h1v1h-1zM11 23h2v1h-2zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h7v1h-7zM14 24h3v1h-3zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h8v1h-8zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM7 25h5v1h-5zM13 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM24 25h3v1h-3zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM3 26h5v1h-5zM9 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM4 27h2v1h-2zM7 27h2v1h-2zM11 27h2v1h-2zM15 27h1v1h-1zM19 27h6v1h-6zM27 27h2v1h-2zM31 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h2v1h-2zM15 28h3v1h-3zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h3v1h-3zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h2v1h-2zM11 29h4v1h-4zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h3v1h-3zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h1v1h-1zM12 30h1v1h-1zM15 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h4v1h-4zM14 31h2v1h-2zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h2v1h-2zM11 32h4v1h-4zM18 32h5v1h-5zM25 32h8v1h-8zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h3v1h-3zM15 33h2v1h-2zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h4v1h-4zM17 34h1v1h-1zM20 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h1v1h-1zM11 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h5v1h-5zM14 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite sur les processus (le plus guidé).</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>citer les commandes <code>ps</code> et <code>kill</code> et ce qu'est un PID ;</li>
+        <li>dérouler à la main un ordonnancement par priorité ;</li>
+        <li>reconnaître un interblocage.</li>
+      </ul>
+      <p class="td-duree">30 minutes · 1 exercice de bac (4 points) · 6 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord. Réponds sur ta feuille, avec ton brouillon, puis vérifie ici chaque réponse.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 3 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. priorités et interblocage (ici) ; 2. <a href="feuille-2.html">le tourniquet en Python</a> ; 3. <a href="feuille-3.html">simuler un ordonnanceur</a>.</p>
+    </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
@@ -141,555 +158,16 @@ cycles = ["P3", "[[P3|p3]]", "[[P2|p2]]", "[[P1|p1]]", "[[P1|p1]]",
     </div>
   </section>
 
-  <h2 class="td-partie">Exercice 2 (4 points) : le tourniquet en Python</h2>
-  <p>Sujet du bac 2023, Polynésie, jour 1 (<b>23-NSIJ1PO1</b>), exercice 2, 4 points. <a href="https://aeif.fr/wp-content/uploads/2025/07/Polynesie_mars_2023_1.pdf">Le sujet d'origine (PDF)</a>.</p>
-  <p><i>Cet exercice porte sur la gestion des processus et la programmation orientée objet.</i></p>
-  <p>On rappelle qu'un processus est l'instance d'un programme en cours d'exécution. Il est identifié par un numéro unique appelé PID. L'ordonnanceur est la composante du système d'exploitation qui gère l'allocation du processeur entre les différents processus. Nous allons nous intéresser à l'algorithme d'ordonnancement du tourniquet dont le fonctionnement est résumé ci-dessous :</p>
-  <ul>
-    <li>les processus prêts à être exécutés sont placés dans une file d'attente selon leur ordre d'arrivée ;</li>
-    <li>l'ordonnanceur alloue le processeur à chaque processus de la file d'attente un même nombre de cycles CPU, appelé quantum ;</li>
-    <li>si le processus n'est pas terminé au bout de ce temps, son exécution est suspendue et il est mis à la fin de la file d'attente ;</li>
-    <li>si le processus est terminé, il sort définitivement de la file d'attente.</li>
-  </ul>
-  <p>1. On considère trois processus soumis à l'ordonnanceur au même instant pour lesquels on donne les informations ci-dessous :</p>
-  <table border="1">
-    <thead><tr><th scope="col">PID</th><th scope="col">Durée (en cycles CPU)</th><th scope="col">Ordre d'arrivée</th></tr></thead>
-    <tbody>
-      <tr><td>11</td><td>4</td><td>1</td></tr>
-      <tr><td>20</td><td>2</td><td>2</td></tr>
-      <tr><td>32</td><td>3</td><td>3</td></tr>
-    </tbody>
-  </table>
-
-  <section class="td-q" data-type="trous" id="q7">
-    <p class="td-consigne">1. a) Si le quantum du tourniquet est d'un cycle CPU, recopier et compléter la suite des PID des processus dans l'ordre de leur exécution : 11, 20, 32, 11, …</p>
-    <pre class="td-code">
-ordre = [11, 20, 32, 11, [[20]], [[32]], [[11]], [[32]], [[11]]]</pre>
-    <p class="td-aide">Chaque processus passe un cycle, puis retourne au bout de la file. Tiens à jour, à côté, le nombre de cycles qui reste à chacun.</p>
-    <p class="td-aide">Après 11, 20, 32, 11, il reste : 11 → 2 cycles, 20 → 1, 32 → 2. La file est 20, 32, 11.</p>
-    <div class="td-correction">
-      <p>11, 20, 32, 11, <b>20, 32, 11, 32, 11</b>. Le processus 20 se termine en 5e position ; 32 en 8e ; 11 en dernier (9 cycles en tout = 4 + 2 + 3).</p>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="trous" id="q8">
-    <p class="td-consigne">1. b) Donner la composition de la suite des PID lorsque le quantum du tourniquet est de deux cycles CPU.</p>
-    <pre class="td-code">
-ordre = [[[11]], [[11]], [[20]], [[20]], [[32]], [[32]], [[11]], [[11]], [[32]]]</pre>
-    <p class="td-retour" data-si="11">Relis la règle : le quantum vaut 2, chaque processus garde le processeur pendant 2 cycles s'il en a besoin.</p>
-    <p class="td-aide">Avec un quantum de 2, chaque processus s'exécute 2 cycles de suite (ou moins s'il finit avant), puis va au bout de la file.</p>
-    <div class="td-correction">
-      <p><b>11, 11, 20, 20, 32, 32, 11, 11, 32</b>. Le processus 20 finit pendant son premier passage ; 11 finit au 2e passage ; 32 a besoin d'un dernier cycle.</p>
-    </div>
-  </section>
-
-  <p>2. L'objectif de la suite de l'exercice est d'implémenter en langage Python l'algorithme du tourniquet. Nous allons utiliser une liste pour simuler la file d'attente des processus et la classe <code>Processus</code> dont le constructeur est donné ci-dessous. Les états possibles d'un processus sont : « Prêt », « En cours d'exécution », « Suspendu » et « Terminé ».</p>
-  <pre class="td-code">
-class Processus:
-    def __init__(self, pid, duree):
-        self.pid = pid
-        self.duree = duree
-        # Le nombre de cycle qui restent à faire :
-        self.reste_a_faire = duree
-        self.etat = "Prêt"</pre>
-
-  <section class="td-q" data-type="trous" id="q9">
-    <p class="td-consigne">2. a) Recopier et compléter l'instruction Python suivante permettant de créer la liste d'attente initiale des processus donnés dans le tableau précédent (le processus PID 11 est à l'indice 0 de la liste d'attente).</p>
-    <pre class="td-code">
-class Processus:
-    def __init__(self, pid, duree):
-        self.pid = pid
-        self.duree = duree
-        self.reste_a_faire = duree
-        self.etat = "Prêt"
-
-liste_attente = [Processus([[11]], [[4]]), Processus([[20]], [[2]]), Processus([[32]], [[3]])]</pre>
-    <p class="td-aide">Le constructeur prend d'abord le PID, puis la durée.</p>
-    <div class="td-correction">
-      <pre class="td-code">liste_attente = [Processus(11, 4), Processus(20, 2), Processus(32, 3)]</pre>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="trous" id="q10">
-    <p class="td-consigne">2. b) Recopier (sans les commentaires) et compléter les trois méthodes suivantes de la classe <code>Processus</code>.</p>
-    <pre class="td-code">
-class Processus:
-    def __init__(self, pid, duree):
-        self.pid = pid
-        self.duree = duree
-        self.reste_a_faire = duree
-        self.etat = "Prêt"
-
-    def execute_un_cycle(self):
-        """Met à jour le reste à faire après l'exécution d'un cycle."""
-        [[self.reste_a_faire = self.reste_a_faire - 1|self.reste_a_faire -= 1|self.reste_a_faire = -1 + self.reste_a_faire]]
-
-    def change_etat(self, nouvel_etat):
-        """Change l'état du processus avec la valeur passée en paramètre."""
-        [[self.etat = nouvel_etat]]
-
-    def est_termine(self):
-        """Renvoie True si le processus est terminé, False sinon,
-        en se basant sur le reste à faire."""
-        [[return self.reste_a_faire == 0|return self.reste_a_faire &lt;= 0|return self.reste_a_faire &lt; 1|return 0 == self.reste_a_faire|return not self.reste_a_faire &gt; 0]]</pre>
-    <p class="td-aide">Chaque méthode tient en une ligne. Un cycle exécuté, c'est un cycle de moins à faire.</p>
-    <p class="td-aide"><code>est_termine</code> renvoie un booléen : une comparaison suffit, sans <code>if</code>.</p>
-    <div class="td-correction">
-      <pre class="td-code">
-    def execute_un_cycle(self):
-        self.reste_a_faire = self.reste_a_faire - 1
-
-    def change_etat(self, nouvel_etat):
-        self.etat = nouvel_etat
-
-    def est_termine(self):
-        return self.reste_a_faire == 0</pre>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="trous" id="q11">
-    <p class="td-consigne">2. c) La fonction <code>tourniquet</code> ci-dessous implémente l'algorithme décrit dans l'exercice. Elle prend en paramètre une liste d'objets <code>Processus</code> donnés par ordre d'arrivée et un nombre entier positif correspondant au quantum. La fonction renvoie la liste des PID dans l'ordre de leur exécution par le processeur. Recopier et compléter sur la copie le code manquant.</p>
-    <pre class="td-code">
-def tourniquet(liste_attente, quantum):
-    ordre_execution = []
-    while liste_attente != []:
-        # On extrait le premier processus
-        processus = liste_attente.pop(0)
-        processus.change_etat("En cours d'exécution")
-        compteur_tourniquet = 0
-        while [[not processus.est_termine()|processus.reste_a_faire &gt; 0|processus.reste_a_faire != 0|compteur_tourniquet &lt; quantum]] and [[compteur_tourniquet &lt; quantum|not processus.est_termine()|processus.reste_a_faire &gt; 0|processus.reste_a_faire != 0]]:
-            ordre_execution.append([[processus.pid]])
-            processus.execute_un_cycle()
-            compteur_tourniquet = compteur_tourniquet + 1
-        if [[not processus.est_termine()|processus.reste_a_faire &gt; 0|processus.reste_a_faire != 0]]:
-            processus.change_etat("Suspendu")
-            liste_attente.append(processus)
-        else:
-            processus.change_etat([["Terminé"]])
-    return ordre_execution</pre>
-    <p class="td-aide">La boucle intérieure tourne tant que le processus n'a pas fini <b>et</b> que son quantum n'est pas épuisé.</p>
-    <p class="td-aide">Après la boucle : s'il n'a pas fini, il retourne au bout de la file ; sinon, il passe à l'état « Terminé ».</p>
-    <div class="td-correction">
-      <pre class="td-code">
-        while not processus.est_termine() and compteur_tourniquet &lt; quantum:
-            ordre_execution.append(processus.pid)
-            ...
-        if not processus.est_termine():
-            ...
-        else:
-            processus.change_etat("Terminé")</pre>
-      <p>Vérifié par exécution : <code>tourniquet(liste_attente, 1)</code> renvoie <code>[11, 20, 32, 11, 20, 32, 11, 32, 11]</code> et, avec un quantum de 2, <code>[11, 11, 20, 20, 32, 32, 11, 11, 32]</code> : ce sont les réponses de la question 1.</p>
-    </div>
-  </section>
-
-  <h2 class="td-partie">Exercice 3 (6 points) : simuler un ordonnanceur</h2>
-  <p>Sujet du bac 2024, Amérique du Nord, jour 1 (<b>24-NSIJ1AN1</b>), exercice 1, 6 points. <a href="https://aeif.fr/wp-content/uploads/2025/07/Amerique_Nord_2024_1.pdf">Le sujet d'origine (PDF)</a>.</p>
-  <p><i>Cet exercice porte sur la programmation Python, la programmation orientée objet, les structures de données (file), l'ordonnancement et l'interblocage.</i></p>
-  <p>On s'intéresse aux processus et à leur ordonnancement au sein d'un système d'exploitation. On considère ici qu'on utilise un monoprocesseur.</p>
-
-  <section class="td-q" data-type="cases" id="q12">
-    <p class="td-consigne">1. Citer les trois états dans lesquels un processus peut se trouver.</p>
-    <ul class="td-options">
-      <li data-juste>prêt</li>
-      <li data-juste>élu</li>
-      <li data-retour="« Compilé » concerne un programme, pas l'état d'un processus.">compilé</li>
-      <li data-juste>bloqué</li>
-      <li data-retour="« Enregistré » ne fait pas partie des états d'un processus.">enregistré</li>
-    </ul>
-    <p class="td-aide">Un processus attend son tour, s'exécute, ou attend une ressource.</p>
-    <div class="td-correction"><p><b>Prêt</b> (il attend le processeur), <b>élu</b> (il s'exécute), <b>bloqué</b> (il attend une ressource).</p></div>
-  </section>
-
-  <p>On veut simuler cet ordonnancement avec des objets. Pour ce faire, on dispose déjà de la classe <code>Processus</code> dont voici la documentation :</p>
-  <ul>
-    <li><code>p = Processus(nom: str, duree: int)</code> : crée un processus de nom &lt;nom&gt; et de durée &lt;duree&gt; (exprimée en cycles d'ordonnancement) ;</li>
-    <li><code>p.execute_un_cycle()</code> : exécute le processus donné pendant un cycle ;</li>
-    <li><code>p.est_fini()</code> : renvoie <code>True</code> si le processus est terminé, <code>False</code> sinon.</li>
-  </ul>
-  <p>Pour simplifier, on ne s'intéresse pas aux ressources qu'un processus pourrait acquérir ou libérer.</p>
-
-  <section class="td-q" data-type="cases" id="q13">
-    <p class="td-consigne">2. Citer les deux seuls états possibles pour un processus dans ce contexte.</p>
-    <ul class="td-options">
-      <li data-juste>prêt</li>
-      <li data-juste>élu</li>
-      <li data-retour="Sans ressources à attendre, un processus ne peut pas être bloqué.">bloqué</li>
-    </ul>
-    <p class="td-aide">Qu'est-ce qui fait passer un processus à l'état bloqué ? Est-ce possible ici ?</p>
-    <div class="td-correction"><p><b>Prêt</b> et <b>élu</b> : on ne s'occupe pas des ressources, donc aucun processus n'attend une ressource, donc aucun n'est bloqué.</p></div>
-  </section>
-
-  <p>Pour mettre en place l'ordonnancement, on décide d'utiliser une file, instance de la classe <code>File</code> ci-dessous.</p>
-  <pre class="td-code">
-class File:
-    def __init__(self):
-        """ Crée une file vide """
-        self.contenu = []
-
-    def enfile(self, element):
-        """ Enfile element dans la file """
-        self.contenu.append(element)
-
-    def defile(self):
-        """ Renvoie le premier élément de la file et l'enlève de la file """
-        return self.contenu.pop(0)
-
-    def est_vide(self):
-        """ Renvoie True si la file est vide, False sinon """
-        return self.contenu == []</pre>
-  <p>Lors de la phase de tests, on se rend compte que le code suivant produit une erreur :</p>
-  <pre class="td-code">
-f = File()
-print(f.defile())</pre>
-
-  <section class="td-q" data-type="trous" id="q14">
-    <p class="td-consigne">3. Rectifier sur votre copie le code de la classe <code>File</code> pour que la fonction <code>defile</code> renvoie <code>None</code> lorsque la file est vide.</p>
-    <p>Complète les deux lignes ajoutées dans <code>defile</code>. Le test du sujet doit alors afficher <code>None</code>.</p>
-    <pre class="td-code">
-class File:
-    def __init__(self):
-        self.contenu = []
-
-    def enfile(self, element):
-        self.contenu.append(element)
-
-    def defile(self):
-        [[if self.est_vide():|if self.contenu == []:|if len(self.contenu) == 0:|if not self.contenu:|if self.est_vide() == True:]]
-            [[return None|return]]
-        return self.contenu.pop(0)
-
-    def est_vide(self):
-        return self.contenu == []
-
-f = File()
-print(f.defile())</pre>
-    <pre class="td-attendu">
-None</pre>
-    <p class="td-aide">Avant d'enlever le premier élément, il faut tester si la file est vide.</p>
-    <p class="td-aide">La classe a déjà une méthode qui fait ce test : <code>est_vide</code>.</p>
-    <div class="td-correction">
-      <pre class="td-code">
-    def defile(self):
-        if self.est_vide():
-            return None
-        return self.contenu.pop(0)</pre>
-      <p>Sans ce test, <code>pop(0)</code> sur une liste vide lève <code>IndexError: pop from empty list</code>.</p>
-    </div>
-  </section>
-
-  <p>On se propose d'ordonnancer les processus avec une méthode du type <i>tourniquet</i> telle qu'à chaque cycle :</p>
-  <ul>
-    <li>si un nouveau processus est créé, il est mis dans la file d'attente ;</li>
-    <li>ensuite, on défile un processus de la file d'attente et on l'exécute pendant un cycle ;</li>
-    <li>si le processus exécuté n'est pas terminé, on le replace dans la file.</li>
-  </ul>
-  <p>Par exemple, avec les processus suivants, on obtient le chronogramme de la figure 1 :</p>
-  <table border="1">
-    <caption>Liste des processus</caption>
-    <thead><tr><th scope="col">processus</th><th scope="col">cycle de création</th><th scope="col">durée en cycles</th></tr></thead>
-    <tbody>
-      <tr><td>A</td><td>2</td><td>3</td></tr>
-      <tr><td>B</td><td>1</td><td>4</td></tr>
-      <tr><td>C</td><td>4</td><td>3</td></tr>
-      <tr><td>D</td><td>0</td><td>5</td></tr>
-    </tbody>
-  </table>
-  <svg viewBox="0 0 600 208" width="100%" height="230" role="img" aria-labelledby="fig3-titre fig3-desc">
-    <title id="fig3-titre">Figure 1. Chronogramme pour les processus A, B, C et D</title>
-    <desc id="fig3-desc">Processus élu à chaque cycle, de 0 à 14 : D, D, B, D, A, B, D, C, A, B, D, C, A, B, C.</desc>
-    <g stroke="currentColor" stroke-width="1" stroke-dasharray="3 4" opacity="0.6">
-      <line x1="44" y1="8" x2="44" y2="178"/>
-      <line x1="78" y1="8" x2="78" y2="178"/>
-      <line x1="112" y1="8" x2="112" y2="178"/>
-      <line x1="146" y1="8" x2="146" y2="178"/>
-      <line x1="180" y1="8" x2="180" y2="178"/>
-      <line x1="214" y1="8" x2="214" y2="178"/>
-      <line x1="248" y1="8" x2="248" y2="178"/>
-      <line x1="282" y1="8" x2="282" y2="178"/>
-      <line x1="316" y1="8" x2="316" y2="178"/>
-      <line x1="350" y1="8" x2="350" y2="178"/>
-      <line x1="384" y1="8" x2="384" y2="178"/>
-      <line x1="418" y1="8" x2="418" y2="178"/>
-      <line x1="452" y1="8" x2="452" y2="178"/>
-      <line x1="486" y1="8" x2="486" y2="178"/>
-      <line x1="520" y1="8" x2="520" y2="178"/>
-      <line x1="554" y1="8" x2="554" y2="178"/>
-      <line x1="588" y1="8" x2="588" y2="178"/>
-    </g>
-    <g stroke="currentColor" stroke-width="2.5">
-      <line x1="40" y1="50" x2="594" y2="50"/>
-      <line x1="40" y1="90" x2="594" y2="90"/>
-      <line x1="40" y1="130" x2="594" y2="130"/>
-      <line x1="40" y1="170" x2="594" y2="170"/>
-    </g>
-    <g stroke="currentColor" stroke-width="2" fill="Canvas">
-      <rect x="44" y="138" width="34" height="32"/>
-      <rect x="78" y="138" width="34" height="32"/>
-      <rect x="112" y="58" width="34" height="32"/>
-      <rect x="146" y="138" width="34" height="32"/>
-      <rect x="180" y="18" width="34" height="32"/>
-      <rect x="214" y="58" width="34" height="32"/>
-      <rect x="248" y="138" width="34" height="32"/>
-      <rect x="282" y="98" width="34" height="32"/>
-      <rect x="316" y="18" width="34" height="32"/>
-      <rect x="350" y="58" width="34" height="32"/>
-      <rect x="384" y="138" width="34" height="32"/>
-      <rect x="418" y="98" width="34" height="32"/>
-      <rect x="452" y="18" width="34" height="32"/>
-      <rect x="486" y="58" width="34" height="32"/>
-      <rect x="520" y="98" width="34" height="32"/>
-    </g>
-    <g fill="currentColor" font-family="Atkinson Hyperlegible, Arial, sans-serif" font-size="20" font-weight="700" text-anchor="middle">
-      <text x="61" y="161">D</text>
-      <text x="95" y="161">D</text>
-      <text x="129" y="81">B</text>
-      <text x="163" y="161">D</text>
-      <text x="197" y="41">A</text>
-      <text x="231" y="81">B</text>
-      <text x="265" y="161">D</text>
-      <text x="299" y="121">C</text>
-      <text x="333" y="41">A</text>
-      <text x="367" y="81">B</text>
-      <text x="401" y="161">D</text>
-      <text x="435" y="121">C</text>
-      <text x="469" y="41">A</text>
-      <text x="503" y="81">B</text>
-      <text x="537" y="121">C</text>
-      <text x="16" y="41">A</text>
-      <text x="16" y="81">B</text>
-      <text x="16" y="121">C</text>
-      <text x="16" y="161">D</text>
-      <text x="44" y="202">0</text>
-      <text x="214" y="202">5</text>
-      <text x="384" y="202">10</text>
-      <text x="554" y="202">15</text>
-    </g>
-  </svg>
-  <p>Autrement dit : A s'exécute aux cycles 4, 8 et 12 ; B aux cycles 2, 5, 9 et 13 ; C aux cycles 7, 11 et 14 ; D aux cycles 0, 1, 3, 6 et 10.</p>
-  <p>Pour décrire les processus et le moment de leur création, on utilise le code suivant, dans lequel <code>depart_proc</code> associe à un cycle donné le processus qui sera créé à ce moment :</p>
-  <pre class="td-code">
-p1 = Processus("p1", 4)
-p2 = Processus("p2", 3)
-p3 = Processus("p3", 5)
-p4 = Processus("p4", 3)
-depart_proc = {0: p1, 1: p3, 2: p2, 3: p4}</pre>
-  <p>Il s'agit d'une modélisation de la situation précédente où un seul processus peut être créé lors d'un cycle donné.</p>
-
-  <section class="td-q" data-type="trous" id="q15">
-    <p class="td-consigne">4. Recopier et compléter sur votre copie le chronogramme pour les processus p1, p2, p3 et p4.</p>
-    <p>Ici, le chronogramme est la liste des processus élus, cycle par cycle (cycles 0 à 14).</p>
-    <pre class="td-code">
-chronogramme = ["[[p1]]", "[[p1]]", "[[p3]]", "[[p1]]", "[[p2]]",    # cycles 0 à 4
-                "[[p3]]", "[[p4]]", "[[p1]]", "[[p2]]", "[[p3]]",    # cycles 5 à 9
-                "[[p4]]", "[[p2]]", "[[p3]]", "[[p4]]", "[[p3]]"]    # cycles 10 à 14</pre>
-    <p class="td-aide">Fais un tableau à trois colonnes : cycle, contenu de la file au début du cycle (après l'arrivée du nouveau), processus élu.</p>
-    <p class="td-aide">Cycle 0 : file [p1], p1 est élu et revient. Cycle 1 : p3 arrive, file [p1, p3], p1 est élu et revient derrière p3. Cycle 2 : p2 arrive, file [p3, p1, p2]…</p>
-    <div class="td-correction">
-      <p>p1, p1, p3, p1, p2, p3, p4, p1, p2, p3, p4, p2, p3, p4, p3. Fins : p1 au cycle 7, p2 au cycle 11, p4 au cycle 13, p3 au cycle 14. Vérifié par une simulation, qui redonne aussi la figure 1.</p>
-    </div>
-  </section>
-
-  <p>Pour mettre en place l'ordonnancement suivant cette méthode, on écrit la classe <code>Ordonnanceur</code> dont voici un code incomplet (l'attribut <code>temps</code> correspond au cycle en cours). À chaque appel de la méthode <code>tourniquet</code>, celle-ci renvoie soit le nom du processus qui a été élu, soit <code>None</code> si elle n'a pas trouvé de processus en cours.</p>
-
-  <section class="td-q" data-type="trous" id="q16">
-    <p class="td-consigne">5. Compléter le code ci-dessous.</p>
-    <pre class="td-code">
-class Ordonnanceur:
-
-    def __init__(self):
-        self.temps = 0
-        self.file = File()
-
-    def ajoute_nouveau_processus(self, proc):
-        '''Ajoute un nouveau processus dans la file de
-        l'ordonnanceur. '''
-        [[self.file.enfile(proc)]]
-
-    def tourniquet(self):
-        '''Effectue une étape d'ordonnancement et renvoie le nom
-        du processus élu.'''
-        self.temps += 1
-        if not self.file.est_vide():
-            proc = [[self.file.defile()]]
-            [[proc.execute_un_cycle()]]
-            if not proc.est_fini():
-                [[self.file.enfile(proc)|self.ajoute_nouveau_processus(proc)]]
-            return proc.nom
-        else:
-            return None</pre>
-    <p class="td-aide">L'ordonnanceur range ses processus dans <code>self.file</code> : utilise les méthodes de la classe <code>File</code>.</p>
-    <p class="td-aide">Dans <code>tourniquet</code> : on défile, on exécute un cycle, et on renfile si le processus n'est pas fini.</p>
-    <div class="td-correction">
-      <p>Ligne 10 : <code>self.file.enfile(proc)</code> ; ligne 17 : <code>proc = self.file.defile()</code> ; ligne 18 : <code>proc.execute_un_cycle()</code> ; ligne 20 : <code>self.file.enfile(proc)</code>.</p>
-    </div>
-  </section>
-
-  <section class="td-q" data-type="code" id="q17" data-fichier="ordonnanceur.py">
-    <p class="td-consigne">6. Écrire un programme qui : utilise les variables <code>p1</code>, <code>p2</code>, <code>p3</code>, <code>p4</code> et <code>depart_proc</code> définies précédemment ; crée un ordonnanceur ; ajoute un nouveau processus à l'ordonnanceur lorsque c'est le moment ; affiche le processus choisi par l'ordonnanceur ; s'arrête lorsqu'il n'y a plus de processus à exécuter.</p>
-    <p>Sur ta feuille d'abord. Pour le lancer ici, les classes des questions 3 et 5 et une classe <code>Processus</code> sont déjà écrites au début du code : écris ton programme à la fin.</p>
-    <pre class="td-depart">
-class Processus:
-    def __init__(self, nom, duree):
-        self.nom = nom
-        self.reste = duree
-    def execute_un_cycle(self):
-        self.reste = self.reste - 1
-    def est_fini(self):
-        return self.reste == 0
-
-class File:
-    def __init__(self):
-        self.contenu = []
-    def enfile(self, element):
-        self.contenu.append(element)
-    def defile(self):
-        if self.est_vide():
-            return None
-        return self.contenu.pop(0)
-    def est_vide(self):
-        return self.contenu == []
-
-class Ordonnanceur:
-    def __init__(self):
-        self.temps = 0
-        self.file = File()
-    def ajoute_nouveau_processus(self, proc):
-        self.file.enfile(proc)
-    def tourniquet(self):
-        self.temps += 1
-        if not self.file.est_vide():
-            proc = self.file.defile()
-            proc.execute_un_cycle()
-            if not proc.est_fini():
-                self.file.enfile(proc)
-            return proc.nom
-        else:
-            return None
-
-p1 = Processus("p1", 4)
-p2 = Processus("p2", 3)
-p3 = Processus("p3", 5)
-p4 = Processus("p4", 3)
-depart_proc = {0: p1, 1: p3, 2: p2, 3: p4}
-
-# Ton programme :
-</pre>
-    <pre class="td-attendu">
-p1
-p1
-p3
-p1
-p2
-p3
-p4
-p1
-p2
-p3
-p4
-p2
-p3
-p4
-p3</pre>
-    <p class="td-aide">Attention : <code>tourniquet</code> augmente <code>temps</code> de 1 <b>avant</b> d'élire. Avant le premier appel, ajoute le processus du cycle 0.</p>
-    <p class="td-aide">Une boucle <code>while</code> qui s'arrête quand <code>tourniquet</code> renvoie <code>None</code>. Après chaque appel, si <code>ordonnanceur.temps</code> est une clé de <code>depart_proc</code>, ajoute ce processus avant l'appel suivant.</p>
-    <div class="td-correction">
-      <p>La proposition du corrigé de l'AEIF :</p>
-      <pre class="td-code" data-verifier="correction">
-class Processus:
-    def __init__(self, nom, duree):
-        self.nom = nom
-        self.reste = duree
-    def execute_un_cycle(self):
-        self.reste = self.reste - 1
-    def est_fini(self):
-        return self.reste == 0
-
-class File:
-    def __init__(self):
-        self.contenu = []
-    def enfile(self, element):
-        self.contenu.append(element)
-    def defile(self):
-        if self.est_vide():
-            return None
-        return self.contenu.pop(0)
-    def est_vide(self):
-        return self.contenu == []
-
-class Ordonnanceur:
-    def __init__(self):
-        self.temps = 0
-        self.file = File()
-    def ajoute_nouveau_processus(self, proc):
-        self.file.enfile(proc)
-    def tourniquet(self):
-        self.temps += 1
-        if not self.file.est_vide():
-            proc = self.file.defile()
-            proc.execute_un_cycle()
-            if not proc.est_fini():
-                self.file.enfile(proc)
-            return proc.nom
-        else:
-            return None
-
-p1 = Processus("p1", 4)
-p2 = Processus("p2", 3)
-p3 = Processus("p3", 5)
-p4 = Processus("p4", 3)
-depart_proc = {0: p1, 1: p3, 2: p2, 3: p4}
-
-ordonnanceur = Ordonnanceur()
-ordonnanceur.ajoute_nouveau_processus(depart_proc[0])
-processus = ordonnanceur.tourniquet()
-while processus != None:
-    if ordonnanceur.temps in depart_proc:
-        ordonnanceur.ajoute_nouveau_processus(depart_proc[ordonnanceur.temps])
-    print(processus)
-    processus = ordonnanceur.tourniquet()</pre>
-      <p>Les quinze noms affichés sont ceux du chronogramme de la question 4.</p>
-    </div>
-  </section>
-
-  <p>Dans la situation donnée en exemple (voir figure 1), il s'avère qu'en fait les processus utilisent des ressources comme : un fichier commun aux processus ; le clavier de l'ordinateur ; le processeur graphique (GPU) ; le port 25000 de la connexion Internet. Voici le détail de ce que fait chaque processus :</p>
-  <table border="1">
-    <caption>Liste des processus</caption>
-    <thead><tr><th scope="col">A</th><th scope="col">B</th><th scope="col">C</th><th scope="col">D</th></tr></thead>
-    <tbody>
-      <tr><td>acquérir le GPU</td><td>acquérir le clavier</td><td>acquérir le port</td><td>acquérir le fichier</td></tr>
-      <tr><td>faire des calculs</td><td>acquérir le fichier</td><td>faire des calculs</td><td>faire des calculs</td></tr>
-      <tr><td>libérer le GPU</td><td>libérer le clavier</td><td>libérer le port</td><td>acquérir le clavier</td></tr>
-      <tr><td></td><td>libérer le fichier</td><td></td><td>libérer le clavier</td></tr>
-      <tr><td></td><td></td><td></td><td>libérer le fichier</td></tr>
-    </tbody>
-  </table>
-
-  <section class="td-q" data-type="cases" id="q18">
-    <p class="td-consigne">7. Montrer que l'ordre d'exécution donné en exemple aboutit à une situation d'interblocage.</p>
-    <p>Pour vérifier ici : coche les processus qui s'attendent mutuellement. L'explication complète va sur ta feuille.</p>
-    <ul class="td-options">
-      <li data-retour="A acquiert le GPU, calcule, puis le libère : personne d'autre ne veut le GPU, A n'est jamais bloqué.">A</li>
-      <li data-juste>B</li>
-      <li data-retour="C n'utilise que le port, que personne d'autre ne demande : C n'est jamais bloqué.">C</li>
-      <li data-juste>D</li>
-    </ul>
-    <p class="td-aide">Suis la figure 1 : à chaque fois qu'un processus est élu, il fait l'instruction suivante de sa colonne. Note qui détient le fichier et le clavier.</p>
-    <p class="td-aide">Cycle 0 : D acquiert le fichier. Cycle 2 : B acquiert le clavier. Que se passe-t-il au cycle 3 pour D, puis au cycle 5 pour B ?</p>
-    <div class="td-correction">
-      <p>D acquiert le fichier (cycle 0) et calcule (cycle 1). B acquiert le clavier (cycle 2). Au cycle 3, D demande le clavier, détenu par B : D est bloqué. Au cycle 5, B demande le fichier, détenu par D : B est bloqué. <b>B et D s'attendent mutuellement</b> : chacun détient la ressource dont l'autre a besoin et ne la libérera jamais. C'est un interblocage. Mots attendus : détient, attend, bloqué, attente circulaire.</p>
-    </div>
-  </section>
-
   <section class="td-memo">
     <h2>Mémo</h2>
     <p><b>Processus</b> : un programme en cours d'exécution, avec un PID. États : <b>prêt</b>, <b>élu</b>, <b>bloqué</b>. <code>ps</code> les liste, <code>kill</code> en arrête un.</p>
     <p><b>Ordonnancement</b> : par priorité, le plus prioritaire s'exécute (et peut en suspendre un autre) ; par <b>tourniquet</b>, chacun son tour pendant un quantum, puis retour au bout de la file. Fais toujours un tableau : cycle, file, élu.</p>
     <p><b>Interblocage</b> : une attente en cercle. X détient R1 et attend R2, Y détient R2 et attend R1. Pour l'éviter : demander les ressources toujours dans le même ordre.</p>
   </section>
-
+  <p class="td-ecran-seul"><b>Suite :</b> <a href="feuille-2.html">feuille 2, le tourniquet en Python</a>.</p>
   <footer class="td-pied">
-    <p><b>Sources.</b> Exercice 1 : sujet de Métropole, mars 2021, jour 1, exercice 2 (parties A et B) ; exercice 2 : sujet 23-NSIJ1PO1, exercice 2 ; exercice 3 : sujet 24-NSIJ1AN1, exercice 1. Sujets officiels du baccalauréat, spécialité NSI (ministère de l'Éducation nationale), mis en ligne par l'<a href="https://aeif.fr/index.php/annee-2024/">AEIF</a> (Association des enseignantes et enseignants d'informatique de France), avec leurs corrigés (<a href="https://aeif.fr/wp-content/uploads/2025/07/corr_Metropole_mars_2021_1.pdf">corrigé 2021</a>, <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_amerique_nord_2024_1.pdf">corrigé 2024</a>), sous licence CC BY-SA 4.0. Chronogramme redessiné ; tableaux remis en forme pour les petits écrans.</p>
-    <p>Mise en TD et corrections : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-processus">Code source sur GitHub</a></p>
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Métropole, mars 2021, jour 1, exercice 2, parties A et B (la partie C, sur l'opérateur XOR, n'est pas reprise). <a href="https://aeif.fr/wp-content/uploads/2025/07/metropole_mars_2021_1.pdf">Le PDF du sujet</a>, diffusé par l'AEIF (<a href="https://aeif.fr/">aeif.fr</a> : CC BY-SA 4.0, relevée sur ses pages annuelles). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_Metropole_mars_2021_1.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document).</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-processus">Code source sur GitHub</a></p><span class="td-margouillat" data-cachette="pied" style="--x:84%;--r:5deg;--s:1"></span>
   </footer>
 </main>
 </body>
