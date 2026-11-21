@@ -47,7 +47,7 @@
         <li>dire à quoi sert le cas de base d'une fonction récursive ;</li>
         <li>comparer le tri fusion et le tri par insertion.</li>
       </ul>
-      <p class="td-duree">30 minutes · 6 questions · seul·e ou en binôme</p>
+      <p class="td-duree">30 minutes · 5 questions · seul·e ou en binôme</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
@@ -124,10 +124,10 @@ resultat = [0.9, 1.2, 1.5, 2.1]</pre>
   <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
     <p class="td-consigne">Le temps de calcul du tri fusion change-t-il beaucoup si le tableau est déjà trié ?</p>
     <ul class="td-options">
-      <li data-retour="C'est le tri par insertion qui va très vite sur un tableau déjà trié : sa boucle while ne décale rien.">Oui, il devient beaucoup plus rapide.</li>
-      <li data-retour="Rien ne le ralentit : il fait les mêmes découpages dans tous les cas.">Oui, il devient beaucoup plus lent.</li>
+      <li data-retour="C'est le tri par insertion qui va très vite sur un tableau déjà trié : sa boucle while ne décale rien.">Oui, il devient beaucoup plus rapide : il n'a presque rien à faire.</li>
+      <li data-retour="Rien ne le ralentit : il fait les mêmes découpages dans tous les cas.">Oui, il devient beaucoup plus lent, car il découpe pour rien.</li>
       <li data-juste>Non : il découpe et fusionne de la même façon dans tous les cas.</li>
-      <li data-retour="Le tri fusion trie aussi un tableau déjà trié : il ne le détecte pas, il fait tout son travail.">Il ne fait rien sur un tableau déjà trié.</li>
+      <li data-retour="Le tri fusion trie aussi un tableau déjà trié : il ne le détecte pas, il fait tout son travail.">Il ne fait rien : il voit tout de suite que le tableau est déjà trié.</li>
     </ul>
     <p class="td-aide">Le découpage dépend-il des valeurs, ou seulement de la longueur du tableau ?</p>
     <div class="td-correction"><p>Le découpage ne dépend que de la longueur. Mesuré sur 1000 nombres : environ <b>4900 comparaisons</b> si le tableau est déjà trié, <b>5000</b> s'il est à l'envers. Presque pareil.</p></div>
@@ -140,10 +140,10 @@ resultat = [0.9, 1.2, 1.5, 2.1]</pre>
   <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
     <p class="td-consigne">Avec 1000 Lagonnet, le tri fusion est en général beaucoup plus rapide que le tri par insertion : sa complexité est en <i>n</i> log(<i>n</i>). Pourquoi « couper en deux » aide-t-il l'ordinateur ?</p>
     <ul class="td-options">
-      <li data-retour="L'ordinateur ne fait pas deux choses à la fois ici : les deux moitiés sont triées l'une après l'autre.">Les deux moitiés sont triées en même temps, par deux processeurs.</li>
-      <li data-retour="On ne retire aucun élément : à la fin, ils sont tous dans le résultat.">Couper en deux élimine à chaque fois la moitié des éléments à trier.</li>
-      <li data-retour="Le tri fusion compare bien des éléments : c'est la fusion qui le fait.">Une fois le tableau coupé, il n'y a plus aucune comparaison à faire.</li>
-      <li data-juste>On ne coupe qu'environ 10 fois en deux pour arriver à 1 élément, et chaque niveau ne fait qu'une fusion de 1000 éléments.</li>
+      <li data-retour="L'ordinateur ne fait pas deux choses à la fois ici : les deux moitiés sont triées l'une après l'autre.">Les deux moitiés sont triées en même temps, par deux processeurs, ce qui divise le temps par deux.</li>
+      <li data-retour="On ne retire aucun élément : à la fin, ils sont tous dans le résultat.">Couper en deux élimine à chaque fois la moitié des éléments, comme dans une recherche dichotomique.</li>
+      <li data-retour="Le tri fusion compare bien des éléments : c'est la fusion qui le fait.">Une fois le tableau coupé en morceaux de 1 élément, il n'y a plus aucune comparaison à faire.</li>
+      <li data-juste>On coupe environ 10 fois en deux jusqu'à 1 élément ; chaque niveau fusionne les 1000 éléments une fois.</li>
     </ul>
     <p class="td-aide">Combien de fois faut-il diviser 1000 par 2 pour arriver à 1 ?</p>
     <div class="td-correction"><p>1000 → 500 → 250 → … → 1 : environ <b>10 niveaux</b> (le logarithme en base 2 de 1000 vaut environ 10). À chaque niveau, les fusions passent une fois sur les 1000 éléments : environ 1000 × 10 opérations. Le tri par insertion, dans le pire cas, fait 1000 × 1000 / 2 comparaisons (499 500, mesuré), contre environ 5000 pour le tri fusion.</p></div>
@@ -156,10 +156,10 @@ resultat = [0.9, 1.2, 1.5, 2.1]</pre>
   <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
     <p class="td-consigne">Dans <code>tri_fusion</code>, à quoi sert la ligne <code>if len(tab) &lt;= 1: return tab</code> ? (Indice : peut-on couper en deux un Lagonnet tout seul ?)</p>
     <ul class="td-options">
-      <li data-juste>C'est le cas de base : une liste de 0 ou 1 élément est déjà triée, et les appels s'arrêtent.</li>
+      <li data-juste>Elle donne le cas de base : 0 ou 1 élément, la liste est déjà triée ; les appels s'arrêtent.</li>
       <li data-retour="Une liste vide est un cas normal : le tri fusion la renvoie telle quelle, sans erreur.">Elle évite une erreur quand la liste est vide, et ne sert à rien d'autre.</li>
-      <li data-retour="Cette ligne ne regarde que la longueur, pas l'ordre des valeurs.">Elle vérifie que la liste est déjà triée avant de la découper.</li>
-      <li data-retour="Elle ne trie rien : elle renvoie la liste telle quelle.">Elle trie directement les petites listes de deux éléments.</li>
+      <li data-retour="Cette ligne ne regarde que la longueur, pas l'ordre des valeurs.">Elle vérifie que la liste est déjà triée avant de la découper en deux moitiés.</li>
+      <li data-retour="Elle ne trie rien : elle renvoie la liste telle quelle.">Elle trie directement les petites listes de deux éléments, sans avoir à les découper.</li>
     </ul>
     <p class="td-aide">Que se passerait-il sans cette ligne, avec <code>tab = [2.1]</code> ? <code>tab[:0]</code> est vide et <code>tab[0:]</code> vaut encore <code>[2.1]</code>.</p>
     <div class="td-correction"><p>C'est le <b>cas de base</b>. Sans lui, <code>tri_fusion([2.1])</code> rappellerait <code>tri_fusion([2.1])</code> sans fin : Python s'arrêterait avec une <code>RecursionError</code>.</p></div>

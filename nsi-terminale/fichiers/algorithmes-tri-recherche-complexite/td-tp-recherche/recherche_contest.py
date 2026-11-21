@@ -1,7 +1,7 @@
 # Benchmark des recherches : linéaire contre dichotomique, dans le pire cas
 # (la cible n'est pas dans le tableau et elle est plus grande que tout).
 # TD « Mission : optimisation haute fréquence » - Babash - NSI Tani Malandi
-# et Johanne Bakalara - CC BY-SA 4.0
+# et Johanne Bakalara - CC BY-SA 4.0 - script conçu avec l'aide de l'IA (T125)
 # On utilise range(n) : il se lit comme une liste triée, sans occuper la mémoire.
 # Pour n = 100 000 000, la recherche linéaire prend de quelques secondes à plus
 # d'une minute, selon l'ordinateur : patience !

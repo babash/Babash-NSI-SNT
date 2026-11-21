@@ -87,10 +87,10 @@ c = serveurs[1:3]   # c vaut [[[405, 201]|405, 201]]</pre>
   <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
     <p class="td-consigne"><b>L'accès direct.</b> Quel est le coût pour le processeur d'un accès comme <code>serveurs[0]</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Une seule opération, quelle que soit la taille de la liste : coût constant, O(1).</li>
-      <li data-retour="Python ne parcourt pas la liste pour lire serveurs[0] : il va directement à la case.">Autant d'opérations que d'éléments dans la liste.</li>
-      <li data-retour="Lire une case ne dépend pas de sa position : serveurs[0] et serveurs[4] coûtent pareil.">Une opération pour l'indice 0, cinq pour l'indice 4.</li>
-      <li data-retour="L'accès direct ne divise rien : il va droit à la case.">Environ log(n) opérations.</li>
+      <li data-juste>Une seule opération, quelle que soit la taille de la liste : O(1).</li>
+      <li data-retour="Python ne parcourt pas la liste pour lire serveurs[0] : il va directement à la case.">Autant d'opérations que d'éléments dans la liste : O(n).</li>
+      <li data-retour="Lire une case ne dépend pas de sa position : serveurs[0] et serveurs[4] coûtent pareil.">Une opération pour l'indice 0, cinq pour l'indice 4, et ainsi de suite.</li>
+      <li data-retour="L'accès direct ne divise rien : il va droit à la case.">Environ log(n) opérations, comme pour une dichotomie : O(log(n)).</li>
     </ul>
     <p class="td-aide">Python sait où se trouve chaque case de la liste, sans la parcourir.</p>
     <div class="td-correction"><p>Un accès par indice se fait en <b>une seule opération</b>, en temps constant : O(1).</p></div>
@@ -138,10 +138,10 @@ def recherche_dichotomique(tab, valeur):
   <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
     <p class="td-consigne">Ligne 7 (<code>milieu = …</code>) : pourquoi utilise-t-on une division entière, <code>//</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Parce qu'un indice de liste doit être un nombre entier.</li>
-      <li data-retour="La vitesse n'est pas la raison : avec /, on obtiendrait par exemple 3.5, qui n'est pas un indice.">Parce que <code>//</code> calcule plus vite que <code>/</code>.</li>
-      <li data-retour="// ne fait pas d'arrondi au plus proche : il garde la partie entière du quotient (7 // 2 vaut 3).">Pour arrondir le milieu au plus proche.</li>
-      <li data-retour="La division entière ne vérifie rien sur le tri : c'est à toi de fournir un tableau trié.">Pour vérifier que le tableau est trié.</li>
+      <li data-juste>Parce qu'un indice de liste doit être un entier.</li>
+      <li data-retour="La vitesse n'est pas la raison : avec /, on obtiendrait par exemple 3.5, qui n'est pas un indice.">Parce que <code>//</code> calcule beaucoup plus vite que <code>/</code>.</li>
+      <li data-retour="// ne fait pas d'arrondi au plus proche : il garde la partie entière du quotient (7 // 2 vaut 3).">Pour arrondir le milieu à l'entier le plus proche.</li>
+      <li data-retour="La division entière ne vérifie rien sur le tri : c'est à toi de fournir un tableau trié.">Pour vérifier au passage que le tableau est trié.</li>
     </ul>
     <p class="td-aide">Que vaut <code>(0 + 7) / 2</code> ? Peut-on écrire <code>tab[3.5]</code> ?</p>
     <div class="td-correction"><p><code>milieu</code> sert d'indice : <code>tab[milieu]</code>. Un indice doit être un entier ; <code>(0 + 7) / 2</code> vaudrait 3.5, alors que <code>(0 + 7) // 2</code> vaut 3.</p></div>
@@ -154,9 +154,9 @@ def recherche_dichotomique(tab, valeur):
   <section class="td-q" data-type="qcu" id="q6" data-support="ecran">
     <p class="td-consigne">Lignes 10 à 12 : pourquoi peut-on ignorer toute la partie droite si <code>tab[milieu] &gt; valeur</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Le tableau est trié : à droite du milieu, tout est encore plus grand que la cible.</li>
-      <li data-retour="La cible peut être n'importe où : c'est le tri qui garantit qu'elle n'est pas à droite.">Parce que la cible est toujours dans la moitié gauche.</li>
-      <li data-retour="La partie droite n'est pas vide ; elle ne contient que des valeurs trop grandes.">Parce que la partie droite est vide.</li>
+      <li data-juste>Le tableau est trié : à droite du milieu, tout est plus grand que la cible.</li>
+      <li data-retour="La cible peut être n'importe où : c'est le tri qui garantit qu'elle n'est pas à droite.">Parce que la cible est toujours dans la moitié gauche du tableau.</li>
+      <li data-retour="La partie droite n'est pas vide ; elle ne contient que des valeurs trop grandes.">Parce que la partie droite est vide dès que le milieu est trop grand.</li>
       <li data-retour="Ignorer une moitié n'est sûr que parce que le tableau est trié : sinon on risquerait de rater la cible.">Pour aller plus vite, même si on risque de rater la cible.</li>
     </ul>
     <p class="td-aide">Dans un tableau trié, que sait-on des valeurs placées après <code>tab[milieu]</code> ?</p>
@@ -212,10 +212,10 @@ lineaire = [[11]]   # nombre de comparaisons</pre>
   <section class="td-q" data-type="qcu" id="q10" data-support="ecran">
     <p class="td-consigne"><b>Meilleur cas.</b> Où doit être la cible pour que chaque recherche finisse en 1 étape ?</p>
     <ul class="td-options">
-      <li data-juste>Linéaire : en première position. Dichotomie : au milieu du tableau.</li>
-      <li data-retour="La dichotomie commence par le milieu, pas par le début.">Linéaire et dichotomie : en première position.</li>
+      <li data-juste>Linéaire : en première position. Dichotomie : au milieu.</li>
+      <li data-retour="La dichotomie commence par le milieu, pas par le début.">Linéaire et dichotomie : en première position du tableau.</li>
       <li data-retour="La recherche linéaire commence par la première case : c'est là qu'elle s'arrête le plus vite.">Linéaire : au milieu. Dichotomie : en première position.</li>
-      <li data-retour="La dernière position est le pire cas de la recherche linéaire.">Linéaire et dichotomie : en dernière position.</li>
+      <li data-retour="La dernière position est le pire cas de la recherche linéaire.">Linéaire et dichotomie : en dernière position du tableau.</li>
     </ul>
     <p class="td-aide">Quelle case chaque algorithme regarde-t-il en premier ?</p>
     <div class="td-correction"><p>La recherche linéaire regarde d'abord la première case ; la dichotomie regarde d'abord le milieu (12 pour <code>L</code>).</p></div>
@@ -228,10 +228,10 @@ lineaire = [[11]]   # nombre de comparaisons</pre>
   <section class="td-q" data-type="qcu" id="q11" data-support="ecran">
     <p class="td-consigne"><b>Pire cas.</b> Quel est le pire cas pour les deux algorithmes ?</p>
     <ul class="td-options">
-      <li data-juste>La cible n'est pas dans le tableau : il faut aller jusqu'au bout de la recherche.</li>
-      <li data-retour="La cible au milieu est le meilleur cas de la dichotomie.">La cible est au milieu.</li>
-      <li data-retour="Un tableau trié est obligatoire pour la dichotomie ; ce n'est pas un « cas » de la recherche.">Le tableau est trié.</li>
-      <li data-retour="La première position est le meilleur cas de la recherche linéaire.">La cible est en première position.</li>
+      <li data-juste>La cible n'est pas dans le tableau : la recherche va jusqu'au bout.</li>
+      <li data-retour="La cible au milieu est le meilleur cas de la dichotomie.">La cible est au milieu : il faut parcourir la moitié du tableau.</li>
+      <li data-retour="Un tableau trié est obligatoire pour la dichotomie ; ce n'est pas un « cas » de la recherche.">Le tableau est trié : les deux algorithmes doivent tout regarder.</li>
+      <li data-retour="La première position est le meilleur cas de la recherche linéaire.">La cible est en première position, là où tout commence.</li>
     </ul>
     <p class="td-aide">Quand la recherche linéaire doit-elle regarder toutes les cases ?</p>
     <div class="td-correction"><p>Quand la cible est <b>absente</b>, les deux algorithmes vont jusqu'au bout : n cases pour la linéaire, une zone réduite à rien pour la dichotomie. (Pour la linéaire, la cible en dernière position coûte aussi n étapes.)</p></div>
