@@ -20,7 +20,7 @@ ex1 = {
     "(N ∧ V) → F": lambda N, V, F: imp(N and V, F),
     "F → (N ∧ V)": lambda N, V, F: imp(F, N and V),
     "(N ∨ V) → F": lambda N, V, F: imp(N or V, F),
-    "(N ∧ V) ↔ F": lambda N, V, F: (N and V) == F,
+    "(N ∧ V) ⇔ F": lambda N, V, F: (N and V) == F,
 }
 print("Exercice 1"); table("NVF", ex1)
 for nom, f in ex1.items():   # il faut : N et V et non F interdit ; F sans N ni V permis ; rien de plus
@@ -31,7 +31,7 @@ for nom, f in ex1.items():   # il faut : N et V et non F interdit ; F sans N ni 
 ex2 = {
     "(R → P) ∧ (P → D)": lambda R, P, D: imp(R, P) and imp(P, D),
     "(P → R) ∧ (P → D)": lambda R, P, D: imp(P, R) and imp(P, D),
-    "(R ↔ P) ∧ (P → D)": lambda R, P, D: (R == P) and imp(P, D),
+    "(R ⇔ P) ∧ (P → D)": lambda R, P, D: (R == P) and imp(P, D),
     "(R → P) ∧ (D → P)": lambda R, P, D: imp(R, P) and imp(D, P),
 }
 print("Exercice 2"); table("RPD", ex2)
