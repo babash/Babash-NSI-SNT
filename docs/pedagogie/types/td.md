@@ -44,13 +44,15 @@ La correction se fait **dans le navigateur**. Rien n'est envoyé ailleurs : pas 
 
 ### La feuille
 
-Le style graphique des feuilles de TD est **en cours de recherche** (novembre 2026) : rien n'est arrêté sur leur apparence. Les contraintes, elles, sont décidées :
+Le style graphique des feuilles de TD est **arrêté** : c'est « Signal pirate », choisi par l'auteur le 21 novembre 2026 pour tous les TD. Il tient les contraintes décidées :
 
 - la feuille est **imprimée et projetée** ;
-- **pas de fond noir** à l'impression, et tout reste lisible en noir et blanc ;
-- des **contrastes forts** ;
-- la **place est optimisée**, sur le **moins de feuilles possible** ;
-- l'objectif : **le même style** pour toutes les feuilles (TD, contrôles, fiches de séance), proche de celui du TD de POO.
+- **pas de fond noir** ni de grand aplat sombre à l'impression, et tout reste lisible en noir et blanc : rien d'essentiel ne passe par la couleur ;
+- des **contrastes forts** : 7:1 au moins pour le texte et le code ;
+- la **place est optimisée**, sur le **moins de feuilles possible** (4 pages A4 au plus), sans texte sous 10 pt ;
+- en tête, un bandeau dessiné (quatre paysages qui tournent, sans lien avec le chapitre) et le QR code du cours-quiz du chapitre ; sur papier, « Nom et prénom » et « Classe ».
+
+Le modèle est le gabarit du site, `charte/gabarit-td/`, avec son mode d'emploi, et son TD pilote sur les boucles, `charte/td-pilote/`. L'objectif reste **le même style** pour toutes les feuilles (contrôles, fiches de séance) : pour elles, il n'est pas encore appliqué.
 
 ## Un exemple du site
 
@@ -60,4 +62,4 @@ Autres exemples : [Les conditions en Python : cours et TD](https://babash.github
 
 ## Où on en est
 
-En novembre 2026, les TD du site existent en PDF et en page web, mais **la page web n'est pas encore auto-corrective** : elle reprend la feuille à l'écran, sans formulaire. La fiche de chaque TD, dans la bibliothèque, le dit. La correction en ligne est le chantier suivant ; il est prévu ensuite d'associer un TD à chaque fiche de révision.
+En novembre 2026, les TD du site existent en PDF et en page web, mais **la page web n'est pas encore auto-corrective** : elle reprend la feuille à l'écran, sans formulaire. La fiche de chaque TD, dans la bibliothèque, le dit. La conversion des TD au style « Signal pirate » a commencé le 21 novembre : chacun deviendra une page auto-corrective et un PDF imprimé depuis la feuille vierge. Il est prévu ensuite d'associer un TD à chaque fiche de révision.

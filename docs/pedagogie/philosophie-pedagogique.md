@@ -170,6 +170,6 @@ Tout n'est pas encore au niveau de ces principes. En novembre 2026 :
 - les TD existent en page web et en PDF, mais leur correction automatique en ligne reste à faire ([le TD](types/td.md)) ;
 - les applications de jeu n'ont pas encore toutes le même code d'accès ([l'application de jeu](types/application-de-jeu.md)) ;
 - les contrôles de notions par chapitre et les fiches d'exercices de bac sont en projet ;
-- le style graphique des feuilles de TD est en cours de recherche.
+- le style graphique des feuilles de TD est arrêté (« Signal pirate », 21 novembre 2026) et la conversion des TD à ce style a commencé ([le TD](types/td.md)).
 
 Pour la suite : [les règles universelles](regles-universelles.md), puis [les types de ressources](types-de-ressources.md).

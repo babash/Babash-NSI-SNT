@@ -39,15 +39,27 @@ calendrier/                 le Calendrier des vacances, en service depuis le 20/
                             (supabase/, voir SUPABASE.md)
 assets/                     mise en page et fonctionnement (ne pas toucher)
   td-en-ligne.js, .css      le moteur des TD en ligne auto-correctifs (Python, avec Pyodide, chargé
-                            à la demande depuis jsDelivr, jamais copié dans le dépôt)
+                            à la demande depuis jsDelivr, jamais copié dans le dépôt) et leur style
+                            « Signal pirate » : une seule feuille de style pour l'écran clair,
+                            l'écran obscur et le papier
+  td/                       les dessins des TD : les 4 bandeaux qui tournent (avec leurs variantes
+                            de 20 mm pour les contrôles et leurs versions obscures), la marge et le
+                            margouillat caché (places-margouillat.json : ses cachettes) ; refaits
+                            par charte/bandeaux-td.py
+  fonts/                    les polices des TD, hébergées sur le site (aucun appel à un serveur de
+                            polices), avec leurs licences (LISEZMOI.md)
   equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance) ; equipage/ : son contrat
                             (LISEZMOI.md) et son catalogue (catalogue.json, généré depuis le module :
                             ne pas le modifier à la main)
 charte/                     les pages de démonstration du Designer, sans lien depuis le site et non
-                            indexées : le TD pilote du moteur des TD en ligne (td-pilote/, avec son
-                            PDF), le vérificateur de ses réponses (verifier-td.py), le script qui
-                            fait le PDF depuis la feuille vierge (imprimer-td.py) et la démonstration
-                            du moteur d'avatars (avatars.html)
+                            indexées, et les outils des TD : le gabarit (gabarit-td/ : le modèle
+                            commenté, un exemple rendu et LISEZMOI.md, le mode d'emploi des
+                            Ateliers), le TD pilote (td-pilote/, avec son PDF), le script qui crée
+                            le squelette d'un TD (nouveau-td.py), le vérificateur de ses réponses
+                            (verifier-td.py), le script qui fait le PDF depuis la feuille vierge et
+                            contrôle sa mise en page (imprimer-td.py), celui qui dessine les
+                            bandeaux (bandeaux-td.py) et la démonstration du moteur d'avatars
+                            (avatars.html)
 qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
                             nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu
                             élève et le corrigé enseignant·e de chaque quiz, liés depuis sa fiche de la
