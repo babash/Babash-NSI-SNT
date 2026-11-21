@@ -33,7 +33,7 @@
 @font-face { font-family: "JetBrains Mono"; font-style: italic; font-weight: 700; font-display: swap; src: url("fonts/jetbrains-mono-latin-ext-700-italic.woff2") format("woff2"); unicode-range: U+0100-024F, U+1E00-1EFF, U+2C60-2C7F, U+A720-A7FF; }
 @font-face { font-family: "Anton"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/anton-latin-400-normal.woff2") format("woff2"); }
 @font-face { font-family: "VT323"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/vt323-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "TD Symboles"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/td-symboles-400-normal.woff2") format("woff2"); unicode-range: U+2190-2193, U+2260, U+2264-2265, U+25A0-25A1, U+25B2, U+25BC, U+25C6, U+2605-2606, U+2713, U+2717; }
+@font-face { font-family: "TD Symboles"; font-style: normal; font-weight: 400; font-display: swap; src: url("fonts/td-symboles-400-normal.woff2") format("woff2"); unicode-range: U+00AC, U+00D7, U+0394, U+03A3, U+03BB, U+03C0, U+2190-2194, U+21D2, U+21D4, U+2205-2206, U+2208-2209, U+2211, U+221A, U+221E, U+2227-222A, U+2248, U+2260-2261, U+2264-2265, U+25A0-25A1, U+25B2, U+25BC, U+25C6, U+2605-2606, U+2713, U+2717; }
 
 /* ── Affichage clair (écran) : fond blanc, encre foncée, néons en débordement ── */
 :root {
@@ -155,6 +155,8 @@ body.td-page {
 .td :focus-visible { outline: 3px solid var(--td-focus); outline-offset: 2px; }
 .td a { color: var(--td-accent); text-underline-offset: 2px; }
 .td code { font-family: var(--td-mono); font-size: .92em; }
+/* un long mot de code dans le texte (sans espace) passe à la ligne au lieu de faire défiler la page */
+.td :not(pre) > code { overflow-wrap: anywhere; }
 .td h1, .td h2 { font-family: var(--td-titres); font-weight: 400; line-height: 1.1; letter-spacing: .01em; }
 .td h1 code, .td h2 code { font-family: inherit; font-size: 1em; }
 .td h2.td-partie {
@@ -553,6 +555,33 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
 .td-memo .td-margouillat { left: auto; right: 1.2rem; top: 0; transform: translate(0, -55%) rotate(var(--r, 0deg)) scaleX(var(--s, 1)); }
 .td-pied .td-margouillat { left: var(--x, 70%); top: 0; transform: translate(-50%, -62%) rotate(var(--r, 0deg)) scaleX(var(--s, 1)); }
 .td-papier-seul { display: none; }
+/* deux supports (décision du 21/11) : data-support="papier" n'existe qu'imprimé, data-support="ecran" qu'à l'écran */
+@media screen { .td [data-support="papier"] { display: none !important; } }
+
+/* ── Tableaux (énoncés, résultats de requêtes) : <div class="td-table"><table>…</table></div> ── */
+.td-table { max-width: 100%; overflow-x: auto; margin: .5rem 0 .7rem; }
+.td table { border-collapse: collapse; font-size: .95rem; line-height: 1.35; color: var(--td-encre); background: var(--td-panneau); }
+.td table caption { caption-side: top; text-align: left; font-weight: 700; padding: 0 0 .2rem; }
+.td th, .td td { border: 1px solid var(--td-encre); padding: .15rem .5rem; text-align: left; vertical-align: top; }
+.td thead th, .td th[scope="row"] { background: var(--td-panneau-2); font-weight: 700; }
+.td-table th, .td-table td { white-space: nowrap; }
+.td td.td-nb, .td th.td-nb { text-align: right; font-variant-numeric: tabular-nums; }
+.td table code { font-size: 1em; }
+
+/* ── Schémas SVG : <figure class="td-schema"><svg viewBox="…" role="img" aria-label="…">…</svg><figcaption>…</figcaption></figure>
+   Le dessin s'adapte à la largeur ; tracez en currentColor : il suit l'encre (claire en obscur, noire sur papier).
+   Un dessin aux couleurs fixes garde un fond blanc en obscur (data-couleurs="fixes"). ── */
+.td-schema { margin: .6rem 0; max-width: 100%; }
+.td-schema figcaption { font-size: .92rem; color: var(--td-encre-douce); margin-top: .2rem; }
+.td-q svg:not(.td-qr svg), .td-schema svg, .td p > svg { max-width: 100%; height: auto; }
+.td-schema svg { display: block; color: var(--td-encre); }
+.td-schema[data-couleurs="fixes"] svg { background: #FFFFFF; color: #121016; padding: .3rem; }
+
+/* ── Réponse libre (data-type="libre") ── */
+textarea.td-libre { width: 100%; resize: vertical; }
+
+/* ── Pour aller plus loin, mémo : à l'écran ; imprimés seulement avec data-support="papier" ── */
+.td-plus-loin { margin: 1.2rem 0; padding: .6rem .9rem; border: var(--td-trait-ep) dashed var(--td-encre); }
 .td-q-cassee::after { content: "Cette question n'a pas pu s'afficher."; display: block; color: var(--td-erreur); font-weight: 700; }
 
 /* ── Petits écrans ─────────────────────────── */
@@ -573,7 +602,7 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
    Fond blanc, encre foncée ; les néons restent (gris clair en noir et blanc).
    10 pt au moins partout. Marge haute : 11 mm, et 5 mm sur la première page, qui
    commence par le bandeau de 28 mm, à fond perdu en largeur. */
-@page { size: A4; margin: 11mm 0 14mm;
+@page { size: A4; margin: 8mm 0 12mm;
   @bottom-center { content: "Babash - NSI Tani Malandi  ·  CC BY-SA 4.0  ·  conçu avec l'aide de l'IA  ·  " counter(page) " / " counter(pages);
     font-family: "JetBrains Mono", "TD Symboles", monospace; font-size: 10pt; color: #45414D; vertical-align: top; padding-top: 3mm; }
 }
@@ -589,11 +618,30 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
     --td-tk-mot: #9C0057; --td-tk-fn: #00566E; --td-tk-ch: #245400; --td-tk-nb: #704400; --td-tk-com: #525252; --td-tk-op: #121016;
     --td-console-fond: #fff; --td-console-trait: #121016; --td-erreur: #A1001C; --td-accent: #121016;
     --td-marg-img: url("td/margouillat.svg");
-    --td-taille-code: 10pt; --td-interligne-code: 1.42;
+    --td-taille-code: 10pt; --td-interligne-code: 1.32;
     color-scheme: light;
   }
-  body.td-page { background: #fff; color: #121016; font-size: 10.5pt; line-height: 1.34; }
-  .td { max-width: none; padding: 0 13mm; }
+  body.td-page { background: #fff; color: #121016; font-size: 10pt; line-height: 1.3; }
+  .td { max-width: none; padding: 0 12mm; }
+  /* écran seulement, par défaut : le mémo et « pour aller plus loin » (data-support="papier" pour les imprimer) */
+  .td [data-support="ecran"], .td-memo:not([data-support="papier"]), .td-plus-loin:not([data-support="papier"]) { display: none !important; }
+  /* pas de grand blanc en bas de page : une question peut passer d'une page à l'autre, mais son titre reste
+     avec sa consigne, et un code, une console, un tableau, un schéma ou une liste de choix restent entiers */
+  .td pre, .td-erreur-bloc, .td-choix, .td-ordre, .td-editeur, .td table, .td-table, .td-schema, .td-q svg, textarea, .td-ligne-champ { break-inside: avoid; }
+  .td-q-titre, .td-consigne, .td-etiquette-console, .td h2, .td h3 { break-after: avoid; }
+  /* une question courte reste entière ; une longue (message d'erreur, schéma, tableau, éditeur) peut passer à la page suivante */
+  .td-q { break-inside: avoid; }
+  .td-q:has(.td-erreur-bloc, .td-schema, .td-table, .td-editeur, > svg, > p > svg) { break-inside: auto; }
+  .td-consigne { break-inside: avoid; orphans: 3; widows: 3; }
+  /* les accents des capitales (Anton) restent dans la boîte du titre, donc sur la bonne page */
+  .td h2.td-partie { line-height: 1.32; padding-top: .6mm; }
+  .td-q-num { line-height: 1.4; }
+  .td sup, .td sub { font-size: max(10pt, .8em); line-height: 0; }
+  .td table { font-size: 10pt; background: #fff; }
+  .td-table { overflow: visible; margin: 1mm 0 1.5mm; }
+  .td-schema { margin: 1mm 0; }
+  .td-schema svg, .td-q svg { color: #121016; background: none; }
+  .td-plus-loin { border-width: 1px; padding: 1.2mm 3mm; margin: 2mm 0; }
   .td-barre, .td-barre-outils, .td-actions, .td-retour-zone, .td-aide, .td-correction, .td-retour, .td-explication,
   .td-erreur-bloc > button, .td-ed-info, .td-ed-aide, .td-ac, .td-fin, .td-ordre-btn, .td-indic, .td-py-note,
   .td-q-etat, .td-ecran-seul, .td-lignes-choix, .td-pied .td-ecran-seul { display: none !important; }
@@ -605,7 +653,7 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
 
   /* bandeau : 210 x 28 mm, à fond perdu en largeur (1 cqw = 2,1 mm) */
   /* 28 mm (20 mm pour un contrôle) ; plus haut seulement si un texte trop long l'exige (imprimer-td.py le signale) */
-  .td-bandeau, .td-bandeau.td-controle { margin: 0 -13mm 2mm; width: 210mm; min-height: 28mm; height: auto; aspect-ratio: auto; break-inside: avoid; }
+  .td-bandeau, .td-bandeau.td-controle { margin: 0 -12mm 2mm; width: 210mm; min-height: 28mm; height: auto; aspect-ratio: auto; break-inside: avoid; }
   .td-bandeau.td-controle { min-height: 20mm; }
   .td-entete { padding: 0; }
   .td-nom { display: flex; gap: 6mm; margin: 0 0 2mm; font-size: 10.5pt; font-weight: 700; }
@@ -618,9 +666,13 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   .td h2.td-partie { font-size: 14pt; margin: 3mm 0 1.6mm; padding-bottom: .4mm; border-bottom-width: 1.5px; box-shadow: 0 .7mm 0 var(--td-neon-2); break-after: avoid; }
 
   /* questions : un trait en haut, pas de cadre (place pour écrire) */
-  .td-q { border: 0; border-top: 1px solid #121016; border-radius: 0; padding: 1.3mm 0 .6mm; margin: 0 0 1.4mm; break-inside: avoid; box-shadow: none !important; background: #fff; }
+  .td-q { border: 0; border-top: 1px solid #121016; border-radius: 0; padding: 1mm 0 .4mm; margin: 0 0 1mm; box-shadow: none !important; background: #fff; }
   .td-q.td-est-juste, .td-q.td-est-encore { border-left: 0; }
-  .td-q-titre { margin: 0 0 .6mm; gap: 1mm 2.5mm; }
+  /* le numéro de la question sur la ligne de la consigne (une ligne de gagnée par question) */
+  .td-q { display: flow-root; }
+  .td-q-titre { float: left; margin: 0 2.5mm .3mm 0; gap: 1mm 2mm; }
+  .td-q > :not(.td-q-titre):not(.td-consigne):not([hidden]) { clear: left; }
+  .td-q > .td-consigne:first-of-type { min-height: 5.2mm; }
   .td-q-num { font-size: 11pt; padding: 0 1.6mm; box-shadow: .6mm .6mm 0 var(--td-neon-2); }
   .td-q-bonus { font-size: 10pt; }
   .td-q p { margin: .5mm 0; }
@@ -628,26 +680,45 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   .td-reponse { margin-top: .8mm; }
 
   /* code et consoles : 10 pt, une ligne par ligne */
-  .td pre.td-code { overflow: visible; white-space: pre-wrap; padding-top: .6mm; padding-bottom: .6mm; margin: 1mm 0; border-width: 1px; border-left-width: 3px; }
-  .td pre.td-console, .td pre.td-erreur { overflow: visible; white-space: pre-wrap; padding: .8mm 2mm .5mm; margin: 0 0 1mm; border-width: 1px; border-left-width: 3px; line-height: 1.28; }
+  .td pre.td-code { overflow: visible; white-space: pre-wrap; padding-top: .4mm; padding-bottom: .4mm; margin: .7mm 0; border-width: 1px; border-left-width: 3px; }
+  /* un message d'erreur long passe à la ligne (il n'est jamais coupé hors de la page) */
+  .td pre.td-console, .td pre.td-erreur { overflow: visible; white-space: pre-wrap; overflow-wrap: anywhere; padding: .6mm 2mm .4mm; margin: 0 0 .8mm; border-width: 1px; border-left-width: 3px; line-height: 1.22; }
   .td-etiquette-console { font-size: 13pt; margin: 1.2mm 2mm -2.2mm auto !important; }
   .td-num { width: 2.4em; padding-right: .55em; margin-right: .5em; }
 
   /* les champs deviennent des lignes à remplir au stylo (vidés par le moteur avant l'impression) */
   .td-champ, .td-trou { color: #121016 !important; background: #fff !important; border: 0 !important; border-bottom: var(--td-saisie-ep) solid var(--td-saisie) !important; border-radius: 0; }
   /* case à compléter dans le code : cadre noir net, assez large pour écrire à la main */
-  .td-trou { border: var(--td-saisie-ep) solid var(--td-saisie) !important; min-width: 16mm; height: 6mm; margin: .3mm .6mm; vertical-align: middle; }
-  .td pre.td-code-trous .td-l { min-height: 7mm; line-height: 7mm; }
-  .td pre.td-code-trous .td-ind, .td pre.td-code-trous .td-num { height: 7mm; vertical-align: top; }
+  .td-trou { border: var(--td-saisie-ep) solid var(--td-saisie) !important; min-width: 12mm; height: 5.4mm; margin: .2mm .6mm; vertical-align: middle; }
+  .td pre.td-code-trous .td-l { min-height: 6.2mm; line-height: 6.2mm; }
+  .td pre.td-code-trous .td-ind, .td pre.td-code-trous .td-num { height: 6.2mm; vertical-align: top; }
   input.td-champ { min-height: 6mm; padding: 0 1mm; }
   .td-ligne-champ { margin: .6mm 0; }
-  textarea.td-sortie {
-    resize: none; border: 0 !important; padding: 0 1mm; line-height: 7mm; min-height: 14mm; overflow: hidden;
+  /* lignes à remplir : autant que data-lignes (sinon, que de lignes attendues), 7 mm chacune */
+  textarea.td-sortie, textarea.td-libre {
+    resize: none; border: 0 !important; padding: 0 1mm; line-height: 7mm; min-height: 7mm; height: calc(var(--td-lignes, 2) * 7mm) !important; overflow: hidden;
     background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1.2px), var(--td-saisie) calc(7mm - 1.2px) 7mm) !important;
   }
   .td-bloc-champ label { margin-bottom: 0; }
   .td-choix { display: grid; grid-template-columns: 1fr 1fr; gap: .2mm 6mm; }
   .td-choix:has(pre) { grid-template-columns: 1fr 1fr; }
+  /* options courtes : trois ou quatre colonnes (le moteur mesure les options) */
+  .td-choix.td-choix-3 { grid-template-columns: repeat(3, 1fr); }
+  .td-choix.td-choix-4 { grid-template-columns: repeat(4, 1fr); }
+  /* code étroit (« Qu'affiche ce programme ? », choix) : le code à gauche, la réponse à droite */
+  /* code étroit : le code à gauche ; la grille, le schéma, les choix ou les lignes à remplir à sa droite */
+  .td-q.td-cote > pre.td-code { float: left; clear: left; width: calc(50% - 3mm); margin-right: 6mm; }
+  .td-q.td-cote > pre.td-code ~ * { clear: none !important; }
+  .td-q.td-cote > pre.td-code ~ :is(.td-reponse, p, figure, .td-schema, ul, ol):not([hidden]) { display: flow-root; }
+  .td-q.td-cote > pre.td-code ~ svg { display: block; margin-top: .7mm; }
+  .td-q.td-cote > .td-reponse { margin-top: .7mm; }
+  .td-q.td-cote .td-choix { grid-template-columns: 1fr; }
+  .td-q.td-cote .td-choix.td-choix-4 { grid-template-columns: 1fr 1fr; }
+  /* la consigne dit déjà ce qu'il faut écrire : sur papier, l'étiquette du champ des sorties est retirée */
+  .td-q[data-type="sortie"] .td-bloc-champ > label { display: none; }
+  /* trouve l'erreur : « Ligne n° … » et la ligne corrigée sur une seule ligne */
+  .td-q[data-type="erreur"] .td-reponse { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 5mm; }
+  .td-q[data-type="erreur"] .td-reponse > .td-ligne-champ { flex: 1 1 60%; margin: 0; }
   .td-choix legend, .td-choix .td-indic { grid-column: 1 / -1; }
   .td-opt { border: 0; padding: .2mm 0; margin: 0; box-shadow: none !important; }
   .td-opt input { appearance: none; -webkit-appearance: none; width: 3.8mm; height: 3.8mm; border: 1.4px solid var(--td-saisie); border-radius: 0; background: #fff; margin-top: .6mm; }
@@ -659,13 +730,28 @@ textarea.td-sortie { width: 100%; line-height: var(--td-interligne-code); resize
   .td-ordre-ligne { border: 0; border-radius: 0; background: #fff; margin: 0; padding: .1mm 0; }
   .td-ordre-num { width: 4.4em; text-align: left; white-space: nowrap; font-size: 10pt; color: #121016; }
   .td-ordre-num::after { content: " → n° ……"; }
-  .td-editeur { border: var(--td-saisie-ep) solid var(--td-saisie); border-left-width: 3px; min-height: 30mm;
+  .td-editeur { border: var(--td-saisie-ep) solid var(--td-saisie); border-left-width: 3px; min-height: calc(var(--td-lignes-papier, 4.3) * 7mm); height: calc(var(--td-lignes-papier, 4.3) * 7mm);
     background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1.2px), var(--td-saisie) calc(7mm - 1.2px) 7mm) !important; }
   .td-ed-texte, .td-ed-rendu, .td-gouttiere { visibility: hidden; }
-  .td-memo { break-inside: avoid; border-width: 1.5px; margin: 3mm 0 2mm; padding: 1.6mm 3mm; box-shadow: .8mm .8mm 0 var(--td-neon-2); }
+  .td-memo { break-inside: avoid; border-width: 1.5px; margin: 2mm 0 1.5mm; padding: 1.6mm 3mm; box-shadow: .8mm .8mm 0 var(--td-neon-2); }
   .td-memo h2 { font-size: 13pt; }
   .td-memo .td-margouillat { --l: 9mm; }
-  .td-pied { margin-top: 3mm; padding-top: 1.4mm; font-size: 10pt; break-inside: avoid; }
+  .td-pied { margin-top: 2mm; padding-top: 1.2mm; font-size: 10pt; break-inside: avoid; }
+
+  /* TD à plusieurs feuilles, en un seul PDF continu (imprimer-td.py, ou data-feuille="2" et suivantes) :
+     une bande de titre fine au lieu du bandeau ; « Nom et prénom » et le pied de page une seule fois */
+  .td.td-suite .td-bandeau, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau {
+    min-height: 0; width: auto; margin: 3mm 0 1.5mm; padding: .8mm 0; break-after: avoid;
+    border-top: 1.5px solid #121016; border-bottom: 1px solid #121016; container-type: normal; }
+  .td.td-suite .td-bandeau-decor, .td.td-suite .td-qr, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau-decor,
+  .td[data-feuille]:not([data-feuille="1"]) .td-qr { display: none; }
+  .td.td-suite .td-bandeau-texte, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau-texte { margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 3mm; }
+  .td.td-suite .td-bandeau .td-sur-titre, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau .td-sur-titre { font-size: 10pt; }
+  .td.td-suite .td-bandeau .td-puce, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau .td-puce { font-size: 10pt; border-width: 1px; box-shadow: .5mm .5mm 0 var(--td-neon-1); }
+  .td.td-suite .td-bandeau h1, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau h1 { font-size: 14pt; margin: 0; max-width: none; text-shadow: -.4mm .2mm 0 var(--td-neon-2); }
+  .td.td-suite .td-bandeau .td-accroche, .td[data-feuille]:not([data-feuille="1"]) .td-bandeau .td-accroche { font-size: 13pt; margin: 0; max-width: none; }
+  .td.td-suite .td-nom { display: none !important; }
+  .td.td-suite-avant .td-pied { display: none; }
   .td-pied .td-margouillat { --l: 9mm; }
   .td-pied .td-ia { font-size: 10pt; }
 }

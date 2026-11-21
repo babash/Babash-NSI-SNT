@@ -19,7 +19,7 @@
 (function () {
   'use strict';
 
-  var VERSION = '1.0.0';
+  var VERSION = '1.1.0';
   var DUREE = 24 * 3600 * 1000;           // un jour au plus (ordinateurs partagés)
   var PREFIXE = 'td:';
   var PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js';   // Python 3.13
@@ -108,9 +108,29 @@
   }
   function unParmi(reponse, liste, mode) { return liste.some(function (x) { return egal(reponse, x, mode); }); }
   function alternatives(s) { return String(s || '').split('|'); }
-  function normSortie(s) {
-    return String(s).replace(/\r/g, '').split('\n').map(function (l) { return normTexte(l); })
-      .filter(function (l) { return l !== ''; }).join('\n');
+  // garderDebut (data-espaces="exact") : les espaces de début de ligne comptent (motifs centrés, pyramides)
+  function normSortie(s, garderDebut) {
+    return String(s).replace(/\r/g, '').split('\n').map(function (l) {
+      if (!garderDebut || !l.trim()) return normTexte(l);
+      return l.replace(/\t/g, '    ').match(/^ */)[0] + normTexte(l);
+    }).filter(function (l) { return l !== ''; }).join('\n');
+  }
+  // [[réponse]] dans une ligne : la case se ferme au premier « ]] » où les crochets de la réponse sont équilibrés
+  // (t[0] dans [[t[0]]] reste entier). Renvoie [texte, réponse, texte, réponse, …, texte].
+  function decouperTrous(l) {
+    var out = [], debut = 0, k;
+    while ((k = l.indexOf('[[', debut)) >= 0) {
+      var p = 0, fin = -1;
+      for (var j = k + 2; j < l.length; j++) {
+        var c = l[j];
+        if (c === ']' && p === 0 && l[j + 1] === ']') { fin = j; break; }
+        if (c === '[') p++; else if (c === ']' && p > 0) p--;
+      }
+      if (fin < 0) break;
+      out.push(l.slice(debut, k), l.slice(k + 2, fin)); debut = fin + 2;
+    }
+    out.push(l.slice(debut));
+    return out;
   }
 
   /* ── Coloration de Python ──────────────────── */
@@ -119,14 +139,53 @@
     'global if import in is lambda nonlocal not or pass raise return try while with yield').split(' ');
   var FONCTIONS = ('print input range len int float str list dict set tuple abs min max sum round sorted reversed ' +
     'enumerate zip type bool isinstance chr ord map filter open help').split(' ');
-  var RE_TOKEN = /([rRbBfFuU]{0,2}"(?:[^"\\]|\\.)*"?|[rRbBfFuU]{0,2}'(?:[^'\\]|\\.)*'?)|(#.*$)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_\u00c0-\u024f][\w\u00c0-\u024f]*)|(==|!=|<=|>=|\/\/|\*\*|[-+*\/%<>=])/g;
+  // chaînes : triples (docstrings, ouvertes jusqu'en fin de ligne), puis simples ; un « ' » dans "…" reste dans la chaîne
+  var RE_TOKEN = /([rRbBfFuU]{0,2}(?:"""(?:[^"\\]|\\.|"(?!""))*(?:"""|$)|'''(?:[^'\\]|\\.|'(?!''))*(?:'''|$))|[rRbBfFuU]{0,2}"(?:[^"\\]|\\.)*"?|[rRbBfFuU]{0,2}'(?:[^'\\]|\\.)*'?)|(#.*$)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_\u00c0-\u024f][\w\u00c0-\u024f]*)|(==|!=|<=|>=|\/\/|\*\*|[-+*\/%<>=])/g;
 
-  function colorerMots(code) {        // un morceau de ligne, sans l'indentation
+  var MOTS_SQL = ('SELECT FROM WHERE AND OR NOT INSERT INTO VALUES UPDATE SET DELETE CREATE TABLE PRIMARY KEY FOREIGN REFERENCES ' +
+    'JOIN INNER LEFT RIGHT OUTER ON AS ORDER BY GROUP HAVING ASC DESC DISTINCT LIMIT OFFSET NULL IS IN LIKE BETWEEN ' +
+    'INTEGER INT TEXT REAL FLOAT DATE BOOLEAN VARCHAR CHAR DROP ALTER ADD UNIQUE CHECK DEFAULT CASCADE UNION EXISTS').split(' ');
+  var FONCTIONS_SQL = 'COUNT SUM AVG MIN MAX UPPER LOWER LENGTH ROUND ABS'.split(' ');
+  var RE_SQL = /('(?:[^']|'')*'?)|(--.*$)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_\u00c0-\u024f][\w\u00c0-\u024f]*)|(<>|!=|<=|>=|[-+*\/%<>=])/g;
+  // le langage d'un code : data-langage sur le pre, la question ou la page (python par défaut ; sql ; texte = sans coloration)
+  function langue(e) { var x = e && e.closest ? e.closest('[data-langage]') : null; return x ? x.getAttribute('data-langage') : 'python'; }
+  function colorerSql(code) {
     var out = '', i = 0, m;
+    RE_SQL.lastIndex = 0;
+    while ((m = RE_SQL.exec(code))) {
+      out += esc(code.slice(i, m.index)); i = RE_SQL.lastIndex;
+      if (m[1]) out += '<span class="tk-ch">' + esc(m[1]) + '</span>';
+      else if (m[2]) out += '<span class="tk-com">' + esc(m[2]) + '</span>';
+      else if (m[3]) out += '<span class="tk-nb">' + m[3] + '</span>';
+      else if (m[4]) {
+        var u = m[4].toUpperCase();
+        if (MOTS_SQL.indexOf(u) >= 0) out += '<span class="tk-mot">' + esc(m[4]) + '</span>';
+        else if (FONCTIONS_SQL.indexOf(u) >= 0 && /^\s*\(/.test(code.slice(i))) out += '<span class="tk-fn">' + esc(m[4]) + '</span>';
+        else out += esc(m[4]);
+      } else out += '<span class="tk-op">' + esc(m[5]) + '</span>';
+      if (m[0] === '') RE_SQL.lastIndex++;
+    }
+    return out + esc(code.slice(i));
+  }
+  // etat (facultatif) : { dans: '"""' ou "'''" } quand la ligne commence dans une chaîne triple ; mis à jour pour la ligne suivante
+  function colorerMots(code, lang, etat) {        // un morceau de ligne, sans l'indentation
+    if (lang === 'texte') return esc(code);
+    if (lang === 'sql') return colorerSql(code);
+    var out = '', i = 0, m;
+    if (etat && etat.dans) {
+      var f = code.indexOf(etat.dans);
+      if (f < 0) return '<span class="tk-ch">' + esc(code) + '</span>';
+      out = '<span class="tk-ch">' + esc(code.slice(0, f + 3)) + '</span>';
+      code = code.slice(f + 3); etat.dans = null;
+    }
     RE_TOKEN.lastIndex = 0;
     while ((m = RE_TOKEN.exec(code))) {
       out += esc(code.slice(i, m.index)); i = RE_TOKEN.lastIndex;
-      if (m[1]) out += '<span class="tk-ch">' + esc(m[1]) + '</span>';
+      if (m[1]) {
+        out += '<span class="tk-ch">' + esc(m[1]) + '</span>';
+        var tq = m[1].match(/^[rRbBfFuU]{0,2}("""|''')/);
+        if (etat && tq && (m[1].length - tq[0].length < 3 || m[1].slice(-3) !== tq[1])) etat.dans = tq[1];
+      }
       else if (m[2]) out += '<span class="tk-com">' + esc(m[2]) + '</span>';
       else if (m[3]) out += '<span class="tk-nb">' + m[3] + '</span>';
       else if (m[4]) {
@@ -172,7 +231,7 @@
     return { entete: h, fin: fin, niveau: Math.floor(d[h] / 4), mot: (lignes[h].match(/^\s*(\w+)/) || [])[1] || '' };
   }
   // une ligne colorée, avec un filet et une bande grise par niveau d'indentation
-  function colorerLigne(ligne, dVirtuel, actif, num) {
+  function colorerLigne(ligne, dVirtuel, actif, num, lang, etat) {
     var vide = dVirtuel < 0, lead = vide ? -dVirtuel - 1 : decalage(ligne);
     var niv = Math.floor(lead / 4), out = '';
     for (var k = 0; k < niv; k++) {
@@ -181,11 +240,17 @@
     }
     if (vide) return out;
     out += esc(ligne.slice(niv * 4, lead));
-    return out + colorerMots(ligne.slice(lead));
+    return out + colorerMots(ligne.slice(lead), lang, etat);
   }
-  function colorer(code, actif) {
-    var lignes = code.split('\n'), d = decalages(lignes);
-    return lignes.map(function (l, i) { return colorerLigne(l, d[i], actif, i); });
+  function colorer(code, actif, lang) {
+    var lignes = code.split('\n'), d = decalages(lignes), etat = { dans: null };
+    return lignes.map(function (l, i) {
+      if (etat.dans && lang !== 'sql' && lang !== 'texte') {         // ligne dans une chaîne triple : les bandes d'indentation, puis la chaîne
+        var lead = Math.min(decalage(l), Math.max(0, d[i] < 0 ? -d[i] - 1 : d[i])), bandes = colorerLigne(l.slice(0, Math.floor(lead / 4) * 4), -Math.floor(lead / 4) * 4 - 1, actif, i);
+        return bandes + colorerMots(l.slice(Math.floor(lead / 4) * 4), lang, etat);
+      }
+      return colorerLigne(l, d[i], actif, i, lang, etat);
+    });
   }
 
   // code affiché (non modifiable), avec numéros de ligne
@@ -194,7 +259,7 @@
     if (pre.classList.contains('td-code-pret')) return pre.getAttribute('data-source');
     var code = (pre.textContent || '').replace(/^\n/, '').replace(/\s+$/, '');
     pre.setAttribute('data-source', code);
-    var lignes = colorer(code);
+    var lignes = colorer(code, null, langue(pre));
     pre.innerHTML = lignes.map(function (l, i) {
       return '<span class="td-l"><span class="td-num" aria-hidden="true">' + (i + 1) + '</span>' + (l || ' ') + '</span>';
     }).join('');
@@ -244,7 +309,7 @@
     [/KeyError: (.*)/, 'La clé <code>$1</code> n\'existe pas dans le dictionnaire.'],
     [/AttributeError: '(\w+)' object has no attribute '(\w+)'/, 'Un <code>$1</code> n\'a pas de méthode ou d\'attribut <code>$2</code>.'],
     [/RecursionError/, 'La fonction s\'appelle elle-même <b>sans jamais s\'arrêter</b> : il manque un cas de base.'],
-    [/EOFError/, 'Le programme attend une saisie (<code>input</code>), mais cette page ne permet pas d\'en faire.'],
+    [/EOFError/, 'Le programme demande une saisie (<code>input</code>) de plus que ce que la page fournit : chaque <code>input()</code> lit une ligne, et il n\'y en a plus.'],
     [/ModuleNotFoundError: No module named '(\w+)'/, 'Le module <code>$1</code> n\'existe pas ici (ou son nom est mal écrit).']
   ];
   var VOCABULAIRE = [
@@ -300,12 +365,20 @@
       'var py = loadPyodide({ indexURL: ' + JSON.stringify(url.replace(/[^/]*$/, '')) + ' }).then(function (p) {',
       '  p.runPython([',
       '    "import sys, traceback, linecache",',
-      '    "def _td_lancer(src, tests, nom):",',
+      '    "def _td_lancer(src, tests, nom, pre=\'\', graine=\'\'):",',
       '    "    linecache.cache[nom] = (len(src), None, src.splitlines(True), nom)",',
       '    "    g = {\'__name__\': \'__main__\'}",',
       '    "    def rapport(e):",',
       '    "        tb = e.__traceback__.tb_next if e.__traceback__ else None",',
       '    "        return \'\'.join(traceback.format_exception(type(e), e, tb))",',
+      '    "    if pre:",',
+      '    "        try:",',
+      '    "            exec(compile(pre, \'preambule.py\', \'exec\'), g)",',
+      '    "        except BaseException as e:",',
+      '    "            return [\'erreur\', rapport(e)]",',
+      '    "    if graine != \'\':",',
+      '    "        import random",',
+      '    "        random.seed(int(graine) if graine.lstrip(\'-\').isdigit() else graine)",',
       '    "    try:",',
       '    "        exec(compile(src, nom, \'exec\'), g)",',
       '    "    except SystemExit:",',
@@ -330,7 +403,9 @@
       '  py.then(function (p) {',
       '    p.setStdout({ batched: function (s) { sortie.push(s); } });',
       '    p.setStderr({ batched: function (s) { sortie.push(s); } });',
-      '    var r = p.globals.get("_td_lancer")(d.code, d.tests || "", d.fichier || "mon_code.py").toJs();',
+      '    if (typeof d.entrees === "string") { var L = d.entrees.split("\\n"), k = 0; p.setStdin({ stdin: function () { return k < L.length ? L[k++] : undefined; } }); }',
+      '    else p.setStdin({ error: true });',
+      '    var r = p.globals.get("_td_lancer")(d.code, d.tests || "", d.fichier || "mon_code.py", d.pre || "", d.graine || "").toJs();',
       '    self.postMessage({ id: d.id, etat: r[0], detail: r[1], sortie: sortie.join("\\n") });',
       '  }).catch(function (err) { self.postMessage({ id: d.id, etat: "indisponible", detail: String(err) }); });',
       '};'
@@ -349,7 +424,7 @@
       python.attente = {}; python.worker = null; python.charge = false;
     };
   }
-  function lancerPython(url, code, tests, fichier, premier) {
+  function lancerPython(url, code, tests, fichier, premier, extra) {
     return new Promise(function (resoudre) {
       try { if (!python.worker) demarrerPython(url); } catch (e) { resoudre({ etat: 'indisponible' }); return; }
       var id = ++python.n;
@@ -361,7 +436,8 @@
         resoudre({ etat: premier ? 'indisponible' : 'trop-long' });
       }, premier ? 240000 : DELAI_PYTHON);
       python.attente[id] = function (r) { clearTimeout(limite); resoudre(r); };
-      python.worker.postMessage({ id: id, code: code, tests: tests, fichier: fichier });
+      extra = extra || {};
+      python.worker.postMessage({ id: id, code: code, tests: tests, fichier: fichier, pre: extra.pre || '', graine: extra.graine || '', entrees: extra.entrees === undefined || extra.entrees === null ? null : extra.entrees });
     });
   }
 
@@ -588,12 +664,18 @@
 
   /* ── Une question ──────────────────────────── */
 
-  function Question(feuille, section, rang) {
+  function Question(feuille, section, rang, index) {
     this.f = feuille; this.s = section; this.rang = rang;
     this.type = section.getAttribute('data-type');
-    this.id = section.id || ('q' + rang);
+    this.id = section.id || ('q' + (index || rang));
     section.id = this.id;
-    this.bonus = section.hasAttribute('data-bonus') || (this.type === 'code' && !section.hasAttribute('data-obligatoire'));
+    // data-support="papier" : imprimée seulement, jamais comptée ; data-support="ecran" : à l'écran seulement
+    this.support = section.getAttribute('data-support') || '';
+    // « Écris le programme » : obligatoire si la page porte data-code="obligatoire" (défaut de nouveau-td.py, 21/11)
+    // ou si la question porte data-obligatoire ; data-bonus en fait toujours un bonus
+    var codeObligatoire = section.hasAttribute('data-obligatoire') || !!section.closest('[data-code="obligatoire"]');
+    this.bonus = section.hasAttribute('data-bonus') || (this.type === 'code' && !codeObligatoire);
+    this.compte = this.support !== 'papier' && this.type !== 'libre';
     this.etat = feuille.memoire.q[this.id] || { essais: 0, aides: 0 };
     this.juste = !!this.etat.juste;
   }
@@ -608,6 +690,7 @@
     s.setAttribute('aria-labelledby', idTitre);
     var titre = el('h3', { class: 'td-q-titre', id: idTitre }, [
       el('span', { class: 'td-q-num', text: 'Question ' + this.rang }),
+      this.type === 'libre' && this.support !== 'papier' ? el('span', { class: 'td-q-bonus td-ecran-seul', text: 'non corrigée en ligne' }) : null,
       this.bonus ? el('span', { class: 'td-q-bonus', text: '★ bonus' }) : null,
       el('span', { class: 'td-q-etat', 'aria-hidden': 'true' })
     ]);
@@ -644,7 +727,7 @@
     }
     this.retour = el('div', { class: 'td-retour-zone', role: 'status', 'aria-live': 'polite' });
     var barre = el('div', { class: 'td-actions' });
-    if (this.type !== 'code') {
+    if (this.type !== 'code' && this.type !== 'libre') {
       this.bVerifier = el('button', { type: 'button', class: 'td-bouton td-principal', text: 'Vérifier' });
       this.bVerifier.addEventListener('click', function () { q.verifier(); });
       barre.appendChild(this.bVerifier);
@@ -668,7 +751,7 @@
       this.bAide.hidden = reste <= 0;
       this.bAide.textContent = this.etat.aides ? 'Un autre coup de pouce (' + reste + ')' : 'Un coup de pouce';
     }
-    this.bCorr.hidden = !(this.etat.essais >= ESSAIS_AVANT_CORRECTION && !this.etat.vu);
+    this.bCorr.hidden = this.type === 'libre' ? !(this.correction && !this.etat.vu) : !(this.etat.essais >= ESSAIS_AVANT_CORRECTION && !this.etat.vu);
   };
   Question.prototype.aider = function () {
     var a = this.aides[this.etat.aides]; if (!a) return;
@@ -729,6 +812,7 @@
     this.champ.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); q.verifier(); } });
     this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
     this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id, text: this.s.getAttribute('data-etiquette') || 'Ta réponse :' }), this.champ]));
+    this.mettreDeCote();
   };
   Question.prototype.verifier_courte = function () {
     var v = this.champ.value;
@@ -745,7 +829,20 @@
     var fs = el('fieldset', { class: 'td-choix' }, [el('legend', { class: 'td-invisible', text: genre === 'radio' ? 'Choisis une réponse' : 'Coche toutes les bonnes réponses' })]);
     if (genre === 'checkbox') fs.appendChild(el('p', { class: 'td-indic', 'aria-hidden': 'true', text: 'Plusieurs réponses possibles.' }));
     this.options = [];
-    Array.prototype.slice.call(ul.children).forEach(function (li, i) {
+    var lis = Array.prototype.slice.call(ul.children).map(function (li, i) { return { li: li, i: i }; });
+    // data-ordre="melange" (question ou page) : options mélangées, toujours de la même façon pour cette question ;
+    // data-ordre="fixe" sur la question garde l'ordre écrit. Sans attribut : l'ordre écrit (pages d'avant le 21/11).
+    var ordre = (this.s.closest('[data-ordre]') || { getAttribute: function () { return 'fixe'; } }).getAttribute('data-ordre');
+    if (ordre === 'melange' && lis.length > 1) {
+      var r = hasard(this.f.id + '/' + this.id + '/options'), essai = 0, sur;
+      do {
+        sur = lis.slice();
+        for (var a = sur.length - 1; a > 0; a--) { var b = Math.floor(r() * (a + 1)), t = sur[a]; sur[a] = sur[b]; sur[b] = t; }
+      } while (sur.every(function (x, k) { return x.i === k; }) && ++essai < 10);
+      lis = sur;
+    }
+    lis.forEach(function (x, pos) {
+      var li = x.li, i = x.i;
       var idc = nom + '-' + i;
       var input = el('input', { type: genre, name: nom, id: idc, value: String(i) });
       input.checked = (q.etat.valeur || []).indexOf(i) >= 0;
@@ -754,10 +851,27 @@
       while (li.firstChild) lab.appendChild(li.firstChild);
       lab.querySelectorAll('pre.td-code').forEach(function (p) { afficherCode(p, { sansNumeros: true }); });
       fs.appendChild(el('div', { class: 'td-opt' }, [input, lab]));
-      q.options.push({ i: i, input: input, juste: li.hasAttribute('data-juste'), retour: li.getAttribute('data-retour') });
+      q.options.push({ i: i, pos: pos, input: input, juste: li.hasAttribute('data-juste'), retour: li.getAttribute('data-retour') });
     });
     ul.parentNode.removeChild(ul);
+    // sur papier, des options courtes passent sur trois ou quatre colonnes
+    if (!fs.querySelector('pre') && this.options.length >= 3) {
+      var plus = Math.max.apply(null, this.options.map(function (o) { return o.input.parentNode.textContent.trim().length; }));
+      if (plus <= 12 && this.options.length >= 4) fs.classList.add('td-choix-4'); else if (plus <= 26) fs.classList.add('td-choix-3');
+    }
     this.zone.appendChild(fs);
+    this.mettreDeCote();
+  };
+  // sur papier, un code étroit (34 caractères au plus : la moitié de la ligne, numéros compris) se met à gauche et la réponse à droite (sortie, qcu, cases) ;
+  // data-cote="non" l'empêche, data-cote="oui" le force
+  Question.prototype.mettreDeCote = function () {
+    var codes = Array.prototype.filter.call(this.s.children, function (c) { return c.matches('pre.td-code'); });
+    var cote = this.s.getAttribute('data-cote');
+    if (cote === 'non' || codes.length !== 1 || this.s.querySelector(':scope > table, :scope > .td-table')) return;
+    if (this.options && this.options.some(function (o) { return o.input.parentNode.querySelector('pre'); })) return;
+    var source = this.sourceTrous || codes[0].getAttribute('data-source') || codes[0].textContent;
+    var large = Math.max.apply(null, source.split('\n').map(function (l) { return l.length; }));
+    if (cote === 'oui' || large <= 34) this.s.classList.add('td-cote');
   };
   Question.prototype.verifier_qcu = function () {
     var coche = this.options.filter(function (o) { return o.input.checked; });
@@ -777,7 +891,7 @@
     }
   };
   Question.prototype.attenduTexte_options = function () {
-    return this.options.filter(function (o) { return o.juste; }).map(function (o) { return 'choix ' + (o.i + 1); }).join(', ');
+    return this.options.filter(function (o) { return o.juste; }).map(function (o) { return 'choix ' + (o.pos + 1); }).join(', ');
   };
 
   /* compléter un code : [[réponse|autre réponse]] dans le pre.td-code */
@@ -785,20 +899,39 @@
     var q = this, pre = this.s.querySelector('pre.td-code');
     var texte = pre.textContent.replace(/^\n/, '').replace(/\s+$/, '');
     this.trous = [];
-    var lignes = texte.split('\n'), d = decalages(lignes.map(function (l) { return l.replace(/\[\[(.*?)\]\]/g, 'x'); }));
+    var lignes = texte.split('\n'), d = decalages(lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? 'x' : m; }).join(''); }));
+    var lang = langue(pre);
+    // largeur commune à toutes les cases de la question (elle ne trahit pas la réponse) : data-largeur (en caractères)
+    // sur la question ou la page ; sinon la plus longue réponse, arrondie au palier supérieur (6, 10, 16, 24, 32, 48)
+    var reglee = parseInt((this.s.closest('[data-largeur]') || { getAttribute: function () { return ''; } }).getAttribute('data-largeur'), 10);
+    var plusLongue = 0;
+    lignes.forEach(function (l) { decouperTrous(l).forEach(function (m, k) { if (k % 2) alternatives(m).forEach(function (r) { plusLongue = Math.max(plusLongue, r.trim().length); }); }); });
+    var largeurCommune = reglee > 0 ? reglee : [6, 10, 16, 24, 32, 48].filter(function (x) { return x >= plusLongue; })[0] || plusLongue;
+    // une ligne qui a plusieurs cases doit tenir sur la page (80 caractères, numéros compris) : la largeur commune
+    // est réduite s'il le faut, sans descendre sous la plus longue réponse de cette ligne
+    var parTrou = false;      // ligne trop chargée : chaque case garde sa propre largeur (comme avant le 21/11)
+    if (!(reglee > 0)) lignes.forEach(function (l) {
+      var m = decouperTrous(l), n = (m.length - 1) / 2;
+      if (!n) return;
+      var texte = m.filter(function (_, k) { return k % 2 === 0; }).join('').length;
+      var propre = Math.max.apply(null, m.filter(function (_, k) { return k % 2; }).map(function (x) { return Math.max.apply(null, alternatives(x).map(function (r) { return r.trim().length; })); }));
+      var place = Math.floor((72 - texte) / n) - 4;
+      if (place < largeurCommune) largeurCommune = Math.max(place, propre, 4);
+      if (texte + n * (largeurCommune + 5) > 76) parTrou = true;
+    });
     pre.innerHTML = '';
     lignes.forEach(function (l, n) {
       var span = el('span', { class: 'td-l' });
       span.appendChild(el('span', { class: 'td-num', 'aria-hidden': 'true', text: String(n + 1) }));
-      var morceaux = l.split(/\[\[(.*?)\]\]/);
+      var morceaux = decouperTrous(l);
       morceaux.forEach(function (m, k) {
         if (k % 2 === 0) {
           var h = el('span');
-          h.innerHTML = k === 0 ? colorerLigne(m, m.trim() ? decalage(m) : d[n], null, n) : colorerMots(m);
+          h.innerHTML = k === 0 ? colorerLigne(m, m.trim() ? decalage(m) : d[n], null, n, lang) : colorerMots(m, lang);
           span.appendChild(h);
         } else {
           var rep = alternatives(m), num = q.trous.length;
-          var largeur = Math.max.apply(null, rep.map(function (r) { return r.length; })) + 2;
+          var largeur = parTrou ? Math.max.apply(null, rep.map(function (r) { return r.length; })) + 2 : largeurCommune + 2;
           var input = el('input', {
             type: 'text', class: 'td-trou', size: String(largeur), autocomplete: 'off', spellcheck: 'false', autocapitalize: 'off',
             'aria-label': 'Case ' + (num + 1) + ', ligne ' + (n + 1)
@@ -814,6 +947,9 @@
       pre.appendChild(span);
     });
     pre.classList.add('td-code-pret', 'td-code-trous');
+    // largeur du code sur papier (chaque case compte pour sa largeur) : code étroit = réponse à côté
+    this.sourceTrous = lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? new Array((parTrou ? Math.max.apply(null, alternatives(m).map(function (r) { return r.length; })) : largeurCommune) + 6).join('x') : m; }).join(''); }).join('\n');
+    this.mettreDeCote();
   };
   Question.prototype.verifier_trous = function () {
     var vides = this.trous.filter(function (t) { return !t.input.value.trim(); }).length;
@@ -832,10 +968,13 @@
     if (att) att.parentNode.removeChild(att);
     var n = this.attendu.split('\n').length;
     this.champ = el('textarea', { id: id, class: 'td-champ td-mono td-sortie', rows: String(Math.max(2, n + 1)), spellcheck: 'false', autocapitalize: 'off', autocomplete: 'off' });
+    // sur papier : data-lignes lignes à remplir (sinon, autant que de lignes attendues)
+    this.champ.style.setProperty('--td-lignes', String(+this.s.getAttribute('data-lignes') || n));
     this.champ.value = this.etat.valeur || '';
     this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
     this.zone.appendChild(el('div', { class: 'td-ligne-champ td-bloc-champ' }, [
       el('label', { for: id, text: this.s.getAttribute('data-etiquette') || 'Ce que le programme affiche (une ligne par ligne d\'affichage) :' }), this.champ]));
+    this.mettreDeCote();
     this.surJuste = function () {
       this.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'sortie' }));
       this.retour.appendChild(console_(this.attendu));
@@ -844,16 +983,30 @@
   Question.prototype.verifier_sortie = function () {
     var v = this.champ.value;
     if (!v.trim()) return this.dire('Écris ce que le programme affiche, puis vérifie.', 'info');
-    var ok = normSortie(v) === normSortie(this.attendu);
+    var ex = this.s.getAttribute('data-espaces') === 'exact';
+    var ok = normSortie(v, ex) === normSortie(this.attendu, ex);
     var cible = ok ? null : this.retourPour(v, 'texte');
     this.conclure(ok, cible);
     if (!ok) {
-      var a = normSortie(v).split('\n'), b = normSortie(this.attendu).split('\n');
+      var a = normSortie(v, ex).split('\n'), b = normSortie(this.attendu, ex).split('\n');
       if (a.length !== b.length) this.retour.appendChild(el('p', { text: 'Compte les lignes : le programme en affiche ' + (a.length < b.length ? 'plus' : 'moins') + ' que toi.' }));
       else for (var i = 0; i < b.length; i++) if (a[i] !== b[i]) { this.retour.appendChild(el('p', { text: 'Le bon nombre de lignes. Regarde à partir de ta ligne ' + (i + 1) + '.' })); break; }
     }
   };
   Question.prototype.attenduTexte_sortie = function () { return '<br>' + esc(this.attendu).replace(/\n/g, '<br>'); };
+
+  /* réponse libre (data-type="libre", data-lignes="4") : des lignes à remplir sur papier ; à l'écran, une zone
+     de brouillon non corrigée (la question ne compte jamais dans l'avancement) */
+  Question.prototype.monter_libre = function () {
+    var q = this, id = nouvelId('libre'), n = Math.max(1, +this.s.getAttribute('data-lignes') || 3);
+    this.champ = el('textarea', { id: id, class: 'td-champ td-libre', rows: String(n), spellcheck: 'true' });
+    this.champ.style.setProperty('--td-lignes', String(n));
+    this.champ.value = this.etat.valeur || '';
+    this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
+    this.zone.appendChild(el('div', { class: 'td-ligne-champ td-bloc-champ' }, [
+      el('label', { for: id, class: this.support === 'papier' ? 'td-invisible' : null, text: this.s.getAttribute('data-etiquette') || 'Ta réponse (rédigée, non corrigée ici : compare avec la correction) :' }), this.champ]));
+  };
+  Question.prototype.verifier_libre = function () { };
 
   /* remettre des lignes dans l'ordre */
   Question.prototype.monter_ordre = function () {
@@ -874,6 +1027,7 @@
     this.zone.appendChild(el('p', { class: 'td-indic', text: 'Utilise les flèches ▲ ▼ (ou Alt + flèche haut ou bas) pour déplacer une ligne.' }));
     this.zone.appendChild(this.liste); this.zone.appendChild(this.annonce);
     this.dessinerOrdre();
+    this.mettreDeCote();
   };
   Question.prototype.estDansOrdre = function (ordre) {
     var L = this.lignesJustes;
@@ -884,7 +1038,7 @@
     this.liste.innerHTML = '';
     this.ordre.forEach(function (k, pos) {
       var texte = q.lignesJustes[k];
-      var code = el('pre', { class: 'td-code td-code-pret td-sans-num td-ordre-code', html: '<span class="td-l">' + colorerLigne(texte, decalage(texte), null, 0) + '</span>' });
+      var code = el('pre', { class: 'td-code td-code-pret td-sans-num td-ordre-code', html: '<span class="td-l">' + colorerLigne(texte, decalage(texte), null, 0, langue(q.s)) + '</span>' });
       var court = texte.trim();
       var haut = el('button', { type: 'button', class: 'td-bouton td-fleche', 'aria-label': 'Monter la ligne « ' + court + ' »', text: '▲', disabled: pos === 0 });
       var bas = el('button', { type: 'button', class: 'td-bouton td-fleche', 'aria-label': 'Descendre la ligne « ' + court + ' »', text: '▼', disabled: pos === n - 1 });
@@ -957,16 +1111,26 @@
 
   /* écrire et lancer du code (Python à la demande) */
   Question.prototype.monter_code = function () {
-    var q = this, dep = this.s.querySelector('.td-depart'), att = this.s.querySelector('pre.td-attendu'), tests = this.s.querySelector('script.td-tests');
+    var q = this, s = this.s, dep = s.querySelector('.td-depart'), tests = s.querySelector('script.td-tests');
     var depart = dep ? dep.textContent.replace(/^\n/, '') : '';
     if (dep) dep.parentNode.removeChild(dep);
-    this.attendu = att ? att.textContent.replace(/^\n/, '').replace(/\s+$/, '') : null;
-    if (att) att.parentNode.removeChild(att);
+    // un ou plusieurs essais : chaque pre.td-attendu peut porter ses data-entrees (une ligne par input()) et sa data-graine
+    var attr = function (e, n) { return e && e.hasAttribute(n) ? e.getAttribute(n) : (s.hasAttribute(n) ? s.getAttribute(n) : null); };
+    var atts = Array.prototype.slice.call(s.querySelectorAll('pre.td-attendu'));
+    this.essais = (atts.length ? atts : [null]).map(function (a) {
+      return { attendu: a ? a.textContent.replace(/^\n/, '').replace(/\s+$/, '') : null, entrees: attr(a, 'data-entrees'), graine: attr(a, 'data-graine') };
+    });
+    atts.forEach(function (a) { a.parentNode.removeChild(a); });
+    this.attendu = this.essais[0].attendu;
+    // préambule : du Python exécuté avant le programme (le robot, des données…), sur la question ou pour toute la page
+    var pre = s.querySelector('script.td-preambule') || (s.closest('[data-td]') || document).querySelector('script.td-preambule:not(.td-q script)');
+    this.preambule = pre ? pre.textContent : '';
     this.tests = tests ? tests.textContent : '';
     this.fichier = this.s.getAttribute('data-fichier') || 'mon_code.py';
     var box = el('div', { class: 'td-ed-boite' });
     this.zone.appendChild(box);
     this.ed = new Editeur(box, this.etat.valeur !== undefined ? this.etat.valeur : depart, 'Ton programme Python, question ' + this.rang, function (v) { q.etat.valeur = v; q.enregistrer(); });
+    if (s.hasAttribute('data-lignes')) this.ed.racine.style.setProperty('--td-lignes-papier', String(+s.getAttribute('data-lignes')));
     this.depart = depart;
     var barre = el('div', { class: 'td-actions' });
     this.bLancer = el('button', { type: 'button', class: 'td-bouton td-principal', text: 'Lancer et vérifier' });
@@ -975,6 +1139,8 @@
     bRaz.addEventListener('click', function () { q.ed.valeur(q.depart); q.etat.valeur = q.depart; q.enregistrer(); q.ed.ta.focus(); });
     barre.appendChild(this.bLancer); barre.appendChild(bRaz);
     this.zone.appendChild(barre);
+    var saisies = this.essais.filter(function (e) { return e.entrees !== null; });
+    if (saisies.length) this.zone.appendChild(el('p', { class: 'td-indic', text: 'Les saisies (input) sont fournies par la page, une ligne par input() : ' + saisies.map(function (e) { return e.entrees.split('\n').join(', '); }).join(' ; puis ') + '.' }));
     this.zone.appendChild(el('p', { class: 'td-indic td-py-note', text: 'Python se charge au premier lancement (une seule fois, environ 10 Mo). Sans connexion, compare ton programme avec la correction.' }));
   };
   Question.prototype.lancer = function () {
@@ -984,7 +1150,17 @@
     this.bLancer.disabled = true;
     this.dire(premier ? 'Python se charge… (la première fois, cela peut prendre quelques secondes)' : 'Ton programme tourne…', 'info');
     var lent = premier ? setTimeout(function () { q.dire('Python se charge encore : la connexion est lente. Patiente un peu…', 'info'); }, 15000) : null;
-    lancerPython(this.f.pyodide, code, this.tests, this.fichier, premier).then(function (r) {
+    var essais = this.essais, k = 0, ex = this.s.getAttribute('data-espaces') === 'exact';
+    function suivant() {
+      var e = essais[k];
+      return lancerPython(q.f.pyodide, code, q.tests, q.fichier, premier && k === 0, { pre: q.preambule, entrees: e.entrees, graine: e.graine }).then(function (r) {
+        r.essai = e;
+        r.ok = r.etat === 'ok' && (e.attendu === null || normSortie(r.sortie, ex) === normSortie(e.attendu, ex));
+        if (r.ok && ++k < essais.length) return suivant();
+        return r;
+      });
+    }
+    suivant().then(function (r) {
       clearTimeout(lent);
       q.bLancer.disabled = false;
       if (r.etat === 'indisponible') {
@@ -999,16 +1175,18 @@
         q.retour.appendChild(el('p', { html: 'Ton programme tourne encore après ' + DELAI_PYTHON / 1000 + ' secondes : c\'est sans doute une <b>boucle infinie</b>. Vérifie que la condition du <code>while</code> finit par devenir fausse.' }));
         return;
       }
-      var ok = r.etat === 'ok' && (q.attendu === null || normSortie(r.sortie) === normSortie(q.attendu));
+      var ok = r.ok, att = r.essai.attendu;
       q.ed.rendre(r.etat === 'erreur' ? ligneErreur(r.detail) : null);
       q.conclure(ok, null);
+      if (essais.length > 1 || r.essai.entrees !== null) q.retour.appendChild(el('p', { text: (essais.length > 1 ? 'Essai ' + (k + 1) + ' sur ' + essais.length : 'Essai') + (r.essai.entrees !== null ? ', avec les saisies : ' + r.essai.entrees.split('\n').join(' ; ') : '') }));
       if (r.sortie && r.sortie.trim()) { q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'ta sortie' })); q.retour.appendChild(console_(r.sortie)); }
-      else if (r.etat === 'ok') q.retour.appendChild(el('p', { text: 'Ton programme n\'affiche rien. As-tu utilisé print ?' }));
+      // « n'affiche rien » : seulement si c'est la cause probable (pas après un programme juste vérifié par des tests)
+      else if (r.etat === 'ok' && (!ok || (!q.tests.trim() && att === null))) q.retour.appendChild(el('p', { text: 'Ton programme n\'affiche rien. As-tu utilisé print ?' }));
       if (r.etat === 'erreur') blocErreur(r.detail, q.retour);
       else if (r.etat === 'test') q.retour.appendChild(el('p', { text: r.detail || 'Un test ne passe pas.' }));
-      else if (!ok && q.attendu !== null) {
+      else if (!ok && att !== null) {
         q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'sortie attendue' }));
-        q.retour.appendChild(console_(q.attendu, 'td-console-attendu'));
+        q.retour.appendChild(console_(att, 'td-console-attendu'));
       }
     });
   };
@@ -1041,7 +1219,17 @@
     // titre long : réduction mesurée (26 caractères tiennent à la taille normale, 31 à la taille réduite)
     var h1 = this.r.querySelector('.td-bandeau h1');
     if (h1) { var lg = h1.textContent.replace(/\s+/g, ' ').trim().length; if (lg > 31) h1.classList.add('td-titre-tres-long'); else if (lg > 26) h1.classList.add('td-titre-long'); }
-    this.questions = Array.prototype.slice.call(this.r.querySelectorAll('.td-q[data-type]')).map(function (s, i) { return new Question(f, s, i + 1); });
+    // numérotation : deux variantes d'une même question qui se suivent (data-support="ecran" puis "papier",
+    // ou l'inverse) portent le même numéro, à l'écran comme sur papier
+    var n = 0, prec = null;
+    this.questions = Array.prototype.slice.call(this.r.querySelectorAll('.td-q[data-type]')).map(function (s, i) {
+      var sup = s.getAttribute('data-support') || '';
+      var jumelle = !!(prec && sup && prec.sup && prec.sup !== sup && !prec.jumelle);
+      var q = new Question(f, s, jumelle ? n : ++n, i + 1);
+      prec = { sup: sup, jumelle: jumelle };
+      return q;
+    });
+    this.auteurs();
     this.questions.forEach(function (q) {
       try { q.monter(); } catch (e) { q.s.classList.add('td-q-cassee'); if (window.console) console.error('Question ' + q.id + ' :', e); }
     });
@@ -1052,9 +1240,19 @@
     this.monterBarre();
     this.maj(false);
   };
+  // data-auteurs sur <main> : tous les noms dans le pied de chaque page imprimée (décision du 21/11)
+  Feuille.prototype.auteurs = function () {
+    var a = this.r.getAttribute('data-auteurs');
+    if (!a || document.getElementById('td-pied-auteurs')) return;
+    var txt = a.replace(/\s+/g, ' ').trim().replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+    var st = document.createElement('style');
+    st.id = 'td-pied-auteurs';
+    st.textContent = '@page { @bottom-center { content: "' + txt + '  ·  CC BY-SA 4.0  ·  conçu avec l\'aide de l\'IA  ·  " counter(page) " / " counter(pages); } }';
+    document.head.appendChild(st);
+  };
   Feuille.prototype.monterBarre = function () {
     var f = this;
-    var requises = this.questions.filter(function (q) { return !q.bonus; }).length;
+    var requises = this.questions.filter(function (q) { return q.compte && !q.bonus; }).length;
     this.jauge = el('div', { class: 'td-jauge', role: 'progressbar', 'aria-valuemin': '0', 'aria-valuemax': String(requises), 'aria-label': 'Avancement de la feuille' }, [el('span', { class: 'td-jauge-plein' })]);
     this.texteJauge = el('p', { class: 'td-jauge-texte' });
     this.validee = el('p', { class: 'td-validee', role: 'status', 'aria-live': 'polite' });
@@ -1083,9 +1281,9 @@
     this.r.insertBefore(fin, pied || null);
   };
   Feuille.prototype.maj = function (annoncer) {
-    var req = this.questions.filter(function (q) { return !q.bonus; });
+    var req = this.questions.filter(function (q) { return q.compte && !q.bonus; });
     var faites = req.filter(function (q) { return q.juste; }).length;
-    var bonus = this.questions.filter(function (q) { return q.bonus; });
+    var bonus = this.questions.filter(function (q) { return q.compte && q.bonus; });
     var bf = bonus.filter(function (q) { return q.juste; }).length;
     var pc = req.length ? Math.round(100 * faites / req.length) : 100;
     this.jauge.firstChild.style.width = pc + '%';
@@ -1204,6 +1402,6 @@
     window.addEventListener('beforeprint', function () { feuilles.forEach(function (f) { f.viderPourImpression(); }); });
     window.addEventListener('afterprint', function () { feuilles.forEach(function (f) { f.restaurerApresImpression(); }); });
   }
-  window.TDenLigne = { version: VERSION, colorer: colorer, expliquerErreur: expliquerErreur, egal: egal, normSortie: normSortie };
+  window.TDenLigne = { version: VERSION, colorer: colorer, expliquerErreur: expliquerErreur, egal: egal, normSortie: normSortie, decouperTrous: decouperTrous };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', demarrer); else demarrer();
 })();

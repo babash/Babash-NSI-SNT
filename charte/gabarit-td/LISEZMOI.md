@@ -6,6 +6,120 @@ Un TD est **une seule page HTML** : à l'écran, elle se corrige toute seule ; i
 - Modèle : `charte/gabarit-td/modele.html` (commenté) ; exemple rendu : `charte/gabarit-td/index.html` ; TD complet : `charte/td-pilote/`.
 - Outils : `charte/nouveau-td.py` (le squelette), `charte/verifier-td.py` (le code exécuté pour de vrai), `charte/imprimer-td.py` (le PDF vierge et les contrôles de mise en page).
 
+## Nouveautés du 21/11 (T123b) : à lire d'abord
+
+Tout ajout passe par un **attribut nouveau** : une page écrite avant le 21/11, sans ces attributs, garde son comportement à l'écran (les options restent dans l'ordre écrit, le code reste en bonus…). Seules changent pour toutes les pages : **l'impression, plus serrée** (voir plus bas), la largeur des cases à trous, et les corrections de défauts (case `[[t[0]]]`, coloration, « n'affiche rien »).
+
+### Décisions de l'enseignant (21/11)
+
+**1. Deux supports pour une question ouverte.** En ligne, un choix auto-corrigé ; sur papier, la question ouverte avec des lignes. Les deux variantes **se suivent** et portent le même numéro.
+
+```html
+<section class="td-q" data-type="qcu" id="q4" data-support="ecran"> … </section>
+<section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="4">
+  <p class="td-consigne">Explique pourquoi la boucle ne s'arrête pas.</p>
+</section>
+```
+
+| Attribut | Effet |
+|---|---|
+| `data-support="papier"` | n'apparaît qu'à l'impression (et dans le PDF) ; ne compte ni dans l'avancement ni dans « Feuille validée » |
+| `data-support="ecran"` | n'apparaît qu'à l'écran |
+| `data-type="libre"` + `data-lignes="4"` | réponse rédigée : 4 lignes noires à remplir sur papier ; à l'écran (si elle n'est pas `papier`), une zone de brouillon non corrigée, avec « Voir la correction » ; jamais comptée |
+
+Les attributs `data-support` valent aussi pour tout autre élément (un paragraphe, une figure).
+
+**2. « Écris le programme » est obligatoire** pour valider la feuille : `nouveau-td.py` écrit `data-code="obligatoire"` sur `<main>`. Une question `code` marquée `data-bonus` reste un bonus. (Une page sans `data-code` garde l'ancien défaut : code en bonus, sauf `data-obligatoire`.)
+
+```html
+<main class="td" data-td="nsi1-boucles-td1" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+```
+
+**3. Tous les noms sur chaque page imprimée** : `data-auteurs` sur `<main>` (rempli par `nouveau-td.py --auteurs`). Le pied de chaque page A4 devient « Noms · CC BY-SA 4.0 · conçu avec l'aide de l'IA · page / pages » (sans l'attribut : « Babash - NSI Tani Malandi »). Mettez les mêmes noms dans le pied de la page (`footer.td-pied`) : `nouveau-td.py` le fait.
+
+```html
+<main class="td" … data-auteurs="Babash - NSI Tani Malandi ; Etienne Clave ; Marion Dufour">
+```
+
+### Nouveaux attributs, un exemple chacun
+
+| Attribut | Où | Exemple et effet |
+|---|---|---|
+| `data-ordre="melange"` | `<main>` ou question `qcu`/`cases` | options mélangées, toujours de la même façon pour cette question (défaut de `nouveau-td.py`) |
+| `data-ordre="fixe"` | question | `<section class="td-q" data-type="qcu" data-ordre="fixe">` : l'ordre écrit est gardé (options « 1, 2, 3, 4 ») |
+| `data-lignes` | question `sortie`, `code`, `libre` | `data-lignes="6"` : 6 lignes de 7 mm sur papier (cadre de l'éditeur compris ; sans lui : 30 mm pour le code, autant de lignes que de lignes attendues pour une sortie) |
+| `data-largeur` | question `trous` ou `<main>` | `data-largeur="12"` : toutes les cases font 12 caractères. Sans lui, toutes les cases d'une question ont **la même largeur** (la plus longue réponse, arrondie à 6, 10, 16, 24, 32 ou 48) : la largeur ne trahit plus la réponse |
+| `data-espaces="exact"` | question `sortie` ou `code` | `data-espaces="exact"` : les espaces de début de ligne comptent (motifs centrés, pyramides) |
+| `data-entrees` | question `code`, ou chaque `pre.td-attendu` | `<pre class="td-attendu" data-entrees="4">8</pre>` : chaque `input()` lit une ligne ; plusieurs `pre.td-attendu` = plusieurs essais (tous doivent passer). Plusieurs saisies : une par ligne (`data-entrees="12&#10;5"`) |
+| `data-graine` | question `code`, ou `pre.td-attendu` | `data-graine="7"` : `random` donne toujours les mêmes tirages (même résultat dans le moteur et dans `verifier-td.py`) |
+| `script.td-preambule` | dans la question, ou dans `<main>` pour toute la page | `<script type="text/x-python" class="td-preambule">def est(): …</script>` : du Python exécuté avant le programme de l'élève (le robot, des données, une classe) ; les numéros de ligne des erreurs restent ceux de l'élève |
+| `data-langage` | `<pre>`, question ou `<main>` | `data-langage="sql"` : coloration SQL, et `verifier-td.py` exécute la requête avec SQLite sur les tables de la page ; `data-langage="texte"` : aucune coloration, rien à exécuter (lignes d'un résultat dans une question `ordre`) |
+| `script.td-tables` | question ou `<main>` | `<script type="text/x-sql" class="td-tables">CREATE TABLE … ; INSERT …</script>` : les tables pour vérifier le SQL |
+| `data-cote` | question | sur papier, un code étroit (34 caractères au plus) se met à gauche et la réponse (lignes, choix, grille) à droite ; `data-cote="non"` l'empêche, `data-cote="oui"` le force |
+| `data-pages-max` | `<main>` | `data-pages-max="5"` : 5 pages admises par `imprimer-td.py` (exercice de bac de 6 points) ; 4 par défaut |
+| `data-feuille` | `<main>` | `data-feuille="2"` : deuxième feuille d'un TD ; sur papier, une bande de titre fine au lieu du bandeau (`nouveau-td.py --feuille 2`) |
+| `class="td-plus-loin"` | un bloc | « Pour aller plus loin » : à l'écran seulement (comme le mémo) ; `data-support="papier"` pour l'imprimer |
+
+### Tableaux, schémas, symboles
+
+```html
+<div class="td-table"><table>
+  <caption>Table eleve</caption>
+  <thead><tr><th>id</th><th>prenom</th></tr></thead>
+  <tbody><tr><td class="td-nb">1</td><td>Anli</td></tr></tbody>
+</table></div>
+
+<figure class="td-schema">
+  <svg viewBox="0 0 200 60" role="img" aria-label="Deux nœuds reliés"> … tracé en currentColor … </svg>
+  <figcaption>Le graphe.</figcaption>
+</figure>
+```
+
+- Tableau : trait noir, en-tête grisé, 10 pt sur papier, défilement dans son cadre sur téléphone (jamais la page) ; `td-nb` aligne un nombre à droite.
+- Schéma SVG : `max-width: 100%`, hauteur proportionnelle ; tracez en `currentColor`, il suit l'encre (claire en obscur, noire sur papier). Un dessin aux couleurs fixes : `<figure class="td-schema" data-couleurs="fixes">` (fond blanc en obscur). Le texte d'un SVG est mesuré **à sa taille imprimée réelle** (échelle comprise) : 10 pt au moins.
+- `<sup>` et `<sub>` : 10 pt au moins sur papier. Un `<code>` long sans espace passe à la ligne (plus de défilement à 320 px).
+- Police « TD Symboles » : ← ↑ → ↓ ↔ ⇒ ⇔ ∧ ∨ ¬ × ≠ ≤ ≥ ≈ ≡ Δ Σ π λ √ ∞ ∑ ∈ ∉ ∅ ∩ ∪ ■ □ ▲ ▼ ◆ ★ ☆ ✓ ✗ (refaite par `python3 -I charte/symboles-td.py`).
+
+### Le bandeau et sa puce
+
+- `--genre TD|DM|TP|Activité|Séance` : la puce du bandeau (et le titre de l'onglet).
+- **Le bandeau est tiré de l'identifiant** (SHA-256 modulo 4) : même identifiant, même bandeau, sur toutes les branches, sans regarder le dépôt. Des lots convertis en parallèle ne prennent donc plus tous les mêmes bandeaux.
+- `python3 -I charte/reattribuer-bandeaux.py` montre la répartition exacte de tous les TD du dépôt (1, 2, 3, 4, 1…, les feuilles d'un même dossier sur des bandeaux différents) ; `--appliquer` l'écrit (data-bandeau et place du margouillat). À lancer une fois, après les fusions.
+- Un titre, une accroche ou un chapitre trop longs ne sont plus coupés : le titre rapetisse, puis passe sur deux lignes, et le bandeau grandit. `nouveau-td.py` prévient, `imprimer-td.py` le signale.
+
+### L'impression, resserrée (toutes les pages)
+
+Objectif : le PDF d'un TD converti ne dépasse pas l'original de plus d'une page, sans descendre sous 10 pt.
+- Marges et espacements réduits ; texte à 10 pt, code à 10 pt plus serré ; le numéro de la question sur la ligne de la consigne.
+- Une question courte reste entière ; une longue (message d'erreur, schéma, tableau, éditeur) peut passer à la page suivante, mais un code, une console, un tableau, un schéma ou une liste de choix restent entiers, et le titre reste avec sa consigne.
+- Code étroit : la réponse à côté (voir `data-cote`). Options courtes : 3 ou 4 colonnes.
+- Lignes de réponse : autant que de lignes attendues (`data-lignes` pour régler). L'étiquette « Ce que le programme affiche… » n'est pas imprimée (la consigne le dit).
+- Le mémo et « pour aller plus loin » : à l'écran seulement (`data-support="papier"` pour les imprimer).
+- Un message d'erreur ou une console trop longs passent à la ligne au lieu d'être refusés.
+- **TD à plusieurs feuilles : un seul PDF continu.** Donnez toutes les adresses à `imprimer-td.py`, dans l'ordre :
+  ```
+  python3 -I charte/imprimer-td.py http://localhost:8000/…/td-for.html http://localhost:8000/…/td-for-2.html http://localhost:8000/…/td-for-3.html …/td-for.pdf
+  ```
+  Chaque feuille est contrôlée seule (et doit tenir en 4 pages, ou `data-pages-max`), puis le PDF est fait d'un seul tenant : pas de saut de page entre les feuilles, une bande de titre fine pour la deuxième et les suivantes, « Nom et prénom » et le pied une seule fois.
+
+### Vérifier : `verifier-td.py`
+
+- Préambule, `data-entrees`, `data-graine`, plusieurs essais, `data-espaces` : comme dans le moteur.
+- SQL (`data-langage="sql"`) : exécuté avec SQLite sur `script.td-tables` ; sans tables, la question est notée « SQL non vérifié » (sans erreur). `data-langage="texte"` : rien à exécuter.
+- « Trouve l'erreur » d'indentation : si la ligne corrigée garde le décalage fautif, le bon décalage est cherché (0, 4, 8… espaces).
+- Les cases `[[…]]` sont découpées comme dans le moteur (`[[t[0]]]` reste entier).
+
+### Essayer sans connexion : Python local
+
+Le moteur charge Python 3.13 (Pyodide 0.29.3) depuis jsDelivr au premier clic. Pour les essais hors ligne, servez une copie locale de Pyodide et déclarez-la **avant** le moteur, ou sur `<main>` :
+
+```html
+<script>window.TD_PYODIDE = 'http://localhost:8000/pyodide/pyodide.js';</script>
+<!-- ou --> <main class="td" data-pyodide="http://localhost:8000/pyodide/pyodide.js" …>
+```
+
+Avec Playwright : `context.add_init_script("window.TD_PYODIDE='http://localhost:8000/pyodide/pyodide.js'")`. Ne laissez jamais cette ligne dans une page publiée.
+
 ## 1. Créer le squelette
 
 À la racine du dépôt :
@@ -29,13 +143,16 @@ python3 -I charte/nouveau-td.py nsi1/fichiers/boucles-td1 \
 
 **Textes trop longs.** Au-delà de ces longueurs, rien n'est coupé ni recouvert : le titre est imprimé plus petit (au-delà de 26 caractères), puis passe sur deux lignes (au-delà de 31), la ligne du niveau et du chapitre passe à la ligne, et **le bandeau grandit** (sur papier aussi). `nouveau-td.py` prévient (« Attention : … ») et `imprimer-td.py` signale un bandeau de plus de 28 mm (20 mm pour un contrôle) ; il refuse un texte coupé, sorti du bandeau ou qui recouvre le QR code, « Nom et prénom » ou les objectifs. Raccourcissez plutôt.
 | `--controle` | variante de contrôle : bandeau de 20 mm, puce « Contrôle ». |
+| `--genre` | la puce du bandeau : `TD` (défaut), `DM`, `TP`, `Activité`, `Séance`. |
+| `--auteurs` | tous les noms, séparés par « ; » (pied de page et pied de chaque page imprimée). |
+| `--feuille`, `--pages-max` | numéro de la feuille (2, 3… : bande de titre fine sur papier) ; pages A4 admises (4 par défaut). |
 | `--remplacer`, `--cachette` | écraser une page existante ; forcer la cachette du margouillat (`b1` à `b4`, `memo`, `pied`). |
 
 Le script écrit `index.html` dans le dossier, avec les bons chemins vers `assets/`, le lien « Code source sur GitHub » et le pied de page complet.
 
 ## 2. Le bandeau : il tourne
 
-**Aucune correspondance entre bandeau et chapitre** : les quatre bandeaux tournent. Sans `--bandeau`, `nouveau-td.py` donne au nouveau TD **le bandeau le moins utilisé** par les TD du dépôt ; à égalité, l'ordre est tiré de l'identifiant. La répartition reste donc équilibrée, et elle est **stable** : relancer le script pour un TD qui existe déjà (même identifiant) lui rend son bandeau. `--bandeau N` le force, si besoin.
+**Aucune correspondance entre bandeau et chapitre** : les quatre bandeaux tournent. Sans `--bandeau`, `nouveau-td.py` tire le bandeau **de l'identifiant** (le même sur toutes les branches, sans regarder le dépôt) ; une page qui existe déjà garde le sien. Après les fusions, `charte/reattribuer-bandeaux.py --appliquer` rééquilibre exactement tous les TD. `--bandeau N` le force, si besoin.
 
 | N° | Paysage (aucun nom de lieu : les élèves devinent) | Fichiers |
 |---|---|---|
@@ -73,7 +190,8 @@ Les types de questions du moteur (`data-type`) :
 | `trous` | dans le code : `range([[1]], [[11]])` ; plusieurs réponses : `[[i\|k]]` | seules les cases fausses sont marquées |
 | `ordre` | `<ol class="td-lignes">` **dans l'ordre juste** (4 espaces par niveau) | le moteur mélange, toujours de la même façon |
 | `erreur` | `pre.td-code` + `pre.td-erreur` + `data-fichier="taxi.py" data-ligne="3" data-reponse="ligne corrigée"` | la bonne ligne, puis la ligne corrigée |
-| `code` | `<pre class="td-depart">` + `pre.td-attendu` et/ou `<script type="text/x-python" class="td-tests">` + `<pre class="td-code" data-verifier="correction">` | exécuté par Python 3.13, chargé au clic ; **bonus** par défaut, `data-obligatoire` pour le compter |
+| `code` | `<pre class="td-depart">` + `pre.td-attendu` (un ou plusieurs, avec `data-entrees`) et/ou `<script type="text/x-python" class="td-tests">` + `<pre class="td-code" data-verifier="correction">` | exécuté par Python 3.13, chargé au clic ; **obligatoire** avec `data-code="obligatoire"` sur `<main>` (défaut des nouvelles pages), `data-bonus` pour un bonus |
+| `libre` | `data-lignes="4"` (souvent avec `data-support="papier"`) | jamais corrigée ni comptée : des lignes sur papier, un brouillon et la correction à l'écran |
 
 « Trouve l'erreur » : **toujours le vrai message de Python 3.13**, en entier (« Did you mean » compris). Pour l'obtenir : écrire le programme dans un fichier du nom de `data-fichier`, puis `python3 -I charte/verifier-td.py --erreur taxi.py`, et copier la sortie telle quelle dans `pre.td-erreur`. Le moteur la colore et l'étiquette « erreur ».
 
@@ -94,7 +212,7 @@ Sur papier, l'en-tête demande **« Nom et prénom » et « Classe »** (la feui
 ## 5. Liste de contrôle avant de livrer
 
 - [ ] `verifier-td.py` : « tout est juste ».
-- [ ] `imprimer-td.py` : « PDF vierge : oui », **4 pages A4 au plus** (une fiche : 2 pages).
+- [ ] `imprimer-td.py` : « PDF vierge : oui », **4 pages A4 au plus par feuille** (une fiche : 2 pages ; `data-pages-max` pour un exercice de bac) ; un TD à plusieurs feuilles : toutes les adresses, un seul PDF.
 - [ ] **10 pt au moins** partout sur papier (contrôlé par le script).
 - [ ] **Code : 80 caractères au plus par ligne** dans une question (mesuré : 80 colonnes de JetBrains Mono à 10 pt sur A4) ; **35 au plus** dans une option de `qcu` ou `cases` (les options s'impriment sur deux colonnes). Visez 70 pour garder de la marge ; une ligne trop longue est signalée (« ligne de code coupée »).
 - [ ] Pas de débordement : la page à **320 px** sans défilement horizontal, en clair et en obscur ; puis 768 et 1440 px.
