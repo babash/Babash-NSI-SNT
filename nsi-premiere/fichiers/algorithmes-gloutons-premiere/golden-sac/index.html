@@ -1,0 +1,279 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Opération Golden Sac : TD en ligne</title>
+  <meta name="description" content="TD en ligne auto-correctif : Opération Golden Sac (1re NSI, Algorithmes gloutons).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../../assets/td-en-ligne.css">
+  <script src="../../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsi1-golden-sac" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:69.52%;--y:75.0%;--r:-90deg;--l:2.8%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Algorithmes gloutons</span></p>
+        <h1>Opération Golden Sac</h1>
+        <p class="td-accroche">Le sac à dos glouton</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=gloutons" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM10 0h1v1h-1zM12 0h2v1h-2zM15 0h1v1h-1zM17 0h2v1h-2zM20 0h1v1h-1zM22 0h1v1h-1zM24 0h1v1h-1zM26 0h1v1h-1zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM10 1h3v1h-3zM14 1h1v1h-1zM18 1h2v1h-2zM22 1h1v1h-1zM25 1h4v1h-4zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM14 2h1v1h-1zM19 2h4v1h-4zM24 2h1v1h-1zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h6v1h-6zM17 3h3v1h-3zM22 3h1v1h-1zM24 3h3v1h-3zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM10 4h3v1h-3zM15 4h2v1h-2zM18 4h3v1h-3zM22 4h3v1h-3zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h3v1h-3zM12 5h1v1h-1zM14 5h1v1h-1zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM26 5h2v1h-2zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h1v1h-1zM10 7h1v1h-1zM12 7h2v1h-2zM19 7h1v1h-1zM23 7h1v1h-1zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h3v1h-3zM14 8h2v1h-2zM18 8h1v1h-1zM20 8h7v1h-7zM30 8h5v1h-5zM1 9h2v1h-2zM5 9h1v1h-1zM7 9h5v1h-5zM14 9h4v1h-4zM21 9h1v1h-1zM25 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM1 10h4v1h-4zM6 10h2v1h-2zM9 10h1v1h-1zM11 10h1v1h-1zM14 10h1v1h-1zM17 10h1v1h-1zM20 10h2v1h-2zM23 10h2v1h-2zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM4 11h2v1h-2zM8 11h7v1h-7zM16 11h1v1h-1zM21 11h3v1h-3zM26 11h3v1h-3zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h1v1h-1zM9 12h3v1h-3zM13 12h1v1h-1zM17 12h1v1h-1zM20 12h1v1h-1zM22 12h5v1h-5zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h1v1h-1zM2 13h4v1h-4zM7 13h1v1h-1zM10 13h1v1h-1zM12 13h2v1h-2zM16 13h2v1h-2zM19 13h5v1h-5zM26 13h1v1h-1zM31 13h1v1h-1zM0 14h4v1h-4zM5 14h2v1h-2zM8 14h2v1h-2zM13 14h1v1h-1zM15 14h3v1h-3zM21 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h1v1h-1zM2 15h1v1h-1zM5 15h1v1h-1zM7 15h1v1h-1zM9 15h1v1h-1zM12 15h1v1h-1zM14 15h2v1h-2zM17 15h6v1h-6zM24 15h1v1h-1zM27 15h1v1h-1zM29 15h4v1h-4zM0 16h1v1h-1zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h1v1h-1zM11 16h1v1h-1zM13 16h2v1h-2zM16 16h1v1h-1zM19 16h1v1h-1zM21 16h1v1h-1zM23 16h1v1h-1zM25 16h2v1h-2zM29 16h2v1h-2zM32 16h1v1h-1zM34 16h2v1h-2zM0 17h2v1h-2zM7 17h1v1h-1zM11 17h2v1h-2zM14 17h2v1h-2zM18 17h1v1h-1zM20 17h3v1h-3zM24 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM2 18h2v1h-2zM6 18h2v1h-2zM9 18h1v1h-1zM11 18h1v1h-1zM13 18h1v1h-1zM15 18h5v1h-5zM21 18h2v1h-2zM26 18h3v1h-3zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h1v1h-1zM2 19h1v1h-1zM4 19h2v1h-2zM7 19h2v1h-2zM10 19h1v1h-1zM12 19h1v1h-1zM15 19h1v1h-1zM18 19h5v1h-5zM24 19h1v1h-1zM28 19h3v1h-3zM36 19h1v1h-1zM3 20h1v1h-1zM6 20h2v1h-2zM9 20h1v1h-1zM11 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h4v1h-4zM29 20h2v1h-2zM32 20h3v1h-3zM1 21h2v1h-2zM4 21h2v1h-2zM8 21h2v1h-2zM11 21h4v1h-4zM16 21h1v1h-1zM18 21h3v1h-3zM23 21h1v1h-1zM25 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM0 22h2v1h-2zM3 22h4v1h-4zM8 22h1v1h-1zM14 22h3v1h-3zM18 22h1v1h-1zM20 22h1v1h-1zM22 22h1v1h-1zM24 22h5v1h-5zM30 22h4v1h-4zM36 22h1v1h-1zM0 23h1v1h-1zM3 23h1v1h-1zM5 23h1v1h-1zM7 23h2v1h-2zM12 23h1v1h-1zM14 23h1v1h-1zM20 23h1v1h-1zM23 23h1v1h-1zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h1v1h-1zM8 24h1v1h-1zM10 24h3v1h-3zM15 24h1v1h-1zM18 24h10v1h-10zM29 24h2v1h-2zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM3 25h1v1h-1zM7 25h1v1h-1zM9 25h4v1h-4zM15 25h2v1h-2zM25 25h1v1h-1zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM2 26h2v1h-2zM5 26h7v1h-7zM20 26h2v1h-2zM23 26h2v1h-2zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM3 27h1v1h-1zM5 27h1v1h-1zM8 27h2v1h-2zM16 27h1v1h-1zM21 27h3v1h-3zM27 27h2v1h-2zM31 27h2v1h-2zM35 27h1v1h-1zM0 28h1v1h-1zM4 28h3v1h-3zM9 28h2v1h-2zM16 28h2v1h-2zM22 28h5v1h-5zM28 28h8v1h-8zM8 29h4v1h-4zM16 29h2v1h-2zM19 29h1v1h-1zM21 29h6v1h-6zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM11 30h2v1h-2zM15 30h3v1h-3zM21 30h1v1h-1zM24 30h3v1h-3zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h2v1h-2zM13 31h3v1h-3zM17 31h3v1h-3zM21 31h4v1h-4zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h1v1h-1zM10 32h1v1h-1zM12 32h1v1h-1zM16 32h1v1h-1zM19 32h1v1h-1zM21 32h1v1h-1zM24 32h9v1h-9zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM10 33h2v1h-2zM13 33h1v1h-1zM15 33h1v1h-1zM18 33h1v1h-1zM20 33h1v1h-1zM22 33h1v1h-1zM24 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h2v1h-2zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h1v1h-1zM10 34h1v1h-1zM14 34h4v1h-4zM19 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM36 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h5v1h-5zM15 35h1v1h-1zM18 35h4v1h-4zM23 35h2v1h-2zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h1v1h-1zM10 36h3v1h-3zM14 36h2v1h-2zM17 36h1v1h-1zM19 36h2v1h-2zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> manipuler un dictionnaire de listes, puis dérouler un algorithme glouton pour remplir un sac à dos.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>lire, ajouter et modifier une valeur dans un dictionnaire de listes ;</li>
+        <li>lire un message <code>KeyError</code> et corriger la clé ;</li>
+        <li>dérouler à la main deux stratégies gloutonnes.</li>
+      </ul>
+      <p class="td-duree">40 minutes · 14 questions · seul·e ou en binôme · la suite est sur la feuille 2</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <p><b>Objectif de la mission :</b> <i>infiltration réussie. Tu es dans la salle des coffres. Ton sac à dos de transport est limité à <b>10 kg</b>. Tu dois choisir les objets les plus chers pour maximiser ton butin avant que la police n'encercle le bâtiment. Bonne chance, agent·e.</i></p>
+
+  <h2 class="td-partie">1. Infiltration du système de sécurité</h2>
+  <p>La base de données des objets est un dictionnaire nommé <code>musee</code> (prix en milliers d'euros) :</p>
+  <pre class="td-code">
+# "Nom de l'objet": [poids_en_kg, prix_en_keuros]
+musee = {
+    "Statue d'or": [15, 200],
+    "Tableau de maître": [5, 150],
+    "Vase Ming": [2, 50],
+    "Armure de samouraï": [25, 100],
+    "Diadème": [1, 40]
+}</pre>
+
+  <section class="td-q" data-type="qcu" id="q1" data-ordre="fixe">
+    <p class="td-consigne"><b>Vrai ou faux ?</b> L'instruction <code>musee[0]</code> permet de récupérer la Statue d'or.</p>
+    <ul class="td-options">
+      <li data-retour="Un dictionnaire n'a pas d'indices : musee[0] cherche une clé 0, qui n'existe pas.">Vrai</li>
+      <li data-juste>Faux</li>
+    </ul>
+    <p class="td-aide">Dans un dictionnaire, entre les crochets, on écrit une clé, pas une position.</p>
+    <div class="td-correction"><p><b>Faux.</b> Un dictionnaire se lit par ses clés : <code>musee[0]</code> cherche la clé <code>0</code> et Python répond <code>KeyError: 0</code>. On écrit <code>musee["Statue d'or"]</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q2" data-ordre="fixe">
+    <p class="td-consigne">Quelle instruction renvoie exactement le prix du <code>"Diadème"</code> (<code>40</code>) ?</p>
+    <ul class="td-options">
+      <li data-retour="Cette instruction renvoie toute la liste [1, 40] : le poids et le prix."><code>musee["Diadème"]</code></li>
+      <li data-juste><code>musee["Diadème"][1]</code></li>
+      <li data-retour="musee[1] cherche une clé 1, qui n'existe pas : KeyError. La clé vient en premier, l'indice ensuite."><code>musee[1]["Diadème"]</code></li>
+    </ul>
+    <p class="td-aide"><code>musee["Diadème"]</code> vaut <code>[1, 40]</code>. Quel est l'indice du prix dans cette liste ?</p>
+    <div class="td-correction"><p><code>musee["Diadème"]</code> donne la liste <code>[1, 40]</code> ; le prix est à l'indice 1 : <code>musee["Diadème"][1]</code> vaut <b>40</b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q3" data-comparer="code" data-reponse="musee[&quot;Pièce rare&quot;] = [1, 10]|musee[&quot;Piece rare&quot;] = [1, 10]|musee[&quot;pièce rare&quot;] = [1, 10]|musee[&quot;piece rare&quot;] = [1, 10]">
+    <p class="td-consigne">Écris l'instruction qui ajoute au dictionnaire une <code>"Pièce rare"</code> de <code>1</code> kg qui vaut <code>10</code> k€.</p>
+    <p class="td-retour" data-si="musee[&quot;Pièce rare&quot;] = [10, 1]|musee[&quot;Piece rare&quot;] = [10, 1]">L'ordre compte : d'abord le poids (1 kg), puis le prix (10 k€).</p>
+    <p class="td-retour" data-si="musee.append([1, 10])|musee.append(&quot;Pièce rare&quot;, [1, 10])">Un dictionnaire n'a pas de méthode <code>append</code> : on ajoute une paire avec <code>musee[clé] = valeur</code>.</p>
+    <p class="td-aide">La valeur associée à la clé est une liste <code>[poids, prix]</code>.</p>
+    <div class="td-correction"><pre class="td-code">
+musee["Pièce rare"] = [1, 10]</pre><p>La clé n'existe pas encore : la paire est ajoutée.</p></div>
+  </section>
+
+  <section class="td-q" data-type="erreur" id="q4" data-fichier="complice.py" data-ligne="8" data-reponse="print(musee[&quot;Vase Ming&quot;])" data-support="ecran">
+    <p class="td-consigne">Un·e complice tape ce programme, et Python affiche une erreur <code>KeyError</code>. Trouve la ligne en cause, puis corrige-la.</p>
+    <pre class="td-code">
+musee = {
+    "Statue d'or": [15, 200],
+    "Tableau de maître": [5, 150],
+    "Vase Ming": [2, 50],
+    "Armure de samouraï": [25, 100],
+    "Diadème": [1, 40]
+}
+print(musee["vase ming"])</pre>
+    <pre class="td-erreur">
+Traceback (most recent call last):
+  File "complice.py", line 8, in &lt;module&gt;
+    print(musee["vase ming"])
+          ~~~~~^^^^^^^^^^^^^
+KeyError: 'vase ming'</pre>
+    <p class="td-aide"><code>KeyError</code> veut dire : « cette clé n'existe pas dans le dictionnaire ».</p>
+    <p class="td-aide">Compare lettre par lettre <code>"vase ming"</code> et la clé écrite dans le dictionnaire.</p>
+    <div class="td-correction"><p>Ligne 8. Les clés sont sensibles à la <b>casse</b> (majuscules et minuscules) : <code>"vase ming"</code> n'est pas <code>"Vase Ming"</code>. On corrige : <code>print(musee["Vase Ming"])</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Un·e complice tape <code>print(musee["vase ming"])</code>. Pourquoi Python affiche-t-il une erreur <code>KeyError</code> ?</p>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q5" data-comparer="code" data-reponse="musee[&quot;Vase Ming&quot;][1] = 60">
+    <p class="td-consigne">Écris l'instruction qui passe le prix du <code>"Vase Ming"</code> à <code>60</code> k€.</p>
+    <p class="td-retour" data-si="musee[&quot;Vase Ming&quot;] = 60">Cette instruction remplace toute la liste <code>[2, 50]</code> par 60 : le poids est perdu. On ne change que l'élément d'indice 1.</p>
+    <p class="td-retour" data-si="musee[&quot;Vase Ming&quot;][0] = 60">L'indice 0 est le poids. Le prix est à l'indice 1.</p>
+    <p class="td-aide">On désigne le prix comme à la question 2, puis on lui affecte une nouvelle valeur.</p>
+    <div class="td-correction"><pre class="td-code">
+musee["Vase Ming"][1] = 60</pre><p>La liste du Vase devient <code>[2, 60]</code>.</p></div>
+  </section>
+
+  <p><b>Indice du hacker :</b> dans un dictionnaire de listes, <code>dico[cle]</code> renvoie la liste entière. Pour un élément précis de cette liste, on ajoute un deuxième crochet : <code>dico[cle][0]</code> pour le poids, <code>dico[cle][1]</code> pour le prix.</p>
+
+  <h2 class="td-partie">2. Analyse des contraintes</h2>
+  <p>Ton sac est limité à <b>10 kg</b>. On repart du dictionnaire <code>musee</code> de départ (sans les changements de la partie 1).</p>
+
+  <section class="td-q" data-type="courte" id="q6" data-reponse="48|48 kg" data-etiquette="Poids total (kg) :">
+    <p class="td-consigne">Quel est le poids total de tous les objets du musée ?</p>
+    <p class="td-aide">Additionne le premier nombre de chaque liste.</p>
+    <div class="td-correction"><p>15 + 5 + 2 + 25 + 1 = <b>48</b> kg.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q7" data-ordre="fixe">
+    <p class="td-consigne">Est-ce transportable dans le sac ?</p>
+    <ul class="td-options">
+      <li data-retour="Le sac est limité à 10 kg : compare avec le poids total.">Oui</li>
+      <li data-juste>Non</li>
+    </ul>
+    <div class="td-correction"><p><b>Non</b> : 48 kg, c'est presque 5 fois la limite de 10 kg. Il faut choisir.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q8" data-reponse="7|7 kg" data-etiquette="Poids utilisé (kg) :">
+    <p class="td-consigne">Si tu prends le Tableau et le Vase, quel poids utilises-tu ?</p>
+    <p class="td-aide">Le Tableau pèse 5 kg, le Vase 2 kg.</p>
+    <div class="td-correction"><p>5 + 2 = <b>7</b> kg.</p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q9" data-reponse="240|240 k€|240 000 €" data-etiquette="Valeur (k€) :">
+    <p class="td-consigne">Quelle est la valeur (en k€) de la combinaison Tableau + Vase + Diadème ?</p>
+    <p class="td-retour" data-si="8|8 kg">8 kg, c'est le poids. On demande la valeur : additionne les prix.</p>
+    <p class="td-aide">Le prix est le deuxième nombre de chaque liste.</p>
+    <div class="td-correction"><p>150 + 50 + 40 = <b>240</b> k€ (pour 8 kg).</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q10" data-support="ecran">
+    <p class="td-consigne"><b>Logique :</b> pourquoi est-il impossible de prendre la Statue d'or ?</p>
+    <ul class="td-options">
+      <li data-retour="Son prix n'est pas le problème : c'est même l'objet le plus cher.">Elle est trop chère.</li>
+      <li data-juste>Elle pèse 15 kg, plus que les 10 kg du sac.</li>
+      <li data-retour="La clé existe bien : &quot;Statue d'or&quot; est dans le dictionnaire.">Sa clé n'existe pas dans le dictionnaire.</li>
+      <li data-retour="Même dans un sac vide, elle ne rentre pas : regarde son poids.">Le sac est déjà plein.</li>
+    </ul>
+    <div class="td-correction"><p>Elle pèse <b>15 kg</b> : même seule, elle dépasse la limite de 10 kg.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q10-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne">Logique : pourquoi est-il impossible de prendre la Statue d'or ?</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q11">
+    <p class="td-consigne">Si tu devais choisir <b>un seul</b> objet pour avoir le plus d'argent, lequel serait-ce ?</p>
+    <ul class="td-options">
+      <li data-retour="C'est le plus cher, mais il ne rentre pas dans le sac (15 kg).">La Statue d'or</li>
+      <li data-juste>Le Tableau de maître</li>
+      <li data-retour="Elle pèse 25 kg : elle ne rentre pas dans le sac.">L'Armure de samouraï</li>
+      <li data-retour="Il rentre, mais un autre objet qui rentre vaut plus.">Le Vase Ming</li>
+    </ul>
+    <p class="td-aide">Garde seulement les objets de 10 kg ou moins, puis prends le plus cher.</p>
+    <div class="td-correction"><p>Parmi les objets qui rentrent (Tableau, Vase, Diadème), le plus cher est le <b>Tableau de maître</b> : 150 k€.</p></div>
+  </section>
+
+  <h2 class="td-partie">3. Simulation des stratégies gloutonnes</h2>
+  <p data-support="papier">Complète les deux tableaux pour comparer les résultats des stratégies. Un objet trop lourd : on écrit « NON (trop lourd) » et on ne le prend pas.</p>
+  <p data-support="ecran">Complète les deux tableaux, écrits ici comme des listes Python : chaque ligne est une étape <code>(objet examiné, prix, poids utilisé, place restante)</code>. Un objet trop lourd a le prix <code>None</code> : on ne le prend pas.</p>
+  <p><b>Rappel :</b> un algorithme glouton ne revient jamais en arrière. Si un objet est trop lourd, on passe définitivement au suivant dans la liste des priorités.</p>
+
+  <section class="td-q" data-type="trous" id="q12" data-support="ecran">
+    <p class="td-consigne"><b>Stratégie A : « priorité à la valeur »</b> (le plus cher d'abord).</p>
+    <pre class="td-code">
+strategie_A = [
+    ("Statue d'or", None, 0, 10),
+    ("Tableau de maître", 150, 5, 5),
+    ("[[Armure de samouraï|Armure de samourai|armure de samouraï|armure de samourai|Armure|armure]]",
+     [[None|NON|non|none]], [[5]], [[5]]),
+    ("[[Vase Ming|vase ming|Vase|vase]]",
+     [[50]], [[7]], [[3]]),
+    ("[[Diadème|Diademe|diadème|diademe]]",
+     [[40]], [[8]], [[2]]),
+]</pre>
+    <p class="td-aide">Classe les objets du plus cher au moins cher : Statue (200), Tableau (150), Armure (100), Vase (50), Diadème (40).</p>
+    <p class="td-aide">Après le Tableau, il reste 5 kg. L'Armure pèse 25 kg : elle ne rentre pas, le poids ne change pas.</p>
+    <div class="td-correction"><pre class="td-code">
+("Armure de samouraï", None, 5, 5),
+("Vase Ming", 50, 7, 3),
+("Diadème", 40, 8, 2),</pre><p>Butin : Tableau + Vase + Diadème = <b>240 k€</b> pour 8 kg.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q12-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>Stratégie A : « priorité à la valeur »</b> (le plus cher d'abord). Complète le tableau.</p>
+    <div class="td-table"><table><thead><tr><th>Étape</th><th>Objet choisi</th><th>Prix (k€)</th><th>Poids utilisé</th><th>Place restante</th></tr></thead><tbody><tr><td>1</td><td>Statue d'or</td><td>NON (trop lourde)</td><td>0 kg</td><td>10 kg</td></tr><tr><td>2</td><td>Tableau de maître</td><td>150</td><td>5 kg</td><td>5 kg</td></tr><tr><td>3</td><td>&#160;</td><td>&#160;</td><td>&#160;</td><td>&#160;</td></tr><tr><td>4</td><td>&#160;</td><td>&#160;</td><td>&#160;</td><td>&#160;</td></tr><tr><td>5</td><td>&#160;</td><td>&#160;</td><td>&#160;</td><td>&#160;</td></tr></tbody></table></div>
+    <p class="td-consigne">Butin total :</p>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q13" data-support="ecran">
+    <p class="td-consigne"><b>Stratégie B : « priorité à la légèreté »</b> (le plus léger d'abord).</p>
+    <pre class="td-code">
+strategie_B = [
+    ("Diadème", 40, 1, 9),
+    ("[[Vase Ming|vase ming|Vase|vase]]",
+     [[50]], [[3]], [[7]]),
+    ("[[Tableau de maître|Tableau de maitre|tableau de maître|tableau de maitre|Tableau|tableau]]",
+     [[150]], [[8]], [[2]]),
+    ("[[Statue d'or|statue d'or|Statue|statue]]",
+     [[None|NON|non|none]], [[8]], [[2]]),
+    ("[[Armure de samouraï|Armure de samourai|armure de samouraï|armure de samourai|Armure|armure]]",
+     [[None|NON|non|none]], [[8]], [[2]]),
+]</pre>
+    <p class="td-aide">Classe les objets du plus léger au plus lourd : Diadème (1 kg), Vase (2), Tableau (5), Statue (15), Armure (25).</p>
+    <p class="td-aide">Le poids utilisé s'additionne : 1, puis 1 + 2 = 3…</p>
+    <div class="td-correction"><pre class="td-code">
+("Vase Ming", 50, 3, 7),
+("Tableau de maître", 150, 8, 2),
+("Statue d'or", None, 8, 2),
+("Armure de samouraï", None, 8, 2),</pre><p>Butin : Diadème + Vase + Tableau = <b>240 k€</b> pour 8 kg.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q13-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>Stratégie B : « priorité à la légèreté »</b> (le plus léger d'abord). Complète le tableau.</p>
+    <div class="td-table"><table><thead><tr><th>Étape</th><th>Objet choisi</th><th>Prix (k€)</th><th>Poids utilisé</th><th>Place restante</th></tr></thead><tbody><tr><td>1</td><td>Diadème</td><td>40</td><td>1 kg</td><td>9 kg</td></tr><tr><td>2</td><td>&#160;</td><td>&#160;</td><td>&#160;</td><td>&#160;</td></tr><tr><td>3</td><td>&#160;</td><td>&#160;</td><td>&#160;</td><td>&#160;</td></tr><tr><td>4</td><td>&#160;</td><td>&#160;</td><td>&#160;</td><td>&#160;</td></tr><tr><td>5</td><td>&#160;</td><td>&#160;</td><td>&#160;</td><td>&#160;</td></tr></tbody></table></div>
+    <p class="td-consigne">Butin total :</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q14" data-ordre="fixe">
+    <p class="td-consigne">Quelle solution est la meilleure ?</p>
+    <ul class="td-options">
+      <li data-retour="Additionne les prix des objets pris par chaque stratégie : compare les deux totaux.">La stratégie A</li>
+      <li data-retour="Additionne les prix des objets pris par chaque stratégie : compare les deux totaux.">La stratégie B</li>
+      <li data-juste>Aucune : elles rapportent autant l'une que l'autre.</li>
+    </ul>
+    <p class="td-aide">Les deux stratégies prennent-elles les mêmes objets ?</p>
+    <div class="td-correction"><p>Les deux prennent le Tableau, le Vase et le Diadème, dans un ordre différent : <b>240 k€</b> chacune. Ce n'est pas toujours le cas : avec d'autres objets, les deux stratégies peuvent donner des butins différents.</p></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite de l'opération :</b> <a href="feuille-2.html">feuille 2, le code de sélection et le script de fuite</a>.</p>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><b>Dictionnaire de listes</b> : <code>musee[cle]</code> donne la liste <code>[poids, prix]</code>, <code>musee[cle][1]</code> le prix. Une clé mal écrite (casse comprise) donne <code>KeyError</code>.</p>
+    <p><b>Glouton</b> : à chaque étape, on prend le meilleur objet qui rentre encore (le plus cher, ou le plus léger…), sans jamais revenir en arrière.</p>
+  </section>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-premiere/fichiers/algorithmes-gloutons-premiere/golden-sac">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
