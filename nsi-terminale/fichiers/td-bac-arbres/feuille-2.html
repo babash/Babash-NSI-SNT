@@ -1,37 +1,55 @@
 <!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Les arbres binaires : TD type bac (2/2)</title>
-  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : la plus grande somme racine-feuille d'un arbre binaire (bac 2022, Amérique du Sud, exercice 5), avec coups de pouce et corrections.">
+  <title>Arbres binaires · TD type bac (2/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : la plus grande somme racine-feuille (bac 2022, Amérique du Sud, 22-NSIJ2AS1, exercice 5).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Chakra+Petch:wght@500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
   <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
   <script src="../../../assets/td-en-ligne.js" defer></script>
 </head>
 <body class="td-page">
-<main class="td" data-td="tle-td-bac-arbres-2" data-td-version="1">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-arbres-2" data-td-version="2">
 
   <header class="td-entete">
-    <p class="td-sur-titre">Terminale NSI · Structures de données · TD type bac, feuille 2 sur 2</p>
-    <h1>Les arbres binaires : TD type bac (2/2)</h1>
-    <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : la plus grande somme racine-feuille.</p>
-    <p><b>Je sais :</b></p>
-    <ul class="td-criteres">
+    <!-- BANDEAU : paysage n° 1 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:55.12%;--y:83.04%;--r:-84deg;--l:3.08%;--s:-1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Arbres binaires</span></p>
+        <h1>Arbres binaires</h1>
+        <p class="td-accroche">Type bac · feuille 2/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=arbres-binaires" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM8 0h1v1h-1zM10 0h2v1h-2zM15 0h1v1h-1zM17 0h1v1h-1zM22 0h2v1h-2zM26 0h1v1h-1zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM8 1h3v1h-3zM13 1h5v1h-5zM21 1h5v1h-5zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM10 2h1v1h-1zM14 2h2v1h-2zM18 2h2v1h-2zM25 2h4v1h-4zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h3v1h-3zM15 3h1v1h-1zM17 3h2v1h-2zM22 3h6v1h-6zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM9 4h2v1h-2zM12 4h1v1h-1zM14 4h1v1h-1zM16 4h1v1h-1zM19 4h1v1h-1zM22 4h1v1h-1zM26 4h3v1h-3zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM10 5h1v1h-1zM12 5h1v1h-1zM14 5h1v1h-1zM17 5h6v1h-6zM24 5h1v1h-1zM28 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h1v1h-1zM10 7h2v1h-2zM13 7h2v1h-2zM19 7h2v1h-2zM24 7h1v1h-1zM26 7h3v1h-3zM0 8h1v1h-1zM2 8h2v1h-2zM5 8h3v1h-3zM9 8h2v1h-2zM13 8h3v1h-3zM18 8h2v1h-2zM21 8h1v1h-1zM23 8h1v1h-1zM26 8h3v1h-3zM30 8h1v1h-1zM33 8h1v1h-1zM35 8h2v1h-2zM0 9h1v1h-1zM3 9h1v1h-1zM7 9h9v1h-9zM17 9h2v1h-2zM20 9h2v1h-2zM23 9h1v1h-1zM25 9h1v1h-1zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM1 10h2v1h-2zM5 10h7v1h-7zM16 10h1v1h-1zM18 10h3v1h-3zM23 10h2v1h-2zM26 10h1v1h-1zM29 10h1v1h-1zM31 10h1v1h-1zM0 11h1v1h-1zM3 11h2v1h-2zM8 11h3v1h-3zM16 11h1v1h-1zM18 11h1v1h-1zM20 11h1v1h-1zM25 11h4v1h-4zM30 11h1v1h-1zM32 11h3v1h-3zM2 12h1v1h-1zM4 12h4v1h-4zM10 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM4 13h2v1h-2zM7 13h2v1h-2zM10 13h2v1h-2zM13 13h1v1h-1zM15 13h5v1h-5zM22 13h1v1h-1zM24 13h1v1h-1zM27 13h1v1h-1zM29 13h5v1h-5zM35 13h2v1h-2zM1 14h1v1h-1zM3 14h2v1h-2zM6 14h1v1h-1zM9 14h1v1h-1zM12 14h3v1h-3zM19 14h1v1h-1zM24 14h3v1h-3zM28 14h2v1h-2zM32 14h1v1h-1zM34 14h2v1h-2zM0 15h2v1h-2zM7 15h1v1h-1zM9 15h1v1h-1zM12 15h2v1h-2zM15 15h1v1h-1zM19 15h4v1h-4zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM0 16h4v1h-4zM5 16h3v1h-3zM10 16h1v1h-1zM14 16h2v1h-2zM17 16h1v1h-1zM19 16h1v1h-1zM21 16h2v1h-2zM25 16h1v1h-1zM27 16h2v1h-2zM33 16h2v1h-2zM36 16h1v1h-1zM1 17h1v1h-1zM4 17h1v1h-1zM8 17h4v1h-4zM13 17h1v1h-1zM18 17h2v1h-2zM23 17h5v1h-5zM29 17h2v1h-2zM33 17h4v1h-4zM2 18h3v1h-3zM6 18h1v1h-1zM8 18h1v1h-1zM10 18h3v1h-3zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h3v1h-3zM24 18h1v1h-1zM26 18h3v1h-3zM30 18h4v1h-4zM35 18h2v1h-2zM2 19h1v1h-1zM4 19h2v1h-2zM7 19h3v1h-3zM12 19h1v1h-1zM14 19h4v1h-4zM20 19h1v1h-1zM22 19h1v1h-1zM24 19h1v1h-1zM26 19h1v1h-1zM32 19h2v1h-2zM35 19h1v1h-1zM2 20h2v1h-2zM5 20h2v1h-2zM8 20h1v1h-1zM10 20h1v1h-1zM12 20h8v1h-8zM21 20h1v1h-1zM23 20h1v1h-1zM26 20h1v1h-1zM28 20h2v1h-2zM31 20h2v1h-2zM36 20h1v1h-1zM0 21h1v1h-1zM2 21h1v1h-1zM4 21h2v1h-2zM8 21h2v1h-2zM12 21h3v1h-3zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM0 22h4v1h-4zM6 22h1v1h-1zM10 22h2v1h-2zM13 22h1v1h-1zM16 22h1v1h-1zM18 22h1v1h-1zM21 22h1v1h-1zM23 22h1v1h-1zM25 22h2v1h-2zM28 22h2v1h-2zM31 22h1v1h-1zM35 22h1v1h-1zM0 23h1v1h-1zM3 23h3v1h-3zM8 23h2v1h-2zM11 23h2v1h-2zM14 23h4v1h-4zM19 23h2v1h-2zM23 23h6v1h-6zM30 23h1v1h-1zM32 23h3v1h-3zM36 23h1v1h-1zM2 24h1v1h-1zM5 24h3v1h-3zM9 24h1v1h-1zM13 24h4v1h-4zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h3v1h-3zM27 24h1v1h-1zM29 24h2v1h-2zM32 24h1v1h-1zM34 24h2v1h-2zM1 25h2v1h-2zM5 25h1v1h-1zM7 25h2v1h-2zM10 25h1v1h-1zM17 25h1v1h-1zM21 25h1v1h-1zM24 25h5v1h-5zM30 25h7v1h-7zM1 26h4v1h-4zM6 26h1v1h-1zM8 26h1v1h-1zM10 26h2v1h-2zM13 26h2v1h-2zM18 26h1v1h-1zM22 26h1v1h-1zM24 26h2v1h-2zM32 26h4v1h-4zM0 27h1v1h-1zM3 27h2v1h-2zM7 27h1v1h-1zM9 27h1v1h-1zM11 27h1v1h-1zM13 27h1v1h-1zM15 27h1v1h-1zM19 27h4v1h-4zM24 27h1v1h-1zM27 27h2v1h-2zM31 27h2v1h-2zM2 28h2v1h-2zM5 28h2v1h-2zM8 28h1v1h-1zM11 28h1v1h-1zM13 28h1v1h-1zM16 28h1v1h-1zM18 28h5v1h-5zM25 28h1v1h-1zM27 28h6v1h-6zM34 28h1v1h-1zM8 29h3v1h-3zM13 29h1v1h-1zM15 29h1v1h-1zM18 29h1v1h-1zM21 29h1v1h-1zM23 29h1v1h-1zM26 29h3v1h-3zM32 29h1v1h-1zM34 29h1v1h-1zM36 29h1v1h-1zM0 30h7v1h-7zM8 30h1v1h-1zM10 30h2v1h-2zM14 30h3v1h-3zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h1v1h-1zM26 30h1v1h-1zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h3v1h-3zM17 31h5v1h-5zM27 31h2v1h-2zM32 31h1v1h-1zM36 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM9 32h1v1h-1zM12 32h2v1h-2zM15 32h2v1h-2zM20 32h1v1h-1zM26 32h1v1h-1zM28 32h6v1h-6zM35 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h2v1h-2zM12 33h5v1h-5zM23 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h1v1h-1zM10 34h1v1h-1zM15 34h1v1h-1zM18 34h1v1h-1zM21 34h1v1h-1zM23 34h1v1h-1zM29 34h2v1h-2zM32 34h1v1h-1zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h2v1h-2zM12 35h1v1h-1zM15 35h1v1h-1zM19 35h1v1h-1zM22 35h2v1h-2zM25 35h3v1h-3zM31 35h2v1h-2zM34 35h1v1h-1zM0 36h7v1h-7zM8 36h2v1h-2zM11 36h4v1h-4zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : la plus grande somme racine-feuille.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
       <li>construire un arbre avec une classe <code>Noeud</code> ;</li>
       <li>calculer à la main le niveau (la hauteur) d'un arbre et ses sommes racine-feuille ;</li>
       <li>écrire une méthode récursive qui traite les cas : deux enfants, un seul enfant, une feuille.</li>
     </ul>
-    <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (4 points), 6 questions · seul·e ou en binôme</p>
-    <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
-    <p class="td-ecran-seul"><b>Ce TD a deux feuilles :</b> 1. <a href="index.html">la somme d'un arbre</a> (la plus guidée) ; 2. la plus grande somme racine-feuille (ici).</p>
-    <p><b>Convention du cours :</b> un nœud seul a une hauteur de 0, l'arbre vide de −1. Ce sujet appelle cette mesure le « niveau » et donne aussi 0 à une feuille.</p>
+      <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (4 points) · 6 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+      <p><b>Convention du cours :</b> un nœud seul a une hauteur de 0, l'arbre vide de −1. Ce sujet appelle cette mesure le « niveau » et donne aussi 0 à une feuille.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. <a href="index.html">la somme d'un arbre</a> ; 2. la plus grande somme racine-feuille (ici).</p>
+    </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
+
   <!-- ═════════════ EXERCICE 2 ═════════════ -->
   <h2 class="td-partie">Exercice 2 : la plus grande somme racine-feuille (4 points)</h2>
   <p><i>Bac 2022, Amérique du Sud, jour 2 (sujet 22-NSIJ2AS1), exercice 5, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-amerique-sud-jour-2.pdf">Sujet d'origine (PDF)</a>.</i></p>
@@ -310,18 +328,9 @@ def est_magique(self):
     <p>Quatre cas : deux enfants, seulement un enfant gauche, seulement un enfant droit, une feuille.</p>
     <p>niveau = 1 + max des niveaux des enfants, et 0 pour une feuille : c'est la hauteur du cours (−1 pour l'arbre vide).</p>
   </section>
-  <section class="td-memo td-ecran-seul">
-    <h2>Pour aller plus loin</h2>
-    <ul>
-      <li><a href="https://aeif.fr/wp-content/uploads/2025/07/Amerique_nord_2022_2.pdf">Bac 2022, Amérique du Nord, jour 2, exercice 4</a> (4 points) : le pédigrée d'un chien, fonctions récursives sur un arbre.</li>
-      <li><a href="https://aeif.fr/wp-content/uploads/2022/11/2022_LeReunion_J1.pdf">Bac 2022, La Réunion et Mayotte, jour 1, exercice 4</a> (4 points) : un arbre généalogique, parcours préfixe et infixe. Attention : le code du sujet contient deux coquilles (<code>droite</code> au lieu de <code>droit</code>, et <code>self</code> oublié dans <code>__init__</code>).</li>
-      <li><a href="https://kxs.fr/files/sujets/2025/ecrit/terminale-2025-amerique-nord-jour-1.pdf">Bac 2025, Amérique du Nord, jour 1, exercice 1</a> (6 points) : un arbre de décision pour reconnaître des végétaux, méthodes récursives.</li>
-    </ul>
-  </section>
-
   <footer class="td-pied">
-    <p>Énoncé : sujet officiel du baccalauréat de NSI, Amérique du Sud, septembre 2022, jour 2 (22-NSIJ2AS1), exercice 5 (ministère de l'Éducation nationale), recopié d'après le PDF diffusé par <a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> et l'<a href="https://aeif.fr/index.php/annee-2022/">AEIF</a> ; arbres redessinés. Correction comparée au corrigé de l'AEIF (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0).</p>
-    <p>Mise en TD, coups de pouce et corrections : Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-arbres">Code source sur GitHub</a></p>
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Amérique du Sud, mai 2022, jour 2 (22-NSIJ2AS1), exercice 5. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-amerique-sud-jour-2.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_amerique_sud_2022_2.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document). Arbres redessinés.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-arbres">Code source sur GitHub</a></p>
   </footer>
 </main>
 </body>
