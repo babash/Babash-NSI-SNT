@@ -263,13 +263,13 @@ ressource({
 
 ressource({
   titre: "Opération MIRAGE : TP de commandes Linux",
-  lien: "https://babash.github.io/TP-commandes-hacker/fiche_eleve_mirage.html",
+  lien: "https://babash.github.io/mirage/fiche_eleve_mirage.html",
   texte: "Quinze missions d'infiltration dans un terminal Linux qui tourne dans le navigateur : arborescence, fichiers, droits, puis repérer un processus espion avec `ps` et l'arrêter avec `kill`. Correction automatique et indices progressifs.",
   tags: ["En ligne", "Rien à installer"],
   annexes: {
-    "Fiche de l'enseignant·e": "https://babash.github.io/TP-commandes-hacker/fiche_prof_mirage.html",
+    "Fiche de l'enseignant·e": "https://babash.github.io/mirage/fiche_prof_mirage.html",
     "Terminal JSLinux": "https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&mem=192",
-    "Code source": "https://github.com/babash/TP-commandes-hacker",
+    "Code source": "https://github.com/babash/mirage",
   },
 });
 
