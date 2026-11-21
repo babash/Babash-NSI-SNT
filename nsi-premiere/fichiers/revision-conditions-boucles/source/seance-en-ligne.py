@@ -258,7 +258,7 @@ def mini():
       </ul>
       <p class="td-duree">Feuille 2 sur 3 · 15 minutes · 10 questions · seul·e, sans aide</p>
     </div>''', '@@CORPS']
-    o.append('  <p class="td-papier-seul">Ensuite, on échange les copies : chacun·e corrige celle de l\'autre avec le corrigé. <b>Copie corrigée par :</b> ……………………… · <b>Note :</b> …… / 10 · <b>La question que je refais :</b> ……</p>')
+    o.append('  <p class="td-papier-seul"><b>Nom et prénom :</b> ………………………………………… · <b>Classe :</b> ………… · Ensuite, on échange les copies : chacun·e corrige celle de l\'autre avec le corrigé. <b>Copie corrigée par :</b> ……………………… · <b>Note :</b> …… / 10 · <b>La question que je refais :</b> ……</p>')
     o.append('  <h2 class="td-partie">1. Que veut dire ce code ? (2 points)</h2>')
     a, b = R.M1
     o.append(qcu('m1', 'a) Que veut dire ce code ?', a['code'], TRAD[0], 'Lis « elif » comme « sinon, si » et « else » comme « sinon ».', E(a['rep'])))
@@ -279,10 +279,11 @@ age = 20
     <div class="td-correction"><p>Ligne 2 : <code>{E(q['fix'].strip())}</code>, décalée de 4 espaces. {E(q['exp'])}</p></div>
   </section>''')
     q = R.M2[1]
-    o.append(f'''  <section class="td-q" data-type="courte" id="m4" data-comparer="code" data-reponse="{E(q['fix'])}|for i in range(1,6):|for i in range(6):">
+    o.append(f'''  <section class="td-q" data-type="courte" id="m4" data-comparer="code" data-reponse="{E(q['fix'])}|for i in range(1,6):|for i in range(1, 5+1):|for i in range(1,5+1):">
     <p class="td-consigne">b) {E(q['q'])} Réécris la ligne fautive, corrigée.</p>
 {code(q['code'])}
-    <p class="td-retour" data-si="for i in range(1, 5+1):">C'est juste, mais on écrit plus simplement 6.</p>
+    <p class="td-retour" data-si="for i in range(6):">range(6) commence à 0 : le programme afficherait 0, 1, 2, 3, 4, 5. Il faut commencer à 1.</p>
+    <p class="td-retour" data-si="for i in range(0, 6):">range(0, 6) commence à 0 : le programme afficherait aussi 0. Il faut commencer à 1.</p>
     <p class="td-aide">range(a, b) s'arrête juste avant b.</p>
     <div class="td-correction"><p><code>{E(q['fix'])}</code> : {E(q['exp'])}</p></div>
   </section>''')
@@ -416,9 +417,52 @@ def verifier_pages():
     assert n == 4
 
 
+def verifier_reponses():
+    """Toute réponse acceptée par la page du mini-contrôle (m3 à m7), et toute réponse refusée avec un retour,
+    est exécutée : une réponse acceptée doit donner la sortie attendue, une réponse refusée une autre sortie."""
+    import contextlib, io
+    page = open(os.path.join(os.path.dirname(ICI), 'seance-revision-eleves-2.html'), encoding='utf-8').read()
+
+    def sortie(prog, avant=''):
+        f = io.StringIO()
+        with contextlib.redirect_stdout(f):
+            exec(compile(avant + prog, 'essai.py', 'exec'), {})
+        return f.getvalue().split()
+
+    def section(i):
+        return re.search(r'<section class="td-q"[^>]*id="%s".*?</section>' % i, page, re.S).group(0)
+    n = 0
+    # m4 : la ligne corrigée, puis le print
+    q = R.M2[1]; s = section('m4')
+    for r in html.unescape(re.search(r'data-reponse="([^"]*)"', s).group(1)).split('|'):
+        assert sortie(r + '\n    print(i)') == q['attendu'], ('m4 accepte', r); n += 1
+    for r in re.findall(r'data-si="([^"]*)"', s):
+        assert sortie(html.unescape(r) + '\n    print(i)') != q['attendu'], ('m4 refuse', r); n += 1
+    # m3, m5 : la ligne corrigée à sa place
+    for i, k, l, avant in (('m3', 0, 2, 'age = 20\n'), ('m5', 2, 3, 'x = 7\n')):
+        q = R.M2[k]; s = section(i)
+        lignes = q['code'].split('\n')
+        for r in html.unescape(re.search(r'data-reponse="([^"]*)"', s).group(1)).split('|'):
+            lignes2 = lignes[:]; ind = len(lignes[l - 1]) - len(lignes[l - 1].lstrip())
+            lignes2[l - 1] = (r if r.startswith(' ') else ' ' * (4 if i == 'm3' else ind) + r.strip())
+            sortie('\n'.join(lignes2), avant); n += 1          # se lance sans erreur
+    # m6, m7 : chaque combinaison des variantes acceptées
+    import itertools
+    for k, q in enumerate(R.M3):
+        s = section(f'm{6 + k}')
+        code_page = html.unescape(re.search(r'<pre class="td-code">\n(.*?)</pre>', s, re.S).group(1))
+        trous = re.findall(r'\[\[(.*?)\]\]', code_page)
+        for choix in itertools.product(*[t_.split('|') for t_ in trous]):
+            it = iter(choix)
+            prog = re.sub(r'\[\[(.*?)\]\]', lambda m: next(it), code_page)
+            assert sortie(prog) == q['attendu'], (f'm{6 + k} accepte', choix); n += 1
+    print(f'mini-contrôle : {n} réponses acceptées ou refusées vérifiées par exécution')
+
+
 if __name__ == '__main__':
     R.verifier_mini(); R.verifier_defis()
     if sys.argv[1:] == ['--verifier']:
+        verifier_reponses()
         verifier_pages()
         print('tout est juste')
     else:
