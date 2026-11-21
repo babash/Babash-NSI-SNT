@@ -20,10 +20,11 @@ Le robot est celui des fiches d'origine (décision de l'enseignant·e) : mêmes 
 
 - `robot.py` : le robot et ses grilles (`for` : 8 x 6, départ A6, TD for, while et récapitulatif ; `si` : 6 x 5, départ A3, TD conditions ; `libre` : sans obstacle).
 - `grilles.py` : dessine les grilles en SVG (trait `currentColor` : thème clair, obscur et papier en noir et blanc).
-- `verifier.py` : les contrôles de `charte/verifier-td.py`, avec le robot. Le moteur ne connaît pas le robot :
-  `charte/verifier-td.py` seul signale donc les questions dont le code appelle `nord()`, `est()`… (NameError).
-  Ce script vérifie aussi chaque case d'arrivée (`data-verifier="robot"`) et chaque affichage
-  (`data-verifier="robot-sortie"`) par exécution réelle.
+- Chaque page porte, dans un `script.td-preambule` (T123b), le robot sur une grille sans obstacle (8 x 6, départ A6) :
+  la page et `charte/verifier-td.py` exécutent donc aussi les programmes qui appellent `nord()`, `est()`…,
+  et les questions qui lisent une saisie portent leurs réponses dans `data-entrees`.
+- `verifier.py` : les contrôles de `charte/verifier-td.py`, plus chaque case d'arrivée (`data-verifier="robot"`)
+  et chaque affichage (`data-verifier="robot-sortie"`), vérifiés par exécution réelle sur la grille de la page.
 - `td-for-calculs.py`, `td-while-calculs.py`… (avec `calculs.py`) : les autres réponses calculées
   (choix justifiés, nombres de tours, fonctions, tests du moteur lancés sur les corrections).
 - `verifier.py` donne aussi à `input()` des réponses toutes prêtes (5, oui, non…), pour les programmes qui demandent une saisie.

@@ -16,13 +16,35 @@
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
      data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
-<main class="td" data-td="nsi1-boucle-for" data-td-version="1">
+<main class="td" data-td="nsi1-boucle-for" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+
+  <!-- le robot des fiches (grille sans obstacle de 8 colonnes A à H et 6 lignes, départ en A6) : il permet
+       à Python d'exécuter, dans la page et dans verifier-td.py, les programmes qui appellent nord(), est()… -->
+  <script type="text/x-python" class="td-preambule">
+_COL = "ABCDEFGH"
+_pos = [0, 6]
+def _libre(dx, dy):
+    x, y = _pos[0] + dx, _pos[1] + dy
+    return 0 <= x < 8 and 1 <= y <= 6
+def _pas(dx, dy):
+    if not _libre(dx, dy):
+        raise RuntimeError("Le robot s'écrase en partant de " + _COL[_pos[0]] + str(_pos[1]) + ".")
+    _pos[0], _pos[1] = _pos[0] + dx, _pos[1] + dy
+def nord(): _pas(0, -1)
+def sud(): _pas(0, 1)
+def est(): _pas(1, 0)
+def ouest(): _pas(-1, 0)
+def obstacleNord(): return not _libre(0, -1)
+def obstacleSud(): return not _libre(0, 1)
+def obstacleEst(): return not _libre(1, 0)
+def obstacleOuest(): return not _libre(-1, 0)
+</script>
 
   <header class="td-entete">
-    <!-- BANDEAU : paysage n° 3 (1 à 4, selon le chapitre). Titre, niveau, chapitre à gauche ;
+    <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
          QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
          Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
-    <div class="td-bandeau" data-bandeau="3">
+    <div class="td-bandeau" data-bandeau="4">
       <div class="td-bandeau-decor" aria-hidden="true"></div>
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Langages et programmation</span></p>
@@ -77,7 +99,7 @@ e</pre>
     </div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="q2">
+  <section class="td-q" data-type="qcu" id="q2" data-support="ecran">
     <p class="td-consigne"><b>Robot.</b> Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 for i in range(2):
@@ -94,6 +116,14 @@ for i in range(2):
     <div class="td-correction">
       <p>Le bloc répété contient <code>nord()</code> <b>et</b> <code>est()</code> : à chaque tour, le robot monte puis avance. Avec 2 tours, il dessine un escalier de 2 marches.</p>
     </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>Robot.</b> Traduis ce programme par une phrase en français.</p>
+    <pre class="td-code">
+for i in range(2):
+    nord()
+    est()</pre>
   </section>
 
   <section class="td-q" data-type="sortie" id="q3">
@@ -116,7 +146,7 @@ for i in range(1, 6):
     </div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="q4">
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
     <p class="td-consigne"><b>Robot.</b> Choisis la phrase qui traduit ce programme.</p>
     <pre class="td-code">
 for i in range(4):
@@ -135,6 +165,16 @@ for i in range(4):
     <div class="td-correction">
       <p>À chaque tour (4 tours), le robot regarde à l'est : obstacle, il monte d'une case ; case libre, il avance d'une case vers l'est.</p>
     </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>Robot.</b> Traduis ce programme par une phrase en français.</p>
+    <pre class="td-code">
+for i in range(4):
+    if obstacleEst():
+        nord()
+    else:
+        est()</pre>
   </section>
 
   <h2 class="td-partie">2. Trouve l'erreur</h2>
@@ -208,7 +248,7 @@ SyntaxError: invalid syntax</pre>
     </div>
   </section>
 
-  <section class="td-q" data-type="qcu" data-bonus id="q9">
+  <section class="td-q" data-type="qcu" data-bonus id="q9" data-support="ecran">
     <p class="td-consigne">Ce programme doit afficher les nombres de 1 à 10, mais 10 n'apparaît pas. Pourquoi ?</p>
     <pre class="td-code">
 for i in range(1, 10):
@@ -225,7 +265,14 @@ for i in range(1, 10):
     </div>
   </section>
 
-  <section class="td-q" data-type="qcu" data-bonus id="q10">
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Ce programme doit afficher les nombres de 1 à 10, mais 10 n'apparaît pas. Entoure l'erreur, réécris la ligne corrigée et explique en quelques mots.</p>
+    <pre class="td-code">
+for i in range(1, 10):
+    print(i)</pre>
+  </section>
+
+  <section class="td-q" data-type="qcu" data-bonus id="q10" data-support="ecran">
     <p class="td-consigne">Ce programme doit afficher 15 (= 1 + 2 + 3 + 4 + 5), mais il affiche 5. Pourquoi ?</p>
     <pre class="td-code">
 for i in range(1, 6):
@@ -244,7 +291,16 @@ print(somme)</pre>
     </div>
   </section>
 
-  <section class="td-q" data-type="qcu" data-bonus id="q11">
+  <section class="td-q" data-type="libre" id="q10-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">Ce programme doit afficher 15 (= 1 + 2 + 3 + 4 + 5), mais il affiche 5. Entoure l'erreur, réécris la ligne corrigée et explique en quelques mots.</p>
+    <pre class="td-code">
+for i in range(1, 6):
+    somme = 0
+    somme = somme + i
+print(somme)</pre>
+  </section>
+
+  <section class="td-q" data-type="qcu" data-bonus id="q11" data-support="ecran">
     <p class="td-consigne"><b>Robot.</b> Sur la grille ci-dessous, depuis A6, ce programme fait s'écraser le robot. Pourquoi ?</p>
     <pre class="td-code">
 for i in range(5):
@@ -260,6 +316,14 @@ for i in range(5):
     <div class="td-correction">
       <p>A6 → B6 → C6 → D6, puis le 4e <code>est()</code> vise E6 : c'est un obstacle, le robot s'écrase.</p>
     </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q11-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne"><b>Robot.</b> Sur la grille ci-dessous, depuis A6, ce programme fait s'écraser le robot. Pourquoi ? Explique en quelques mots.</p>
+    <pre class="td-code">
+for i in range(5):
+    est()</pre>
+    <svg class="td-grille-robot" width="214" height="166" viewBox="0 0 214 166" role="img" aria-label="Grille du robot : 8 colonnes (A à H) et 6 lignes (1 à 6), le nord en haut. Le robot est en A6. Obstacles en A2, F2, G3, B4, C4, D4, G4, E6." font-family="inherit" font-size="14" font-weight="700"><text x="32.0" y="14" text-anchor="middle" fill="currentColor">A</text><text x="56.0" y="14" text-anchor="middle" fill="currentColor">B</text><text x="80.0" y="14" text-anchor="middle" fill="currentColor">C</text><text x="104.0" y="14" text-anchor="middle" fill="currentColor">D</text><text x="128.0" y="14" text-anchor="middle" fill="currentColor">E</text><text x="152.0" y="14" text-anchor="middle" fill="currentColor">F</text><text x="176.0" y="14" text-anchor="middle" fill="currentColor">G</text><text x="200.0" y="14" text-anchor="middle" fill="currentColor">H</text><text x="9.0" y="37.0" text-anchor="middle" fill="currentColor">1</text><text x="9.0" y="61.0" text-anchor="middle" fill="currentColor">2</text><text x="9.0" y="85.0" text-anchor="middle" fill="currentColor">3</text><text x="9.0" y="109.0" text-anchor="middle" fill="currentColor">4</text><text x="9.0" y="133.0" text-anchor="middle" fill="currentColor">5</text><text x="9.0" y="157.0" text-anchor="middle" fill="currentColor">6</text><rect x="21.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M25 49L39 63M39 49L25 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="141.5" y="45.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M145 49L159 63M159 49L145 63" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="165.5" y="69.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M169 73L183 87M183 73L169 87" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="45.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M49 97L63 111M63 97L49 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="69.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M73 97L87 111M87 97L73 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="93.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M97 97L111 111M111 97L97 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="165.5" y="93.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M169 97L183 111M183 97L169 111" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><rect x="117.5" y="141.5" width="21" height="21" fill="currentColor" fill-opacity=".28"/><path d="M121 145L135 159M135 145L121 159" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><g fill="none" stroke="currentColor" stroke-width="1.6"><rect x="25.0" y="148.0" width="14.0" height="11.0" rx="2.5"/><path d="M32.0 148.0V144.0"/></g><g fill="currentColor"><circle cx="32.0" cy="143.5" r="1.6"/><circle cx="29.3" cy="152.6" r="1.5"/><circle cx="34.7" cy="152.6" r="1.5"/><rect x="29.0" y="155.6" width="6.0" height="1.4"/></g><path d="M20 20V164M44 20V164M68 20V164M92 20V164M116 20V164M140 20V164M164 20V164M188 20V164M212 20V164M20 20H212M20 44H212M20 68H212M20 92H212M20 116H212M20 140H212M20 164H212" fill="none" stroke="currentColor" stroke-width="1"/></svg>
   </section>
 
   <p class="td-ecran-seul"><b>La suite :</b> <a href="td-for-2.html">feuille 2 sur 3, compléter le code et suivre le robot</a>.</p>
