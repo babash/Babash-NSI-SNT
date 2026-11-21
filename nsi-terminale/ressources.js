@@ -257,7 +257,7 @@ ressource({
     "Fiches processus, activité 1": "fichiers/os-humain/fiches-activite-1.pdf",
     "Fiches processus, activité 2": "fichiers/os-humain/fiches-activite-2.pdf",
     "Fiches processus, activité 3": "fichiers/os-humain/fiches-activite-3.pdf",
-    "Code source": "https://github.com/babash/Ex-cution-d-branch-e",
+    "Code source": "https://github.com/babash/os-humain",
   },
 });
 
