@@ -98,6 +98,7 @@ donnees/
   bibliotheque*.json            construits à chaque publication, jamais commités (ci-dessus)
 scripts/valider_donnees.py      la validation des données
 scripts/tests/test_notions.py   ses tests pour le thésaurus, les notions des fiches et la visibilité
+scripts/depots-renommes/        les dépôts renommés : leur ancienne adresse est refusée dans les fiches
 scripts/construire_bibliotheque.py  la construction des fichiers de l'onglet Bibliothèque
 bibliotheque/                   la page de l'onglet ; son programme est assets/bibliotheque.js,
                                 et sa recherche assets/recherche.js
@@ -218,7 +219,13 @@ Pour valider les données, depuis le dossier du site : `python3 scripts/valider_
 message donne le fichier et le champ. Le script signale comme erreur, entre autres, un lien
 principal vers GitHub, un identifiant en double, une référence inexistante (une notion absente
 du thésaurus comprise), un document sans réglage de visibilité, et tout ce qui ressemble à un
-mot de passe, un identifiant ou une clé secrète. Il vérifie aussi le thésaurus lui-même :
+mot de passe, un identifiant ou une clé secrète. Depuis le 21 novembre 2026, il refuse aussi
+l'ancienne adresse d'un dépôt renommé (`babash.github.io/<ancien nom>/…`,
+`github.com/babash/<ancien nom>`…, en toutes casses), dans les fiches et la vitrine : les dépôts
+sont renommés sans redirection, et une ancienne adresse ne mène nulle part. Les notes datées
+d'une fiche gardent les adresses de leur époque. La liste des renommages est dans
+`scripts/depots-renommes/`, un fichier par dépôt, ajouté avec le commit qui corrige ses adresses ;
+ses tests : `python3 -I -B scripts/tests/test_depots_renommes.py`. Il vérifie aussi le thésaurus lui-même :
 notions plus larges et associées existantes, hiérarchie sans cycle, libellés préférés uniques
 (la recherche compare les racines des mots : « test » et « Tests » se confondraient), historique
 cohérent. Les anciens rôles des notions (`enseignees`, `evaluees`) sont refusés depuis la

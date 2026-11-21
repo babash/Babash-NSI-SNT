@@ -465,6 +465,45 @@ def chercher_secrets(fichier, obj, rapport):
             rapport.attention(fichier, chemin, f"adresse électronique « {m.group(0)} » : vérifier qu'elle peut être publiée.")
 
 
+# ── Les dépôts renommés (T100) : aucune fiche ne cite une ancienne adresse ──
+# Un fichier par dépôt renommé dans scripts/depots-renommes/ (ajouté dans le commit qui corrige ses
+# adresses), pour que chaque renommage se publie seul. Il n'y a pas de dépôt de redirection
+# (décision du 21/11) : une ancienne adresse ne mène nulle part.
+def anciens_depots(racine, rapport):
+    """Les anciens noms de dépôt, en motifs d'adresse (toutes casses)."""
+    motifs = []
+    for p in sorted(glob.glob(os.path.join(racine, "scripts", "depots-renommes", "*.json"))):
+        nom = relatif(racine, p)
+        try:
+            with open(p, encoding="utf-8") as f:
+                d = json.load(f)
+        except (OSError, ValueError) as e:
+            rapport.erreur(nom, "", f"fichier illisible ({e}) : il faut un objet {{\"ancien\": …, \"nouveau\": …}}.")
+            continue
+        ancien = d.get("ancien") if isinstance(d, dict) else None
+        nouveau = d.get("nouveau") if isinstance(d, dict) else None
+        if not isinstance(ancien, str) or not isinstance(nouveau, str) or not ancien or not nouveau or ancien == nouveau:
+            rapport.erreur(nom, "", "il faut « ancien » et « nouveau », deux noms de dépôt différents.")
+            continue
+        motif = re.compile(r"(github\.io/|github\.com/babash/|githubusercontent\.com/babash/|github/babash/|repos/babash/)"
+                           + re.escape(ancien) + r"(?=[/#?\"'`)\s<>.,;:\]|&]|$)", re.I)
+        motifs.append((motif, ancien, nouveau))
+    return motifs
+
+
+def chercher_anciens_depots(fichier, obj, motifs, rapport):
+    for chemin, t in textes(obj):
+        if chemin.startswith(("notes", "historique")):
+            continue  # les notes datées gardent les adresses de leur époque
+        for motif, ancien, nouveau in motifs:
+            for m in motif.finditer(t):
+                if m.group(0)[len(m.group(1)):] == nouveau:
+                    continue  # nouveau nom qui ne diffère que par la casse (nsi-terminale)
+                rapport.erreur(fichier, chemin, f"ancienne adresse du dépôt « {ancien} », renommé « {nouveau} » : "
+                               f"elle ne mène plus nulle part, écrire « {nouveau} ».")
+                break
+
+
 # ── Le validateur ───────────────────────────────────────────────────────────
 
 class Validation:
@@ -475,6 +514,7 @@ class Validation:
         self.avant = avant      # --avant : une version précédente du thésaurus, à comparer
         self.donnees = os.path.join(self.racine, "donnees")
         self.rapport = Rapport()
+        self._anciens = anciens_depots(self.racine, self.rapport)  # T100 : anciens noms des dépôts renommés
         self.schemas = {}
         self.valeurs = {}       # liste → {id: entrée}
         self.criteres = {}      # editeur_code, td_en_ligne → {critère: libellé}
@@ -1093,6 +1133,7 @@ class Validation:
             if fiche is None:
                 continue
             chercher_secrets(fichier, fiche, self.rapport)
+            chercher_anciens_depots(fichier, fiche, self._anciens, self.rapport)
             if not isinstance(fiche, dict):
                 self.rapport.erreur(fichier, "", "une fiche est un objet { … }")
                 continue
@@ -1322,6 +1363,7 @@ class Validation:
         if v is None:
             return
         chercher_secrets(fichier, v, self.rapport)
+        chercher_anciens_depots(fichier, v, self._anciens, self.rapport)
         if not self.conforme("vitrine", v, fichier):
             return
         rubriques_vues = set()
