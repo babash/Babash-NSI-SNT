@@ -34,6 +34,7 @@ spec.loader.exec_module(vt)
 # ce que « tape » l'élève quand un programme appelle input(), selon la question posée (l'invite) ;
 # pour une autre invite : 5, puis oui, puis non, et ainsi de suite
 SAISIES = {'Devine : ': ['10', '50', '42'], 'Note : ': ['10', '14', '15'], 'Âge : ': ['17'],
+           'a : ': ['1'], 'b : ': ['-3'], 'c : ': ['2'], 'Entrez le mois : ': ['Mars', 'Février', 'Juin', 'Brumaire'],
            '': ['5', 'oui', 'non']}
 
 
