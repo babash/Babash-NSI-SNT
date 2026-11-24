@@ -98,6 +98,7 @@
     var b2 = P.bouton('Créer mon code', { type: 'submit', classe: 'cc-principal' });
     var f2 = P.formulaire([pseudo, niveau, appareil2, b2, m2], function () {
       var v = CC.nettoyerPseudo(pseudo.input.value);
+      if (CC.caractereSpecial(pseudo.input.value)) { P.message(m2, CC.MESSAGE_CARACTERE, 'erreur'); pseudo.input.focus(); return; }
       if (!v) { P.message(m2, 'Choisis un prénom ou un pseudo de 2 à 24 caractères (jamais ton nom de famille).', 'erreur'); pseudo.input.focus(); return; }
       if (niveau && !niveau.select.value) { P.message(m2, 'Choisis ton niveau.', 'erreur'); niveau.select.focus(); return; }
       P.occupe(b2, true);
@@ -388,6 +389,10 @@
 
   /* ── 2b. La boutique : les objets, rangés par famille ───────────── */
 
+  /* Un haut fait qu'on peut gagner aujourd'hui : accordé par l'enseignant·e, ou d'une application qui lit
+     déjà le compte commun (réglage COMPTE_COMMUN_APPLICATIONS). Les autres sont « bientôt », sans promesse. */
+  function atteignable(h) { return h.accord === 'enseignant' || CC.applicationsBranchees(); }
+
   function boutiqueOuverte() { return cat.elements.some(function (e) { return e.acces === 'credits'; }); }
 
   function remplirBoutique(panneau) {
@@ -402,7 +407,9 @@
     var pris = cat.elements.filter(function (e) { return e.acces === 'credits' && possede(e); });
 
     panneau.appendChild(el('p', { class: 'cc-intro' }, [
-      'Tu as ', el('strong', null, fiche.credits + ' crédits'), '. Tu les gagnes en travaillant : une feuille de TD validée, un cours-quiz suivi jusqu\'au bout, une mission… ',
+      'Tu as ', el('strong', null, fiche.credits + ' crédits'), '. ',
+      CC.applicationsBranchees() ? 'Tu les gagnes en travaillant : une feuille de TD validée, un cours-quiz suivi jusqu\'au bout, une mission… '
+        : 'Pour l\'instant, seul·e ton enseignant·e peut t\'en donner ; les feuilles de TD et les applications en donneront bientôt. ',
       'Un achat ne se rembourse pas, mais il ne se perd jamais.'
     ]));
     var m = P.zoneMessage();
@@ -440,8 +447,10 @@
       if (a && t && t.origine === 'enseignant') texte = 'Offert' + (t.par ? ' par ' + t.par : '') + (t.motif ? ' : ' + t.motif : '') + (t.depuis ? ' (' + P.date(t.depuis) + ')' : '');
       else if (a && t && t.haut_fait) texte = 'Gagné avec : ' + K.nomHf(t.haut_fait.application, t.haut_fait.id);
       else if (a) texte = e.depart ? 'Avec toi dès le départ.' : 'À toi.';
-      else if (h) texte = 'Se gagne avec : ' + (h.nom || 'un haut fait secret') + (h.application === 'commun' ? ', accordé par ton enseignant·e' : ' (' + K.app(h.application).nom + ')');
-      else texte = 'Ton enseignant·e peut te l\'offrir, ou un jeu te le donnera.';
+      else if (h && atteignable(h)) texte = 'Se gagne avec : ' + (h.nom || 'un haut fait secret') + (h.application === 'commun' ? ', accordé par ton enseignant·e' : ' (' + K.app(h.application).nom + ')');
+      else if (h) texte = 'Bientôt, avec un haut fait de ' + K.app(h.application).nom + '.';
+      else if (e.famille === 'classe') texte = CC.disponible('commun_prof_offrir') ? 'Ton enseignant·e peut te l\'offrir.' : 'Bientôt, ton enseignant·e pourra te l\'offrir.';
+      else texte = 'Bientôt.';
       return el('li', { class: 'cc-article' + (a ? ' cc-trophee-a-toi' : ' cc-a-gagner') }, [
         miniature(e),
         el('p', { class: 'cc-article-nom' }, [e.nom, el('span', { class: 'invisible' }, a ? ' (à toi)' : ' (pas encore)')]),
@@ -545,7 +554,10 @@
               el('br'),
               el('span', { class: 'petit' }, g
                 ? 'Gagné le ' + P.date(g.gagne_le) + (h.description ? '. ' + h.description : '')
-                : h.secret ? 'Indice : ' + (h.indice || '…') : (h.accord === 'enseignant' ? 'Accordé par ton enseignant·e. ' : 'Pour l\'avoir : ') + (h.description || ''))
+                : h.secret ? 'Indice : ' + (h.indice || '…')
+                : h.accord === 'enseignant' ? 'Accordé par ton enseignant·e. ' + (h.description || '')
+                : atteignable(h) ? 'Pour l\'avoir : ' + (h.description || '')
+                : 'Bientôt, quand ' + a.nom + ' lira ton code. ' + (h.description || ''))
             ])
           ]);
         })));

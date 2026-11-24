@@ -161,7 +161,12 @@
         return;
       }
       P.occupe(b, true);
-      Prof.ouvrir(codeAffiche).then(function (rep) { P.occupe(b, false); if (rep.ok) { espace = rep; router(); } else entree(rep.message); });
+      /* Si la base ne répond pas, le code reste à l'écran avec le message : il n'est montré qu'une fois */
+      Prof.ouvrir(codeAffiche).then(function (rep) {
+        P.occupe(b, false);
+        if (rep.ok) { espace = rep; router(); return; }
+        P.message(m, rep.message + ' Ton code reste affiché : garde-le, puis réessaie « Je l\'ai noté ».', 'erreur');
+      });
     });
     main.appendChild(el('section', { class: 'cc-carte cc-ton-code' }, [titre, el('p', { class: 'cc-code cc-code-grand' }, codeAffiche),
       el('p', null, texte || 'Il n\'est montré qu\'une fois : note-le ou imprime-le.'),
@@ -294,8 +299,23 @@
         Prof.nouveauCode().then(function (rep) {
           O.vider(zoneCode);
           if (!rep.ok) { P.message(m2, rep.message, 'erreur'); return; }
+          /* Le nouveau code n'est montré qu'une fois : on retape ses 4 chiffres, comme à la création */
+          var chiffres = (rep.code_affiche.match(/(\d{4})$/) || [])[1] || '';
+          var saisie = P.champ({ etiquette: 'Retape les 4 chiffres de ton nouveau code', inputmode: 'numeric', max: 4, classe: 'cc-chiffres', autocomplete: 'off' });
+          var m4 = P.zoneMessage();
+          var note = P.bouton('Je l\'ai noté', { type: 'submit', classe: 'cc-principal' });
           zoneCode.appendChild(el('p', { class: 'cc-code cc-code-grand' }, rep.code_affiche));
           zoneCode.appendChild(el('p', null, rep.message));
+          zoneCode.appendChild(P.formulaire([saisie, note, m4], function () {
+            if (saisie.input.value.replace(/\D/g, '') !== chiffres) {
+              P.message(m4, 'Ce ne sont pas les bons chiffres : regarde ton nouveau code et recopie-le.', 'erreur');
+              saisie.input.focus();
+              return;
+            }
+            O.vider(zoneCode);
+            P.message(m2, 'Ton nouveau code est noté ; l\'ancien ne marche plus.', 'ok');
+          }));
+          saisie.input.focus();
         });
       });
       zoneCode.appendChild(el('p', null, 'L\'ancien code ne marchera plus.' + (CC.applicationsBranchees() ? ' Les codes de tes applications restent valables.' : '')));
