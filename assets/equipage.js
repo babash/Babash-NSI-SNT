@@ -13,6 +13,9 @@
      Equipage.aleatoire(graine)                     -> description
      Equipage.texte(description, etat)              -> texte alternatif
      Equipage.catalogue, Equipage.ETATS, Equipage.version
+   Pour les applications (T133b) : états d'usage, poignee.geste / bulle /
+   marque / serie, Equipage.calme / plafond / pause / neutre / phrases /
+   gestes / applis (mode d'emploi : charte/applis.md).
 
    Contrat complet : assets/equipage/LISEZMOI.md.
    Dessins originaux ; style de personnage repris du jeu de révision
@@ -222,12 +225,12 @@
     ['eclairs_chocolat', 'Les éclairs au chocolat', 'pieds', 'clin'], ['casque_mabawa', 'Le bonnet à mabawa', 'tete', 'clin'],
     ['cornes_zebu', 'Le serre-tête cornes de zébu', 'tete', 'clin'], ['baladeur_galaxie', 'Le baladeur intergalactique', 'cou', 'clin'],
     ['mangue_etoiles', 'La mangue de cristal à quatre étoiles', 'main', 'clin'], ['nuage_taxi', 'Le nuage-taxi', 'pieds', 'clin'],
-    ['perche_extensible', 'La perche à mangues extensible', 'main', 'clin'], ['calculette_9000', 'La calculette de puissance (plus de 9 000)', 'cou', 'clin'],
+    ['calculette_9000', 'La calculette de puissance (plus de 9 000)', 'cou', 'clin'],
     ['grenouille_porte_monnaie', 'La grenouille porte-monnaie', 'cou', 'clin'], ['style_trois_baguettes', 'Le style à trois baguettes', 'main', 'clin'],
     ['bateau_mouton', 'Le bateau-mouton', 'main', 'clin'], ['tresor_une_piece', 'Le trésor en une seule pièce', 'main', 'clin'],
     ['boussole_gouter', 'La boussole qui montre le goûter', 'cou', 'clin'], ['crochet_tricot', 'Le crochet… à tricoter', 'main', 'clin'],
     ['perle_noire', 'La perle noire du lagon', 'cou', 'clin'], ['kraken_peluche', 'Le kraken en peluche', 'epaule', 'clin'],
-    ['maki_sushi', 'Le maki… sushi', 'main', 'clin'], ['bouchon_mamoudzou', 'Le bouchon de Mamoudzou', 'tete', 'clin'],
+    ['maki_sushi', 'Le maki… sushi', 'main', 'clin'],
     ['barges_pieds', 'Les barges aux pieds', 'pieds', 'clin'], ['doukabe_dos', 'Le doukabé à dos', 'dos', 'clin'],
     ['crete_recurer', 'La crête à récurer', 'tete', 'clin'], ['pinces_linge', 'Les pinces à linge rebelles', 'epaule', 'clin'],
     ['bottes_conserve', 'Les bottes en conserve', 'pieds', 'clin'],
@@ -299,6 +302,9 @@
   APPLIS.forEach(function (a) { OBJETS.push([a[0], a[1], a[2], 'applis']); });
   var APPLI_DE = {};
   APPLIS.forEach(function (a) { APPLI_DE[a[0]] = { application: a[3], haut_fait: a[4] }; });
+  /* objets retirés à la demande de l'enseignant (24/11) : [emplacement, id, place d'origine dans la liste].
+     Une description qui les porte les perd (« aucun ») ; aleatoire garde leur place pour que les tirages ne changent pas. */
+  var RETIRES = [['main', 'perche_extensible', 7], ['tete', 'bouchon_mamoudzou', 4]];
   /* anciens identifiants (v3) : repris dans leur nouvel emplacement */
   var COMPAT = { masque: ['visage', 'loup'], chale: ['epaule', 'kishali'], ballon: ['pieds', 'ballon_foot'], monocle_visee: ['visage', 'monocle_pixels'] };
   CATALOGUE.emplacements.forEach(function (e) { CATALOGUE.objets[e.id] = [{ id: 'aucun', nom: 'Rien' }]; });
@@ -1297,8 +1303,6 @@
       p: { p: '#9a4ab8', P: '#c87ae8', w: '#ffffff', k: '#1b1530', R: '#ff7fa0', m: '#6a2a5a' } },
     maki_sushi: { ou: 'main', gros: 1, a: [3, 7], r: ['..kkk..', '.kwwwk.', 'kwbbbwk', 'kwobowk', 'kwbdbwk', '.kwwwk.', '..kkk..'],
       p: { k: '#1f2a24', w: BLANC, b: '#8a6a4a', o: '#f0a030', d: '#3a2a2a' } },
-    bouchon_mamoudzou: { ou: 'tete', clair: 1, a: [7, 6], r: ['..r...b...y...', '.rrr.bbb.yyy..', '.k.k.k.k.k.k..', '..cccccccccc..', '.cCcCccCcCcCc.', '.cccCcccccCcc.', '.cCccCcCccccc.', '.CCCCCCCCCCCC.'],
-      p: { r: '#e8403a', b: '#3f6ad8', y: '#f2c14e', k: '#2a2a35', c: '#e8c088', C: '#b88848' } },
     barges_pieds: { ou: 'pieds', a: [2, 3], r: ['...rr..', 'wwwwwww', 'bbbbbbb', '.wwwww.'], p: { r: '#e8403a', w: '#eef2fa', b: '#3f6ad8' } },
     bottes_conserve: { ou: 'pieds', a: [1, 5], r: ['lllll', 'sSsSs', 'AAAAA', 'AwAwA', 'sSsSs', 'lllll'], p: { l: '#eef0f6', s: '#b8c0d4', S: MET, A: 'A', w: '#ffffff' } },
 
@@ -1331,7 +1335,7 @@
     palmes_lagon: { ou: 'pieds', a: [1, 2], r: ['......pP..', '...ppPpPp.', 'pppPpPpPpp'], p: { p: '#ff9a3a', P: '#ffd28a' } }
   };
   /* objets tenus : le bras se lève pour les porter */
-  var TIENT = { bombe: 1, cle: 1, baton_lumineux: 1, lanterne: 1, parapluie: 1, style_trois_baguettes: 1, perche_extensible: 1 };
+  var TIENT = { bombe: 1, cle: 1, baton_lumineux: 1, lanterne: 1, parapluie: 1, style_trois_baguettes: 1 };
   Object.keys(SPR).forEach(function (k) { if (SPR[k].ou === 'main') TIENT[k] = 1; });
   var CHAPEAUX = { chapeau_paille: 1, bonnet: 1, casquette: 1, bandana: 1, casque_mabawa: 1, casquette_mabawa: 1, casquette_barge: 1, casquette_pilaou: 1, bob: 1 };
   var CRETES = { meches_vives: 1, crete_pics: 1, crete_recurer: 1 };
@@ -1865,10 +1869,6 @@
     if (acc === 'style_trois_baguettes') {
       [[-2, -10], [2, -11], [6, -9]].forEach(function (b) { ligne(c, hx, hy, hx + b[0], hy + b[1], function (k) { return k % 3 === 1 ? '#f2d090' : '#d89a48'; }, 2); });
     }
-    if (acc === 'perche_extensible') {
-      ligne(c, hx, hy, hx + 2, hy - 20, function (k) { return k % 5 === 0 ? '#8a9a3a' : '#c8c86a'; });
-      poser(c, ['.oG.', 'bobb', 'bbbb', '.bb.'], { o: '#f08a2a', G: '#3fae4a', b: '#a8784a' }, hx + 2, hy - 21, [1, 3]);
-    }
     if (acc === 'enceinte') {
       var x0 = c.tx0 - 13, y0 = G - 6;
       c.L.rect(x0, y0, 10, 7, '#3a3f58');
@@ -2390,6 +2390,7 @@
       '.eq-bulle{position:absolute;z-index:3;left:50%;bottom:100%;transform:translate(-50%,-6px);width:max-content;max-width:var(--eq-bulle-max,14em);padding:.3em .65em;' +
         'background:var(--td-fond,#fff);color:var(--td-encre,#121016);border:1.4px solid var(--td-trait-fort,#121016);border-radius:12px;box-shadow:3px 3px 0 var(--td-neon-2,#FF2E97);' +
         'font:700 var(--eq-bulle-taille,1rem)/1.2 var(--td-texte,system-ui,sans-serif);text-align:center;white-space:normal;animation:eq-bulle-vient .25s ease-out both}',
+      '.eq-acomp .eq-bulle{left:32.4%}',
       '.eq-bulle::after{content:"";position:absolute;left:50%;bottom:-7px;width:11px;height:11px;background:inherit;border-right:inherit;border-bottom:inherit;transform:translateX(-50%) rotate(45deg)}',
       '@keyframes eq-bulle-vient{from{opacity:0;transform:translate(-50%,0)}to{opacity:1;transform:translate(-50%,-6px)}}',
       '.eq-calme .eq-bulle{animation:none!important}',
@@ -2491,7 +2492,7 @@
     { id: 'rit', nom: 'Rire', etat: 'content' }, { id: 'sieste', nom: 'Petite sieste', etat: 'dort' }
   ];
   var GESTE_DE = {}; GESTES.forEach(function (g) { GESTE_DE[g.id] = g; });
-  /* les 20 phrases du lobby : liste FERMÉE, envoyée par numéro (de 0 à 19).
+  /* les 21 phrases du lobby : liste FERMÉE, envoyée par numéro (de 0 à 20).
      Version 1. On n'en retire jamais et on n'en change jamais le sens : on ajoute à la fin, et la version monte.
      Copie versionnée : assets/equipage/applis.json (charte/equipage-donnees.js la régénère et la vérifie). */
   var PHRASES_VERSION = 1;
@@ -2499,8 +2500,16 @@
     'Prêt·e !', 'Coucou la classe !', 'Bonne chance à tout le monde !', 'J’ai le trac, mais j’y vais.', 'Allez, on se lance !',
     'Mon cerveau charge… 87 %', 'Le margouillat est avec nous.', 'On se trompe, on apprend.', 'Même pas peur (enfin, un peu).', 'Je suis là, et bien réveillé·e !',
     'On fait ça ensemble.', 'Bravo d’avance à tout le monde.', 'J’ai révisé… dans mes rêves.', 'Respire, ça va bien se passer.', 'Wi-Fi, ne me lâche pas.',
-    'Plus rapide que le bouchon de Mamoudzou !', 'Je sens que je vais apprendre un truc.', 'Qui a vu mon stylo ?', 'Pas de stress : c’est pour apprendre.', 'Hâte de voir la première question !'
+    'Je sens que je vais apprendre un truc.', 'Qui a vu mon stylo ?', 'Pas de stress : c’est pour apprendre.', 'Hâte de voir la première question !',
+    'Ne vous inquiétez pas, Monsieur.', 'Moi, c’est au talent.'
   ];
+  /* les phrases qui s'adressent à l'enseignant·e : la page projetée choisit la forme (Equipage.adresse) ;
+     l'élève envoie le même numéro, quelle que soit la forme */
+  var ADRESSES = { monsieur: 'Monsieur', madame: 'Madame' }, _adresse = 'monsieur';
+  var VARIANTES = { 19: function (a) { return 'Ne vous inquiétez pas, ' + ADRESSES[a] + '.'; } };
+  function phrase(n) { return VARIANTES[n] ? VARIANTES[n](_adresse) : PHRASES[n]; }
+  /* Equipage.adresse('monsieur' | 'madame') : réglage de l'enseignant·e sur la page projetée ; Equipage.adresse() le lit */
+  function adresse(a) { if (a !== undefined && ADRESSES[a]) _adresse = a; return _adresse; }
   /* les joueurs et joueuses sans compte : l'Esprit en capuche, le même pour tous (décision du 24/11) */
   var NEUTRE = normaliser({ lignee: 'esprit', coiffure: 'capuche', haut: 'sweat', compagnon: 'margouillat', couleurs: { haut: 'sarcelle', accent: 'cyan' } });
 
@@ -2594,11 +2603,12 @@
       var cl = (element.className.replace(/(^|\s)eq(-[a-z]+)?(?=\s|$)/g, '').trim() + ' ' + classes(o, cadre)).trim();
       if (!v.autorise) cl += ' eq-fige';
       if (porteur()) cl += ' eq-porteur';
-      element.className = cl;
       var oo = o;
       if (v.geste) { oo = {}; for (var x in o) oo[x] = o[x]; oo.etat = v.geste; }
       if (!v.autorise && oo.anime !== false) { if (oo === o) { oo = {}; for (var y in o) oo[y] = o[y]; } oo.anime = false; }
       var h = svg(etatDesc, oo);
+      if (bulle && h.indexOf('viewBox="0 8 74 56"') > 0) cl += ' eq-acomp';
+      element.className = cl;
       if (marque === 'repondu') h += '<span class="eq-fanion">' + SVG_FANION + '<span class="eq-vh">a répondu</span></span>';
       if (serie >= 2) h += '<span class="eq-flamme">' + SVG_FLAMME + '<b aria-hidden="true">' + serie + '</b><span class="eq-vh">série de ' + serie + '</span></span>';
       element.innerHTML = h;
@@ -2659,9 +2669,10 @@
         var l = listeDe(liste);
         if (!l || v.mort || typeof numero !== 'number' || numero % 1 !== 0 || numero < 0 || numero >= l.length || typeof l[numero] !== 'string') return false;
         var duree = opt && +opt.duree > 0 ? Math.min(+opt.duree, 15000) : 5000;
-        if (bulle || _bullesVues < BULLES_MAX) { v.montrerBulle(l[numero], duree); return true; }
+        var texte = l === PHRASES ? phrase(numero) : l[numero];
+        if (bulle || _bullesVues < BULLES_MAX) { v.montrerBulle(texte, duree); return true; }
         _fileBulles = _fileBulles.filter(function (b) { return b.v !== v; });
-        _fileBulles.push({ v: v, texte: l[numero], duree: duree });
+        _fileBulles.push({ v: v, texte: texte, duree: duree });
         return true;
       },
       /* marque('repondu' | null) : le fanion ; serie(n) : la flamme et son chiffre, à partir de 2 */
@@ -2771,7 +2782,11 @@
     };
     var proba = { tete: 0.5, visage: 0.3, cou: 0.3, dos: 0.35, main: 0.5, epaule: 0.25, pieds: 0.25, autour: 0.25 };
     /* les objets des applications ne sortent jamais au hasard : ce sont des trophées (tirages inchangés) */
-    EMPLACEMENTS.forEach(function (e) { var l = CATALOGUE.objets[e].filter(function (x) { return x.famille !== 'applis'; }); d.objets[e] = r() < proba[e] ? l[1 + Math.floor(r() * (l.length - 1))].id : 'aucun'; });
+    EMPLACEMENTS.forEach(function (e) {
+      var l = CATALOGUE.objets[e].filter(function (x) { return x.famille !== 'applis'; });
+      RETIRES.forEach(function (x) { if (x[0] === e) l.splice(x[2], 0, { id: 'aucun' }); });
+      d.objets[e] = r() < proba[e] ? l[1 + Math.floor(r() * (l.length - 1))].id : 'aucun';
+    });
     if (d.couleurs.bas === d.couleurs.haut) d.couleurs.bas = 'anthracite';
     return normaliser(d);
   }
@@ -2814,7 +2829,8 @@
     defaut: function () { return copie(DEFAUT); }, compat: copie(COMPAT),
     /* T133b : l'interface des applications */
     USAGES: copie(USAGES), gestes: GESTES.map(function (g) { return { id: g.id, nom: g.nom, etat: g.etat }; }),
-    phrases: PHRASES.slice(), phrasesVersion: PHRASES_VERSION,
+    phrases: PHRASES.slice(), phrasesVersion: PHRASES_VERSION, adresse: adresse, phrase: function (n) { return typeof n === 'number' && PHRASES[n] !== undefined ? phrase(n) : null; },
+    variantes: Object.keys(VARIANTES).map(Number),
     applis: APPLIS.map(function (a) { return { id: a[0], nom: a[1], emplacement: a[2], application: a[3], haut_fait: a[4], haut_fait_nom: a[5], categorie: a[6], condition: a[7] }; }),
     neutre: function () { return copie(NEUTRE); },
     calme: calme, plafond: plafond, pause: pause, viderCache: function () { _cache = {}; _nCache = 0; }

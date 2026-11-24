@@ -31,7 +31,13 @@ function applis() {
     equipage_version: E.version,
     note: 'Généré depuis assets/equipage.js par charte/equipage-donnees.js. Les phrases sont une liste FERMÉE, envoyée par numéro (0 à ' +
       (E.phrases.length - 1) + ') : on n’en retire jamais, on n’en change jamais le sens, on ajoute à la fin et la version monte. Ne pas modifier à la main.',
-    phrases: E.phrases.map(function (p, i) { return { numero: i, texte: p }; }),
+    phrases: E.phrases.map(function (p, i) {
+      if (E.variantes.indexOf(i) < 0) return { numero: i, texte: p };
+      var x = { numero: i, texte: p, variantes: {} }, avant = E.adresse();
+      ['monsieur', 'madame'].forEach(function (a) { E.adresse(a); x.variantes[a] = E.phrase(i); });
+      E.adresse(avant); return x;
+    }),
+    adresse: 'Une phrase qui a des « variantes » s\u2019adresse à l\u2019enseignant·e : l\u2019élève envoie le numéro, la page projetée choisit la forme (Equipage.adresse(\u0027monsieur\u0027 | \u0027madame\u0027), réglage de l\u2019enseignant·e).',
     gestes: E.gestes,
     usages: Object.keys(E.USAGES).map(function (k) { return { id: k, etat: E.USAGES[k] }; }),
     neutre: E.neutre(),

@@ -1,0 +1,296 @@
+/* ─────────────────────────────────────────────
+   Ressources NSI et SNT : socle d'habillage des applications (T133b)
+
+   « Piste B » (décision de l'enseignant du 24/11) : le design du site, plus
+   une touche légère propre à chaque application. Une seule source, chargée
+   depuis le site, APRÈS la palette :
+
+     <html lang="fr" data-appli="quizz-nsi">
+     <link rel="stylesheet" href="https://babash.github.io/Babash-NSI-SNT/assets/signal-commun.css">
+     <link rel="stylesheet" href="https://babash.github.io/Babash-NSI-SNT/assets/applis.css">
+     <script src="https://babash.github.io/Babash-NSI-SNT/assets/equipage.js"></script>
+
+   data-appli : "quizz-nsi" | "hello-go" | "calendrier" | "gombessa" | "lagon-arena".
+   Aucune couleur nouvelle pour le texte : la palette --td-* du site (contrastes
+   vérifiés : texte 7:1, texte doux 4,5:1, clair et obscur). Les néons ne sont
+   qu'un décor (ombres décalées, filets), jamais porteurs de sens.
+   Classes préfixées « ap- » : rien ne touche aux balises de l'application.
+   Démonstration et mode d'emploi : charte/applis.html, charte/applis.md.
+   Auteur : Babash - NSI Tani Malandi. Code sous licence MIT.
+   ───────────────────────────────────────────── */
+
+/* ── 0. Réglages ── */
+:root {
+  --ap-trame: rgba(18, 16, 22, .09);
+  --ap-touche: var(--td-neon-1);        /* néon de décor de l'application */
+  --ap-touche-2: var(--td-neon-2);
+  --ap-largeur: 72rem;
+  --ap-gouttiere: 16px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --ap-trame: rgba(236, 232, 245, .08); } }
+:root[data-theme="dark"] { --ap-trame: rgba(236, 232, 245, .08); }
+
+.ap, .ap *, .ap *::before, .ap *::after { box-sizing: border-box; }
+.ap { margin: 0; background: var(--td-fond); color: var(--td-encre); font: 400 var(--td-taille, 1.0625rem)/1.5 var(--td-texte); -webkit-text-size-adjust: 100%; }
+.ap :focus-visible { outline: 3px solid var(--td-focus); outline-offset: 2px; }
+.ap h1, .ap h2, .ap h3, .ap h4 { margin: 0; }
+.ap-page { max-width: var(--ap-largeur); margin: 0 auto; padding: 16px var(--ap-gouttiere) 32px; }
+.ap-pile > * + * { margin-top: 12px; }
+
+/* textes */
+.ap-titre { font: 400 clamp(1.6rem, 5vw, 2.2rem)/1.08 var(--td-titres); letter-spacing: .01em; }
+.ap-titre-neon { text-shadow: 3px 3px 0 var(--ap-touche-2); }
+.ap-sous { font: 700 1.05rem/1.3 var(--td-texte); }
+.ap-petit { font-size: .9rem; color: var(--td-encre-douce); }
+.ap-signal { font: 400 1.15rem/1 var(--td-signal); text-transform: uppercase; letter-spacing: .05em; }
+.ap-mono, .ap code { font-family: var(--td-mono); font-size: .92em; }
+.ap-vh { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.ap-trame { background-image: radial-gradient(var(--ap-trame) 1px, transparent 1.2px); background-size: 6px 6px; }
+
+/* ── 1. Barre du haut (la même dans chaque application) ── */
+.ap-barre { display: flex; align-items: center; gap: 10px; padding: 6px var(--ap-gouttiere); min-height: 48px; border-bottom: 1.4px solid var(--td-trait-fort); background: var(--td-fond); }
+.ap-logo { font: 700 1.15rem/1 var(--td-texte); letter-spacing: -.01em; white-space: nowrap; color: var(--td-encre); text-decoration: none; }
+.ap-logo b { color: var(--td-accent); }
+.ap-lieu { font-size: .9rem; color: var(--td-encre-douce); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ap-espace { flex: 1; }
+
+/* ── 2. Bandeau des liens rapides (« Zoé · mes applications ») : sobre, identique partout ── */
+.ap-bandeau { position: relative; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 8px; min-height: 40px; border-bottom: 1px solid var(--td-trait); background: var(--td-panneau-2); font-size: .95rem; }
+.ap-moi { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 2px 12px 2px 3px; border: 1px solid var(--td-trait-fort); border-radius: 999px; background: var(--td-fond); color: var(--td-encre); font: 700 .95rem/1.2 var(--td-texte); white-space: nowrap; cursor: pointer; }
+.ap-moi .eq { flex: none; }
+.ap-bandeau a, .ap-lien { color: var(--td-encre); text-decoration: underline; text-underline-offset: 3px; }
+.ap-menu { position: absolute; left: 8px; top: 100%; z-index: 20; width: min(300px, calc(100vw - 32px)); margin: 2px 0 0; padding: 6px 0; list-style: none; background: var(--td-fond); border: 1.4px solid var(--td-trait-fort); box-shadow: 4px 4px 0 var(--ap-touche); }
+.ap-menu[hidden] { display: none; }
+.ap-menu a { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 8px 12px; color: var(--td-encre); text-decoration: none; }
+.ap-menu a:hover { background: var(--td-panneau-2); }
+.ap-menu small { margin-left: auto; color: var(--td-encre-douce); }
+.ap-menu .ap-sep { border-top: 1px solid var(--td-trait); margin: 6px 0; }
+.ap-menu [aria-current] { font-weight: 700; text-decoration: underline; text-decoration-thickness: 2px; }
+
+/* ── 3. Boutons, cartes, champs ── */
+.ap-bt { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 1.4px solid var(--td-trait-fort); border-radius: var(--td-rayon, 2px);
+  background: var(--td-fond); color: var(--td-encre); font: 700 1rem/1.2 var(--td-texte); text-decoration: none; cursor: pointer; }
+.ap-bt:hover { background: var(--td-panneau-2); }
+.ap-bt-principal { background: var(--td-principal-fond); color: var(--td-principal-encre); box-shadow: 3px 3px 0 var(--ap-touche); }
+.ap-bt-principal:hover { background: var(--td-principal-fond); text-decoration: underline; }
+.ap-bt-large { width: 100%; }
+.ap-bt-grand { min-height: 56px; font-size: 1.15rem; }
+.ap-bt-mini { min-height: 36px; padding: 4px 10px; font-size: .9rem; }
+.ap-bt[aria-pressed="true"] { box-shadow: inset 0 0 0 2px var(--td-trait-fort); text-decoration: underline; text-decoration-thickness: 2px; }
+.ap-bt:disabled, .ap-bt[aria-disabled="true"] { border-style: dashed; color: var(--td-encre-douce); cursor: not-allowed; box-shadow: none; }
+/* le lien discret « Jouer sans compte » : du texte souligné, jamais un bouton */
+.ap-discret { display: inline-block; padding: 10px 2px; color: var(--td-encre-douce); font-size: .95rem; text-decoration: underline; text-underline-offset: 3px; background: none; border: 0; cursor: pointer; font-family: inherit; }
+.ap-discret:hover { color: var(--td-encre); }
+.ap-carte { border: 1.4px solid var(--td-trait-fort); border-radius: var(--td-rayon, 2px); background: var(--td-panneau); padding: 12px 14px; }
+.ap-carte-douce { border-color: var(--td-trait); }
+.ap-carte-pointille { border-style: dashed; }
+.ap-label { display: block; font-weight: 700; margin-bottom: 4px; }
+.ap-champ { display: block; width: 100%; min-height: 44px; padding: 8px 10px; border: 1.4px solid var(--td-trait-fort); border-radius: var(--td-rayon, 2px); background: var(--td-fond); color: var(--td-encre); font: 400 1.05rem/1.2 var(--td-mono); }
+.ap-champ-code { text-transform: uppercase; letter-spacing: .08em; }
+.ap-puce { display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; border: 1px solid var(--td-trait-fort); font: 400 1rem/1.35 var(--td-signal); text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.ap-message { border-left: 4px solid var(--td-trait-fort); background: var(--td-info-fond); padding: 8px 12px; }
+.ap-message-encore { border-left-color: var(--td-encore); background: var(--td-encore-fond); color: var(--td-encre); }
+.ap-qr { display: inline-block; line-height: 0; padding: 8px; background: #FFFFFF; border: 1.4px solid var(--td-trait-fort); }
+.ap-qr svg, .ap-qr img, .ap-qr canvas { display: block; width: 100%; height: auto; }
+
+/* ── 4. L'entrée (téléphone) : un bouton principal, le lien discret en dessous ── */
+.ap-entree { max-width: 26rem; margin: 0 auto; padding: 20px var(--ap-gouttiere) 28px; display: flex; flex-direction: column; gap: 14px; }
+.ap-entree .ap-avatar { align-self: center; }
+.ap-entree-ou { display: flex; align-items: center; gap: 10px; color: var(--td-encre-douce); font-size: .9rem; }
+.ap-entree-ou::before, .ap-entree-ou::after { content: ""; flex: 1; border-top: 1px solid var(--td-trait); }
+.ap-entree .ap-discret { align-self: center; }
+
+/* ── 5. Le lobby (écran projeté) ── */
+.ap-lobby { display: grid; grid-template-columns: minmax(16rem, 22rem) 1fr; gap: 20px 28px; padding: 16px var(--ap-gouttiere); }
+.ap-seance { align-self: start; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; }
+.ap-seance .ap-qr { width: min(100%, 220px); }
+.ap-code-seance { font: 400 clamp(2.4rem, 7vw, 4.4rem)/1 var(--td-signal); letter-spacing: .25em; padding-left: .25em; }
+.ap-plateau { display: grid; grid-template-columns: repeat(auto-fill, minmax(var(--ap-case, 104px), 1fr)); gap: 58px 6px; align-content: start; padding-top: 52px; }
+.ap-joueur { position: relative; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+.ap-joueur .eq { position: relative; z-index: 1; --eq-bulle-max: 9.5em; }
+.ap-joueur:hover, .ap-joueur:focus-within { z-index: 2; }
+.ap-dalle { display: block; width: 70%; height: 8px; margin-top: -7px; border: 1px solid var(--td-trait); background: radial-gradient(var(--td-trait) .8px, transparent 1px) 0 0 / 4px 4px, var(--td-panneau-2); transform: skewX(-24deg); }
+.ap-pseudo { max-width: 100%; margin-top: 4px; font: 700 1rem/1.15 var(--td-texte); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ap-sans-pseudos .ap-pseudo { visibility: hidden; }        /* masqués d'un clic : la place reste, rien ne saute */
+.ap-joueur-arrive { animation: ap-arrive .6s ease-out both; }
+.ap-compte { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
+.ap-commandes { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ── 6. Pendant la question ──
+   Retours de l'enseignant (24/11, 10:53) : on garde l'écran de question de QuizzNSI, « plus lisible,
+   notamment le code » : une couleur ET une forme par réponse (A ▲, B ◆, C ●, D ■), la coloration
+   syntaxique, l'indentation marquée par des guides. Ces composants sont repris TELS QUELS de
+   quizz-nsi (css/quizz.css, branche atelier/t131-minuterie-et-flammes, mêmes classes, mêmes
+   couleurs vérifiées), sous .ap. On n'y ajoute que ce qu'il a validé sur la maquette : le chrono
+   (.ap-minuteur) et les bustes discrets (.ap-reponses : fanion « a répondu », flamme et son chiffre). */
+.ap {
+  --ap-f0: #DC2626; --ap-f1: #2563EB; --ap-f2: #B45309; --ap-f3: #15803D;
+  --ap-c-mot: #5B21B6; --ap-c-ch: #02553F; --ap-c-nb: #7A3304; --ap-c-com: #414A57; --ap-c-fn: #084E62; --ap-c-nat: #86143F; --ap-c-def: #1E40AF; --ap-c-self: #7C2D12; --ap-c-err: #921035; --ap-guide: #C5CEDD;
+  --ap-code-fond: #F5F7FB; --ap-ok: #166534; --ap-ok-fond: #E8F6EC; --ap-ko: #B91C1C;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ap {
+  --ap-f0: #F87171; --ap-f1: #60A5FA; --ap-f2: #FBBF24; --ap-f3: #4ADE80;
+  --ap-c-mot: #C4B5FD; --ap-c-ch: #6EE7B7; --ap-c-nb: #FCD34D; --ap-c-com: #A3B1C6; --ap-c-fn: #67E8F9; --ap-c-nat: #F9A8D4; --ap-c-def: #93C5FD; --ap-c-self: #FDBA74; --ap-c-err: #FCA5A5; --ap-guide: #2A3A5C;
+  --ap-code-fond: #0F182C; --ap-ok: #4ADE80; --ap-ok-fond: #0C2716; --ap-ko: #FCA5A5; } }
+:root[data-theme="dark"] .ap {
+  --ap-f0: #F87171; --ap-f1: #60A5FA; --ap-f2: #FBBF24; --ap-f3: #4ADE80;
+  --ap-c-mot: #C4B5FD; --ap-c-ch: #6EE7B7; --ap-c-nb: #FCD34D; --ap-c-com: #A3B1C6; --ap-c-fn: #67E8F9; --ap-c-nat: #F9A8D4; --ap-c-def: #93C5FD; --ap-c-self: #FDBA74; --ap-c-err: #FCA5A5; --ap-guide: #2A3A5C;
+  --ap-code-fond: #0F182C; --ap-ok: #4ADE80; --ap-ok-fond: #0C2716; --ap-ko: #FCA5A5; }
+.ap-question { display: flex; flex-direction: column; gap: 10px; padding: 16px var(--ap-gouttiere); }
+.ap-question-tete { display: flex; align-items: flex-start; gap: 16px; }
+.ap-enonce { flex: 1; min-width: 0; }
+.ap .q-num { font-weight: 700; color: var(--td-accent); margin: 0; }
+.ap .q-nom { font: 700 1.35em/1.2 var(--td-texte); margin: .1em 0 .3em; }
+/* le code (repris de quizz-nsi) */
+.ap code, .ap pre { font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+.ap pre.code { font-family: var(--td-mono); font-size: .88em; line-height: 1.55; background: var(--ap-code-fond); color: var(--td-encre); border: 1px solid var(--td-trait); border-radius: 10px; padding: 10px 12px; margin: .4em 0 .8em; overflow-x: auto; tab-size: 4; }
+.ap pre.code code { background: none; border: 0; padding: 0; font-size: 1em; overflow-wrap: normal; }
+.ap pre.code .ligne { display: block; white-space: pre; }
+.ap pre.code .num { display: inline-block; width: 2ch; margin-right: 1.2ch; color: var(--ap-c-com); text-align: right; user-select: none; }
+.ap pre.code .guide { border-left: 1px solid var(--ap-guide); }
+.ap .c-mot { color: var(--ap-c-mot); font-weight: 700; } .ap .c-ch { color: var(--ap-c-ch); font-style: italic; } .ap .c-nb { color: var(--ap-c-nb); } .ap .c-com { color: var(--ap-c-com); }
+.ap .c-fn { color: var(--ap-c-fn); text-decoration: underline; text-underline-offset: 2px; } .ap .c-nat { color: var(--ap-c-nat); text-decoration: underline; text-underline-offset: 2px; }
+.ap .c-def { color: var(--ap-c-def); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; } .ap .c-self { color: var(--ap-c-self); }
+.ap .c-err { color: var(--ap-c-err); font-weight: 700; }
+/* les réponses : une couleur ET une forme (repris de quizz-nsi) */
+.ap .forme { width: 1.15em; height: 1.15em; flex: none; }
+.ap .forme.f0 { fill: var(--ap-f0); } .ap .forme.f1 { fill: var(--ap-f1); } .ap .forme.f2 { fill: var(--ap-f2); } .ap .forme.f3 { fill: var(--ap-f3); }
+.ap .pastille { display: inline-flex; align-items: center; gap: .3em; flex: none; font-weight: 700; font-size: 1.15em; }
+.ap .pastille b { min-width: 1ch; }
+.ap .options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: .4em 0; }
+.ap .option { font: inherit; color: var(--td-encre); text-align: left; display: flex; align-items: flex-start; gap: .7em; background: var(--td-panneau); border: 2px solid var(--td-trait); border-radius: 12px; padding: 12px 14px; min-height: 58px; position: relative; }
+.ap .option.o0 { border-left: 10px solid var(--ap-f0); } .ap .option.o1 { border-left: 10px solid var(--ap-f1); } .ap .option.o2 { border-left: 10px solid var(--ap-f2); } .ap .option.o3 { border-left: 10px solid var(--ap-f3); }
+.ap button.option { cursor: pointer; width: 100%; }
+.ap button.option:hover:not(:disabled) { background: var(--td-panneau-2); }
+.ap .opt-texte { flex: 1; min-width: 0; padding-top: .05em; }
+.ap .opt-texte pre.code { margin: 0; font-size: .82em; }
+.ap .option.choisie { outline: 3px solid var(--td-encre); outline-offset: 1px; }
+/* le chrono de la maquette (validé : « le chrono est très bien ») */
+.ap-minuteur { position: relative; flex: none; width: 96px; height: 96px; }
+.ap-minuteur svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ap-minuteur circle { fill: none; stroke-width: 8; }
+.ap-minuteur .ap-fond-arc { stroke: var(--td-panneau-2); }
+.ap-minuteur .ap-arc { stroke: var(--td-trait-fort); }
+.ap-minuteur b { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font: 400 2.2rem/1 var(--td-titres); }
+.ap-temps { height: 12px; border: 1.4px solid var(--td-trait-fort); background: var(--td-panneau-2); }
+.ap-temps span { display: block; height: 100%; background: var(--td-trait-fort); }
+/* les bustes discrets (validés) : fanion « a répondu », flamme et son chiffre ; jamais juste ou faux */
+.ap-reponses { border-top: 1.4px solid var(--td-trait-fort); background: var(--td-panneau-2); padding: 10px var(--ap-gouttiere); }
+.ap-reponses-rangee { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: flex-end; }
+.ap-reponses .eq { --eq-marque: 14px; }
+.ap-legende { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 8px 0 0; font-size: .95rem; color: var(--td-encre-douce); }
+.ap-tel .options, .ap-tel .q-corps { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+.ap-tel button.option { min-height: 64px; font-size: 18px; padding: 14px; }
+.ap-tel pre.code { font-size: 14px; }
+
+/* ── 7. Le podium ── */
+.ap-podium { position: relative; display: flex; justify-content: center; align-items: flex-end; gap: 10px; min-height: 320px; padding: 24px var(--ap-gouttiere) 0; overflow: hidden; }
+.ap-place { display: flex; flex-direction: column; align-items: center; width: min(31%, 220px); min-width: 0; }
+.ap-place-1 { order: 2; } .ap-place-2 { order: 1; } .ap-place-3 { order: 3; }
+.ap-place .eq { animation: ap-pose .6s ease-out both; }
+.ap-place-1 .eq { animation-delay: 1.3s; } .ap-place-2 .eq { animation-delay: .85s; } .ap-place-3 .eq { animation-delay: .4s; }
+.ap-marche { display: flex; flex-direction: column; align-items: center; width: 100%; border: 1.4px solid var(--td-trait-fort); border-bottom: 0; background: var(--td-panneau-2); box-shadow: 6px 0 0 var(--ap-touche); padding: 6px 4px 0; transform-origin: bottom; animation: ap-monte .7s cubic-bezier(.2, .9, .3, 1.2) both; }
+.ap-place-1 .ap-marche { height: 180px; animation-delay: .9s; }
+.ap-place-2 .ap-marche { height: 145px; animation-delay: .45s; }
+.ap-place-3 .ap-marche { height: 115px; }
+.ap-rang { font: 400 clamp(2rem, 5vw, 3.6rem)/1 var(--td-titres); }
+.ap-marche .ap-pseudo { font-size: 1.15rem; }
+.ap-classe { border-top: 1.4px solid var(--td-trait-fort); background: var(--td-panneau); padding: 10px var(--ap-gouttiere); text-align: center; }
+.ap-classe-rangee { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 6px; margin-top: 6px; }
+.ap-confettis { position: absolute; inset: 0; pointer-events: none; z-index: 4; overflow: hidden; }
+.ap-confettis i { position: absolute; top: -20px; width: 8px; height: 12px; animation: ap-confetti 3.6s linear both; }
+
+/* ── 8. Les annonces de fin : haut fait, crédits (sur le téléphone de l'élève seul·e) ── */
+.ap-annonce { position: relative; border: 1.4px solid var(--td-trait-fort); background: var(--td-panneau); padding: 14px; text-align: center; box-shadow: 4px 4px 0 var(--ap-touche-2); animation: ap-pop .5s ease-out both; }
+.ap-annonce-titre { font: 400 1.2rem/1 var(--td-signal); text-transform: uppercase; letter-spacing: .05em; }
+.ap-gros-chiffre { display: block; font: 400 clamp(2.4rem, 9vw, 3.4rem)/1 var(--td-titres); }
+.ap-annonce-objet { display: flex; align-items: center; justify-content: center; gap: 12px; text-align: left; }
+.ap-credits { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; white-space: nowrap; }
+.ap-piece { display: inline-block; width: 18px; height: 18px; flex: none; border-radius: 50%; border: 1.4px solid #121016; background: radial-gradient(circle at 35% 35%, #FFF3A0 0 25%, #F2C14E 26% 100%); }
+
+/* ── 9. Bibliothèque des quiz : filtres et cartes ── */
+.ap-biblio { display: grid; grid-template-columns: 17rem 1fr; gap: 24px; }
+.ap-filtres fieldset { border: 0; border-top: 1.4px solid var(--td-trait-fort); margin: 14px 0 0; padding: 6px 0 0; min-width: 0; }
+.ap-filtres legend { font: 400 1.15rem/1 var(--td-signal); text-transform: uppercase; padding: 0 6px 0 0; }
+.ap-filtres label:not(.ap-label) { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; font-size: .95rem; line-height: 1.3; min-height: 32px; }
+.ap-filtres input[type="checkbox"], .ap-filtres input[type="radio"] { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--td-trait-fort); flex: none; }
+.ap-theme-titre { font: 700 1.2rem/1.3 var(--td-texte); margin: 18px 0 8px; padding-bottom: 4px; border-bottom: 1px dashed var(--td-trait); }
+.ap-grille-quiz { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); gap: 10px; }
+.ap-carte-quiz { display: flex; flex-direction: column; gap: 6px; min-height: 150px; padding: 10px 12px; border: 1.4px solid var(--td-trait-fort); background: var(--td-panneau); }
+.ap-carte-quiz.ap-revision { border-style: dashed; }        /* « Révision » : cadre pointillé ; « Cours-quiz » : cadre plein (et le mot) */
+.ap-carte-quiz h4 { font: 700 1.08rem/1.25 var(--td-texte); }
+.ap-carte-quiz .ap-puce { align-self: flex-start; }
+.ap-carte-quiz .ap-actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 6px; }
+.ap-carte-quiz .ap-actions .ap-bt { flex: 1 1 auto; }
+
+/* ── 10. Les touches propres à chaque application (décor seulement) ── */
+.ap-touche { position: relative; height: 18px; border-bottom: 1.4px solid var(--td-trait-fort); overflow: hidden; }
+/* QuizzNSI : le plateau de la Flottille, des cases et un chemin */
+[data-appli="quizz-nsi"] { --ap-touche: var(--td-neon-1); --ap-touche-2: var(--td-neon-2); }
+[data-appli="quizz-nsi"] .ap-touche { background: linear-gradient(90deg, transparent 0 calc(100% - 1px), var(--td-trait) 0) 0 0 / 18px 100%, radial-gradient(var(--ap-trame) 1px, transparent 1.2px) 0 0 / 5px 5px; }
+[data-appli="quizz-nsi"] .ap-touche::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 4px; background: linear-gradient(90deg, var(--td-neon-1) 0 30%, transparent 30% 70%, var(--td-neon-2) 70%); }
+/* Hello GO : la scène, un faisceau en trame et les planches */
+[data-appli="hello-go"] { --ap-touche: var(--td-neon-3); --ap-touche-2: var(--td-neon-2); }
+[data-appli="hello-go"] .ap-touche { height: 40px; background: repeating-linear-gradient(0deg, transparent 0 7px, var(--ap-trame) 7px 8px); }
+[data-appli="hello-go"] .ap-touche::before { content: ""; position: absolute; top: -4px; left: 18px; width: 160px; height: 60px; clip-path: polygon(0 0, 22px 0, 100% 100%, 30% 100%); background-image: radial-gradient(#C99A00 1.1px, transparent 1.4px); background-size: 5px 5px; }
+[data-appli="hello-go"] .ap-touche::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; border-top: 1.4px solid var(--td-trait-fort); background: linear-gradient(90deg, transparent 0 calc(100% - 1px), var(--td-trait) 0) 0 0 / 46px 100%; }
+/* Calendrier des vacances : une rangée de cases à cocher, une sur sept marquée */
+[data-appli="calendrier"] { --ap-touche: var(--td-neon-3); --ap-touche-2: var(--td-neon-1); }
+[data-appli="calendrier"] .ap-touche { height: 22px; background: linear-gradient(90deg, var(--td-trait-fort) 0 1.4px, transparent 1.4px) 0 0 / 22px 100%, linear-gradient(90deg, transparent 0 132px, var(--td-neon-3) 132px 154px, transparent 154px) 0 0 / 154px 100%; }
+/* Expédition Gombessa : la profondeur, des ondes de sonar */
+[data-appli="gombessa"] { --ap-touche: var(--td-neon-1); --ap-touche-2: var(--td-neon-1); }
+[data-appli="gombessa"] .ap-touche { height: 22px; background: radial-gradient(circle at 0 100%, transparent 0 8px, var(--td-trait) 8px 9.4px, transparent 9.4px 14px, var(--td-trait) 14px 15.4px, transparent 15.4px) 0 0 / 40px 22px, linear-gradient(180deg, transparent, var(--ap-trame)); }
+/* Lagon Arena : la vague et le sable */
+[data-appli="lagon-arena"] { --ap-touche: var(--td-neon-1); --ap-touche-2: var(--td-neon-3); }
+[data-appli="lagon-arena"] .ap-touche { height: 20px; background: radial-gradient(circle at 50% 0, transparent 0 9px, var(--td-trait-fort) 9px 10.4px, transparent 10.4px) 0 -2px / 24px 14px repeat-x, radial-gradient(var(--ap-trame) 1px, transparent 1.2px) 0 0 / 4px 4px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-appli="hello-go"] .ap-touche::before { background-image: radial-gradient(var(--td-neon-3) 1.1px, transparent 1.4px); } }
+:root[data-theme="dark"][data-appli="hello-go"] .ap-touche::before { background-image: radial-gradient(var(--td-neon-3) 1.1px, transparent 1.4px); }
+
+/* ── 11. Écran projeté : sobre et lisible du fond de la salle ── */
+.ap-projete { font-size: 22px; }
+.ap-projete .ap-petit, .ap-projete .ap-legende { font-size: 19px; }
+.ap-projete pre.code { font-size: 24px; }
+.ap-projete .option { font-size: 26px; }
+.ap-projete .ap-pseudo { font-size: 18px; }
+.ap-projete .ap-bt { font-size: 20px; }
+.ap-projete .eq-bulle { --eq-bulle-taille: 18px; }
+.ap-projete .ap-touche::after, .ap-projete .ap-bt-principal { box-shadow: none; }   /* aucun aplat de néon au vidéoprojecteur */
+.ap-projete .ap-bt-principal { box-shadow: 3px 3px 0 var(--td-trait); }
+
+/* ── 12. Mouvement : coupé par le réglage de l'appareil ou Equipage.calme(true) ── */
+@keyframes ap-arrive { 0% { transform: translateY(-40px); opacity: 0; } 60% { transform: translateY(4px); opacity: 1; } 100% { transform: none; opacity: 1; } }
+@keyframes ap-pose { 0% { transform: translateY(-80px); opacity: 0; } 70% { transform: translateY(5px); opacity: 1; } 100% { transform: none; opacity: 1; } }
+@keyframes ap-monte { from { transform: scaleY(0); } to { transform: none; } }
+@keyframes ap-pop { 0% { transform: scale(.5); opacity: 0; } 60% { transform: scale(1.06); opacity: 1; } 100% { transform: none; opacity: 1; } }
+@keyframes ap-confetti { 0% { transform: translate(0, -40px) rotate(0); opacity: 0; } 8% { opacity: 1; } 100% { transform: translate(var(--dx, 20px), 110vh) rotate(540deg); opacity: 1; } }
+.eq-calme .ap *, .eq-calme .ap, .ap-calme * { animation: none !important; transition: none !important; }
+.eq-calme .ap-confettis, .ap-calme .ap-confettis { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .ap *, .ap { animation: none !important; transition: none !important; }
+  .ap-confettis { display: none; }
+}
+
+/* ── 13. Petits écrans (dès 320 px) ── */
+@media (max-width: 760px) {
+  .ap-lobby { grid-template-columns: 1fr; }
+  .ap-biblio { grid-template-columns: 1fr; }
+  .ap .options { grid-template-columns: minmax(0, 1fr); }
+  .ap .option:has(.opt-texte pre.code) { flex-direction: column; align-items: stretch; gap: .35em; padding: 10px 6px 10px 8px; }
+  .ap pre.code { font-size: 13.5px; padding: 8px 6px; }
+  .ap pre.code .num { margin-right: .6ch; }
+  .ap-question-tete { flex-direction: column-reverse; }
+  .ap-minuteur { width: 72px; height: 72px; align-self: flex-end; }
+  .ap-plateau { --ap-case: 84px; gap: 40px 4px; }
+  .ap-place { width: 32%; }
+}
+@media (max-width: 380px) {
+  .ap-barre { gap: 6px; }
+  .ap-lieu { display: none; }
+  .ap-code-seance { letter-spacing: .12em; }
+}
+
+/* ── 14. Impression : fond blanc, encre foncée, aucun décor ── */
+@media print {
+  .ap-touche, .ap-bandeau, .ap-confettis, .ap-commandes { display: none !important; }
+  .ap-bt-principal, .ap-annonce, .ap-marche, .ap-menu { box-shadow: none !important; }
+}

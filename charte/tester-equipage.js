@@ -32,8 +32,15 @@ else {
 if (refChemin) {
   var R = require(refChemin);
   var etats = R.ETATS.map(function (e) { return e.id; });
+  /* objets retirés à la demande de l'enseignant (24/11) : une description qui les porte les perd */
+  var RETIRES = { 'main:perche_extensible': 1, 'tete:bouchon_mamoudzou': 1 };
+  function sansRetires(d) { d = JSON.parse(JSON.stringify(d)); Object.keys(d.objets || {}).forEach(function (e) { if (RETIRES[e + ':' + d.objets[e]]) d.objets[e] = 'aucun'; }); return d; }
+  function porteRetire(d) { return Object.keys(d.objets).some(function (e) { return RETIRES[e + ':' + d.objets[e]]; }); }
   var descs = Object.keys(R.modeles).map(function (k) { return R.modeles[k].description; });
   for (var g = 0; g < 300; g++) descs.push(R.aleatoire(g * 7919 + 13));
+  var nRet = descs.filter(porteRetire).length;
+  descs = descs.filter(function (d) { return !porteRetire(d); });
+  console.log('(' + nRet + ' avatars de référence portaient un objet retiré : écartés de la comparaison au caractère près)');
   var diff = 0, n = 0;
   descs.forEach(function (d, k) {
     ok(JSON.stringify(E.normaliser(d)) === JSON.stringify(R.normaliser(d)), 'normaliser change la description ' + k);
@@ -48,11 +55,13 @@ if (refChemin) {
   });
   ok(diff === 0, diff + ' images sur ' + n + ' diffèrent du moteur de référence');
   console.log('Existant : ' + n + ' images comparées, ' + diff + ' différence(s).');
-  for (g = 0; g < 500; g++) ok(JSON.stringify(E.aleatoire(g)) === JSON.stringify(R.aleatoire(g)), 'aleatoire(' + g + ') a changé');
+  for (g = 0; g < 500; g++) ok(JSON.stringify(E.aleatoire(g)) === JSON.stringify(R.normaliser(sansRetires(R.aleatoire(g)))), 'aleatoire(' + g + ') a changé');
+  ok(E.normaliser({ objets: { main: 'perche_extensible', tete: 'bouchon_mamoudzou' } }).objets.main === 'aucun', 'objets retirés refusés');
   ok(E.texte(descs[0], 'repos') === R.texte(descs[0], 'repos'), 'texte a changé');
   ['tete', 'visage', 'cou', 'dos', 'main', 'epaule', 'pieds', 'autour'].forEach(function (e) {
     var avant = R.catalogue.objets[e].map(function (o) { return o.id; }).join();
     var apres = E.catalogue.objets[e].filter(function (o) { return o.famille !== 'applis'; }).map(function (o) { return o.id; }).join();
+    avant = R.catalogue.objets[e].filter(function (o) { return !RETIRES[e + ':' + o.id]; }).map(function (o) { return o.id; }).join();
     ok(avant === apres, 'les objets « ' + e + ' » existants ont changé');
   });
 }
@@ -96,7 +105,10 @@ var ref = E.normaliser({ teint: 3 });
   ok(E.svg(ref, { etat: p[0], decalage: 0, alt: '' }) === E.svg(ref, { etat: p[1], decalage: 0, alt: '' }), 'l\'état ' + p[0] + ' n\'est pas ' + p[1]);
 });
 ok(E.gestes.map(function (g) { return g.id; }).join() === 'salue,saute,rit,sieste', 'les quatre gestes');
-ok(E.phrases.length === 20 && Object.isFrozen(E.phrases), '20 phrases gelées');
+ok(E.phrases.length === 21 && Object.isFrozen(E.phrases), '21 phrases gelées');
+ok(!E.phrases.some(function (p) { return /bouchon/i.test(p); }), 'plus de bouchon dans les phrases');
+E.adresse('madame'); ok(E.phrase(19) === 'Ne vous inquiétez pas, Madame.', 'variante Madame');
+E.adresse('monsieur'); ok(E.phrase(19) === 'Ne vous inquiétez pas, Monsieur.' && E.phrase(99) === null, 'variante Monsieur, numéro inconnu');
 ok(E.phrases.every(function (p) { return typeof p === 'string' && p.length > 0 && p.length <= 48 && !/[<>&]/.test(p); }), 'phrases courtes, sans balise');
 var N = E.neutre();
 ok(N.lignee === 'esprit' && N.coiffure === 'capuche' && JSON.stringify(N) === JSON.stringify(E.neutre()), 'l\'Esprit en capuche, le même pour tous');
