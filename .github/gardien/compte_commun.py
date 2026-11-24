@@ -145,7 +145,34 @@ async def parcours_gardien(monde):
     st = await stockage(prof)
     verifier(code_prof not in json.dumps(st) and code_prof.replace("-", "") not in json.dumps(st), "le code d'enseignant·e montré n'est gardé ni dans l'onglet ni dans le navigateur")
     verifier("#" not in prof.url or code_prof not in prof.url, "le code d'enseignant·e n'est pas dans l'adresse")
-    await prof.get_by_role("button", name="Je l'ai noté").click()
+    # « Je l'ai noté » demande les 4 chiffres (T132f) : une erreur, ou « Imprimer », ne font jamais perdre le code
+    if await prof.get_by_label("Retape les 4 chiffres de ton code").count():
+        await prof.get_by_role("button", name="Je l'ai noté").click()
+        await prof.wait_for_timeout(500)
+        verifier(code_prof in await prof.locator(".cc-ton-code").inner_text(), "« Je l'ai noté » sans les 4 chiffres : refusé, le code reste affiché")
+        await prof.get_by_label("Retape les 4 chiffres de ton code").fill("0000" if not code_prof.endswith("0000") else "1111")
+        await prof.get_by_role("button", name="Je l'ai noté").click()
+        await T.attendre_texte(prof, "Ce ne sont pas les bons chiffres")
+        verifier(code_prof in await prof.locator(".cc-ton-code").inner_text(), "4 chiffres faux : refusés, le code reste affiché")
+        await prof.evaluate("() => { window.print = () => {}; }")
+        await prof.get_by_role("button", name="Imprimer").click()
+        await prof.wait_for_timeout(500)
+        verifier(code_prof in await prof.locator(".cc-ton-code").inner_text(), "« Imprimer » n'envoie pas le formulaire : le code reste affiché")
+        await prof.get_by_label("Retape les 4 chiffres de ton code").fill(code_prof[-4:])
+        # la base injoignable au moment de « Je l'ai noté » : que devient l'affichage du code ?
+        await pctx.set_offline(True)
+        await prof.get_by_role("button", name="Je l'ai noté").click()
+        await prof.wait_for_timeout(800)
+        garde = await prof.locator(".cc-ton-code").count() and code_prof in await prof.locator("main").inner_text()
+        NOTES.append("Hors ligne au moment de « Je l'ai noté » (4 chiffres justes) : " + ("le code reste affiché" if garde else "la page revient à l'entrée, le code n'est plus affiché"))
+        await pctx.set_offline(False)
+        if not garde:
+            await prof.get_by_label("Ton code d'enseignant·e").fill(code_prof)
+            await prof.get_by_role("button", name="Ouvrir mon espace").click()
+        else:
+            await prof.get_by_role("button", name="Je l'ai noté").click()
+    else:
+        await prof.get_by_role("button", name="Je l'ai noté").click()
     await T.attendre_texte(prof, "Mes classes")
     st = await stockage(prof)
     verifier(code_prof not in json.dumps(st), "après « Je l'ai noté » (sans « Rester ouvert »), le code n'est dans aucun stockage")
@@ -284,15 +311,28 @@ async def parcours_gardien(monde):
     rep = await s1.evaluate("async () => (await CompteCommun.maClasse())")
     verifier(rep.get("ok") and rep.get("classes") == [], "l'élève retiré·e n'a plus de classe, son compte reste")
     await prof.locator("summary", has_text="Réglages de la classe").click()
-    await prof.get_by_role("button", name="Archiver la classe").click()
-    await T.attendre_texte(prof, "archivée")
-    await prof.get_by_role("link", name="← Mes classes").click()
-    await prof.locator("h2.cc-titre-section", has_text=re.compile(r"^Mes classes$")).wait_for(timeout=15000)
-    arch = await prof.locator("details", has_text="Classes archivées").count()
-    ouvertes = await prof.locator("ul.cc-classes").first.inner_text()
-    verifier(arch == 1 and nom_classe not in ouvertes.split("Classes archivées")[0], "la classe archivée est rangée à part (« Classes archivées »)")
+    if await prof.get_by_role("button", name="Archiver la classe").count():
+        # après 0010 (COMPTE_COMMUN_CATALOGUE) : archiver range la classe à part
+        await prof.get_by_role("button", name="Archiver la classe").click()
+        await T.attendre_texte(prof, "archivée")
+        await prof.get_by_role("link", name="← Mes classes").click()
+        await prof.locator("h2.cc-titre-section", has_text=re.compile(r"^Mes classes$")).wait_for(timeout=15000)
+        arch = await prof.locator("details", has_text="Classes archivées").count()
+        ouvertes = await prof.locator("ul.cc-classes").first.inner_text()
+        verifier(arch == 1 and nom_classe not in ouvertes.split("Classes archivées")[0], "la classe archivée est rangée à part (« Classes archivées »)")
+    else:
+        # avant 0010 : seule la case « Inscriptions ouvertes » ; la classe reste avec les autres, rien ne parle d'archive
+        reglages_classe = prof.locator("details", has_text="Réglages de la classe")
+        await reglages_classe.get_by_label("Inscriptions ouvertes").uncheck()
+        await reglages_classe.get_by_role("button", name="Enregistrer").first.click()
+        await prof.wait_for_timeout(1500)
+        await prof.get_by_role("link", name="← Mes classes").click()
+        await prof.locator("h2.cc-titre-section", has_text=re.compile(r"^Mes classes$")).wait_for(timeout=15000)
+        txt = await prof.locator("main").inner_text()
+        verifier("archiv" not in txt.lower() and "inscriptions fermées" in txt and nom_classe in await prof.locator("ul.cc-classes").first.inner_text(),
+                 "avant 0010 : inscriptions fermées, la classe reste avec les autres, aucun mot sur l'archive")
     if CAPTURES:
-        await prof.screenshot(path=os.path.join(CAPTURES, "g37-accueil-archive-1440.png"), full_page=True)
+        await prof.screenshot(path=os.path.join(CAPTURES, "g37-accueil-fermee-1440.png"), full_page=True)
     ctx3, s3 = await creer_eleve(monde, chemin, "Sam", "10.1.0.4")
     code3 = (await s3.locator(".cc-code-grand").inner_text(timeout=15000)).strip()
     codes.append(code3)
@@ -300,9 +340,9 @@ async def parcours_gardien(monde):
     await s3.get_by_role("button", name="C'est noté").click()
     await T.attendre_texte(s3, "Salut, Sam")
     txt3 = await s3.locator("main").inner_text()
-    verifier("fermées" in txt3, "classe archivée : un·e nouvel·le élève ne peut pas la rejoindre, et le message le dit (son code est créé quand même)")
+    verifier("fermées" in txt3, "inscriptions fermées : un·e nouvel·le élève ne peut pas rejoindre la classe, et le message le dit (son code est créé quand même)")
     rep = await s2.evaluate("async () => (await CompteCommun.maClasse()).classes.length")
-    verifier(rep == 1, "classe archivée : Zoé la voit toujours dans « Ma classe »")
+    verifier(rep == 1, "inscriptions fermées : Zoé voit toujours la classe dans « Ma classe »")
 
     # ── E. « Ce n'est pas moi » ──
     await s2.reload()
