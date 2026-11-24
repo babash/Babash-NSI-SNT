@@ -81,9 +81,9 @@ theme("Structures de données", {
 groupe("Structures de données, interface et implémentation");
 
 ressource({
-  titre: "Chapitre 1 : interface et implémentation",
+  titre: "Interface et implémentation : listes, files et piles",
   lien: "fichiers/chapitre1-interface-et-implementation.pdf",
-  texte: "Cours complet du premier chapitre du thème « Structures de données » : interface et implémentation, puis les listes avec 8 exercices, puis les files FIFO et les piles LIFO avec 3 exercices. 9 pages A4.",
+  texte: "Cours complet du thème « Structures de données » : interface et implémentation, puis les listes avec 8 exercices, puis les files FIFO et les piles LIFO avec 3 exercices. 9 pages A4.",
   tags: ["À imprimer", "Cours"],
   annexes: {
     "Code source : sources LaTeX": "https://github.com/babash/nsi-terminale/tree/main/Th%C3%A8me%201%20%E2%80%93%20Structures%20de%20donn%C3%A9es",
