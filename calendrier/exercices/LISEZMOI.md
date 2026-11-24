@@ -46,6 +46,14 @@ python3 scripts/calendrier_exercices.py --fichier calendrier/exercices/<thème>.
 
 L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place de `"niveaux"`) est encore acceptée, avec un avertissement : il suffit de renommer les deux clés et d'ajouter `"nature"`.
 
+## Les libellés : ceux des référentiels du site
+
+**« Le même choix de libellé partout »** (enseignant·e, 24/11). Un thème reprend les identifiants et les libellés des référentiels du site (`donnees/referentiels/`) :
+- `programme` : des identifiants de `programmes.json`, et le titre d'un chapitre suit l'intitulé du programme (« Structures de données », « Internet », « Le Web ») ;
+- `notions` : des identifiants de `notions.json` (le contrôle du site les connaît), et le titre d'une notion suit son libellé (`libelle`) ;
+- l'**identifiant** d'un thème (`py-boucles`, `snt-internet-web`…) ne change jamais, même si son titre change : la base le garde dans chaque case (`vacances.cases.theme`). Seul le `titre` peut se rapprocher d'un libellé.
+- Un nouveau thème choisit d'abord son titre dans les référentiels ; un écart se justifie dans le rapport de l'Atelier.
+
 ## Les règles d'un thème
 
 1. **De 8 à 30 exercices** (le compte de `catalogue.json` se remet à jour avec `python3 scripts/calendrier_exercices.py --catalogue`), numérotés `<thème>-001`, `-002`… dans l'ordre : **30 de préférence**, notion comme chapitre, pour qu'un thème coché seul remplisse les 30 jours des vacances de Noël sans révision ; une notion peut commencer à 8, un chapitre à 15, et l'on complète ensuite jusqu'à 30. Les thèmes alternent : un calendrier de 30 jours avec 3 thèmes demande 10 exercices à chacun. C'est l'ordre des cases : l'exercice 1 sert à la première case du thème. Si un calendrier demande plus d'exercices que la banque n'en a, la page enseignant·e le signale en rouge avant d'enregistrer et demande confirmation ; les exercices reviennent alors dans l'ordre, en révision (l'élève voit « Révision »), et aucune case ne reste vide.

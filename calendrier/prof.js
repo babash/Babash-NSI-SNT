@@ -18,7 +18,12 @@
     window.scrollTo(0, 0);
   }
   // le jour de Mayotte selon la base (cv_prof_ouvrir), et non l'horloge de l'appareil, qui peut être fausse
-  function aujourdhui() { return (espace && espace.aujourdhui) || CV.aujourdhuiMayotte(); }
+  // le jour de la base, avancé des jours passés depuis sur l'appareil (une page restée ouverte après minuit)
+  function aujourdhui() {
+    if (!espace || !espace.aujourdhui) return CV.aujourdhuiMayotte();
+    if (!espace.vuLocal) espace.vuLocal = CV.aujourdhuiMayotte();
+    return CV.ajouter(espace.aujourdhui, Math.max(0, CV.ecart(espace.vuLocal, CV.aujourdhuiMayotte())));
+  }
   function message(msg, cls) { return '<div class="message ' + (cls || "ko") + '" role="' + (cls === "ok" ? "status" : "alert") + '">' + esc(msg || "") + "</div>"; }
 
   // ------------------------------------------------------------ entrer ou créer son espace
@@ -134,8 +139,8 @@
         (besoin > t.n ? ' <b class="ko-texte">(pas assez)</b>' : "") + (t.relus < t.n ? ", " + (t.n - t.relus) + " à relire" : "") + "</li>";
     });
     var alerte = nouveau.courts.length ? '<div class="alerte-banque" role="alert"><b>Pas assez d\'exercices.</b><ul>' + nouveau.courts.map(function (c) {
-      return "<li>« " + esc(c.titre) + " » n'a que " + c.n + " exercices pour " + c.besoin + " cases : à partir de la case n° " + (c.n + 1) + " de ce thème, les exercices 1 à " + c.n +
-        " reviennent, en révision (leur corrigé est déjà ouvert). Aucune case ne reste vide.</li>";
+      return "<li>« " + esc(c.titre) + " » n'a que " + c.n + " exercices pour " + c.besoin + " cases : à partir de la case n° " + (c.n + 1) + " de ce thème, " + (Math.min(c.n, c.besoin - c.n) > 1 ? "les exercices 1 à " + Math.min(c.n, c.besoin - c.n) + " reviennent" : "l'exercice 1 revient") +
+        ", en révision (leur corrigé est déjà ouvert). Aucune case ne reste vide.</li>";
     }).join("") + "</ul><p class=\"mt\">Pour l'éviter : cochez un thème de plus, ou raccourcissez le calendrier. Vous pouvez aussi enregistrer ainsi.</p></div>" : "";
     b.innerHTML = "Ordre des cases : " + o2.map(function (id) { return esc(trouver(id).titre); }).join(", puis ") + ".<ul class=\"liste\">" + parTheme.join("") + "</ul>" + alerte;
   }

@@ -137,7 +137,14 @@ def juste(page, t, it, s):
             for c, v in enumerate(ligne):
                 champ = page.locator("input.cellule[data-cle='%d-%d']" % (r, c))
                 if champ.count():
-                    champ.fill(("'%s'" % v) if not v.lstrip("-").isdigit() and r == 0 else v)  # des guignets acceptés
+                    signe = page.locator("[data-j=signe][data-cle='%d-%d']" % (r, c))
+                    if v.startswith("-") and signe.count():
+                        # un nombre négatif sans signe moins au clavier : la valeur, puis le bouton ±
+                        champ.fill(v[1:])
+                        signe.click()
+                        verifier(page.input_value("input.cellule[data-cle='%d-%d']" % (r, c)) == v, "trace : le bouton ± change le signe")
+                    else:
+                        champ.fill(("'%s'" % v) if not v.lstrip("-").isdigit() and r == 0 else v)  # des guillemets acceptés
         page.locator("input.cellule").last.press("Enter")
     elif t == "combien":
         page.focus("#valeur")
@@ -210,6 +217,9 @@ def jouer(page, ex, niveau, nom):
                 verifier(annonce(page).strip() != "", f"{nom} : l'erreur volontaire n'est pas annoncée (aria-live)")
                 continue
         juste(page, t, it, s)
+        if not page.evaluate("window.FIN"):
+            # le focus reste dans le jeu après un geste (jamais renvoyé au début de la page)
+            verifier(page.evaluate("!!document.activeElement && document.getElementById('jeu').contains(document.activeElement)"), f"{nom} : focus perdu après un geste ({t})")
     verifier(False, f"{nom} : la partie ne se termine pas")
     return None
 
