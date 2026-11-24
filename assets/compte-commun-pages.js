@@ -69,9 +69,10 @@
   }
 
   /* Une annonce brève (« Haut fait : Premier circuit », « +20 crédits »), lue par les lecteurs d'écran */
-  function annoncer(texte, genre) {
+  /* options.suivi : une annonce de suivi (XP, crédits d'un·e élève), cachée en mode projection */
+  function annoncer(texte, genre, options) {
     if (!annonces || !texte) return;
-    var a = el('p', { class: 'cc-annonce' + (genre ? ' cc-annonce-' + genre : '') }, texte);
+    var a = el('p', { class: 'cc-annonce' + (genre ? ' cc-annonce-' + genre : '') + (options && options.suivi ? ' cc-suivi' : '') }, texte);
     annonces.appendChild(a);
     setTimeout(function () { if (a.parentNode) a.parentNode.removeChild(a); }, 6000);
   }

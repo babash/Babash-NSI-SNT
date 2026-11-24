@@ -140,7 +140,7 @@
     });
     var alerte = nouveau.courts.length ? '<div class="alerte-banque" role="alert"><b>Pas assez d\'exercices.</b><ul>' + nouveau.courts.map(function (c) {
       return "<li>« " + esc(c.titre) + " » n'a que " + c.n + " exercices pour " + c.besoin + " cases : à partir de la case n° " + (c.n + 1) + " de ce thème, " + (Math.min(c.n, c.besoin - c.n) > 1 ? "les exercices 1 à " + Math.min(c.n, c.besoin - c.n) + " reviennent" : "l'exercice 1 revient") +
-        ", en révision (leur corrigé est déjà ouvert). Aucune case ne reste vide.</li>";
+        ", en révision (" + (Math.min(c.n, c.besoin - c.n) > 1 ? "leur corrigé est" : "son corrigé est") + " déjà ouvert). Aucune case ne reste vide.</li>";
     }).join("") + "</ul><p class=\"mt\">Pour l'éviter : cochez un thème de plus, ou raccourcissez le calendrier. Vous pouvez aussi enregistrer ainsi.</p></div>" : "";
     b.innerHTML = "Ordre des cases : " + o2.map(function (id) { return esc(trouver(id).titre); }).join(", puis ") + ".<ul class=\"liste\">" + parTheme.join("") + "</ul>" + alerte;
   }
@@ -251,7 +251,8 @@
       t.cases.map(function (c) { return '<th scope="col" class="t-jour" title="' + esc(CV.dateLongue(c.jour) + " · " + c.theme + " n° " + c.rang) + '">' + CV.versDate(c.jour).getUTCDate() + "</th>"; }).join("") + "<th></th></tr>";
     var lignes = t.eleves.map(function (e) {
       var faites = {}; e.resultats.forEach(function (r) { if (r.reussi) faites[r.numero] = 1; });
-      var codeAff = masquer ? e.code_affiche.split("-")[0] + "-•••••-•••" : e.code_affiche;
+      // un code vide (élève relié au compte commun, migration vacances_0003) : un tiret, sans erreur
+      var codeAff = !e.code_affiche ? "—" : masquer ? String(e.code_affiche).split("-")[0] + "-•••••-•••" : e.code_affiche;
       return "<tr><th scope=\"row\">" + esc(e.pseudo) + '</th><td class="mono">' + esc(codeAff) + "</td><td>" + Object.keys(faites).length + "/" + ouvertes.length + "</td><td>" + joursDifferents(e) +
         "</td><td>" + esc(CV.dateCourte(new Date(new Date(e.vu_le).getTime() + 3 * 3600000).toISOString().slice(0, 10))) + "</td>" + t.cases.map(function (c) { return cellule(e, c, auj); }).join("") +
         '<td><button class="lien" data-act="eleve" data-id="' + esc(e.id) + '">gérer</button></td></tr>';
@@ -270,7 +271,7 @@
     var lignes = [["pseudo", "code", "cases faites", "jours différents"].concat(t.cases.map(function (c) { return c.jour + " " + c.theme + " n°" + c.rang; })).map(q).join(sep)];
     t.eleves.forEach(function (e) {
       var faites = {}; e.resultats.forEach(function (r) { if (r.reussi) faites[r.numero] = 1; });
-      lignes.push([e.pseudo, e.code_affiche, Object.keys(faites).length, joursDifferents(e)].concat(t.cases.map(function (c) {
+      lignes.push([e.pseudo, e.code_affiche || "", Object.keys(faites).length, joursDifferents(e)].concat(t.cases.map(function (c) {
         var rs = e.resultats.filter(function (r) { return r.numero === c.numero && r.reussi; });
         if (!rs.length) return "";
         var et = Math.max.apply(null, rs.map(function (r) { return r.dans_les_temps ? r.etoiles : 0; }));
@@ -283,7 +284,7 @@
   function gererEleve(id) {
     var e = tableau.eleves.filter(function (x) { return x.id === id; })[0]; if (!e) return;
     var v = document.createElement("div"); v.className = "voile"; v.setAttribute("data-act", "fermer");
-    v.innerHTML = '<div class="feuille" role="dialog" aria-modal="true" aria-label="' + esc(e.pseudo) + '"><h2>' + esc(e.pseudo) + '</h2><p>Code : <span class="mono">' + esc(e.code_affiche) + "</span></p>" +
+    v.innerHTML = '<div class="feuille" role="dialog" aria-modal="true" aria-label="' + esc(e.pseudo) + '"><h2>' + esc(e.pseudo) + '</h2><p>Code : <span class="mono">' + esc(e.code_affiche || "—") + "</span></p>" +
       '<div class="pile"><button class="btn large" data-act="nouveau-code" data-id="' + esc(id) + '">Nouveau code (code perdu ou divulgué)</button>' +
       '<button class="btn large" data-act="renommer" data-id="' + esc(id) + '">Renommer</button><button class="btn large" data-act="retirer" data-id="' + esc(id) + '">Retirer de ce calendrier…</button>' +
       '<button class="btn large" data-act="fermer">Fermer</button></div><div id="msg-eleve"></div></div>';

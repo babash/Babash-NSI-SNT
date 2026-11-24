@@ -27,7 +27,7 @@ import threading
 ICI = os.path.dirname(os.path.abspath(__file__))
 RACINE_DEFAUT = os.path.dirname(os.path.dirname(ICI))
 CODE_DEMO = "DEMO-ESSAI-PROF-2046"
-MOTIF = "Aide pour ranger les câbles"
+MOTIF = "Aide pour ranger les câbles <b>&</b>"  # un motif libre, affiché tel quel (jamais interprété)
 COMPAGNONS = ("Margouillat vert", "Maki", "Petit robot", "Tortue serveur", "Roussette")
 
 

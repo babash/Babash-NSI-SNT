@@ -154,8 +154,15 @@ async def parcours(monde, captures):
     verifier(re.fullmatch(r"[A-Z]+-[A-Z]+-[A-Z]+-\d{4}", code_prof) is not None, f"code d'enseignant·e de 3 mots et 4 chiffres ({len(code_prof)} caractères)")
     verifier(await prof.get_by_role("button", name="Imprimer").count() == 1 and await prof.get_by_role("button", name="Je l'ai noté").count() == 1,
              "le code est montré une fois, avec « Imprimer » et « Je l'ai noté »")
+    await prof.get_by_label("Retape les 4 chiffres de ton code").fill("0000" if not code_prof.endswith("0000") else "1111")
+    await prof.get_by_role("button", name="Je l'ai noté").click()
+    await attendre_texte(prof, "Ce ne sont pas les bons chiffres")
+    verifier(True, "« Je l'ai noté » demande les 4 chiffres du code : un essai faux est refusé")
+    await prof.get_by_label("Retape les 4 chiffres de ton code").fill(code_prof[-4:])
     await prof.get_by_role("button", name="Je l'ai noté").click()
     await attendre_texte(prof, "Mes classes")
+    rep = await prof.evaluate("async () => (await CompteCommun.prof.creerClasse('Sec' + String.fromCharCode(0x202E) + 'onde', [])).message")
+    verifier("caractère spécial" in rep, f"un nom de classe avec un caractère invisible : « {rep} »")
     classes = {}
     for nom in ("Seconde 4", "TNSI 2"):
         await prof.locator("summary", has_text="Nouvelle classe").click()
@@ -228,6 +235,13 @@ async def parcours(monde, captures):
     verifier("margouillat" in texte.lower() and "arrivent bientôt" in texte, "sans catalogue, la loge propose l'identité, les tenues et le margouillat, et le dit")
     sel = loge.get_by_label("Coiffure", exact=True)
     options = await sel.locator("option").evaluate_all("o => o.map(x => x.value)")
+    t = await loge.inner_text()
+    verifier("Bientôt, gratuits pour tout le monde" in t and all(x in t for x in ("bandana à pois", "kishali sur la tête", "kishali sur les épaules")), "la loge annonce les trois pièces libres pour bientôt")
+    toutes = await loge.locator("option").evaluate_all("o => o.map(x => x.value)")
+    verifier(not any(v in toutes for v in ("kishali_tete", "kishali", "bandana")), "et ne les propose pas : la base les refuserait avant 0010")
+    rep = await ali2.evaluate("""async () => { const r = await CompteCommun.reprendre(); const a = JSON.parse(JSON.stringify(r.fiche.avatar));
+      a.objets.tete = 'kishali_tete'; return (await CompteCommun.porter(a)).ok; }""")
+    verifier(rep is False, "commun_porter refuse aujourd'hui le kishali sur la tête (absent de commun.elements)")
     await sel.select_option(options[-1])
     await loge.get_by_label("Couleur du haut", exact=True).select_option(index=2)
     await loge.get_by_role("button", name="Porter cet avatar").click()
@@ -250,6 +264,14 @@ async def parcours(monde, captures):
     verifier(await carte_ali.get_by_text(eleves["Ali"][2]).is_visible(), "hors projection, l'enseignant·e voit le code d'Ali")
     await prof.get_by_label("Mode projection").check()
     verifier(not await carte_ali.get_by_text(eleves["Ali"][2]).is_visible(), "en mode projection, le code d'Ali est masqué")
+    await carte_ali.locator("summary", has_text="Attribuer de l'XP").click()
+    await carte_ali.get_by_label("Motif").first.fill("Aide à un camarade")
+    await carte_ali.get_by_role("button", name="Attribuer").click()
+    await prof.locator(".cc-annonce", has_text="+10 XP").wait_for(state="attached", timeout=15000)
+    verifier(not await prof.locator(".cc-annonce", has_text="+10 XP").is_visible(), "en mode projection, l'annonce « +10 XP » ne s'affiche pas")
+    carte_ali = prof.locator(".cc-eleve", has=prof.locator(".cc-eleve-nom", has_text="Ali"))
+    verifier(await prof.get_by_text("Archiver la classe").count() == 0 and await prof.get_by_text("Classes archivées").count() == 0,
+             "avant 0010, la page ne prétend pas archiver (seule la case « Inscriptions ouvertes »)")
     await prof.get_by_label("Mode projection").uncheck()
     await carte_ali.locator("summary", has_text="Pseudo, code, retrait").click()
     await carte_ali.get_by_role("button", name="Nouveau code").click()
@@ -269,6 +291,10 @@ async def parcours(monde, captures):
 
     # ── 5. Bea efface ses données ──
     bea = eleves["Bea"][1]
+    rep = await bea.evaluate("""async () => { const k = 'compte-commun:session'; const s = JSON.parse(localStorage.getItem(k));
+      s.jusqu = new Date(Date.now() + 864e5).toISOString(); localStorage.setItem(k, JSON.stringify(s));
+      await CompteCommun.reprendre(); return (new Date(JSON.parse(localStorage.getItem(k)).jusqu) - Date.now()) / 864e5; }""")
+    verifier(rep > 29.9, f"« C'est mon téléphone » : le jeton est prolongé de 30 jours quand il sert ({rep:.1f} jours)")
     await bea.reload()
     await attendre_texte(bea, "Salut, Bea")
     await bea.get_by_role("tab", name="Crédits et codes").click()

@@ -121,9 +121,25 @@
   /* Les fonctions prévues par une migration à venir : la page le dit, sans rien envoyer */
   var FONCTIONS_A_VENIR = {
     commun_prof_offrir: 'Offrir un trophée arrive avec le catalogue des avatars (migration 0010).',
+    commun_prof_archiver_classe: 'Archiver une classe arrive avec la migration 0010 : pour l\'instant, on ferme seulement ses inscriptions.',
     commun_prof_niveau_eleve: 'Le niveau arrive avec sa migration (T132e) : rien n\'est envoyé pour l\'instant.',
     commun_prof_niveau_classe: 'Le niveau arrive avec sa migration (T132e) : rien n\'est envoyé pour l\'instant.'
   };
+
+  /* Le réglage qui ouvre chaque fonction à venir, une fois sa migration appliquée */
+  function ouverte(fonction) {
+    if (/niveau/.test(fonction)) return !!reglage.niveau;
+    if (fonction === 'commun_prof_offrir' || fonction === 'commun_prof_archiver_classe') return !!reglage.catalogue;
+    return !FONCTIONS_A_VENIR[fonction];
+  }
+
+  /* Un caractère invisible ou de mise en forme (copié-collé) : la base le refuse avec un message sur la
+     longueur ; la page dit la vraie raison, sans rien envoyer. */
+  var REFUS_CARACTERE = { ok: false, message: 'Un caractère spécial (invisible ou de mise en forme, souvent venu d\'un copier-coller) n\'est pas accepté : retape le texte au clavier.' };
+  function caractereSpecial(t) { return t != null && INVISIBLES.test(String(t).replace(/[\t\n\r]/g, ' ')); }
+  function textesPropres(params, noms) {
+    return !noms.some(function (n) { return caractereSpecial(params[n]); });
+  }
 
   function implementationSupabase(cfg) {
     var base = String(cfg.url || '').replace(/\/+$/, '');
@@ -134,7 +150,7 @@
         if (typeof fetch !== 'function') {
           return Promise.resolve({ ok: false, message: 'Ce navigateur est trop ancien pour le compte commun.' });
         }
-        if (FONCTIONS_A_VENIR[fonction] && !(reglage.niveau && /niveau/.test(fonction))) return Promise.resolve({ ok: false, a_venir: true, message: FONCTIONS_A_VENIR[fonction] });
+        if (FONCTIONS_A_VENIR[fonction] && !ouverte(fonction)) return Promise.resolve({ ok: false, a_venir: true, message: FONCTIONS_A_VENIR[fonction] });
         if (typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve(copie(HORS_LIGNE));
         var arret = typeof AbortController === 'function' ? new AbortController() : null;
         var minuteur = arret ? setTimeout(function () { arret.abort(); }, 20000) : null;
@@ -579,7 +595,7 @@
           classes: Object.keys(D.classes).map(function (k) { return D.classes[k]; }).filter(function (c) { return c.enseignant_id === pid; })
             .sort(function (a, b) { return a.nom.localeCompare(b.nom, 'fr'); })
             .map(function (c) {
-              return { id: c.id, nom: c.nom, code: c.code, ouverte: c.ouverte, applications: c.applications.slice(),
+              return { id: c.id, nom: c.nom, code: c.code, ouverte: c.ouverte, archivee: !!c.archivee, applications: c.applications.slice(),
                 eleves: D.inscriptions.filter(function (i) { return i.classe_id === c.id; }).length };
             }),
           applications: [], alarme: false };
@@ -610,6 +626,15 @@
         c.applications = appsConnues(p.p_applications);
         return { ok: true };
       },
+      commun_prof_archiver_classe: function (p) {
+        var pid = prof(p.p_code);
+        if (!pid) return MAUVAIS_PROF;
+        if (!classeDuProf(pid, p.p_classe)) return PAS_A_TOI;
+        var c = D.classes[p.p_classe], a = p.p_archivee !== false;
+        c.archivee = a;
+        if (a) c.ouverte = false;
+        return { ok: true, archivee: a };
+      },
       commun_prof_supprimer_classe: function (p) {
         var pid = prof(p.p_code);
         if (!pid) return MAUVAIS_PROF;
@@ -639,7 +664,7 @@
         if (!classeDuProf(pid, p.p_classe)) return PAS_A_TOI;
         var c = D.classes[p.p_classe];
         return { ok: true,
-          classe: { id: c.id, nom: c.nom, code: c.code, ouverte: c.ouverte, applications: c.applications.slice(), lien: lienClasse(c.code),
+          classe: { id: c.id, nom: c.nom, code: c.code, ouverte: c.ouverte, archivee: !!c.archivee, applications: c.applications.slice(), lien: lienClasse(c.code),
             tableaux: D.classes_liens.filter(function (l) { return l.classe_id === c.id; }).map(function (l) {
               var a = C.adresses_prof[l.application];
               return { application: l.application, nom: nomApp(l.application), reference: l.reference,
@@ -690,7 +715,8 @@
         if (!pid) return MAUVAIS_PROF;
         var e = element(p.p_element);
         /* Décision de l'enseignant (20/11) : seulement des objets de trophée, jamais un compagnon */
-        if (!e || e.acces !== 'haut_fait' || e.emplacement === 'compagnon') return { ok: false, message: 'Seul un objet de trophée (qui ne s\'achète pas) peut être offert ; un compagnon se gagne.' };
+        /* Comme 0010 : seulement un trophée de la classe (« Les gimmicks de la classe ») */
+        if (!e || e.acces !== 'haut_fait' || e.famille !== 'classe') return { ok: false, message: 'Seul un trophée de la classe s\'offre ; les compagnons et les objets des applications se gagnent.' };
         var m = nettoyerTexte(p.p_motif, 3, 80);
         if (!m) return { ok: false, message: 'Donne un motif de 3 à 80 caractères.' };
         if (!eleveVisible(pid, p.p_compte)) return { ok: false, message: 'Cet·te élève n\'est dans aucune de tes classes.' };
@@ -918,6 +944,7 @@
     var cc = r.compte_commun || r;
     var url = cc.url || '', cle = cc.cle_publique || '';
     reglage = { en_ligne: false, probleme: null, niveau: r.COMPTE_COMMUN_NIVEAU === true || r.niveau === true,
+      catalogue: r.COMPTE_COMMUN_CATALOGUE === true || r.catalogue === true,
       applications: r.COMPTE_COMMUN_APPLICATIONS === true || r.applications === true };
     if (!enLigne) { impl = implementationDemo(); return mode(); }
     if (!/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(url) || !cle) {
@@ -964,6 +991,15 @@
     s.pseudo = pseudo;
     if (mode() === 'demo') sessionMemoire = s; else ecrireStockage(CLE_SESSION, s, !!s.appareil);
   }
+  /* « C'est mon téléphone » : la base garde le jeton 30 jours après son dernier usage ; l'appareil fait
+     de même (jusqu'ici, il l'oubliait 30 jours après l'entrée du code, même s'il servait chaque jour).
+     Le jeton d'un jour ne se prolonge pas : la base le refuse 1 jour après l'entrée, quoi qu'il arrive. */
+  function prolonger() {
+    var s = lireSession();
+    if (!s || !s.appareil || mode() === 'demo') return;
+    s.jusqu = new Date(Date.now() + 30 * 864e5).toISOString();
+    ecrireStockage(CLE_SESSION, s, true);
+  }
   function oublierSession() {
     sessionMemoire = null;
     if (mode() !== 'demo') ecrireStockage(CLE_SESSION, null);
@@ -980,6 +1016,7 @@
       if (!rep.ok && /expiré/.test(rep.message || '')) { oublierSession(); rep.sans_session = true; }
       if (rep.ok && rep.fiche && rep.fiche.pseudo) noterPseudo(rep.fiche.pseudo);
       if (rep.ok && rep.pseudo) noterPseudo(rep.pseudo);
+      if (rep.ok) prolonger();
       return rep;
     });
   }
@@ -1004,6 +1041,7 @@
     return codeProf;
   }
   function avecProf(fonction, params) {
+    if (!textesPropres(params || {}, ['p_nom', 'p_pseudo', 'p_motif'])) return Promise.resolve(copie(REFUS_CARACTERE));
     var c = lireCodeProf();
     if (!c) return Promise.resolve({ ok: false, sans_session: true, message: 'Entre ton code d\'enseignant·e.' });
     params = params || {};
@@ -1013,6 +1051,7 @@
 
   var Prof = {
     creerEspace: function (nom, etablissement) {
+      if (caractereSpecial(nom) || caractereSpecial(etablissement)) return Promise.resolve(copie(REFUS_CARACTERE));
       return appeler('commun_prof_creer_espace', { p_nom: nom, p_etablissement: etablissement || null });
     },
     ouvrir: function (code, options) {
@@ -1040,6 +1079,9 @@
     modifierClasse: function (classe, nom, ouverte, apps) {
       return avecProf('commun_prof_modifier_classe', { p_classe: classe, p_nom: nom, p_ouverte: ouverte, p_applications: apps || [] });
     },
+    /* La migration 0010 : archiver (inscriptions fermées, classe rangée à part) ou désarchiver.
+       Ouverte par le réglage COMPTE_COMMUN_CATALOGUE ; avant, la page ne propose que d'ouvrir ou fermer les inscriptions. */
+    archiverClasse: function (classe, archivee) { return avecProf('commun_prof_archiver_classe', { p_classe: classe, p_archivee: archivee !== false }); },
     supprimerClasse: function (classe, confirmation) { return avecProf('commun_prof_supprimer_classe', { p_classe: classe, p_confirmation: confirmation }); },
     lierClasse: function (classe, app, reference, retirer) {
       return avecProf('commun_prof_lier_classe', { p_classe: classe, p_application: app, p_reference: reference, p_retirer: !!retirer });
@@ -1372,6 +1414,7 @@
       });
     },
     creer: function (pseudo, options) {
+      if (caractereSpecial(pseudo)) return Promise.resolve(copie(REFUS_CARACTERE));
       var p = { p_pseudo: pseudo, p_garde_jours: jours(options) };
       /* Le niveau n'est envoyé que si sa migration est appliquée (réglage COMPTE_COMMUN_NIVEAU) */
       if (reglage.niveau && options && options.niveau) p.p_niveau = options.niveau;
@@ -1382,7 +1425,7 @@
        toujours vrai en démonstration. Les pages taisent jusque-là ce qui n'existe pas encore. */
     applicationsBranchees: function () { return mode() === 'demo' || !!reglage.applications; },
     niveaux: chargerNiveaux,
-    disponible: function (fonction) { if (/niveau/.test(fonction)) return !!reglage.niveau; return mode() === 'demo' || !FONCTIONS_A_VENIR[fonction]; },
+    disponible: function (fonction) { if (/niveau/.test(fonction)) return !!reglage.niveau; return mode() === 'demo' || ouverte(fonction); },
     qui: function () { var s = lireSession(); return s ? { pseudo: s.pseudo, appareil: !!s.appareil } : null; },
     bandeau: bandeau,
     entrer: function (code, options) {
@@ -1391,7 +1434,7 @@
     reprendre: function () { return avecSession('commun_reprise', {}); },
     porter: function (avatar) { return avecSession('commun_porter', { p_avatar: avatar }); },
     acheter: function (element) { return avecSession('commun_acheter', { p_element: element }); },
-    renommer: function (pseudo) { return avecSession('commun_renommer', { p_pseudo: pseudo }); },
+    renommer: function (pseudo) { return caractereSpecial(pseudo) ? Promise.resolve(copie(REFUS_CARACTERE)) : avecSession('commun_renommer', { p_pseudo: pseudo }); },
     lierCode: function (code) { return avecSession('commun_lier_code', { p_code: code }); },
     evenementPage: function (app, evenement, cle) {
       return avecSession('commun_evenement_page', { p_application: app, p_evenement: evenement, p_cle: cle });
