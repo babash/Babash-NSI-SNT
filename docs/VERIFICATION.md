@@ -77,7 +77,9 @@ Le fichier `.github/workflows/verifier.yml` lance cinq contrôles, visibles dans
   branches, et à la demande : `node charte/tester-equipage.js`, sans navigateur (une demi-minute
   environ). L'existant doit se dessiner au caractère près comme avec le moteur de référence (celui
   de `main` avant T133b, `0b44455`, que le job rapatrie à part), sauf les deux objets retirés ; les
-  15 objets des applications, les états d'usage, la liste fermée des phrases et les clés héritées
+  18 objets des applications (avec leurs identifiants de haut fait), les objets de la version 2.2
+  (gimmicks, fidélité, pièces libres, le kishali sur la tête avec toutes les coiffures), le geste
+  « tempête », les états d'usage, la liste fermée des phrases et les clés héritées
   refusées sont essayés, et les fichiers de données (`assets/equipage/catalogue.json` et
   `assets/equipage/applis.json`) doivent être à jour. Une erreur fait échouer le contrôle. Un
   changement voulu d'un dessin existant demande de changer le moteur de référence de l'essai.

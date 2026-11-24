@@ -56,7 +56,7 @@ assets/                     mise en page et fonctionnement (ne pas toucher)
                             charte/bandeaux-td.py
   fonts/                    les polices des TD et du site, hébergées sur le site (aucun appel à un
                             serveur de polices), avec leurs licences (LISEZMOI.md)
-  equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance ; version 2.1, avec
+  equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance ; version 2.2, avec
                             l'interface des applications de jeu) ; equipage/ : son contrat
                             (LISEZMOI.md), son catalogue (catalogue.json) et le fichier des
                             applications (applis.json : les phrases de la liste fermée, les gestes,
@@ -97,9 +97,10 @@ donnees/                    les fiches et les référentiels de la bibliothèque
                             scripts/annales_notions.py) ; la page bibliotheque/annales/ les lit
   compte-commun/            les apparences de l'avatar du compte commun (apparences.json, construit par
                             scripts/apparences_compte_commun.py depuis assets/equipage/catalogue.json,
-                            à relancer quand le catalogue change ; pas encore relancé pour la
-                            version 2.1 du moteur : la famille « applis », des trophées, est d'abord
-                            à ajouter aux familles de trophées du script) et les tableaux de bord
+                            à relancer quand le catalogue change ; relancé pour la version 2.1 du
+                            moteur, pas encore pour la 2.2 : la famille « fidelite », des trophées,
+                            est d'abord à ajouter aux familles de trophées du script, et les pièces
+                            marquées « libre » à proposer sans crédits) et les tableaux de bord
                             des applications (tableaux-de-bord.json)
 .github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
 scripts/                    vérification automatique, validation des données, construction de la
