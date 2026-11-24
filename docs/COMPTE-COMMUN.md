@@ -14,7 +14,9 @@ Un·e élève a **un seul code** (deux mots et trois chiffres, comme `PIRATE-ETR
 Le réglage `COMPTE_COMMUN_EN_LIGNE` de `reglages.js` choisit le mode : `false`, une démonstration en mémoire (rien n'est envoyé) ; `true`, la base. Trois réglages taisent ce qui n'existe pas encore, et s'allument chacun après sa migration :
 - `COMPTE_COMMUN_NIVEAU` : le choix du niveau (migration du niveau) ;
 - `COMPTE_COMMUN_APPLICATIONS` : les codes et les espaces des applications, les crédits qu'elles donnent (première application branchée) ;
-- `COMPTE_COMMUN_CATALOGUE` : « Offrir un trophée » et « Archiver la classe » (migration 0010). Avant, la loge annonce les pièces libres (kishali, bandana) pour bientôt, sans les proposer : `commun_porter` les refuserait.
+- `COMPTE_COMMUN_CATALOGUE` : « Offrir un trophée » et « Archiver la classe » (migration 0010), à mettre à `true` une fois 0010 en base.
+
+La boutique, les hauts faits, les trophées et les pièces libres de la loge (kishali, bandana) suivent, eux, le catalogue lu en base, sans réglage : avant 0010, ils sont annoncés pour bientôt, sans être proposés (`commun_porter` refuserait les pièces) ; après, la boutique dit que, pour l'instant, seul·e l'enseignant·e donne des crédits (l'XP attribuée et les hauts faits accordés), et les hauts faits des applications qui ne lisent pas encore le compte restent marqués « Bientôt ».
 
 ## Les règles que le module garantit
 

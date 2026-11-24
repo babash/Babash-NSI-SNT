@@ -110,6 +110,12 @@ sur un Postgres **local** reconstruit avec `supabase/`, jamais sur la base réel
   onglets de la planque), à 320, 768 et 1440 px, en clair et en obscur ;
 - `compte_commun_exemple.py` rejoue l'exemple « Brancher une application » de
   [COMPTE-COMMUN.md](COMPTE-COMMUN.md) ;
+- `compte_commun_combinaisons.py` essaie, avec le fichier de la migration 0010 en argument, les
+  quatre combinaisons (0010 en base ou non, réglage `COMPTE_COMMUN_CATALOGUE` vrai ou faux) :
+  offrir, archiver puis désarchiver seulement quand les deux sont là, la boutique, les hauts faits,
+  les trophées et la loge qui disent vrai, aucun appel à une fonction absente de la base ; puis le
+  catalogue illisible au chargement de l'espace. Il doit passer en entier avant de mettre le
+  réglage à `true` ;
 - `empreinte_commun_complement.sql` complète `scripts/supabase_empreinte_commun.sql` (types,
   séquences, déclencheurs, règles, droits de colonnes, propriétaires et volatilité des fonctions,
   publications), à lancer en lecture sur la base réelle et sur la base locale.
