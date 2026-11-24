@@ -43,6 +43,7 @@ Un objet JSON d’environ 450 octets (600 au plus, avec les huit emplacements re
 | `cheveux` | un nom de la palette `cheveux`, ou `#rrggbb` |
 | `haut`, `bas`, `chaussures` | 12 (dont les maillots de Madagascar, blanc, rouge et vert, et des Comores, vert avec le croissant et les quatre étoiles ; sans écusson de fédération, sans marque, sans numéro), 8 (dont le salouva) et 6 pièces ; `haut: "aucun"` n'existe que pour Nuée et Esprit |
 | `objets` | un objet par emplacement, cumulables : 24 pour la tête, 13 pour le visage, 14 au cou et à la taille, 13 dans le dos, 28 dans la main, 10 sur les épaules, 10 aux pieds, 10 autour (122 en tout), rangés en 9 familles (`Equipage.catalogue.familles`) |
+| `libre` (champ du catalogue) | `true` pour les pièces de tous les jours, libres pour tout le monde dès le départ : `epaule:kishali`, `tete:kishali_tete`, `tete:bandana` (24/11) |
 | `fauteuil` | `true` ou `false` : une aide technique, jamais à gagner |
 | `compagnon` | `aucun`, `margouillat` (de départ), `maki`, `robot`, `tortue`, `roussette` (marqués `gagne: true` dans le catalogue) |
 | `couleurs.*` | un nom de palette (`tissu`, `neon`, `chaussures`, `yeux`) ou `#rrggbb` |

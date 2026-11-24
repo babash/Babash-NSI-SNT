@@ -284,7 +284,7 @@
     ['bonnet', 'Bonnet à pompon', 'tete', 'classique'], ['casquette', 'Casquette sans marque', 'tete', 'classique'], ['frontale', 'Lampe frontale', 'tete', 'classique'],
     ['bandeau', 'Bandeau de sport', 'tete', 'classique'], ['lunettes', 'Lunettes de vue', 'visage', 'classique'], ['pansement', 'Pansement', 'visage', 'classique'],
     ['peinture', 'Peinture néon', 'visage', 'classique'], ['echarpe', 'Écharpe', 'epaule', 'classique'],
-    ['kishali', 'Kishali sur les épaules', 'epaule', 'classique'], ['parapluie', 'Parapluie de la saison des pluies', 'main', 'classique'], ['ballon_foot', 'Ballon de foot', 'pieds', 'classique']
+    ['kishali', 'Kishali sur les épaules', 'epaule', 'classique'], ['kishali_tete', 'Kishali sur la tête', 'tete', 'classique'], ['parapluie', 'Parapluie de la saison des pluies', 'main', 'classique'], ['ballon_foot', 'Ballon de foot', 'pieds', 'classique']
   ];
   /* les objets des applications (T133b, famille « applis ») : trois par application, chacun donné par
      un haut fait (jamais acheté). [id, nom, emplacement, application, haut fait, nom du haut fait,
@@ -313,7 +313,9 @@
   FIDELITE.forEach(function (f) { OBJETS.push([f[0], f[1], f[2], 'fidelite']); });
   /* ce qui ne sort jamais au hasard : les trophées des applications et de la fidélité, et les objets ajoutés après la
      version 2.0 (les tirages au hasard des pages existantes ne changent pas) */
-  var HORS_HASARD = { bouteille_percee: 1, dessin_karim: 1 };
+  var HORS_HASARD = { bouteille_percee: 1, dessin_karim: 1, kishali_tete: 1 };
+  /* les pièces de tous les jours, libres pour tout le monde dès le départ (décision du 24/11, 12:34) : ni crédits, ni haut fait */
+  var LIBRES = { kishali: 1, kishali_tete: 1, bandana: 1 };
   function auHasard(x) { return x.famille !== 'applis' && x.famille !== 'fidelite' && !own(HORS_HASARD, x.id); }
   var APPLI_DE = {};
   APPLIS.forEach(function (a) { APPLI_DE[a[0]] = { application: a[3], haut_fait: a[4] }; });
@@ -325,6 +327,7 @@
   CATALOGUE.emplacements.forEach(function (e) { CATALOGUE.objets[e.id] = [{ id: 'aucun', nom: 'Rien' }]; });
   OBJETS.forEach(function (o) {
     var e = { id: o[0], nom: o[1], famille: o[3] }; if (o[4]) e.texte = o[4];
+    if (own(LIBRES, o[0])) e.libre = true;
     if (APPLI_DE[o[0]]) { e.application = APPLI_DE[o[0]].application; e.haut_fait = APPLI_DE[o[0]].haut_fait; }
     CATALOGUE.objets[o[2]].push(e);
   });
@@ -387,7 +390,8 @@
     var haut = MAILLOT_PAYS[d.haut] || couleur('haut', d.couleurs.haut), bas = couleur('bas', d.couleurs.bas);
     return {
       lignee: d.lignee, corps: d.corps, peau: TEINTS[d.teint - 1], cheveux: couleur('cheveux', d.cheveux),
-      coiffure: d.coiffure, tenue: d.haut, haut: haut, accent: acc, accent2: acc2, manches: MANCHES[d.haut],
+      /* sous le kishali porté sur la tête, les cheveux sont rangés : ni trou ni mèche qui dépasse, quelle que soit la coiffure */
+      coiffure: d.objets.tete === 'kishali_tete' ? 'sous_kishali' : d.coiffure, tenue: d.haut, haut: haut, accent: acc, accent2: acc2, manches: MANCHES[d.haut],
       embleme: fonce(haut, 0.6), dessous: '#ece4d4', motif_c: acc, bug: acc2, motif: NOIR,
       bas_style: d.bas, bas: bas, bande: acc, cable: acc2, piece1: fonce(haut, 0.05), piece2: '#e8b84a',
       chaussure_style: d.chaussures, chaussure: couleur('chaussures', d.couleurs.chaussures), lacet: acc,
@@ -1360,7 +1364,7 @@
   /* objets tenus : le bras se lève pour les porter */
   var TIENT = { bombe: 1, cle: 1, baton_lumineux: 1, lanterne: 1, parapluie: 1, style_trois_baguettes: 1 };
   Object.keys(SPR).forEach(function (k) { if (SPR[k].ou === 'main') TIENT[k] = 1; });
-  var CHAPEAUX = { chapeau_paille: 1, bonnet: 1, casquette: 1, bandana: 1, casque_mabawa: 1, casquette_mabawa: 1, casquette_barge: 1, casquette_pilaou: 1, bob: 1 };
+  var CHAPEAUX = { chapeau_paille: 1, bonnet: 1, casquette: 1, bandana: 1, kishali_tete: 1, casque_mabawa: 1, casquette_mabawa: 1, casquette_barge: 1, casquette_pilaou: 1, bob: 1 };
   var CRETES = { meches_vives: 1, crete_pics: 1, crete_recurer: 1 };
 
   /* agrandit une carte par deux (algorithme Scale2x) : contours arrondis, même taille de pixel */
@@ -1754,6 +1758,19 @@
       for (y = hy - 1; y <= hy + 4; y++) { var r = crane(hy, y); for (x = r[0]; x <= r[1]; x++) c.px(x, y, (x + y * 2) % 4 === 0 ? BLANC : (y === hy + 4 ? fonce(bd, 0.2) : bd)); }
       c.L.rect(X1 + 1, hy + 3, 2, 2, bd);
       for (k = 0; k < 4; k++) { c.px(X1 + 2 + (k + n) % 2, hy + 5 + k, bd); c.px(X1 + 3, hy + 5 + k - (n % 2), fonce(bd, 0.2)); }
+    }
+    if (v === 'kishali_tete') {
+      /* le kishali porté sur la tête : il couvre le haut du crâne et les cheveux des côtés, et retombe sur les épaules ;
+         sa couleur et son motif (points, petits losanges) viennent des couleurs de l'avatar */
+      var kc = cfg.chale, kf = fonce(kc, 0.18), km = cfg.accent;
+      [[hy - 4, X0 + 4, X1 - 4], [hy - 3, X0 + 2, X1 - 2], [hy - 2, X0 + 1, X1 - 1], [hy - 1, X0, X1], [hy, X0 - 1, X1 + 1], [hy + 1, X0 - 1, X1 + 1], [hy + 2, X0 - 1, X1 + 1]].forEach(function (r) {
+        for (x = r[1]; x <= r[2]; x++) c.px(x, r[0], r[0] === hy + 2 ? kf : (mod(x + r[0], 4) === 0 && r[0] < hy + 2 ? km : (mod(x - r[0], 4) === 2 ? clair(kc, 0.3) : kc)));
+      });
+      for (y = hy + 3; y < TY + 1; y++) {
+        [X0 - 2, X0 - 1, X0, X1, X1 + 1, X1 + 2].forEach(function (xx, j) { c.px(xx, y, (j === 2 || j === 3) ? kf : (mod(y, 4) === 0 && (j === 0 || j === 5) ? km : kc)); });
+      }
+      for (y = TY + 1; y < TY + 5; y++) { c.px(X0 - 2, y, kc); c.px(X0 - 1, y, y === TY + 4 ? kf : kc); }
+      c.px(X0 - 2, TY + 5, km); c.px(X0 - 1, TY + 5, km);
     }
     if (v === 'bandeau_noue') {
       var bn = cfg.accent2;

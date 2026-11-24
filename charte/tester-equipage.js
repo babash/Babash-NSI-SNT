@@ -60,7 +60,7 @@ if (refChemin) {
   ok(E.texte(descs[0], 'repos') === R.texte(descs[0], 'repos'), 'texte a changé');
   ['tete', 'visage', 'cou', 'dos', 'main', 'epaule', 'pieds', 'autour'].forEach(function (e) {
     var avant = R.catalogue.objets[e].map(function (o) { return o.id; }).join();
-    var apres = E.catalogue.objets[e].filter(function (o) { return o.famille !== 'applis' && o.famille !== 'fidelite' && o.id !== 'bouteille_percee' && o.id !== 'dessin_karim'; }).map(function (o) { return o.id; }).join();
+    var apres = E.catalogue.objets[e].filter(function (o) { return o.famille !== 'applis' && o.famille !== 'fidelite' && o.id !== 'bouteille_percee' && o.id !== 'dessin_karim' && o.id !== 'kishali_tete'; }).map(function (o) { return o.id; }).join();
     avant = R.catalogue.objets[e].filter(function (o) { return !RETIRES[e + ':' + o.id]; }).map(function (o) { return o.id; }).join();
     ok(avant === apres, 'les objets « ' + e + ' » existants ont changé');
   });
@@ -96,7 +96,7 @@ E.applis.filter(function (a) { return a.emplacement === 'main'; }).forEach(funct
 /* aucun objet des applications ne sort au hasard */
 for (var s = 0; s < 400; s++) {
   var d = E.aleatoire(s);
-  E.applis.concat(E.fidelite, [{ id: 'bouteille_percee', emplacement: 'main' }, { id: 'dessin_karim', emplacement: 'main' }]).forEach(function (a) { ok(d.objets[a.emplacement] !== a.id, 'aleatoire(' + s + ') donne ' + a.id); });
+  E.applis.concat(E.fidelite, [{ id: 'bouteille_percee', emplacement: 'main' }, { id: 'dessin_karim', emplacement: 'main' }, { id: 'kishali_tete', emplacement: 'tete' }]).forEach(function (a) { ok(d.objets[a.emplacement] !== a.id, 'aleatoire(' + s + ') donne ' + a.id); });
 }
 
 /* ── 3. états d'usage, gestes, phrases, neutre ── */
@@ -122,6 +122,18 @@ var auras = ['aura_etincelle', 'aura_halo', 'aura_supernova'].map(function (id) 
 ok(auras[0] !== auras[1] && auras[1] !== auras[2] && auras[0].length < auras[1].length && auras[1].length < auras[2].length, 'les trois auras grandissent d\'un palier à l\'autre');
 ok(image(avec('dos', 'ailes_circuit'), 'repos') !== image(nu, 'repos'), 'ailes de circuit visibles');
 ok(E.catalogue.objets.main.some(function (o) { return o.id === 'dessin_karim' && o.famille === 'classe'; }), 'dessin_karim : trophée de la famille classe');
+/* le kishali (tête, épaules) et le bandana : libres pour tout le monde dès le départ, sur tout corps et toute coiffure */
+[['tete', 'kishali_tete'], ['epaule', 'kishali'], ['tete', 'bandana']].forEach(function (x) {
+  ok(E.catalogue.objets[x[0]].some(function (o) { return o.id === x[1] && o.libre === true; }), x[0] + ':' + x[1] + ' libre');
+});
+var libres = []; E.catalogue.emplacements.forEach(function (e) { E.catalogue.objets[e.id].forEach(function (o) { if (o.libre) libres.push(e.id + ':' + o.id); }); });
+ok(libres.sort().join() === 'epaule:kishali,tete:bandana,tete:kishali_tete', 'seules ces trois pièces sont libres : ' + libres.join());
+E.catalogue.coiffure.forEach(function (cf) { ['fine', 'moyenne', 'ronde'].forEach(function (co) {
+  var a = E.normaliser({ coiffure: cf.id, corps: co, cheveux: '#123456', objets: { tete: 'kishali_tete' } });
+  ['repos', 'tres_content', 'concentre', 'dort'].forEach(function (et) {
+    ok(E.svg(a, { etat: et, anime: false, alt: '' }).indexOf('#123456') < 0, 'kishali sur la tête : aucune mèche (' + cf.id + ', ' + co + ', ' + et + ')');
+  });
+}); });
 ok(image(avec('main', 'dessin_karim'), 'repos') !== image(nu, 'repos') && image(avec('main', 'dessin_karim'), 'fete') !== image(nu, 'fete'), 'dessin_karim visible');
 ok(E.phrases.length === 21 && Object.isFrozen(E.phrases), '21 phrases gelées');
 ok(!E.phrases.some(function (p) { return /bouchon/i.test(p); }), 'plus de bouchon dans les phrases');
