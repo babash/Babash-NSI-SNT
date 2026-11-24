@@ -483,4 +483,39 @@ def erreur_sans_test_final(txt):
 
 assert erreur_sans_test_final("((") is True  # déclarée à tort bien parenthésée
 print("Variantes et erreurs fréquentes : toutes exécutées.")
+
+print("=== Q18 : compteur exécuté selon la précision ajoutée au sujet ===")
+from itertools import product
+
+
+class PileComptee(Pile):
+    compteur = 0
+
+    def est_vide(self):
+        PileComptee.compteur += 1          # test est_vide (dans depiler ou final)
+        return len(self.contenu) == 0
+
+
+def est_bien_parenthesee_comptee(txt):
+    PileComptee.compteur = 0
+    p = PileComptee()
+    for c in txt:
+        PileComptee.compteur += 1          # reconnaître le caractère
+        if c in "([{":
+            p.empiler(c)
+        elif c in ")]}":
+            o = p.depiler()                # + 1 (est_vide dans depiler)
+            PileComptee.compteur += 1      # vérifier le couple
+            if o != COUPLES[c]:
+                return False, PileComptee.compteur
+    return p.est_vide(), PileComptee.compteur   # + 1 (test final)
+
+
+r, nb = est_bien_parenthesee_comptee(ex_bon)
+print("Q18 :", ex_bon, "->", r, nb, "comparaisons")
+assert r is True and nb == 30
+for n in range(0, 9):
+    pire = max(est_bien_parenthesee_comptee("".join(t))[1] for t in product("()[a", repeat=n))
+    assert pire == 2 * n + 1, (n, pire)
+print("Q18 : maximum 2n + 1 vérifié sur toutes les chaînes de longueur 0 à 8 (alphabet ( ) [ a)")
 print("Tout est vérifié.")
