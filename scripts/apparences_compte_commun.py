@@ -35,7 +35,9 @@ PRIX = {"tete": 40, "visage": 40, "cou": 40, "main": 40, "epaule": 40, "pieds": 
 # Les familles de trophées (par identifiant, jamais par nom) : leurs objets ne s'achètent pas ; ils
 # viennent d'un haut fait, de l'enseignant·e (avec un motif) ou d'un jeu, comme élément d'histoire.
 # Décision de l'enseignant du 20/11 (19:00) : « Les gimmicks de la classe » ne sont pas dans la boutique.
-FAMILLES_TROPHEES = {"classe"}
+# T133 (24/11) : les 15 objets des applications (famille « applis ») se gagnent chacun par un haut fait
+# de son application (Equipage.applis, charte/applis.md, § 5) : des trophées, jamais en boutique.
+FAMILLES_TROPHEES = {"classe", "applis"}
 # Les objets retirés par l'enseignant (24/11, T133) : ils restent peut-être dans le catalogue
 # du moteur le temps que le Designer publie le sien, mais ne sont jamais proposés ici.
 RETIRES = {"tete:bouchon_mamoudzou", "main:perche_extensible"}
