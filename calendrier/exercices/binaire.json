@@ -2385,9 +2385,9 @@
      "duree": 3,
      "items": [
       {
-       "texte": "2 octets, c'est 16 bits.",
-       "reponse": true,
-       "explication": "Chaque octet a 8 bits : 2 × 8 = 16."
+       "texte": "2 octets, c'est 10 bits.",
+       "reponse": false,
+       "explication": "Chaque octet a 8 bits : 2 octets font 2 × 8 = 16 bits."
       },
       {
        "texte": "1 ko, c'est 1 000 bits.",
@@ -2448,11 +2448,11 @@
        "verifier": "taille == 2000000"
       },
       {
-       "texte": "n vaut 1 000, comme 1 ko.",
+       "texte": "octets vaut 300 : le nombre d'octets de 3 ko.",
        "reponse": false,
-       "explication": "2 puissance 10 vaut 1 024, pas 1 000. On appelle 1 024 octets un kibioctet (Kio).",
-       "code": "n = 2 ** 10",
-       "verifier": "n == 1000"
+       "explication": "1 ko = 1 000 octets : 3 ko font 3 000 octets.",
+       "code": "octets = 3 * 1000",
+       "verifier": "octets == 300"
       },
       {
        "texte": "go vaut 1.5 : 1 500 Mo font 1,5 Go.",
@@ -3073,24 +3073,24 @@
        "affiche_fautif": "5003"
       },
       {
-       "but": "Afficher 1024, c'est-à-dire 2 puissance 10.",
+       "but": "Afficher 256, le nombre de valeurs d'un octet (2 puissance 8).",
        "lignes": [
-        "n = 2 ^ 10",
+        "n = 2 * 8",
         "print(n)"
        ],
        "ligne": 0,
        "corrections": [
-        "n = 2 ** 10",
-        "n = 2 * 10",
-        "n = 10 ** 2"
+        "n = 2 ** 8",
+        "n = 8 ** 2",
+        "n = 2 + 8"
        ],
        "bonne": 0,
-       "affiche": "1024",
-       "explication": "En Python, la puissance s'écrit ** ; ^ fait tout autre chose (un « ou exclusif » sur les bits).",
+       "affiche": "256",
+       "explication": "En Python, la puissance s'écrit ** : 2 ** 8 = 2 × 2 × … (8 fois) = 256.",
        "aides": [
-        "En Python, ^ n'est pas la puissance."
+        "Puissance s'écrit ** en Python."
        ],
-       "affiche_fautif": "8"
+       "affiche_fautif": "16"
       }
      ]
     }
@@ -3505,9 +3505,9 @@
        "explication": "Rouge 00, vert FF (255), bleu 00."
       },
       {
-       "texte": "Dans #FF8800, le rouge est au maximum.",
-       "reponse": true,
-       "explication": "Les deux premiers chiffres sont le rouge : FF, soit 255."
+       "texte": "Dans #FF8800, le bleu est au maximum.",
+       "reponse": false,
+       "explication": "L'ordre est rouge, vert, bleu : FF est le rouge ; le bleu, 00, est éteint."
       },
       {
        "texte": "(128, 128, 128) est un gris.",
@@ -3768,11 +3768,11 @@
        ]
       },
       {
-       "code": "print(chr(72) + chr(105))",
-       "reponse": "Hi",
-       "explication": "72 est le code de H, 105 celui de i ; + colle les deux textes.",
+       "code": "print(chr(65) + chr(66))",
+       "reponse": "AB",
+       "explication": "65 est le code de A, 66 celui de B ; + colle les deux textes.",
        "aides": [
-        "105 − 32 = 73 : le code de I majuscule."
+        "Le code de A est 65."
        ]
       },
       {
@@ -4582,9 +4582,9 @@
        "explication": "Quatre nombres séparés par des points."
       },
       {
-       "texte": "Chaque nombre d'une adresse IPv4 va de 0 à 255 : il tient sur un octet.",
-       "reponse": true,
-       "explication": "Un octet prend 256 valeurs, de 0 à 255."
+       "texte": "Chaque nombre d'une adresse IPv4 va de 0 à 999.",
+       "reponse": false,
+       "explication": "Chaque nombre tient sur un octet : il va de 0 à 255."
       },
       {
        "texte": "192.168.1.300 est une adresse IPv4 possible.",
@@ -4617,9 +4617,9 @@
        "explication": "4 octets × 8 bits = 32 bits."
       },
       {
-       "texte": "Une adresse IPv6 est plus longue qu'une adresse IPv4.",
-       "reponse": true,
-       "explication": "IPv6 utilise 128 bits, contre 32 pour IPv4."
+       "texte": "Une adresse IPv6 est plus courte qu'une adresse IPv4.",
+       "reponse": false,
+       "explication": "IPv6 utilise 128 bits, contre 32 pour IPv4 : beaucoup plus d'adresses possibles."
       },
       {
        "texte": "Il y a plus d'adresses IPv4 possibles que d'habitant·e·s sur Terre.",
@@ -4668,11 +4668,11 @@
        "verifier": "total > 5000000000"
       },
       {
-       "texte": "n vaut 3 : un octet par lettre.",
+       "texte": "n vaut 8 : le nombre d'octets du mot Mayotte en ASCII.",
        "reponse": false,
-       "explication": "En UTF-8, é prend 2 octets : n vaut 5. Seuls les caractères ASCII tiennent sur un octet.",
-       "code": "n = len(\"été\".encode(\"utf-8\"))",
-       "verifier": "n == 3"
+       "explication": "Mayotte a 7 lettres : 7 octets en ASCII, un par lettre.",
+       "code": "n = len(\"Mayotte\")",
+       "verifier": "n == 8"
       },
       {
        "texte": "n vaut 255, le plus grand nombre d'une adresse IPv4.",
@@ -4682,11 +4682,11 @@
        "verifier": "n == 255"
       },
       {
-       "texte": "uns vaut 24 : le nombre de bits à 1 dans 255.255.255.0.",
+       "texte": "n vaut 32 : le nombre de bits d'une adresse IPv4.",
        "reponse": true,
-       "explication": "Trois octets pleins (8 bits à 1 chacun) et un octet vide.",
-       "code": "masque = [255, 255, 255, 0]\nuns = sum(format(x, \"08b\").count(\"1\") for x in masque)",
-       "verifier": "uns == 24"
+       "explication": "4 octets de 8 bits : 32 bits.",
+       "code": "n = 4 * 8",
+       "verifier": "n == 32"
       }
      ]
     }
