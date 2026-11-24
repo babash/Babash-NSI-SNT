@@ -153,6 +153,8 @@ Cinq réglages de `reglages.js` changent ces textes sans toucher au code :
 | `invitation_ia` | l'invitation à préciser l'usage de l'IA |
 | `pied_ia` | la mention courte de la ligne, « conçu avec l'aide de l'IA » |
 
+Quatre autres réglages de `reglages.js` concernent le compte commun (pages `eleve/` et `enseignant/`) et non les rubriques : `COMPTE_COMMUN_EN_LIGNE` (la base, ou une démonstration en mémoire), `COMPTE_COMMUN_NIVEAU`, `COMPTE_COMMUN_APPLICATIONS` et `COMPTE_COMMUN_CATALOGUE`, qui s'allument chacun après sa migration : voir [COMPTE-COMMUN.md](COMPTE-COMMUN.md).
+
 Pour `mention_ia`, `reutilisation`, `invitation_ia` et `pied_ia`, un texte vide (`""`) retire la phrase ;
 un réglage absent reprend le texte validé par l'enseignant, écrit dans `assets/site.js`. Les
 deux licences, elles, sont fixées dans `assets/site.js`.
