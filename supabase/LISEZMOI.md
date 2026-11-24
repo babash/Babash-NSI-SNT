@@ -6,6 +6,25 @@ Ce dossier contient les migrations qui ne relèvent d'aucune application : les p
 - **Une exception :** `0004` vise l'ancien projet de Lagon Arena, `gkyvaugipddjqjvvpopw`. Il n'y touche à aucun objet `guilde_*`.
 - **Les règles suivies :** `architecture/regles-supabase.md` (P2, P4, P8 corrigée, M1 à M8) et la spécification des codes, `architecture/codes-acces.md` (§ 1.10).
 
+## Où en est la base (24/11/2026) : le compte commun est en place
+
+**Le compte commun (`0007` v2.3, puis `0008`) est en base depuis le 24/11, vers 11:20 (heure de Mayotte).** L'enseignant a collé lui-même, dans l'éditeur SQL du projet `cukahpyqkljiddmimpyi`, dans cet ordre :
+
+| Fichier collé | md5 du fichier | Ce qu'il a fait |
+|---|---|---|
+| `2026-11-24-retour-avant-socle.sql` | `70531585ed1af164648b81513dbd4199` | a retiré la **version 1** du compte commun (voir ci-dessous) |
+| `0007-compte-commun.sql` (v2.3) | `f4e939976f3dc72bcdb0649b3de12912` | les élèves : comptes, codes (64 mots « pirates »), avatar, hauts faits, XP cachée, crédits |
+| `0008-enseignants-communs.sql` | `5e49dbf387d4b9bfb80478b4ab7c61c7` | l'espace commun des enseignant·e·s, les classes communes |
+
+- **Le contrôle du chef d'orchestre** (`verification.sql`, en lecture) : 24 contrôles sur 24 « ok » : 23 tables dans `commun`, 33 fonctions `public.commun_…`, 33 fonctions internes, RLS partout et aucune règle, aucun droit d'`anon` ni d'`authenticated` sur les tables ni sur le schéma, 64 mots, 9 applications, 9 emplacements, le margouillat, 9 barèmes, 0 ligne d'élève ou d'enseignant·e.
+- **La preuve de fidélité (T132d)** : la base réelle et une base locale construite avec les fichiers de ce dossier (socle, puis `0007`, puis `0008`) ont été comparées **objet par objet**, par les métadonnées : définition de chaque fonction (`pg_get_functiondef`, fins de ligne normalisées), droits et commentaires des fonctions, colonnes (type, défaut, nullabilité, commentaire), contraintes, index, vue, droits et RLS des tables, commentaires, droits du schéma, contenu des tables de référence (applications, mots, emplacements, éléments, barèmes, hauts faits, récompenses, activités, ménage). **550 objets de chaque côté, 550 identiques.** Le seul écart attendu : sur la base réelle, `service_role` a aussi le droit d'exécuter les 33 fonctions `commun_` (droits par défaut de la plateforme, que `0001` laisse à `service_role`) ; une fois `service_role` mis à part, les droits sont identiques. La requête : `scripts/supabase_empreinte_commun.sql`.
+- **Rien n'est inscrit dans l'historique des migrations** (collage à la main). La requête qui l'inscrirait est plus bas (« Inscrire le collage à l'historique ») : c'est une écriture en base, à montrer d'abord à l'enseignant.
+- **Les conseillers, après le collage** (24/11, 11:28) : « RLS sans règle » (INFO) pour les 23 tables de `commun` et « security definer appelable par anon » (WARN) pour les 33 fonctions `commun_` : attendus. **Nouveaux** : « reg* non pris en charge » (WARN, 7 colonnes `regprocedure` des connecteurs dans `commun.applications`, qui gêneraient un `pg_upgrade`) ; 9 clés étrangères sans index et 9 index pas encore servis (INFO, tables vides). À reprendre dans une prochaine migration (connecteurs en `text` vérifié par `to_regprocedure`, index des clés étrangères).
+
+### Le retour avant le socle (pièce du 24/11)
+
+`2026-11-24-retour-avant-socle.sql` n'est pas une migration à rejouer : c'est la pièce de ce qui a été fait le 24/11. La base contenait alors la **toute première version** du compte commun (`0007` et `0008` du 20/11, commit `a33a640` de la branche `archi/t101-compte-commun`, jamais publiée : ni XP, ni crédits, ni classes), et non la version 2.2 approuvée. Ce fichier a retiré, objet par objet et sans `cascade` : 18 fonctions `public.commun_…`, 22 fonctions internes et 15 tables du schéma `commun` (avec leurs 24 index ; les 7 applications, 64 mots, 17 emplacements et la ligne de ménage partaient avec leurs tables, aucune donnée d'élève). Il a gardé le socle (`0003`, `0009`) : `commun.secret`, `commun.essais`, la vue `commun.registre` et ses 6 fonctions. Il refusait de tourner si une table d'élèves ou d'enseignant·e·s avait une ligne, si un objet inconnu était dans `commun`, ou si un objet d'application dépendait du compte commun. Essayé en local avant d'être collé (base v1 reconstruite, empreinte identique à la base réelle).
+
 ## Où en est la base (13/11/2026)
 
 **`0005` est appliqué**, après l'accord de l'enseignant sur le SQL exact (« Ok base Court-circuit », 13/11 à 06:45, heure de Mayotte ; règle M4) : `base_unique_0005_registre_court_circuit`, le 13/11 à 06:49 (version 20261113034900), par le chef d'orchestre, sans les lignes `begin;` et `commit;`, juste après la migration de Court-circuit (`court_circuit_0001_codes_eleves`, 06:48). Le texte enregistré a la même empreinte que le fichier (md5 sans commentaires, espaces ni `;` : `22e6c1b4…`). Vérifié par les métadonnées seulement : la vue lit `court_circuit`, elle reste fermée à `anon` et à `authenticated`, et elle range les 4 tables de Court-circuit (`eleves` et `programmes` : données d'élèves ; `mots` et `menage` : non), sur 15 lignes en tout. Il ne change que la vue `commun.registre` et deux commentaires (voir « 0005 » plus bas).
@@ -52,9 +71,12 @@ On ne fait jamais d'essai sur une table de données d'élèves de la base en lig
 | `0003-schema-commun.sql` | cible | `base_unique_0003_schema_commun` | Crée le schéma `commun` : le compteur d'essais, le sel secret, six fonctions internes et le registre des tables. |
 | `0004-ancien-projet-sequence-pantheon.sql` | **ancien projet de Lagon Arena** | `base_unique_0004_ancien_projet_sequence_pantheon` | Retire à `anon` ses droits sur `pantheon_id_seq`. |
 | `0005-registre-court-circuit.sql` | cible | `base_unique_0005_registre_court_circuit` | Range le schéma `court_circuit` et le préfixe `cc_` dans le registre des tables. |
-| `0009-registre-vacances.sql` (et son inverse) | cible | `base_unique_0009_registre_vacances` | Range le schéma `vacances` et le préfixe `cv_` (Calendrier des vacances, T105) dans le registre. Il reprend la vue de `0006` (Hello GO, appliquée le 17/11 ; ses fichiers sont sur la branche `gardien/t73-registre`). Les numéros `0007` et `0008` sont pris par le compte commun (T101), qui ne touche pas au registre. **Appliqué le 20/11 (15:33).** Mode d'emploi : `calendrier/supabase/LISEZMOI.md`. Le `schema.sql` du socle ne le contient pas encore : il sera refait quand `0006` sera sur `main`. |
+| `0009-registre-vacances.sql` (et son inverse) | cible | `base_unique_0009_registre_vacances` | Range le schéma `vacances` et le préfixe `cv_` (Calendrier des vacances, T105) dans le registre. Il reprend la vue de `0006` (Hello GO, appliquée le 17/11 ; ses fichiers sont sur la branche `gardien/t73-registre`). Les numéros `0007` et `0008` sont pris par le compte commun (T101), qui ne touche pas au registre. **Appliqué le 20/11 (15:33).** Mode d'emploi : `calendrier/supabase/LISEZMOI.md`. Le `schema.sql` du socle le contient depuis T132d (le 24/11). |
+| `0007-compte-commun.sql` (v2.3, et son inverse) | cible | `base_unique_0007_compte_commun` | Le compte commun des élèves : 16 tables, 19 fonctions internes, 12 fonctions `commun_` pour `anon`. **En base depuis le 24/11** (collé à la main). L'inverse refuse si `0008` est là, ou si une application s'est branchée. |
+| `0008-enseignants-communs.sql` (et son inverse) | cible | `base_unique_0008_enseignants_communs` | L'espace commun des enseignant·e·s (code de 3 mots et 4 chiffres, gardé en empreinte), les classes communes (code de 4 lettres, lien, QR code) : 5 tables, 8 fonctions internes, 21 fonctions `commun_`. **En base depuis le 24/11.** Inverse : avant celui de `0007`. |
+| `2026-11-24-retour-avant-socle.sql` | cible | (aucun : pièce du 24/11) | Retrait de la version 1 du compte commun avant `0007` v2.3 (voir plus haut). Ne se relance pas : il s'arrête sans rien modifier sur la base d'aujourd'hui. |
 | `NNNN-…-inverse.sql` | le même | `…_inverse` | Le SQL inverse de chaque migration. |
-| `schema.sql` | un projet neuf | — | Le script complet du socle (0001, 0003 et 0005), pour la copie d'un·e collègue. |
+| `schema.sql` | un projet neuf | — | Le script complet du socle (0001, 0003, 0005, 0009, puis le compte commun 0007 et 0008), pour la copie d'un·e collègue. Fabriqué par `scripts/supabase_schema.py`. |
 
 Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne. Il se colle d'un bloc dans l'éditeur SQL. Par `apply_migration`, on retire seulement ces deux lignes : le reste est appliqué tel quel.
 
@@ -287,3 +309,22 @@ end if;
   - garde-fous : mauvais rôle, mauvais projet, registre venu d'ailleurs, `0003` absent ;
   - `schema.sql` dans un projet neuf : le même registre et les mêmes droits que `0001`, `0003` et `0005` ; puis le script complet de Court-circuit et son scénario en `anon`.
 - **Le résultat :** 34 contrôles, 0 échec, et 78 pour le scénario de Court-circuit.
+
+## Inscrire le collage à l'historique (proposition, non exécutée)
+
+Le collage du 24/11 n'a laissé aucune trace dans `supabase_migrations.schema_migrations`. Cette requête l'y inscrirait, **sans rien rejouer** : c'est une écriture en base, à montrer à l'enseignant avant que le chef d'orchestre ne la lance (`execute_sql`). Les versions sont l'heure du collage (11:20 à Mayotte, 08:20 UTC) ; le texte enregistré est une note qui renvoie au fichier et à son md5, pas le fichier lui-même.
+
+```sql
+insert into supabase_migrations.schema_migrations (version, name, statements, created_by)
+values
+  ('20261124082000', 'base_unique_0007_0008_retour_version_1',
+   array['-- Collé à la main le 24/11/2026 dans l''éditeur SQL : supabase/2026-11-24-retour-avant-socle.sql du dépôt du site, md5 70531585ed1af164648b81513dbd4199.'],
+   'enseignant (éditeur SQL)'),
+  ('20261124082100', 'base_unique_0007_compte_commun',
+   array['-- Collé à la main le 24/11/2026 dans l''éditeur SQL : supabase/0007-compte-commun.sql (version 2.3) du dépôt du site, md5 f4e939976f3dc72bcdb0649b3de12912.'],
+   'enseignant (éditeur SQL)'),
+  ('20261124082200', 'base_unique_0008_enseignants_communs',
+   array['-- Collé à la main le 24/11/2026 dans l''éditeur SQL : supabase/0008-enseignants-communs.sql du dépôt du site, md5 5e49dbf387d4b9bfb80478b4ab7c61c7.'],
+   'enseignant (éditeur SQL)')
+on conflict (version) do nothing;
+```

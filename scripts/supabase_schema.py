@@ -32,16 +32,22 @@ ENTETE = """begin;
 --   A. les droits par défaut fermés (migration 0001) ;
 --   B. le schéma commun : compteur d'essais, sel secret, fonctions internes
 --      et registre des tables (migration 0003) ;
---   C. le registre mis à jour : Court-circuit en plus (migration 0005).
+--   C. le registre mis à jour : Court-circuit en plus (migration 0005) ;
+--   D. le registre mis à jour : le Calendrier des vacances (migration 0009) ;
+--   E. le compte commun des élèves : codes, avatar, hauts faits, XP et
+--      crédits (migration 0007, version 2.3) ;
+--   F. l'espace commun des enseignant·e·s et les classes communes
+--      (migration 0008).
 --  La migration 0002 n'y est pas : elle corrige les droits d'objets qui
 --  existaient déjà dans le projet de l'enseignant.
 --
 --  Mode d'emploi : dans le tableau de bord de Supabase, SQL Editor, coller
---  tout le fichier, puis Run. Il peut être relancé sans risque : il ne crée
---  que ce qui manque, et ne tire jamais un second sel.
+--  tout le fichier, puis Run. Relancé sur un projet déjà installé, il
+--  s'arrête au garde-fou du compte commun (E) sans rien modifier : tout est
+--  dans une seule transaction, et le sel n'est jamais tiré deux fois.
 --
---  NE PAS MODIFIER À LA MAIN : ce fichier est fabriqué à partir de 0001, de
---  0003 et de 0005 par scripts/supabase_schema.py (même texte, sans le
+--  NE PAS MODIFIER À LA MAIN : ce fichier est fabriqué à partir de 0001,
+--  0003, 0005, 0009, 0007 et 0008 par scripts/supabase_schema.py (même texte, sans le
 --  contrôle du projet de l'enseignant). Il change dans le même commit qu'eux
 --  (règle M2).
 --  Détails : LISEZMOI.md.
@@ -82,12 +88,27 @@ def fabriquer():
                      "\ncommit;", "0005")
     for n in range(1, 3):
         registre = re.sub(rf"^-- {n}\. ", f"-- C{n}. ", registre, count=1, flags=re.M)
+    p9, p7, p8 = lire("0009-registre-vacances.sql"), lire("0007-compte-commun.sql"), lire("0008-enseignants-communs.sql")
+    vacances = entre(p9, "create or replace view commun.registre", "\ncommit;", "0009")
+    eleves = entre(p7, "-- Garde-fou : le bon rôle, le bon projet, le socle 0003", "\ncommit;", "0007")
+    projet7 = re.compile(r"  if to_regclass\('public\.snt_responses'\) is null and .*?\n  end if;\n", re.S)
+    if len(projet7.findall(eleves)) != 1:
+        sys.exit("0007 : le contrôle du projet est introuvable dans le garde-fou : adapter scripts/supabase_schema.py.")
+    eleves = projet7.sub("", eleves).replace("-- Garde-fou : le bon rôle, le bon projet, le socle 0003", "-- Garde-fou : le bon rôle, le socle 0003", 1)
+    profs = entre(p8, "do $$", "\ncommit;", "0008")
+    for n in range(1, 10):
+        eleves = re.sub(rf"^-- {n}\. ", f"-- E{n}. ", eleves, count=1, flags=re.M)
+    for n in range(1, 6):
+        profs = re.sub(rf"^-- {n}\. ", f"-- F{n}. ", profs, count=1, flags=re.M)
     droits = droits.replace("-- 1. Schéma public", "-- A1. Schéma public").replace("-- 2. Tous les schémas", "-- A2. Tous les schémas")
     barre = "-- =============================================================================\n"
     return (ENTETE + garde.rstrip() + "\n\n"
             + barre + "-- A. Les droits par défaut (migration 0001)\n" + barre + droits.rstrip() + "\n\n"
             + barre + "-- B. Le schéma commun (migration 0003)\n" + barre + commun.rstrip() + "\n\n"
-            + barre + "-- C. Le registre : Court-circuit en plus (migration 0005)\n" + barre + registre.rstrip()
+            + barre + "-- C. Le registre : Court-circuit en plus (migration 0005)\n" + barre + registre.rstrip() + "\n\n"
+            + barre + "-- D. Le registre : le Calendrier des vacances (migration 0009)\n" + barre + vacances.rstrip() + "\n\n"
+            + barre + "-- E. Le compte commun des élèves (migration 0007, version 2.3)\n" + barre + eleves.rstrip() + "\n\n"
+            + barre + "-- F. L'espace commun des enseignant·e·s et les classes communes (migration 0008)\n" + barre + profs.rstrip()
             + "\n\ncommit;\n")
 
 
@@ -99,7 +120,7 @@ def main():
             print("supabase/schema.sql n'est pas à jour : lancer python3 scripts/supabase_schema.py et le commiter "
                   "avec les migrations (règle M2).")
             return 1
-        print("supabase/schema.sql est à jour (0001 + 0003 + 0005).")
+        print("supabase/schema.sql est à jour (0001 + 0003 + 0005 + 0009 + 0007 + 0008).")
         return 0
     with open(CIBLE, "w", encoding="utf-8") as f:
         f.write(texte)

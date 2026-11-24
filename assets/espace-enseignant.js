@@ -20,6 +20,7 @@
   var tableauxDeBord = null;         // les applications et l'adresse de leur tableau de bord
   var modeTableau = false;           // masque codes, XP et crédits (écran projeté)
   var messageClasse = null;          // le message d'une action, montré une fois après le rechargement de la classe
+  var NIVEAUX = [];                  // les niveaux des référentiels (masqués tant que COMPTE_COMMUN_NIVEAU vaut false)
 
   window.pageEnseignant = function (racine, outils) {
     O = outils; el = O.el; P = window.PagesCompte; CC = window.CompteCommun;
@@ -33,12 +34,15 @@
     P.initialiser(O);
     CC.configurer(O.reglages());
     main = P.entete(racine, { page: 'enseignant', puce: 'Prof', surTitre: ['compte commun'],
-      titre: 'Espace enseignant·e', chapo: 'Un seul code pour toutes les applications : tes classes, tes élèves et les tableaux de bord, rangés ensemble.' });
+      titre: 'Espace enseignant·e', chapo: CC.applicationsBranchees() ? 'Un seul code pour toutes les applications : tes classes, tes élèves et les tableaux de bord, rangés ensemble.'
+        : 'Un seul code pour tes classes communes et tes élèves, avec les tableaux de bord des applications rangés à côté. Bientôt, ce code ouvrira aussi les applications.' });
     main.appendChild(el('p', { class: 'vide' }, 'Chargement…'));
-    Promise.all([CC.catalogue(), chargerTableaux()]).then(function (r) {
+    Promise.all([CC.catalogue(), chargerTableaux(), CC.niveauActif() ? CC.niveaux() : Promise.resolve([])]).then(function (r) {
       cat = r[0] && r[0].elements ? r[0] : { applications: [], elements: [], hauts_faits: [], emplacements: [] };
+      if (r[0] && !r[0].ok && r[0].message && !r[0].elements) main.insertBefore(el('p', { class: 'cc-message cc-erreur', role: 'alert' }, r[0].message), main.firstChild);
       K = P.outilsCatalogue(cat);
       tableauxDeBord = r[1];
+      NIVEAUX = r[2] || [];
       if (Prof.ouvert()) {
         Prof.rouvrir().then(function (rep) { if (rep.ok) { espace = rep; router(); } else entree(); });
       } else entree();
@@ -88,7 +92,7 @@
     espace = null;
     var grille = el('div', { class: 'cc-deux' });
 
-    var code = P.champ({ etiquette: 'Ton code d\'enseignant·e', aide: '3 mots et 4 chiffres, ou le code d\'un espace d\'application (Hello GO…).',
+    var code = P.champ({ etiquette: 'Ton code d\'enseignant·e', aide: CC.applicationsBranchees() ? '3 mots et 4 chiffres, ou le code d\'un espace d\'application (Hello GO…).' : '3 mots et 4 chiffres.',
       exemple: 'MOT-MOT-MOT-1234', capitales: true, max: 80, classe: 'cc-code-saisie', type: 'password', autocomplete: 'off' });
     var voir = P.caseACocher('Montrer le code pendant la saisie');
     voir.input.addEventListener('change', function () { code.input.type = voir.input.checked ? 'text' : 'password'; });
@@ -136,14 +140,21 @@
   function montrerCodeProf(codeAffiche, texte) {
     O.vider(main);
     var titre = el('h2', { class: 'cc-carte-titre', tabindex: '-1' }, 'Ton code d\'enseignant·e');
-    var b = P.bouton('C\'est noté : ouvrir mon espace', { classe: 'cc-principal' });
+    var b = P.bouton('Je l\'ai noté', { classe: 'cc-principal' });
     var imprimer = P.bouton('Imprimer', { classe: 'cc-discret' });
-    imprimer.addEventListener('click', function () { window.print(); });
+    imprimer.addEventListener('click', function () {
+      document.body.classList.add('cc-impression-code');
+      var fin = function () { document.body.classList.remove('cc-impression-code'); window.removeEventListener('afterprint', fin); };
+      window.addEventListener('afterprint', fin);
+      try { window.print(); } catch (e) { fin(); }
+    });
     b.addEventListener('click', function () {
       Prof.ouvrir(codeAffiche).then(function (rep) { if (rep.ok) { espace = rep; router(); } else entree(rep.message); });
     });
     main.appendChild(el('section', { class: 'cc-carte cc-ton-code' }, [titre, el('p', { class: 'cc-code cc-code-grand' }, codeAffiche),
-      el('p', null, texte || 'Il n\'est montré qu\'une fois : note-le ou imprime-le.'), el('div', { class: 'cc-actions' }, [b, imprimer])]));
+      el('p', null, texte || 'Il n\'est montré qu\'une fois : note-le ou imprime-le.'),
+      el('p', { class: 'petit' }, 'Il ouvre ton espace depuis n\'importe quel appareil. Personne d\'autre ne peut le retrouver : ni la base, ni le site.'),
+      el('div', { class: 'cc-actions' }, [b, imprimer])]));
     titre.focus();
   }
 
@@ -166,7 +177,7 @@
   function barreEspace() {
     var fermer = P.bouton('Fermer mon espace', { classe: 'cc-discret' });
     fermer.addEventListener('click', function () { Prof.fermer(); try { history.replaceState(null, '', location.pathname + location.search); } catch (e) { /* rien */ } entree('Ton espace est fermé sur cet appareil.'); });
-    var tableau = P.caseACocher('Mode tableau', '(masque codes, XP et crédits : pour projeter)');
+    var tableau = P.caseACocher('Mode projection', '(masque les codes, l\'XP et les crédits)');
     tableau.input.checked = modeTableau;
     tableau.input.addEventListener('change', function () { modeTableau = tableau.input.checked; document.body.classList.toggle('cc-mode-tableau', modeTableau); });
     return el('div', { class: 'cc-barre-espace' }, [
@@ -183,8 +194,10 @@
     var titre = el('h2', { class: 'cc-titre-section', tabindex: '-1' }, 'Mes classes');
     main.appendChild(titre);
     if (espace.alarme) main.appendChild(el('p', { class: 'cc-message cc-erreur' }, 'Beaucoup d\'essais de codes ratés en une heure sur le compte commun : surveille la salle.'));
-    var classes = espace.classes || [];
-    main.appendChild(classes.length ? el('ul', { class: 'cc-classes' }, classes.map(function (c) {
+    var toutes = espace.classes || [];
+    var classes = toutes.filter(function (c) { return c.ouverte; });
+    var fermees = toutes.filter(function (c) { return !c.ouverte; });
+    function carteClasse(c) {
       return el('li', { class: 'cc-classe-carte' }, [
         el('a', { href: '#/classe/' + encodeURIComponent(c.id), class: 'cc-classe-lien-nom' }, c.nom),
         el('p', { class: 'petit' }, [
@@ -193,7 +206,12 @@
         ]),
         el('p', { class: 'petit' }, (c.applications || []).map(function (a) { return K.app(a).nom; }).join(', ') || 'Aucune application choisie')
       ]);
-    })) : el('p', { class: 'vide' }, 'Pas encore de classe. Crée-en une : tu obtiens son lien et son QR code.'));
+    }
+    main.appendChild(classes.length ? el('ul', { class: 'cc-classes' }, classes.map(carteClasse))
+      : el('p', { class: 'vide' }, toutes.length ? 'Aucune classe ouverte.' : 'Pas encore de classe. Crée-en une : tu obtiens son lien et son QR code.'));
+    if (fermees.length) main.appendChild(el('details', { class: 'cc-carte' }, [el('summary', null, 'Classes archivées (' + fermees.length + ')'),
+      el('p', { class: 'petit' }, 'Inscriptions fermées : leurs élèves gardent leur compte et tout ce qu\'ils ont gagné. « Rouvrir » dans les réglages de la classe.'),
+      el('ul', { class: 'cc-classes' }, fermees.map(carteClasse))]));
     main.appendChild(formNouvelleClasse());
     main.appendChild(blocTableaux());
     main.appendChild(blocReglages());
@@ -234,7 +252,7 @@
     var t = tableauxDeBord || { applications: [], problemes: [] };
     var sec = el('section', { class: 'cc-section-tableaux', 'aria-labelledby': 'titre-tableaux' }, [
       el('h2', { id: 'titre-tableaux', class: 'cc-titre-section' }, 'Les tableaux de bord des applications'),
-      el('p', { class: 'petit' }, 'Chaque tableau reste dans son application : cette page les range. Une classe reliée ouvre directement le sien.')
+      el('p', { class: 'petit' }, 'Chaque tableau reste dans son application, avec son propre code : cette page les range. Une classe reliée garde le lien vers le sien.')
     ]);
     if (t.problemes.length) sec.appendChild(el('div', { class: 'alerte', role: 'alert' }, [el('p', null, el('strong', null, 'Liste des tableaux de bord incomplète')),
       el('ul', null, t.problemes.map(function (p) { return el('li', null, p); }))]));
@@ -266,7 +284,7 @@
           zoneCode.appendChild(el('p', null, rep.message));
         });
       });
-      zoneCode.appendChild(el('p', null, 'L\'ancien code ne marchera plus. Les codes de tes applications restent valables.'));
+      zoneCode.appendChild(el('p', null, 'L\'ancien code ne marchera plus.' + (CC.applicationsBranchees() ? ' Les codes de tes applications restent valables.' : '')));
       zoneCode.appendChild(el('div', { class: 'cc-actions' }, [oui, non]));
     });
     var debloquer = P.bouton('Débloquer le réseau de la salle');
@@ -276,8 +294,9 @@
     var conf = P.champ({ etiquette: 'Écris SUPPRIMER pour confirmer', max: 12, capitales: true });
     var m3 = P.zoneMessage();
     return el('details', { class: 'cc-carte' }, [el('summary', null, 'Réglages de mon espace'),
-      el('h3', null, 'Ajouter un espace d\'application'),
-      P.formulaire([autre, P.bouton('Relier cet espace', { type: 'submit' }), m1], function () {
+      /* Masqué tant qu'aucune application n'est branchée : son code serait refusé (aucun connecteur) */
+      CC.applicationsBranchees() ? el('h3', null, 'Ajouter un espace d\'application') : null,
+      !CC.applicationsBranchees() ? null : P.formulaire([autre, P.bouton('Relier cet espace', { type: 'submit' }), m1], function () {
         Prof.lierCode(autre.input.value).then(function (rep) {
           P.message(m1, rep.message, rep.ok ? 'ok' : 'erreur');
           if (rep.ok) rafraichirEspace();
@@ -447,7 +466,8 @@
     var selHf = el('select', { id: P.idUnique('hf'), class: 'cc-select' }, restants.map(function (h) {
       return el('option', { value: h.application + '/' + h.id }, h.nom || h.id);
     }));
-    var fHf = restants.length ? P.formulaire([el('div', { class: 'cc-champ' }, [el('label', { for: selHf.id }, 'Haut fait'), selHf]),
+    var fHf = !hfProf.length ? el('p', { class: 'petit' }, 'Aucun haut fait d\'enseignant·e pour l\'instant : ils arrivent avec le catalogue.')
+      : restants.length ? P.formulaire([el('div', { class: 'cc-champ' }, [el('label', { for: selHf.id }, 'Haut fait'), selHf]),
       P.bouton('Accorder', { type: 'submit' }), m2], function () {
       var v = selHf.value.split('/');
       Prof.accorder(e.compte, v[0], v[1]).then(function (rep) {
@@ -463,7 +483,8 @@
     var aOffrir = (cat.elements || []).filter(function (x) { return x.acces === 'haut_fait' && x.emplacement !== 'compagnon' && dejaTr.indexOf(x.id) < 0; });
     var selTr = el('select', { id: P.idUnique('trophee'), class: 'cc-select' }, aOffrir.map(function (x) { return el('option', { value: x.id }, x.nom); }));
     var motifTr = P.champ({ etiquette: 'Motif', aide: 'De 3 à 80 caractères ; l\'élève le lit dans ses trophées.', max: 80, exemple: 'A rangé la salle informatique' });
-    var fTr = aOffrir.length ? P.formulaire([el('div', { class: 'cc-champ' }, [el('label', { for: selTr.id }, 'Trophée'), selTr]), motifTr,
+    var fTr = !CC.disponible('commun_prof_offrir') ? el('p', { class: 'petit' }, 'Offrir un trophée arrive avec le catalogue des avatars.')
+      : aOffrir.length ? P.formulaire([el('div', { class: 'cc-champ' }, [el('label', { for: selTr.id }, 'Trophée'), selTr]), motifTr,
       P.bouton('Offrir', { type: 'submit' }), m4], function () {
       Prof.offrir(e.compte, selTr.value, motifTr.input.value).then(function (rep) {
         if (!rep.ok) { P.message(m4, rep.message, 'erreur'); return; }
@@ -506,10 +527,14 @@
     actions.appendChild(el('details', null, [el('summary', null, 'Accorder un haut fait'), fHf]));
     actions.appendChild(el('details', null, [el('summary', null, 'Offrir un trophée'), fTr]));
     actions.appendChild(el('details', null, [el('summary', null, 'Pseudo, code, retrait'), fRen, el('div', { class: 'cc-actions' }, [nc, retirer]), zoneNc, zoneRet]));
+    if (CC.niveauActif() && NIVEAUX.length) actions.appendChild(el('details', null, [el('summary', null, 'Niveau'), formNiveau(NIVEAUX, e.niveau, 'Enregistrer', function (v) {
+      return Prof.niveauEleve(e.compte, v);
+    })]));
 
     return el('li', { class: 'cc-eleve' }, [
       el('div', { class: 'cc-eleve-tete' }, [av, el('div', null, [
         el('p', { class: 'cc-eleve-nom' }, e.pseudo),
+        CC.niveauActif() && libelleNiveau(e.niveau) ? el('p', { class: 'petit' }, libelleNiveau(e.niveau)) : null,
         el('p', { class: 'petit' }, 'Dernière visite : ' + P.depuis(e.vu_le)),
         el('p', { class: 'petit cc-suivi' }, ['XP gagnée : ', el('strong', null, String(e.xp)), ' · crédits : ', el('strong', null, String(e.credits))]),
         el('p', { class: 'petit cc-suivi' }, ['Code : '].concat((e.codes || []).map(function (x, i) { return el('span', { class: 'cc-code' }, (i ? ', ' : '') + x); })))
@@ -527,6 +552,24 @@
       ]),
       actions
     ]);
+  }
+
+  function libelleNiveau(id) { var n = NIVEAUX.filter(function (x) { return x.id === id; })[0]; return n ? n.libelle : null; }
+
+  /* Un choix de niveau (libellés des référentiels du site) et son bouton */
+  function formNiveau(niveaux, actuel, texte, envoyer) {
+    var id = P.idUnique('niveau');
+    var sel = el('select', { id: id, class: 'cc-select' }, niveaux.map(function (n) {
+      return el('option', { value: n.id, selected: n.id === actuel ? true : null }, n.libelle);
+    }));
+    var m = P.zoneMessage();
+    return P.formulaire([el('div', { class: 'cc-champ' }, [el('label', { for: id }, 'Niveau'), sel]), P.bouton(texte, { type: 'submit' }), m], function () {
+      envoyer(sel.value).then(function (rep) {
+        if (!rep.ok) { P.message(m, rep.message, 'erreur'); return; }
+        messageClasse = 'Niveau enregistré : ' + libelleNiveau(sel.value) + '.';
+        router();
+      });
+    });
   }
 
   function blocJournal(journal) {
@@ -557,6 +600,23 @@
           rafraichirEspace().then(router);
         });
       }),
+      el('h3', null, c.ouverte ? 'Archiver la classe' : 'Rouvrir la classe'),
+      el('p', { class: 'petit' }, c.ouverte ? 'Ferme les inscriptions et range la classe à part. Rien n\'est effacé.' : 'Rouvre les inscriptions : la classe revient avec les autres.'),
+      (function () {
+        var b = P.bouton(c.ouverte ? 'Archiver la classe' : 'Rouvrir la classe');
+        var m3 = P.zoneMessage();
+        b.addEventListener('click', function () {
+          Prof.modifierClasse(c.id, c.nom, !c.ouverte, c.applications).then(function (rep) {
+            if (!rep.ok) { P.message(m3, rep.message, 'erreur'); return; }
+            messageClasse = c.ouverte ? 'La classe est archivée : inscriptions fermées.' : 'La classe est rouverte.';
+            rafraichirEspace().then(router);
+          });
+        });
+        return el('div', null, [b, m3]);
+      })(),
+      CC.niveauActif() && NIVEAUX.length ? el('h3', null, 'Le niveau de toute la classe') : null,
+      CC.niveauActif() && NIVEAUX.length ? el('p', { class: 'petit' }, 'À la rentrée, par exemple : tous les élèves de la classe passent au niveau choisi.') : null,
+      CC.niveauActif() && NIVEAUX.length ? formNiveau(NIVEAUX, null, 'Changer pour toute la classe', function (v) { return Prof.niveauClasse(c.id, v); }) : null,
       el('h3', null, 'Supprimer la classe'),
       el('p', { class: 'petit' }, 'Les comptes des élèves restent, avec tout ce qu\'ils ont gagné.'),
       P.formulaire([conf, P.bouton('Supprimer la classe', { type: 'submit', classe: 'cc-bouton-danger' }), m2], function () {

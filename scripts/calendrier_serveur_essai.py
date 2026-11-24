@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
-"""Serveur d'essai du Calendrier des vacances, pour un poste de développement.
+"""Serveur d'essai du Calendrier des vacances et du compte commun, pour un poste de développement.
 
 Il sert les fichiers du site et imite l'appel des fonctions de Supabase
 (POST /rest/v1/rpc/<fonction>) sur une base Postgres LOCALE, où l'on a lancé le
 socle (supabase/schema.sql) et calendrier/supabase/schema.sql. Chaque appel est
 fait sous le rôle anon, comme par l'API. Jamais la base en ligne : la règle des
 bases interdit d'essayer des codes sur la base réelle.
+
+Il sert aussi les fonctions du compte commun (commun_…, SQL 0007 et 0008) : les essais
+de T132d (scripts/tests/test_compte_commun_en_ligne.py) le lancent eux-mêmes. L'en-tête
+X-Forwarded-For de la requête est passé à la base (request.headers), comme le fait l'API :
+le compteur d'essais par réseau se vérifie donc aussi en local.
 
 Usage :
   python3 scripts/calendrier_serveur_essai.py --port 18106 --psql "psql -h /chemin/socket -p 55432 -U postgres"
@@ -56,6 +61,8 @@ def litteral(v):
         return repr(v)
     if isinstance(v, list):
         return "array[" + ",".join(litteral(x) for x in v) + "]"
+    if isinstance(v, dict):
+        return litteral(json.dumps(v, ensure_ascii=False))
     return "'" + str(v).replace("'", "''") + "'"
 
 
@@ -67,7 +74,7 @@ class Gestion(http.server.SimpleHTTPRequestHandler):
         pass
 
     def do_POST(self):
-        m = re.fullmatch(r"/rest/v1/rpc/(cv_[a-z_]+)", self.path)
+        m = re.fullmatch(r"/rest/v1/rpc/((?:cv|commun)_[a-z_]+)", self.path)
         if not m:
             return self.send_error(404)
         fn = m.group(1)
@@ -77,7 +84,8 @@ class Gestion(http.server.SimpleHTTPRequestHandler):
             return self.repondre(404, {"message": "fonction inconnue"})
         try:
             args = ", ".join(f"{n} => {litteral(v)}::{types[n]}" for n, v in corps.items() if n in types)
-            sortie = psql(f"set role anon; select public.{fn}({args})::text")
+            entetes = json.dumps({"x-forwarded-for": self.headers.get("X-Forwarded-For", "127.0.0.1")})
+            sortie = psql(f"select set_config('request.headers', {litteral(entetes)}, false); set role anon; select public.{fn}({args})::text")
             self.repondre(200, json.loads(sortie.splitlines()[-1]))
         except (RuntimeError, ValueError, KeyError) as e:
             self.repondre(400, {"message": str(e)})
