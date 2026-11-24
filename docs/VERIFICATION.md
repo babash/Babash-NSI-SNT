@@ -34,7 +34,7 @@ de la version publiée.
 
 ## Les contrôles
 
-Le fichier `.github/workflows/verifier.yml` lance quatre contrôles, visibles dans l'onglet
+Le fichier `.github/workflows/verifier.yml` lance cinq contrôles, visibles dans l'onglet
 **Actions** du dépôt (coche verte : tout va bien ; croix rouge : clique pour voir le détail) :
 
 - **Données de la bibliothèque**, à chaque modification, sur toutes les branches, et à la
@@ -73,6 +73,14 @@ Le fichier `.github/workflows/verifier.yml` lance quatre contrôles, visibles da
   vue sur la branche de l'Atelier, avant d'arriver sur `main`. Une erreur fait échouer le contrôle ;
   les avertissements (exercices pas encore relus, puzzles trop longs pour essayer toutes les
   dispositions) se lisent dans le journal du job.
+- **Moteur d'avatars**, depuis le 24 novembre 2026 (T133b), à chaque modification, sur toutes les
+  branches, et à la demande : `node charte/tester-equipage.js`, sans navigateur (une demi-minute
+  environ). L'existant doit se dessiner au caractère près comme avec le moteur de référence (celui
+  de `main` avant T133b, `0b44455`, que le job rapatrie à part), sauf les deux objets retirés ; les
+  15 objets des applications, les états d'usage, la liste fermée des phrases et les clés héritées
+  refusées sont essayés, et les fichiers de données (`assets/equipage/catalogue.json` et
+  `assets/equipage/applis.json`) doivent être à jour. Une erreur fait échouer le contrôle. Un
+  changement voulu d'un dessin existant demande de changer le moteur de référence de l'essai.
 - **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
   fichiers `ressources.js` et des fiches de la bibliothèque (`donnees/ressources/*.json` : les
   documents, les auteurs et autrices, les crédits) sont testés. Un lien en échec est revérifié par un second job,

@@ -55,9 +55,15 @@ assets/                     mise en page et fonctionnement (ne pas toucher)
                             charte/bandeaux-td.py
   fonts/                    les polices des TD et du site, hébergées sur le site (aucun appel à un
                             serveur de polices), avec leurs licences (LISEZMOI.md)
-  equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance) ; equipage/ : son contrat
-                            (LISEZMOI.md) et son catalogue (catalogue.json, généré depuis le module :
-                            ne pas le modifier à la main)
+  equipage.js, equipage/    le moteur d'avatars (pixel art, sans dépendance ; version 2.1, avec
+                            l'interface des applications de jeu) ; equipage/ : son contrat
+                            (LISEZMOI.md), son catalogue (catalogue.json) et le fichier des
+                            applications (applis.json : les phrases de la liste fermée, les gestes,
+                            les objets de trophée et leurs hauts faits), générés depuis le module par
+                            charte/equipage-donnees.js : ne pas les modifier à la main
+  applis.css                le socle d'habillage des applications de jeu (le design du site et une
+                            touche propre à chacune, data-appli), chargé après signal-commun.css ;
+                            mode d'emploi : charte/applis.md
 charte/                     les pages de démonstration du Designer, sans lien depuis le site et non
                             indexées, et les outils des TD : le gabarit (gabarit-td/ : le modèle
                             commenté, un exemple rendu et LISEZMOI.md, le mode d'emploi des
@@ -70,8 +76,11 @@ charte/                     les pages de démonstration du Designer, sans lien d
                             (reattribuer-bandeaux.py), celui qui refait la police « TD Symboles »
                             (symboles-td.py), celui qui fait continuer les numéros des questions
                             d'une feuille à l'autre (numeroter-feuilles.py), celui qui essaie les
-                            outils des TD sur des témoins de fuite (tester-outils.py) et la
-                            démonstration du moteur d'avatars (avatars.html)
+                            outils des TD sur des témoins de fuite (tester-outils.py), la
+                            démonstration du moteur d'avatars (avatars.html), celle du socle des
+                            applications (applis.html, avec son mode d'emploi applis.md) et les
+                            essais du moteur (tester-equipage.js, joué à chaque envoi par
+                            « Vérifier le site », et tester-applis.py, dans Chromium)
 qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
                             nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu
                             élève et le corrigé enseignant·e de chaque quiz, liés depuis sa fiche de la
@@ -86,8 +95,10 @@ donnees/                    les fiches et les référentiels de la bibliothèque
                             scripts/annales_notions.py) ; la page bibliotheque/annales/ les lit
   compte-commun/            les apparences de l'avatar du compte commun (apparences.json, construit par
                             scripts/apparences_compte_commun.py depuis assets/equipage/catalogue.json,
-                            à relancer quand le catalogue change) et les tableaux de bord des
-                            applications (tableaux-de-bord.json)
+                            à relancer quand le catalogue change ; pas encore relancé pour la
+                            version 2.1 du moteur : la famille « applis », des trophées, est d'abord
+                            à ajouter aux familles de trophées du script) et les tableaux de bord
+                            des applications (tableaux-de-bord.json)
 .github/                    publication et vérification automatique (VERIFICATION.md), outils du Gardien (GARDIEN.md)
 scripts/                    vérification automatique, validation des données, construction de la
                             bibliothèque, script complet de la base, et les dépôts renommés
