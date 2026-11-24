@@ -45,7 +45,7 @@ def verifier(cond, quoi):
         ECHECS.append(quoi)
 
 
-def preparer(psql):
+def preparer(psql, catalogue=None):
     p0 = shlex.split(psql) + ["-X", "-q", "-v", "ON_ERROR_STOP=1"]
 
     def lancer(base, sql=None, fichier=None):
@@ -65,6 +65,8 @@ def preparer(psql):
                  "create schema court_circuit; create schema grand_oral; create schema lagon; create schema vacances; create schema gombessa;")
     for f in ("0001-droits-par-defaut", "0003-schema-commun", "0009-registre-vacances", "0007-compte-commun", "0008-enseignants-communs"):
         lancer(BASE, fichier=os.path.join(RACINE, "supabase", f + ".sql"))
+    if catalogue:
+        lancer(BASE, fichier=catalogue)
     return shlex.split(psql) + ["-d", BASE]
 
 
@@ -82,10 +84,11 @@ def demarrer_serveur(psql):
 class Monde:
     """Le site local, l'API imitée, et la liste de toutes les requêtes des pages."""
 
-    def __init__(self, navigateur, base):
+    def __init__(self, navigateur, base, catalogue=False):
         self.nav, self.base, self.requetes, self.erreurs_js = navigateur, base, [], []
         with open(os.path.join(RACINE, "reglages.js"), encoding="utf-8") as f:
-            self.reglages = re.sub(r"COMPTE_COMMUN_EN_LIGNE:\s*false", "COMPTE_COMMUN_EN_LIGNE: true", f.read())
+            r = re.sub(r"COMPTE_COMMUN_EN_LIGNE:\s*(true|false)", "COMPTE_COMMUN_EN_LIGNE: true", f.read())
+        self.reglages = re.sub(r"COMPTE_COMMUN_CATALOGUE:\s*(true|false)", "COMPTE_COMMUN_CATALOGUE: " + ("true" if catalogue else "false"), r)
 
     async def appareil(self, largeur=1440, theme="light", reseau="10.0.0.1"):
         ctx = await self.nav.new_context(viewport={"width": largeur, "height": 900}, color_scheme=theme)
@@ -159,6 +162,11 @@ async def parcours(monde, captures):
     await attendre_texte(prof, "Ce ne sont pas les bons chiffres")
     verifier(True, "« Je l'ai noté » demande les 4 chiffres du code : un essai faux est refusé")
     await prof.get_by_label("Retape les 4 chiffres de ton code").fill(code_prof[-4:])
+    await prof.route(BASE_API + "/rest/v1/rpc/commun_prof_ouvrir", lambda r: r.fulfill(status=503, body="{}"))
+    await prof.get_by_role("button", name="Je l'ai noté").click()
+    await attendre_texte(prof, "Ton code reste affiché")
+    verifier(await prof.locator(".cc-code-grand").inner_text() == code_prof, "la base ne répond pas à « Je l'ai noté » : le code reste à l'écran, avec le message")
+    await prof.unroute(BASE_API + "/rest/v1/rpc/commun_prof_ouvrir")
     await prof.get_by_role("button", name="Je l'ai noté").click()
     await attendre_texte(prof, "Mes classes")
     rep = await prof.evaluate("async () => (await CompteCommun.prof.creerClasse('Sec' + String.fromCharCode(0x202E) + 'onde', [])).message")
@@ -217,6 +225,15 @@ async def parcours(monde, captures):
     await pg.get_by_role("tab", name="Hauts faits").click()
     t = await pg.locator("#panneau-hauts-faits").inner_text()
     verifier("pourra compter" not in t and "arrivent bientôt" in t, "onglet Hauts faits : « bientôt », sans promesse")
+    # Un pseudo avec un caractère invisible : le bon message
+    autre = await monde.appareil(reseau="10.0.0.5")
+    pp = await monde.page(autre, "/eleve/")
+    await pp.get_by_label("Ton prénom ou un pseudo").wait_for()
+    await pp.evaluate("document.querySelector('#titre-creer').parentNode.querySelector('input').value = 'Lé' + String.fromCharCode(0x200B) + 'a'")
+    await pp.get_by_role("button", name="Créer mon code").click()
+    await attendre_texte(pp, "caractère spécial")
+    verifier(True, "élève : un pseudo avec un caractère invisible reçoit « caractère spécial », pas « 2 à 24 caractères »")
+    await autre.close()
     # Le bandeau « mes applications »
     n = await pg.evaluate("""async () => { const d = document.createElement('div'); document.body.appendChild(d);
       await CompteCommun.bandeau(d, { application: 'commun' }); return d.textContent; }""")
@@ -354,9 +371,21 @@ async def parcours(monde, captures):
                 await pg.screenshot(path=os.path.join(captures, f"planque-{largeur}-{theme}.png"), full_page=True)
             await ctx.close()
 
-    # ── 8. Supprimer l'espace ──
+    # ── 8. Un nouveau code d'enseignant·e (4 chiffres à retaper), puis supprimer l'espace ──
     await prof.get_by_role("link", name="← Mes classes").click()
     await prof.locator("summary", has_text="Réglages de mon espace").click()
+    await prof.get_by_role("button", name="Me donner un nouveau code").click()
+    await prof.get_by_role("button", name="Oui, changer mon code").click()
+    nouveau_prof = (await prof.locator(".cc-code-grand").inner_text(timeout=15000)).strip()
+    codes_vus.append(nouveau_prof)
+    await prof.get_by_label("Retape les 4 chiffres de ton nouveau code").fill("0000" if not nouveau_prof.endswith("0000") else "1111")
+    await prof.get_by_role("button", name="Je l'ai noté").click()
+    await attendre_texte(prof, "regarde ton nouveau code")
+    await prof.get_by_label("Retape les 4 chiffres de ton nouveau code").fill(nouveau_prof[-4:])
+    await prof.get_by_role("button", name="Je l'ai noté").click()
+    await attendre_texte(prof, "Ton nouveau code est noté")
+    verifier(await prof.locator(".cc-code-grand").count() == 0, "« Me donner un nouveau code » : 4 chiffres à retaper (un essai faux refusé), puis le code disparaît")
+    code_prof = nouveau_prof
     await prof.get_by_label("Écris SUPPRIMER pour confirmer").fill("SUPPRIMER")
     await prof.get_by_role("button", name="Supprimer mon espace").click()
     await attendre_texte(prof, "sont supprimés")
@@ -375,15 +404,101 @@ async def parcours(monde, captures):
     verifier(not monde.erreurs_js, f"aucune erreur JavaScript {monde.erreurs_js[:3]}")
 
 
-async def principal(psql, captures):
+async def combinaison(nav, psql, catalogue, reglage):
+    """Une combinaison : la migration 0010 en base ou non, le réglage COMPTE_COMMUN_CATALOGUE vrai ou faux."""
+    nom = f"0010 {'en base' if catalogue else 'absente'}, réglage {'vrai' if reglage else 'faux'}"
+    serveur, base = demarrer_serveur(preparer(psql, catalogue))
+    monde = Monde(nav, base, catalogue=reglage)
+    ctx = await monde.appareil(reseau="10.1.0.1")
+    prof = await monde.page(ctx, "/enseignant/")
+    await prof.get_by_label("Nom affiché aux élèves").wait_for()
+    code = await prof.evaluate("""async () => { const r = await CompteCommun.prof.creerEspace('M. Combi'); await CompteCommun.prof.ouvrir(r.code_affiche);
+      const c = await CompteCommun.prof.creerClasse('Essai', ['td', 'quizz_nsi', 'vacances']); return [r.code_affiche, c.id, c.code]; }""")
+    el = await monde.page(ctx, "/eleve/?classe=" + code[2])
+    await el.get_by_label("Ton prénom ou un pseudo").fill("Lou")
+    await el.get_by_role("button", name="Créer mon code").click()
+    c = (await el.locator(".cc-code-grand").inner_text(timeout=15000)).strip()
+    await el.get_by_label("Retape les 3 chiffres de ton code").fill(c[-3:])
+    await el.get_by_role("button", name="C'est noté").click()
+    await attendre_texte(el, "Salut, Lou")
+    await el.get_by_role("tab", name="Boutique").click()
+    t = await el.locator("#panneau-boutique").inner_text()
+    if catalogue:
+        verifier("seul·e ton enseignant·e peut t'en donner" in t and "Tu les gagnes en travaillant" not in t, f"{nom} : la boutique s'ouvre et dit d'où viennent les crédits aujourd'hui")
+    else:
+        verifier("ouvre bientôt" in t, f"{nom} : la boutique dit qu'elle ouvre bientôt")
+    await el.get_by_role("tab", name="Hauts faits").click()
+    t = await el.locator("#panneau-hauts-faits").inner_text()
+    if catalogue:
+        verifier("Pour l'avoir" not in t and "Bientôt, quand" in t and "Accordé par ton enseignant·e" in t,
+                 f"{nom} : hauts faits des applications non branchées « bientôt », ceux de l'enseignant·e accordables")
+    else:
+        verifier("arrivent bientôt" in t, f"{nom} : les hauts faits arrivent bientôt")
+    await el.get_by_role("tab", name="Trophées").click()
+    t = await el.locator("#panneau-trophees").inner_text()
+    lignes_gagne = [l for l in t.splitlines() if l.startswith("Se gagne avec")]
+    verifier(all("accordé par ton enseignant·e" in l for l in lignes_gagne) and (not catalogue or "Bientôt, avec un haut fait de" in t),
+             f"{nom} : trophées, aucun « Se gagne avec » d'une application non branchée ({len(lignes_gagne)} par l'enseignant·e)")
+    if catalogue:
+        verifier(("Ton enseignant·e peut te l'offrir." in t) == reglage, f"{nom} : « Ton enseignant·e peut te l'offrir » seulement avec le réglage")
+    await el.get_by_role("tab", name="Mon avatar").click()
+    options = await el.locator("#panneau-loge option").evaluate_all("o => o.map(x => x.value)")
+    t = await el.locator("#panneau-loge").inner_text()
+    if catalogue:
+        verifier("kishali_tete" in options and "bandana" in options and "Bientôt, gratuits" not in t, f"{nom} : la loge propose le kishali et le bandana, portables")
+        ok = await el.evaluate("""async () => { const r = await CompteCommun.reprendre(); const a = JSON.parse(JSON.stringify(r.fiche.avatar));
+          a.objets.tete = 'kishali_tete'; a.objets.epaule = 'kishali'; return (await CompteCommun.porter(a)).ok; }""")
+        verifier(ok is True, f"{nom} : commun_porter accepte le kishali (tête et épaules)")
+    else:
+        verifier("kishali_tete" not in options and "Bientôt, gratuits" in t, f"{nom} : la loge annonce le kishali et le bandana pour bientôt")
+    # L'enseignant·e : offrir et archiver seulement si les deux sont là
+    await prof.goto(base + "/enseignant/#/classe/" + code[1])
+    await prof.get_by_label("Ton code d'enseignant·e").fill(code[0])
+    await prof.get_by_role("button", name="Ouvrir mon espace").click()
+    await prof.locator(".cc-eleve").first.wait_for(timeout=15000)
+    t = await prof.locator("main").text_content()  # les volets fermés compris
+    les_deux = bool(catalogue and reglage)
+    verifier((await prof.locator("select[id^=trophee]").count() > 0) == les_deux and ("arrive avec le catalogue" in t) != les_deux,
+             f"{nom} : « Offrir un trophée » {'proposé' if les_deux else 'annoncé pour plus tard, sans liste'}")
+    verifier(("Archiver la classe" in t) == les_deux, f"{nom} : « Archiver la classe » {'proposé' if les_deux else 'absent'}")
+    if les_deux:
+        await prof.locator("summary", has_text="Offrir un trophée").click()
+        opts = await prof.locator("select[id^=trophee] option").evaluate_all("o => o.map(x => x.value)")
+        verifier(opts and all(o.startswith(("tete:", "visage:", "cou:", "dos:", "main:", "epaule:", "pieds:", "autour:")) for o in opts) and "main:bouteille_percee" in opts,
+                 f"{nom} : seulement les trophées de la classe ({len(opts)})")
+        await prof.get_by_label("Motif", exact=True).last.fill("A réparé <b>la</b> souris")
+        await prof.get_by_role("button", name="Offrir").click()
+        await attendre_texte(prof, "trophée offert")
+        await prof.locator("summary", has_text="Réglages de la classe").click()
+        await prof.get_by_role("button", name="Archiver la classe").click()
+        await attendre_texte(prof, "La classe est archivée")
+        await prof.get_by_role("link", name="← Mes classes").click()
+        await attendre_texte(prof, "Classes archivées (1)")
+        verifier(True, f"{nom} : la classe archivée est rangée à part (commun_prof_archiver_classe)")
+        await el.reload()
+        await attendre_texte(el, "Salut, Lou")
+        await el.get_by_role("tab", name="Trophées").click()
+        verifier("A réparé <b>la</b> souris" in await el.locator("#panneau-trophees").inner_text(), f"{nom} : l'élève lit le motif tel quel")
+    verifier(not monde.erreurs_js, f"{nom} : aucune erreur JavaScript {monde.erreurs_js[:2]}")
+    await ctx.close()
+    serveur.shutdown()
+
+
+async def principal(psql, captures, catalogue=None):
     from playwright.async_api import async_playwright
     base_psql = preparer(psql)
     serveur, base = demarrer_serveur(base_psql)
     async with async_playwright() as p:
         nav = await p.chromium.launch()
         await parcours(Monde(nav, base), captures)
+        serveur.shutdown()
+        if catalogue:
+            for en_base in (False, True):
+                for reglage in (False, True):
+                    await combinaison(nav, psql, catalogue if en_base else None, reglage)
+        else:
+            print("(les quatre combinaisons de la migration 0010 sont sautées : --catalogue manque)")
         await nav.close()
-    serveur.shutdown()
     print(f"\n{len(ECHECS)} échec(s).")
     return 1 if ECHECS else 0
 
@@ -392,12 +507,13 @@ def main():
     a = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     a.add_argument("--psql", required=True, help="la commande psql d'un Postgres LOCAL, entre guillemets (sans -d)")
     a.add_argument("--captures", default=None)
+    a.add_argument("--catalogue", default=None, help="le fichier de la migration 0010 (catalogue), pour essayer les quatre combinaisons")
     args = a.parse_args()
     if "supabase.co" in args.psql or "pooler" in args.psql:
         sys.exit("Ce test ne se lance jamais sur la base réelle.")
     if args.captures:
         os.makedirs(args.captures, exist_ok=True)
-    sys.exit(asyncio.run(principal(args.psql, args.captures)))
+    sys.exit(asyncio.run(principal(args.psql, args.captures, args.catalogue)))
 
 
 if __name__ == "__main__":

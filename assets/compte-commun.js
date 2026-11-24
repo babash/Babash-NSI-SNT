@@ -127,9 +127,12 @@
   };
 
   /* Le réglage qui ouvre chaque fonction à venir, une fois sa migration appliquée */
+  var catalogueEnBase = null;        // null : pas encore lu ; vrai si commun_catalogue rend des objets à prix (0010)
   function ouverte(fonction) {
     if (/niveau/.test(fonction)) return !!reglage.niveau;
-    if (fonction === 'commun_prof_offrir' || fonction === 'commun_prof_archiver_classe') return !!reglage.catalogue;
+    /* Les fonctions de 0010 : le réglage COMPTE_COMMUN_CATALOGUE, et le catalogue vraiment en base (des objets
+       à prix) ; ainsi, réglage à true trop tôt ou base revenue en arrière, la page ne propose rien d'impossible */
+    if (fonction === 'commun_prof_offrir' || fonction === 'commun_prof_archiver_classe') return !!reglage.catalogue && catalogueEnBase !== false;
     return !FONCTIONS_A_VENIR[fonction];
   }
 
@@ -1399,6 +1402,8 @@
     probleme: function () { return reglage.probleme; },
     normaliserCode: normaliserCode,
     nettoyerPseudo: nettoyerPseudo,
+    caractereSpecial: caractereSpecial,
+    MESSAGE_CARACTERE: REFUS_CARACTERE.message,
     nettoyerTexte: nettoyerTexte,
 
     /* L'élève */
@@ -1408,6 +1413,7 @@
     catalogue: function () {
       return Promise.all([appeler('commun_catalogue', {}), chargerApparences()]).then(function (r) {
         var rep = r[0];
+        if (rep && Array.isArray(rep.elements)) catalogueEnBase = rep.elements.some(function (e) { return e.acces === 'credits'; });
         if (rep && typeof rep === 'object') rep.apparences = r[1];
         if (!r[1] && rep) { rep.ok = false; rep.message = 'Les apparences de l\'avatar (donnees/compte-commun/apparences.json) n\'ont pas pu être lues.'; }
         return rep;
