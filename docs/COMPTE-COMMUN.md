@@ -11,10 +11,10 @@ Un·e élève a **un seul code** (deux mots et trois chiffres, comme `PIRATE-ETR
 | `eleve/` (« Ma planque ») | l'élève | créer son code (seul·e ou par le lien de classe `eleve/?classe=ABCD`), entrer avec son code, « Mon avatar », ses hauts faits, sa classe, la carte de son code à imprimer, « Ce n'est pas moi », « Effacer mes données » |
 | `enseignant/` | l'enseignant·e | créer son espace (le code est montré une seule fois), ses classes (lien et QR code faits dans la page), ses élèves (avatar, hauts faits, nouveau code), le mode projection, les tableaux de bord des applications, supprimer son espace |
 
-Le réglage `COMPTE_COMMUN_EN_LIGNE` de `reglages.js` choisit le mode : `false`, une démonstration en mémoire (rien n'est envoyé) ; `true`, la base. Trois réglages taisent ce qui n'existe pas encore, et s'allument chacun après sa migration :
-- `COMPTE_COMMUN_NIVEAU` : le choix du niveau (migration du niveau) ;
-- `COMPTE_COMMUN_APPLICATIONS` : les codes et les espaces des applications, les crédits qu'elles donnent (première application branchée) ;
-- `COMPTE_COMMUN_CATALOGUE` : « Offrir un trophée » et « Archiver la classe » (migration 0010), à mettre à `true` une fois 0010 en base.
+Le réglage `COMPTE_COMMUN_EN_LIGNE` de `reglages.js` choisit le mode : `false`, une démonstration en mémoire (rien n'est envoyé) ; `true`, la base. Trois réglages taisent ce qui n'existe pas encore :
+- `COMPTE_COMMUN_NIVEAU` : le choix du niveau, à mettre à `true` après la migration du niveau ;
+- `COMPTE_COMMUN_APPLICATIONS` : les codes et les espaces des applications, les crédits qu'elles donnent, à mettre à `true` quand une première application est branchée ;
+- `COMPTE_COMMUN_CATALOGUE` : « Offrir un trophée » et « Archiver la classe » (migration 0010), à `true` depuis le 24/11/2026 : la page ne les propose que si le catalogue lu en base a des objets à prix, donc une fois 0010 en base ; si la lecture du catalogue échoue, elle ne les propose pas et le dit en haut de l'espace.
 
 La boutique, les hauts faits, les trophées et les pièces libres de la loge (kishali, bandana) suivent, eux, le catalogue lu en base, sans réglage : avant 0010, ils sont annoncés pour bientôt, sans être proposés (`commun_porter` refuserait les pièces) ; après, la boutique dit que, pour l'instant, seul·e l'enseignant·e donne des crédits (l'XP attribuée et les hauts faits accordés), et les hauts faits des applications qui ne lisent pas encore le compte restent marqués « Bientôt ».
 

@@ -115,8 +115,8 @@ sur un Postgres **local** reconstruit avec `supabase/`, jamais sur la base réel
   quatre combinaisons (0010 en base ou non, réglage `COMPTE_COMMUN_CATALOGUE` vrai ou faux) :
   offrir, archiver puis désarchiver seulement quand les deux sont là, la boutique, les hauts faits,
   les trophées et la loge qui disent vrai, aucun appel à une fonction absente de la base ; puis le
-  catalogue illisible au chargement de l'espace. Il doit passer en entier avant de mettre le
-  réglage à `true` ;
+  catalogue illisible au chargement de l'espace. Il passe en entier depuis T132h (réglage à
+  `true`) et se rejoue à chaque changement du compte commun ou de 0010 ;
 - `empreinte_commun_complement.sql` complète `scripts/supabase_empreinte_commun.sql` (types,
   séquences, déclencheurs, règles, droits de colonnes, propriétaires et volatilité des fonctions,
   publications), à lancer en lecture sur la base réelle et sur la base locale.
