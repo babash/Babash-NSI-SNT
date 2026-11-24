@@ -68,7 +68,22 @@
   var FN_PY = /^(print|range|len|input|int|str|float|bool|round|list|dict|type|abs|min|max|sum)$/;
   var MC_SQL = /^(SELECT|FROM|WHERE|AND|OR|NOT|ORDER|BY|ASC|DESC|JOIN|ON|INNER|LEFT|AS|GROUP|HAVING|COUNT|SUM|AVG|MIN|MAX|DISTINCT|INSERT|INTO|VALUES|UPDATE|SET|DELETE|CREATE|TABLE|PRIMARY|KEY|FOREIGN|REFERENCES|NULL|IS|LIKE|IN|LIMIT|INTEGER|TEXT|REAL)$/;
   CV.langage = "python";
+  // sans langage de programmation (« aucun ») : le HTML seul est coloré (balises en gras, valeurs en italique),
+  // tout autre texte reste tel quel
+  function colorerHtml(texte) {
+    if (texte.indexOf("<") < 0) return CV.esc(texte);
+    var re = /(<!--.*?-->)|(<\/?)([A-Za-z][A-Za-z0-9]*)|("[^"]*")/g, out = "", i = 0, m;
+    while ((m = re.exec(texte))) {
+      out += CV.esc(texte.slice(i, m.index));
+      if (m[1]) out += '<span class="com">' + CV.esc(m[1]) + "</span>";
+      else if (m[3]) out += CV.esc(m[2]) + '<span class="kw">' + m[3] + "</span>";
+      else out += '<span class="str">' + CV.esc(m[4]) + "</span>";
+      i = re.lastIndex;
+    }
+    return out + CV.esc(texte.slice(i));
+  }
   CV.colorer = function (texte, langage) {
+    if ((langage || CV.langage) === "aucun") return colorerHtml(texte);
     var sql = (langage || CV.langage) === "sql";
     var re = /("[^"]*"|'[^']*')|(#.*$|--.*$)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)/g, out = "", i = 0, m;
     while ((m = re.exec(texte))) {

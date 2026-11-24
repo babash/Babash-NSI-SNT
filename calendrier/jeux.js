@@ -21,12 +21,23 @@
   // les bits d'une case « bits » (chaîne de 0 et de 1) en nombre
   CV.valeurBits = function (b) { var v = 0; for (var i = 0; i < b.length; i++) v = v * 2 + (b[i] === "1" ? 1 : 0); return v; };
 
+  // les libellés : un thème sans programme (langage « aucun » : HTML, réseau, histoire du Web…) n'en parle pas
+  CV.libelle = function (cle, langage) {
+    var aucun = (langage || CV.langage) === "aucun";
+    return ({ question: aucun ? "Que montre le navigateur ?" : "Qu'affiche ce programme ?",
+      corrige: aucun ? "Version corrigée :" : "Programme corrigé :",
+      resultat: aucun ? "Résultat :" : "Il affiche :",
+      affiche: aucun ? "Résultat :" : "Affiche :",
+      mien: aucun ? "Mon ordre" : "Mon programme",
+      gauche: aucun ? "À gauche" : "Le programme",
+      droite: aucun ? "À droite" : "Ce qu'il affiche" })[cle];
+  };
   // ce que montre le programme fautif d'une « erreur » : le message réel, sa sortie, ou une boucle sans fin
   CV.console = function (q, langage) {
-    var sql = langage === "sql";
-    if (q.message != null) return '<div class="console" role="note"><span class="console-titre">' + (sql ? "SQLite répond" : "Python affiche") + ' :</span><pre class="console-erreur">' + CV.esc(q.message) + "</pre></div>";
+    var sql = langage === "sql", aucun = langage === "aucun";
+    if (q.message != null) return '<div class="console" role="note"><span class="console-titre">' + (q.etiquette || (sql ? "SQLite répond" : aucun ? "Message" : "Python affiche")) + ' :</span><pre class="console-erreur">' + CV.esc(q.message) + "</pre></div>";
     if (q.boucle_infinie) return '<div class="console" role="note"><span class="console-titre">Le programme ne s\'arrête jamais :</span><pre>(boucle infinie)</pre></div>';
-    if (q.affiche_fautif != null) return '<div class="console" role="note"><span class="console-titre">' + (sql ? "La requête affiche" : "Le programme affiche") + ' :</span><pre>' + (q.affiche_fautif === "" ? (sql ? "(aucune ligne)" : "(rien)") : CV.esc(q.affiche_fautif)) + "</pre></div>";
+    if (q.affiche_fautif != null) return '<div class="console" role="note"><span class="console-titre">' + (q.etiquette || (sql ? "La requête affiche" : aucun ? "Ce qui se passe" : "Le programme affiche")) + ' :</span><pre>' + (q.affiche_fautif === "" ? (sql ? "(aucune ligne)" : "(rien)") : CV.esc(q.affiche_fautif)) + "</pre></div>";
     return "";
   };
   // un arbre binaire { v, g, d }, dessiné en SVG (lisible à 320 px : 31 nœuds au plus)
@@ -120,7 +131,7 @@
           '<div class="choix deux"><button class="option vf" data-j="vf" data-v="1"' + (f ? " disabled" : "") + '>Vrai</button><button class="option vf" data-j="vf" data-v="0"' + (f ? " disabled" : "") + ">Faux</button></div>";
       }
       if (type === "sortie") {
-        var h = '<p class="consigne">Qu\'affiche ce programme ?</p>' + CV.blocCode(q.code.split("\n"));
+        var h = '<p class="consigne">' + esc(q.consigne || CV.libelle("question")) + "</p>" + CV.blocCode(q.code.split("\n"));
         if (!q.options) return h + '<label for="rep">Ta réponse</label><input type="text" id="rep" autocomplete="off" autocapitalize="off" spellcheck="false" value="' + esc(s.rep || "") + '"' + (f ? " disabled" : "") + ">";
         return h + '<div class="choix">' + s.opts.map(function (k) {
           var cls = f && k === q.bonne ? " ok" : s.desactives[k] ? " ko" : "";
@@ -130,35 +141,35 @@
       if (type === "associer") {
         var gauche = q.paires.map(function (p, i) {
           var ok = s.trouves[i];
-          return '<button class="option' + (ok ? " ok" : s.g === i ? " sel" : "") + '" data-j="ag" data-i="' + i + '"' + (ok ? " disabled" : "") + "><pre>" + (q.executer ? CV.blocLignes(p[0]) : esc(p[0])) + "</pre></button>";
+          return '<button class="option' + (ok ? " ok" : s.g === i ? " sel" : "") + '" data-j="ag" data-i="' + i + '"' + (ok ? " disabled" : "") + "><pre>" + (q.executer || q.code_gauche ? CV.blocLignes(p[0]) : esc(p[0])) + "</pre></button>";
         }).join("");
         var droite = s.droite.map(function (i) {
           var ok = s.trouves[i];
           return '<button class="option' + (ok ? " ok" : "") + '" data-j="ad" data-i="' + i + '"' + (ok ? " disabled" : "") + "><pre>" + esc(q.paires[i][1]) + "</pre></button>";
         }).join("");
         return '<p class="consigne">' + esc(q.consigne) + ' Touche un élément à gauche, puis celui qui va avec.</p><div class="colonnes"><div><h3>' +
-          (q.executer ? "Le programme" : "À gauche") + '</h3><div class="choix">' + gauche + "</div></div><div><h3>" + (q.executer ? "Ce qu'il affiche" : "À droite") +
+          (q.executer ? CV.libelle("gauche") : "À gauche") + '</h3><div class="choix">' + gauche + "</div></div><div><h3>" + (q.executer ? CV.libelle("droite") : "À droite") +
           '</h3><div class="choix">' + droite + "</div></div></div>";
       }
       if (type === "erreur") {
         var classes = {}; if (s.phase === 2 || f) classes[q.ligne] = f ? "ok" : "choisie";
         if (s.fausse != null) classes[s.fausse] = "ko";
         var lignes = q.lignes.slice(); if (f) lignes[q.ligne] = q.corrections[q.bonne];
-        var hh = '<p class="consigne">But : ' + esc(q.but) + "</p><p>" + (s.phase === 1 ? "Touche la ligne qui contient l'erreur." : f ? "Programme corrigé :" : "Choisis la bonne correction de la ligne " + (q.ligne + 1) + ".") + "</p>" +
+        var hh = '<p class="consigne">But : ' + esc(q.but) + "</p><p>" + (s.phase === 1 ? "Touche la ligne qui contient l'erreur." : f ? CV.libelle("corrige") : "Choisis la bonne correction de la ligne " + (q.ligne + 1) + ".") + "</p>" +
           CV.blocCode(lignes, { touchable: s.phase === 1 && !f, classes: classes }) + (f ? "" : CV.console(q, CV.langage));
         if (s.phase === 2 && !f) hh += '<div class="choix">' + s.corr.map(function (k) {
           return '<button class="option' + (s.desactives[k] ? " ko" : "") + '" data-j="corr" data-k="' + k + '"' + (s.desactives[k] ? " disabled" : "") + "><pre>" + CV.ligneCode(q.corrections[k]) + "</pre></button>";
         }).join("") + "</div>";
-        if (f) hh += '<p class="doux">Il affiche :</p>' + affichage(q.affiche);
+        if (f) hh += '<p class="doux">' + CV.libelle("resultat") + '</p>' + affichage(q.affiche);
         return hh;
       }
       if (type === "ordre") {
         var place = s.ordre.map(function (k, i) { return '<button class="piece" data-j="retirer" data-i="' + i + '"' + (f ? " disabled" : "") + ">" + CV.ligneCode(q.lignes[k]) + "</button>"; }).join("");
         var res = s.reserve.map(function (k, i) { return '<button class="piece" data-j="placer" data-i="' + i + '">' + CV.ligneCode(q.lignes[k]) + "</button>"; }).join("");
         return '<p class="consigne">But : ' + esc(q.but) + '</p><p class="doux">Touche les lignes dans l\'ordre. Touche une ligne placée pour la retirer.</p>' +
-          '<h3 class="sous">Mon programme</h3><div class="zone-ordre">' + (place || '<span class="doux">Vide pour l\'instant.</span>') + "</div>" +
+          '<h3 class="sous">' + CV.libelle("mien") + '</h3><div class="zone-ordre">' + (place || '<span class="doux">Vide pour l\'instant.</span>') + "</div>" +
           (res ? '<h3 class="sous">Les lignes</h3><div class="choix">' + res + "</div>" : "") +
-          (f ? '<p class="doux">Il affiche :</p>' + affichage(q.affiche) : "");
+          (f ? '<p class="doux">' + CV.libelle("resultat") + '</p>' + affichage(q.affiche) : "");
       }
       if (type === "completer") {
         var lc = q.lignes.map(function (l, i) {
@@ -172,7 +183,7 @@
         }).join("");
         var tr = q.trous[s.sel];
         return '<p class="consigne">But : ' + esc(q.but) + '</p><div class="code">' + lc + "</div>" +
-          (f ? '<p class="doux">Il affiche :</p>' + affichage(q.affiche) :
+          (f ? '<p class="doux">' + CV.libelle("resultat") + '</p>' + affichage(q.affiche) :
             '<p class="doux">Pièces pour le trou ' + (s.sel + 1) + ' :</p><div class="jetons">' + (s.jet ? s.jet[s.sel] : tr.options.map(function (_, j) { return j; })).map(function (j) {
               return '<button class="jeton" data-j="jeton" data-k="' + j + '">' + esc(tr.options[j]) + "</button>";
             }).join("") + "</div>");
@@ -468,13 +479,13 @@
   function corrigeItem(t, q) {
     var esc2 = CV.esc;
     if (t === "vraifaux") return (q.code ? CV.blocCode(q.code.split("\n")) : "") + "<p>" + esc2(q.texte) + ' <span class="' + (q.reponse ? 'vrai">Vrai' : 'faux">Faux') + '</span></p><p class="doux">' + esc2(q.explication) + "</p>";
-    if (t === "sortie") return CV.blocCode(q.code.split("\n")) + '<p class="doux">Affiche :</p><div class="affiche">' + esc2(q.options ? q.options[q.bonne].split(" / ").join("\n") : q.reponse) + '</div><p class="doux">' + esc2(q.options ? q.retours[q.bonne] : q.explication) + "</p>";
-    if (t === "associer") return "<p>" + esc2(q.consigne) + '</p><table class="paires">' + q.paires.map(function (p) { return "<tr><td><code class=\"mono\">" + (q.executer ? CV.blocLignes(p[0]) : esc2(p[0])) + "</code></td><td>" + esc2(p[1]) + "</td></tr>"; }).join("") + '</table><p class="doux">' + esc2(q.explication) + "</p>";
+    if (t === "sortie") return CV.blocCode(q.code.split("\n")) + '<p class="doux">' + CV.libelle("affiche") + '</p><div class="affiche">' + esc2(q.options ? q.options[q.bonne].split(" / ").join("\n") : q.reponse) + '</div><p class="doux">' + esc2(q.options ? q.retours[q.bonne] : q.explication) + "</p>";
+    if (t === "associer") return "<p>" + esc2(q.consigne) + '</p><table class="paires">' + q.paires.map(function (p) { return "<tr><td><code class=\"mono\">" + (q.executer || q.code_gauche ? CV.blocLignes(p[0]) : esc2(p[0])) + "</code></td><td>" + esc2(p[1]) + "</td></tr>"; }).join("") + '</table><p class="doux">' + esc2(q.explication) + "</p>";
     if (t === "erreur") {
       var l2 = q.lignes.slice(); l2[q.ligne] = q.corrections[q.bonne]; var c1 = {}, c2 = {}; c1[q.ligne] = "ko"; c2[q.ligne] = "ok";
       return "<p><b>But :</b> " + esc2(q.but) + '</p><p class="doux">Avec l\'erreur :</p>' + CV.blocCode(q.lignes, { classes: c1 }) + CV.console(q, CV.langage) + '<p class="doux">Corrigé :</p>' + CV.blocCode(l2, { classes: c2 }) + '<p class="doux">' + esc2(q.explication) + "</p>";
     }
-    if (t === "ordre") return "<p><b>But :</b> " + esc2(q.but) + "</p>" + CV.blocCode(q.lignes) + '<p class="doux">Affiche :</p><div class="affiche">' + esc2(q.affiche) + "</div>";
+    if (t === "ordre") return "<p><b>But :</b> " + esc2(q.but) + "</p>" + CV.blocCode(q.lignes) + '<p class="doux">' + CV.libelle("affiche") + '</p><div class="affiche">' + esc2(q.affiche) + "</div>";
     if (t === "trace") {
       var noms = (q.depart ? ["Avant la boucle"] : []).concat(q.tours.slice(q.depart ? 1 : 0).map(function (_, k) { return "Après le tour " + (k + 1); }));
       return (q.code ? CV.blocCode(q.code.split("\n")) : "") + '<div class="defile"><table class="trace"><thead><tr><th scope="col">Moment</th>' +

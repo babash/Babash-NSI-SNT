@@ -2,7 +2,7 @@
 
 Cette page est pour l'Atelier qui écrit la banque d'un **thème**. Un thème est un chapitre (« Listes et dictionnaires ») ou une notion plus fine (« Les boucles », « Le binaire »). L'enseignant·e coche librement plusieurs thèmes pour un calendrier, quel que soit le niveau de sa classe (une terminale peut recevoir des thèmes de première), et les cases alternent entre eux, tour à tour. Une case du calendrier est un exercice : un mini-jeu de **10 minutes au plus**, en **3 niveaux** (Facile, Moyen, Costaud). L'élève choisit son niveau, et un niveau suffit pour valider la case.
 
-**État au 24/11/2026 :** 8 banques, **135 exercices, 1 178 questions** (le contrôle complet : 0 erreur) ; trois Ateliers complètent les thèmes `py-*` et `binaire` (T135). **Le moteur joue 12 types de mini-jeux** depuis le 24/11 (T135). Les arbres s'écrivent de deux façons, que les élèves doivent connaître toutes les deux (décision de l'enseignant du 20/11) : la classe courte `Noeud(v, g, d)` et la classe du cours `ArbreBinaire(valeur, gauche, droit)` ; un thème qui parle d'arbres les fait alterner.
+**État au 24/11/2026 :** 9 banques de 30 exercices (dont `snt-internet-web`, la première sans programme : `langage` « aucun »), **270 exercices** (le contrôle complet : 0 erreur). **Le moteur joue 12 types de mini-jeux** depuis le 24/11 (T135). Les arbres s'écrivent de deux façons, que les élèves doivent connaître toutes les deux (décision de l'enseignant du 20/11) : la classe courte `Noeud(v, g, d)` et la classe du cours `ArbreBinaire(valeur, gauche, droit)` ; un thème qui parle d'arbres les fait alterner.
 
 ## Les fichiers
 
@@ -48,11 +48,12 @@ L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place 
 
 ## Les règles d'un thème
 
-1. **De 8 à 30 exercices** (le compte de `catalogue.json` se remet à jour avec `python3 scripts/calendrier_exercices.py --catalogue`), numérotés `<thème>-001`, `-002`… dans l'ordre : une notion en a de 8 à 12, un chapitre de 15 à 30. Les thèmes alternent : un calendrier de 30 jours avec 3 thèmes demande 10 exercices à chacun. C'est l'ordre des cases : l'exercice 1 sert à la première case du thème. Si un calendrier demande plus d'exercices que la banque n'en a, la page enseignant·e le signale en rouge avant d'enregistrer et demande confirmation ; les exercices reviennent alors dans l'ordre, en révision (l'élève voit « Révision »), et aucune case ne reste vide.
+1. **De 8 à 30 exercices** (le compte de `catalogue.json` se remet à jour avec `python3 scripts/calendrier_exercices.py --catalogue`), numérotés `<thème>-001`, `-002`… dans l'ordre : **30 de préférence**, notion comme chapitre, pour qu'un thème coché seul remplisse les 30 jours des vacances de Noël sans révision ; une notion peut commencer à 8, un chapitre à 15, et l'on complète ensuite jusqu'à 30. Les thèmes alternent : un calendrier de 30 jours avec 3 thèmes demande 10 exercices à chacun. C'est l'ordre des cases : l'exercice 1 sert à la première case du thème. Si un calendrier demande plus d'exercices que la banque n'en a, la page enseignant·e le signale en rouge avant d'enregistrer et demande confirmation ; les exercices reviennent alors dans l'ordre, en révision (l'élève voit « Révision »), et aucune case ne reste vide.
    - Un exercice publié ne change jamais de rang ni d'identifiant.
    - On peut corriger un exercice, et on ajoute toujours à la fin.
 2. **Les types tournent.** Le moteur sait jouer **12 types** (voir plus bas). Deux exercices de suite n'ont jamais le même type, et six exercices de suite en couvrent au moins cinq. Ordre conseillé, à adapter au thème : vraifaux, sortie, associer, erreur, completer, ordre, puis un des nouveaux (trace pour une boucle, combien pour un nombre de tours, paniers pour classer, intrus pour une notion d'ensemble, memo pour du vocabulaire, bits pour le binaire).
 3. **La difficulté monte doucement** : le cœur du thème d'abord, puis les combinaisons et les révisions. L'exercice 1 se réussit au niveau Facile en 2 minutes.
+   - **Pas de pièges, même au niveau Costaud** (règle de l'enseignant du 24/11) : rien qui repose sur une bizarrerie du langage ou un détail hors programme, non pertinent pour le bac ; le but est de mettre les élèves en confiance. Costaud = un programme un peu plus long ou une réponse à taper.
 4. **Les trois niveaux d'un exercice portent sur la même notion :**
 
    | Niveau | Durée | Questions | Forme |
