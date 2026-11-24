@@ -28,7 +28,7 @@ reglages({
   // true : elles appellent les fonctions commun_… de la base (SQL 0007 v2.3 et 0008, en base depuis le 24/11/2026).
   // La clé est la clé publique (« publishable ») du projet : publique par conception, comme celle du
   // calendrier (calendrier/config.js). Jamais une clé « secret » ou « service_role » : le module la refuse.
-  COMPTE_COMMUN_EN_LIGNE: false,
+  COMPTE_COMMUN_EN_LIGNE: true,
   compte_commun: {
     url: "https://cukahpyqkljiddmimpyi.supabase.co",
     cle_publique: "sb_publishable_dYwCrwaqiDOm8knczJu3Kw_5InHwyPB",
