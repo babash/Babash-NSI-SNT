@@ -16,6 +16,11 @@ HTML déposées dans */fichiers/), relève :
   - le débordement horizontal : défilement horizontal, ou éléments coupés au bord
     (body a overflow-x: hidden, donc un débordement ne se voit pas au défilement) ;
   - une capture pleine page (animations figées, mouvements réduits).
+Les tirages au hasard des pages (le paysage du bandeau et la place du margouillat, tirés à chaque
+affichage depuis T126b, assets/site.js) sont rejoués à l'identique : Math.random a une graine fixe
+dans chaque contexte. Deux rendus d'une même page font donc les mêmes tirages, et comparer.py ne
+voit plus que les vraies différences (Gardien 34, 24/11 : 37 pages « différentes » par le seul
+bandeau sur une branche qui ne les touchait pas).
 Écrit DOSSIER_SORTIE/resultats.json et les captures ; code de sortie 1 si un problème.
 """
 import argparse
@@ -67,10 +72,22 @@ MESURES = r"""() => {
   };
 }"""
 
+# Math.random à graine fixe (mulberry32), posé avant tout script de la page : mêmes tirages à chaque rendu
+GRAINE = r"""(() => {
+  let s = 0x2545F491;
+  Math.random = function () {
+    s = (s + 0x6D2B79F5) | 0;
+    let t = Math.imul(s ^ (s >>> 15), 1 | s);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+})();"""
+
 
 def controler(navigateur, base, page_id, chemin, largeur, mode, sortie, polices, captures):
     contexte = navigateur.new_context(viewport={"width": largeur, "height": 900}, color_scheme=mode,
                                       reduced_motion="reduce", device_scale_factor=1)
+    contexte.add_init_script(GRAINE)
     commun.polices(contexte, polices)
     page = contexte.new_page()
     js, console_err, reseau = [], [], []
