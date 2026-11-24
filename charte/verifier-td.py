@@ -414,16 +414,20 @@ def verifier(chemin):
                     tests_q = next((code_de(x.texte()) for x in s.tous(classe('td-tests'))), '') if langage == 'python' else ''
                     rc, out, err = lancer_q(src, fichier, entrees=e_, graine=g_, tests=tests_q)
                     dep = next((code_de(x.texte()) for x in s.tous(classe('td-depart'))), '')
+                    seule = ''
                     if rc not in (0, None) and dep.strip() and tests_q:
                         # une correction qui ne donne que la partie à compléter : on la pose sur le code de départ
                         # (chaque fonction à sa place, chaque méthode dans sa classe), comme l'élève qui complète le squelette
                         rc2, out2, err2 = lancer_q(sur_depart(dep, src), fichier, entrees=e_, graine=g_, tests=tests_q)
-                        if rc2 == 0:
-                            rc, out, err = rc2, out2, err2
+                        if rc2 != 0:
+                            # T123e : l'échec rapporté est celui de la correction posée sur le départ (celui que verrait
+                            # l'élève) ; celui de la correction seule (souvent un NameError) n'est donné qu'en second
+                            seule = ' ; la correction seule : ' + (err.strip().splitlines() or [''])[-1][:160]
+                        rc, out, err = rc2, out2, err2
                     if rc == 2:
-                        ko(q, 'la correction ne passe pas les tests cachés : ' + err.strip()[-300:])
+                        ko(q, ('la correction posée sur le code de départ' if seule else 'la correction') + ' ne passe pas les tests cachés : ' + err.strip()[-300:] + seule)
                     elif rc != 0 or (att is not None and sortie_norm(out, exact) != sortie_norm(att, exact)):
-                        ko(q, f'correction : sortie {out!r} {err!r}, attendue {att!r}' + (f' (saisies {e_!r})' if e_ is not None else ''))
+                        ko(q, ('la correction posée sur le code de départ : ' if seule else 'correction : ') + f'sortie {out!r} {err!r}, attendue {att!r}' + (f' (saisies {e_!r})' if e_ is not None else '') + seule)
         for li in s.tous(lambda x: x.tag == 'li' and 'data-verifier' in x.attrs):
             v = li.attrs['data-verifier']
             pre_ = next(li.tous(lambda x: x.tag == 'pre'), None)

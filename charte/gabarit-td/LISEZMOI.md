@@ -6,7 +6,35 @@ Un TD est **une seule page HTML** : à l'écran, elle se corrige toute seule ; i
 - Modèle : `charte/gabarit-td/modele.html` (commenté) ; exemple rendu : `charte/gabarit-td/index.html` ; TD complet : `charte/td-pilote/`.
 - Outils : `charte/nouveau-td.py` (le squelette), `charte/verifier-td.py` (le code exécuté pour de vrai), `charte/imprimer-td.py` (le PDF vierge et les contrôles de mise en page).
 
-## Nouveautés du 22/11 (T123d) : à lire d'abord
+## Nouveautés du 24/11 (T123e) : à lire d'abord
+
+Rien ne change **à l'écran** (comparé au pixel sur toutes les pages de TD, à 320, 768 et 1440 px, en clair et en obscur). Ce qui change : **l'impression** des questions courtes regroupées (T123d), où beaucoup de réponses n'avaient plus la place d'être écrites, et deux outils.
+
+### Chaque réponse a la place d'être écrite à la main (le moteur la mesure)
+
+| Mesure | Règle |
+|---|---|
+| **Place demandée** par une réponse | **2,5 mm par caractère** de la réponse modèle (écriture d'un·e élève, prévue large), **20 mm au moins**. Réponse modèle : pour une `courte`, la variante acceptée **la plus longue** de `data-reponse` ; pour une `libre`, sa jumelle d'écran (la question `data-support="ecran"` qui la précède : `data-reponse`, options justes ou correction), sinon sa propre correction. Une `libre` sans réponse modèle n'entre jamais dans un tableau. |
+| Place d'une **étiquette** imprimée (10 pt) | 1,9 mm par caractère, plus 1 mm. |
+| **Tableau** « N° \| Consigne \| Réponse » | Une question n'y entre que si sa réponse tient dans la case. La case fait 58 mm (64 mm avec une réponse rédigée) et **s'élargit jusqu'à 100 mm** pour la plus longue réponse du tableau ; une question qui ne tiendrait pas dans 100 mm reste hors tableau, et coupe le groupe. |
+| **Étiquette** dans une case | sur la ligne d'écriture si elle en prend **un tiers au plus** et laisse la place de la réponse ; sinon **au-dessus**, avec une ligne d'écriture entière dessous. |
+| **Deux colonnes** de questions | à partir de 4 questions à consigne de 48 caractères au plus, et seulement si **chaque réponse tient** dans une case de 30 mm (40 mm avec une réponse rédigée), élargie jusqu'à 44 mm, l'étiquette tenant sur une ligne. Sinon une colonne. |
+| `libre` à `data-lignes="1"` **seule** | **jamais sur la rangée de sa consigne** : elle garde sa ligne pleine (186 mm), comme avant T123d. |
+| `courte` **seule** | sur la rangée de sa consigne si sa réponse (et son étiquette) tiennent dans la ligne, de 64 mm, allongée jusqu'à 110 mm ; sinon sa ligne pleine. Hors rangée, sa ligne fait au moins la place de la réponse, et passe sous l'étiquette s'il le faut. |
+| **Code dans une case** | il ne se coupe qu'à une espace, jamais au milieu d'une expression (`pokemons[1]["types"]` reste entier). |
+
+Ce que le moteur ne peut pas régler : une réponse plus longue qu'une **ligne pleine** (74 caractères environ). `imprimer-td.py` la signale (« Attention : réponse à l'étroit … ligne pleine : data-lignes="2" ») : dans la page, `data-lignes="2"` sur la `libre`. Une alerte « à signaler au Designer » (dans un tableau ou sur une rangée) ne doit jamais apparaître : c'est un défaut du moteur.
+
+`data-regrouper="non"` et `data-lignes="2"` gardent leur effet (T123d). Les PDF publiés ne changent pas tant qu'ils ne sont pas régénérés (passe des Ateliers) : régénérez-les avec `imprimer-td.py` et lisez ses « Attention ».
+
+### Les outils
+
+- `imprimer-td.py` signale, sans bloquer, chaque **réponse à l'étroit** (réponse modèle plus longue que sa place, à 2,5 mm par caractère) : dans un tableau, sur une rangée ou sur une ligne pleine.
+- `verifier-td.py` : quand une correction partielle **posée sur le code de départ** échoue, le message est celui de la correction posée (celui que verrait l'élève, par exemple l'assertion des tests cachés) ; celui de la correction seule (souvent un `NameError`) vient en second, après « la correction seule ».
+- `tester-outils.py` : deux essais de plus (la correction posée fausse ; les réponses à l'étroit, avec un témoin aux cases de 15 mm).
+- `symboles-td.py` : la liste des symboles se reporte dans l'`unicode-range` de « TD Symboles » de `assets/signal-commun.css` (et non plus de `td-en-ligne.css`).
+
+## Nouveautés du 22/11 (T123d)
 
 Rien ne change **à l'écran** (comparé au pixel sur toutes les pages de TD, à 320, 768 et 1440 px, en clair et en obscur). Ce qui change : **l'impression** de toutes les pages (plus courte, sans rien écrire), un outil corrigé et deux options.
 
@@ -16,8 +44,8 @@ Sans rien changer aux pages :
 
 | Quoi | Sur papier |
 |---|---|
-| **Questions courtes qui se suivent** : `courte` sur une rangée, et `libre` à `data-lignes="1"` à consigne courte (150 caractères au plus, sans code ni tableau) | **automatique** à partir de 2 : un tableau « N° \| Consigne \| Réponse » (numéros de la suite papier, `data-etiquette` dans la case de réponse, ★ pour un bonus) ; **deux colonnes de questions** à partir de 4 si chaque consigne a 48 caractères au plus. Case de réponse : 58 mm (64 mm s'il y a une réponse rédigée), une ligne de 7 mm. Le tableau peut passer d'une page à l'autre entre deux rangées (l'en-tête est répété). Les questions `data-support="ecran"` placées entre elles ne coupent pas le groupe. |
-| `libre` à `data-lignes="1"` et consigne courte, seule | sur **une rangée**, la consigne puis la ligne, comme une `courte` |
+| **Questions courtes qui se suivent** : `courte` sur une rangée, et `libre` à `data-lignes="1"` à consigne courte (150 caractères au plus, sans code ni tableau) | **automatique** à partir de 2 : un tableau « N° \| Consigne \| Réponse » (numéros de la suite papier, `data-etiquette` dans la case de réponse, ★ pour un bonus) ; **deux colonnes de questions** à partir de 4 si chaque consigne a 48 caractères au plus. Case de réponse : 58 mm (64 mm s'il y a une réponse rédigée), une ligne de 7 mm. **Depuis T123e** : seulement si la réponse tient dans la case (voir plus haut). Le tableau peut passer d'une page à l'autre entre deux rangées (l'en-tête est répété). Les questions `data-support="ecran"` placées entre elles ne coupent pas le groupe. |
+| `libre` à `data-lignes="1"` et consigne courte, seule | ~~sur une rangée~~ : **retiré en T123e**, elle garde sa ligne pleine |
 | Code de **plus de 15 lignes**, code à trous de **plus de 10 lignes** (plus d'un tiers de page avec la consigne) | il peut se couper **entre deux lignes**, 3 lignes au moins de chaque côté (avant : 40 lignes) |
 | « Écris le programme » avec **une grille ou un schéma** (le robot), code de départ de 48 caractères au plus | la figure **à droite**, le cadre à remplir à sa gauche, la question entière |
 | « Trouve l'erreur » au code étroit (`data-cote`) | « Ligne n° » et la ligne corrigée **sous le code, à gauche**, à côté du message d'erreur |

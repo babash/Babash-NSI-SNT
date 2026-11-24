@@ -659,11 +659,15 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-q:has(pre.td-code-long) { break-inside: auto; }
   /* tableau à remplir : la hauteur en lignes d'écriture de 7 mm */
   .td table .td-vide { height: calc(var(--td-case-h, 1) * 7mm); }
+  /* une réponse courte hors rangée : sa ligne fait au moins la place de la réponse modèle écrite à la main
+     (le moteur la mesure, T123e) ; trop longue à côté de l'étiquette, elle passe dessous, sur toute la largeur */
+  .td-q[data-type="courte"]:not(.td-courte-ligne) input.td-champ { flex-basis: max(12rem, var(--td-champ-l, 0mm)); }
   /* réponses courtes : la consigne et la ligne à remplir sur une seule ligne ; à la suite, elles se resserrent (T123c) */
   .td-q.td-courte-ligne { display: flex; flex-wrap: wrap; align-items: flex-start; column-gap: 3mm; }
   .td-q.td-courte-ligne > .td-q-titre { float: none; margin: 0; flex: none; }
   .td-q.td-courte-ligne > .td-consigne { flex: 1 1 60mm; min-width: 0; min-height: 0; margin: 0; }
-  .td-q.td-courte-ligne > .td-reponse { flex: 0 1 auto; min-width: 64mm; margin: 0; align-self: flex-end; }
+  /* la ligne s'allonge (jusqu'à 110 mm) quand la réponse modèle, écrite à la main, ne tiendrait pas dans 64 mm (T123e) */
+  .td-q.td-courte-ligne > .td-reponse { flex: 0 1 auto; min-width: var(--td-rangee-r, 64mm); margin: 0; align-self: flex-end; }
   .td-q.td-courte-ligne .td-ligne-champ { margin: 0; flex-wrap: nowrap; }
   .td-q.td-courte-ligne .td-ligne-champ > label { white-space: nowrap; }
   .td-q.td-courte-ligne .td-ligne-champ > label.td-etiquette-defaut { display: none; }
@@ -730,16 +734,22 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td table.td-groupe thead th { font-size: 10pt; padding: .2mm 1.6mm; }
   .td table.td-groupe .td-groupe-n { width: 17mm; text-align: center; background: #fff; }
   .td table.td-groupe thead .td-groupe-n { background: var(--td-panneau-2); }
-  .td table.td-groupe .td-groupe-r { width: 58mm; }
-  .td table.td-groupe.td-groupe-redige .td-groupe-r { width: 64mm; }
+  /* la case « Réponse » : 58 mm (64 mm avec une réponse rédigée), élargie par le moteur jusqu'à 100 mm (T123e) */
+  .td table.td-groupe .td-groupe-r { width: var(--td-groupe-r, 58mm); }
+  .td table.td-groupe.td-groupe-redige .td-groupe-r { width: var(--td-groupe-r, 64mm); }
   .td table.td-groupe.td-groupe-2 .td-groupe-n { width: 12mm; }
-  .td table.td-groupe.td-groupe-2 .td-groupe-r { width: 30mm; }
-  .td table.td-groupe.td-groupe-2.td-groupe-redige .td-groupe-r { width: 40mm; }
+  .td table.td-groupe.td-groupe-2 .td-groupe-r { width: var(--td-groupe-r, 30mm); }
+  .td table.td-groupe.td-groupe-2.td-groupe-redige .td-groupe-r { width: var(--td-groupe-r, 40mm); }
   .td table.td-groupe.td-groupe-2 tr > :nth-child(4) { border-left-width: 2.5px; }
   .td table.td-groupe .td-q-num { display: inline-block; font-size: 10.5pt; line-height: 1.3; }
   .td table.td-groupe td.td-vide { height: 7mm; vertical-align: bottom; }
   .td table.td-groupe .td-groupe-etiq { display: block; font-size: 10pt; color: var(--td-encre-douce); line-height: 1.2; padding-bottom: .4mm; }
   .td table.td-groupe .td-groupe-rien { border-left-width: 2.5px; }
+  /* l'étiquette qui prendrait plus du tiers de la case passe au-dessus : dessous, une ligne d'écriture entière (T123e) */
+  .td table.td-groupe td.td-groupe-etiq-dessus { height: auto; vertical-align: top; }
+  .td table.td-groupe .td-groupe-ligne { display: block; height: 6.5mm; }
+  /* un code de la consigne ne se coupe qu'à une espace (le moteur pose les morceaux insécables) */
+  .td table.td-groupe .td-insecable { white-space: nowrap; }
   /* une question sur une rangée : le break-after de sa consigne passait à toute la question (rangée de flex), qui
      restait collée à la suivante et partait avec elle à la page suivante (défaut de T123c) */
   .td-q.td-courte-ligne > .td-consigne, .td-q.td-courte-ligne > .td-q-titre { break-after: auto; }

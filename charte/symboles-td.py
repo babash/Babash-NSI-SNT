@@ -2,7 +2,7 @@
 """Refait « TD Symboles » : sous-ensemble de DejaVu Sans 2.37, renommé (la licence Bitstream Vera l'exige).
 
 Usage : python3 -I charte/symboles-td.py /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf assets/fonts/td-symboles-400-normal.woff2
-Puis reporter la liste UNI dans l'unicode-range de « TD Symboles » (assets/td-en-ligne.css).
+Puis reporter la liste UNI dans l'unicode-range de « TD Symboles » (assets/signal-commun.css, commun au site et aux TD depuis T123d ; plus dans td-en-ligne.css).
 """
 import sys
 from fontTools import subset
