@@ -127,12 +127,12 @@
   };
 
   /* Le réglage qui ouvre chaque fonction à venir, une fois sa migration appliquée */
-  var catalogueEnBase = null;        // null : pas encore lu ; vrai si commun_catalogue rend des objets à prix (0010)
+  var catalogueEnBase = null;        // null : pas lu ou lecture ratée ; vrai seulement si commun_catalogue rend des objets à prix (0010)
   function ouverte(fonction) {
     if (/niveau/.test(fonction)) return !!reglage.niveau;
     /* Les fonctions de 0010 : le réglage COMPTE_COMMUN_CATALOGUE, et le catalogue vraiment en base (des objets
        à prix) ; ainsi, réglage à true trop tôt ou base revenue en arrière, la page ne propose rien d'impossible */
-    if (fonction === 'commun_prof_offrir' || fonction === 'commun_prof_archiver_classe') return !!reglage.catalogue && catalogueEnBase !== false;
+    if (fonction === 'commun_prof_offrir' || fonction === 'commun_prof_archiver_classe') return !!reglage.catalogue && catalogueEnBase === true;
     return !FONCTIONS_A_VENIR[fonction];
   }
 

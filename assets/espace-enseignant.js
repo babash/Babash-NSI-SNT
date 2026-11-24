@@ -20,7 +20,8 @@
   var tableauxDeBord = null;         // les applications et l'adresse de leur tableau de bord
   var modeTableau = false;           // masque codes, XP et crédits (écran projeté)
   var messageClasse = null;          // le message d'une action, montré une fois après le rechargement de la classe
-  var NIVEAUX = [];                  // les niveaux des référentiels (masqués tant que COMPTE_COMMUN_NIVEAU vaut false)
+  var NIVEAUX = [];
+  var erreurCatalogue = null;        // le message d'une lecture ratée du catalogue : gardé en haut de chaque vue                  // les niveaux des référentiels (masqués tant que COMPTE_COMMUN_NIVEAU vaut false)
 
   window.pageEnseignant = function (racine, outils) {
     O = outils; el = O.el; P = window.PagesCompte; CC = window.CompteCommun;
@@ -39,7 +40,8 @@
     main.appendChild(el('p', { class: 'vide' }, 'Chargement…'));
     Promise.all([CC.catalogue(), chargerTableaux(), CC.niveauActif() ? CC.niveaux() : Promise.resolve([])]).then(function (r) {
       cat = r[0] && r[0].elements ? r[0] : { applications: [], elements: [], hauts_faits: [], emplacements: [] };
-      if (r[0] && !r[0].ok && r[0].message && !r[0].elements) main.insertBefore(el('p', { class: 'cc-message cc-erreur', role: 'alert' }, r[0].message), main.firstChild);
+      if (r[0] && !r[0].ok && r[0].message && !r[0].elements) erreurCatalogue = 'Le catalogue n\'a pas pu être lu : ' + r[0].message
+        + ' Offrir un trophée, archiver une classe et accorder un haut fait attendent qu\'il se lise : recharge la page dans un moment.';
       K = P.outilsCatalogue(cat);
       tableauxDeBord = r[1];
       NIVEAUX = r[2] || [];
@@ -87,8 +89,14 @@
 
   /* ── 1. Entrer ou créer son espace ─────────────────────────────── */
 
+  /* La lecture ratée du catalogue reste à l'écran, quelle que soit la vue (avant, entree() l'effaçait) */
+  function alerteCatalogue() {
+    if (erreurCatalogue) main.appendChild(el('p', { class: 'cc-message cc-erreur', role: 'alert' }, erreurCatalogue));
+  }
+
   function entree(messageDepart) {
     O.vider(main);
+    alerteCatalogue();
     espace = null;
     var grille = el('div', { class: 'cc-deux' });
 
@@ -207,6 +215,7 @@
 
   function accueilEspace() {
     O.vider(main);
+    alerteCatalogue();
     main.appendChild(barreEspace());
     var titre = el('h2', { class: 'cc-titre-section', tabindex: '-1' }, 'Mes classes');
     main.appendChild(titre);
@@ -358,12 +367,18 @@
     Promise.all([Prof.classe(id), Prof.journalXp(id)]).then(function (r) {
       var rep = r[0];
       O.vider(main);
+      alerteCatalogue();
       main.appendChild(barreEspace());
       main.appendChild(el('p', { class: 'cc-fil' }, el('a', { href: '#/' }, '← Mes classes')));
       if (!rep.ok) { main.appendChild(el('p', { class: 'cc-message cc-erreur', role: 'alert' }, rep.message)); return; }
       var journal = r[1].ok ? r[1].journal : [];
       if (inviter) return ecranInviter(rep.classe);
       var c = rep.classe;
+      /* 0010 v5 : commun_prof_classe ne dit pas si la classe est archivée ; commun_prof_ouvrir, si */
+      if (c.archivee == null) {
+        var x = ((espace && espace.classes) || []).filter(function (k) { return k.id === c.id; })[0];
+        c.archivee = !!(x && x.archivee);
+      }
       var titre = el('h2', { class: 'cc-titre-section', tabindex: '-1' }, c.nom);
       main.appendChild(titre);
       if (messageClasse) { main.appendChild(el('p', { class: 'cc-message cc-ok', role: 'status' }, messageClasse)); messageClasse = null; }

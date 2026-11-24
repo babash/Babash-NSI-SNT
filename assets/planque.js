@@ -444,7 +444,7 @@
     function source(e) { return (cat.hauts_faits || []).filter(function (h) { return (h.recompenses || []).indexOf(e.id) >= 0; })[0]; }
     function carte(e) {
       var a = possede(e), t = origines[e.id], h = source(e), texte;
-      if (a && t && t.origine === 'enseignant') texte = 'Offert' + (t.par ? ' par ' + t.par : '') + (t.motif ? ' : ' + t.motif : '') + (t.depuis ? ' (' + P.date(t.depuis) + ')' : '');
+      if (a && t && t.origine === 'enseignant') texte = 'Offert par ' + (t.par || 'ton enseignant·e') + (t.motif ? ' : ' + t.motif : '') + (t.depuis ? ' (' + P.date(t.depuis) + ')' : '');
       else if (a && t && t.haut_fait) texte = 'Gagné avec : ' + K.nomHf(t.haut_fait.application, t.haut_fait.id);
       else if (a) texte = e.depart ? 'Avec toi dès le départ.' : 'À toi.';
       else if (h && atteignable(h)) texte = 'Se gagne avec : ' + (h.nom || 'un haut fait secret') + (h.application === 'commun' ? ', accordé par ton enseignant·e' : ' (' + K.app(h.application).nom + ')');
