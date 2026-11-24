@@ -7,8 +7,8 @@
 
    - assets/equipage/catalogue.json : les valeurs admises dans une description d'avatar
      (lu par scripts/apparences_compte_commun.py, de l'Architecte) ;
-   - assets/equipage/applis.json : le fichier versionné des applications : les 20 phrases du
-     lobby (liste fermée, envoyée par numéro), les 4 gestes, les états d'usage et les 15 objets
+   - assets/equipage/applis.json : le fichier versionné des applications : les 21 phrases du
+     lobby (liste fermée, envoyée par numéro), les 4 gestes, les états d'usage et les 18 objets
      des applications avec le haut fait qui donne chacun.
    Ne pas modifier ces deux fichiers à la main. */
 'use strict';
@@ -41,7 +41,8 @@ function applis() {
     gestes: E.gestes,
     usages: Object.keys(E.USAGES).map(function (k) { return { id: k, etat: E.USAGES[k] }; }),
     neutre: E.neutre(),
-    objets: E.applis
+    objets: E.applis,
+    fidelite: E.fidelite
   };
 }
 var sorties = [

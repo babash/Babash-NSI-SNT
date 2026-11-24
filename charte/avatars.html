@@ -230,7 +230,9 @@
     $('tailles').appendChild(f);
     return E.creer(s, desc, { taille: t, etat: 'repos' });
   });
-  var sept = E.ETATS.map(function (e) {
+  /* les sept états ; le geste « tempête » (T133c) est montré sur applis.html */
+  var SEPT = E.ETATS.filter(function (e) { return e.id !== 'tempete'; });
+  var sept = SEPT.map(function (e) {
     var c = el('div', { 'class': 'carte' }), s = el('span');
     c.appendChild(s); c.appendChild(el('strong', null, e.nom.charAt(0).toUpperCase() + e.nom.slice(1)));
     $('sept-etats').appendChild(c);
@@ -284,7 +286,7 @@
     synchro.push(nuancier(c[2], E.catalogue.couleurs[c[1]].map(function (x) { return { id: x.id, couleur: x.couleur, nomLisible: c[2].toLowerCase() + ' : ' + lisible(x.id) }; }), function () { return desc.couleurs[c[0]]; }, function (v) { desc.couleurs[c[0]] = v; }, 'c-' + c[0]));
   });
 
-  E.ETATS.forEach(function (e) {
+  SEPT.forEach(function (e) {
     var b = el('button', { type: 'button', 'class': 'b', 'aria-pressed': String(e.id === etat), 'data-e': e.id }, e.nom.charAt(0).toUpperCase() + e.nom.slice(1));
     b.addEventListener('click', function () {
       etat = e.id; grand.etat(etat);
@@ -320,12 +322,12 @@
   var BASES = [{ teint: 2, coiffure: 'court', cheveux: 'chatains' }, { teint: 7, coiffure: 'afro_pixel' }, { teint: 5, coiffure: 'tresses' }, { teint: 4, coiffure: 'boucles', cheveux: 'bruns' }, { teint: 8, coiffure: 'puffs' }, { teint: 3, coiffure: 'lisses', cheveux: 'roux' }];
   var TISSUS = ['canard', 'jaune', 'violet', 'rouge', 'vert', 'orange'], NEONS = ['cyan', 'rose', 'vert', 'jaune', 'violet', 'orange'], ni = 0;
   E.catalogue.familles.forEach(function (f) {
-    if (f.id === 'applis') return; /* les objets des applications ont leur planche : applis.html */
+    if (f.id === 'applis' || f.id === 'fidelite') return; /* les objets des applications et de la fidélité ont leur planche : applis.html */
     $('objets').appendChild(el('h3', { style: 'margin:16px 0 6px' }, f.nom));
     var g = el('div', { 'class': 'grille grille-objets' });
     E.catalogue.emplacements.forEach(function (e) {
       E.catalogue.objets[e.id].forEach(function (o) {
-        if (o.famille !== f.id) return;
+        if (o.famille !== f.id || o.id === 'bouteille_percee' || o.id === 'dessin_karim' || o.id === 'kishali_tete') return; /* T133c : montrés sur applis.html */
         var d = E.defaut(), b = BASES[ni % BASES.length];
         for (var k in b) d[k] = b[k];
         d.couleurs.haut = TISSUS[ni % 6]; d.couleurs.accent = NEONS[(ni + 2) % 6]; d.compagnon = 'aucun'; ni++;

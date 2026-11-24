@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Habillage des applications</title>
-  <meta name="description" content="Démonstration du socle d'habillage des applications (assets/applis.css) et de l'interface du moteur d'avatars : entrée, lobby, question, podium, annonces, liens rapides, bibliothèque de quiz, les 15 objets des applications, états, gestes et bulles.">
+  <meta name="description" content="Démonstration du socle d'habillage des applications (assets/applis.css) et de l'interface du moteur d'avatars : entrée, lobby, question, podium, annonces, liens rapides, bibliothèque de quiz, les 18 objets des applications, états, gestes et bulles.">
   <meta name="robots" content="noindex">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
@@ -175,14 +175,22 @@
   </section>
 
   <section class="dm-sec" id="objets">
-    <h2><span class="dm-n">6</span>Les 15 objets des applications</h2>
+    <h2><span class="dm-n">6</span>Les 18 objets des applications</h2>
     <p class="dm-but">Dessinés dans le moteur (famille <code>applis</code>), accrochés au corps : l'objet tenu suit la main, le chapeau suit la tête. Chacun est donné par un haut fait, jamais acheté. Montrés au repos, en fête et en salut.</p>
     <div class="dm-objets" id="dm-objets"></div>
   </section>
 
+  <section class="dm-sec" id="nouveautes">
+    <h2><span class="dm-n">6b</span>La bouteille, la tempête, la fidélité</h2>
+    <p class="dm-but">Demandes de l'enseignant du 24/11 : la bouteille d'eau percée (tenue au repos ; pendant un geste, un mince jet monte, toujours vers le haut) et le geste « tempête » (un tour sur soi-même dans un petit tourbillon, 1,8 s). Le dessin de Karim (une feuille de classeur et un margouillat griffonné, un clin d'œil affectueux). Les quatre objets des hauts faits de fidélité (noms à confirmer) : trois auras qui grandissent d'un palier à l'autre, des ailes en pistes de circuit imprimé.</p>
+    <div class="dm-objets" id="dm-nouveaux"></div>
+    <h3 class="ap-sous" style="margin:14px 0 6px">Le geste « tempête », image par image</h3>
+    <div class="dm-rangee" id="dm-tempete" style="align-items:flex-end"></div>
+  </section>
+
   <section class="dm-sec" id="interface">
     <h2><span class="dm-n">7</span>États, gestes, bulles et marques</h2>
-    <p class="dm-but">Essayez l'interface sur un avatar. Les bulles ne viennent que de la liste fermée des 20 phrases, par numéro.</p>
+    <p class="dm-but">Essayez l'interface sur un avatar. Les bulles ne viennent que de la liste fermée des 21 phrases, par numéro.</p>
     <div class="dm-rangee">
       <div class="dm-cadre"><div class="dm-scene" id="dm-essai"></div></div>
       <div class="ap-pile">
@@ -264,7 +272,7 @@
     [[30, 19], [9, 20], [2, 0], [21, 10], [14, 6], [27, 4], [5, 2], [12, 13]].forEach(function (b, k) {
       setTimeout(function () { poignees[b[0]].bulle(b[1], undefined, { duree: demo ? 15000 : 5000 }); }, demo ? 0 : k * 700);
     });
-    [[3, 'salue'], [11, 'saute'], [24, 'rit'], [33, 'sieste']].forEach(function (g) { poignees[g[0]].geste(g[1], { duree: 6000 }); });
+    [[3, 'salue'], [11, 'saute'], [24, 'rit'], [33, 'sieste'], [20, 'tempete']].forEach(function (g) { poignees[g[0]].geste(g[1], { duree: 6000 }); });
   }
   bulles();
   $('dm-relancer').addEventListener('click', bulles);
@@ -336,8 +344,8 @@
   var zd = JSON.parse(JSON.stringify(ZOE)); zd.objets.main = 'de_flottille';
   E.creer($('dm-hf-av'), zd, { taille: 72, etat: 'fete', compagnon: false, alt: 'Zoé tient le dé de la Flottille' });
 
-  /* 6. les 15 objets */
-  var NOMS_APPLIS = { quizz_nsi: 'QuizzNSI', grand_oral: 'Hello GO', calendrier: 'Calendrier des vacances', gombessa: 'Expédition Gombessa', lagon: 'Lagon Arena' };
+  /* 6. les 18 objets */
+  var NOMS_APPLIS = { quizz_nsi: 'QuizzNSI', grand_oral: 'Hello GO', vacances: 'Calendrier des vacances', alien: 'Alien Python', gombessa: 'Expédition Gombessa', lagon: 'Lagon Arena' };
   var EMPL = {}; E.catalogue.emplacements.forEach(function (e) { EMPL[e.id] = e.nom; });
   var BASES = [ZOE, CLASSE[3].d, CLASSE[12].d, CLASSE[20].d, E.neutre()];
   E.applis.forEach(function (o, i) {
@@ -349,6 +357,37 @@
     [['Objet', o.nom], ['Emplacement', EMPL[o.emplacement] + ' (' + o.id + ')'], ['Application', NOMS_APPLIS[o.application]], ['Haut fait', '« ' + o.haut_fait_nom + ' » : ' + o.condition]].forEach(function (x) { dl.appendChild(el('dt', null, x[0])); dl.appendChild(el('dd', null, x[1])); });
     f.appendChild(dl); $('dm-objets').appendChild(f);
   });
+
+  /* 6b. la bouteille, la tempête, la fidélité */
+  [['tete', 'kishali_tete', 'Kishali sur la tête', 'Sur la tête · libre pour tout le monde dès le départ', ['repos', 'salue', 'fete']],
+   ['epaule', 'kishali', 'Kishali sur les épaules', 'Sur les épaules · libre pour tout le monde dès le départ', ['repos', 'salue', 'fete']],
+   ['tete', 'bandana', 'Bandana à pois', 'Sur la tête · libre pour tout le monde dès le départ', ['repos', 'salue', 'fete']],
+   ['main', 'bouteille_percee', 'La bouteille d\'eau percée', 'Dans la main · offerte par l\'enseignant·e (famille « Les gimmicks de la classe »)', ['repos', 'salue', 'fete']],
+   ['main', 'dessin_karim', 'Le dessin de Karim', 'Dans la main · offert par l\'enseignant·e (famille « Les gimmicks de la classe ») · haut fait proposé « Coup de crayon » · nom affiché modifiable', ['repos', 'salue', 'fete']],
+   ['autour', 'aura_etincelle', 'Aura étincelle', 'Autour · haut fait « Deuxième saison » (nom à confirmer)', ['repos', 'fete']],
+   ['autour', 'aura_halo', 'Aura halo', 'Autour · haut fait « Troisième saison » (nom à confirmer)', ['repos', 'fete']],
+   ['autour', 'aura_supernova', 'Aura supernova', 'Autour · haut fait « Supernova » (nom à confirmer)', ['repos', 'fete']],
+   ['dos', 'ailes_circuit', 'Ailes de circuit imprimé', 'Dans le dos · haut fait « Nouveau palier » (nom à confirmer)', ['repos', 'fete']]].forEach(function (o, i) {
+    var f = el('figure', 'dm-objet ap-carte ap-carte-douce'), poses = el('div', 'dm-poses');
+    f.style.margin = '0'; f.id = 'dm-nv-' + o[1];
+    var d = JSON.parse(JSON.stringify(i === 2 ? CLASSE[3].d : ZOE)); for (var k in d.objets) d.objets[k] = 'aucun'; d.objets[o[0]] = o[1];
+    o[4].forEach(function (e) { var s = el('span'); poses.appendChild(s); E.creer(s, d, { taille: 112, etat: e, anime: false, compagnon: false, alt: e === 'repos' ? o[2] : '' }); });
+    f.appendChild(poses); f.appendChild(el('strong', null, o[2] + ' (' + o[0] + ':' + o[1] + ')')); f.appendChild(el('span', 'ap-petit', o[3]));
+    $('dm-nouveaux').appendChild(f);
+  });
+  /* les images du geste, figées une à une, puis le geste joué */
+  var NB_T = (E.svg(ZOE, { etat: 'tempete', alt: '' }).match(/class="eq-img/g) || []).length;
+  for (var ti = 0; ti < NB_T; ti++) {
+    var fi = el('figure', 'dm-cadre dm-tempete-img'); fi.style.margin = '0'; fi.style.padding = '6px'; fi.style.flex = '0 0 auto';
+    var sp = el('span'); fi.appendChild(sp); fi.appendChild(el('figcaption', 'ap-petit', 'Image ' + (ti + 1)));
+    $('dm-tempete').appendChild(fi);
+    sp.innerHTML = E.svg(ZOE, { taille: 112, etat: 'tempete', compagnon: false, alt: '', decalage: 0 });
+    sp.className = 'eq'; sp.setAttribute('data-image', ti);
+    [].forEach.call(sp.querySelectorAll('.eq-img'), function (g, j) { g.removeAttribute('style'); g.setAttribute('class', 'eq-img' + (j === ti ? ' eq-i0' : '')); });
+  }
+  var tj = el('span'); var tb = el('button', 'ap-bt ap-bt-mini', 'Jouer la tempête'); var tf = el('div', 'ap-pile'); tf.appendChild(tj); tf.appendChild(tb); $('dm-tempete').appendChild(tf);
+  var ptp = E.creer(tj, ZOE, { taille: 112, etat: 'lobby', compagnon: false, alt: 'Zoé' });
+  tb.addEventListener('click', function () { ptp.geste('tempete'); });
 
   /* 7. l'interface sur un avatar */
   var essai = el('span'); $('dm-essai').appendChild(essai);

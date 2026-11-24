@@ -6,9 +6,9 @@
    1. Rien ne change pour l'existant : mêmes images (au caractère près) que le moteur de
       référence (main avant T133b, commit 0b44455, lu par git ; ou --reference) pour les modèles,
       300 avatars au hasard, tous les états et les trois cadres ; mêmes tirages au hasard.
-   2. Les 15 objets des applications : famille « applis », haut fait, dessin visible, accroché
+   2. Les 18 objets des applications : famille « applis », haut fait, dessin visible, accroché
       au corps (l'objet tenu suit la main, le chapeau suit la tête qui se baisse).
-   3. Les états d'usage, les gestes, les 20 phrases (liste fermée, gelée), l'avatar neutre.
+   3. Les états d'usage, les gestes, les 21 phrases (liste fermée, gelée), l'avatar neutre.
    4. Les fichiers de données (catalogue.json, applis.json) sont à jour.
    L'interface dans une page (bulles, marques, plafond, calme, pause) : charte/tester-applis.py. */
 'use strict';
@@ -60,17 +60,26 @@ if (refChemin) {
   ok(E.texte(descs[0], 'repos') === R.texte(descs[0], 'repos'), 'texte a changé');
   ['tete', 'visage', 'cou', 'dos', 'main', 'epaule', 'pieds', 'autour'].forEach(function (e) {
     var avant = R.catalogue.objets[e].map(function (o) { return o.id; }).join();
-    var apres = E.catalogue.objets[e].filter(function (o) { return o.famille !== 'applis'; }).map(function (o) { return o.id; }).join();
+    var apres = E.catalogue.objets[e].filter(function (o) { return o.famille !== 'applis' && o.famille !== 'fidelite' && o.id !== 'bouteille_percee' && o.id !== 'dessin_karim' && o.id !== 'kishali_tete'; }).map(function (o) { return o.id; }).join();
     avant = R.catalogue.objets[e].filter(function (o) { return !RETIRES[e + ':' + o.id]; }).map(function (o) { return o.id; }).join();
     ok(avant === apres, 'les objets « ' + e + ' » existants ont changé');
   });
 }
 
-/* ── 2. les 15 objets des applications ── */
+/* ── 2. les 18 objets des applications ── */
 var nu = E.normaliser({ teint: 5, coiffure: 'puffs', haut: 'veste' });
 function avec(emp, id) { var d = JSON.parse(JSON.stringify(nu)); d.objets[emp] = id; return E.normaliser(d); }
 function image(d, etat) { return E.svg(d, { taille: 112, etat: etat, anime: false, compagnon: false, alt: '' }); }
-ok(E.applis.length === 15, '15 objets attendus, ' + E.applis.length + ' trouvés');
+ok(E.applis.length === 18, '18 objets attendus, ' + E.applis.length + ' trouvés');
+/* identifiants exacts de la migration de l'Architecte (0010, T138) */
+ok(E.applis.map(function (a) { return a.application + '/' + a.haut_fait + '=' + a.emplacement + ':' + a.id; }).join() ===
+  ['quizz_nsi/jusqu-au-bout=main:de_flottille', 'quizz_nsi/tour-du-plateau=tete:chapeau_pion', 'quizz_nsi/rebond=autour:flamme_apprivoisee',
+   'grand_oral/premier-passage=main:micro_paillettes', 'grand_oral/ni-trop-ni-trop-peu=cou:noeud_chrono', 'grand_oral/vous-avez-un-sujet=autour:projecteur_poursuite',
+   'vacances/premiere-case=main:case_surprise', 'vacances/costaud=tete:bob_fanion', 'vacances/tous-les-themes=autour:guirlande_cases',
+   'gombessa/premiere-plongee=visage:monocle_hublot', 'gombessa/les-grottes-du-gombessa=cou:collier_sonar', 'gombessa/debogage=epaule:bulle_luci',
+   'lagon/ponte-reussie=tete:casque_carapace', 'lagon/rematch=epaule:bebe_tortue', 'lagon/le-parcours=pieds:palmes_lagon',
+   'alien/sur-la-piste=tete:antennes_ecoute', 'alien/a-l-envers=main:decodeur_poche', 'alien/le-grand-tour=autour:halo_coordonnees'].join(), 'identifiants alignés sur la migration 0010');
+ok(E.applis.every(function (a) { return a.haut_fait_nom !== 'Vous avez un sujet !' && a.condition.indexOf("'") < 0; }), 'tutoiement et apostrophes courbes');
 var parAppli = {};
 E.applis.forEach(function (a) {
   parAppli[a.application] = (parAppli[a.application] || 0) + 1;
@@ -85,7 +94,7 @@ E.applis.forEach(function (a) {
     ok(image(avec(a.emplacement, a.id), e) !== image(nu, e), a.id + ' invisible dans l\'état ' + e);
   });
 });
-ok(Object.keys(parAppli).sort().join() === 'calendrier,gombessa,grand_oral,lagon,quizz_nsi' &&
+ok(Object.keys(parAppli).sort().join() === 'alien,gombessa,grand_oral,lagon,quizz_nsi,vacances' &&
   Object.keys(parAppli).every(function (k) { return parAppli[k] === 3; }), 'il faut 3 objets par application : ' + JSON.stringify(parAppli));
 /* l'objet tenu suit la main : sa position change quand le bras se lève */
 E.applis.filter(function (a) { return a.emplacement === 'main'; }).forEach(function (a) {
@@ -96,7 +105,7 @@ E.applis.filter(function (a) { return a.emplacement === 'main'; }).forEach(funct
 /* aucun objet des applications ne sort au hasard */
 for (var s = 0; s < 400; s++) {
   var d = E.aleatoire(s);
-  E.applis.forEach(function (a) { ok(d.objets[a.emplacement] !== a.id, 'aleatoire(' + s + ') donne ' + a.id); });
+  E.applis.concat(E.fidelite, [{ id: 'bouteille_percee', emplacement: 'main' }, { id: 'dessin_karim', emplacement: 'main' }, { id: 'kishali_tete', emplacement: 'tete' }]).forEach(function (a) { ok(d.objets[a.emplacement] !== a.id, 'aleatoire(' + s + ') donne ' + a.id); });
 }
 
 /* ── 3. états d'usage, gestes, phrases, neutre ── */
@@ -104,8 +113,39 @@ var ref = E.normaliser({ teint: 3 });
 [['lobby', 'repos'], ['attente', 'concentre'], ['repondu', 'repos'], ['fete', 'tres_content'], ['applaudit', 'content']].forEach(function (p) {
   ok(E.svg(ref, { etat: p[0], decalage: 0, alt: '' }) === E.svg(ref, { etat: p[1], decalage: 0, alt: '' }), 'l\'état ' + p[0] + ' n\'est pas ' + p[1]);
 });
-ok(E.gestes.map(function (g) { return g.id; }).join() === 'salue,saute,rit,sieste', 'les quatre gestes');
+ok(E.gestes.map(function (g) { return g.id; }).join() === 'salue,saute,rit,sieste,tempete', 'les cinq gestes');
+
+/* T133c : la bouteille d'eau percée, le geste « tempête », les objets de fidélité */
+var bt = avec('main', 'bouteille_percee');
+var cb = E.catalogue.objets.main.filter(function (o) { return o.id === 'bouteille_percee'; })[0];
+ok(cb && cb.famille === 'classe' && E.normaliser(bt).objets.main === 'bouteille_percee', 'bouteille_percee au catalogue (famille classe, un trophée)');
+ok(image(bt, 'repos').indexOf('#4ab8f0') < 0, 'bouteille : pas de jet au repos');
+['salue', 'tres_content', 'content'].forEach(function (e) { ok(image(bt, e).indexOf('#4ab8f0') > 0, 'bouteille : un jet pendant le geste ' + e); });
+ok(E.gestes[4].etat === 'tempete' && E.gestes[4].duree >= 1500 && E.gestes[4].duree <= 2000, 'tempête : 1,5 à 2 s');
+var tp = E.svg(nu, { etat: 'tempete', decalage: 0, alt: '' }), nimg = (tp.match(/class="eq-img/g) || []).length;
+ok(nimg >= 4, 'tempête : au moins 4 images (' + nimg + ')');
+ok(E.svg(nu, { etat: 'tempete', anime: false, alt: '' }) !== E.svg(nu, { etat: 'repos', anime: false, alt: '' }), 'tempête : l\'image fixe garde le tourbillon');
+ok(/tourbillonne/.test(E.texte(nu, 'tempete')), 'tempête : texte alternatif');
+ok(E.fidelite.length === 4 && E.fidelite.map(function (f) { return f.emplacement + ':' + f.id; }).join() === 'autour:aura_etincelle,autour:aura_halo,autour:aura_supernova,dos:ailes_circuit', 'les 4 objets de fidélité');
+var auras = ['aura_etincelle', 'aura_halo', 'aura_supernova'].map(function (id) { var im = image(avec('autour', id), 'repos'); ok(E.catalogue.objets.autour.some(function (o) { return o.id === id && o.famille === 'fidelite'; }), id + ' au catalogue'); return im; });
+ok(auras[0] !== auras[1] && auras[1] !== auras[2] && auras[0].length < auras[1].length && auras[1].length < auras[2].length, 'les trois auras grandissent d\'un palier à l\'autre');
+ok(image(avec('dos', 'ailes_circuit'), 'repos') !== image(nu, 'repos'), 'ailes de circuit visibles');
+ok(E.catalogue.objets.main.some(function (o) { return o.id === 'dessin_karim' && o.famille === 'classe'; }), 'dessin_karim : trophée de la famille classe');
+/* le kishali (tête, épaules) et le bandana : libres pour tout le monde dès le départ, sur tout corps et toute coiffure */
+[['tete', 'kishali_tete'], ['epaule', 'kishali'], ['tete', 'bandana']].forEach(function (x) {
+  ok(E.catalogue.objets[x[0]].some(function (o) { return o.id === x[1] && o.libre === true; }), x[0] + ':' + x[1] + ' libre');
+});
+var libres = []; E.catalogue.emplacements.forEach(function (e) { E.catalogue.objets[e.id].forEach(function (o) { if (o.libre) libres.push(e.id + ':' + o.id); }); });
+ok(libres.sort().join() === 'epaule:kishali,tete:bandana,tete:kishali_tete', 'seules ces trois pièces sont libres : ' + libres.join());
+E.catalogue.coiffure.forEach(function (cf) { ['fine', 'moyenne', 'ronde'].forEach(function (co) {
+  var a = E.normaliser({ coiffure: cf.id, corps: co, cheveux: '#123456', objets: { tete: 'kishali_tete' } });
+  ['repos', 'tres_content', 'concentre', 'dort'].forEach(function (et) {
+    ok(E.svg(a, { etat: et, anime: false, alt: '' }).indexOf('#123456') < 0, 'kishali sur la tête : aucune mèche (' + cf.id + ', ' + co + ', ' + et + ')');
+  });
+}); });
+ok(image(avec('main', 'dessin_karim'), 'repos') !== image(nu, 'repos') && image(avec('main', 'dessin_karim'), 'fete') !== image(nu, 'fete'), 'dessin_karim visible');
 ok(E.phrases.length === 21 && Object.isFrozen(E.phrases), '21 phrases gelées');
+ok(E.phrases.every(function (p) { return !/ [!?:%]/.test(p); }) && E.phrases[0].indexOf(String.fromCharCode(0x202F)) > 0, 'espace fine insécable avant ! ? : %');
 ok(!E.phrases.some(function (p) { return /bouchon/i.test(p); }), 'plus de bouchon dans les phrases');
 E.adresse('madame'); ok(E.phrase(19) === 'Ne vous inquiétez pas, Madame.', 'variante Madame');
 E.adresse('monsieur'); ok(E.phrase(19) === 'Ne vous inquiétez pas, Monsieur.' && E.phrase(99) === null, 'variante Monsieur, numéro inconnu');

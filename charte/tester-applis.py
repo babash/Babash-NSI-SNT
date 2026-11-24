@@ -74,6 +74,10 @@ def essais_interface(nav, base, lent):
     ok(pg.evaluate("H[30].geste('salue', { duree: 400 }) && !H[30].element.classList.contains('eq-fige')"), "un geste doit animer l'avatar même au-delà du plafond")
     ok(pg.evaluate("document.querySelectorAll('#p .eq.eq-fige').length") == 27, "toujours 8 animés pendant un geste")
     ok(pg.evaluate("H[30].geste('vole') === false"), "geste inconnu ignoré")
+    ok(pg.evaluate("H[31].geste('tempete') && /tourbillonne/.test(H[31].element.querySelector('title').textContent) && !H[31].element.classList.contains('eq-fige')"), "geste tempête")
+    ok(pg.evaluate("document.querySelectorAll('#p .eq.eq-fige').length") == 27, "la tempête compte dans le plafond")
+    pg.wait_for_timeout(2100)
+    ok(pg.evaluate("/au repos/.test(H[31].element.querySelector('title').textContent)"), "après la tempête (1,8 s), retour à l'état d'avant")
     avant = pg.evaluate("H[2].element.querySelector('svg').outerHTML.length")
     pg.evaluate("H[2].geste('saute', { duree: 300 })")
     pendant = pg.evaluate("H[2].element.querySelector('title').textContent")
@@ -88,10 +92,17 @@ def essais_interface(nav, base, lent):
     pg.evaluate("for (var i = 0; i < 10; i++) H[i].bulle(i, undefined, { duree: 600 })")
     ok(pg.evaluate("document.querySelectorAll('.eq-bulle').length") == 6, "6 bulles au plus à la fois")
     ok(pg.evaluate("document.querySelectorAll('.eq-bulle')[0].textContent") == pg.evaluate("Equipage.phrases[0]"), "la bulle montre la phrase de son numéro")
-    pg.wait_for_timeout(900)
-    ok(pg.evaluate("document.querySelectorAll('.eq-bulle').length") == 4, "les 4 bulles en attente passent ensuite")
-    pg.wait_for_timeout(800)
-    ok(pg.evaluate("document.querySelectorAll('.eq-bulle').length") == 0, "les bulles s'effacent")
+    # sans délai fixe (le mode --lent ralentit tout) : on attend que la file avance
+    try:
+        pg.wait_for_function("document.querySelectorAll('.eq-bulle').length === 4", timeout=8000)
+        ok(True, "")
+    except Exception:
+        ok(False, "les 4 bulles en attente passent ensuite")
+    try:
+        pg.wait_for_function("document.querySelectorAll('.eq-bulle').length === 0", timeout=8000)
+        ok(True, "")
+    except Exception:
+        ok(False, "les bulles s'effacent")
     ok(pg.evaluate("[H[11].bulle(0, ['TEXTE LIBRE']), H[11].bulle(0, new Proxy(['TEXTE LIBRE'], {})), H[11].bulle(0, { 0: 'TEXTE LIBRE', length: 1 }), H[11].bulle(0, 'constructor')].every(x => x === false)"),
        "un tableau ou un objet fourni par l'appelant est refusé")
     pg.wait_for_timeout(100)
@@ -113,6 +124,8 @@ def essais_interface(nav, base, lent):
     ok(pg.evaluate("H[13].element.querySelector('.eq-flamme b').textContent") == "4", "flamme et son chiffre")
     pg.evaluate("H[14].etat('repondu')")
     ok(pg.evaluate("!!H[14].element.querySelector('.eq-fanion')"), "l'état repondu pose le fanion")
+    pg.evaluate("H[14].etat('repondu'); H[14].etat('fete')")
+    ok(pg.evaluate("!H[14].element.querySelector('.eq-fanion')"), "le fanion ne reste pas sur le podium")
     pg.evaluate("H[14].etat('attente')")
     ok(pg.evaluate("!H[14].element.querySelector('.eq-fanion') && /concentr/.test(H[14].element.querySelector('title').textContent)"), "l'état attente : concentré·e, sans fanion")
     ok(pg.evaluate("H[14].element.className.split(' ').filter(c => c === 'eq-porteur').length <= 1"), "classes sans doublon")
@@ -162,6 +175,32 @@ def essais_interface(nav, base, lent):
     ctx.close()
 
 
+BORD = PAGE.replace('<body class="ap"><div class="ap-plateau" id="p"></div>', '<body class="ap"><div class="ap-plateau" id="plateau"></div>')
+
+
+def essais_bulles_au_bord(nav, base):
+    """L'exemple de charte/applis.md : une bulle au bord gauche ou droit reste dans le plateau, et ne cache aucun pseudo."""
+    for largeur in (320, 768, 1440):
+        ctx = nav.new_context(viewport={"width": largeur, "height": 700})
+        pg = ctx.new_page()
+        pg.route(base + "/bord.html", lambda r: r.fulfill(body=BORD, content_type="text/html; charset=utf-8"))
+        pg.goto(base + "/bord.html")
+        r = pg.evaluate("""() => { var E = Equipage, J = [];
+          ['Zoé','Anli','Faïza','Kenji','Mariama','Nassim','Lucas','Inaya','Soilihi','Chloé','Ibrahim','Naïa'].forEach(function (p, i) {
+            var c = document.createElement('div'); c.className = 'ap-joueur';
+            c.innerHTML = '<span></span><span class="ap-dalle"></span><span class="ap-pseudo"></span>'; c.lastChild.textContent = p;
+            plateau.appendChild(c); J.push(E.creer(c.firstChild, i % 5 === 4 ? E.neutre() : E.aleatoire(4100 + i * 13), { taille: 96, etat: 'lobby', compagnon: false })); });
+          var t = [...document.querySelectorAll('.ap-joueur')].map(e => e.getBoundingClientRect().top), n = t.filter(x => x === t[0]).length;
+          [0, n - 1, Math.min(n, 11), 11].forEach(function (k, i) { J[k].bulle([16, 9, 12, 15][i], null, { duree: 60000 }); });
+          var pl = plateau.getBoundingClientRect(), bs = [...document.querySelectorAll('.eq-bulle')].map(b => b.getBoundingClientRect()),
+            ps = [...document.querySelectorAll('.ap-pseudo')].map(b => b.getBoundingClientRect()), cache = 0;
+          bs.forEach(b => ps.forEach(q => { if (b.left < q.right && b.right > q.left && b.top < q.bottom && b.bottom > q.top) cache++; }));
+          return { dedans: bs.every(b => b.left >= pl.left - 0.5 && b.right <= pl.right + 0.5 && b.left >= 0), defile: document.documentElement.scrollWidth > innerWidth, cache: cache }; }""")
+        ok(r["dedans"] and not r["defile"], "bulle au bord (%d px) : rognée ou débordante %s" % (largeur, r))
+        ok(r["cache"] == 0, "bulle au bord (%d px) : %d pseudo(s) caché(s)" % (largeur, r["cache"]))
+        ctx.close()
+
+
 def essais_page(nav, base):
     for schema in ("light", "dark"):
         for largeur in (320, 768, 1440):
@@ -173,7 +212,7 @@ def essais_page(nav, base):
             pg.wait_for_timeout(400)
             ok(not erreurs, "applis.html %s %d : %s" % (schema, largeur, erreurs))
             ok(pg.evaluate("document.documentElement.scrollWidth <= innerWidth"), "applis.html %s %d : défilement horizontal" % (schema, largeur))
-            ok(pg.evaluate("document.querySelectorAll('#dm-objets figure').length") == 15, "applis.html : 15 objets")
+            ok(pg.evaluate("document.querySelectorAll('#dm-objets figure').length") == 18, "applis.html : 18 objets")
             ctx.close()
 
 
@@ -182,6 +221,7 @@ def main():
     with sync_playwright() as p:
         nav = p.chromium.launch()
         essais_interface(nav, base, "--lent" in sys.argv)
+        essais_bulles_au_bord(nav, base)
         essais_page(nav, base)
         nav.close()
     s.shutdown()
