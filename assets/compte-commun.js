@@ -6,8 +6,9 @@
    - « demo » : des données fictives, en mémoire. Rien n'est envoyé,
      rien n'est gardé : recharger la page efface tout. C'est le mode
      par défaut, tant que reglages.js ne dit pas COMPTE_COMMUN_EN_LIGNE: true ;
-   - « supabase » : les fonctions commun_… de la base unique (SQL 0007
-     et 0008 de T101). Écrite, mais inactive tant que le réglage reste à false.
+   - « supabase » : les fonctions commun_… de la base unique (SQL 0007 v2.3
+     et 0008, en base depuis le 24/11/2026), avec la clé publique du projet.
+   Mode d'emploi, règles et exemple pour une application : docs/COMPTE-COMMUN.md.
 
    Chaque appel porte le nom et les paramètres de la fonction SQL
    (commun_creer, p_pseudo…), et rend toujours une promesse qui se
@@ -62,46 +63,104 @@
   function copie(x) { return x == null ? x : JSON.parse(JSON.stringify(x)); }
   function maintenant() { return new Date().toISOString(); }
 
+  /* Le jeton de l'élève sur cet appareil (décision de l'enseignant, 24/11) :
+     - par défaut, dans l'onglet seulement (sessionStorage) : fermer l'onglet suffit à partir,
+       et la base refuse le jeton après 1 jour ;
+     - avec « C'est mon téléphone », dans le navigateur (localStorage), 30 jours après le dernier usage.
+     Tous les sites de babash.github.io sont à la même origine : le jeton posé ici est lu par les
+     autres applications. Jamais de code ni de jeton dans une adresse. */
+  function magasin(nom) {
+    try { var m = window[nom]; m.getItem('x'); return m; } catch (e) { return null; }
+  }
   function lireStockage(nom) {
-    try { return JSON.parse(localStorage.getItem(nom) || 'null'); } catch (e) { return null; }
+    var l = [magasin('sessionStorage'), magasin('localStorage')];
+    for (var i = 0; i < l.length; i++) {
+      if (!l[i]) continue;
+      try { var v = JSON.parse(l[i].getItem(nom) || 'null'); if (v) return v; } catch (e) { /* illisible : ignoré */ }
+    }
+    return null;
   }
-  function ecrireStockage(nom, valeur) {
+  function ecrireStockage(nom, valeur, durable) {
+    var s = magasin('sessionStorage'), l = magasin('localStorage');
+    try { if (s) s.removeItem(nom); } catch (e) { /* rien */ }
+    try { if (l) l.removeItem(nom); } catch (e) { /* rien */ }
+    if (valeur == null) return;
+    var cible = durable ? l : s;
+    try { if (cible) cible.setItem(nom, JSON.stringify(valeur)); } catch (e) { /* navigation privée : la session vaut pour cette page */ }
+  }
+
+  /* Un code ou un jeton ne passe jamais par une adresse : s'il y en a un (lien mal fait, copie
+     d'écran), il est retiré de la barre d'adresse et n'est pas utilisé. Le code de classe
+     (4 lettres, public) reste permis. */
+  (function nettoyerAdresse() {
     try {
-      if (valeur == null) localStorage.removeItem(nom);
-      else localStorage.setItem(nom, JSON.stringify(valeur));
-    } catch (e) { /* navigation privée : la session vaut pour cette page */ }
-  }
+      var u = new URL(location.href), sale = false;
+      ['code', 'jeton', 'token', 'code_prof', 'cle'].forEach(function (k) { if (u.searchParams.has(k)) { u.searchParams.delete(k); sale = true; } });
+      if (/(^|[#&])(code|jeton|token)=/i.test(u.hash.slice(1))) { u.hash = ''; sale = true; }
+      if (sale) {
+        history.replaceState(null, '', u.pathname + u.search + u.hash);
+        if (window.console) console.warn('[compte commun] un code ou un jeton était dans l\'adresse : retiré, jamais utilisé.');
+      }
+    } catch (e) { /* ancien navigateur */ }
+  })();
 
   /* ═════════════════════════════════════════════════════════════
      Mode « supabase » : les fonctions commun_… de la base unique.
      Seule la clé publique (« anon » ou « publishable ») va ici.
      ═════════════════════════════════════════════════════════════ */
 
+  /* Les messages d'une erreur de l'API, en français, sans jargon */
+  function messageHttp(statut) {
+    if (statut === 404) return 'Cette fonction du compte commun n\'est pas encore installée sur la base. Préviens ton enseignant·e.';
+    if (statut === 401 || statut === 403) return 'La base refuse la clé de cette page. Préviens ton enseignant·e.';
+    if (statut === 429) return 'Trop de demandes en même temps : attends une minute, puis réessaie.';
+    if (statut >= 500) return 'La base du compte commun ne répond pas pour l\'instant. Réessaie dans un moment.';
+    return 'Le compte commun ne répond pas comme prévu (code ' + statut + '). Réessaie dans un moment.';
+  }
+
+  /* Les fonctions prévues par une migration à venir : la page le dit, sans rien envoyer */
+  var FONCTIONS_A_VENIR = {
+    commun_prof_offrir: 'Offrir un trophée arrive avec le catalogue des avatars (migration 0010).',
+    commun_prof_niveau_eleve: 'Le niveau arrive avec sa migration (T132e) : rien n\'est envoyé pour l\'instant.',
+    commun_prof_niveau_classe: 'Le niveau arrive avec sa migration (T132e) : rien n\'est envoyé pour l\'instant.'
+  };
+
   function implementationSupabase(cfg) {
     var base = String(cfg.url || '').replace(/\/+$/, '');
+    var HORS_LIGNE = { ok: false, hors_ligne: true, message: 'Pas de connexion : vérifie le wifi ou les données mobiles, puis réessaie. Rien n\'est perdu.' };
     return {
       nom: 'supabase',
       appeler: function (fonction, params) {
         if (typeof fetch !== 'function') {
           return Promise.resolve({ ok: false, message: 'Ce navigateur est trop ancien pour le compte commun.' });
         }
+        if (FONCTIONS_A_VENIR[fonction] && !(reglage.niveau && /niveau/.test(fonction))) return Promise.resolve({ ok: false, a_venir: true, message: FONCTIONS_A_VENIR[fonction] });
+        if (typeof navigator !== 'undefined' && navigator.onLine === false) return Promise.resolve(copie(HORS_LIGNE));
+        var arret = typeof AbortController === 'function' ? new AbortController() : null;
+        var minuteur = arret ? setTimeout(function () { arret.abort(); }, 20000) : null;
         return fetch(base + '/rest/v1/rpc/' + fonction, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            apikey: cfg.cle_publique
-          },
-          body: JSON.stringify(params || {})
+          headers: { 'Content-Type': 'application/json', apikey: cfg.cle_publique },
+          body: JSON.stringify(params || {}),
+          signal: arret ? arret.signal : undefined,
+          credentials: 'omit',
+          referrerPolicy: 'no-referrer',
+          cache: 'no-store'
         }).then(function (r) {
           if (r.ok) return r.json();
           return r.text().then(function (t) {
+            /* Le détail technique va dans la console, jamais à l'écran (il peut citer le SQL) */
             if (window.console) console.warn('[compte commun] ' + fonction + ' : code ' + r.status + ' ' + t.slice(0, 300));
-            return { ok: false, message: 'Le compte commun ne répond pas comme prévu (code ' + r.status + '). Réessaie dans un moment.' };
+            return { ok: false, statut: r.status, message: messageHttp(r.status) };
           });
         }).then(function (rep) {
-          return rep && typeof rep === 'object' ? rep : { ok: false, message: 'Réponse inattendue du compte commun.' };
-        }).catch(function () {
-          return { ok: false, hors_ligne: true, message: 'Le compte commun est injoignable : vérifie la connexion, puis réessaie.' };
+          return rep && typeof rep === 'object' ? rep : { ok: false, message: 'Réponse inattendue du compte commun. Réessaie dans un moment.' };
+        }).catch(function (e) {
+          if (e && e.name === 'AbortError') return { ok: false, hors_ligne: true, message: 'Le compte commun met trop de temps à répondre : la connexion est peut-être lente. Réessaie.' };
+          return copie(HORS_LIGNE);
+        }).then(function (rep) {
+          if (minuteur) clearTimeout(minuteur);
+          return rep;
         });
       }
     };
@@ -117,7 +176,7 @@
     var apps = [
       ['commun', 'Ressources NSI et SNT', 'https://babash.github.io/Babash-NSI-SNT/eleve/'],
       ['td', 'Feuilles de TD en ligne', 'https://babash.github.io/Babash-NSI-SNT/'],
-      ['calendrier', 'Calendrier des vacances', 'https://babash.github.io/Babash-NSI-SNT/calendrier/'],
+      ['vacances', 'Calendrier des vacances', 'https://babash.github.io/Babash-NSI-SNT/calendrier/'],
       ['quizz_nsi', 'QuizzNSI', 'https://babash.github.io/quizz-nsi/'],
       ['gombessa', 'Expédition Gombessa', 'https://babash.github.io/gombessa/'],
       ['court_circuit', 'Court-circuit', 'https://babash.github.io/court-circuit/'],
@@ -135,7 +194,7 @@
       ['td', 'erreur-surmontee', 'Erreur surmontée', 'Valider un exercice après au moins un essai raté.', 'perseverance', 'page', ['compagnon:robot']],
       ['td', 'lecteur-de-traces', 'Lecteur de traces', 'Lire jusqu\'au bout le message d\'erreur de Python.', 'maitrise', 'page', [], 'Il paraît que certains messages d\'erreur cachent un indice.'],
       ['quizz_nsi', 'jusqu-au-bout', 'Jusqu\'au bout', 'Suivre un cours-quiz jusqu\'à la dernière question.', 'perseverance', 'page', []],
-      ['calendrier', 'dix-jours-differents', 'Dix jours différents', 'Faire un mini-jeu dix jours différents, dans l\'ordre que tu veux.', 'perseverance', 'page', []],
+      ['vacances', 'dix-jours-differents', 'Dix jours différents', 'Faire un mini-jeu dix jours différents, dans l\'ordre que tu veux.', 'perseverance', 'page', []],
       ['court_circuit', 'premier-circuit', 'Premier circuit', 'Faire avancer son robot jusqu\'au bout d\'un circuit.', 'premiers_pas', 'serveur', []],
       ['court_circuit', 'sortie-de-la-grotte', 'Sortie de la grotte', 'Trouver la sortie de la grotte avec une boucle.', 'exploration', 'serveur', ['compagnon:roussette']],
       ['gombessa', 'premiere-plongee', 'Première plongée', 'Réussir sa première mission.', 'premiers_pas', 'serveur', ['compagnon:tortue']],
@@ -151,7 +210,7 @@
       ['td', 'feuille_validee', 'Feuille de TD validée en ligne', 30, true],
       ['td', 'exercice_valide', 'Exercice de TD validé en ligne', 5, true],
       ['quizz_nsi', 'cours_quiz_suivi', 'Cours-quiz suivi jusqu\'au bout', 15, true],
-      ['calendrier', 'mini_jeu_fait', 'Mini-jeu du calendrier des vacances', 5, true],
+      ['vacances', 'mini_jeu_fait', 'Mini-jeu du calendrier des vacances', 5, true],
       ['gombessa', 'mission_reussie', 'Mission réussie dans Expédition Gombessa', 10, false],
       ['court_circuit', 'challenge_reussi', 'Challenge réussi dans Court-circuit', 10, false],
       ['grand_oral', 'etape_dossier', 'Étape du dossier de Grand oral', 15, false],
@@ -164,13 +223,13 @@
       ['td', 'feuille_validee', 'td:boucles-td2', 'TD 2 : les boucles'],
       ['td', 'exercice_valide', 'td:boucles-td2/ex3', 'TD 2 : les boucles, exercice 3'],
       ['quizz_nsi', 'cours_quiz_suivi', 'quizz:piles-files', 'Cours-quiz : piles et files'],
-      ['calendrier', 'mini_jeu_fait', 'cal:jour-01', 'Calendrier : jour 1']
+      ['vacances', 'mini_jeu_fait', 'cal:jour-01', 'Calendrier : jour 1']
     ].map(function (a) { return { application: a[0], evenement: a[1], cle: a[2], nom: a[3], actif: true }; });
 
     /* Tableaux de bord : dans la démonstration, ils ouvrent la démonstration de chaque application */
     var adressesProf = {
       commun: 'https://babash.github.io/Babash-NSI-SNT/enseignant/',
-      calendrier: 'https://babash.github.io/Babash-NSI-SNT/calendrier/prof.html',
+      vacances: 'https://babash.github.io/Babash-NSI-SNT/calendrier/prof.html',
       gombessa: 'https://babash.github.io/gombessa/prof.html',
       lagon: 'https://babash.github.io/lagon-arena/prof.html?demo',
       court_circuit: 'https://babash.github.io/court-circuit/prof.html?demo'
@@ -196,6 +255,7 @@
     function ilYa(jours, heures) { return new Date(Date.now() - (jours * 24 + (heures || 0)) * 3600e3).toISOString(); }
     function chiffres() { return String(Math.floor(Math.random() * 1000) + 1000).slice(1); }
 
+    var NIVEAUX_DEMO = ['seconde', 'premiere', 'terminale'];
     var MOTS_DEMO = ['ESSAI', 'MAQUETTE', 'EXEMPLE', 'BROUILLON', 'APERCU', 'MODELE'];
     function nouveauCodeEleve() {
       var c;
@@ -328,7 +388,7 @@
       var k = D.comptes[cid];
       if (!k) return null;
       return {
-        pseudo: k.pseudo, pseudo_provisoire: k.pseudo_provisoire, avatar: copie(k.avatar), credits: k.credits,
+        pseudo: k.pseudo, pseudo_provisoire: k.pseudo_provisoire, avatar: copie(k.avatar), credits: k.credits, niveau: k.niveau || null,
         codes: D.codes.filter(function (x) { return x.compte_id === cid; })
           .sort(function (a, b) { return (b.principal - a.principal) || (a.cree_le < b.cree_le ? -1 : 1); })
           .map(function (x) { return { application: x.application, code_affiche: x.code_affiche, principal: x.principal }; }),
@@ -373,6 +433,7 @@
         var ps = nettoyerPseudo(p.p_pseudo);
         if (!ps) return { ok: false, message: 'Choisis un prénom ou un pseudo de 2 à 24 caractères (jamais ton nom de famille).' };
         var cid = creerCompte(ps), code = nouveauCodeEleve();
+        if (p.p_niveau) D.comptes[cid].niveau = p.p_niveau;
         donnerCode(cid, code);
         return { ok: true, code_affiche: code, jeton: ouvrirSession(cid), fiche: fiche(cid) };
       },
@@ -446,14 +507,14 @@
       commun_evenement_page: function (p) {
         var cid = compteParSession(p.p_jeton);
         if (!cid) return { ok: false, message: 'Entre ton code pour garder tes crédits.' };
-        if (['td', 'calendrier', 'quizz_nsi'].indexOf(p.p_application) < 0) return { ok: false, message: 'Cette page ne donne pas de crédits.' };
+        if (['td'].indexOf(p.p_application) < 0) return { ok: false, message: 'Cette page ne donne pas de crédits.' };
         var g = gagnerXp(cid, p.p_application, p.p_evenement, p.p_cle, 'page');
         return { ok: true, credits_gagnes: g, message: g > 0 ? 'Bien joué : c\'est gardé.' : 'C\'est déjà gardé (une activité ne compte qu\'une fois).' };
       },
       commun_haut_fait_page: function (p) {
         var cid = compteParSession(p.p_jeton);
         if (!cid) return EXPIRE;
-        if (['td', 'calendrier', 'quizz_nsi'].indexOf(p.p_application) < 0) return { ok: false, message: 'Cette application n\'accorde pas de haut fait depuis sa page.' };
+        if (['td'].indexOf(p.p_application) < 0) return { ok: false, message: 'Cette application n\'accorde pas de haut fait depuis sa page.' };
         return { ok: true, nouveautes: accorder(cid, p.p_application, [p.p_haut_fait], 'page') };
       },
       commun_quitter: function (p) { delete D.sessions[p.p_jeton]; return { ok: true }; },
@@ -586,7 +647,7 @@
             }) },
           eleves: D.inscriptions.filter(function (i) { return i.classe_id === c.id; }).map(function (i) { return D.comptes[i.compte_id]; })
             .sort(trierPseudo).map(function (k) {
-              return { compte: k.id, pseudo: k.pseudo, avatar: copie(k.avatar), xp: k.xp, credits: k.credits, vu_le: k.vu_le,
+              return { compte: k.id, pseudo: k.pseudo, niveau: k.niveau || null, avatar: copie(k.avatar), xp: k.xp, credits: k.credits, vu_le: k.vu_le,
                 codes: D.codes.filter(function (x) { return x.compte_id === k.id; }).map(function (x) { return x.code_affiche; }),
                 /* Proposition T101b (à ajouter à commun_prof_classe) : les trophées, avec leur motif */
                 trophees: D.debloques.filter(function (d) { return d.compte_id === k.id && d.origine !== 'achat'; }).map(function (d) {
@@ -659,6 +720,25 @@
         D.comptes[p.p_compte].pseudo = ps;
         D.comptes[p.p_compte].pseudo_provisoire = false;
         return { ok: true, pseudo: ps };
+      },
+      /* Le niveau (décision de l'enseignant du 24/11, 11:34) : choisi par l'élève à la création
+         de son code seulement ; ensuite, seul·e l'enseignant·e le change, par élève ou pour toute une classe */
+      commun_prof_niveau_eleve: function (p) {
+        var pid = prof(p.p_code);
+        if (!pid) return MAUVAIS_PROF;
+        if (NIVEAUX_DEMO.indexOf(p.p_niveau) < 0) return { ok: false, message: 'Niveau inconnu.' };
+        if (!eleveVisible(pid, p.p_compte)) return { ok: false, message: 'Cet·te élève n\'est dans aucune de tes classes communes.' };
+        D.comptes[p.p_compte].niveau = p.p_niveau;
+        return { ok: true, niveau: p.p_niveau };
+      },
+      commun_prof_niveau_classe: function (p) {
+        var pid = prof(p.p_code);
+        if (!pid) return MAUVAIS_PROF;
+        if (!classeDuProf(pid, p.p_classe)) return PAS_A_TOI;
+        if (NIVEAUX_DEMO.indexOf(p.p_niveau) < 0) return { ok: false, message: 'Niveau inconnu.' };
+        var n = 0;
+        D.inscriptions.forEach(function (i) { if (i.classe_id === p.p_classe) { D.comptes[i.compte_id].niveau = p.p_niveau; n += 1; } });
+        return { ok: true, eleves: n };
       },
       commun_prof_nouveau_code_eleve: function (p) {
         var pid = prof(p.p_code);
@@ -837,7 +917,7 @@
     var enLigne = r.COMPTE_COMMUN_EN_LIGNE === true || r.en_ligne === true;
     var cc = r.compte_commun || r;
     var url = cc.url || '', cle = cc.cle_publique || '';
-    reglage = { en_ligne: false, probleme: null };
+    reglage = { en_ligne: false, probleme: null, niveau: r.COMPTE_COMMUN_NIVEAU === true || r.niveau === true };
     if (!enLigne) { impl = implementationDemo(); return mode(); }
     if (!/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(url) || !cle) {
       reglage.probleme = 'COMPTE_COMMUN_EN_LIGNE vaut true, mais l\'adresse du projet (compte_commun.url) ou sa clé publique '
@@ -846,7 +926,7 @@
       impl = implementationDemo();
       return mode();
     }
-    if (/service_role|sb_secret_/.test(cle)) {
+    if (/service_role|sb_secret_/.test(cle) || roleJwt(cle) && roleJwt(cle) !== 'anon') {
       reglage.probleme = 'La clé donnée dans reglages.js n\'est pas une clé publique : elle est refusée, la page reste en démonstration.';
       impl = implementationDemo();
       return mode();
@@ -856,6 +936,12 @@
     return mode();
   }
   function mode() { return implementation().nom; }
+  /* Le rôle d'une ancienne clé « anon » (un JWT) : seule « anon » est acceptée */
+  function roleJwt(cle) {
+    var m = /^ey[^.]+\.([^.]+)\./.exec(cle || '');
+    if (!m) return null;
+    try { return JSON.parse(atob(m[1].replace(/-/g, '+').replace(/_/g, '/'))).role || '?'; } catch (e) { return '?'; }
+  }
 
   /* ── La session de l'élève sur cet appareil ── */
   var sessionMemoire = null;
@@ -866,9 +952,16 @@
     return s;
   }
   function garderSession(jeton, jours, pseudo) {
-    var s = { jeton: jeton, jusqu: new Date(Date.now() + jours * 864e5).toISOString(), pseudo: pseudo || null };
+    var s = { jeton: jeton, jusqu: new Date(Date.now() + jours * 864e5).toISOString(), pseudo: pseudo || null, appareil: jours === 30 };
     if (mode() === 'demo') sessionMemoire = s;
-    else ecrireStockage(CLE_SESSION, s);
+    else ecrireStockage(CLE_SESSION, s, jours === 30);
+  }
+  /* Le pseudo gardé avec le jeton, après un changement de pseudo (pour « Continuer en tant que… ») */
+  function noterPseudo(pseudo) {
+    var s = lireSession();
+    if (!s || !pseudo) return;
+    s.pseudo = pseudo;
+    if (mode() === 'demo') sessionMemoire = s; else ecrireStockage(CLE_SESSION, s, !!s.appareil);
   }
   function oublierSession() {
     sessionMemoire = null;
@@ -884,12 +977,14 @@
     params.p_jeton = j;
     return appeler(fonction, params).then(function (rep) {
       if (!rep.ok && /expiré/.test(rep.message || '')) { oublierSession(); rep.sans_session = true; }
+      if (rep.ok && rep.fiche && rep.fiche.pseudo) noterPseudo(rep.fiche.pseudo);
+      if (rep.ok && rep.pseudo) noterPseudo(rep.pseudo);
       return rep;
     });
   }
   function apresEntree(jours) {
     return function (rep) {
-      if (rep.ok && rep.jeton) garderSession(rep.jeton, jours, rep.fiche && rep.fiche.pseudo);
+      if (rep.ok && rep.jeton) { oublierSession(); garderSession(rep.jeton, jours, rep.fiche && rep.fiche.pseudo); }
       if (rep.jeton) delete rep.jeton; // le jeton reste dans le module, jamais dans la page
       return rep;
     };
@@ -957,6 +1052,15 @@
     retirerEleve: function (classe, compte) { return avecProf('commun_prof_retirer_eleve', { p_classe: classe, p_compte: compte }); },
     renommerEleve: function (compte, pseudo) { return avecProf('commun_prof_renommer_eleve', { p_compte: compte, p_pseudo: pseudo }); },
     nouveauCodeEleve: function (compte) { return avecProf('commun_prof_nouveau_code_eleve', { p_compte: compte }); },
+    /* Masqués tant que le réglage COMPTE_COMMUN_NIVEAU reste à false (migration de T132e) */
+    niveauEleve: function (compte, niveau) {
+      if (!reglage.niveau) return Promise.resolve({ ok: false, a_venir: true, message: FONCTIONS_A_VENIR.commun_prof_niveau_eleve });
+      return avecProf('commun_prof_niveau_eleve', { p_compte: compte, p_niveau: niveau });
+    },
+    niveauClasse: function (classe, niveau) {
+      if (!reglage.niveau) return Promise.resolve({ ok: false, a_venir: true, message: FONCTIONS_A_VENIR.commun_prof_niveau_classe });
+      return avecProf('commun_prof_niveau_classe', { p_classe: classe, p_niveau: niveau });
+    },
     nouveauCode: function () {
       return avecProf('commun_prof_nouveau_code', {}).then(function (rep) {
         if (rep.ok && rep.code_affiche) {
@@ -1163,6 +1267,88 @@
     });
   }
 
+  /* ═════════════════════════════════════════════════════════════
+     Les niveaux : les libellés des référentiels du site (donnees/referentiels/valeurs.json),
+     jamais un synonyme. « Seconde · SNT », « Première · NSI », « Terminale · NSI ».
+     ═════════════════════════════════════════════════════════════ */
+  var niveauxPromesse = null;
+  var NIVEAU_ENSEIGNEMENT = { seconde: 'snt', premiere: 'nsi', terminale: 'nsi' };
+  function chargerNiveaux() {
+    if (niveauxPromesse) return niveauxPromesse;
+    niveauxPromesse = (typeof fetch === 'function' && RACINE ? fetch(RACINE + 'donnees/referentiels/valeurs.json').then(function (r) {
+      if (!r.ok) throw new Error('code ' + r.status);
+      return r.json();
+    }) : Promise.reject(new Error('lecture impossible'))).then(function (v) {
+      var ens = {};
+      (v.enseignements || []).forEach(function (e) { ens[e.id] = e.libelle; });
+      return (v.niveaux || []).filter(function (n) { return NIVEAU_ENSEIGNEMENT[n.id]; }).map(function (n) {
+        return { id: n.id, libelle: n.libelle + ' · ' + (ens[NIVEAU_ENSEIGNEMENT[n.id]] || NIVEAU_ENSEIGNEMENT[n.id].toUpperCase()), court: n.court };
+      });
+    }).catch(function (e) {
+      if (window.console) console.warn('[compte commun] référentiel des niveaux illisible : ' + (e && e.message || e));
+      return [];
+    });
+    return niveauxPromesse;
+  }
+
+  /* ═════════════════════════════════════════════════════════════
+     Le bandeau « Zoé · mes applications » : des liens simples vers les
+     autres applications, qui gardent le compte (même origine, même onglet).
+     Aucun jeton ni code dans les liens. L'application appelle
+     CompteCommun.bandeau(element, { application: 'quizz_nsi' }).
+     ═════════════════════════════════════════════════════════════ */
+  var STYLE_BANDEAU = [
+    '.ccb{--ccb-fond:#F4F6FB;--ccb-encre:#141824;--ccb-trait:#C9D1E3;--ccb-accent:#0E6177;font:inherit;font-size:.95rem;color:var(--ccb-encre);',
+    'background:var(--ccb-fond);border:1px solid var(--ccb-trait);border-radius:6px;padding:.35rem .6rem;max-width:100%;box-sizing:border-box}',
+    '@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .ccb{--ccb-fond:#161A26;--ccb-encre:#E8ECF6;--ccb-trait:#33405C;--ccb-accent:#5EE3F5}}',
+    ':root[data-theme=dark] .ccb{--ccb-fond:#161A26;--ccb-encre:#E8ECF6;--ccb-trait:#33405C;--ccb-accent:#5EE3F5}',
+    '.ccb summary{cursor:pointer;font-weight:700;overflow-wrap:anywhere}.ccb summary:focus-visible,.ccb a:focus-visible,.ccb button:focus-visible{outline:2px solid var(--ccb-accent);outline-offset:2px}',
+    '.ccb ul{list-style:none;margin:.4rem 0 0;padding:0;display:flex;flex-wrap:wrap;gap:.3rem .8rem}.ccb a{color:var(--ccb-accent)}',
+    '.ccb button{font:inherit;color:var(--ccb-encre);background:none;border:1px solid var(--ccb-trait);border-radius:4px;padding:.15rem .5rem;margin-top:.4rem;cursor:pointer}'
+  ].join('');
+  function bandeau(conteneur, options) {
+    options = options || {};
+    if (!conteneur || typeof document === 'undefined') return Promise.resolve(null);
+    if (!document.getElementById('compte-commun-bandeau-style')) {
+      var st = document.createElement('style');
+      st.id = 'compte-commun-bandeau-style';
+      st.textContent = STYLE_BANDEAU;
+      (document.head || document.documentElement).appendChild(st);
+    }
+    conteneur.textContent = '';
+    var s = lireSession();
+    if (!s) return Promise.resolve(null);
+    var d = document.createElement('details');
+    d.className = 'ccb';
+    var sm = document.createElement('summary');
+    sm.textContent = (s.pseudo || 'Mon compte') + ' · mes applications';
+    d.appendChild(sm);
+    var ul = document.createElement('ul');
+    d.appendChild(ul);
+    function lien(texte, href) {
+      var li = document.createElement('li'), a = document.createElement('a');
+      a.href = href; a.textContent = texte; li.appendChild(a); ul.appendChild(li);
+    }
+    lien('Mon avatar', RACINE ? RACINE + 'eleve/' : 'https://babash.github.io/Babash-NSI-SNT/eleve/');
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = 'Ce n\'est pas moi';
+    b.addEventListener('click', function () {
+      window.CompteCommun.quitter().then(function () {
+        conteneur.textContent = '';
+        try { document.dispatchEvent(new CustomEvent('compte-commun:sortie')); } catch (e) { /* ancien navigateur */ }
+      });
+    });
+    d.appendChild(b);
+    conteneur.appendChild(d);
+    return appeler('commun_catalogue', {}).then(function (cat) {
+      ((cat && cat.applications) || []).forEach(function (a) {
+        if (a.adresse && a.id !== 'commun' && a.id !== options.application) lien(a.nom, a.adresse);
+      });
+      return d;
+    });
+  }
+
   window.CompteCommun = {
     version: 1,
     configurer: configurer,
@@ -1175,6 +1361,7 @@
     /* L'élève */
     connecte: function () { return !!jeton(); },
     pseudoMemorise: function () { var s = lireSession(); return s ? s.pseudo : null; },
+    oublier: function () { oublierSession(); },
     catalogue: function () {
       return Promise.all([appeler('commun_catalogue', {}), chargerApparences()]).then(function (r) {
         var rep = r[0];
@@ -1184,8 +1371,16 @@
       });
     },
     creer: function (pseudo, options) {
-      return appeler('commun_creer', { p_pseudo: pseudo, p_garde_jours: jours(options) }).then(apresEntree(jours(options)));
+      var p = { p_pseudo: pseudo, p_garde_jours: jours(options) };
+      /* Le niveau n'est envoyé que si sa migration est appliquée (réglage COMPTE_COMMUN_NIVEAU) */
+      if (reglage.niveau && options && options.niveau) p.p_niveau = options.niveau;
+      return appeler('commun_creer', p).then(apresEntree(jours(options)));
     },
+    niveauActif: function () { return !!reglage.niveau; },
+    niveaux: chargerNiveaux,
+    disponible: function (fonction) { if (/niveau/.test(fonction)) return !!reglage.niveau; return mode() === 'demo' || !FONCTIONS_A_VENIR[fonction]; },
+    qui: function () { var s = lireSession(); return s ? { pseudo: s.pseudo, appareil: !!s.appareil } : null; },
+    bandeau: bandeau,
     entrer: function (code, options) {
       return appeler('commun_entrer', { p_code: code, p_garde_jours: jours(options) }).then(apresEntree(jours(options)));
     },
