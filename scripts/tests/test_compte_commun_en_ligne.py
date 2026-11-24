@@ -171,6 +171,10 @@ async def parcours(monde, captures):
         await prof.get_by_role("link", name="← Mes classes").click()
         await attendre_texte(prof, "Mes classes")
     verifier(await prof.locator(".cc-classe-carte").count() == 2, "les deux classes sont sur l'accueil de l'espace")
+    await prof.locator("summary", has_text="Réglages de mon espace").click()
+    t = await prof.locator("main").inner_text()
+    verifier("Ajouter un espace d'application" not in t and "Relier cet espace" not in t and "code d'un espace d'application" not in t, "espace enseignant·e : pas de lien vers un espace d'application tant qu'aucune n'est branchée")
+    await prof.locator("summary", has_text="Réglages de mon espace").click()
 
     # ── 2. Trois élèves rejoignent « Seconde 4 » par le lien de classe ──
     code_classe = classes["Seconde 4"][0]
@@ -195,6 +199,17 @@ async def parcours(monde, captures):
     verifier(len(noms) == 3 and any("Ali" in n for n in noms), f"Chloé voit ses 3 camarades ({', '.join(n.replace(chr(10), ' ') for n in noms)})")
     texte = await pg.locator("#panneau-classe").inner_text()
     verifier(eleves["Ali"][2] not in texte and "XP" not in texte, "Chloé ne voit ni le code ni l'XP d'Ali")
+    # Aucune phrase n'annonce ce qui n'existe pas encore (aucune application branchée)
+    await pg.get_by_role("tab", name="Applications").click()
+    t = await pg.locator("#panneau-applications").inner_text()
+    verifier("Bientôt, ton code marchera" in t and "reconnaissent toutes seules" not in t, "onglet Applications : « bientôt », pas de promesse")
+    await pg.get_by_role("tab", name="Crédits et codes").click()
+    t = await pg.locator("#panneau-credits").inner_text()
+    verifier("seul·e ton enseignant·e peut t'en donner" in t and "Ajouter un autre de mes codes" not in t and "applications qui le permettent" not in t,
+             "onglet Crédits et codes : ni code d'une autre application, ni effacement « partout », crédits dits tels qu'ils sont")
+    await pg.get_by_role("tab", name="Hauts faits").click()
+    t = await pg.locator("#panneau-hauts-faits").inner_text()
+    verifier("pourra compter" not in t and "arrivent bientôt" in t, "onglet Hauts faits : « bientôt », sans promesse")
     # Le bandeau « mes applications »
     n = await pg.evaluate("""async () => { const d = document.createElement('div'); document.body.appendChild(d);
       await CompteCommun.bandeau(d, { application: 'commun' }); return d.textContent; }""")

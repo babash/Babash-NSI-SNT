@@ -36,6 +36,9 @@ reglages({
   // Le niveau de l'élève (Seconde · SNT, Première · NSI, Terminale · NSI) : choisi à la création du code,
   // changé ensuite par l'enseignant·e seulement. À mettre à true après l'application de sa migration (T132e).
   COMPTE_COMMUN_NIVEAU: false,
+  // Vrai quand au moins une application (QuizzNSI, le calendrier…) lit le compte commun : les pages parlent
+  // alors des codes des applications, du lien d'un espace d'application et des crédits qu'elles donnent.
+  COMPTE_COMMUN_APPLICATIONS: false,
 
   // Les rubriques. Depuis T51b, le site prend la liste et l'ordre des rubriques dans la vitrine
   // (donnees/vitrine.json, réglée dans l'admin) : cette liste n'est plus lue par les pages.

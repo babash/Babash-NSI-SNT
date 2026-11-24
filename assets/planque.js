@@ -45,7 +45,8 @@
     P.initialiser(O);
     CC.configurer(O.reglages());
     main = P.entete(racine, { page: 'eleve', puce: 'Élève', surTitre: ['compte commun'], titre: 'Ma planque',
-      chapo: 'Ton avatar, tes hauts faits et ta classe. Un seul code pour toutes les applications.' });
+      chapo: CC.applicationsBranchees() ? 'Ton avatar, tes hauts faits et ta classe. Un seul code pour toutes les applications.'
+        : 'Ton avatar et ta classe, avec un seul code. Bientôt, ce code marchera aussi dans les applications du site.' });
     classeLien = lireClasseDeLAdresse();
     main.appendChild(el('p', { class: 'vide' }, 'Chargement…'));
     CC.catalogue().then(function (rep) {
@@ -107,7 +108,7 @@
       });
     });
     grille.appendChild(P.carte('Je suis nouveau ou nouvelle', [
-      el('p', { class: 'petit' }, 'Tu reçois un code. Il te servira dans toutes les applications du site.'), f2], { id: 'titre-creer' }));
+      el('p', { class: 'petit' }, CC.applicationsBranchees() ? 'Tu reçois un code. Il te servira dans toutes les applications du site.' : 'Tu reçois un code, qui te fait revenir ici depuis n\'importe quel appareil.'), f2], { id: 'titre-creer' }));
     main.appendChild(grille);
 
     if (messageDepart) main.insertBefore(el('p', { class: 'cc-message cc-info', role: 'status' }, messageDepart), main.firstChild);
@@ -245,7 +246,7 @@
       avatar,
       el('div', { class: 'cc-tete-texte' }, [
         titre,
-        el('p', { class: 'cc-solde' }, [el('span', { class: 'cc-solde-nombre' }, String(fiche.credits)), ' crédits à dépenser en apparences']),
+        el('p', { class: 'cc-solde' }, [el('span', { class: 'cc-solde-nombre' }, String(fiche.credits)), boutiqueOuverte() ? ' crédits à dépenser en apparences' : ' crédits (la boutique ouvre bientôt)']),
         classes.length ? el('p', { class: 'petit' }, classes.map(function (c) { return c.nom; }).join(' · ')) : null,
         CC.niveauActif() && fiche.niveau && libelleNiveau(fiche.niveau) ? el('p', { class: 'petit' }, 'Niveau : ' + libelleNiveau(fiche.niveau)) : null,
         el('div', { class: 'cc-actions' }, [pasMoi, sortir])
@@ -513,11 +514,11 @@
     var mesApps = appsDeMesClasses();
     mesApps.commun = true;
     fiche.hauts_faits.forEach(function (g) { mesApps[g.application] = true; });
-    panneau.appendChild(el('p', { class: 'cc-intro' }, 'Ce que tu as fait, rangé par application. Ceux qui restent sont en gris, avec ce qu\'il faut faire. Un haut fait ne se perd jamais.'));
     if (!(cat.hauts_faits || []).length) {
-      panneau.appendChild(el('p', { class: 'vide' }, 'Les hauts faits arrivent bientôt, avec le catalogue : tout ce que tu fais d\'ici là pourra compter.'));
+      panneau.appendChild(el('p', { class: 'vide' }, 'Les hauts faits arrivent bientôt, avec le catalogue.'));
       return;
     }
+    panneau.appendChild(el('p', { class: 'cc-intro' }, 'Ce que tu as fait, rangé par application. Ceux qui restent sont en gris, avec ce qu\'il faut faire. Un haut fait ne se perd jamais.'));
     cat.applications.forEach(function (a) {
       if (!mesApps[a.id]) return;
       var hs = (cat.hauts_faits || []).filter(function (h) { return h.application === a.id && (h.actif || gagnes[a.id + '/' + h.id]); });
@@ -596,7 +597,8 @@
     }
     var deClasse = toutes.filter(function (a) { return mesApps[a.id]; });
     var autres = toutes.filter(function (a) { return !mesApps[a.id]; });
-    panneau.appendChild(el('p', { class: 'cc-intro' }, 'Ton code marche dans chacune. Sur cet appareil, elles te reconnaissent toutes seules.'));
+    panneau.appendChild(el('p', { class: 'cc-intro' }, CC.applicationsBranchees() ? 'Ton code marche dans chacune. Sur cet appareil, elles te reconnaissent toutes seules.'
+      : 'Les applications du site. Bientôt, ton code marchera dans chacune ; pour l\'instant, chacune a encore son propre code.'));
     if (deClasse.length) { panneau.appendChild(el('h3', null, 'Celles de ta classe')); panneau.appendChild(liste(deClasse)); }
     panneau.appendChild(el('h3', null, deClasse.length ? 'Les autres' : 'Les applications'));
     panneau.appendChild(liste(autres));
@@ -621,7 +623,8 @@
     panneau.appendChild(journal.length ? el('ul', { class: 'cc-journal' }, journal.map(function (j) {
       return el('li', null, [el('span', { class: 'cc-journal-date' }, P.date(j.le)), el('span', { class: 'cc-journal-quoi' }, libelleJournal(j)),
         el('span', { class: 'cc-journal-nb' + (j.credits < 0 ? ' cc-moins' : '') }, (j.credits > 0 ? '+' : '−') + Math.abs(j.credits))]);
-    })) : el('p', { class: 'vide' }, 'Rien encore : valide une feuille de TD en ligne ou suis un cours-quiz jusqu\'au bout.'));
+    })) : el('p', { class: 'vide' }, CC.applicationsBranchees() ? 'Rien encore : valide une feuille de TD en ligne ou suis un cours-quiz jusqu\'au bout.'
+      : 'Rien encore. Pour l\'instant, seul·e ton enseignant·e peut t\'en donner ; les feuilles de TD et les applications en donneront bientôt.'));
 
     /* Les codes */
     panneau.appendChild(el('h3', null, 'Mes codes'));
@@ -643,7 +646,8 @@
 
     var autre = P.champ({ etiquette: 'Un autre de tes codes (d\'une autre application)', max: 80, capitales: true, classe: 'cc-code-saisie' });
     var m1 = P.zoneMessage();
-    panneau.appendChild(P.carte('Ajouter un autre de mes codes', [
+    /* Masqué tant qu'aucune application n'est branchée : son code serait refusé */
+    if (CC.applicationsBranchees()) panneau.appendChild(P.carte('Ajouter un autre de mes codes', [
       el('p', { class: 'petit' }, 'Tes deux comptes n\'en font plus qu\'un : rien n\'est perdu, une activité faite deux fois ne compte qu\'une fois.'),
       P.formulaire([autre, P.bouton('Ajouter ce code', { type: 'submit' }), m1], function () {
         CC.lierCode(autre.input.value).then(function (rep) {
@@ -662,13 +666,13 @@
     })], { niveau: 'h3' }));
 
     var conf = P.champ({ etiquette: 'Écris EFFACER pour confirmer', max: 10, capitales: true });
-    var partout = P.caseACocher('Effacer aussi mes comptes des applications qui le permettent');
+    var partout = CC.applicationsBranchees() ? P.caseACocher('Effacer aussi mes comptes des applications qui le permettent') : null;
     var m3 = P.zoneMessage();
     panneau.appendChild(el('details', { class: 'cc-carte cc-danger' }, [
       el('summary', null, 'Effacer mes données'),
       el('p', null, 'Ton compte commun, ton avatar, tes hauts faits, tes crédits et tes codes nés sur le site sont effacés pour de bon. Ce n\'est pas réversible.'),
       P.formulaire([conf, partout, P.bouton('Effacer mes données', { type: 'submit', classe: 'cc-bouton-danger' }), m3], function () {
-        CC.effacerMoi(conf.input.value, partout.input.checked).then(function (rep) {
+        CC.effacerMoi(conf.input.value, !!(partout && partout.input.checked)).then(function (rep) {
           if (!rep.ok) { P.message(m3, rep.message, 'erreur'); return; }
           accueil(rep.message);
         });
@@ -682,7 +686,7 @@
     var ancienne = document.querySelector('.cc-carte-imprimee');
     if (ancienne) ancienne.parentNode.removeChild(ancienne);
     var carte = el('div', { class: 'cc-carte-imprimee', 'aria-hidden': 'true' }, [
-      el('p', { class: 'cc-carte-imprimee-titre' }, 'Mon code pour les applications de NSI et SNT'),
+      el('p', { class: 'cc-carte-imprimee-titre' }, CC.applicationsBranchees() ? 'Mon code pour les applications de NSI et SNT' : 'Mon code pour le site Ressources NSI et SNT'),
       pseudo ? el('p', null, 'Pseudo : ' + pseudo) : null,
       el('p', { class: 'cc-code cc-code-grand' }, code),
       el('p', null, 'Pour revenir : babash.github.io/Babash-NSI-SNT/eleve/, puis « J\'ai déjà un code ».'),

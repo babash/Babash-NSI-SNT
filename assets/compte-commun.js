@@ -917,7 +917,8 @@
     var enLigne = r.COMPTE_COMMUN_EN_LIGNE === true || r.en_ligne === true;
     var cc = r.compte_commun || r;
     var url = cc.url || '', cle = cc.cle_publique || '';
-    reglage = { en_ligne: false, probleme: null, niveau: r.COMPTE_COMMUN_NIVEAU === true || r.niveau === true };
+    reglage = { en_ligne: false, probleme: null, niveau: r.COMPTE_COMMUN_NIVEAU === true || r.niveau === true,
+      applications: r.COMPTE_COMMUN_APPLICATIONS === true || r.applications === true };
     if (!enLigne) { impl = implementationDemo(); return mode(); }
     if (!/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(url) || !cle) {
       reglage.probleme = 'COMPTE_COMMUN_EN_LIGNE vaut true, mais l\'adresse du projet (compte_commun.url) ou sa clé publique '
@@ -1377,6 +1378,9 @@
       return appeler('commun_creer', p).then(apresEntree(jours(options)));
     },
     niveauActif: function () { return !!reglage.niveau; },
+    /* Vrai quand au moins une application lit le compte commun (réglage COMPTE_COMMUN_APPLICATIONS) ;
+       toujours vrai en démonstration. Les pages taisent jusque-là ce qui n'existe pas encore. */
+    applicationsBranchees: function () { return mode() === 'demo' || !!reglage.applications; },
     niveaux: chargerNiveaux,
     disponible: function (fonction) { if (/niveau/.test(fonction)) return !!reglage.niveau; return mode() === 'demo' || !FONCTIONS_A_VENIR[fonction]; },
     qui: function () { var s = lireSession(); return s ? { pseudo: s.pseudo, appareil: !!s.appareil } : null; },

@@ -34,7 +34,8 @@
     P.initialiser(O);
     CC.configurer(O.reglages());
     main = P.entete(racine, { page: 'enseignant', puce: 'Prof', surTitre: ['compte commun'],
-      titre: 'Espace enseignant·e', chapo: 'Un seul code pour toutes les applications : tes classes, tes élèves et les tableaux de bord, rangés ensemble.' });
+      titre: 'Espace enseignant·e', chapo: CC.applicationsBranchees() ? 'Un seul code pour toutes les applications : tes classes, tes élèves et les tableaux de bord, rangés ensemble.'
+        : 'Un seul code pour tes classes communes et tes élèves, avec les tableaux de bord des applications rangés à côté. Bientôt, ce code ouvrira aussi les applications.' });
     main.appendChild(el('p', { class: 'vide' }, 'Chargement…'));
     Promise.all([CC.catalogue(), chargerTableaux(), CC.niveauActif() ? CC.niveaux() : Promise.resolve([])]).then(function (r) {
       cat = r[0] && r[0].elements ? r[0] : { applications: [], elements: [], hauts_faits: [], emplacements: [] };
@@ -91,7 +92,7 @@
     espace = null;
     var grille = el('div', { class: 'cc-deux' });
 
-    var code = P.champ({ etiquette: 'Ton code d\'enseignant·e', aide: '3 mots et 4 chiffres, ou le code d\'un espace d\'application (Hello GO…).',
+    var code = P.champ({ etiquette: 'Ton code d\'enseignant·e', aide: CC.applicationsBranchees() ? '3 mots et 4 chiffres, ou le code d\'un espace d\'application (Hello GO…).' : '3 mots et 4 chiffres.',
       exemple: 'MOT-MOT-MOT-1234', capitales: true, max: 80, classe: 'cc-code-saisie', type: 'password', autocomplete: 'off' });
     var voir = P.caseACocher('Montrer le code pendant la saisie');
     voir.input.addEventListener('change', function () { code.input.type = voir.input.checked ? 'text' : 'password'; });
@@ -251,7 +252,7 @@
     var t = tableauxDeBord || { applications: [], problemes: [] };
     var sec = el('section', { class: 'cc-section-tableaux', 'aria-labelledby': 'titre-tableaux' }, [
       el('h2', { id: 'titre-tableaux', class: 'cc-titre-section' }, 'Les tableaux de bord des applications'),
-      el('p', { class: 'petit' }, 'Chaque tableau reste dans son application : cette page les range. Une classe reliée ouvre directement le sien.')
+      el('p', { class: 'petit' }, 'Chaque tableau reste dans son application, avec son propre code : cette page les range. Une classe reliée garde le lien vers le sien.')
     ]);
     if (t.problemes.length) sec.appendChild(el('div', { class: 'alerte', role: 'alert' }, [el('p', null, el('strong', null, 'Liste des tableaux de bord incomplète')),
       el('ul', null, t.problemes.map(function (p) { return el('li', null, p); }))]));
@@ -283,7 +284,7 @@
           zoneCode.appendChild(el('p', null, rep.message));
         });
       });
-      zoneCode.appendChild(el('p', null, 'L\'ancien code ne marchera plus. Les codes de tes applications restent valables.'));
+      zoneCode.appendChild(el('p', null, 'L\'ancien code ne marchera plus.' + (CC.applicationsBranchees() ? ' Les codes de tes applications restent valables.' : '')));
       zoneCode.appendChild(el('div', { class: 'cc-actions' }, [oui, non]));
     });
     var debloquer = P.bouton('Débloquer le réseau de la salle');
@@ -293,8 +294,9 @@
     var conf = P.champ({ etiquette: 'Écris SUPPRIMER pour confirmer', max: 12, capitales: true });
     var m3 = P.zoneMessage();
     return el('details', { class: 'cc-carte' }, [el('summary', null, 'Réglages de mon espace'),
-      el('h3', null, 'Ajouter un espace d\'application'),
-      P.formulaire([autre, P.bouton('Relier cet espace', { type: 'submit' }), m1], function () {
+      /* Masqué tant qu'aucune application n'est branchée : son code serait refusé (aucun connecteur) */
+      CC.applicationsBranchees() ? el('h3', null, 'Ajouter un espace d\'application') : null,
+      !CC.applicationsBranchees() ? null : P.formulaire([autre, P.bouton('Relier cet espace', { type: 'submit' }), m1], function () {
         Prof.lierCode(autre.input.value).then(function (rep) {
           P.message(m1, rep.message, rep.ok ? 'ok' : 'erreur');
           if (rep.ok) rafraichirEspace();
