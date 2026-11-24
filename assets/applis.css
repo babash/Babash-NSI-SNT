@@ -10,7 +10,7 @@
      <link rel="stylesheet" href="https://babash.github.io/Babash-NSI-SNT/assets/applis.css">
      <script src="https://babash.github.io/Babash-NSI-SNT/assets/equipage.js"></script>
 
-   data-appli : "quizz-nsi" | "hello-go" | "calendrier" | "gombessa" | "lagon-arena".
+   data-appli : "quizz-nsi" | "hello-go" | "calendrier" | "gombessa" | "lagon-arena" | "alien-python".
    Aucune couleur nouvelle pour le texte : la palette --td-* du site (contrastes
    vérifiés : texte 7:1, texte doux 4,5:1, clair et obscur). Les néons ne sont
    qu'un décor (ombres décalées, filets), jamais porteurs de sens.
@@ -246,6 +246,68 @@
 /* Lagon Arena : la vague et le sable */
 [data-appli="lagon-arena"] { --ap-touche: var(--td-neon-1); --ap-touche-2: var(--td-neon-3); }
 [data-appli="lagon-arena"] .ap-touche { height: 20px; background: radial-gradient(circle at 50% 0, transparent 0 9px, var(--td-trait-fort) 9px 10.4px, transparent 10.4px) 0 -2px / 24px 14px repeat-x, radial-gradient(var(--ap-trame) 1px, transparent 1.2px) 0 0 / 4px 4px; }
+/* Alien Python (T137) : un signal venu d'ailleurs, capté à Mamoudzou en 2046 et décodé en coordonnées.
+   Le bandeau : une règle graduée (les colonnes de la grille) et, dessous, le signal en traits et en points ;
+   la grille : les quatre coins d'un viseur de réception ; l'alien : vert, deux antennes. Dessins originaux. */
+[data-appli="alien-python"] { --ap-touche: var(--td-neon-1); --ap-touche-2: var(--td-vert); }
+[data-appli="alien-python"] .ap-touche { height: 24px;
+  background: linear-gradient(90deg, var(--td-trait-fort) 0 1.4px, transparent 1.4px) 0 0 / 60px 9px repeat-x,
+              linear-gradient(90deg, var(--td-trait) 0 1px, transparent 1px) 0 0 / 12px 5px repeat-x,
+              radial-gradient(var(--ap-trame) 1px, transparent 1.2px) 0 0 / 5px 5px; }
+[data-appli="alien-python"] .ap-touche::after { content: ""; position: absolute; left: 0; right: 0; bottom: 4px; height: 5px;
+  background: linear-gradient(90deg, var(--td-neon-1) 0 22px, transparent 22px 30px, var(--td-neon-1) 30px 35px, transparent 35px 43px, var(--td-vert) 43px 48px, transparent 48px 56px, var(--td-neon-1) 56px 78px, transparent 78px 96px) 0 0 / 96px 100% repeat-x; }
+
+/* le code affiché : numéros, bande grise et filet par niveau (tracé différent : lisible en noir et blanc) ;
+   coloration aux couleurs des TD (7:1) avec un tracé pour chaque sorte : gras, souligné, italique */
+[data-appli="alien-python"] .al-code { margin: .5em 0; padding: 10px 12px 10px 8px; font: 400 .95rem/1.6 var(--td-mono); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0;
+  background: var(--td-code-fond); color: var(--td-code-encre); border: 1.4px solid var(--td-trait-fort); border-radius: var(--td-rayon); overflow-x: auto; tab-size: 4; white-space: pre; }
+[data-appli="alien-python"] .al-code code { font: inherit; }
+[data-appli="alien-python"] .al-code .ligne { display: block; min-height: 1.6em; white-space: pre; }
+[data-appli="alien-python"] .al-code .num { display: inline-block; width: 2ch; margin-right: 1.4ch; color: var(--td-code-num); text-align: right; user-select: none; }
+[data-appli="alien-python"] .al-ind { display: inline-block; vertical-align: top; height: 1.6em;
+  background: linear-gradient(90deg, var(--td-g0) 0 1.6px, transparent 1.6px), var(--td-bande); }
+[data-appli="alien-python"] .al-ind.n1 { background: repeating-linear-gradient(180deg, var(--td-g1) 0 4px, transparent 4px 7px) 0 0 / 1.6px 100% no-repeat, var(--td-bande-2); }
+[data-appli="alien-python"] .al-ind.n2 { background: repeating-linear-gradient(180deg, var(--td-g2) 0 2.4px, transparent 2.4px 5px) 0 0 / 2.4px 100% no-repeat, var(--td-bande); }
+[data-appli="alien-python"] .al-ind.n3 { background: linear-gradient(90deg, var(--td-g3) 0 1px, transparent 1px), var(--td-bande-2); }
+[data-appli="alien-python"] .tk-mot { color: var(--td-tk-mot); font-weight: 700; }
+[data-appli="alien-python"] .tk-fn { color: var(--td-tk-fn); text-decoration: underline; text-decoration-thickness: .09em; text-underline-offset: .26em; text-decoration-skip-ink: none; }
+[data-appli="alien-python"] .tk-ch { color: var(--td-tk-ch); font-style: italic; text-decoration: underline dotted; text-underline-offset: .28em; }
+[data-appli="alien-python"] .tk-nb { color: var(--td-tk-nb); font-weight: 700; }
+[data-appli="alien-python"] .tk-com { color: var(--td-tk-com); font-style: italic; }
+[data-appli="alien-python"] code.al-py { font-family: var(--td-mono); font-size: .92em; background: var(--td-code-fond); color: var(--td-code-encre); border: 1px solid var(--td-trait); padding: 0 .3em; }
+
+/* l'éditeur des séries inversées : le texte tapé (transparent, curseur visible) devant son miroir coloré */
+[data-appli="alien-python"] .al-editeur { position: relative; margin: .5em 0; border: 1.4px solid var(--td-trait-fort); border-radius: var(--td-rayon); background: var(--td-code-fond); }
+[data-appli="alien-python"] .al-editeur:focus-within { outline: 3px solid var(--td-focus); outline-offset: 2px; }
+[data-appli="alien-python"] .al-editeur .al-miroir { position: absolute; inset: 0; margin: 0; border: 0; overflow: hidden; pointer-events: none; }
+[data-appli="alien-python"] .al-editeur .al-miroir-in { display: block; width: max-content; min-width: 100%; will-change: transform; }
+[data-appli="alien-python"] .al-editeur textarea { position: relative; z-index: 1; display: block; width: 100%; min-height: 0; margin: 0; padding: 10px 12px 10px calc(8px + 3.4ch); border: 0; border-radius: 0;
+  background: transparent; color: transparent; caret-color: var(--td-code-encre); font: 400 .95rem/1.6 var(--td-mono); font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0;
+  letter-spacing: 0; text-transform: none; white-space: pre; overflow-wrap: normal; overflow: auto; tab-size: 4; resize: vertical; }
+[data-appli="alien-python"] .al-editeur textarea:focus-visible { outline: 0; }
+[data-appli="alien-python"] .al-editeur textarea::selection { background: rgba(0, 147, 176, .3); color: transparent; }
+
+/* la grille : couleurs du site, le chemin en trait plein numéroté, la case choisie en pointillé */
+[data-appli="alien-python"] .al-grille { position: relative; max-width: 460px; padding: 10px; }
+[data-appli="alien-python"] .al-grille::before { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(var(--ap-touche), var(--ap-touche)) 0 0 / 18px 3px, linear-gradient(var(--ap-touche), var(--ap-touche)) 0 0 / 3px 18px,
+              linear-gradient(var(--ap-touche), var(--ap-touche)) 100% 0 / 18px 3px, linear-gradient(var(--ap-touche), var(--ap-touche)) 100% 0 / 3px 18px,
+              linear-gradient(var(--ap-touche), var(--ap-touche)) 0 100% / 18px 3px, linear-gradient(var(--ap-touche), var(--ap-touche)) 0 100% / 3px 18px,
+              linear-gradient(var(--ap-touche), var(--ap-touche)) 100% 100% / 18px 3px, linear-gradient(var(--ap-touche), var(--ap-touche)) 100% 100% / 3px 18px;
+  background-repeat: no-repeat; }
+[data-appli="alien-python"] .gr { display: block; width: 100%; border: 1.4px solid var(--td-trait-fort); background: var(--td-fond); }
+/* (le fond, les traits, les lettres et l'alien sont dans le dessin réutilisé <use> : leurs couleurs y sont posées par des variables) */
+[data-appli="alien-python"] .g-chemin { stroke: var(--td-accent); }
+[data-appli="alien-python"] .g-etape { fill: var(--td-accent); }
+[data-appli="alien-python"] .g-num { fill: var(--td-encre); stroke: var(--td-fond); font-family: var(--td-texte); }
+[data-appli="alien-python"] .g-arrivee { stroke: var(--td-accent); }
+[data-appli="alien-python"] .g-choix { fill: none; stroke: var(--td-focus); stroke-dasharray: 1.6 1; }
+[data-appli="alien-python"] .ck .c { fill: transparent; cursor: pointer; }
+[data-appli="alien-python"] .ck .c:hover { fill: var(--td-accent); fill-opacity: .25; }
+/* tableau de l'enseignant·e : une jauge sous le nombre, le texte garde son contraste */
+[data-appli="alien-python"] td.al-jauge { background: linear-gradient(var(--td-accent), var(--td-accent)) 0 100% / calc(var(--n, 0) * 100%) 5px no-repeat; }
+@media print { [data-appli="alien-python"] .al-grille::before { display: none; } }
+
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"])[data-appli="hello-go"] .ap-touche::before { background-image: radial-gradient(var(--td-neon-3) 1.1px, transparent 1.4px); } }
 :root[data-theme="dark"][data-appli="hello-go"] .ap-touche::before { background-image: radial-gradient(var(--td-neon-3) 1.1px, transparent 1.4px); }
 

@@ -17,7 +17,7 @@ Tout vient du site, une seule source ; rien n'est copié dans l'application.
 2. `assets/applis.css` : le socle (classes `ap-…`), à mettre sur `<body class="ap">` ou sur le conteneur de l'application.
 3. `assets/equipage.js` : `window.Equipage`. Il injecte sa propre petite feuille (`#equipage-css`).
 
-`data-appli` donne la touche propre : `quizz-nsi`, `hello-go`, `calendrier`, `gombessa` ou `lagon-arena`. Elle ne change que le décor (`.ap-touche`, sous la barre du haut) et le néon des ombres (`--ap-touche`) : jamais une couleur de texte.
+`data-appli` donne la touche propre : `quizz-nsi`, `hello-go`, `calendrier`, `gombessa`, `lagon-arena` ou `alien-python` (T137 : la règle graduée et le signal en traits et en points, le viseur de la grille, l'alien vert à antennes ; ses classes `al-…` : code coloré, éditeur à miroir, grille). Elle ne change que le décor (`.ap-touche`, sous la barre du haut) et le néon des ombres (`--ap-touche`) : jamais une couleur de texte.
 
 ## 2. Exemple minimal : le lobby, la question, le podium
 
