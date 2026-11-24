@@ -1,0 +1,526 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Programmation objet · TD type bac (2/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : les classes Region et Pays, coloriage d&#x27;une carte (bac 2023, Métropole, 23-NSIJ1ME1, exercice 3).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-poo-2" data-premiere-question="8" data-td-version="3" data-pages-max="5" data-code="obligatoire" data-ordre="melange">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 3 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="3">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b4" style="--x:69.52%;--y:75.0%;--r:-90deg;--l:2.8%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>Programmation objet</h1>
+        <p class="td-accroche">Type bac · feuille 2/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=poo" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 37 37" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h1v1h-1zM11 0h1v1h-1zM13 0h2v1h-2zM16 0h1v1h-1zM18 0h2v1h-2zM23 0h1v1h-1zM26 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h5v1h-5zM17 1h2v1h-2zM21 1h1v1h-1zM26 1h1v1h-1zM32 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM13 2h1v1h-1zM18 2h2v1h-2zM21 2h1v1h-1zM23 2h2v1h-2zM26 2h1v1h-1zM28 2h3v1h-3zM32 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h4v1h-4zM14 3h1v1h-1zM16 3h2v1h-2zM20 3h1v1h-1zM22 3h1v1h-1zM24 3h1v1h-1zM26 3h1v1h-1zM28 3h3v1h-3zM32 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h6v1h-6zM15 4h1v1h-1zM17 4h1v1h-1zM19 4h2v1h-2zM22 4h2v1h-2zM26 4h1v1h-1zM28 4h3v1h-3zM32 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM10 5h1v1h-1zM12 5h2v1h-2zM15 5h3v1h-3zM20 5h2v1h-2zM24 5h1v1h-1zM26 5h1v1h-1zM32 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM15 7h1v1h-1zM18 7h1v1h-1zM20 7h2v1h-2zM23 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h2v1h-2zM13 8h1v1h-1zM15 8h3v1h-3zM23 8h1v1h-1zM26 8h5v1h-5zM1 9h3v1h-3zM8 9h1v1h-1zM10 9h1v1h-1zM12 9h1v1h-1zM16 9h1v1h-1zM18 9h4v1h-4zM23 9h1v1h-1zM26 9h2v1h-2zM29 9h2v1h-2zM32 9h1v1h-1zM0 10h2v1h-2zM4 10h3v1h-3zM8 10h5v1h-5zM15 10h4v1h-4zM20 10h3v1h-3zM26 10h1v1h-1zM28 10h1v1h-1zM30 10h2v1h-2zM2 11h1v1h-1zM9 11h1v1h-1zM11 11h2v1h-2zM14 11h2v1h-2zM20 11h2v1h-2zM24 11h2v1h-2zM28 11h5v1h-5zM2 12h1v1h-1zM4 12h3v1h-3zM9 12h2v1h-2zM12 12h1v1h-1zM17 12h2v1h-2zM20 12h1v1h-1zM22 12h1v1h-1zM24 12h2v1h-2zM27 12h3v1h-3zM2 13h4v1h-4zM8 13h1v1h-1zM10 13h2v1h-2zM13 13h5v1h-5zM19 13h2v1h-2zM23 13h4v1h-4zM31 13h2v1h-2zM0 14h1v1h-1zM2 14h2v1h-2zM6 14h1v1h-1zM13 14h1v1h-1zM18 14h1v1h-1zM20 14h1v1h-1zM22 14h1v1h-1zM24 14h8v1h-8zM2 15h2v1h-2zM5 15h1v1h-1zM9 15h5v1h-5zM16 15h1v1h-1zM19 15h3v1h-3zM23 15h1v1h-1zM25 15h2v1h-2zM30 15h1v1h-1zM1 16h2v1h-2zM5 16h3v1h-3zM11 16h4v1h-4zM17 16h1v1h-1zM19 16h2v1h-2zM22 16h4v1h-4zM27 16h2v1h-2zM32 16h1v1h-1zM0 17h2v1h-2zM7 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM16 17h5v1h-5zM23 17h1v1h-1zM26 17h2v1h-2zM29 17h4v1h-4zM1 18h8v1h-8zM10 18h1v1h-1zM12 18h2v1h-2zM15 18h2v1h-2zM21 18h2v1h-2zM24 18h1v1h-1zM27 18h2v1h-2zM30 18h2v1h-2zM1 19h2v1h-2zM5 19h1v1h-1zM7 19h1v1h-1zM12 19h2v1h-2zM15 19h2v1h-2zM21 19h10v1h-10zM32 19h1v1h-1zM0 20h2v1h-2zM3 20h2v1h-2zM6 20h1v1h-1zM9 20h1v1h-1zM12 20h2v1h-2zM15 20h1v1h-1zM17 20h1v1h-1zM19 20h1v1h-1zM22 20h1v1h-1zM24 20h2v1h-2zM28 20h2v1h-2zM31 20h2v1h-2zM0 21h1v1h-1zM3 21h2v1h-2zM7 21h1v1h-1zM9 21h1v1h-1zM14 21h2v1h-2zM17 21h1v1h-1zM19 21h3v1h-3zM23 21h1v1h-1zM26 21h1v1h-1zM29 21h1v1h-1zM32 21h1v1h-1zM0 22h1v1h-1zM6 22h6v1h-6zM13 22h1v1h-1zM15 22h3v1h-3zM20 22h1v1h-1zM22 22h1v1h-1zM29 22h1v1h-1zM31 22h1v1h-1zM0 23h1v1h-1zM2 23h1v1h-1zM4 23h1v1h-1zM16 23h1v1h-1zM19 23h1v1h-1zM21 23h3v1h-3zM26 23h1v1h-1zM29 23h2v1h-2zM32 23h1v1h-1zM0 24h1v1h-1zM2 24h2v1h-2zM6 24h1v1h-1zM9 24h1v1h-1zM12 24h1v1h-1zM16 24h3v1h-3zM22 24h8v1h-8zM32 24h1v1h-1zM8 25h7v1h-7zM16 25h1v1h-1zM18 25h3v1h-3zM24 25h1v1h-1zM28 25h1v1h-1zM30 25h1v1h-1zM32 25h1v1h-1zM0 26h7v1h-7zM10 26h2v1h-2zM15 26h2v1h-2zM18 26h1v1h-1zM21 26h4v1h-4zM26 26h1v1h-1zM28 26h1v1h-1zM30 26h2v1h-2zM0 27h1v1h-1zM6 27h1v1h-1zM8 27h2v1h-2zM11 27h5v1h-5zM18 27h1v1h-1zM20 27h2v1h-2zM23 27h2v1h-2zM28 27h4v1h-4zM0 28h1v1h-1zM2 28h3v1h-3zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h1v1h-1zM12 28h1v1h-1zM15 28h1v1h-1zM17 28h1v1h-1zM24 28h6v1h-6zM31 28h2v1h-2zM0 29h1v1h-1zM2 29h3v1h-3zM6 29h1v1h-1zM8 29h1v1h-1zM14 29h1v1h-1zM16 29h5v1h-5zM22 29h4v1h-4zM28 29h1v1h-1zM30 29h3v1h-3zM0 30h1v1h-1zM2 30h3v1h-3zM6 30h1v1h-1zM8 30h3v1h-3zM12 30h6v1h-6zM20 30h2v1h-2zM24 30h1v1h-1zM26 30h2v1h-2zM0 31h1v1h-1zM6 31h1v1h-1zM9 31h1v1h-1zM13 31h2v1h-2zM16 31h1v1h-1zM19 31h4v1h-4zM26 31h1v1h-1zM28 31h3v1h-3zM0 32h7v1h-7zM8 32h2v1h-2zM13 32h2v1h-2zM16 32h2v1h-2zM19 32h2v1h-2zM22 32h4v1h-4zM27 32h1v1h-1zM31 32h1v1h-1z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : colorier une carte avec les classes <code>Region</code> et <code>Pays</code>.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>écrire une méthode qui lit ou modifie les attributs avec <code>self</code> ;</li>
+        <li>faire travailler plusieurs objets ensemble (une liste d'objets, un objet qui en contient d'autres) ;</li>
+        <li>suivre un algorithme glouton qui colorie les régions une à une.</li>
+      </ul>
+      <p class="td-duree">1 heure · 1 exercice de bac (6 points) · 12 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord, au brouillon ou sur la feuille imprimée, puis on vérifie ici.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. <a href="index.html">le stock de la briocherie</a> ; 2. colorier une carte (ici).</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice 2 · Colorier une carte (6 points)</h2>
+  <p><b>Sujet :</b> baccalauréat 2023, Métropole, jour 1, sujet 23-NSIJ1ME1, exercice 3 (6 points). <a href="https://kxs.fr/files/sujets/2023/ecrit/terminale-2023-metropole-juin-jour-1.pdf">Le sujet d'origine (PDF)</a>.</p>
+  <p><i>Cet exercice traite de programmation orientée objet en Python et d'algorithmique.</i></p>
+  <p>Un pays est composé de différentes régions. Deux régions sont voisines si elles ont au moins une frontière en commun. L'objectif est d'attribuer une couleur à chaque région sur la carte du pays sans que deux régions voisines aient la même couleur et en utilisant le moins de couleurs possibles.</p>
+  <p>La figure 1 du sujet donne un exemple de résultat de coloration des régions de la France métropolitaine (carte en couleurs, non reprise ici).</p>
+  <p>On rappelle quelques fonctions et méthodes des tableaux (le type <code>list</code> en Python) qui pourront être utilisées dans cet exercice :</p>
+  <ul>
+    <li><code>len(tab)</code> : renvoie le nombre d'éléments du tableau <code>tab</code> ;</li>
+    <li><code>tab.append(elt)</code> : ajoute l'élément <code>elt</code> en fin de tableau <code>tab</code> ;</li>
+    <li><code>tab.remove(elt)</code> : enlève la première occurrence de <code>elt</code> de <code>tab</code> si <code>elt</code> est dans <code>tab</code>. Provoque une erreur sinon.</li>
+  </ul>
+  <p>Exemple : <code>len([1, 3, 12, 24, 3])</code> renvoie 5 ; avec <code>tab = [1, 3, 12, 24, 3]</code>, l'instruction <code>tab.append(7)</code> modifie <code>tab</code> en <code>[1, 3, 12, 24, 3, 7]</code> ; avec <code>tab = [1, 3, 12, 24, 3]</code>, l'instruction <code>tab.remove(3)</code> modifie <code>tab</code> en <code>[1, 12, 24, 3]</code>.</p>
+  <p>Les deux parties de cet exercice forment un ensemble. Cependant, il n'est pas nécessaire d'avoir répondu à une question pour aborder la suivante. En particulier, on pourra utiliser les méthodes des questions précédentes même quand elles n'ont pas été codées.</p>
+  <h3>Partie 1</h3>
+  <p>On considère la classe <code>Region</code> qui modélise une région sur une carte et dont le début de l'implémentation est :</p>
+  <pre class="td-code">
+class Region:
+    '''Modélise une région d'un pays sur une carte.'''
+    def __init__(self, nom_region):
+        '''
+        initialise une région
+        : param nom_region (str) le nom de la région
+        '''
+        self.nom = nom_region
+        # tableau des régions voisines, vide au départ
+        self.tab_voisines = []
+        # tableau des couleurs disponibles pour colorier la région
+        self.tab_couleurs_disponibles = ['rouge', 'vert', 'bleu',
+                                         'jaune', 'orange', 'marron']
+        # couleur attribuée à la région et non encore choisie au départ
+        self.couleur_attribuee = None</pre>
+
+  <section class="td-q" data-type="qcu" id="q8" data-support="ecran">
+    <p class="td-consigne"><b>1.</b> Associer, en vous appuyant sur l'extrait de code précédent, les noms <code>nom</code>, <code>tab_voisines</code>, <code>tab_<wbr>couleurs_<wbr>disponibles</code> et <code>couleur_attribuee</code> au terme qui leur correspond parmi : objet, attribut, méthode ou classe. <span class="td-ecran-seul">Ici, choisis la bonne association.</span></p>
+    <ul class="td-options">
+      <li data-retour="Une méthode se définit avec def et s'appelle avec des parenthèses. Ces noms sont écrits après self. dans le constructeur.">Ce sont quatre méthodes.</li>
+      <li data-juste>Ce sont quatre attributs.</li>
+      <li data-retour="La classe, c'est Region. Ces quatre noms décrivent chaque région : ils appartiennent à chaque objet.">nom est la classe, les trois autres sont des attributs.</li>
+      <li data-retour="Un objet est une instance créée avec Region(…). Ces noms sont des variables rangées dans chaque objet.">Ce sont quatre objets.</li>
+    </ul>
+    <p class="td-aide">Regarde comment ils sont écrits : <code>self.nom = …</code>, <code>self.tab_voisines = …</code></p>
+    <div class="td-correction">
+      <p>Les quatre sont des <b>attributs</b> : des variables propres à chaque objet, créées dans le constructeur avec <code>self.</code>. <code>Region</code> est la <b>classe</b> ; <code>__init__</code> est une <b>méthode</b> (le constructeur) ; une région créée avec <code>Region("Grand Est")</code> est un <b>objet</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>1.</b> Associer, en vous appuyant sur l'extrait de code précédent, les noms <code>nom</code>, <code>tab_voisines</code>, <code>tab_<wbr>couleurs_<wbr>disponibles</code> et <code>couleur_attribuee</code> au terme qui leur correspond parmi : objet, attribut, méthode ou classe. <span class="td-ecran-seul">Ici, choisis la bonne association.</span></p>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q9" data-reponse="str|chaîne de caractères|chaine de caracteres|une chaîne de caractères|string|chaîne|texte" data-etiquette="Type :">
+    <p class="td-consigne"><b>2.</b> Indiquer le type du paramètre <code>nom_region</code> de la méthode <code>__init__</code> de la classe <code>Region</code>.</p>
+    <p class="td-aide">Relis la documentation de la méthode : <code>: param nom_region (str)</code>.</p>
+    <div class="td-correction">
+      <p><code>str</code> : une chaîne de caractères. C'est écrit dans la documentation (<i>docstring</i>) de la méthode.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q10" data-comparer="code" data-reponse="ge = Region(&quot;Grand Est&quot;)|ge = Region(nom_region=&quot;Grand Est&quot;)" data-etiquette="Instruction :">
+    <p class="td-consigne"><b>3.</b> Donner une instruction permettant de créer une instance nommée <code>ge</code> de la classe <code>Region</code> correspondant à la région dont le nom est « Grand Est ».</p>
+    <p class="td-retour" data-si="ge = Region(Grand Est)|ge = Region()">Le nom de la région est un texte : il s'écrit entre guillemets, dans les parenthèses.</p>
+    <p class="td-retour" data-si="ge = Region(self, &quot;Grand Est&quot;)">On n'écrit jamais <code>self</code> à l'appel : Python le passe tout seul.</p>
+    <p class="td-aide">On appelle la classe comme une fonction : <code>Region(…)</code>. Que met-on entre les parenthèses ?</p>
+    <div class="td-correction">
+      <p><code>ge = Region("Grand Est")</code> : l'appel à la classe exécute le constructeur <code>__init__</code>, avec <code>nom_region = "Grand Est"</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q11">
+    <p class="td-consigne"><b>4.</b> Recopier et compléter la ligne 6 de la méthode de la classe <code>Region</code> ci-dessous :</p>
+    <pre class="td-code">
+def renvoie_premiere_couleur_disponible(self):
+    '''Renvoie la première couleur du tableau des couleurs
+    disponibles supposé non vide.
+    : return (str)
+    '''
+    return [[self.tab_couleurs_disponibles[0]]]</pre>
+    <p class="td-aide">Le tableau est l'attribut <code>self.tab_couleurs_disponibles</code>. Quel est l'indice du premier élément ?</p>
+    <div class="td-correction">
+      <p><code>return self.tab_couleurs_disponibles[0]</code> : on n'oublie pas <code>self.</code> pour atteindre l'attribut.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q12">
+    <p class="td-consigne"><b>5.</b> Recopier et compléter la ligne 6 de la méthode de la classe <code>Region</code> ci-dessous :</p>
+    <pre class="td-code">
+def renvoie_nb_voisines(self) :
+    '''
+    Renvoie le nombre de régions voisines.
+    : return (int)
+    '''
+    return [[len(self.tab_voisines)]]</pre>
+    <p class="td-aide">Les voisines sont rangées dans <code>self.tab_voisines</code>. Quelle fonction donne le nombre d'éléments d'un tableau ?</p>
+    <div class="td-correction">
+      <p><code>return len(self.tab_voisines)</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="trous" id="q13">
+    <p class="td-consigne"><b>6.</b> Compléter la méthode de la classe <code>Region</code> ci-dessous à partir de la ligne 6 :</p>
+    <pre class="td-code">
+def est_coloriee(self):
+    '''
+    Renvoie True si une couleur a été attribuée à cette région et False sinon.
+    : return (bool)
+    '''
+    return [[self.couleur_attribuee != None|self.couleur_attribuee is not None|not self.couleur_attribuee is None|not self.couleur_attribuee == None]]</pre>
+    <p class="td-aide">Au départ, <code>couleur_attribuee</code> vaut <code>None</code>. Une région est coloriée quand cet attribut ne vaut <b>plus</b> <code>None</code>.</p>
+    <div class="td-correction">
+      <p><code>return self.couleur_attribuee != None</code> (ou <code>is not None</code>). On renvoie directement le booléen, sans <code>if</code>.</p>
+    </div>
+  </section>
+  <section class="td-q" data-type="code" id="q14" data-fichier="region.py" data-obligatoire data-lignes="2" data-depart-papier="non">
+    <p class="td-consigne"><b>7.</b> Compléter la méthode de la classe <code>Region</code> ci-dessous à partir de la ligne 8<span class="td-ecran-seul"> (dans l'éditeur, la méthode est déjà placée dans la classe)</span> :</p>
+    <!-- sur papier, la méthode telle que le sujet la donne (lignes 1 à 8), numérotée comme le sujet : la feuille se suffit -->
+    <pre class="td-code td-sans-num td-papier-seul">
+ 1  def retire_couleur(self, couleur):
+ 2      '''
+ 3      Retire couleur du tableau de couleurs disponibles de
+            la région si elle est dans ce tableau. Ne fait rien
+            sinon.
+ 4      : param couleur (str)
+ 5      : ne renvoie rien
+ 6      : effet de bord sur le tableau des couleurs
+            disponibles
+ 7      '''
+ 8      ...</pre>
+    <pre class="td-depart">
+class Region:
+    '''Modélise une région d'un pays sur une carte.'''
+    def __init__(self, nom_region):
+        self.nom = nom_region
+        # tableau des régions voisines, vide au départ
+        self.tab_voisines = []
+        # tableau des couleurs disponibles pour colorier la région
+        self.tab_couleurs_disponibles = ['rouge', 'vert', 'bleu', 'jaune', 'orange', 'marron']
+        # couleur attribuée à la région et non encore choisie au départ
+        self.couleur_attribuee = None
+
+    def retire_couleur(self, couleur):
+        '''
+        Retire couleur du tableau de couleurs disponibles de la région si elle est dans ce tableau. Ne fait rien sinon.
+        : param couleur (str)
+        : ne renvoie rien
+        : effet de bord sur le tableau des couleurs disponibles
+        '''
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_r = Region("Grand Est")
+_r.retire_couleur('vert')
+assert _r.tab_couleurs_disponibles == ['rouge', 'bleu', 'jaune', 'orange', 'marron'], "Après retire_couleur('vert'), le vert doit avoir disparu des couleurs disponibles."
+_r.retire_couleur('vert')
+assert _r.tab_couleurs_disponibles == ['rouge', 'bleu', 'jaune', 'orange', 'marron'], "Retirer une couleur absente ne doit rien faire (et ne pas provoquer d'erreur)."
+assert _r.retire_couleur('rouge') is None, "retire_couleur ne renvoie rien."
+</script>
+    <p class="td-aide"><code>remove</code> provoque une erreur si la couleur est absente : il faut d'abord tester sa présence.</p>
+    <p class="td-aide">Le test de présence : <code>if couleur in self.tab_couleurs_disponibles:</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def retire_couleur(self, couleur):
+    if couleur in self.tab_couleurs_disponibles:
+        self.tab_couleurs_disponibles.remove(couleur)
+</pre>
+      <p>On teste avant de retirer, pour respecter « Ne fait rien sinon ». La méthode modifie l'attribut (effet de bord) et ne renvoie rien.</p>
+    </div>
+  </section>
+  <section class="td-q" data-type="code" id="q15" data-fichier="region.py" data-obligatoire data-lignes="4" data-depart-papier="non">
+    <p class="td-consigne"><b>8.</b> Compléter la méthode de la classe <code>Region</code> ci-dessous, à partir de la ligne 7, en utilisant une boucle :</p>
+    <!-- sur papier, la méthode telle que le sujet la donne (lignes 1 à 7), numérotée comme le sujet : la feuille se suffit -->
+    <pre class="td-code td-sans-num td-papier-seul">
+ 1  def est_voisine(self, region):
+ 2      '''
+ 3      Renvoie True si la region passée en paramètre est une
+            voisine et False sinon.
+ 4      : param region (Region)
+ 5      : return (bool)
+ 6      '''
+ 7      ...</pre>
+    <pre class="td-depart">
+class Region:
+    '''Modélise une région d'un pays sur une carte.'''
+    def __init__(self, nom_region):
+        self.nom = nom_region
+        # tableau des régions voisines, vide au départ
+        self.tab_voisines = []
+        # tableau des couleurs disponibles pour colorier la région
+        self.tab_couleurs_disponibles = ['rouge', 'vert', 'bleu', 'jaune', 'orange', 'marron']
+        # couleur attribuée à la région et non encore choisie au départ
+        self.couleur_attribuee = None
+
+    def est_voisine(self, region):
+        '''
+        Renvoie True si la region passée en paramètre est une voisine et False sinon.
+        : param region (Region)
+        : return (bool)
+        '''
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_a, _b, _c = Region("A"), Region("B"), Region("C")
+_a.tab_voisines = [_b]
+assert _a.est_voisine(_b) is True, "B est dans les voisines de A : on attend True."
+assert _a.est_voisine(_c) is False, "C n'est pas une voisine de A : on attend False."
+_c.tab_voisines = [_a, _b]
+assert _c.est_voisine(_b) is True, "B est la 2e voisine de C : on attend True. Ne renvoie pas False trop tôt, dans la boucle !"
+assert Region("D").est_voisine(_a) is False, "Une région sans voisine : on attend False."
+</script>
+    <p class="td-aide">Parcours <code>self.tab_voisines</code> avec une boucle <code>for</code> et compare chaque voisine à <code>region</code>.</p>
+    <p class="td-aide">Dès qu'on la trouve : <code>return True</code>. Le <code>return False</code> se place <b>après</b> la boucle, une fois toutes les voisines vues.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def est_voisine(self, region):
+    for voisine in self.tab_voisines:
+        if voisine == region:
+            return True
+    return False
+</pre>
+      <p>Erreur fréquente : mettre <code>else: return False</code> dans la boucle, ce qui arrête la recherche à la première voisine. (Sans la contrainte de la boucle, <code>return region in self.tab_voisines</code> suffirait.)</p>
+    </div>
+  </section>
+
+  <h3>Partie 2</h3>
+  <p>Dans cette partie :</p>
+  <ul>
+    <li>on considère qu'on dispose d'un ensemble d'instances de la classe <code>Region</code> pour lesquelles l'attribut <code>tab_voisines</code> a été renseigné ;</li>
+    <li>on pourra utiliser les méthodes de la classe <code>Region</code> évoquées dans les questions de la partie 1 : <code>renvoie_<wbr>premiere_<wbr>couleur_<wbr>disponible</code>, <code>renvoie_nb_voisines</code>, <code>est_coloriee</code>, <code>retire_couleur</code>, <code>est_voisine</code>.</li>
+  </ul>
+  <p>On a créé une classe <code>Pays</code> :</p>
+  <ul>
+    <li>cette classe modélise la carte d'un pays composé de régions ;</li>
+    <li>l'unique attribut <code>tab_regions</code> de cette classe est un tableau (type <code>list</code> en Python) dont les éléments sont des instances de la classe <code>Region</code>.</li>
+  </ul>
+  <section class="td-q" data-type="code" id="q16" data-fichier="pays.py" data-obligatoire data-lignes="5" data-depart-papier="non">
+    <p class="td-consigne"><b>9.</b> Recopier et compléter la méthode de la classe <code>Pays</code> ci-dessous à partir de la ligne 7 :</p>
+    <!-- sur papier, la méthode telle que le sujet la donne (lignes 1 à 7, « Region » seul en ligne 5 comme dans le sujet), numérotée comme le sujet : la feuille se suffit -->
+    <pre class="td-code td-sans-num td-papier-seul">
+ 1  def renvoie_tab_regions_non_coloriees(self):
+ 2      '''
+ 3      Renvoie un tableau dont les éléments sont les régions
+            du pays sans couleur attribuée.
+ 4      : return (list) tableau d’instances de la classe
+ 5  Region
+ 6      '''
+ 7      ...</pre>
+    <pre class="td-depart">
+class Region:
+    '''Modélise une région d'un pays sur une carte.'''
+    def __init__(self, nom_region):
+        self.nom = nom_region
+        # tableau des régions voisines, vide au départ
+        self.tab_voisines = []
+        # tableau des couleurs disponibles pour colorier la région
+        self.tab_couleurs_disponibles = ['rouge', 'vert', 'bleu', 'jaune', 'orange', 'marron']
+        # couleur attribuée à la région et non encore choisie au départ
+        self.couleur_attribuee = None
+
+    def renvoie_premiere_couleur_disponible(self):
+        return self.tab_couleurs_disponibles[0]
+
+    def renvoie_nb_voisines(self):
+        return len(self.tab_voisines)
+
+    def est_coloriee(self):
+        return self.couleur_attribuee != None
+
+    def retire_couleur(self, couleur):
+        if couleur in self.tab_couleurs_disponibles:
+            self.tab_couleurs_disponibles.remove(couleur)
+
+    def est_voisine(self, region):
+        for voisine in self.tab_voisines:
+            if voisine == region:
+                return True
+        return False
+
+
+class Pays:
+    def __init__(self, tab_regions):
+        self.tab_regions = tab_regions
+
+    def renvoie_tab_regions_non_coloriees(self):
+        '''
+        Renvoie un tableau dont les éléments sont les régions du pays sans couleur attribuée.
+        : return (list) tableau d’instances de la classe Region
+        '''
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_a, _b, _c = Region("A"), Region("B"), Region("C")
+_p = Pays([_a, _b, _c])
+assert _p.renvoie_tab_regions_non_coloriees() == [_a, _b, _c], "Au départ, aucune région n'est coloriée : on attend les trois régions, dans l'ordre."
+_b.couleur_attribuee = 'rouge'
+assert _p.renvoie_tab_regions_non_coloriees() == [_a, _c], "B est coloriée : on attend [A, C]."
+_a.couleur_attribuee = 'vert'; _c.couleur_attribuee = 'bleu'
+assert _p.renvoie_tab_regions_non_coloriees() == [], "Toutes les régions sont coloriées : on attend un tableau vide."
+</script>
+    <p class="td-aide">Crée un tableau vide, parcours <code>self.tab_regions</code> et ajoute (<code>append</code>) chaque région qui n'est pas coloriée.</p>
+    <p class="td-aide">Pour savoir si une région <code>reg</code> est coloriée, appelle sa méthode : <code>reg.est_coloriee()</code>.</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def renvoie_tab_regions_non_coloriees(self):
+    tab = []
+    for reg in self.tab_regions:
+        if not reg.est_coloriee():
+            tab.append(reg)
+    return tab
+</pre>
+      <p>On utilise la méthode <code>est_coloriee</code> de chaque objet <code>Region</code> plutôt que de lire son attribut : c'est l'intérêt de l'interface.</p>
+    </div>
+  </section>
+
+  <p><b>10.</b> On considère la méthode de la classe <code>Pays</code> ci-dessous.</p>
+  <pre class="td-code">
+def renvoie_max(self):
+    nb_voisines_max = -1
+    region_max = None
+    for reg in self.renvoie_tab_regions_non_coloriees():
+        if reg.renvoie_nb_voisines() &gt; nb_voisines_max:
+            nb_voisines_max = reg.renvoie_nb_voisines()
+            region_max = reg
+    return region_max
+</pre>
+
+  <section class="td-q" data-type="qcu" id="q17" data-support="ecran">
+    <p class="td-consigne"><b>10.a.</b> Expliquer dans quel cas cette méthode renvoie <code>None</code>.</p>
+    <ul class="td-options">
+      <li data-juste>Quand toutes les régions du pays sont déjà coloriées : le tableau des régions non coloriées est vide.</li>
+      <li data-retour="Une région sans voisine a 0 voisine, et 0 &gt; -1 : elle peut donc être renvoyée.">Quand une région non coloriée n'a aucune voisine : son tableau de régions voisines est vide.</li>
+      <li data-retour="En cas d'égalité, le test &gt; garde la première région trouvée : la méthode renvoie bien une région.">Quand deux régions non coloriées ont le même nombre de voisines : la méthode ne peut pas choisir.</li>
+      <li data-retour="region_max vaut None au départ : si la boucle ne fait aucun tour, c'est cette valeur qui est renvoyée.">Jamais : la méthode renvoie toujours une région, puisque le pays contient au moins une région.</li>
+    </ul>
+    <p class="td-aide">Quelle est la valeur de <code>region_max</code> si la boucle <code>for</code> ne fait aucun tour ?</p>
+    <div class="td-correction">
+      <p><code>region_max</code> vaut <code>None</code> au départ. Elle change dès qu'une région non coloriée est vue, car toute région a au moins 0 voisine et 0 &gt; −1. Elle ne vaut donc <code>None</code> que si <b>aucune région n'est à colorier</b>.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q17-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>10.a.</b> Expliquer dans quel cas cette méthode renvoie <code>None</code>.</p>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q18" data-support="ecran">
+    <p class="td-consigne"><b>10.b.</b> Indiquer, dans le cas où cette méthode ne renvoie pas <code>None</code>, les deux particularités de la région renvoyée. <span class="td-ecran-seul">Coche les deux.</span></p>
+    <ul class="td-options">
+      <li data-juste>Elle n'est pas encore coloriée.</li>
+      <li data-juste>Parmi les régions non coloriées, c'est elle qui a le plus de voisines (la première trouvée en cas d'égalité).</li>
+      <li data-retour="La boucle ne parcourt que les régions non coloriées : une région déjà coloriée peut avoir plus de voisines.">Parmi toutes les régions du pays, c'est elle qui a le plus de voisines.</li>
+      <li data-retour="La boucle garde la région qui a le plus de voisines, pas la dernière du tableau.">C'est la dernière région du tableau des régions non coloriées.</li>
+    </ul>
+    <div class="td-correction">
+      <p>La région renvoyée <b>n'est pas coloriée</b> et elle a le <b>plus grand nombre de voisines</b> parmi les régions non coloriées. Avec le test strict <code>&gt;</code>, en cas d'égalité, c'est la première rencontrée.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q18-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>10.b.</b> Indiquer, dans le cas où cette méthode ne renvoie pas <code>None</code>, les deux particularités de la région renvoyée. </p>
+  </section>
+  <section class="td-q" data-type="code" id="q19" data-fichier="pays.py" data-lignes="8" data-depart-papier="non">
+    <p class="td-consigne"><b>11.</b> Coder la méthode <code>colorie(self)</code> de la classe <code>Pays</code> qui choisit une couleur pour chaque région du pays de la façon suivante :</p>
+    <ul>
+      <li>On récupère la région non coloriée qui possède le plus de voisines.</li>
+      <li>Tant que cette région existe :
+        <ul>
+          <li>La couleur attribuée à cette région est la première couleur disponible dans son tableau de couleurs disponibles.</li>
+          <li>Pour chaque région voisine de la région : si la couleur choisie est présente dans le tableau des couleurs disponibles de la région voisine alors on la retire de ce tableau.</li>
+          <li>On récupère à nouveau la région non coloriée qui possède le plus de voisines.</li>
+        </ul>
+      </li>
+    </ul>
+    <pre class="td-depart">
+class Region:
+    '''Modélise une région d'un pays sur une carte.'''
+    def __init__(self, nom_region):
+        self.nom = nom_region
+        # tableau des régions voisines, vide au départ
+        self.tab_voisines = []
+        # tableau des couleurs disponibles pour colorier la région
+        self.tab_couleurs_disponibles = ['rouge', 'vert', 'bleu', 'jaune', 'orange', 'marron']
+        # couleur attribuée à la région et non encore choisie au départ
+        self.couleur_attribuee = None
+
+    def renvoie_premiere_couleur_disponible(self):
+        return self.tab_couleurs_disponibles[0]
+
+    def renvoie_nb_voisines(self):
+        return len(self.tab_voisines)
+
+    def est_coloriee(self):
+        return self.couleur_attribuee != None
+
+    def retire_couleur(self, couleur):
+        if couleur in self.tab_couleurs_disponibles:
+            self.tab_couleurs_disponibles.remove(couleur)
+
+    def est_voisine(self, region):
+        for voisine in self.tab_voisines:
+            if voisine == region:
+                return True
+        return False
+
+
+class Pays:
+    def __init__(self, tab_regions):
+        self.tab_regions = tab_regions
+
+    def renvoie_tab_regions_non_coloriees(self):
+        tab = []
+        for reg in self.tab_regions:
+            if not reg.est_coloriee():
+                tab.append(reg)
+        return tab
+
+    def renvoie_max(self):
+        nb_voisines_max = -1
+        region_max = None
+        for reg in self.renvoie_tab_regions_non_coloriees():
+            if reg.renvoie_nb_voisines() &gt; nb_voisines_max:
+                nb_voisines_max = reg.renvoie_nb_voisines()
+                region_max = reg
+        return region_max
+
+    def colorie(self):
+        ...
+</pre>
+    <script type="text/x-python" class="td-tests">
+_a, _b, _c, _d = Region("A"), Region("B"), Region("C"), Region("D")
+_a.tab_voisines = [_b, _c]; _b.tab_voisines = [_a, _c, _d]; _c.tab_voisines = [_a, _b]; _d.tab_voisines = [_b]
+_p = Pays([_a, _b, _c, _d])
+_r = _p.colorie()
+_cols = [x.couleur_attribuee for x in (_a, _b, _c, _d)]
+assert None not in _cols, "Toutes les régions doivent être coloriées. Couleurs obtenues (A, B, C, D) : " + repr(_cols)
+for _x in (_a, _b, _c, _d):
+    for _v in _x.tab_voisines:
+        assert _x.couleur_attribuee != _v.couleur_attribuee, "Deux voisines ont la même couleur : " + _x.nom + " et " + _v.nom
+assert _cols == ['vert', 'rouge', 'bleu', 'vert'], "Les régions sont bien coloriées, mais pas dans l'ordre de l'algorithme (on attend B rouge, puis A vert, C bleu, D vert). Obtenu : " + repr(_cols)
+</script>
+    <p class="td-aide">La structure : <code>region = self.renvoie_max()</code>, puis <code>while region != None:</code> … et, à la fin du corps de la boucle, on récupère à nouveau <code>self.renvoie_max()</code>.</p>
+    <p class="td-aide">Dans la boucle : on attribue <code>region.renvoie_premiere_couleur_disponible()</code> à <code>region.couleur_attribuee</code>, puis, pour chaque voisine, <code>voisine.retire_couleur(couleur)</code> (elle ne fait rien si la couleur est absente).</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def colorie(self):
+    region = self.renvoie_max()
+    while region != None:
+        couleur = region.renvoie_premiere_couleur_disponible()
+        region.couleur_attribuee = couleur
+        for voisine in region.tab_voisines:
+            voisine.retire_couleur(couleur)
+        region = self.renvoie_max()
+</pre>
+      <p>Sur la petite carte des tests (B touche A, C et D), B est coloriée en premier (3 voisines) : rouge. Puis A (vert), C (bleu, car le vert lui a été retiré par A) et D (vert). C'est un <b>algorithme glouton</b> : il ne garantit pas le plus petit nombre de couleurs, mais il est rapide.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Les <b>attributs</b> sont les variables de chaque objet : <code>self.nom</code>. Les <b>méthodes</b> sont les fonctions de la classe : leur premier paramètre est <code>self</code>, mais on ne l'écrit pas à l'appel (<code>ge.renvoie_nb_voisines()</code>).</p>
+    <p>Dans une méthode, on préfère appeler les méthodes des autres objets (<code>reg.est_coloriee()</code>) plutôt que lire leurs attributs.</p>
+  </section>
+
+  <section class="td-memo td-ecran-seul">
+    <h2>Pour aller plus loin</h2>
+    <ul>
+      <li>Bac 2025, Asie, jour 2, exercice 1 : une classe <code>Date</code>, accesseurs, années bissextiles (6 points). Attention, deux erreurs dans le sujet : <code>date(1, 1, annee)</code> au lieu de <code>Date(…)</code>, et un timestamp donné à l'heure de Paris. <a href="https://kxs.fr/files/sujets/2025/ecrit/terminale-2025-asie-jour-2.pdf">Le sujet (PDF)</a></li>
+      <li>Bac 2021, Centres étrangers, jour 1, exercice 1 : le code de César en classe (4 points). <a href="https://kxs.fr/files/sujets/2021/ecrit/terminale-2021-centres-etrangers-sujet-1.pdf">Le sujet (PDF)</a></li>
+      <li>Bac 2025, Polynésie, jour 2, exercice 1 : le jeu « 6 qui prend », trois classes qui travaillent ensemble (6 points). <a href="https://aeif.fr/wp-content/uploads/2025/11/Polynesie_juin_2025_sujet_2.pdf">Le sujet (PDF)</a></li>
+    </ul>
+  </section>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Métropole, mars 2023, jour 1 (23-NSIJ1ME1), exercice 3. <a href="https://kxs.fr/files/sujets/2023/ecrit/terminale-2023-metropole-juin-jour-1.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Aucun corrigé de l'AEIF n'est publié pour ce sujet : corrections de la mise en TD, vérifiées par exécution. La carte en couleurs du sujet (figure 1) n'est pas reprise.</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-poo">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

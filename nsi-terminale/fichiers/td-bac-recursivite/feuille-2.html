@@ -1,0 +1,344 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Récursivité · TD type bac (2/2)</title>
+  <meta name="description" content="TD type bac auto-correctif de terminale NSI, feuille 2 : construire des chaînes avec des règles (bac 2022, Polynésie, 22-NSIJ1PO1, exercice 1).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré). -->
+<main class="td" data-td="tle-td-bac-recursivite-2" data-premiere-question="7" data-td-version="3" data-code="obligatoire" data-ordre="melange">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 4 (tiré de l\'identifiant, voir charte/gabarit-td/LISEZMOI.md). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="4">
+      <div class="td-bandeau-decor" aria-hidden="true"></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Récursivité</span></p>
+        <h1>Récursivité</h1>
+        <p class="td-accroche">Type bac · feuille 2/2</p>
+      </div>
+      <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=recursivite" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM11 0h1v1h-1zM13 0h2v1h-2zM17 0h1v1h-1zM26 0h1v1h-1zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM9 1h1v1h-1zM11 1h2v1h-2zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM12 2h2v1h-2zM15 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM13 3h2v1h-2zM17 3h2v1h-2zM22 3h6v1h-6zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h1v1h-1zM11 4h1v1h-1zM16 4h9v1h-9zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h1v1h-1zM13 5h1v1h-1zM16 5h2v1h-2zM20 5h2v1h-2zM26 5h2v1h-2zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h1v1h-1zM16 7h4v1h-4zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h4v1h-4zM30 8h5v1h-5zM0 9h1v1h-1zM2 9h1v1h-1zM5 9h1v1h-1zM7 9h1v1h-1zM10 9h1v1h-1zM12 9h4v1h-4zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h3v1h-3zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h3v1h-3zM4 10h1v1h-1zM6 10h1v1h-1zM9 10h1v1h-1zM11 10h1v1h-1zM13 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h2v1h-2zM30 10h4v1h-4zM35 10h2v1h-2zM4 11h2v1h-2zM7 11h4v1h-4zM12 11h1v1h-1zM15 11h1v1h-1zM19 11h4v1h-4zM26 11h3v1h-3zM31 11h2v1h-2zM36 11h1v1h-1zM1 12h6v1h-6zM9 12h1v1h-1zM11 12h1v1h-1zM13 12h1v1h-1zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM7 13h3v1h-3zM11 13h1v1h-1zM13 13h2v1h-2zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h3v1h-3zM6 14h1v1h-1zM8 14h9v1h-9zM18 14h1v1h-1zM22 14h1v1h-1zM25 14h1v1h-1zM27 14h1v1h-1zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h2v1h-2zM3 15h1v1h-1zM8 15h6v1h-6zM15 15h1v1h-1zM19 15h2v1h-2zM24 15h1v1h-1zM27 15h1v1h-1zM29 15h4v1h-4zM0 16h1v1h-1zM3 16h6v1h-6zM10 16h1v1h-1zM12 16h2v1h-2zM18 16h9v1h-9zM29 16h2v1h-2zM32 16h1v1h-1zM34 16h2v1h-2zM3 17h1v1h-1zM8 17h1v1h-1zM10 17h1v1h-1zM12 17h2v1h-2zM15 17h2v1h-2zM21 17h1v1h-1zM23 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM0 18h4v1h-4zM6 18h2v1h-2zM9 18h1v1h-1zM11 18h3v1h-3zM17 18h2v1h-2zM20 18h3v1h-3zM24 18h1v1h-1zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h1v1h-1zM2 19h2v1h-2zM5 19h1v1h-1zM8 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h2v1h-2zM29 19h2v1h-2zM36 19h1v1h-1zM0 20h1v1h-1zM3 20h1v1h-1zM5 20h2v1h-2zM10 20h1v1h-1zM12 20h2v1h-2zM17 20h1v1h-1zM22 20h1v1h-1zM24 20h4v1h-4zM29 20h2v1h-2zM32 20h3v1h-3zM0 21h1v1h-1zM2 21h3v1h-3zM8 21h2v1h-2zM11 21h4v1h-4zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h1v1h-1zM4 22h1v1h-1zM6 22h2v1h-2zM9 22h3v1h-3zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM0 23h2v1h-2zM4 23h1v1h-1zM7 23h3v1h-3zM12 23h3v1h-3zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h7v1h-7zM8 24h2v1h-2zM12 24h2v1h-2zM15 24h2v1h-2zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h1v1h-1zM25 24h6v1h-6zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM3 25h1v1h-1zM7 25h1v1h-1zM10 25h1v1h-1zM14 25h2v1h-2zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h2v1h-2zM25 25h1v1h-1zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM2 26h2v1h-2zM5 26h4v1h-4zM10 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM2 27h2v1h-2zM5 27h1v1h-1zM8 27h1v1h-1zM10 27h1v1h-1zM13 27h1v1h-1zM15 27h1v1h-1zM19 27h4v1h-4zM24 27h1v1h-1zM27 27h2v1h-2zM31 27h2v1h-2zM0 28h1v1h-1zM5 28h2v1h-2zM10 28h8v1h-8zM19 28h1v1h-1zM22 28h5v1h-5zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h1v1h-1zM10 29h5v1h-5zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h5v1h-5zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h4v1h-4zM14 30h3v1h-3zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h1v1h-1zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h1v1h-1zM10 31h3v1h-3zM15 31h1v1h-1zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h1v1h-1zM10 32h3v1h-3zM14 32h1v1h-1zM18 32h5v1h-5zM24 32h9v1h-9zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h1v1h-1zM13 33h4v1h-4zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h1v1h-1zM11 34h3v1h-3zM17 34h1v1h-1zM20 34h1v1h-1zM24 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM10 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM23 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h1v1h-1zM10 36h1v1h-1zM12 36h2v1h-2zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> réussir un vrai exercice de l'épreuve écrite : la récursivité sur des chaînes de caractères.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+      <li>expliquer une erreur de récursion (<code>RecursionError</code>) et justifier qu'une fonction termine ;</li>
+      <li>lister tous les résultats possibles d'appels récursifs ;</li>
+      <li>écrire une fonction récursive qui teste une règle sur une chaîne.</li>
+    </ul>
+      <p class="td-duree">45 minutes à 1 h · 1 exercice de bac (4 points) · 9 questions · seul·e ou en binôme</p>
+      <p><b>Comme à l'épreuve :</b> sans machine d'abord (au brouillon ou sur ta copie), puis on vérifie ici. L'énoncé est celui du sujet officiel ; les numéros des questions du sujet sont en gras ; les schémas sont redessinés.</p>
+      <p class="td-ecran-seul"><b>Ce TD a 2 feuilles</b>, une par exercice de bac, du plus guidé au plus proche de l'épreuve : 1. <a href="index.html">compte à rebours, factorielle et somme</a> ; 2. construire des chaînes avec des règles (ici).</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <h2 class="td-partie">Exercice : construire des chaînes avec des règles (4 points)</h2>
+  <p><i>Bac 2022, Polynésie, jour 1 (sujet 22-NSIJ1PO1), exercice 1, 4 points. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-polynesie-jour-1.pdf">Sujet d'origine (PDF)</a>.</i></p>
+  <p><i>Cet exercice traite du thème «programmation», et principalement de la récursivité.</i></p>
+  <p>On rappelle qu'une chaîne de caractères peut être représentée en Python par un texte entre guillemets <code>""</code> et que :</p>
+  <ul>
+    <li>la fonction <code>len</code> renvoie la longueur de la chaîne de caractères passée en paramètre ;</li>
+    <li>si une variable <code>ch</code> désigne une chaîne de caractères, alors <code>ch[0]</code> renvoie son premier caractère, <code>ch[1]</code> le deuxième, etc. ;</li>
+    <li>l'opérateur <code>+</code> permet de concaténer deux chaînes de caractères.</li>
+  </ul>
+  <p>Exemples :</p>
+  <pre class="td-code td-sans-num">
+&gt;&gt;&gt; texte = "bricot"
+&gt;&gt;&gt; len(texte)
+6
+&gt;&gt;&gt; texte[0]
+"b"
+&gt;&gt;&gt; texte[1]
+"r"
+&gt;&gt;&gt; "a" + texte
+"abricot"</pre>
+  <p>On s'intéresse dans cet exercice à la construction de chaînes de caractères suivant certaines règles de construction.</p>
+  <p><b>Règle A :</b> une chaîne est construite suivant la règle A dans les deux cas suivants :</p>
+  <ul>
+    <li>soit elle est égale à <code>"a"</code> ;</li>
+    <li>soit elle est de la forme <code>"a"+chaine+"a"</code>, où <code>chaine</code> est une chaîne de caractères construite suivant la règle A.</li>
+  </ul>
+  <p><b>Règle B :</b> une chaîne est construite suivant la règle B dans les deux cas suivants :</p>
+  <ul>
+    <li>soit elle est de la forme <code>"b"+chaine+"b"</code>, où <code>chaine</code> est une chaîne de caractères construite suivant la règle A ;</li>
+    <li>soit elle est de la forme <code>"b"+chaine+"b"</code>, où <code>chaine</code> est une chaîne de caractères construite suivant la règle B.</li>
+  </ul>
+  <p>On a reproduit ci-dessous l'aide de la fonction <code>choice</code> du module <code>random</code>.</p>
+  <pre class="td-code td-sans-num">
+&gt;&gt;&gt;from random import choice
+&gt;&gt;&gt;help(choice)
+Help on method choice in module random:
+choice(seq) method of random.Random instance
+    Choose a random element from a non-empty sequence.</pre>
+  <p class="td-ecran-seul"><i>Traduction : « Choisit un élément au hasard dans une séquence non vide. »</i></p>
+  <p>La fonction <code>A()</code> ci-dessous renvoie une chaîne de caractères construite suivant la règle A, en choisissant aléatoirement entre les deux cas de figure de cette règle.</p>
+  <pre class="td-code">
+def A():
+    if choice([True, False]):
+        return "a"
+    else:
+        return "a" + A() + "a"</pre>
+
+  <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
+    <p class="td-consigne"><b>1. a.</b> Cette fonction est-elle récursive ? Justifier.</p>
+    <p class="td-ecran-seul">Sur la copie, on écrit la justification. Ici, choisis-la.</p>
+    <ul class="td-options">
+      <li data-juste>Oui : à la ligne 5, la fonction <code>A</code> s'appelle elle-même.</li>
+      <li data-retour="Appeler choice ne rend pas une fonction récursive : il faut qu'elle s'appelle elle-même.">Oui : elle appelle la fonction <code>choice</code>, du module <code>random</code>.</li>
+      <li data-retour="Une fonction récursive n'a pas besoin de paramètre. Regarde la ligne 5.">Non : elle n'a pas de paramètre, donc elle ne peut pas changer d'un appel à l'autre.</li>
+      <li data-retour="Elle n'a pas de boucle, mais elle se répète autrement : regarde la ligne 5.">Non : elle ne contient aucune boucle <code>for</code> ni <code>while</code>, rien ne s'y répète.</li>
+    </ul>
+    <p class="td-aide">Lis la ligne 5 : quelle fonction y est appelée ?</p>
+    <div class="td-correction"><p>Oui : la fonction <code>A</code> s'appelle elle-même (<code>"a" + A() + "a"</code>), elle est donc récursive.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><b>1. a.</b> Cette fonction est-elle récursive ? Justifier.</p>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q2" data-support="ecran">
+    <p class="td-consigne"><b>1. b.</b> La fonction <code>choice([True, False])</code> peut renvoyer <code>False</code> un très grand nombre de fois consécutives. Expliquer pourquoi ce cas de figure amènerait à une erreur d'exécution.</p>
+    <p class="td-ecran-seul">Sur la copie, on rédige l'explication. Ici, choisis-la.</p>
+    <ul class="td-options">
+      <li data-retour="La chaîne reste petite (quelques milliers de caractères) : ce n'est pas la mémoire des chaînes qui pose problème.">La chaîne renvoyée devient trop longue : au-delà de quelques milliers de caractères, elle ne tient plus en mémoire et Python s'arrête sur une erreur de mémoire.</li>
+      <li data-juste>Chaque <code>False</code> lance un nouvel appel de <code>A</code> avant la fin des précédents : les appels s'empilent et, au-delà d'environ 1 000, Python s'arrête sur une erreur de récursion.</li>
+      <li data-retour="choice peut renvoyer False plusieurs fois de suite : chaque tirage est indépendant.">Ce cas ne peut pas arriver : <code>choice</code> ne renvoie jamais <code>False</code> deux fois de suite, donc la fonction finit toujours par renvoyer une chaîne, sans erreur.</li>
+      <li data-retour="La fonction renvoie toujours une chaîne quand elle s'arrête. Le problème vient du nombre d'appels.">Chaque <code>False</code> fait renvoyer <code>None</code> à la fonction, et on ne peut pas ajouter <code>None</code> à une chaîne : Python s'arrête sur une erreur de type.</li>
+    </ul>
+    <p class="td-aide">Avec <code>False</code>, que fait la fonction avant de renvoyer son résultat ? Combien d'appels sont alors en attente ?</p>
+    <p class="td-aide">Python garde chaque appel en attente dans la pile d'exécution, dont la taille est limitée (environ 1 000 appels).</p>
+    <div class="td-correction">
+      <p>Chaque <code>False</code> provoque un appel récursif de plus, en attente. La pile des appels dépasse sa limite : Python s'arrête. Voici le vrai message, obtenu en forçant <code>choice</code> à renvoyer toujours <code>False</code> :</p>
+      <pre class="td-erreur">
+Traceback (most recent call last):
+  File "regles.py", line 10, in &lt;module&gt;
+    A()
+    ~^^
+  File "regles.py", line 8, in A
+    return "a" + A() + "a"
+                 ~^^
+  File "regles.py", line 8, in A
+    return "a" + A() + "a"
+                 ~^^
+  File "regles.py", line 8, in A
+    return "a" + A() + "a"
+                 ~^^
+  [Previous line repeated 994 more times]
+  File "regles.py", line 5, in A
+    if choice([True, False]):
+       ~~~~~~^^^^^^^^^^^^^^^
+RecursionError: maximum recursion depth exceeded</pre>
+      <p><code>RecursionError</code> : la profondeur maximale de récursion est dépassée (« maximum recursion depth exceeded »).</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne"><b>1. b.</b> La fonction <code>choice([True, False])</code> peut renvoyer <code>False</code> un très grand nombre de fois consécutives. Expliquer pourquoi ce cas de figure amènerait à une erreur d'exécution.</p>
+  </section>
+
+  <p>Dans la suite, on considère une deuxième version de la fonction <code>A</code>. À présent, la fonction prend en paramètre un entier <code>n</code> tel que, si la valeur de <code>n</code> est négative ou nulle, la fonction renvoie <code>"a"</code>. Si la valeur de <code>n</code> est strictement positive, elle renvoie une chaîne de caractères construite suivant la règle A avec un <code>n</code> décrémenté de 1, en choisissant aléatoirement entre les deux cas de figure de cette règle.</p>
+
+  <section class="td-q" data-type="trous" id="q3">
+    <p class="td-consigne"><b>2. a.</b> Recopier sur la copie et compléter aux emplacements des points de suspension <code>...</code> le code de cette nouvelle fonction <code>A</code>.</p>
+    <pre class="td-code">
+def A(n):
+    if [[n &lt;= 0|n&lt;=0|n &lt; 1|n&lt;1|0 &gt;= n|0&gt;=n]] or choice([True, False]) :
+        return "a"
+    else:
+        return "a" + [[A(n - 1)|A(n-1)]] + "a"</pre>
+    <p class="td-aide">Première case : la condition « <code>n</code> est négatif ou nul ».</p>
+    <p class="td-aide">Deuxième case : un appel récursif avec <code>n</code> décrémenté de 1.</p>
+    <div class="td-correction">
+      <pre class="td-code td-sans-num">
+def A(n):
+    if n &lt;= 0 or choice([True, False]) :
+        return "a"
+    else:
+        return "a" + A(n - 1) + "a"</pre>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
+    <p class="td-consigne"><b>2. b.</b> Justifier le fait qu'un appel de la forme <code>A(n)</code> avec <code>n</code> un nombre entier positif inférieur à 50, termine toujours.</p>
+    <p class="td-ecran-seul">Sur la copie, on rédige la justification. Ici, choisis-la.</p>
+    <ul class="td-options">
+      <li data-retour="choice peut renvoyer False plusieurs fois : on ne peut pas compter sur lui pour s'arrêter.">Parce que <code>choice</code> finit toujours par renvoyer <code>True</code> : au bout de quelques appels, la fonction renvoie <code>"a"</code> et s'arrête.</li>
+      <li data-juste>Parce qu'à chaque appel, <code>n</code> diminue de 1 : au pire, après <code>n</code> appels, <code>n</code> vaut 0 et <code>A</code> renvoie <code>"a"</code> sans s'appeler (moins de 51 appels).</li>
+      <li data-retour="La valeur 50 ne joue aucun rôle dans le code : c'est la diminution de n qui compte.">Parce que la fonction s'arrête dès que <code>n</code> vaut 50 : avec un entier positif inférieur à 50, elle n'a presque rien à faire.</li>
+      <li data-retour="Elle est bien récursive (elle appelle A(n - 1)), et elle termine quand même.">Parce que la fonction n'est plus récursive : elle ne s'appelle plus elle-même et renvoie directement une chaîne de <code>"a"</code>.</li>
+    </ul>
+    <p class="td-aide">Comment évolue <code>n</code> d'un appel au suivant ? Que se passe-t-il quand <code>n</code> atteint 0 ?</p>
+    <div class="td-correction">
+      <p>Soit <code>choice</code> renvoie <code>True</code> et l'appel s'arrête ; soit on rappelle <code>A</code> avec <code>n - 1</code>. Au plus <code>n + 1</code> appels (51 au plus), car quand <code>n &lt;= 0</code>, le cas de base renvoie <code>"a"</code>. On reste loin de la limite d'environ 1 000 appels.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne"><b>2. b.</b> Justifier le fait qu'un appel de la forme <code>A(n)</code> avec <code>n</code> un nombre entier positif inférieur à 50, termine toujours.</p>
+  </section>
+
+  <p>On donne ci-après le code de la fonction récursive <code>B</code> qui prend en paramètre un entier <code>n</code> et qui renvoie une chaîne de caractères construite suivant la règle B.</p>
+  <pre class="td-code">
+def B(n):
+    if n &lt;= 0 or choice([True, False]):
+        return "b" + A(n-1) + "b"
+    else:
+        return "b" + B(n-1) + "b"</pre>
+  <p>On admet que :</p>
+  <ul>
+    <li>les appels <code>A(-1)</code> et <code>A(0)</code> renvoient la chaîne <code>"a"</code> ;</li>
+    <li>l’appel <code>A(1)</code> renvoie la chaîne <code>"a"</code> ou la chaîne <code>"aaa"</code> ;</li>
+    <li>l’appel <code>A(2)</code> renvoie la chaîne <code>"a"</code>, la chaîne <code>"aaa"</code> ou la chaîne <code>"aaaaa"</code>.</li>
+  </ul>
+  <p><b>3.</b> Donner toutes les chaînes possibles renvoyées par les appels <code>B(0)</code>, <code>B(1)</code> et <code>B(2)</code>.</p>
+
+  <section class="td-q" data-type="courte" id="q5" data-reponse="bab|&quot;bab&quot;|'bab'" data-etiquette="B(0) renvoie :">
+    <p class="td-consigne"><b>3.</b> Donner toutes les chaînes possibles renvoyées par l'appel <code>B(0)</code>.</p>
+    <p class="td-retour" data-si="aba">Avec la règle B, la chaîne commence et finit par <code>"b"</code>.</p>
+    <p class="td-retour" data-si="b">N'oublie pas le <code>"b"</code> de la fin et ce qu'il y a entre les deux : <code>A(n-1)</code>.</p>
+    <p class="td-aide">Avec <code>n = 0</code>, la condition <code>n &lt;= 0</code> est vraie : on calcule <code>"b" + A(-1) + "b"</code>.</p>
+    <div class="td-correction"><p><code>B(0)</code> renvoie toujours <code>"b" + A(-1) + "b"</code>, soit <b><code>"bab"</code></b>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q6" data-support="ecran">
+    <p class="td-consigne"><b>3.</b> L'appel <code>B(1)</code> : coche toutes les chaînes possibles.</p>
+    <ul class="td-options">
+      <li data-juste><code>"bab"</code></li>
+      <li data-juste><code>"bbabb"</code></li>
+      <li data-retour="A(0) renvoie seulement &quot;a&quot; : &quot;baaab&quot; demande A(1), donc un appel B(2).">
+<code>"baaab"</code></li>
+      <li data-retour="Il faudrait deux appels de B en plus : c'est possible pour B(2), pas pour B(1).">
+<code>"bbbabbb"</code></li>
+    </ul>
+    <p class="td-aide">Deux cas : <code>choice</code> renvoie <code>True</code> (on calcule <code>"b" + A(0) + "b"</code>) ou <code>False</code> (on calcule <code>"b" + B(0) + "b"</code>).</p>
+    <div class="td-correction"><p>Cas <code>True</code> : <code>"b" + A(0) + "b"</code> = <code>"bab"</code>. Cas <code>False</code> : <code>"b" + B(0) + "b"</code> = <code>"bbabb"</code>. Vérifié en énumérant les deux cas par programme.</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q6-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>3.</b> Donner toutes les chaînes possibles renvoyées par l'appel <code>B(1)</code>.</p>
+  </section>
+
+  <section class="td-q" data-type="cases" id="q7" data-support="ecran">
+    <p class="td-consigne"><b>3.</b> L'appel <code>B(2)</code> : coche toutes les chaînes possibles.</p>
+    <ul class="td-options">
+      <li data-juste><code>"bab"</code></li>
+      <li data-juste><code>"baaab"</code></li>
+      <li data-retour="&quot;baaaaab&quot; demande A(2), mais B(2) appelle A(1), qui renvoie &quot;a&quot; ou &quot;aaa&quot;.">
+<code>"baaaaab"</code></li>
+      <li data-juste><code>"bbabb"</code></li>
+      <li data-juste><code>"bbbabbb"</code></li>
+      <li data-retour="Une chaîne de la règle B commence et finit par &quot;b&quot;, avec une chaîne de la règle A au centre.">
+<code>"bbbb"</code></li>
+    </ul>
+    <p class="td-aide">Cas <code>True</code> : <code>"b" + A(1) + "b"</code>, et <code>A(1)</code> a deux résultats possibles.</p>
+    <p class="td-aide">Cas <code>False</code> : <code>"b" + B(1) + "b"</code>, et tu connais les deux résultats de <code>B(1)</code>.</p>
+    <div class="td-correction"><p>Cas <code>True</code> : <code>"bab"</code> ou <code>"baaab"</code>. Cas <code>False</code> : <code>"b" + "bab" + "b"</code> = <code>"bbabb"</code> ou <code>"b" + "bbabb" + "b"</code> = <code>"bbbabbb"</code>. Quatre chaînes en tout (vérifié par programme).</p></div>
+  </section>
+
+  <section class="td-q" data-type="libre" id="q7-papier" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><b>3.</b> Donner toutes les chaînes possibles renvoyées par l'appel <code>B(2)</code>.</p>
+  </section>
+
+  <p>On suppose maintenant qu'on dispose d'une fonction <code>raccourcir</code> qui prend comme paramètre une chaîne de caractères de longueur supérieure ou égale à 2, et renvoie la chaîne de caractères obtenue à partir de la chaîne initiale en lui ôtant le premier et le dernier caractère.</p>
+  <p>Par exemple :</p>
+  <pre class="td-code td-sans-num">
+&gt;&gt;&gt; raccourcir("abricot")
+"brico"
+&gt;&gt;&gt; raccourcir("ab")
+""</pre>
+
+  <section class="td-q" data-type="trous" id="q8">
+    <p class="td-consigne"><b>4. a.</b> Recopier sur la copie et compléter les points de suspension <code>...</code> du code de la fonction <code>regleA</code> ci-dessous pour qu'elle renvoie <code>True</code> si la chaîne passée en paramètre est construite suivant la règle A, et <code>False</code> sinon.</p>
+    <pre class="td-code">
+def regleA(chaine):
+    n = len(chaine)
+    if n &gt;= 2:
+        return (chaine[0] == "a" and chaine[n-1] == "a"
+                and regleA([[raccourcir(chaine)]]))
+    else:
+        return chaine == [["a"|'a']]</pre>
+    <p class="td-aide">Pour une chaîne longue, on vérifie le premier et le dernier caractère, puis on vérifie ce qu'il reste au milieu, avec la même fonction.</p>
+    <p class="td-aide">Pour une chaîne de 0 ou 1 caractère, une seule chaîne suit la règle A.</p>
+    <div class="td-correction">
+      <pre class="td-code td-sans-num">
+        return (chaine[0] == "a" and chaine[n-1] == "a"
+                and regleA(raccourcir(chaine)))
+    else:
+        return chaine == "a"</pre>
+      <p><b>Remarque sur le sujet :</b> la ligne du <code>return</code> y est coupée après <code>and</code>. En Python, une ligne coupée ainsi provoque une erreur de syntaxe : on l'écrit sur une seule ligne, ou entre parenthèses.</p>
+    </div>
+  </section>
+
+  <section class="td-q" data-type="code" id="q9" data-obligatoire data-fichier="regles.py" data-lignes="6" data-depart-papier="non">
+    <p class="td-consigne"><b>4. b.</b> Écrire le code d’une fonction <code>regleB</code>, prenant en paramètre une chaîne de caractères et renvoyant <code>True</code> si la chaîne est construite suivant la règle B, et <code>False</code> sinon.</p>
+    <p class="td-ecran-seul">Sur machine, <code>raccourcir</code> et <code>regleA</code> sont déjà écrites dans l'éditeur.</p>
+    <pre class="td-depart">
+def raccourcir(chaine):
+    return chaine[1:len(chaine) - 1]
+
+def regleA(chaine):
+    n = len(chaine)
+    if n &gt;= 2:
+        return (chaine[0] == "a" and chaine[n-1] == "a"
+                and regleA(raccourcir(chaine)))
+    else:
+        return chaine == "a"
+
+def regleB(chaine):
+    ...
+
+print(regleB("bbabb"), regleB("bba"))
+</pre>
+    <script type="text/x-python" class="td-tests">
+for _c in ["bab", "bbabb", "baaab", "bbbabbb", "bbaaabb"]:
+    assert regleB(_c) is True, f'regleB("{_c}") doit renvoyer True.'
+for _c in ["b", "bb", "", "aba", "babb", "bbab", "baab", "a"]:
+    assert regleB(_c) is False, f'regleB("{_c}") doit renvoyer False.'
+print("Tous les tests passent.")
+</script>
+    <p class="td-aide">Inspire-toi de <code>regleA</code> : premier et dernier caractères égaux à <code>"b"</code>, puis on regarde le milieu <code>raccourcir(chaine)</code>.</p>
+    <p class="td-aide">D'après la règle B, le milieu doit suivre la règle A <b>ou</b> la règle B : <code>regleA(...) or regleB(...)</code>, entre parenthèses.</p>
+    <p class="td-aide">Une chaîne de moins de 2 caractères ne peut pas suivre la règle B (il faut au moins un <code>"b"</code> au début et à la fin, plus un milieu).</p>
+    <div class="td-correction">
+      <pre class="td-code" data-verifier="correction">
+def regleB(chaine):
+    n = len(chaine)
+    if n &gt;= 2:
+        return (chaine[0] == "b" and chaine[n-1] == "b"
+                and (regleA(raccourcir(chaine)) or regleB(raccourcir(chaine))))
+    else:
+        return False</pre>
+      <p>Les parenthèses autour du <code>or</code> sont nécessaires : sans elles, <code>and</code> passe avant <code>or</code>.</p>
+    </div>
+  </section>
+
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p>Terminaison : un paramètre qui diminue à chaque appel et un cas de base atteint à coup sûr.</p>
+    <p>Trop d'appels en attente (environ 1 000) : Python s'arrête avec <code>RecursionError: maximum recursion depth exceeded</code>.</p>
+    <p>Récursivité sur une chaîne : on traite le premier et le dernier caractère, puis on rappelle la fonction sur le milieu, plus court.</p><span class="td-margouillat" data-cachette="memo" style="--r:8deg;--s:-1"></span>
+  </section>
+  <footer class="td-pied">
+    <p><b>Énoncé :</b> sujet officiel du baccalauréat, spécialité NSI, épreuve écrite (ministère de l'Éducation nationale) : Polynésie, mai 2022, jour 1 (22-NSIJ1PO1), exercice 1. <a href="https://kxs.fr/files/sujets/2022/ecrit/terminale-2022-polynesie-jour-1.pdf">Le PDF du sujet</a>, diffusé par kxs.fr (<a href="https://kxs.fr/sujets/terminale-ecrit">kxs.fr</a> : aucune licence indiquée). Corrections comparées au <a href="https://aeif.fr/wp-content/uploads/2025/07/corr_polynesie_2022.pdf">corrigé de l'AEIF</a> (Association des enseignantes et enseignants d'informatique de France, CC BY-SA 4.0 ; auteur·rices non nommé·es dans le document).</p>
+    <p>Babash - NSI Tani Malandi (mise en TD, coups de pouce et corrections) · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a>, moteur sous licence MIT · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/td-bac-recursivite">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
