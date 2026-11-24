@@ -116,6 +116,17 @@ N.teint = 1; ok(E.neutre().teint !== 1 || E.neutre().lignee === 'esprit', 'neutr
 var t0 = Date.now(); for (var r = 0; r < 200; r++) E.svg(ref, { etat: 'repos', taille: 96 }); var t1 = Date.now() - t0;
 ok(t1 < 2000, 'le cache des dessins ne sert pas (' + t1 + ' ms)');
 
+/* clés héritées : jamais acceptées */
+['constructor', 'toString', '__proto__', 'hasOwnProperty', 'valueOf'].forEach(function (k) {
+  var d = E.normaliser({ couleurs: { haut: k, accent: k, yeux: k }, cheveux: k, objets: { main: k, tete: k }, compagnon: k, lignee: k });
+  ok(d.couleurs.haut === 'canard' && d.couleurs.accent === 'cyan' && d.cheveux === 'noirs' && d.objets.main === 'aucun' && d.compagnon === 'margouillat' && d.lignee === 'humain', 'normaliser accepte la clé héritée ' + k);
+  E.adresse(k); ok(E.adresse() === 'monsieur' && E.phrase(19) === 'Ne vous inquiétez pas, Monsieur.', 'adresse accepte ' + k);
+  ok(E.svg(ref, { etat: k, decalage: 0, alt: '' }) === E.svg(ref, { etat: 'repos', decalage: 0, alt: '' }), 'état ' + k + ' : repos attendu');
+  ok(E.svg(ref, { cadre: k, decalage: 0, alt: '' }) === E.svg(ref, { decalage: 0, alt: '' }), 'cadre ' + k);
+  ok(E.compagnonSVG(k) === '' && E.phrase(k) === null, 'compagnon ou phrase ' + k);
+  ok(E.margouillatSVG({ bord: k, etat: k, anime: false }).indexOf('<svg') === 0, 'margouillat ' + k);
+});
+
 /* ── 4. fichiers de données ── */
 try { cp.execFileSync(process.execPath, [path.join(__dirname, 'equipage-donnees.js'), '--verifier'], { stdio: 'pipe' }); ok(true, ''); }
 catch (e) { ok(false, String(e.stderr || e.message).trim()); }

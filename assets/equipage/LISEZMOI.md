@@ -98,7 +98,7 @@ Sept états, chacun une suite de 3 à 5 images (CSS, sans script) : au repos (re
 Les applications de jeu chargent `assets/signal-commun.css`, `assets/applis.css` puis ce module, depuis le site. Mode d'emploi complet, avec un exemple de lobby, de question et de podium : [`charte/applis.md`](../../charte/applis.md) ; démonstration : `charte/applis.html`.
 
 - États d'usage (alias) : `lobby` (repos), `attente` (concentré·e), `repondu` (repos et fanion), `fete` (très content·e), `applaudit` (content·e).
-- Poignée : `geste('salue' | 'saute' | 'rit' | 'sieste', { duree })`, `bulle(numero, liste)` (liste fermée, `Equipage.phrases` par défaut, 21 phrases, 6 bulles au plus par page ; `Equipage.adresse('monsieur' | 'madame')` choisit la forme de la phrase 19), `marque('repondu' | null)`, `serie(n)`.
+- Poignée : `geste('salue' | 'saute' | 'rit' | 'sieste', { duree })`, `bulle(numero, null, { duree })` (seulement la liste fermée du moteur, `Equipage.phrases`, 21 phrases ; tout tableau ou objet fourni par l'appelant est refusé ; 6 bulles au plus par page ; `Equipage.adresse('monsieur' | 'madame')` choisit la forme de la phrase 19), `marque('repondu' | null)`, `serie(n)`.
 - Page : `Equipage.calme(bool)`, `Equipage.plafond(n)`, `Equipage.pause(bool)` (automatique quand l'onglet est caché), `Equipage.neutre()` (l'Esprit en capuche), `Equipage.applis`, `Equipage.viderCache()`.
 - Données versionnées : `assets/equipage/applis.json` (phrases, gestes, états d'usage, objets et hauts faits) et `assets/equipage/catalogue.json`, régénérés par `node charte/equipage-donnees.js` (`--verifier` pour contrôler). Essais : `node charte/tester-equipage.js`, `python3 -I -B charte/tester-applis.py`.
 

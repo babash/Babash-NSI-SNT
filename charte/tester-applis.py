@@ -92,9 +92,12 @@ def essais_interface(nav, base, lent):
     ok(pg.evaluate("document.querySelectorAll('.eq-bulle').length") == 4, "les 4 bulles en attente passent ensuite")
     pg.wait_for_timeout(800)
     ok(pg.evaluate("document.querySelectorAll('.eq-bulle').length") == 0, "les bulles s'effacent")
-    pg.evaluate("H[11].bulle(0, ['<img src=x onerror=window.PIRATE=1>'])")
+    ok(pg.evaluate("[H[11].bulle(0, ['TEXTE LIBRE']), H[11].bulle(0, new Proxy(['TEXTE LIBRE'], {})), H[11].bulle(0, { 0: 'TEXTE LIBRE', length: 1 }), H[11].bulle(0, 'constructor')].every(x => x === false)"),
+       "un tableau ou un objet fourni par l'appelant est refusé")
     pg.wait_for_timeout(100)
-    ok(pg.evaluate("!window.PIRATE && !document.querySelector('.eq-bulle img')"), "le texte d'une bulle n'est jamais du HTML")
+    ok(pg.evaluate("document.body.textContent.indexOf('TEXTE LIBRE') < 0 && document.querySelectorAll('.eq-bulle').length === 0"), "jamais de texte libre dans une bulle")
+    ok(pg.evaluate("H[11].bulle(0, 'lobby') === true && H[11].element.querySelector('.eq-bulle').textContent === Equipage.phrases[0]"), "la liste du moteur par son nom")
+    ok(pg.evaluate("['constructor', 'toString', '__proto__'].every(k => H[12].geste(k) === false)"), "geste : clés héritées refusées")
     ok(pg.evaluate("Object.isFrozen(Equipage.phrases) && Equipage.phrases.length === 21"), "21 phrases gelées")
     pg.evaluate("Equipage.adresse('madame'); H[15].bulle(19)")
     ok(pg.evaluate("H[15].element.querySelector('.eq-bulle').textContent") == "Ne vous inquiétez pas, Madame.", "la page projetée choisit « Madame »")
@@ -128,6 +131,28 @@ def essais_interface(nav, base, lent):
     ok(pg.evaluate("H[0].bulle(1) === false"), "plus de bulle après detruire")
     ok(not erreurs, "erreurs JavaScript : %s" % erreurs)
     ctx.close()
+    # le buste sur le téléphone, dans la barre, à côté du chrono
+    for schema in ("light", "dark"):
+        ctx = nav.new_context(viewport={"width": 320, "height": 700}, color_scheme=schema)
+        pg = ctx.new_page()
+        pg.goto(base + "/charte/applis.html?essai")
+        pg.wait_for_timeout(300)
+        b = pg.evaluate("""() => { var a = document.querySelector('#dm-tel-av').getBoundingClientRect(), q = document.querySelector('#dm-question-tel .ap-question').getBoundingClientRect(),
+          t = document.querySelector('#dm-question-tel'), p = t.querySelector('pre.code');
+          return { dessus: a.bottom <= q.top + 1, dans: a.right <= t.getBoundingClientRect().right, code: p.scrollWidth <= p.clientWidth + 1 }; }""")
+        ok(b["dessus"] and b["dans"], "téléphone %s : le buste reste dans la barre du haut" % schema)
+        ok(b["code"], "téléphone %s : le code tient à 320 px" % schema)
+        pg.evaluate("__tel.etat('repondu')")
+        ok(pg.evaluate("!!document.querySelector('#dm-tel-av .eq-fanion') && !!document.querySelector('#dm-tel-av .eq-flamme')"), "téléphone : fanion et flamme")
+        pg.evaluate("__tel.etat('juste')")
+        ok("très content" in pg.evaluate("document.querySelector('#dm-tel-av title').textContent"), "téléphone : fête quand c'est juste")
+        pg.evaluate("__tel.etat('faux')")
+        t = pg.evaluate("document.querySelector('#dm-tel-av title').textContent")
+        ok("au repos" in t and "triste" not in t, "téléphone : sobre quand c'est faux")
+        pg.evaluate("__tel.sans(true)")
+        ok("lignée Esprit" in pg.evaluate("document.querySelector('#dm-tel-av title').textContent"), "téléphone : l'Esprit en capuche sans compte")
+        ok(pg.evaluate("document.documentElement.scrollWidth <= innerWidth"), "téléphone %s : pas de défilement horizontal" % schema)
+        ctx.close()
     # réglage « mouvement réduit »
     ctx = nav.new_context(reduced_motion="reduce")
     pg = ctx.new_page()

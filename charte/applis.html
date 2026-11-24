@@ -112,7 +112,7 @@
     <div class="dm-cadre" id="dm-question-projete">
       <div class="ap-question">
         <div class="ap-question-tete">
-          <div class="ap-enonce"><p class="q-num">Question 4 sur 12</p><h3 class="q-nom">Que renvoie <code>vider(p)</code> si la pile <code>p</code> contient trois éléments ?</h3><div class="dm-code-q"></div></div>
+          <div class="ap-enonce"><p class="q-num">Question 4 sur 12</p><h3 class="q-nom">Qu'affiche ce programme ?</h3><div class="dm-code-q"></div></div>
           <div class="ap-minuteur" role="timer" aria-label="18 secondes"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="ap-fond-arc" cx="50" cy="50" r="44"/><circle class="ap-arc" cx="50" cy="50" r="44" stroke-dasharray="276" stroke-dashoffset="110"/></svg><b>18</b></div>
         </div>
         <div class="options dm-options"></div>
@@ -121,10 +121,20 @@
         <p class="ap-legende"><span>Fanion : a répondu</span><span>Flamme : série de bonnes réponses</span><span id="dm-repondu-compte"></span></p></div>
     </div>
     <h3 class="ap-sous" style="margin:16px 0 8px">Sur le téléphone</h3>
-    <div class="dm-cadre dm-tel ap-tel" id="dm-question-tel">
-      <div class="ap-barre"><span class="ap-logo">Quizz<b>NSI</b></span><span class="ap-espace"></span><span class="ap-petit">18 s</span></div>
-      <div class="ap-question"><p class="q-num">Question 4 sur 12</p><h3 class="q-nom">Que renvoie <code>vider(p)</code> si la pile <code>p</code> contient trois éléments ?</h3><div class="dm-code-q"></div>
+    <p class="dm-but">Le buste de l'élève est dans la barre du haut, à côté du chrono : il ne prend aucune place sur la question ni sur le code. Il réagit comme sur l'écran projeté : fanion quand on a répondu, flamme et son chiffre, fête à la correction quand c'est juste, rien de moqueur quand c'est faux (il reste au repos). Sans compte : l'Esprit en capuche.</p>
+    <div class="dm-rangee">
+    <div class="dm-cadre dm-tel ap-tel" id="dm-question-tel" style="flex:0 1 380px">
+      <div class="ap-barre"><span class="ap-logo">Quizz<b>NSI</b></span><span class="ap-espace"></span><span class="ap-moi-q"><span id="dm-tel-av"></span><span class="ap-chrono-tel" role="timer">18 s</span></span></div>
+      <div class="ap-question"><p class="q-num">Question 4 sur 12</p><h3 class="q-nom">Qu'affiche ce programme ?</h3><div class="dm-code-q"></div>
         <div class="options dm-options"></div></div>
+    </div>
+    <div class="ap-pile" style="flex:1 1 220px">
+      <div class="ap-commandes" id="dm-tel-etapes">
+        <button class="ap-bt ap-bt-mini" data-etape="attente">Question</button><button class="ap-bt ap-bt-mini" data-etape="repondu">A répondu</button>
+        <button class="ap-bt ap-bt-mini" data-etape="juste">Correction : juste</button><button class="ap-bt ap-bt-mini" data-etape="faux">Correction : faux</button>
+      </div>
+      <div class="ap-commandes"><button class="ap-bt ap-bt-mini" id="dm-tel-sans" aria-pressed="false">Sans compte</button></div>
+    </div>
     </div>
   </section>
 
@@ -262,12 +272,14 @@
   $('dm-pseudos').addEventListener('click', function () { var on = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(on)); this.textContent = on ? 'Montrer les pseudos' : 'Masquer les pseudos'; $('dm-plateau').classList.toggle('ap-sans-pseudos', on); });
 
   /* 3. question : le code et les réponses comme dans QuizzNSI (même balisage que js/commun.js) */
-  var CODE = ['def vider(p):', '    n = 0', '    while not p.est_vide():', '        p.depiler()', '        n = n + 1', '    return n'];
+  var CODE = ['def vider(p):', '    """Vide p."""', '    n = 0', '    while not p.est_vide():', '        x = p.depiler()', '        if x is not None:', '            n = n + 1', '    return n', '', 'p = Pile()', 'for i in range(3):', '    p.empiler(i)', 'print(vider(p))'];
   function colorer(t) {
+    if (/^"/.test(t)) return '<span class="c-ch">' + t + '</span>';
     return t.replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/\b(def|while|not|return)\b/g, '<span class="c-mot">$1</span>')
-      .replace(/(<\/span> )(vider)/, '$1<span class="c-def">$2</span>')
-      .replace(/\.(est_vide|depiler)\(/g, '.<span class="c-fn">$1</span>(')
+      .replace(/\b(def|while|not|return|if|is|for|in|None)\b/g, '<span class="c-mot">$1</span>')
+      .replace(/(<\/span> )(vider)\(p\):/, '$1<span class="c-def">$2</span>(p):')
+      .replace(/\b(print|range)\(/g, '<span class="c-nat">$1</span>(')
+      .replace(/\.(est_vide|depiler|empiler)\(/g, '.<span class="c-fn">$1</span>(')
       .replace(/\b(\d+)\b/g, '<span class="c-nb">$1</span>');
   }
   var code = '<pre class="code numerote"><code>' + CODE.map(function (l, i) {
@@ -276,12 +288,31 @@
     return '<span class="ligne"><span class="num" aria-hidden="true">' + (i + 1) + '</span>' + g + colorer(l.slice(ind)) + '</span>';
   }).join('') + '</code></pre>';
   var FORMES = ['<path d="M12 3 22 21H2z"/>', '<path d="M12 2 22 12 12 22 2 12z"/>', '<circle cx="12" cy="12" r="10"/>', '<rect x="3" y="3" width="18" height="18" rx="2"/>'];
-  var REPS = ['<code>0</code>', '<code>3</code>', '<code>None</code>', 'Une erreur'];
+  var REPS = ['<code>3</code>', '<code>2</code>', '<code>0</code>', '<code>None</code>'];
   var opts = REPS.map(function (r, i) {
     return '<button class="option o' + i + '"><span class="pastille p' + i + '"><svg class="forme f' + i + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + FORMES[i] + '</svg><b>' + 'ABCD'[i] + '</b></span><span class="opt-texte">' + r + '</span></button>';
   }).join('');
   document.querySelectorAll('.dm-code-q').forEach(function (d) { d.innerHTML = code; });
   document.querySelectorAll('.dm-options').forEach(function (d) { d.innerHTML = opts; });
+  /* le buste de l'élève sur son téléphone, à côté du chrono */
+  var telSans = false, telEtape = 'attente', pt = null;
+  function telAvatar() {
+    var d = telSans ? E.neutre() : ZOE;
+    if (pt) pt.detruire();
+    pt = E.creer($('dm-tel-av'), d, { taille: 40, cadre: 'buste', etat: 'attente' });
+    telEtat(telEtape);
+  }
+  function telEtat(e) {
+    telEtape = e;
+    if (e === 'attente') pt.serie(0).etat('attente');
+    if (e === 'repondu') pt.etat('repondu').serie(2);
+    if (e === 'juste') pt.marque(null).serie(3).etat('fete');
+    if (e === 'faux') pt.marque(null).serie(0).etat('lobby');
+  }
+  telAvatar();
+  document.querySelectorAll('#dm-tel-etapes [data-etape]').forEach(function (b) { b.addEventListener('click', function () { telEtat(b.getAttribute('data-etape')); }); });
+  $('dm-tel-sans').addEventListener('click', function () { telSans = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(telSans)); telAvatar(); });
+  window.__tel = { etat: telEtat, sans: function (v) { telSans = v; telAvatar(); } };
   /* les bustes discrets : fanion et flamme */
   var nb = 0;
   CLASSE.slice(0, 31).forEach(function (c, i) {

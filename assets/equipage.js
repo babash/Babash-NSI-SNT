@@ -64,6 +64,8 @@
   /* ── calque de pixels ─────────────────────── */
   function Calque(w, h) { this.w = w; this.h = h; this.p = new Map(); this.m = new Set(); }
   var K = 1024;
+  /* une clé donnée par l'appelant ne vaut que si l'objet l'a en propre (jamais constructor, toString, __proto__…) */
+  function own(o, k) { return (typeof k === 'string' || typeof k === 'number') && Object.prototype.hasOwnProperty.call(o, k); }
   Calque.prototype.px = function (x, y, c, solide, a) {
     if (c === null || c === undefined) return;
     if (solide === undefined) solide = true;
@@ -348,20 +350,20 @@
     if (ob.tete === undefined) ob.tete = d.tete;
     if (ob.visage === undefined) ob.visage = d.visage;
     EMPLACEMENTS.forEach(function (e) { if (objetDans(e, ob[e])) r.objets[e] = ob[e]; });
-    EMPLACEMENTS.forEach(function (e) { var v = COMPAT[ob[e]]; if (v && r.objets[v[0]] === 'aucun') r.objets[v[0]] = v[1]; });
+    EMPLACEMENTS.forEach(function (e) { var v = own(COMPAT, ob[e]) ? COMPAT[ob[e]] : null; if (v && r.objets[v[0]] === 'aucun') r.objets[v[0]] = v[1]; });
     var t = parseInt(d.teint, 10);
     if (t >= 1 && t <= TEINTS.length) r.teint = t;
     r.fauteuil = d.fauteuil === true;
-    if (typeof d.cheveux === 'string' && (PALETTES.cheveux[d.cheveux] || /^#[0-9a-fA-F]{6}$/.test(d.cheveux))) r.cheveux = d.cheveux;
+    if (typeof d.cheveux === 'string' && (own(PALETTES.cheveux, d.cheveux) || /^#[0-9a-fA-F]{6}$/.test(d.cheveux))) r.cheveux = d.cheveux;
     var c = d.couleurs && typeof d.couleurs === 'object' ? d.couleurs : {};
     ['haut', 'bas', 'accent', 'chaussures', 'yeux'].forEach(function (k) {
       var v = c[k];
-      if (typeof v === 'string' && (PALETTES[CHAMP_PALETTE[k]][v] || /^#[0-9a-fA-F]{6}$/.test(v))) r.couleurs[k] = v;
+      if (typeof v === 'string' && (own(PALETTES[CHAMP_PALETTE[k]], v) || /^#[0-9a-fA-F]{6}$/.test(v))) r.couleurs[k] = v;
     });
     if (r.haut === 'aucun' && !SANS_CORPS[r.lignee]) r.haut = 'tshirt';
     return r;
   }
-  function couleur(champ, v) { return PALETTES[CHAMP_PALETTE[champ]][v] || v; }
+  function couleur(champ, v) { return own(PALETTES[CHAMP_PALETTE[champ]], v) ? PALETTES[CHAMP_PALETTE[champ]][v] : v; }
 
   /* description -> réglages de dessin */
   function reglages(d) {
@@ -2279,7 +2281,7 @@
   var COMPAGNONS = { maki: maki, robot: petitRobot, tortue: tortue, roussette: roussette, margouillat: margComp };
   var COMP_MIROIR = { margouillat: 1, tortue: 1 };
   function compagnon(id, etat, n) {
-    var f = COMPAGNONS[id];
+    var f = own(COMPAGNONS, id) ? COMPAGNONS[id] : null;
     if (!f) return null;
     var C = f(etat || 'neutre', n || 0);
     if (COMP_MIROIR[id]) C = C.transformer(function (x, y) { return [CW - 1 - x, y]; });
@@ -2434,7 +2436,7 @@
     });
     if (d.fauteuil) morceaux.push('en fauteuil de course');
     if (d.compagnon !== 'aucun') morceaux.push('avec ' + (d.compagnon === 'robot' ? 'un petit robot' : d.compagnon === 'tortue' ? 'une tortue serveur' : d.compagnon === 'roussette' ? 'une roussette' : 'un ' + nom('compagnon', d.compagnon)));
-    var e = ETATS[etat] ? ETATS[etat].nom : ETATS.repos.nom;
+    var e = own(ETATS, etat) ? ETATS[etat].nom : ETATS.repos.nom;
     return morceaux.join(', ') + ' ; ' + e + '.';
   }
 
@@ -2448,7 +2450,7 @@
     var etat = etatMoteur(o.etat);
     var taille = +o.taille > 0 ? +o.taille : 96;
     var cadre = o.cadre && o.cadre !== 'auto' ? o.cadre : (taille < 32 ? 'pastille' : (taille < 64 ? 'buste' : 'entier'));
-    if (!CADRES[cadre]) cadre = 'entier';
+    if (!own(CADRES, cadre) || cadre === 'entier_compagnon') cadre = 'entier';
     var avecComp = cadre === 'entier' && d.compagnon !== 'aucun' && o.compagnon !== false;
     var vb = CADRES[avecComp ? 'entier_compagnon' : cadre];
     if (o.net) taille = Math.max(vb[3], Math.floor(taille / vb[3]) * vb[3]);
@@ -2485,7 +2487,7 @@
      ════════════════════════════════════════════ */
   /* les états nommés par usage : des alias des états du moteur */
   var USAGES = { lobby: 'repos', attente: 'concentre', repondu: 'repos', fete: 'tres_content', applaudit: 'content' };
-  function etatMoteur(e) { return ETATS[e] ? e : (USAGES[e] || 'repos'); }
+  function etatMoteur(e) { return own(ETATS, e) ? e : (own(USAGES, e) ? USAGES[e] : 'repos'); }
   /* les gestes du lobby : un état joué un moment, puis retour à l'état d'avant */
   var GESTES = [
     { id: 'salue', nom: 'Saluer', etat: 'salue' }, { id: 'saute', nom: 'Sauter de joie', etat: 'tres_content' },
@@ -2507,9 +2509,9 @@
      l'élève envoie le même numéro, quelle que soit la forme */
   var ADRESSES = { monsieur: 'Monsieur', madame: 'Madame' }, _adresse = 'monsieur';
   var VARIANTES = { 19: function (a) { return 'Ne vous inquiétez pas, ' + ADRESSES[a] + '.'; } };
-  function phrase(n) { return VARIANTES[n] ? VARIANTES[n](_adresse) : PHRASES[n]; }
+  function phrase(n) { return own(VARIANTES, n) ? VARIANTES[n](_adresse) : PHRASES[n]; }
   /* Equipage.adresse('monsieur' | 'madame') : réglage de l'enseignant·e sur la page projetée ; Equipage.adresse() le lit */
-  function adresse(a) { if (a !== undefined && ADRESSES[a]) _adresse = a; return _adresse; }
+  function adresse(a) { if (own(ADRESSES, a)) _adresse = a; return _adresse; }
   /* les joueurs et joueuses sans compte : l'Esprit en capuche, le même pour tous (décision du 24/11) */
   var NEUTRE = normaliser({ lignee: 'esprit', coiffure: 'capuche', haut: 'sweat', compagnon: 'margouillat', couleurs: { haut: 'sarcelle', accent: 'cyan' } });
 
@@ -2572,9 +2574,9 @@
 
   /* ── les bulles : 6 au plus par page, les autres attendent ── */
   var BULLES_MAX = 6, _bullesVues = 0, _fileBulles = [];
+  /* seules les listes du moteur sont admises : jamais un tableau ni un objet fourni par l'appelant (jamais de texte libre) */
   function listeDe(liste) {
     if (liste === undefined || liste === null || liste === 'lobby') return PHRASES;
-    if (Array.isArray(liste)) return liste;
     return null;
   }
   function suivanteBulle() {
@@ -2655,7 +2657,7 @@
       options: function (p) { for (var k in p) o[k] = p[k]; repartir(false); rendre(); return this; },
       /* geste('salue' | 'saute' | 'rit' | 'sieste', { duree: 3000 }) : un nom inconnu est ignoré */
       geste: function (nom, opt) {
-        var g = GESTE_DE[nom];
+        var g = own(GESTE_DE, nom) ? GESTE_DE[nom] : null;
         if (!g || v.mort) return false;
         var duree = opt && +opt.duree > 0 ? Math.min(+opt.duree, 20000) : 3000;
         clearTimeout(minuterie);
@@ -2667,9 +2669,9 @@
          numéro inconnu ignoré ; 6 bulles au plus par page, les autres attendent leur tour */
       bulle: function (numero, liste, opt) {
         var l = listeDe(liste);
-        if (!l || v.mort || typeof numero !== 'number' || numero % 1 !== 0 || numero < 0 || numero >= l.length || typeof l[numero] !== 'string') return false;
+        if (l !== PHRASES || v.mort || typeof numero !== 'number' || numero % 1 !== 0 || numero < 0 || numero >= PHRASES.length) return false;
         var duree = opt && +opt.duree > 0 ? Math.min(+opt.duree, 15000) : 5000;
-        var texte = l === PHRASES ? phrase(numero) : l[numero];
+        var texte = phrase(numero);
         if (bulle || _bullesVues < BULLES_MAX) { v.montrerBulle(texte, duree); return true; }
         _fileBulles = _fileBulles.filter(function (b) { return b.v !== v; });
         _fileBulles.push({ v: v, texte: texte, duree: duree });
@@ -2695,8 +2697,9 @@
      position (le long du bord, '75%'), encre ('couleur' | 'noir' | 'auto' : noir à l'impression), anime, alt */
   function margouillatSVG(options) {
     var o = options || {};
-    var etat = { content: 1, triste: 1 }[o.etat] ? o.etat : 'neutre';
-    var sens = o.sens || ({ haut: 'sol', bas: 'plafond', gauche: 'montant', droite: 'descendant' }[o.bord]) || 'sol';
+    var etat = o.etat === 'content' || o.etat === 'triste' ? o.etat : 'neutre';
+    var SENS = { haut: 'sol', bas: 'plafond', gauche: 'montant', droite: 'descendant' };
+    var sens = o.sens || (own(SENS, o.bord) ? SENS[o.bord] : null) || 'sol';
     var vue = sens === 'sol' || sens === 'plafond' ? 'profil' : 'dessus';
     var css = typeof o.taille === 'string' && /[a-z%]$/.test(o.taille) ? o.taille : null;
     var px = css ? (/mm$/.test(css) ? parseFloat(css) * 3.78 : 24) : (+o.taille > 0 ? +o.taille : 32);
@@ -2750,7 +2753,7 @@
 
   /* compagnon seul (choix dans un menu, par exemple) */
   function compagnonSVG(id, options) {
-    var o = options || {}, etat = { content: 1, triste: 1, dort: 1 }[o.etat] ? o.etat : 'neutre';
+    var o = options || {}, etat = o.etat === 'content' || o.etat === 'triste' || o.etat === 'dort' ? o.etat : 'neutre';
     var nb = o.anime === false ? 1 : 2, anim = nb > 1 ? animation([600, 600]) : null, corps = '';
     if (!anim) feuille();
     for (var i = 0; i < nb; i++) {
@@ -2829,7 +2832,7 @@
     defaut: function () { return copie(DEFAUT); }, compat: copie(COMPAT),
     /* T133b : l'interface des applications */
     USAGES: copie(USAGES), gestes: GESTES.map(function (g) { return { id: g.id, nom: g.nom, etat: g.etat }; }),
-    phrases: PHRASES.slice(), phrasesVersion: PHRASES_VERSION, adresse: adresse, phrase: function (n) { return typeof n === 'number' && PHRASES[n] !== undefined ? phrase(n) : null; },
+    phrases: PHRASES.slice(), phrasesVersion: PHRASES_VERSION, adresse: adresse, phrase: function (n) { return typeof n === 'number' && n % 1 === 0 && n >= 0 && n < PHRASES.length ? phrase(n) : null; },
     variantes: Object.keys(VARIANTES).map(Number),
     applis: APPLIS.map(function (a) { return { id: a[0], nom: a[1], emplacement: a[2], application: a[3], haut_fait: a[4], haut_fait_nom: a[5], categorie: a[6], condition: a[7] }; }),
     neutre: function () { return copie(NEUTRE); },
