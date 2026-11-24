@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="fr" data-appli="quizz-nsi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Habillage des applications</title>
+  <meta name="description" content="Démonstration du socle d'habillage des applications (assets/applis.css) et de l'interface du moteur d'avatars : entrée, lobby, question, podium, annonces, liens rapides, bibliothèque de quiz, les 15 objets des applications, états, gestes et bulles.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0E0C14" media="(prefers-color-scheme: dark)">
+  <!-- l'ordre que suit toute application : la palette, puis le socle, puis le moteur -->
+  <link rel="stylesheet" href="../assets/signal-commun.css">
+  <link rel="stylesheet" href="../assets/applis.css">
+  <style>
+    /* la page de démonstration seulement (le socle est dans assets/applis.css) */
+    .dm-sec { padding: 28px 0 18px; border-bottom: 1px dashed var(--td-trait); }
+    .dm-sec > h2 { font: 400 clamp(1.4rem, 3.6vw, 2rem)/1.1 var(--td-titres); margin: 0 0 6px; }
+    .dm-sec > h2 .dm-n { display: inline-block; min-width: 1.6em; margin-right: .3em; padding: 0 .25em; border: 1.4px solid var(--td-trait-fort); font-family: var(--td-signal); text-align: center; box-shadow: 3px 3px 0 var(--ap-touche); }
+    .dm-but { max-width: 52rem; margin: 0 0 12px; }
+    .dm-outils { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 0; }
+    .dm-outils select { min-height: 44px; font: inherit; border: 1.4px solid var(--td-trait-fort); background: var(--td-fond); color: var(--td-encre); padding: 4px 8px; }
+    .dm-cadre { border: 1.4px solid var(--td-trait-fort); background: var(--td-fond); overflow: hidden; }
+    .dm-tel { max-width: 380px; border-radius: 18px; }
+    .dm-rangee { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+    .dm-rangee > * { flex: 1 1 300px; min-width: 0; }
+    .dm-objets { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+    .dm-objet { display: flex; flex-direction: column; gap: 6px; overflow-wrap: anywhere; }
+    .dm-objet .dm-poses { display: flex; gap: 0; }
+    .dm-objet dl { margin: 0; font-size: .92rem; }
+    .dm-objet dt { font-weight: 700; display: inline; } .dm-objet dt::after { content: " : "; } .dm-objet dd { display: inline; margin: 0; } .dm-objet dd::after { content: ""; display: block; margin-bottom: 3px; }
+    .dm-table { border-collapse: collapse; width: 100%; font-size: .95rem; }
+    .dm-table th, .dm-table td { border: 1px solid var(--td-trait); padding: 6px 8px; text-align: left; vertical-align: top; }
+    .dm-table th { background: var(--td-panneau-2); }
+    .dm-defile { overflow-x: auto; max-width: 100%; }
+    .dm-scene { display: flex; flex-wrap: wrap; gap: 50px 18px; align-items: flex-end; padding: 60px 12px 12px; }
+    footer.dm-pied { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 18px 0; font-size: .9rem; color: var(--td-encre-douce); }
+    footer.dm-pied a { color: var(--td-encre); }
+  </style>
+</head>
+<body class="ap">
+<header class="ap-barre">
+  <a class="ap-logo" href="../index.html">Ressources <b>NSI</b> SNT</a>
+  <span class="ap-lieu">Charte · habillage des applications</span>
+</header>
+<div class="ap-touche" aria-hidden="true"></div>
+<main class="ap-page">
+  <h1 class="ap-titre ap-titre-neon">Habillage des applications</h1>
+  <p class="dm-but">Le socle commun des applications (<code>assets/applis.css</code>) et l'interface du moteur d'avatars (<code>assets/equipage.js</code>), tels que validés sur les maquettes T133 : « piste B », variante discrète pendant la question, l'Esprit en capuche pour les joueurs et joueuses sans compte, pseudos masquables d'un clic. Mode d'emploi pour les applications : <a class="ap-lien" href="applis.md">charte/applis.md</a>.</p>
+  <div class="dm-outils">
+    <label>Application <select id="dm-appli">
+      <option value="quizz-nsi">QuizzNSI</option><option value="hello-go">Hello GO</option><option value="calendrier">Calendrier des vacances</option>
+      <option value="gombessa">Expédition Gombessa</option><option value="lagon-arena">Lagon Arena</option></select></label>
+    <div role="group" aria-label="Affichage" class="dm-outils" style="margin:0">
+      <button class="ap-bt ap-bt-mini" data-theme-choix="" aria-pressed="true">Auto</button>
+      <button class="ap-bt ap-bt-mini" data-theme-choix="light" aria-pressed="false">Clair</button>
+      <button class="ap-bt ap-bt-mini" data-theme-choix="dark" aria-pressed="false">Obscur</button>
+    </div>
+    <button class="ap-bt ap-bt-mini" id="dm-calme" aria-pressed="false">Animations coupées</button>
+    <button class="ap-bt ap-bt-mini" id="dm-projete" aria-pressed="false">Écran projeté</button>
+  </div>
+
+  <section class="dm-sec" id="entree">
+    <h2><span class="dm-n">1</span>L'entrée et les liens rapides</h2>
+    <p class="dm-but">Un seul bouton principal ; « Jouer sans compte » est un lien discret, en dessous. Le bandeau des liens rapides est le même dans chaque application.</p>
+    <div class="dm-rangee">
+      <div class="dm-cadre dm-tel">
+        <div class="ap-bandeau"><button class="ap-moi" id="dm-moi" aria-expanded="false" aria-controls="dm-menu"><span id="dm-moi-av"></span>Zoé · mes applications</button>
+          <ul class="ap-menu" id="dm-menu" hidden>
+            <li><a href="#" aria-current="page">QuizzNSI <small>ici</small></a></li><li><a href="#">Hello GO</a></li><li><a href="#">Calendrier des vacances</a></li>
+            <li><a href="#">Expédition Gombessa</a></li><li><a href="#">Lagon Arena</a></li><li class="ap-sep" role="separator"></li><li><a href="#">Ma planque (avatar, hauts faits)</a></li>
+          </ul></div>
+        <div class="ap-entree">
+          <span class="ap-avatar" id="dm-entree-av"></span>
+          <h3 class="ap-titre" style="text-align:center">Rejoindre la séance</h3>
+          <label class="ap-label" for="dm-code">Code de la séance</label>
+          <input class="ap-champ ap-champ-code" id="dm-code" placeholder="exemple : ABCD" autocomplete="off">
+          <button class="ap-bt ap-bt-principal ap-bt-large ap-bt-grand">Entrer avec mon code</button>
+          <p class="ap-entree-ou">ou</p>
+          <button class="ap-discret">Jouer sans compte</button>
+        </div>
+      </div>
+      <div class="ap-pile">
+        <div class="ap-message">Sans compte, tu joues avec l'Esprit en capuche, le même pour tout le monde : rien n'est gardé.</div>
+        <div class="ap-message ap-message-encore">Code inconnu : vérifie les lettres au tableau.</div>
+        <p><span class="ap-puce">Cours-quiz</span> <span class="ap-puce">12 questions</span></p>
+        <div class="ap-commandes"><button class="ap-bt">Secondaire</button><button class="ap-bt ap-bt-principal">Principal</button><button class="ap-bt" disabled>Pas encore</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dm-sec" id="lobby">
+    <h2><span class="dm-n">2</span>Le lobby</h2>
+    <p class="dm-but">35 avatars, dont 4 sans compte. Plafond de 8 avatars animés à la fois ; les bulles sont des phrases d'une liste fermée (6 à la fois au plus, les autres attendent). Le temps de rendu s'affiche sous le plateau.</p>
+    <div class="dm-cadre" id="dm-lobby-cadre">
+      <div class="ap-barre"><span class="ap-logo">Quizz<b>NSI</b></span><span class="ap-lieu">Piles et files · Terminale NSI</span><span class="ap-espace"></span>
+        <div class="ap-commandes"><button class="ap-bt ap-bt-mini" id="dm-pseudos" aria-pressed="false">Masquer les pseudos</button><button class="ap-bt ap-bt-mini" id="dm-relancer">Relancer les bulles</button><label class="ap-petit">Formule <select id="dm-adresse"><option value="monsieur">Monsieur</option><option value="madame">Madame</option></select></label></div></div>
+      <div class="ap-touche" aria-hidden="true"></div>
+      <div class="ap-lobby">
+        <div class="ap-carte ap-seance"><span class="ap-signal">Rejoins la séance</span><span class="ap-qr" id="dm-qr"></span><span class="ap-code-seance" aria-describedby="dm-ex">ABCD</span><span class="ap-petit" id="dm-ex">(code d'exemple)</span><span class="ap-petit">babash.github.io/quizz-nsi</span>
+          <button class="ap-bt ap-bt-principal ap-bt-large ap-bt-grand">Commencer le cours</button></div>
+        <div><p class="ap-compte"><span class="ap-titre">Sur le plateau : 35</span><span class="ap-petit">Les bulles sont des phrases toutes faites.</span></p>
+          <div class="ap-plateau" id="dm-plateau"></div>
+          <p class="ap-petit" id="dm-mesure" role="status"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dm-sec" id="question">
+    <h2><span class="dm-n">3</span>Pendant la question</h2>
+    <p class="dm-but">L'écran de question de QuizzNSI, gardé tel quel (une couleur et une forme par réponse, coloration syntaxique, guides d'indentation), avec les deux ajouts validés : le chrono et les bustes discrets (le fanion dit seulement « a répondu », la flamme et son chiffre disent une série ; jamais juste ou faux).</p>
+    <div class="dm-cadre" id="dm-question-projete">
+      <div class="ap-question">
+        <div class="ap-question-tete">
+          <div class="ap-enonce"><p class="q-num">Question 4 sur 12</p><h3 class="q-nom">Qu'affiche ce programme ?</h3><div class="dm-code-q"></div></div>
+          <div class="ap-minuteur" role="timer" aria-label="18 secondes"><svg viewBox="0 0 100 100" aria-hidden="true"><circle class="ap-fond-arc" cx="50" cy="50" r="44"/><circle class="ap-arc" cx="50" cy="50" r="44" stroke-dasharray="276" stroke-dashoffset="110"/></svg><b>18</b></div>
+        </div>
+        <div class="options dm-options"></div>
+      </div>
+      <div class="ap-reponses"><div class="ap-reponses-rangee" id="dm-reponses"></div>
+        <p class="ap-legende"><span>Fanion : a répondu</span><span>Flamme : série de bonnes réponses</span><span id="dm-repondu-compte"></span></p></div>
+    </div>
+    <h3 class="ap-sous" style="margin:16px 0 8px">Sur le téléphone</h3>
+    <p class="dm-but">Le buste de l'élève est dans la barre du haut, à côté du chrono : il ne prend aucune place sur la question ni sur le code. Il réagit comme sur l'écran projeté : fanion quand on a répondu, flamme et son chiffre, fête à la correction quand c'est juste, rien de moqueur quand c'est faux (il reste au repos). Sans compte : l'Esprit en capuche.</p>
+    <div class="dm-rangee">
+    <div class="dm-cadre dm-tel ap-tel" id="dm-question-tel" style="flex:0 1 380px">
+      <div class="ap-barre"><span class="ap-logo">Quizz<b>NSI</b></span><span class="ap-espace"></span><span class="ap-moi-q"><span id="dm-tel-av"></span><span class="ap-chrono-tel" role="timer">18 s</span></span></div>
+      <div class="ap-question"><p class="q-num">Question 4 sur 12</p><h3 class="q-nom">Qu'affiche ce programme ?</h3><div class="dm-code-q"></div>
+        <div class="options dm-options"></div></div>
+    </div>
+    <div class="ap-pile" style="flex:1 1 220px">
+      <div class="ap-commandes" id="dm-tel-etapes">
+        <button class="ap-bt ap-bt-mini" data-etape="attente">Question</button><button class="ap-bt ap-bt-mini" data-etape="repondu">A répondu</button>
+        <button class="ap-bt ap-bt-mini" data-etape="juste">Correction : juste</button><button class="ap-bt ap-bt-mini" data-etape="faux">Correction : faux</button>
+      </div>
+      <div class="ap-commandes"><button class="ap-bt ap-bt-mini" id="dm-tel-sans" aria-pressed="false">Sans compte</button></div>
+    </div>
+    </div>
+  </section>
+
+  <section class="dm-sec" id="podium">
+    <h2><span class="dm-n">4</span>Le podium et les annonces</h2>
+    <p class="dm-but">Trois places, puis toute la classe applaudit. Sur le téléphone, chacun·e voit seul·e son haut fait et ses crédits.</p>
+    <div class="dm-rangee">
+      <div class="dm-cadre" style="flex:2 1 420px">
+        <div class="ap-podium" id="dm-podium"><div class="ap-confettis" aria-hidden="true" id="dm-confettis"></div></div>
+        <div class="ap-classe"><span class="ap-sous">Bravo à toute la classe !</span><div class="ap-classe-rangee" id="dm-classe"></div></div>
+      </div>
+      <div class="ap-pile">
+        <div class="ap-annonce"><span class="ap-annonce-titre">Haut fait</span><div class="ap-annonce-objet"><span id="dm-hf-av"></span><span><b>Premier pas</b><br><span class="ap-petit">Tu gagnes le dé de la Flottille.</span></span></div></div>
+        <div class="ap-annonce"><span class="ap-annonce-titre">Crédits</span><span class="ap-gros-chiffre">+15</span><span class="ap-credits"><span class="ap-piece" aria-hidden="true"></span>crédits pour ta planque</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dm-sec" id="bibliotheque">
+    <h2><span class="dm-n">5</span>La bibliothèque des quiz</h2>
+    <p class="dm-but">Par niveau puis par thème du programme ; « Cours-quiz » au cadre plein, « Révision » au cadre pointillé (et toujours le mot).</p>
+    <div class="ap-biblio">
+      <form class="ap-filtres" onsubmit="return false">
+        <label class="ap-label" for="dm-cherche">Chercher</label><input class="ap-champ" id="dm-cherche" type="search" placeholder="pile, arbre…">
+        <fieldset><legend>Niveau</legend><label><input type="radio" name="niv" checked> Terminale NSI</label><label><input type="radio" name="niv"> Première NSI</label><label><input type="radio" name="niv"> SNT</label></fieldset>
+        <fieldset><legend>Type</legend><label><input type="checkbox" checked> Cours-quiz</label><label><input type="checkbox" checked> Révision</label></fieldset>
+        <fieldset><legend>Thème du programme</legend><label><input type="checkbox" checked> Structures de données</label><label><input type="checkbox" checked> Langages et programmation</label></fieldset>
+      </form>
+      <div>
+        <h3 class="ap-theme-titre">Structures de données</h3>
+        <div class="ap-grille-quiz">
+          <article class="ap-carte-quiz"><span class="ap-puce">Cours-quiz</span><h4>Piles et files</h4><span class="ap-petit">12 questions</span><div class="ap-actions"><a class="ap-bt ap-bt-principal ap-bt-mini" href="#">Animer en classe</a><a class="ap-bt ap-bt-mini" href="#">Réviser seul·e</a></div></article>
+          <article class="ap-carte-quiz ap-revision"><span class="ap-puce">Révision</span><h4>Listes chaînées</h4><span class="ap-petit">10 questions</span><div class="ap-actions"><a class="ap-bt ap-bt-principal ap-bt-mini" href="#">Animer en classe</a><a class="ap-bt ap-bt-mini" href="#">Réviser seul·e</a></div></article>
+          <article class="ap-carte-quiz"><span class="ap-puce">Cours-quiz</span><h4>Arbres binaires</h4><span class="ap-petit">14 questions</span><div class="ap-actions"><a class="ap-bt ap-bt-principal ap-bt-mini" href="#">Animer en classe</a><a class="ap-bt ap-bt-mini" href="#">Réviser seul·e</a></div></article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dm-sec" id="objets">
+    <h2><span class="dm-n">6</span>Les 15 objets des applications</h2>
+    <p class="dm-but">Dessinés dans le moteur (famille <code>applis</code>), accrochés au corps : l'objet tenu suit la main, le chapeau suit la tête. Chacun est donné par un haut fait, jamais acheté. Montrés au repos, en fête et en salut.</p>
+    <div class="dm-objets" id="dm-objets"></div>
+  </section>
+
+  <section class="dm-sec" id="interface">
+    <h2><span class="dm-n">7</span>États, gestes, bulles et marques</h2>
+    <p class="dm-but">Essayez l'interface sur un avatar. Les bulles ne viennent que de la liste fermée des 20 phrases, par numéro.</p>
+    <div class="dm-rangee">
+      <div class="dm-cadre"><div class="dm-scene" id="dm-essai"></div></div>
+      <div class="ap-pile">
+        <div class="ap-commandes" id="dm-etats"></div>
+        <div class="ap-commandes" id="dm-gestes"></div>
+        <div class="ap-commandes"><button class="ap-bt ap-bt-mini" id="dm-fanion">Fanion</button><button class="ap-bt ap-bt-mini" id="dm-serie">Série +1</button><button class="ap-bt ap-bt-mini" id="dm-zero">Série à 0</button></div>
+        <label class="ap-label" for="dm-phrase">Bulle</label>
+        <div class="ap-commandes"><select class="ap-champ" id="dm-phrase" style="flex:1;font-family:var(--td-texte)"></select><button class="ap-bt ap-bt-principal" id="dm-envoyer">Envoyer</button></div>
+      </div>
+    </div>
+    <div class="dm-defile" style="margin-top:16px">
+      <table class="dm-table"><caption class="ap-vh">États d'usage</caption><thead><tr><th>État d'usage</th><th>État du moteur</th><th>Quand</th></tr></thead><tbody>
+        <tr><td><code>lobby</code></td><td>au repos</td><td>en attendant le début</td></tr>
+        <tr><td><code>attente</code></td><td>concentré·e</td><td>pendant la question, avant de répondre</td></tr>
+        <tr><td><code>repondu</code></td><td>au repos, avec le fanion</td><td>après avoir répondu (jamais juste ou faux)</td></tr>
+        <tr><td><code>fete</code></td><td>très content·e</td><td>sur le podium</td></tr>
+        <tr><td><code>applaudit</code></td><td>content·e</td><td>toute la classe, à la fin</td></tr>
+      </tbody></table>
+    </div>
+  </section>
+
+  <footer class="dm-pied">
+    <span>Babash - NSI Tani Malandi</span>
+    <span>Dessins originaux, CC BY-SA 4.0 ; code sous licence MIT</span>
+    <a href="https://github.com/babash/Babash-NSI-SNT">Code source sur GitHub</a>
+    <span>conçu avec l'aide de l'IA</span>
+  </footer>
+</main>
+
+<script src="../assets/qrcode-generator.js"></script>
+<script src="../assets/equipage.js"></script>
+<script>
+(function () {
+  'use strict';
+  var E = window.Equipage;
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt !== undefined) e.textContent = txt; return e; }
+  var demo = /[?&]essai\b/.test(location.search);
+
+  /* la classe de démonstration : prénoms inventés, 4 sans compte (l'Esprit en capuche) */
+  var PRENOMS = ['Zoé', 'Anli', 'Faïza', 'Kenji', 'Mariama', 'Nassim', 'Lucas', 'Inaya', 'Soilihi', 'Chloé', 'Ibrahim', 'Naïa',
+    'Yanis', 'Riziki', 'Emma', 'Moussa', 'Ambdi', 'Sitti', 'Hugo', 'Nour', 'Fahad', 'Léa', 'Djamila', 'Tom', 'Samia', 'Elif',
+    'Kaïs', 'Saïd', 'Anaïs', 'Roukia', 'Mathis', 'Zaïnaba', 'Ilyas', 'Kaskazi', 'Pixel'];
+  var SANS = { 6: 1, 17: 1, 26: 1, 33: 1 };
+  var ZOE = E.normaliser({ teint: 6, coiffure: 'puffs', haut: 'veste', bas: 'cargo', chaussures: 'montantes', objets: { cou: 'cle_usb' }, couleurs: { haut: 'violet', accent: 'jaune' } });
+  var CLASSE = PRENOMS.map(function (p, i) { return { nom: p, d: i === 0 ? ZOE : SANS[i] ? E.neutre() : E.aleatoire(4100 + i * 13), serie: [0, 3, 0, 0, 2, 0, 0, 4, 0, 0, 2, 0, 0, 0, 3][i % 15] }; });
+
+  /* affichage */
+  document.querySelectorAll('[data-theme-choix]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var t = b.getAttribute('data-theme-choix');
+      if (t) document.documentElement.setAttribute('data-theme', t); else document.documentElement.removeAttribute('data-theme');
+      document.querySelectorAll('[data-theme-choix]').forEach(function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    });
+  });
+  $('dm-appli').addEventListener('change', function () { document.documentElement.setAttribute('data-appli', this.value); });
+  $('dm-calme').addEventListener('click', function () { var on = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(on)); E.calme(on ? true : null); });
+  $('dm-projete').addEventListener('click', function () { var on = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(on)); $('dm-lobby-cadre').classList.toggle('ap-projete', on); });
+
+  /* 1. entrée et liens rapides */
+  E.creer($('dm-entree-av'), ZOE, { taille: 112, etat: 'salue' });
+  E.creer($('dm-moi-av'), ZOE, { taille: 28, anime: false, alt: '' });
+  $('dm-moi').addEventListener('click', function () { var m = $('dm-menu'), o = m.hidden; m.hidden = !o; this.setAttribute('aria-expanded', String(o)); });
+
+  /* 2. lobby : 35 avatars, plafond de 8 animés, bulles */
+  if (typeof qrcode === 'function') { var q = qrcode(0, 'M'); q.addData('https://babash.github.io/quizz-nsi/?s=ABCD'); q.make(); $('dm-qr').innerHTML = q.createSvgTag(4, 0, 'QR code de la séance'); }
+  E.plafond(8);
+  var t0 = performance.now(), poignees = [];
+  CLASSE.forEach(function (c, i) {
+    var j = el('div', 'ap-joueur'), a = el('span');
+    j.appendChild(a); j.appendChild(el('span', 'ap-dalle')); j.appendChild(el('span', 'ap-pseudo', c.nom));
+    $('dm-plateau').appendChild(j);
+    poignees.push(E.creer(a, c.d, { taille: 96, etat: 'lobby', compagnon: false, alt: c.nom + ', sur le plateau' }));
+  });
+  var t1 = performance.now();
+  $('dm-mesure').textContent = 'Rendu des 35 avatars : ' + Math.round(t1 - t0) + ' ms sur cet appareil.';
+  window.__mesureLobby = t1 - t0;
+  function bulles() {
+    [[30, 19], [9, 20], [2, 0], [21, 10], [14, 6], [27, 4], [5, 2], [12, 13]].forEach(function (b, k) {
+      setTimeout(function () { poignees[b[0]].bulle(b[1], undefined, { duree: demo ? 15000 : 5000 }); }, demo ? 0 : k * 700);
+    });
+    [[3, 'salue'], [11, 'saute'], [24, 'rit'], [33, 'sieste']].forEach(function (g) { poignees[g[0]].geste(g[1], { duree: 6000 }); });
+  }
+  bulles();
+  $('dm-relancer').addEventListener('click', bulles);
+  $('dm-adresse').addEventListener('change', function () { E.adresse(this.value); poignees[16].bulle(19); });
+  $('dm-pseudos').addEventListener('click', function () { var on = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(on)); this.textContent = on ? 'Montrer les pseudos' : 'Masquer les pseudos'; $('dm-plateau').classList.toggle('ap-sans-pseudos', on); });
+
+  /* 3. question : le code et les réponses comme dans QuizzNSI (même balisage que js/commun.js) */
+  var CODE = ['def vider(p):', '    """Vide p."""', '    n = 0', '    while not p.est_vide():', '        x = p.depiler()', '        if x is not None:', '            n = n + 1', '    return n', '', 'p = Pile()', 'for i in range(3):', '    p.empiler(i)', 'print(vider(p))'];
+  function colorer(t) {
+    if (/^"/.test(t)) return '<span class="c-ch">' + t + '</span>';
+    return t.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/\b(def|while|not|return|if|is|for|in|None)\b/g, '<span class="c-mot">$1</span>')
+      .replace(/(<\/span> )(vider)\(p\):/, '$1<span class="c-def">$2</span>(p):')
+      .replace(/\b(print|range)\(/g, '<span class="c-nat">$1</span>(')
+      .replace(/\.(est_vide|depiler|empiler)\(/g, '.<span class="c-fn">$1</span>(')
+      .replace(/\b(\d+)\b/g, '<span class="c-nb">$1</span>');
+  }
+  var code = '<pre class="code numerote"><code>' + CODE.map(function (l, i) {
+    var ind = l.match(/^ */)[0].length, g = '';
+    for (var k = 0; k < ind / 4; k++) g += '<span class="guide">    </span>';
+    return '<span class="ligne"><span class="num" aria-hidden="true">' + (i + 1) + '</span>' + g + colorer(l.slice(ind)) + '</span>';
+  }).join('') + '</code></pre>';
+  var FORMES = ['<path d="M12 3 22 21H2z"/>', '<path d="M12 2 22 12 12 22 2 12z"/>', '<circle cx="12" cy="12" r="10"/>', '<rect x="3" y="3" width="18" height="18" rx="2"/>'];
+  var REPS = ['<code>3</code>', '<code>2</code>', '<code>0</code>', '<code>None</code>'];
+  var opts = REPS.map(function (r, i) {
+    return '<button class="option o' + i + '"><span class="pastille p' + i + '"><svg class="forme f' + i + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + FORMES[i] + '</svg><b>' + 'ABCD'[i] + '</b></span><span class="opt-texte">' + r + '</span></button>';
+  }).join('');
+  document.querySelectorAll('.dm-code-q').forEach(function (d) { d.innerHTML = code; });
+  document.querySelectorAll('.dm-options').forEach(function (d) { d.innerHTML = opts; });
+  /* le buste de l'élève sur son téléphone, à côté du chrono */
+  var telSans = false, telEtape = 'attente', pt = null;
+  function telAvatar() {
+    var d = telSans ? E.neutre() : ZOE;
+    if (pt) pt.detruire();
+    pt = E.creer($('dm-tel-av'), d, { taille: 40, cadre: 'buste', etat: 'attente' });
+    telEtat(telEtape);
+  }
+  function telEtat(e) {
+    telEtape = e;
+    if (e === 'attente') pt.serie(0).etat('attente');
+    if (e === 'repondu') pt.etat('repondu').serie(2);
+    if (e === 'juste') pt.marque(null).serie(3).etat('fete');
+    if (e === 'faux') pt.marque(null).serie(0).etat('lobby');
+  }
+  telAvatar();
+  document.querySelectorAll('#dm-tel-etapes [data-etape]').forEach(function (b) { b.addEventListener('click', function () { telEtat(b.getAttribute('data-etape')); }); });
+  $('dm-tel-sans').addEventListener('click', function () { telSans = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(telSans)); telAvatar(); });
+  window.__tel = { etat: telEtat, sans: function (v) { telSans = v; telAvatar(); } };
+  /* les bustes discrets : fanion et flamme */
+  var nb = 0;
+  CLASSE.slice(0, 31).forEach(function (c, i) {
+    var s = el('span'); $('dm-reponses').appendChild(s);
+    var repondu = i % 3 !== 2;
+    var p = E.creer(s, c.d, { taille: 48, cadre: 'buste', anime: false, etat: repondu ? 'repondu' : 'attente', alt: c.nom + (repondu ? ', a répondu' : ', réfléchit') });
+    if (c.serie >= 2) p.serie(c.serie);
+    if (repondu) nb++;
+  });
+  $('dm-repondu-compte').textContent = nb + ' sur 31 ont répondu';
+
+  /* 4. podium et classe qui applaudit */
+  [[1, 0], [2, 7], [3, 14]].forEach(function (r) {
+    var c = CLASSE[r[1]], pl = el('div', 'ap-place ap-place-' + r[0]), a = el('span'), m = el('div', 'ap-marche');
+    pl.appendChild(a); m.appendChild(el('span', 'ap-rang', String(r[0]))); m.appendChild(el('span', 'ap-pseudo', c.nom)); pl.appendChild(m);
+    $('dm-podium').appendChild(pl);
+    E.creer(a, c.d, { taille: 112, etat: 'fete', compagnon: false, alt: c.nom + ', place ' + r[0] });
+  });
+  ['#00D8F5', '#FF2E97', '#FFE600', '#2FA84F'].forEach(function (col, k) { for (var n = 0; n < 6; n++) { var i = el('i'); i.style.left = (5 + (k * 6 + n) * 4) + '%'; i.style.background = col; i.style.animationDelay = (n * 0.3 + k * 0.1) + 's'; i.style.setProperty('--dx', ((n % 3) - 1) * 30 + 'px'); $('dm-confettis').appendChild(i); } });
+  CLASSE.slice(0, 16).forEach(function (c) { var s = el('span'); $('dm-classe').appendChild(s); E.creer(s, c.d, { taille: 48, cadre: 'buste', etat: 'applaudit', alt: '' }); });
+  var zd = JSON.parse(JSON.stringify(ZOE)); zd.objets.main = 'de_flottille';
+  E.creer($('dm-hf-av'), zd, { taille: 72, etat: 'fete', compagnon: false, alt: 'Zoé tient le dé de la Flottille' });
+
+  /* 6. les 15 objets */
+  var NOMS_APPLIS = { quizz_nsi: 'QuizzNSI', grand_oral: 'Hello GO', calendrier: 'Calendrier des vacances', gombessa: 'Expédition Gombessa', lagon: 'Lagon Arena' };
+  var EMPL = {}; E.catalogue.emplacements.forEach(function (e) { EMPL[e.id] = e.nom; });
+  var BASES = [ZOE, CLASSE[3].d, CLASSE[12].d, CLASSE[20].d, E.neutre()];
+  E.applis.forEach(function (o, i) {
+    var f = el('figure', 'dm-objet ap-carte ap-carte-douce'), poses = el('div', 'dm-poses'), dl = el('dl');
+    f.style.margin = '0';
+    var d = JSON.parse(JSON.stringify(o.emplacement === 'pieds' ? ZOE : BASES[i % BASES.length])); for (var k in d.objets) d.objets[k] = 'aucun'; d.objets[o.emplacement] = o.id;
+    ['repos', 'fete', 'salue'].forEach(function (e) { var s = el('span'); poses.appendChild(s); E.creer(s, d, { taille: 112, etat: e, anime: false, compagnon: false, alt: e === 'repos' ? o.nom : '' }); });
+    f.appendChild(poses);
+    [['Objet', o.nom], ['Emplacement', EMPL[o.emplacement] + ' (' + o.id + ')'], ['Application', NOMS_APPLIS[o.application]], ['Haut fait', '« ' + o.haut_fait_nom + ' » : ' + o.condition]].forEach(function (x) { dl.appendChild(el('dt', null, x[0])); dl.appendChild(el('dd', null, x[1])); });
+    f.appendChild(dl); $('dm-objets').appendChild(f);
+  });
+
+  /* 7. l'interface sur un avatar */
+  var essai = el('span'); $('dm-essai').appendChild(essai);
+  var pe = E.creer(essai, ZOE, { taille: 168, etat: 'lobby', alt: 'Zoé' }), serie = 0;
+  E.creer($('dm-essai').appendChild(el('span')), E.neutre(), { taille: 112, etat: 'lobby', alt: 'Esprit en capuche, joueur ou joueuse sans compte' });
+  Object.keys(E.USAGES).forEach(function (u) { var b = el('button', 'ap-bt ap-bt-mini', u); b.addEventListener('click', function () { pe.etat(u); }); $('dm-etats').appendChild(b); });
+  E.gestes.forEach(function (g) { var b = el('button', 'ap-bt ap-bt-mini', g.nom); b.addEventListener('click', function () { pe.geste(g.id); }); $('dm-gestes').appendChild(b); });
+  $('dm-fanion').addEventListener('click', function () { var on = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', String(on)); pe.marque(on ? 'repondu' : null); });
+  $('dm-serie').addEventListener('click', function () { pe.serie(++serie); });
+  $('dm-zero').addEventListener('click', function () { serie = 0; pe.serie(0); });
+  E.phrases.forEach(function (p, i) { var o = el('option', null, i + '. ' + p); o.value = i; $('dm-phrase').appendChild(o); });
+  $('dm-envoyer').addEventListener('click', function () { pe.bulle(+$('dm-phrase').value); });
+  pe.bulle(4);
+})();
+</script>
+</body>
+</html>

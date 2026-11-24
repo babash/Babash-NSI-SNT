@@ -13,6 +13,9 @@
      Equipage.aleatoire(graine)                     -> description
      Equipage.texte(description, etat)              -> texte alternatif
      Equipage.catalogue, Equipage.ETATS, Equipage.version
+   Pour les applications (T133b) : états d'usage, poignee.geste / bulle /
+   marque / serie, Equipage.calme / plafond / pause / neutre / phrases /
+   gestes / applis (mode d'emploi : charte/applis.md).
 
    Contrat complet : assets/equipage/LISEZMOI.md.
    Dessins originaux ; style de personnage repris du jeu de révision
@@ -22,7 +25,7 @@
 (function (racine) {
   'use strict';
 
-  var VERSION = '2.0.0';
+  var VERSION = '2.1.0';
   var CONTOUR = '#1b1530', NOIR = '#2b2143';
   var NC = '#3ff0ff', NR = '#ff4fb8', NJ = '#e8ff3a', NV = '#8a5bff', NO = '#ff9a3a', NG = '#5dff8a';
 
@@ -61,6 +64,8 @@
   /* ── calque de pixels ─────────────────────── */
   function Calque(w, h) { this.w = w; this.h = h; this.p = new Map(); this.m = new Set(); }
   var K = 1024;
+  /* une clé donnée par l'appelant ne vaut que si l'objet l'a en propre (jamais constructor, toString, __proto__…) */
+  function own(o, k) { return (typeof k === 'string' || typeof k === 'number') && Object.prototype.hasOwnProperty.call(o, k); }
   Calque.prototype.px = function (x, y, c, solide, a) {
     if (c === null || c === undefined) return;
     if (solide === undefined) solide = true;
@@ -205,7 +210,7 @@
     bas: liste([['pantalon', 'Pantalon'], ['cargo', 'Cargo à câble'], ['short', 'Short de terrain'], ['jogging', 'Jogging fluo'], ['jupe_longue', 'Jupe longue fleurs-circuits'], ['sarouel', 'Sarouel de danse'], ['patchwork', 'Pantalon rapiécé'], ['salouva', 'Salouva']]),
     chaussures: liste([['baskets', 'Baskets'], ['montantes', 'Baskets montantes'], ['savates', 'Savates néon'], ['bottes', 'Bottes de pont'], ['crampons', 'Crampons de sable'], ['pieds_nus', 'Pieds nus et chevillère']]),
     emplacements: liste([['tete', 'Sur la tête'], ['visage', 'Sur le visage'], ['cou', 'Au cou et à la taille'], ['dos', 'Dans le dos'], ['main', 'Dans la main'], ['epaule', 'Sur les épaules'], ['pieds', 'Aux pieds'], ['autour', 'Autour']]),
-    familles: liste([['clin', 'Clins d\'œil'], ['classe', 'Les gimmicks de la classe'], ['heros', 'Héros et héroïnes de BD'], ['pirate', 'Pirates et aventure'], ['lycee', 'Le style du lycée'], ['punk', 'Punk et rue'], ['cyber', 'Cyber et Flottille'], ['nature', 'Fées, esprits, nature'], ['classique', 'Classiques']]),
+    familles: liste([['clin', 'Clins d\'œil'], ['classe', 'Les gimmicks de la classe'], ['heros', 'Héros et héroïnes de BD'], ['pirate', 'Pirates et aventure'], ['lycee', 'Le style du lycée'], ['punk', 'Punk et rue'], ['cyber', 'Cyber et Flottille'], ['nature', 'Fées, esprits, nature'], ['classique', 'Classiques'], ['applis', 'Objets des applications']]),
     objets: {},
     compagnon: [{ id: 'aucun', nom: 'Aucun' }, { id: 'margouillat', nom: 'Margouillat vert', depart: true }, { id: 'maki', nom: 'Maki', gagne: true }, { id: 'robot', nom: 'Petit robot', gagne: true }, { id: 'tortue', nom: 'Tortue serveur', gagne: true }, { id: 'roussette', nom: 'Roussette', gagne: true }],
     teint: TEINTS.map(function (c, i) { return { id: i + 1, nom: 'Teint ' + (i + 1), couleur: c }; }),
@@ -222,12 +227,12 @@
     ['eclairs_chocolat', 'Les éclairs au chocolat', 'pieds', 'clin'], ['casque_mabawa', 'Le bonnet à mabawa', 'tete', 'clin'],
     ['cornes_zebu', 'Le serre-tête cornes de zébu', 'tete', 'clin'], ['baladeur_galaxie', 'Le baladeur intergalactique', 'cou', 'clin'],
     ['mangue_etoiles', 'La mangue de cristal à quatre étoiles', 'main', 'clin'], ['nuage_taxi', 'Le nuage-taxi', 'pieds', 'clin'],
-    ['perche_extensible', 'La perche à mangues extensible', 'main', 'clin'], ['calculette_9000', 'La calculette de puissance (plus de 9 000)', 'cou', 'clin'],
+    ['calculette_9000', 'La calculette de puissance (plus de 9 000)', 'cou', 'clin'],
     ['grenouille_porte_monnaie', 'La grenouille porte-monnaie', 'cou', 'clin'], ['style_trois_baguettes', 'Le style à trois baguettes', 'main', 'clin'],
     ['bateau_mouton', 'Le bateau-mouton', 'main', 'clin'], ['tresor_une_piece', 'Le trésor en une seule pièce', 'main', 'clin'],
     ['boussole_gouter', 'La boussole qui montre le goûter', 'cou', 'clin'], ['crochet_tricot', 'Le crochet… à tricoter', 'main', 'clin'],
     ['perle_noire', 'La perle noire du lagon', 'cou', 'clin'], ['kraken_peluche', 'Le kraken en peluche', 'epaule', 'clin'],
-    ['maki_sushi', 'Le maki… sushi', 'main', 'clin'], ['bouchon_mamoudzou', 'Le bouchon de Mamoudzou', 'tete', 'clin'],
+    ['maki_sushi', 'Le maki… sushi', 'main', 'clin'],
     ['barges_pieds', 'Les barges aux pieds', 'pieds', 'clin'], ['doukabe_dos', 'Le doukabé à dos', 'dos', 'clin'],
     ['crete_recurer', 'La crête à récurer', 'tete', 'clin'], ['pinces_linge', 'Les pinces à linge rebelles', 'epaule', 'clin'],
     ['bottes_conserve', 'Les bottes en conserve', 'pieds', 'clin'],
@@ -276,10 +281,40 @@
     ['peinture', 'Peinture néon', 'visage', 'classique'], ['echarpe', 'Écharpe', 'epaule', 'classique'],
     ['kishali', 'Kishali sur les épaules', 'epaule', 'classique'], ['parapluie', 'Parapluie de la saison des pluies', 'main', 'classique'], ['ballon_foot', 'Ballon de foot', 'pieds', 'classique']
   ];
+  /* les objets des applications (T133b, famille « applis ») : trois par application, chacun donné par
+     un haut fait (jamais acheté). [id, nom, emplacement, application, haut fait, nom du haut fait,
+     catégorie, condition]. Les identifiants d'application et de haut fait suivent le compte commun. */
+  var APPLIS = [
+    ['de_flottille', 'Le dé de la Flottille', 'main', 'quizz_nsi', 'premier-pas', 'Premier pas', 'premiers_pas', 'Suivre ton premier cours-quiz jusqu\'au bout, en classe.'],
+    ['chapeau_pion', 'Le chapeau-pion', 'tete', 'quizz_nsi', 'tour-du-plateau', 'Tour du plateau', 'exploration', 'Suivre des cours-quiz de trois thèmes différents du programme.'],
+    ['flamme_apprivoisee', 'La flamme apprivoisée', 'autour', 'quizz_nsi', 'rebond', 'Rebond', 'perseverance', 'Trouver la bonne réponse juste après une erreur.'],
+    ['micro_paillettes', 'Le micro à paillettes', 'main', 'grand_oral', 'premier-passage', 'Premier passage', 'premiers_pas', 'T\'évaluer après ton premier oral blanc.'],
+    ['noeud_chrono', 'Le nœud pap\' à chrono', 'cou', 'grand_oral', 'ni-trop-ni-trop-peu', 'Ni trop ni trop peu', 'maitrise', 'Avoir un plan qui tient en dix minutes (30 à 50 points).'],
+    ['projecteur_poursuite', 'Le projecteur de poursuite', 'autour', 'grand_oral', 'vous-avez-un-sujet', 'Vous avez un sujet !', 'creation', 'Avoir une question validée par ton enseignant·e.'],
+    ['case_surprise', 'La case-surprise', 'main', 'calendrier', 'premiere-case', 'Première case', 'premiers_pas', 'Ouvrir et valider ta première case du calendrier.'],
+    ['bob_fanion', 'Le bob à fanion', 'tete', 'calendrier', 'costaud', 'Costaud', 'maitrise', 'Valider une case au niveau « Costaud ».'],
+    ['guirlande_cases', 'La guirlande de cases', 'autour', 'calendrier', 'tous-les-themes', 'Tous les thèmes', 'exploration', 'Valider des cases de trois thèmes différents.'],
+    ['monocle_hublot', 'Le monocle-hublot', 'visage', 'gombessa', 'la-luciole-avance', 'La Luciole avance', 'premiers_pas', 'Faire avancer la Luciole avec ton premier programme juste.'],
+    ['collier_sonar', 'Le collier-sonar', 'cou', 'gombessa', 'les-grottes-du-gombessa', 'Les grottes du gombessa', 'exploration', 'Atteindre les grottes, à 250 m : finir l\'expédition.'],
+    ['bulle_luci', 'La bulle de LUCI', 'epaule', 'gombessa', 'debogage', 'Débogage', 'perseverance', 'Corriger un programme après une erreur, jusqu\'à ce qu\'il marche.'],
+    ['casque_carapace', 'Le casque-carapace', 'tete', 'lagon', 'ponte-reussie', 'Ponte réussie', 'premiers_pas', 'Écrire une tortue qui pond sur la plage pendant un match.'],
+    ['bebe_tortue', 'Le bébé tortue', 'epaule', 'lagon', 'rematch', 'Rematch', 'perseverance', 'Corriger ta tortue après un match, puis la relancer.'],
+    ['palmes_lagon', 'Les palmes du lagon', 'pieds', 'lagon', 'le-parcours', 'Le parcours', 'exploration', 'Finir le parcours des quatre missions.']
+  ];
+  APPLIS.forEach(function (a) { OBJETS.push([a[0], a[1], a[2], 'applis']); });
+  var APPLI_DE = {};
+  APPLIS.forEach(function (a) { APPLI_DE[a[0]] = { application: a[3], haut_fait: a[4] }; });
+  /* objets retirés à la demande de l'enseignant (24/11) : [emplacement, id, place d'origine dans la liste].
+     Une description qui les porte les perd (« aucun ») ; aleatoire garde leur place pour que les tirages ne changent pas. */
+  var RETIRES = [['main', 'perche_extensible', 7], ['tete', 'bouchon_mamoudzou', 4]];
   /* anciens identifiants (v3) : repris dans leur nouvel emplacement */
   var COMPAT = { masque: ['visage', 'loup'], chale: ['epaule', 'kishali'], ballon: ['pieds', 'ballon_foot'], monocle_visee: ['visage', 'monocle_pixels'] };
   CATALOGUE.emplacements.forEach(function (e) { CATALOGUE.objets[e.id] = [{ id: 'aucun', nom: 'Rien' }]; });
-  OBJETS.forEach(function (o) { var e = { id: o[0], nom: o[1], famille: o[3] }; if (o[4]) e.texte = o[4]; CATALOGUE.objets[o[2]].push(e); });
+  OBJETS.forEach(function (o) {
+    var e = { id: o[0], nom: o[1], famille: o[3] }; if (o[4]) e.texte = o[4];
+    if (APPLI_DE[o[0]]) { e.application = APPLI_DE[o[0]].application; e.haut_fait = APPLI_DE[o[0]].haut_fait; }
+    CATALOGUE.objets[o[2]].push(e);
+  });
   Object.keys(PALETTES).forEach(function (k) {
     CATALOGUE.couleurs[k] = Object.keys(PALETTES[k]).map(function (id) { return { id: id, couleur: PALETTES[k][id] }; });
   });
@@ -315,20 +350,20 @@
     if (ob.tete === undefined) ob.tete = d.tete;
     if (ob.visage === undefined) ob.visage = d.visage;
     EMPLACEMENTS.forEach(function (e) { if (objetDans(e, ob[e])) r.objets[e] = ob[e]; });
-    EMPLACEMENTS.forEach(function (e) { var v = COMPAT[ob[e]]; if (v && r.objets[v[0]] === 'aucun') r.objets[v[0]] = v[1]; });
+    EMPLACEMENTS.forEach(function (e) { var v = own(COMPAT, ob[e]) ? COMPAT[ob[e]] : null; if (v && r.objets[v[0]] === 'aucun') r.objets[v[0]] = v[1]; });
     var t = parseInt(d.teint, 10);
     if (t >= 1 && t <= TEINTS.length) r.teint = t;
     r.fauteuil = d.fauteuil === true;
-    if (typeof d.cheveux === 'string' && (PALETTES.cheveux[d.cheveux] || /^#[0-9a-fA-F]{6}$/.test(d.cheveux))) r.cheveux = d.cheveux;
+    if (typeof d.cheveux === 'string' && (own(PALETTES.cheveux, d.cheveux) || /^#[0-9a-fA-F]{6}$/.test(d.cheveux))) r.cheveux = d.cheveux;
     var c = d.couleurs && typeof d.couleurs === 'object' ? d.couleurs : {};
     ['haut', 'bas', 'accent', 'chaussures', 'yeux'].forEach(function (k) {
       var v = c[k];
-      if (typeof v === 'string' && (PALETTES[CHAMP_PALETTE[k]][v] || /^#[0-9a-fA-F]{6}$/.test(v))) r.couleurs[k] = v;
+      if (typeof v === 'string' && (own(PALETTES[CHAMP_PALETTE[k]], v) || /^#[0-9a-fA-F]{6}$/.test(v))) r.couleurs[k] = v;
     });
     if (r.haut === 'aucun' && !SANS_CORPS[r.lignee]) r.haut = 'tshirt';
     return r;
   }
-  function couleur(champ, v) { return PALETTES[CHAMP_PALETTE[champ]][v] || v; }
+  function couleur(champ, v) { return own(PALETTES[CHAMP_PALETTE[champ]], v) ? PALETTES[CHAMP_PALETTE[champ]][v] : v; }
 
   /* description -> réglages de dessin */
   function reglages(d) {
@@ -1270,13 +1305,39 @@
       p: { p: '#9a4ab8', P: '#c87ae8', w: '#ffffff', k: '#1b1530', R: '#ff7fa0', m: '#6a2a5a' } },
     maki_sushi: { ou: 'main', gros: 1, a: [3, 7], r: ['..kkk..', '.kwwwk.', 'kwbbbwk', 'kwobowk', 'kwbdbwk', '.kwwwk.', '..kkk..'],
       p: { k: '#1f2a24', w: BLANC, b: '#8a6a4a', o: '#f0a030', d: '#3a2a2a' } },
-    bouchon_mamoudzou: { ou: 'tete', clair: 1, a: [7, 6], r: ['..r...b...y...', '.rrr.bbb.yyy..', '.k.k.k.k.k.k..', '..cccccccccc..', '.cCcCccCcCcCc.', '.cccCcccccCcc.', '.cCccCcCccccc.', '.CCCCCCCCCCCC.'],
-      p: { r: '#e8403a', b: '#3f6ad8', y: '#f2c14e', k: '#2a2a35', c: '#e8c088', C: '#b88848' } },
     barges_pieds: { ou: 'pieds', a: [2, 3], r: ['...rr..', 'wwwwwww', 'bbbbbbb', '.wwwww.'], p: { r: '#e8403a', w: '#eef2fa', b: '#3f6ad8' } },
-    bottes_conserve: { ou: 'pieds', a: [1, 5], r: ['lllll', 'sSsSs', 'AAAAA', 'AwAwA', 'sSsSs', 'lllll'], p: { l: '#eef0f6', s: '#b8c0d4', S: MET, A: 'A', w: '#ffffff' } }
+    bottes_conserve: { ou: 'pieds', a: [1, 5], r: ['lllll', 'sSsSs', 'AAAAA', 'AwAwA', 'sSsSs', 'lllll'], p: { l: '#eef0f6', s: '#b8c0d4', S: MET, A: 'A', w: '#ffffff' } },
+
+    /* ─ les objets des applications (T133b) : accrochés au corps, ils suivent la main, la tête et les épaules ─ */
+    de_flottille: { ou: 'main', a: [1, 5], f: [
+      ['wwwwwwg', 'wkwwwwg', 'wwwwwwg', 'wwwkwwg', 'wwwwwwg', 'wwwwwkg', 'ggggggg'],
+      ['wwwwwwg', 'wkwwwkg', 'wwwwwwg', 'wwwkwwg', 'wwwwwwg', 'wkwwwkg', 'ggggggg']], p: { w: '#f4f1ff', k: '#1b1530', g: '#b9b3d6' } },
+    chapeau_pion: { ou: 'tete', clair: 1, a: [7, 12], r: [
+      '......ccc......', '.....cCCwc.....', '.....cCCCc.....', '.....cCCCc.....', '......ccc......', '......cCc......', '.....cCCCc.....',
+      '....cCCCCCc....', '...cCCCCCCCc...', '..cCCCCCCCCCc..', '.cCCCCCCCCCCCc.', 'ccccccccccccccc', '.kkkkkkkkkkkkk.'], p: { c: '#1f9ab0', C: '#8ae8f0', w: '#ffffff', k: '#13607a' } },
+    micro_paillettes: { ou: 'main', gros: 1, a: [2, 5], f: [
+      ['.mMm.', 'mMwMm', 'mMMMm', '.mMm.', '..k..', '..k..', '..k..', '..k..'],
+      ['.mwm.', 'mMMMm', 'mMMwm', '.mMm.', '..k..', '..k..', '..k..', '..k..']], p: { m: '#c8ccd8', M: '#8a90a8', w: '#ffe14a', k: '#2a2440' } },
+    noeud_chrono: { ou: 'cou', a: [5, 1], r: ['pp.......pp', 'ppppwwwpppp', 'pppwwkwwppp', 'ppppwwwpppp', 'pp.......pp'], p: { p: '#8a5bff', w: '#f4f1ff', k: '#1b1530' } },
+    case_surprise: { ou: 'main', a: [1, 6], f: [
+      ['y.....y', '.y.y.y.', 'bbbbbbb', 'bBBBBBb', 'bBnnBBb', 'bBBBBBb', 'bbbbbbb'],
+      ['.y.y.y.', 'y.....y', 'bbbbbbb', 'bBBBBBb', 'bBnnBBb', 'bBBBBBb', 'bbbbbbb']], p: { y: '#ffe14a', b: '#c8302a', B: '#f4f1ff', n: '#1b1530' } },
+    bob_fanion: { ou: 'tete', clair: 1, a: [10, 9], r: [
+      '..............fFF...', '..............fFFFF.', '..............f.....', '.....bbbbbbbbbf.....', '....bbbbbbbbbbbb....', '...bbbbbbbbbbbbbb...',
+      '...BBBBBBBBBBBBBB...', '..bbbbbbbbbbbbbbbb..', 'bbbbbbbbbbbbbbbbbbbb', 'b..................b'], p: { b: '#3fb8a0', B: '#ff4fb8', f: '#5a3a1a', F: '#ffe14a' } },
+    monocle_hublot: { ou: 'visage', a: [8, 3], r: ['..ggg..', '.gcccg.', 'gcCcccg', 'gcccccg', 'gcccccg', '.gcccg.', '..ggg..'], p: { g: '#c8963b', c: ['#7ad8ff', 0.45], C: ['#ffffff', 0.9] } },
+    collier_sonar: { ou: 'cou', a: [2, -3], chaine: '#1f8a8a', f: [
+      ['.ttt.', 'tTTTt', 'tTkTt', 'tTTTt', '.ttt.'], ['.ttt.', 'tTTTt', 'tTkTt', 'tTTTt', '.ttt.']], p: { t: '#1f8a8a', T: '#8ae8f0', k: '#1b1530' } },
+    bulle_luci: { ou: 'epd', a: [-4, 13], f: [
+      ['..ii..', '.bbbb.', 'bBBBBb', 'bBkkBb', 'bBBBBb', '.bbbb.', '......'], ['......', '..ii..', '.bbbb.', 'bBBBBb', 'bBkkBb', 'bBBBBb', '.bbbb.']], p: { b: '#3a9ad8', B: '#bdefff', k: '#1b1530', i: '#ffe14a' } },
+    casque_carapace: { ou: 'tete', clair: 1, a: [9, 7], r: [
+      '.......ggggg.......', '.....ggGgggGgg.....', '...ggGgggGgggGgg...', '..gGgggGgggGgggGg..', '.ggggGgggGgggGgggg.', 'gGgggGgggGgggGggggg', 'bbbbbbbbbbbbbbbbbbb', '.b...............b.'], p: { g: '#3f7a35', G: '#8ac85a', b: '#c8a060' } },
+    bebe_tortue: { ou: 'epg', a: [12, 5], f: [
+      ['hh..sss..', 'kh.sSsSs.', 'hhsSsSsSs', '...sssss.', '...f...f.'], ['.........', 'hh..sss..', 'kh.sSsSs.', 'hhsSsSsSs', '...sssss.']], p: { s: '#3f7a35', S: '#8ac85a', h: '#9ad07a', k: '#1b1530', f: '#9ad07a' } },
+    palmes_lagon: { ou: 'pieds', a: [1, 2], r: ['......pP..', '...ppPpPp.', 'pppPpPpPpp'], p: { p: '#ff9a3a', P: '#ffd28a' } }
   };
   /* objets tenus : le bras se lève pour les porter */
-  var TIENT = { bombe: 1, cle: 1, baton_lumineux: 1, lanterne: 1, parapluie: 1, style_trois_baguettes: 1, perche_extensible: 1 };
+  var TIENT = { bombe: 1, cle: 1, baton_lumineux: 1, lanterne: 1, parapluie: 1, style_trois_baguettes: 1 };
   Object.keys(SPR).forEach(function (k) { if (SPR[k].ou === 'main') TIENT[k] = 1; });
   var CHAPEAUX = { chapeau_paille: 1, bonnet: 1, casquette: 1, bandana: 1, casque_mabawa: 1, casquette_mabawa: 1, casquette_barge: 1, casquette_pilaou: 1, bob: 1 };
   var CRETES = { meches_vives: 1, crete_pics: 1, crete_recurer: 1 };
@@ -1810,10 +1871,6 @@
     if (acc === 'style_trois_baguettes') {
       [[-2, -10], [2, -11], [6, -9]].forEach(function (b) { ligne(c, hx, hy, hx + b[0], hy + b[1], function (k) { return k % 3 === 1 ? '#f2d090' : '#d89a48'; }, 2); });
     }
-    if (acc === 'perche_extensible') {
-      ligne(c, hx, hy, hx + 2, hy - 20, function (k) { return k % 5 === 0 ? '#8a9a3a' : '#c8c86a'; });
-      poser(c, ['.oG.', 'bobb', 'bbbb', '.bb.'], { o: '#f08a2a', G: '#3fae4a', b: '#a8784a' }, hx + 2, hy - 21, [1, 3]);
-    }
     if (acc === 'enceinte') {
       var x0 = c.tx0 - 13, y0 = G - 6;
       c.L.rect(x0, y0, 10, 7, '#3a3f58');
@@ -1857,8 +1914,31 @@
 
   /* ── autour ── */
   var BOLT = ['..xx', '.xx.', 'xxxx', '.xx.', 'xx..'];
+  var FLAMME = [['...r...', '..rr...', '..ror..', '.rooor.', '.royor.', 'rokyoko', 'royyyor', '.ryyyr.', '..rrr..'],
+    ['....r..', '...rr..', '..ror..', '.rooor.', '.royor.', 'rokyoko', 'royyyor', '.ryyyr.', '..rrr..']];
+  var GUIRLANDE = ['#ff4fb8', '#3ff0ff', '#ffe14a', '#5dff8a', '#8a5bff', '#ff9a3a'];
+  function objetsApplisAutour(c, v, n) {
+    var x, y;
+    if (v === 'flamme_apprivoisee') poser(c, FLAMME[n % 2], { r: '#e8402a', o: '#ff9a3a', y: '#ffe14a', k: '#1b1530' }, 5, 28 - (n % 2), [0, 0]);
+    if (v === 'projecteur_poursuite') {
+      /* le faisceau : une trame légère, jamais sur l'avatar (calque des lueurs, hors des pixels pleins) */
+      for (y = 17; y <= 60; y++) for (x = 4; x <= 44; x++) {
+        var t = (y - 17) / 43, a = 7 + t * 4, b = 9 + t * 34;
+        if (x >= a && x <= b && (x + y) % 2 === 0 && !c.L.plein(x, y) && !c.L.plein(x + 1, y) && !c.L.plein(x - 1, y) && !c.L.plein(x, y + 1) && !c.L.plein(x, y - 1)) c.fx(x, y, '#f2c400', (n % 2) ? 0.7 : 0.85);
+      }
+      poser(c, ['.kkk.', 'kgggk', 'kgYgk', 'kgggk', '.kkk.', '..k..', '.kkk.'], { k: '#2a2440', g: '#8a90a8', Y: '#ffe14a' }, 3, 11, [0, 0]);
+    }
+    if (v === 'guirlande_cases') {
+      for (x = 3; x <= 45; x++) c.px(x, Math.round(15 + 5 * Math.sin(Math.PI * (x - 3) / 42)), '#8a90a8');
+      for (var i = 0; i < 6; i++) {
+        var px = 6 + i * 7, py = Math.round(15 + 5 * Math.sin(Math.PI * (px - 3) / 42)) + 1, col = GUIRLANDE[(i + n) % 6];
+        poser(c, ['ccc', 'ccc', '.c.'], { c: col }, px, py, [0, 0]);
+      }
+    }
+  }
   function objetsAutour(c) {
     var o = c.cfg.o, cfg = c.cfg, n = c.pose.n || 0, i, v = o.autour;
+    objetsApplisAutour(c, v, n);
     if (v === 'lucioles') {
       for (i = 0; i < 5; i++) { var a = i * 1.2566 + n * 0.45, x = CX + Math.cos(a) * 20, y = 38 + Math.sin(a) * 15; c.px(x, y, '#fff27a'); c.px(x + 1, y, '#fff27a'); c.glow(rnd(x), rnd(y), NJ, 3, 0.45); }
     }
@@ -2201,7 +2281,7 @@
   var COMPAGNONS = { maki: maki, robot: petitRobot, tortue: tortue, roussette: roussette, margouillat: margComp };
   var COMP_MIROIR = { margouillat: 1, tortue: 1 };
   function compagnon(id, etat, n) {
-    var f = COMPAGNONS[id];
+    var f = own(COMPAGNONS, id) ? COMPAGNONS[id] : null;
     if (!f) return null;
     var C = f(etat || 'neutre', n || 0);
     if (COMP_MIROIR[id]) C = C.transformer(function (x, y) { return [CW - 1 - x, y]; });
@@ -2299,7 +2379,25 @@
       '.eq-marg{position:absolute;z-index:1;pointer-events:none;line-height:0}',
       '.eq-papier{display:none}',
       '@media print{.eq-img{animation:none!important;opacity:0!important}.eq-img.eq-i0{opacity:1!important}.eq-halo{fill:transparent!important}.eq-encre-noire .eq-ecran{display:none}.eq-encre-noire .eq-papier{display:inline}}',
-      '@media (prefers-reduced-motion:reduce){.eq-img{animation:none!important}}'
+      '@media (prefers-reduced-motion:reduce){.eq-img{animation:none!important}}',
+      /* T133b : marques, bulles, mode calme, plafond, pause (classes nouvelles seulement) */
+      '.eq-calme .eq-img,.eq.eq-fige .eq-img{animation:none!important;opacity:0!important}.eq-calme .eq-img.eq-i0,.eq.eq-fige .eq-img.eq-i0{opacity:1!important}',
+      '.eq-pause .eq-img,.eq-pause .eq-bulle{animation-play-state:paused!important}',
+      '.eq.eq-porteur{position:relative}',
+      '.eq-vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}',
+      '.eq-fanion{position:absolute;left:0;top:0;width:var(--eq-marque,14px);height:calc(var(--eq-marque,14px)*1.43);line-height:0;z-index:2}',
+      '.eq-fanion svg,.eq-flamme svg{display:block;width:100%;height:100%;overflow:visible}',
+      '.eq-flamme{position:absolute;right:0;bottom:0;width:calc(var(--eq-marque,14px)*1.3);height:calc(var(--eq-marque,14px)*1.6);line-height:0;z-index:2}',
+      '.eq-flamme b{position:absolute;left:0;right:0;top:42%;text-align:center;font:700 calc(var(--eq-marque,14px)*.72)/1 var(--td-texte,system-ui,sans-serif);color:#121016}',
+      '.eq-bulle{position:absolute;z-index:3;left:50%;bottom:100%;transform:translate(-50%,-6px);width:max-content;max-width:var(--eq-bulle-max,14em);padding:.3em .65em;' +
+        'background:var(--td-fond,#fff);color:var(--td-encre,#121016);border:1.4px solid var(--td-trait-fort,#121016);border-radius:12px;box-shadow:3px 3px 0 var(--td-neon-2,#FF2E97);' +
+        'font:700 var(--eq-bulle-taille,1rem)/1.2 var(--td-texte,system-ui,sans-serif);text-align:center;white-space:normal;animation:eq-bulle-vient .25s ease-out both}',
+      '.eq-acomp .eq-bulle{left:32.4%}',
+      '.eq-bulle::after{content:"";position:absolute;left:50%;bottom:-7px;width:11px;height:11px;background:inherit;border-right:inherit;border-bottom:inherit;transform:translateX(-50%) rotate(45deg)}',
+      '@keyframes eq-bulle-vient{from{opacity:0;transform:translate(-50%,0)}to{opacity:1;transform:translate(-50%,-6px)}}',
+      '.eq-calme .eq-bulle{animation:none!important}',
+      '@media (prefers-reduced-motion:reduce){.eq-bulle{animation:none!important}}',
+      '@media print{.eq-bulle{display:none}}'
     ].join('\n');
     (document.head || document.documentElement).appendChild(_style);
     return _style;
@@ -2338,7 +2436,7 @@
     });
     if (d.fauteuil) morceaux.push('en fauteuil de course');
     if (d.compagnon !== 'aucun') morceaux.push('avec ' + (d.compagnon === 'robot' ? 'un petit robot' : d.compagnon === 'tortue' ? 'une tortue serveur' : d.compagnon === 'roussette' ? 'une roussette' : 'un ' + nom('compagnon', d.compagnon)));
-    var e = ETATS[etat] ? ETATS[etat].nom : ETATS.repos.nom;
+    var e = own(ETATS, etat) ? ETATS[etat].nom : ETATS.repos.nom;
     return morceaux.join(', ') + ' ; ' + e + '.';
   }
 
@@ -2349,10 +2447,10 @@
      true : arrondie à un multiple entier de la grille), decalage (ms, au hasard sinon) */
   function svg(desc, options) {
     var o = options || {}, d = normaliser(desc), cfg = reglages(d);
-    var etat = ETATS[o.etat] ? o.etat : 'repos';
+    var etat = etatMoteur(o.etat);
     var taille = +o.taille > 0 ? +o.taille : 96;
     var cadre = o.cadre && o.cadre !== 'auto' ? o.cadre : (taille < 32 ? 'pastille' : (taille < 64 ? 'buste' : 'entier'));
-    if (!CADRES[cadre]) cadre = 'entier';
+    if (!own(CADRES, cadre) || cadre === 'entier_compagnon') cadre = 'entier';
     var avecComp = cadre === 'entier' && d.compagnon !== 'aucun' && o.compagnon !== false;
     var vb = CADRES[avecComp ? 'entier_compagnon' : cadre];
     if (o.net) taille = Math.max(vb[3], Math.floor(taille / vb[3]) * vb[3]);
@@ -2365,10 +2463,12 @@
     var dec = o.decalage !== undefined ? +o.decalage : Math.floor(Math.random() * (anim ? anim.T : 1));
     var alt = o.alt !== undefined ? o.alt : texte(d, etat);
     var corps = '';
+    var dessins = enCache(JSON.stringify(d) + '|' + etat + '|' + cadre + '|' + avecComp + '|' + anime, function () {
+      return images.map(function (img, i) { var S = imageAvatar(cfg, img, etat, avecComp, i); return cheminsSet(S.anneau(), 'eq-halo') + chemins(S); });
+    });
     images.forEach(function (img, i) {
-      var S = imageAvatar(cfg, img, etat, avecComp, i);
       var st = anim ? ' style="animation:' + anim.noms[i] + ' ' + anim.T + 'ms step-end ' + (-dec) + 'ms infinite"' : '';
-      corps += '<g class="eq-img eq-i' + i + '"' + st + '>' + cheminsSet(S.anneau(), 'eq-halo') + chemins(S) + '</g>';
+      corps += '<g class="eq-img eq-i' + i + '"' + st + '>' + dessins[i] + '</g>';
     });
     var aria = alt === '' ? ' aria-hidden="true" focusable="false"' : ' role="img" aria-label="' + esc(alt) + '"';
     return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="' + vb.join(' ') + '" width="' + largeur + '" height="' + taille + '" shape-rendering="crispEdges"' + aria + '>' + (alt ? '<title>' + esc(alt) + '</title>' : '') + corps + '</svg>';
@@ -2380,25 +2480,214 @@
     return c;
   }
 
+  /* ════════════════════════════════════════════
+     L'INTERFACE DES APPLICATIONS (T133b)
+     États d'usage, gestes, bulles d'une liste fermée, marques (fanion,
+     flamme), mode calme, plafond d'avatars animés, pause, cache.
+     ════════════════════════════════════════════ */
+  /* les états nommés par usage : des alias des états du moteur */
+  var USAGES = { lobby: 'repos', attente: 'concentre', repondu: 'repos', fete: 'tres_content', applaudit: 'content' };
+  function etatMoteur(e) { return own(ETATS, e) ? e : (own(USAGES, e) ? USAGES[e] : 'repos'); }
+  /* les gestes du lobby : un état joué un moment, puis retour à l'état d'avant */
+  var GESTES = [
+    { id: 'salue', nom: 'Saluer', etat: 'salue' }, { id: 'saute', nom: 'Sauter de joie', etat: 'tres_content' },
+    { id: 'rit', nom: 'Rire', etat: 'content' }, { id: 'sieste', nom: 'Petite sieste', etat: 'dort' }
+  ];
+  var GESTE_DE = {}; GESTES.forEach(function (g) { GESTE_DE[g.id] = g; });
+  /* les 21 phrases du lobby : liste FERMÉE, envoyée par numéro (de 0 à 20).
+     Version 1. On n'en retire jamais et on n'en change jamais le sens : on ajoute à la fin, et la version monte.
+     Copie versionnée : assets/equipage/applis.json (charte/equipage-donnees.js la régénère et la vérifie). */
+  var PHRASES_VERSION = 1;
+  var PHRASES = [
+    'Prêt·e !', 'Coucou la classe !', 'Bonne chance à tout le monde !', 'J’ai le trac, mais j’y vais.', 'Allez, on se lance !',
+    'Mon cerveau charge… 87 %', 'Le margouillat est avec nous.', 'On se trompe, on apprend.', 'Même pas peur (enfin, un peu).', 'Je suis là, et bien réveillé·e !',
+    'On fait ça ensemble.', 'Bravo d’avance à tout le monde.', 'J’ai révisé… dans mes rêves.', 'Respire, ça va bien se passer.', 'Wi-Fi, ne me lâche pas.',
+    'Je sens que je vais apprendre un truc.', 'Qui a vu mon stylo ?', 'Pas de stress : c’est pour apprendre.', 'Hâte de voir la première question !',
+    'Ne vous inquiétez pas, Monsieur.', 'Moi, c’est au talent.'
+  ];
+  /* les phrases qui s'adressent à l'enseignant·e : la page projetée choisit la forme (Equipage.adresse) ;
+     l'élève envoie le même numéro, quelle que soit la forme */
+  var ADRESSES = { monsieur: 'Monsieur', madame: 'Madame' }, _adresse = 'monsieur';
+  var VARIANTES = { 19: function (a) { return 'Ne vous inquiétez pas, ' + ADRESSES[a] + '.'; } };
+  function phrase(n) { return own(VARIANTES, n) ? VARIANTES[n](_adresse) : PHRASES[n]; }
+  /* Equipage.adresse('monsieur' | 'madame') : réglage de l'enseignant·e sur la page projetée ; Equipage.adresse() le lit */
+  function adresse(a) { if (own(ADRESSES, a)) _adresse = a; return _adresse; }
+  /* les joueurs et joueuses sans compte : l'Esprit en capuche, le même pour tous (décision du 24/11) */
+  var NEUTRE = normaliser({ lignee: 'esprit', coiffure: 'capuche', haut: 'sweat', compagnon: 'margouillat', couleurs: { haut: 'sarcelle', accent: 'cyan' } });
+
+  /* cache des dessins : par description, état, cadre, compagnon et animation */
+  var _cache = {}, _nCache = 0, CACHE_MAX = 400;
+  function enCache(cle, faire) {
+    if (Object.prototype.hasOwnProperty.call(_cache, cle)) return _cache[cle];
+    if (_nCache >= CACHE_MAX) { _cache = {}; _nCache = 0; }
+    _nCache += 1;
+    return (_cache[cle] = faire());
+  }
+
+  /* ── réglages de la page ── */
+  var _calme = null, _plafond = Infinity, _vivants = [], _ecoute = false;
+  function racineDoc() { return typeof document !== 'undefined' ? document.documentElement : null; }
+  function mouvementReduit() {
+    try { return typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+  }
+  /* Equipage.calme(true | false) pour toute la page ; Equipage.calme() dit si la page est calme
+     (forcée, ou réglage « mouvement réduit » de l'appareil) */
+  function calme(v) {
+    if (v === undefined) return _calme === true || (_calme === null && mouvementReduit());
+    _calme = v === null ? null : !!v;
+    var r = racineDoc();
+    if (r) { feuille(); if (_calme === true) r.classList.add('eq-calme'); else r.classList.remove('eq-calme'); }
+    repartir(true);
+    return calme();
+  }
+  /* Equipage.plafond(8) : au plus 8 avatars animés à la fois (les gestes d'abord), les autres en image fixe */
+  function plafond(n) {
+    if (n === undefined) return _plafond;
+    _plafond = n === null || n === Infinity ? Infinity : Math.max(0, Math.floor(+n) || 0);
+    repartir(true);
+    return _plafond;
+  }
+  /* Equipage.pause(true | false) : arrête les animations ; automatique quand l'onglet est caché */
+  function pause(v) {
+    var r = racineDoc(); if (!r) return false;
+    feuille();
+    if (v === undefined) return r.classList.contains('eq-pause');
+    if (v) r.classList.add('eq-pause'); else r.classList.remove('eq-pause');
+    return !!v;
+  }
+  function ecouter() {
+    if (_ecoute || typeof document === 'undefined' || !document.addEventListener) return;
+    _ecoute = true;
+    document.addEventListener('visibilitychange', function () { pause(document.hidden); });
+  }
+  /* qui a le droit d'être animé : seulement quand un plafond ou le calme est demandé */
+  function repartir(rendreTout) {
+    _vivants = _vivants.filter(function (v) { return !v.mort && (!v.element || v.element.isConnected !== false); });
+    var limite = _calme === true ? 0 : _plafond, rang = 0;
+    var ordre = _vivants.filter(function (v) { return v.geste; }).concat(_vivants.filter(function (v) { return !v.geste; }));
+    ordre.forEach(function (v) {
+      var ok = limite === Infinity || (v.veutAnime() && rang < limite);
+      if (ok && limite !== Infinity && v.veutAnime()) rang += 1;
+      if (v.autorise !== ok) { v.autorise = ok; if (rendreTout) v.rendre(); }
+    });
+  }
+
+  /* ── les bulles : 6 au plus par page, les autres attendent ── */
+  var BULLES_MAX = 6, _bullesVues = 0, _fileBulles = [];
+  /* seules les listes du moteur sont admises : jamais un tableau ni un objet fourni par l'appelant (jamais de texte libre) */
+  function listeDe(liste) {
+    if (liste === undefined || liste === null || liste === 'lobby') return PHRASES;
+    return null;
+  }
+  function suivanteBulle() {
+    while (_bullesVues < BULLES_MAX && _fileBulles.length) {
+      var b = _fileBulles.shift();
+      if (!b.v.mort) b.v.montrerBulle(b.texte, b.duree);
+    }
+  }
+
+  /* les marques : le fanion « a répondu » (jamais juste ou faux) et la flamme d'une série */
+  var SVG_FANION = '<svg viewBox="0 0 14 20" aria-hidden="true" focusable="false"><path d="M2.5 1v18" stroke="#121016" stroke-width="2" stroke-linecap="round"/><path d="M3.5 2h9l-3 3.6 3 3.6h-9z" fill="#FFE600" stroke="#121016" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+  var SVG_FLAMME = '<svg viewBox="0 0 16 20" aria-hidden="true" focusable="false"><path d="M8 1c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 2 3 2 4 1-2 2-5 2-8z" fill="#FF9A3A" stroke="#121016" stroke-width="1.3"/><path d="M8 11c1 2 3 2.5 3 4.5a3 3 0 0 1-6 0c0-1.5 1-2 1-3.5 1 .5 1.5 1 2-1z" fill="#FFE14A"/></svg>';
+
   function creer(element, desc, options) {
     var o = {}, k;
     for (k in options || {}) o[k] = options[k];
     var etatDesc = normaliser(desc);
     if (o.decalage === undefined) o.decalage = Math.floor(Math.random() * 4000);
+    var marque = null, serie = 0, bulle = null, minuterie = null;
+    var v = { element: element, autorise: true, geste: null, mort: false };
+    v.veutAnime = function () { return o.anime !== false; };
+    function porteur() { return !!(marque || serie >= 2 || bulle); }
     function rendre() {
       var taille = +o.taille > 0 ? +o.taille : 96;
       var cadre = o.cadre && o.cadre !== 'auto' ? o.cadre : (taille < 32 ? 'pastille' : (taille < 64 ? 'buste' : 'entier'));
-      element.className = (element.className.replace(/(^|\s)eq(-[a-z]+)?(?=\s|$)/g, '').trim() + ' ' + classes(o, cadre)).trim();
-      element.innerHTML = svg(etatDesc, o);
+      var cl = (element.className.replace(/(^|\s)eq(-[a-z]+)?(?=\s|$)/g, '').trim() + ' ' + classes(o, cadre)).trim();
+      if (!v.autorise) cl += ' eq-fige';
+      if (porteur()) cl += ' eq-porteur';
+      var oo = o;
+      if (v.geste) { oo = {}; for (var x in o) oo[x] = o[x]; oo.etat = v.geste; }
+      if (!v.autorise && oo.anime !== false) { if (oo === o) { oo = {}; for (var y in o) oo[y] = o[y]; } oo.anime = false; }
+      var h = svg(etatDesc, oo);
+      if (bulle && h.indexOf('viewBox="0 8 74 56"') > 0) cl += ' eq-acomp';
+      element.className = cl;
+      if (marque === 'repondu') h += '<span class="eq-fanion">' + SVG_FANION + '<span class="eq-vh">a répondu</span></span>';
+      if (serie >= 2) h += '<span class="eq-flamme">' + SVG_FLAMME + '<b aria-hidden="true">' + serie + '</b><span class="eq-vh">série de ' + serie + '</span></span>';
+      element.innerHTML = h;
+      if (bulle) element.appendChild(bulle.el);
     }
+    v.rendre = rendre;
+    v.montrerBulle = function (texte, duree) {
+      if (typeof document === 'undefined') return;
+      if (!bulle) {
+        _bullesVues += 1;
+        var el = document.createElement('span');
+        el.className = 'eq-bulle';
+        bulle = { el: el };
+        el.textContent = texte;           /* jamais de HTML : du texte d'une liste fermée */
+        rendre();
+      } else {
+        bulle.el.textContent = texte;
+        clearTimeout(bulle.t);
+      }
+      bulle.t = setTimeout(cacherBulle, duree);
+    };
+    function cacherBulle() {
+      if (!bulle) return;
+      clearTimeout(bulle.t);
+      if (bulle.el.parentNode) bulle.el.parentNode.removeChild(bulle.el);
+      bulle = null; _bullesVues = Math.max(0, _bullesVues - 1);
+      if (!v.mort) rendre();
+      suivanteBulle();
+    }
+    if (o.etat === 'repondu') marque = 'repondu';
+    if (_vivants.length > 300) repartir(false);
+    _vivants.push(v); ecouter();
+    if (_plafond !== Infinity || _calme === true) repartir(false);
     rendre();
     return {
       element: element,
       get description() { return copie(etatDesc); },
       maj: function (d) { etatDesc = normaliser(d); rendre(); return this; },
-      etat: function (e) { o.etat = e; rendre(); return this; },
-      options: function (p) { for (var k in p) o[k] = p[k]; rendre(); return this; },
-      detruire: function () { element.innerHTML = ''; }
+      etat: function (e) {
+        o.etat = e;
+        if (e === 'repondu') marque = 'repondu'; else if (e === 'attente' || e === 'lobby') marque = null;
+        rendre(); return this;
+      },
+      options: function (p) { for (var k in p) o[k] = p[k]; repartir(false); rendre(); return this; },
+      /* geste('salue' | 'saute' | 'rit' | 'sieste', { duree: 3000 }) : un nom inconnu est ignoré */
+      geste: function (nom, opt) {
+        var g = own(GESTE_DE, nom) ? GESTE_DE[nom] : null;
+        if (!g || v.mort) return false;
+        var duree = opt && +opt.duree > 0 ? Math.min(+opt.duree, 20000) : 3000;
+        clearTimeout(minuterie);
+        v.geste = g.etat; repartir(true); rendre();
+        minuterie = setTimeout(function () { v.geste = null; if (!v.mort) { repartir(true); rendre(); } }, duree);
+        return true;
+      },
+      /* bulle(numero, liste) : une phrase d'une liste fermée (par défaut, les 20 phrases du lobby) ;
+         numéro inconnu ignoré ; 6 bulles au plus par page, les autres attendent leur tour */
+      bulle: function (numero, liste, opt) {
+        var l = listeDe(liste);
+        if (l !== PHRASES || v.mort || typeof numero !== 'number' || numero % 1 !== 0 || numero < 0 || numero >= PHRASES.length) return false;
+        var duree = opt && +opt.duree > 0 ? Math.min(+opt.duree, 15000) : 5000;
+        var texte = phrase(numero);
+        if (bulle || _bullesVues < BULLES_MAX) { v.montrerBulle(texte, duree); return true; }
+        _fileBulles = _fileBulles.filter(function (b) { return b.v !== v; });
+        _fileBulles.push({ v: v, texte: texte, duree: duree });
+        return true;
+      },
+      /* marque('repondu' | null) : le fanion ; serie(n) : la flamme et son chiffre, à partir de 2 */
+      marque: function (m) { marque = m === 'repondu' ? 'repondu' : null; rendre(); return this; },
+      serie: function (n) { n = Math.floor(+n) || 0; serie = n > 0 ? Math.min(n, 999) : 0; rendre(); return this; },
+      get anime() { return v.autorise && o.anime !== false; },
+      detruire: function () {
+        v.mort = true; clearTimeout(minuterie);
+        if (bulle) { clearTimeout(bulle.t); bulle = null; _bullesVues = Math.max(0, _bullesVues - 1); }
+        _fileBulles = _fileBulles.filter(function (b) { return b.v !== v; });
+        element.innerHTML = '';
+        repartir(true); suivanteBulle();
+      }
     };
   }
 
@@ -2408,8 +2697,9 @@
      position (le long du bord, '75%'), encre ('couleur' | 'noir' | 'auto' : noir à l'impression), anime, alt */
   function margouillatSVG(options) {
     var o = options || {};
-    var etat = { content: 1, triste: 1 }[o.etat] ? o.etat : 'neutre';
-    var sens = o.sens || ({ haut: 'sol', bas: 'plafond', gauche: 'montant', droite: 'descendant' }[o.bord]) || 'sol';
+    var etat = o.etat === 'content' || o.etat === 'triste' ? o.etat : 'neutre';
+    var SENS = { haut: 'sol', bas: 'plafond', gauche: 'montant', droite: 'descendant' };
+    var sens = o.sens || (own(SENS, o.bord) ? SENS[o.bord] : null) || 'sol';
     var vue = sens === 'sol' || sens === 'plafond' ? 'profil' : 'dessus';
     var css = typeof o.taille === 'string' && /[a-z%]$/.test(o.taille) ? o.taille : null;
     var px = css ? (/mm$/.test(css) ? parseFloat(css) * 3.78 : 24) : (+o.taille > 0 ? +o.taille : 32);
@@ -2463,7 +2753,7 @@
 
   /* compagnon seul (choix dans un menu, par exemple) */
   function compagnonSVG(id, options) {
-    var o = options || {}, etat = { content: 1, triste: 1, dort: 1 }[o.etat] ? o.etat : 'neutre';
+    var o = options || {}, etat = o.etat === 'content' || o.etat === 'triste' || o.etat === 'dort' ? o.etat : 'neutre';
     var nb = o.anime === false ? 1 : 2, anim = nb > 1 ? animation([600, 600]) : null, corps = '';
     if (!anim) feuille();
     for (var i = 0; i < nb; i++) {
@@ -2494,7 +2784,12 @@
       couleurs: { haut: cle('tissu'), bas: cle('tissu'), accent: cle('neon'), chaussures: cle('chaussures'), yeux: cle('yeux') }
     };
     var proba = { tete: 0.5, visage: 0.3, cou: 0.3, dos: 0.35, main: 0.5, epaule: 0.25, pieds: 0.25, autour: 0.25 };
-    EMPLACEMENTS.forEach(function (e) { var l = CATALOGUE.objets[e]; d.objets[e] = r() < proba[e] ? l[1 + Math.floor(r() * (l.length - 1))].id : 'aucun'; });
+    /* les objets des applications ne sortent jamais au hasard : ce sont des trophées (tirages inchangés) */
+    EMPLACEMENTS.forEach(function (e) {
+      var l = CATALOGUE.objets[e].filter(function (x) { return x.famille !== 'applis'; });
+      RETIRES.forEach(function (x) { if (x[0] === e) l.splice(x[2], 0, { id: 'aucun' }); });
+      d.objets[e] = r() < proba[e] ? l[1 + Math.floor(r() * (l.length - 1))].id : 'aucun';
+    });
     if (d.couleurs.bas === d.couleurs.haut) d.couleurs.bas = 'anthracite';
     return normaliser(d);
   }
@@ -2534,8 +2829,16 @@
     compagnonSVG: compagnonSVG,
     catalogue: CATALOGUE, palettes: PALETTES, modeles: MODELES,
     ETATS: LISTE_ETATS.map(function (k) { return { id: k, nom: ETATS[k].nom }; }),
-    defaut: function () { return copie(DEFAUT); }
+    defaut: function () { return copie(DEFAUT); }, compat: copie(COMPAT),
+    /* T133b : l'interface des applications */
+    USAGES: copie(USAGES), gestes: GESTES.map(function (g) { return { id: g.id, nom: g.nom, etat: g.etat }; }),
+    phrases: PHRASES.slice(), phrasesVersion: PHRASES_VERSION, adresse: adresse, phrase: function (n) { return typeof n === 'number' && n % 1 === 0 && n >= 0 && n < PHRASES.length ? phrase(n) : null; },
+    variantes: Object.keys(VARIANTES).map(Number),
+    applis: APPLIS.map(function (a) { return { id: a[0], nom: a[1], emplacement: a[2], application: a[3], haut_fait: a[4], haut_fait_nom: a[5], categorie: a[6], condition: a[7] }; }),
+    neutre: function () { return copie(NEUTRE); },
+    calme: calme, plafond: plafond, pause: pause, viderCache: function () { _cache = {}; _nCache = 0; }
   };
+  Object.freeze(API.phrases);
   if (typeof module === 'object' && module.exports) module.exports = API;
   else racine.Equipage = API;
 })(typeof window !== 'undefined' ? window : this);
