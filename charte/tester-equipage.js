@@ -6,9 +6,9 @@
    1. Rien ne change pour l'existant : mêmes images (au caractère près) que le moteur de
       référence (main avant T133b, commit 0b44455, lu par git ; ou --reference) pour les modèles,
       300 avatars au hasard, tous les états et les trois cadres ; mêmes tirages au hasard.
-   2. Les 15 objets des applications : famille « applis », haut fait, dessin visible, accroché
+   2. Les 18 objets des applications : famille « applis », haut fait, dessin visible, accroché
       au corps (l'objet tenu suit la main, le chapeau suit la tête qui se baisse).
-   3. Les états d'usage, les gestes, les 20 phrases (liste fermée, gelée), l'avatar neutre.
+   3. Les états d'usage, les gestes, les 21 phrases (liste fermée, gelée), l'avatar neutre.
    4. Les fichiers de données (catalogue.json, applis.json) sont à jour.
    L'interface dans une page (bulles, marques, plafond, calme, pause) : charte/tester-applis.py. */
 'use strict';
@@ -66,11 +66,20 @@ if (refChemin) {
   });
 }
 
-/* ── 2. les 15 objets des applications ── */
+/* ── 2. les 18 objets des applications ── */
 var nu = E.normaliser({ teint: 5, coiffure: 'puffs', haut: 'veste' });
 function avec(emp, id) { var d = JSON.parse(JSON.stringify(nu)); d.objets[emp] = id; return E.normaliser(d); }
 function image(d, etat) { return E.svg(d, { taille: 112, etat: etat, anime: false, compagnon: false, alt: '' }); }
-ok(E.applis.length === 15, '15 objets attendus, ' + E.applis.length + ' trouvés');
+ok(E.applis.length === 18, '18 objets attendus, ' + E.applis.length + ' trouvés');
+/* identifiants exacts de la migration de l'Architecte (0010, T138) */
+ok(E.applis.map(function (a) { return a.application + '/' + a.haut_fait + '=' + a.emplacement + ':' + a.id; }).join() ===
+  ['quizz_nsi/jusqu-au-bout=main:de_flottille', 'quizz_nsi/tour-du-plateau=tete:chapeau_pion', 'quizz_nsi/rebond=autour:flamme_apprivoisee',
+   'grand_oral/premier-passage=main:micro_paillettes', 'grand_oral/ni-trop-ni-trop-peu=cou:noeud_chrono', 'grand_oral/vous-avez-un-sujet=autour:projecteur_poursuite',
+   'vacances/premiere-case=main:case_surprise', 'vacances/costaud=tete:bob_fanion', 'vacances/tous-les-themes=autour:guirlande_cases',
+   'gombessa/premiere-plongee=visage:monocle_hublot', 'gombessa/les-grottes-du-gombessa=cou:collier_sonar', 'gombessa/debogage=epaule:bulle_luci',
+   'lagon/ponte-reussie=tete:casque_carapace', 'lagon/rematch=epaule:bebe_tortue', 'lagon/le-parcours=pieds:palmes_lagon',
+   'alien/sur-la-piste=tete:antennes_ecoute', 'alien/a-l-envers=main:decodeur_poche', 'alien/le-grand-tour=autour:halo_coordonnees'].join(), 'identifiants alignés sur la migration 0010');
+ok(E.applis.every(function (a) { return a.haut_fait_nom !== 'Vous avez un sujet !' && a.condition.indexOf("'") < 0; }), 'tutoiement et apostrophes courbes');
 var parAppli = {};
 E.applis.forEach(function (a) {
   parAppli[a.application] = (parAppli[a.application] || 0) + 1;
@@ -85,7 +94,7 @@ E.applis.forEach(function (a) {
     ok(image(avec(a.emplacement, a.id), e) !== image(nu, e), a.id + ' invisible dans l\'état ' + e);
   });
 });
-ok(Object.keys(parAppli).sort().join() === 'calendrier,gombessa,grand_oral,lagon,quizz_nsi' &&
+ok(Object.keys(parAppli).sort().join() === 'alien,gombessa,grand_oral,lagon,quizz_nsi,vacances' &&
   Object.keys(parAppli).every(function (k) { return parAppli[k] === 3; }), 'il faut 3 objets par application : ' + JSON.stringify(parAppli));
 /* l'objet tenu suit la main : sa position change quand le bras se lève */
 E.applis.filter(function (a) { return a.emplacement === 'main'; }).forEach(function (a) {
@@ -136,6 +145,7 @@ E.catalogue.coiffure.forEach(function (cf) { ['fine', 'moyenne', 'ronde'].forEac
 }); });
 ok(image(avec('main', 'dessin_karim'), 'repos') !== image(nu, 'repos') && image(avec('main', 'dessin_karim'), 'fete') !== image(nu, 'fete'), 'dessin_karim visible');
 ok(E.phrases.length === 21 && Object.isFrozen(E.phrases), '21 phrases gelées');
+ok(E.phrases.every(function (p) { return !/ [!?:%]/.test(p); }) && E.phrases[0].indexOf(String.fromCharCode(0x202F)) > 0, 'espace fine insécable avant ! ? : %');
 ok(!E.phrases.some(function (p) { return /bouchon/i.test(p); }), 'plus de bouchon dans les phrases');
 E.adresse('madame'); ok(E.phrase(19) === 'Ne vous inquiétez pas, Madame.', 'variante Madame');
 E.adresse('monsieur'); ok(E.phrase(19) === 'Ne vous inquiétez pas, Monsieur.' && E.phrase(99) === null, 'variante Monsieur, numéro inconnu');

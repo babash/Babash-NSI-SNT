@@ -153,9 +153,9 @@
 
   /* pixels -> chemins SVG (rangées fusionnées) */
   function chemins(cal) {
-    var rows = {};
-    cal.p.forEach(function (v, k) { var x = k % K, y = (k - x) / K; (rows[y] = rows[y] || {})[x] = v; });
-    var par = {};
+    var rows = Object.create(null);
+    cal.p.forEach(function (v, k) { var x = k % K, y = (k - x) / K; (rows[y] = rows[y] || Object.create(null))[x] = v; });
+    var par = Object.create(null);
     Object.keys(rows).forEach(function (ys) {
       var y = +ys, r = rows[ys], xs = Object.keys(r).map(Number).sort(function (a, b) { return a - b; });
       var i = 0;
@@ -178,7 +178,7 @@
     return out;
   }
   function cheminsSet(set, cls) {
-    var rows = {};
+    var rows = Object.create(null);
     set.forEach(function (k) { var x = k % K, y = (k - x) / K; (rows[y] = rows[y] || []).push(x); });
     var d = '';
     Object.keys(rows).forEach(function (ys) {
@@ -290,21 +290,27 @@
      un haut fait (jamais acheté). [id, nom, emplacement, application, haut fait, nom du haut fait,
      catégorie, condition]. Les identifiants d'application et de haut fait suivent le compte commun. */
   var APPLIS = [
-    ['de_flottille', 'Le dé de la Flottille', 'main', 'quizz_nsi', 'premier-pas', 'Premier pas', 'premiers_pas', 'Suivre ton premier cours-quiz jusqu\'au bout, en classe.'],
-    ['chapeau_pion', 'Le chapeau-pion', 'tete', 'quizz_nsi', 'tour-du-plateau', 'Tour du plateau', 'exploration', 'Suivre des cours-quiz de trois thèmes différents du programme.'],
-    ['flamme_apprivoisee', 'La flamme apprivoisée', 'autour', 'quizz_nsi', 'rebond', 'Rebond', 'perseverance', 'Trouver la bonne réponse juste après une erreur.'],
-    ['micro_paillettes', 'Le micro à paillettes', 'main', 'grand_oral', 'premier-passage', 'Premier passage', 'premiers_pas', 'T\'évaluer après ton premier oral blanc.'],
-    ['noeud_chrono', 'Le nœud pap\' à chrono', 'cou', 'grand_oral', 'ni-trop-ni-trop-peu', 'Ni trop ni trop peu', 'maitrise', 'Avoir un plan qui tient en dix minutes (30 à 50 points).'],
-    ['projecteur_poursuite', 'Le projecteur de poursuite', 'autour', 'grand_oral', 'vous-avez-un-sujet', 'Vous avez un sujet !', 'creation', 'Avoir une question validée par ton enseignant·e.'],
-    ['case_surprise', 'La case-surprise', 'main', 'calendrier', 'premiere-case', 'Première case', 'premiers_pas', 'Ouvrir et valider ta première case du calendrier.'],
-    ['bob_fanion', 'Le bob à fanion', 'tete', 'calendrier', 'costaud', 'Costaud', 'maitrise', 'Valider une case au niveau « Costaud ».'],
-    ['guirlande_cases', 'La guirlande de cases', 'autour', 'calendrier', 'tous-les-themes', 'Tous les thèmes', 'exploration', 'Valider des cases de trois thèmes différents.'],
-    ['monocle_hublot', 'Le monocle-hublot', 'visage', 'gombessa', 'la-luciole-avance', 'La Luciole avance', 'premiers_pas', 'Faire avancer la Luciole avec ton premier programme juste.'],
-    ['collier_sonar', 'Le collier-sonar', 'cou', 'gombessa', 'les-grottes-du-gombessa', 'Les grottes du gombessa', 'exploration', 'Atteindre les grottes, à 250 m : finir l\'expédition.'],
-    ['bulle_luci', 'La bulle de LUCI', 'epaule', 'gombessa', 'debogage', 'Débogage', 'perseverance', 'Corriger un programme après une erreur, jusqu\'à ce qu\'il marche.'],
-    ['casque_carapace', 'Le casque-carapace', 'tete', 'lagon', 'ponte-reussie', 'Ponte réussie', 'premiers_pas', 'Écrire une tortue qui pond sur la plage pendant un match.'],
-    ['bebe_tortue', 'Le bébé tortue', 'epaule', 'lagon', 'rematch', 'Rematch', 'perseverance', 'Corriger ta tortue après un match, puis la relancer.'],
-    ['palmes_lagon', 'Les palmes du lagon', 'pieds', 'lagon', 'le-parcours', 'Le parcours', 'exploration', 'Finir le parcours des quatre missions.']
+    /* alignés sur la migration 0010 de l'Architecte (identifiants, noms, catégories, conditions au tutoiement) ;
+       décision du chef d'orchestre (24/11) : de_flottille = quizz_nsi/jusqu-au-bout, monocle_hublot = gombessa/premiere-plongee */
+    ['de_flottille', 'Le dé de la Flottille', 'main', 'quizz_nsi', 'jusqu-au-bout', 'Jusqu’au bout', 'premiers_pas', 'Suis ton premier cours-quiz jusqu’au bout, en classe.'],
+    ['chapeau_pion', 'Le chapeau-pion', 'tete', 'quizz_nsi', 'tour-du-plateau', 'Tour du plateau', 'exploration', 'Suis en classe des cours-quiz de trois thèmes différents du programme.'],
+    ['flamme_apprivoisee', 'La flamme apprivoisée', 'autour', 'quizz_nsi', 'rebond', 'Rebond', 'perseverance', 'Trouve la bonne réponse juste après une erreur, pendant un cours-quiz en classe.'],
+    ['micro_paillettes', 'Le micro à paillettes', 'main', 'grand_oral', 'premier-passage', 'Premier passage', 'premiers_pas', 'Évalue-toi après ton premier oral blanc.'],
+    ['noeud_chrono', 'Le nœud pap’ à chrono', 'cou', 'grand_oral', 'ni-trop-ni-trop-peu', 'Ni trop ni trop peu', 'maitrise', 'Construis un plan qui tient en dix minutes (30 à 50 points).'],
+    ['projecteur_poursuite', 'Le projecteur de poursuite', 'autour', 'grand_oral', 'vous-avez-un-sujet', 'Tu as un sujet !', 'creation', 'Fais valider ta question par ton enseignant·e.'],
+    ['case_surprise', 'La case-surprise', 'main', 'vacances', 'premiere-case', 'Première case', 'premiers_pas', 'Ouvre et valide ta première case du calendrier.'],
+    ['bob_fanion', 'Le bob à fanion', 'tete', 'vacances', 'costaud', 'Costaud', 'maitrise', 'Valide une case au niveau « Costaud ».'],
+    ['guirlande_cases', 'La guirlande de cases', 'autour', 'vacances', 'tous-les-themes', 'Trois thèmes explorés', 'exploration', 'Valide des cases de trois thèmes différents.'],
+    ['monocle_hublot', 'Le monocle-hublot', 'visage', 'gombessa', 'premiere-plongee', 'Première plongée', 'premiers_pas', 'Fais avancer la Luciole avec ton premier programme juste.'],
+    ['collier_sonar', 'Le collier-sonar', 'cou', 'gombessa', 'les-grottes-du-gombessa', 'Les grottes du gombessa', 'exploration', 'Atteins les grottes, à 250 m : tu as fini l’expédition.'],
+    ['bulle_luci', 'La bulle de LUCI', 'epaule', 'gombessa', 'debogage', 'Débogage', 'perseverance', 'Corrige un programme après une erreur, jusqu’à ce qu’il marche.'],
+    ['casque_carapace', 'Le casque-carapace', 'tete', 'lagon', 'ponte-reussie', 'Ponte réussie', 'creation', 'Écris une tortue qui pond sur la plage pendant un match.'],
+    ['bebe_tortue', 'Le bébé tortue', 'epaule', 'lagon', 'rematch', 'Rematch', 'perseverance', 'Corrige ta tortue après un match, puis relance-la.'],
+    ['palmes_lagon', 'Les palmes du lagon', 'pieds', 'lagon', 'le-parcours', 'Le parcours', 'exploration', 'Finis le parcours des quatre missions.'],
+    /* Alien Python (validés par l'enseignant le 24/11 ; identifiants de la migration de l'Architecte, T138) */
+    ['antennes_ecoute', 'Les antennes d’écoute', 'tete', 'alien', 'sur-la-piste', 'Sur la piste', 'exploration', 'Suis l’alien sur cinq programmes.'],
+    ['decodeur_poche', 'Le décodeur de poche', 'main', 'alien', 'a-l-envers', 'À l’envers', 'creation', 'Complète un programme pour que l’alien suive le trajet tracé.'],
+    ['halo_coordonnees', 'Le halo de coordonnées', 'autour', 'alien', 'le-grand-tour', 'Le grand tour', 'maitrise', 'Réussis les 78 exercices, à ton rythme.']
   ];
   APPLIS.forEach(function (a) { OBJETS.push([a[0], a[1], a[2], 'applis']); });
   /* les objets des hauts faits de fidélité (T133c ; noms à confirmer par l'enseignant) : des trophées, jamais achetés */
@@ -1325,6 +1331,13 @@
     barges_pieds: { ou: 'pieds', a: [2, 3], r: ['...rr..', 'wwwwwww', 'bbbbbbb', '.wwwww.'], p: { r: '#e8403a', w: '#eef2fa', b: '#3f6ad8' } },
     bottes_conserve: { ou: 'pieds', a: [1, 5], r: ['lllll', 'sSsSs', 'AAAAA', 'AwAwA', 'sSsSs', 'lllll'], p: { l: '#eef0f6', s: '#b8c0d4', S: MET, A: 'A', w: '#ffffff' } },
 
+    /* ─ Alien Python (T133c) : des antennes à coupelles qui captent le signal, un décodeur de poche ─ */
+    antennes_ecoute: { ou: 'tete', a: [8, 10], f: [
+      ['.s.............s.', 's.s...........s.s', '.................', 'gGg...........gGg', '.g.............g.', '.k.............k.', '..k...........k..', '...k.........k...', '...k.........k...', '...bbbbbbbbbbb...'],
+      ['.................', '.s.............s.', '.................', 'gGg...........gGg', '.g.............g.', '.k.............k.', '..k...........k..', '...k.........k...', '...k.........k...', '...bbbbbbbbbbb...']], p: { s: '#3ff0ff', g: '#2f9a3a', G: '#9af0a0', k: '#5a5f7a', b: '#2f9a3a' } },
+    decodeur_poche: { ou: 'main', a: [1, 8], f: [
+      ['.a....', '.a....', 'kkkkkk', 'kgGgGk', 'kGgGgk', 'kgggGk', 'kkkkkk', 'kmkmkk', 'kkkkkk'],
+      ['.a....', '.A....', 'kkkkkk', 'kGgGgk', 'kgGgGk', 'kGgggk', 'kkkkkk', 'kmkmkk', 'kkkkkk']], p: { k: '#2a2f44', g: '#1f6a3a', G: '#5dff8a', m: '#9aa3b8', a: '#9aa3b8', A: '#3ff0ff' } },
     /* ─ le dessin (T133c) : une feuille de classeur (trous, marge, lignes) et un margouillat griffonné, tenue levée ─ */
     dessin_karim: { ou: 'main', a: [1, 11], f: [
       ['wrwwwwwwww', 'krllllllll', 'wrwwwwwggw', 'wrllllgggl', 'krwwwwwgww', 'wrlgggggll', 'wrgwgggwgw', 'krllgllgll', 'wrwgwwwwgw', 'wrllllllll', 'wrwwwwwwww', 'wrllllllll'],
@@ -2021,6 +2034,15 @@
   function objetsApplisAutour(c, v, n) {
     var x, y;
     auraFidelite(c, v, n);
+    if (v === 'halo_coordonnees') {
+      /* les quatre coins d'un viseur de réception, des graduations et des repères « + » : des coordonnées, pas une aura */
+      var vg = '#2f9a3a', vc = '#3ff0ff';
+      [[5, 14, 1, 1], [42, 14, -1, 1], [5, 58, 1, -1], [42, 58, -1, -1]].forEach(function (k) {
+        for (var i = 0; i < 4; i++) { c.px(k[0] + k[2] * i, k[1], vg); c.px(k[0], k[1] + k[3] * i, vg); }
+      });
+      for (y = 22; y <= 50; y += 4) { c.fx(5, y, vg, 0.8); c.fx(42, y, vg, 0.8); }
+      (n % 2 ? [[9, 20], [38, 34], [10, 48]] : [[37, 20], [9, 34], [38, 48]]).forEach(function (p) { c.L.carte(p[0] - 1, p[1] - 1, ['.x.', 'xxx', '.x.'], { x: vc }); });
+    }
     if (v === 'flamme_apprivoisee') poser(c, FLAMME[n % 2], { r: '#e8402a', o: '#ff9a3a', y: '#ffe14a', k: '#1b1530' }, 5, 28 - (n % 2), [0, 0]);
     if (v === 'projecteur_poursuite') {
       /* le faisceau : une trame légère, jamais sur l'avatar (calque des lueurs, hors des pixels pleins) */
@@ -2522,16 +2544,16 @@
       '.eq-pause .eq-img,.eq-pause .eq-bulle{animation-play-state:paused!important}',
       '.eq.eq-porteur{position:relative}',
       '.eq-vh{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}',
-      '.eq-fanion{position:absolute;left:0;top:0;width:var(--eq-marque,14px);height:calc(var(--eq-marque,14px)*1.43);line-height:0;z-index:2}',
+      '.eq-fanion{color:var(--td-encre,#121016);position:absolute;left:0;top:0;width:var(--eq-marque,14px);height:calc(var(--eq-marque,14px)*1.43);line-height:0;z-index:2}',
       '.eq-fanion svg,.eq-flamme svg{display:block;width:100%;height:100%;overflow:visible}',
       '.eq-flamme{position:absolute;right:0;bottom:0;width:calc(var(--eq-marque,14px)*1.3);height:calc(var(--eq-marque,14px)*1.6);line-height:0;z-index:2}',
       '.eq-flamme b{position:absolute;left:0;right:0;top:42%;text-align:center;font:700 calc(var(--eq-marque,14px)*.72)/1 var(--td-texte,system-ui,sans-serif);color:#121016}',
-      '.eq-bulle{position:absolute;z-index:3;left:50%;bottom:100%;transform:translate(-50%,-6px);width:max-content;max-width:var(--eq-bulle-max,14em);padding:.3em .65em;' +
+      '.eq-bulle{position:absolute;z-index:3;left:50%;bottom:100%;transform:translate(calc(-50% + var(--eq-dx,0px)),-6px);width:max-content;max-width:var(--eq-bulle-max,14em);padding:.3em .65em;' +
         'background:var(--td-fond,#fff);color:var(--td-encre,#121016);border:1.4px solid var(--td-trait-fort,#121016);border-radius:12px;box-shadow:3px 3px 0 var(--td-neon-2,#FF2E97);' +
         'font:700 var(--eq-bulle-taille,1rem)/1.2 var(--td-texte,system-ui,sans-serif);text-align:center;white-space:normal;animation:eq-bulle-vient .25s ease-out both}',
       '.eq-acomp .eq-bulle{left:32.4%}',
-      '.eq-bulle::after{content:"";position:absolute;left:50%;bottom:-7px;width:11px;height:11px;background:inherit;border-right:inherit;border-bottom:inherit;transform:translateX(-50%) rotate(45deg)}',
-      '@keyframes eq-bulle-vient{from{opacity:0;transform:translate(-50%,0)}to{opacity:1;transform:translate(-50%,-6px)}}',
+      '.eq-bulle::after{content:"";position:absolute;left:clamp(14px,calc(50% - var(--eq-dx,0px)),calc(100% - 14px));bottom:-7px;width:11px;height:11px;background:inherit;border-right:inherit;border-bottom:inherit;transform:translateX(-50%) rotate(45deg)}',
+      '@keyframes eq-bulle-vient{from{opacity:0;transform:translate(calc(-50% + var(--eq-dx,0px)),0)}to{opacity:1;transform:translate(calc(-50% + var(--eq-dx,0px)),-6px)}}',
       '.eq-calme .eq-bulle{animation:none!important}',
       '@media (prefers-reduced-motion:reduce){.eq-bulle{animation:none!important}}',
       '@media print{.eq-bulle{display:none}}'
@@ -2636,11 +2658,12 @@
      Version 1. On n'en retire jamais et on n'en change jamais le sens : on ajoute à la fin, et la version monte.
      Copie versionnée : assets/equipage/applis.json (charte/equipage-donnees.js la régénère et la vérifie). */
   var PHRASES_VERSION = 1;
+  var FINE = String.fromCharCode(0x202F);   /* espace fine insécable avant ! ? : % (jamais un signe seul en début de ligne) */
   var PHRASES = [
-    'Prêt·e !', 'Coucou la classe !', 'Bonne chance à tout le monde !', 'J’ai le trac, mais j’y vais.', 'Allez, on se lance !',
-    'Mon cerveau charge… 87 %', 'Le margouillat est avec nous.', 'On se trompe, on apprend.', 'Même pas peur (enfin, un peu).', 'Je suis là, et bien réveillé·e !',
+    'Prêt·e' + FINE + '!', 'Coucou la classe' + FINE + '!', 'Bonne chance à tout le monde' + FINE + '!', 'J’ai le trac, mais j’y vais.', 'Allez, on se lance' + FINE + '!',
+    'Mon cerveau charge… 87' + FINE + '%', 'Le margouillat est avec nous.', 'On se trompe, on apprend.', 'Même pas peur (enfin, un peu).', 'Je suis là, et bien réveillé·e' + FINE + '!',
     'On fait ça ensemble.', 'Bravo d’avance à tout le monde.', 'J’ai révisé… dans mes rêves.', 'Respire, ça va bien se passer.', 'Wi-Fi, ne me lâche pas.',
-    'Je sens que je vais apprendre un truc.', 'Qui a vu mon stylo ?', 'Pas de stress : c’est pour apprendre.', 'Hâte de voir la première question !',
+    'Je sens que je vais apprendre un truc.', 'Qui a vu mon stylo' + FINE + '?', 'Pas de stress' + FINE + ': c’est pour apprendre.', 'Hâte de voir la première question' + FINE + '!',
     'Ne vous inquiétez pas, Monsieur.', 'Moi, c’est au talent.'
   ];
   /* les phrases qui s'adressent à l'enseignant·e : la page projetée choisit la forme (Equipage.adresse) ;
@@ -2717,6 +2740,18 @@
     if (liste === undefined || liste === null || liste === 'lobby') return PHRASES;
     return null;
   }
+  /* la bulle reste dans le plateau (le plus proche parent marqué .ap-plateau ou [data-eq-bord]) et dans la largeur
+     de la page : on la décale de côté, la pointe reste au-dessus de l'avatar ; rien ne déborde, rien n'est rogné */
+  function garderDedans(b, porteur) {
+    if (!b || typeof b.getBoundingClientRect !== 'function') return;
+    b.style.setProperty('--eq-dx', '0px');
+    var r = b.getBoundingClientRect(), marge = 4, min = marge, max = (document.documentElement.clientWidth || window.innerWidth || 0) - marge;
+    var bord = porteur && porteur.closest ? porteur.closest('.ap-plateau, [data-eq-bord]') : null;
+    if (bord) { var rb = bord.getBoundingClientRect(); min = Math.max(min, rb.left + marge); max = Math.min(max, rb.right - marge); }
+    if (!(r.width > 0) || max - min < r.width) { if (r.width > 0 && max > min) b.style.setProperty('--eq-dx', Math.round(min + (max - min - r.width) / 2 - r.left) + 'px'); return; }
+    var dx = r.left < min ? min - r.left : (r.right > max ? max - r.right : 0);
+    if (dx) b.style.setProperty('--eq-dx', Math.round(dx) + 'px');
+  }
   function suivanteBulle() {
     while (_bullesVues < BULLES_MAX && _fileBulles.length) {
       var b = _fileBulles.shift();
@@ -2725,7 +2760,7 @@
   }
 
   /* les marques : le fanion « a répondu » (jamais juste ou faux) et la flamme d'une série */
-  var SVG_FANION = '<svg viewBox="0 0 14 20" aria-hidden="true" focusable="false"><path d="M2.5 1v18" stroke="#121016" stroke-width="2" stroke-linecap="round"/><path d="M3.5 2h9l-3 3.6 3 3.6h-9z" fill="#FFE600" stroke="#121016" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+  var SVG_FANION = '<svg viewBox="0 0 14 20" aria-hidden="true" focusable="false"><path d="M2.5 1v18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M3.5 2h9l-3 3.6 3 3.6h-9z" fill="#FFE600" stroke="#121016" stroke-width="1.4" stroke-linejoin="round"/></svg>';
   var SVG_FLAMME = '<svg viewBox="0 0 16 20" aria-hidden="true" focusable="false"><path d="M8 1c1 4 6 6 6 11a6 6 0 0 1-12 0c0-3 2-4 2-7 2 1 2 3 2 4 1-2 2-5 2-8z" fill="#FF9A3A" stroke="#121016" stroke-width="1.3"/><path d="M8 11c1 2 3 2.5 3 4.5a3 3 0 0 1-6 0c0-1.5 1-2 1-3.5 1 .5 1.5 1 2-1z" fill="#FFE14A"/></svg>';
 
   function creer(element, desc, options) {
@@ -2768,6 +2803,7 @@
         bulle.el.textContent = texte;
         clearTimeout(bulle.t);
       }
+      garderDedans(bulle.el, element);
       bulle.t = setTimeout(cacherBulle, duree);
     };
     function cacherBulle() {
@@ -2789,7 +2825,8 @@
       maj: function (d) { etatDesc = normaliser(d); rendre(); return this; },
       etat: function (e) {
         o.etat = e;
-        if (e === 'repondu') marque = 'repondu'; else if (e === 'attente' || e === 'lobby') marque = null;
+        /* le fanion « a répondu » ne vit que pendant la question : il part au lobby, à la question suivante et au podium */
+        if (e === 'repondu') marque = 'repondu'; else if (e === 'attente' || e === 'lobby' || e === 'fete' || e === 'applaudit') marque = null;
         rendre(); return this;
       },
       options: function (p) { for (var k in p) o[k] = p[k]; repartir(false); rendre(); return this; },
@@ -2803,7 +2840,7 @@
         minuterie = setTimeout(function () { v.geste = null; if (!v.mort) { repartir(true); rendre(); } }, duree);
         return true;
       },
-      /* bulle(numero, liste) : une phrase d'une liste fermée (par défaut, les 20 phrases du lobby) ;
+      /* bulle(numero, null, { duree }) : une phrase de la liste fermée du moteur (les 21 phrases du lobby) ;
          numéro inconnu ignoré ; 6 bulles au plus par page, les autres attendent leur tour */
       bulle: function (numero, liste, opt) {
         var l = listeDe(liste);
