@@ -35,9 +35,9 @@
   // ce que montre le programme fautif d'une « erreur » : le message réel, sa sortie, ou une boucle sans fin
   CV.console = function (q, langage) {
     var sql = langage === "sql", aucun = langage === "aucun";
-    if (q.message != null) return '<div class="console" role="note"><span class="console-titre">' + (q.etiquette || (sql ? "SQLite répond" : aucun ? "Message" : "Python affiche")) + ' :</span><pre class="console-erreur">' + CV.esc(q.message) + "</pre></div>";
+    if (q.message != null) return '<div class="console" role="note"><span class="console-titre">' + esc(q.etiquette || (sql ? "SQLite répond" : aucun ? "Message" : "Python affiche")) + ' :</span><pre class="console-erreur">' + CV.esc(q.message) + "</pre></div>";
     if (q.boucle_infinie) return '<div class="console" role="note"><span class="console-titre">Le programme ne s\'arrête jamais :</span><pre>(boucle infinie)</pre></div>';
-    if (q.affiche_fautif != null) return '<div class="console" role="note"><span class="console-titre">' + (q.etiquette || (sql ? "La requête affiche" : aucun ? "Ce qui se passe" : "Le programme affiche")) + ' :</span><pre>' + (q.affiche_fautif === "" ? (sql ? "(aucune ligne)" : "(rien)") : CV.esc(q.affiche_fautif)) + "</pre></div>";
+    if (q.affiche_fautif != null) return '<div class="console" role="note"><span class="console-titre">' + esc(q.etiquette || (sql ? "La requête affiche" : aucun ? "Ce qui se passe" : "Le programme affiche")) + ' :</span><pre>' + (q.affiche_fautif === "" ? (sql ? "(aucune ligne)" : "(rien)") : CV.esc(q.affiche_fautif)) + "</pre></div>";
     return "";
   };
   // un arbre binaire { v, g, d }, dessiné en SVG (lisible à 320 px : 31 nœuds au plus)
@@ -204,6 +204,8 @@
     function zoneTrace(q, s, f) {
       var noms = lignesTrace(q);
       var numerique = q.colonnes.map(function (_, c) { return q.tours.every(function (l) { return /^-?\d+$/.test(l[c]); }); });
+      // le clavier numérique de certains téléphones n'a pas de signe moins : un bouton ± pour ces colonnes
+      var negatif = q.colonnes.map(function (_, c) { return numerique[c] && q.tours.some(function (l) { return /^-/.test(l[c]); }); });
       return '<p class="consigne">' + esc(q.consigne || "Remplis le tableau : la valeur de chaque variable à la fin de chaque tour.") + "</p>" +
         (q.code ? CV.blocCode(q.code.split("\n")) : "") +
         '<div class="defile"><table class="trace"><caption class="sr">Tableau de trace</caption><thead><tr><th scope="col">Moment</th>' +
@@ -214,7 +216,8 @@
             var cle = r + "-" + c, val = s.vals[cle] == null ? "" : s.vals[cle], ko = s.faux && s.faux[cle];
             return "<td><input type=\"text\" class=\"cellule" + (f ? " ok" : ko ? " ko" : "") + '" data-cle="' + cle + '" value="' + esc(f ? v : val) + '"' +
               (numerique[c] ? ' inputmode="numeric"' : "") + ' autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="' + esc(q.colonnes[c] + ", " + noms[r]) + '"' +
-              (ko ? ' aria-invalid="true"' : "") + (f ? " disabled" : "") + "></td>";
+              (ko ? ' aria-invalid="true"' : "") + (f ? " disabled" : "") + ">" +
+              (negatif[c] && !f ? '<button type="button" class="signe" data-j="signe" data-cle="' + cle + '" aria-label="' + esc("Changer le signe : " + q.colonnes[c] + ", " + noms[r]) + '">±</button>' : "") + "</td>";
           }).join("") + "</tr>";
         }).join("") + "</tbody></table></div>";
     }
@@ -272,7 +275,8 @@
         '<div class="memo">' + s.cartes.map(function (c, k) {
           var vue = s.trouves[c[0]] || s.ouvertes.indexOf(k) >= 0;
           return '<button class="memo-carte' + (s.trouves[c[0]] ? " ok" : vue ? " ouverte" : "") + '" data-j="memo" data-k="' + k + '"' + (s.trouves[c[0]] || (s.ouvertes.length === 1 && s.ouvertes[0] === k) || f ? " disabled" : "") +
-            ' aria-label="' + esc("Carte " + (k + 1) + (vue ? " : " + q.paires[c[0]][c[1]] : ", cachée")) + '">' + (vue ? faceMemo(q, c) : '<span aria-hidden="true">?</span>') + "</button>";
+            ' aria-label="' + esc("Carte " + (k + 1) + (vue ? " : " + q.paires[c[0]][c[1]] : ", cachée") + (s.trouves[c[0]] ? ", paire trouvée" : "")) + '">' + (vue ? faceMemo(q, c) : '<span aria-hidden="true">?</span>') +
+            (s.trouves[c[0]] ? '<small class="trouvee" aria-hidden="true">✓ paire</small>' : "") + "</button>";
         }).join("") + "</div>";
     }
     // 12. allume les bits : des ampoules de poids 2^k, groupées par 4
@@ -295,6 +299,10 @@
     function ecrireBits(q, v) {
       if (q.base === "16" || q.base === "rvb") return "En hexadécimal : " + (q.base === "rvb" ? "#" : "") + ("00000000" + v.toString(16).toUpperCase()).slice(-Math.ceil(q.reponse.length / 4));
       return "En décimal : " + v;
+    }
+    function valeurEcrite(q, v) {
+      if (q.base === "16" || q.base === "rvb") return (q.base === "rvb" ? "#" : "") + ("00000000" + v.toString(16).toUpperCase()).slice(-Math.ceil(q.reponse.length / 4)) + " en hexadécimal";
+      return v + " en décimal";
     }
     function juste(msg) { G.fini = true; G.essais++; G.msg = "Juste. " + esc(msg || ""); G.cls = "ok"; dessiner(); sauver(); }
     function rate(msg) {
@@ -391,6 +399,13 @@
         } else { G.msg = "Carte " + (km + 1) + " : « " + esc(q.paires[s.cartes[km][0]][s.cartes[km][1]]) + " »."; G.cls = "info"; }
         dessiner(); focusPremier(".memo-carte:not([disabled])"); return sauver();
       }
+      if (a === "signe") {
+        lireTrace();
+        var cs = el.getAttribute("data-cle"), vs = String(s.vals[cs] || "").trim();
+        s.vals[cs] = /^-/.test(vs) ? vs.slice(1) : "-" + vs;
+        if (s.faux) delete s.faux[cs];
+        G.msg = ""; dessiner(); var ch = racine.querySelector('input.cellule[data-cle="' + cs + '"]'); if (ch) ch.focus(); return sauver();
+      }
       if (a === "bit") {
         var ib = +el.getAttribute("data-i");
         s.bits = s.bits.slice(0, ib) + (s.bits[ib] === "1" ? "0" : "1") + s.bits.slice(ib + 1);
@@ -415,12 +430,12 @@
         }
         if (type === "bits") {
           if (s.bits === q.reponse) return juste(q.explication);
-          return rate("Pas encore : tes bits font " + esc(ecrireBits(q, CV.valeurBits(s.bits)).replace(/^En /, "")) + ". Additionne les poids des bits allumés.");
+          return rate("Pas encore : tes bits valent " + esc(valeurEcrite(q, CV.valeurBits(s.bits))) + ". Additionne les poids des bits allumés.");
         }
         if (type === "ordre") {
           var bien = s.ordre.filter(function (k2, i) { return k2 === i; }).length;
           if (bien === q.lignes.length) return juste("Ton programme est dans le bon ordre.");
-          return rate("Pas encore : " + bien + " ligne" + (bien > 1 ? "s" : "") + " sur " + q.lignes.length + " " + (bien > 1 ? "sont" : "est") + " à leur place. Touche une ligne pour la retirer.");
+          return rate("Pas encore : " + bien + " ligne" + (bien > 1 ? "s" : "") + " sur " + q.lignes.length + " " + (bien > 1 ? "sont à leur place" : "est à sa place") + ". Touche une ligne pour la retirer.");
         }
         if (type === "completer") {
           s.faux = s.choisis.map(function (v, i) { return v !== q.trous[i].bonne; });
@@ -442,6 +457,7 @@
       G.ecoule += Date.now() - depuis;
       var r = { niveau: o.niveau, reussi: true, etoiles: o.niveau, essais: Math.min(G.essais, 500), coups: Math.min(G.coups, 100),
                 duree: Math.min(Math.round(G.ecoule / 1000), 86400), ratees: G.ratees };
+      G.termine = true;
       racine.removeEventListener("click", clic); racine.removeEventListener("keydown", touche); racine.removeEventListener("input", saisie);
       o.surFin(r);
     }
@@ -449,9 +465,27 @@
     // les cases d'un tableau de trace : gardées à chaque frappe (reprise de la partie)
     function lireTrace() { Array.prototype.forEach.call(racine.querySelectorAll("input.cellule"), function (i) { G.s.vals[i.getAttribute("data-cle")] = i.value; }); }
     function saisie(ev) { if (type === "trace" && ev.target.classList.contains("cellule")) { lireTrace(); if (G.s.faux) delete G.s.faux[ev.target.getAttribute("data-cle")]; ev.target.classList.remove("ko"); ev.target.removeAttribute("aria-invalid"); sauver(); } }
-    function clic(ev) { var el = ev.target.closest("[data-j]"); if (el && racine.contains(el)) action(el.getAttribute("data-j"), el); }
+    // après un geste, le focus reste sur l'élément utile : le même bouton s'il existe encore, sinon
+    // « Question suivante », sinon la première commande de la question (au clavier, pas de retour au début de la page)
+    function refocus(el) {
+      var a = document.activeElement;
+      if (a && a !== document.body && a !== racine && racine.contains(a)) return;
+      var sel = '[data-j="' + el.getAttribute("data-j") + '"]' + ["data-i", "data-k", "data-d", "data-p", "data-v", "data-cle"].map(function (n) {
+        return el.hasAttribute(n) ? "[" + n + '="' + el.getAttribute(n) + '"]' : ""; }).join("");
+      var c = racine.querySelector(sel);
+      if (!c || c.disabled) c = racine.querySelector("[data-j=suivant]") || racine.querySelector("#zone [data-j]:not([disabled])") || racine.querySelector("[data-j=verifier]:not([disabled])");
+      if (c) c.focus({ preventScroll: true });
+    }
+    function clic(ev) {
+      var el = ev.target.closest("[data-j]"); if (!el || !racine.contains(el)) return;
+      var a = el.getAttribute("data-j"); action(a, el);
+      if (a !== "quitter" && racine.isConnected && !G.termine) refocus(el);
+    }
     function touche(ev) {
-      if (ev.key === "Enter" && (ev.target.id === "rep" || ev.target.classList.contains("cellule"))) { ev.preventDefault(); action("verifier"); }
+      if (ev.key === "Enter" && (ev.target.id === "rep" || ev.target.classList.contains("cellule"))) {
+        ev.preventDefault(); var cle = ev.target.getAttribute("data-cle"); action("verifier");
+        if (!G.termine) { var x = cle ? racine.querySelector('input.cellule[data-cle="' + cle + '"]:not([disabled])') : racine.querySelector("#rep:not([disabled])"); if (x) x.focus(); else refocus(ev.target); }
+      }
       if (type === "combien" && ev.target.id === "valeur" && !G.fini && /^(ArrowUp|ArrowDown|ArrowRight|ArrowLeft|PageUp|PageDown)$/.test(ev.key)) {
         ev.preventDefault();
         var pas = { ArrowUp: 1, ArrowRight: 1, ArrowDown: -1, ArrowLeft: -1, PageUp: 10, PageDown: -10 }[ev.key], q = it();
