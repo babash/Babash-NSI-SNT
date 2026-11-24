@@ -6,6 +6,8 @@
 #  - à chaque modification, sur toutes les branches, et à la demande : le Calendrier des vacances
 #    (T135) : ses banques d'exercices (chaque programme exécuté), les tests de ce contrôle, et le
 #    moteur des mini-jeux joué dans Chromium. Une erreur fait échouer le job.
+#  - à chaque modification, sur toutes les branches, et à la demande : le moteur d'avatars (T133b),
+#    essayé sans navigateur (charte/tester-equipage.js). Une erreur fait échouer le job.
 #  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources et des
 #    fiches de la bibliothèque (donnees/ressources/*.json : documents, auteurs ; constat N59).
 #    Un lien en échec est revérifié par un second job, donc sur une autre machine, une à deux
@@ -154,6 +156,29 @@ jobs:
       - name: Jouer les mini-jeux dans Chromium
         timeout-minutes: 8
         run: '"$RUNNER_TEMP/playwright/bin/python" -I -B scripts/tests/test_calendrier_jeux.py'
+
+  # T133b (accord du Gardien 35, 24/11/2026, sur la décision du chef d'orchestre) : le moteur
+  # d'avatars (assets/equipage.js) essayé sur chaque branche, sans navigateur (Node seul, environ
+  # 30 s) : l'existant dessiné au caractère près comme le moteur de référence, les 15 objets des
+  # applications, les états d'usage, les phrases de la liste fermée, les clés héritées refusées, et
+  # les fichiers de données (catalogue.json, applis.json) à jour.
+  avatars:
+    name: Moteur d'avatars
+    # Le moteur ne change pas sans envoi : rien à revérifier le lundi.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      # Le moteur de référence (main avant T133b, 0b44455) n'est pas dans une copie à un seul
+      # commit : il est rapatrié ici. Sans lui, l'essai sauterait sa comparaison à l'existant ;
+      # si le rapatriement échoue, l'étape échoue : le contrôle n'est jamais sauté sans bruit.
+      - name: Rapatrier le moteur de référence
+        run: git fetch --no-tags --depth=1 origin 0b44455598a1fbdb01af8975d2cd0b7720fdef09
+
+      - name: Essayer le moteur d'avatars
+        run: node charte/tester-equipage.js
 
   liens:
     name: Liens des ressources
