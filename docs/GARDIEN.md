@@ -92,6 +92,28 @@ Pour les autres dépôts de l'enseignant (applications, mini-sites des TD, diapo
 - `depots.sh` suit la mise en ligne de ces dépôts et dit si une branche est déjà contenue dans
   leur `main`.
 
+Pour le compte commun (`eleve/`, `enseignant/`, `assets/compte-commun.js` ; depuis le 24 novembre 2026),
+sur un Postgres **local** reconstruit avec `supabase/`, jamais sur la base réelle :
+- `api_stricte.py` imite l'API de Supabase plus strictement que le serveur d'essai de
+  l'Architecte : une clé inconnue dans le corps de l'appel, ou un paramètre obligatoire absent,
+  donne l'erreur 404 de l'API ; une fonction `stable` tourne en lecture seule ; le rôle `anon` a
+  son délai de 3 s ; l'en-tête `apikey` doit porter la clé publique de `reglages.js`, et un en-tête
+  `Authorization` est relevé comme une faute ;
+- `compte_commun.py` rejoue, derrière elle, les parcours de l'Architecte
+  (`scripts/tests/test_compte_commun_en_ligne.py`), puis ceux du Gardien : injections par un pseudo,
+  un nom de classe, un nom affiché ou un établissement, caractères invisibles et texte de droite à
+  gauche, titre de la page, console et stockage relus (aucun code ni jeton), QR code recalculé,
+  projection, renommer, retirer, archiver, « Ce n'est pas moi », trop d'essais (élève, classe) et
+  « Débloquer le réseau de la salle », base lente, « Effacer mes données », suppression de l'espace ;
+- `compte_commun_contrastes.py` mesure les contrastes, le débordement et la navigation au clavier
+  de ces pages, état par état (l'entrée, la classe, la projection, l'écran à projeter, les sept
+  onglets de la planque), à 320, 768 et 1440 px, en clair et en obscur ;
+- `compte_commun_exemple.py` rejoue l'exemple « Brancher une application » de
+  [COMPTE-COMMUN.md](COMPTE-COMMUN.md) ;
+- `empreinte_commun_complement.sql` complète `scripts/supabase_empreinte_commun.sql` (types,
+  séquences, déclencheurs, règles, droits de colonnes, propriétaires et volatilité des fonctions,
+  publications), à lancer en lecture sur la base réelle et sur la base locale.
+
 Les tests de non-régression du Gardien se lancent d'un coup :
 `python3 -I .github/gardien/tests/lancer.py --ref origin/<branche>`. Ils vérifient notamment que
 la validation des données détecte toujours les fautes graves, applique les règles 19 et 20 et
