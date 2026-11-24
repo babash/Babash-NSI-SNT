@@ -41,7 +41,8 @@ function applis() {
     gestes: E.gestes,
     usages: Object.keys(E.USAGES).map(function (k) { return { id: k, etat: E.USAGES[k] }; }),
     neutre: E.neutre(),
-    objets: E.applis
+    objets: E.applis,
+    fidelite: E.fidelite
   };
 }
 var sorties = [

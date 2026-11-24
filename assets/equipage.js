@@ -25,7 +25,7 @@
 (function (racine) {
   'use strict';
 
-  var VERSION = '2.1.0';
+  var VERSION = '2.2.0';
   var CONTOUR = '#1b1530', NOIR = '#2b2143';
   var NC = '#3ff0ff', NR = '#ff4fb8', NJ = '#e8ff3a', NV = '#8a5bff', NO = '#ff9a3a', NG = '#5dff8a';
 
@@ -210,7 +210,7 @@
     bas: liste([['pantalon', 'Pantalon'], ['cargo', 'Cargo à câble'], ['short', 'Short de terrain'], ['jogging', 'Jogging fluo'], ['jupe_longue', 'Jupe longue fleurs-circuits'], ['sarouel', 'Sarouel de danse'], ['patchwork', 'Pantalon rapiécé'], ['salouva', 'Salouva']]),
     chaussures: liste([['baskets', 'Baskets'], ['montantes', 'Baskets montantes'], ['savates', 'Savates néon'], ['bottes', 'Bottes de pont'], ['crampons', 'Crampons de sable'], ['pieds_nus', 'Pieds nus et chevillère']]),
     emplacements: liste([['tete', 'Sur la tête'], ['visage', 'Sur le visage'], ['cou', 'Au cou et à la taille'], ['dos', 'Dans le dos'], ['main', 'Dans la main'], ['epaule', 'Sur les épaules'], ['pieds', 'Aux pieds'], ['autour', 'Autour']]),
-    familles: liste([['clin', 'Clins d\'œil'], ['classe', 'Les gimmicks de la classe'], ['heros', 'Héros et héroïnes de BD'], ['pirate', 'Pirates et aventure'], ['lycee', 'Le style du lycée'], ['punk', 'Punk et rue'], ['cyber', 'Cyber et Flottille'], ['nature', 'Fées, esprits, nature'], ['classique', 'Classiques'], ['applis', 'Objets des applications']]),
+    familles: liste([['clin', 'Clins d\'œil'], ['classe', 'Les gimmicks de la classe'], ['heros', 'Héros et héroïnes de BD'], ['pirate', 'Pirates et aventure'], ['lycee', 'Le style du lycée'], ['punk', 'Punk et rue'], ['cyber', 'Cyber et Flottille'], ['nature', 'Fées, esprits, nature'], ['classique', 'Classiques'], ['applis', 'Objets des applications'], ['fidelite', 'Fidélité']]),
     objets: {},
     compagnon: [{ id: 'aucun', nom: 'Aucun' }, { id: 'margouillat', nom: 'Margouillat vert', depart: true }, { id: 'maki', nom: 'Maki', gagne: true }, { id: 'robot', nom: 'Petit robot', gagne: true }, { id: 'tortue', nom: 'Tortue serveur', gagne: true }, { id: 'roussette', nom: 'Roussette', gagne: true }],
     teint: TEINTS.map(function (c, i) { return { id: i + 1, nom: 'Teint ' + (i + 1), couleur: c }; }),
@@ -241,6 +241,9 @@
     ['multiprise', 'La multiprise en sautoir', 'cou', 'classe'], ['souris_marche', 'La souris qui marche', 'epaule', 'classe'],
     ['cle_usb', 'La clé USB retrouvée', 'cou', 'classe'], ['feutre', 'Le feutre qui écrit encore', 'main', 'classe'],
     ['telecommande', 'La télécommande du projecteur', 'main', 'classe'],
+    /* T133c : un clin d'œil affectueux à un élève qui dessine souvent et bien ; le nom affiché est une donnée
+       (il peut devenir « Le dessin du fond de la classe ») : l'identifiant ne change pas */
+    ['dessin_karim', 'Le dessin de Karim', 'main', 'classe'],
 
     ['meches_vives', 'Mèches électriques', 'tete', 'heros'], ['bandeau_noue', 'Bandeau noué au vent', 'tete', 'heros'],
     ['loup', 'Loup de justicier·e', 'visage', 'heros'], ['monocle_pixels', 'Le monocle à pixels', 'visage', 'heros'],
@@ -255,7 +258,7 @@
 
     ['casquette_mabawa', 'Casquette « PLATA O MABAWA »', 'tete', 'lycee', 'PLATA O MABAWA'], ['ski_front', 'Lunettes de ski sur le front', 'tete', 'lycee'],
     ['peigne', 'Peigne planté dans les cheveux', 'tete', 'lycee'], ['ski_yeux', 'Lunettes de ski sur les yeux', 'visage', 'lycee'],
-    ['coelacanthe', 'Cœlacanthe en peluche', 'epaule', 'lycee'],
+    ['coelacanthe', 'Cœlacanthe en peluche', 'epaule', 'lycee'], ['bouteille_percee', 'La bouteille d\'eau percée', 'main', 'lycee'],
     /* dessinés mais hors catalogue pour l'instant (T112d) : casquette_barge, casquette_pilaou, bob, perles, ecouteurs, sacoche,
        sac_devant, telephone, bouteille_glacee, bracelet, claquettes, et le haut maillot_foot */
 
@@ -302,6 +305,14 @@
     ['palmes_lagon', 'Les palmes du lagon', 'pieds', 'lagon', 'le-parcours', 'Le parcours', 'exploration', 'Finir le parcours des quatre missions.']
   ];
   APPLIS.forEach(function (a) { OBJETS.push([a[0], a[1], a[2], 'applis']); });
+  /* les objets des hauts faits de fidélité (T133c ; noms à confirmer par l'enseignant) : des trophées, jamais achetés */
+  var FIDELITE = [['aura_etincelle', 'Aura étincelle', 'autour', 'Deuxième saison'], ['aura_halo', 'Aura halo', 'autour', 'Troisième saison'],
+    ['aura_supernova', 'Aura supernova', 'autour', 'Supernova'], ['ailes_circuit', 'Ailes de circuit imprimé', 'dos', 'Nouveau palier']];
+  FIDELITE.forEach(function (f) { OBJETS.push([f[0], f[1], f[2], 'fidelite']); });
+  /* ce qui ne sort jamais au hasard : les trophées des applications et de la fidélité, et les objets ajoutés après la
+     version 2.0 (les tirages au hasard des pages existantes ne changent pas) */
+  var HORS_HASARD = { bouteille_percee: 1, dessin_karim: 1 };
+  function auHasard(x) { return x.famille !== 'applis' && x.famille !== 'fidelite' && !own(HORS_HASARD, x.id); }
   var APPLI_DE = {};
   APPLIS.forEach(function (a) { APPLI_DE[a[0]] = { application: a[3], haut_fait: a[4] }; });
   /* objets retirés à la demande de l'enseignant (24/11) : [emplacement, id, place d'origine dans la liste].
@@ -1308,6 +1319,14 @@
     barges_pieds: { ou: 'pieds', a: [2, 3], r: ['...rr..', 'wwwwwww', 'bbbbbbb', '.wwwww.'], p: { r: '#e8403a', w: '#eef2fa', b: '#3f6ad8' } },
     bottes_conserve: { ou: 'pieds', a: [1, 5], r: ['lllll', 'sSsSs', 'AAAAA', 'AwAwA', 'sSsSs', 'lllll'], p: { l: '#eef0f6', s: '#b8c0d4', S: MET, A: 'A', w: '#ffffff' } },
 
+    /* ─ le dessin (T133c) : une feuille de classeur (trous, marge, lignes) et un margouillat griffonné, tenue levée ─ */
+    dessin_karim: { ou: 'main', a: [1, 11], f: [
+      ['wrwwwwwwww', 'krllllllll', 'wrwwwwwggw', 'wrllllgggl', 'krwwwwwgww', 'wrlgggggll', 'wrgwgggwgw', 'krllgllgll', 'wrwgwwwwgw', 'wrllllllll', 'wrwwwwwwww', 'wrllllllll'],
+      ['wrwwwwwwww', 'krllllllll', 'wrwwwwwggw', 'wrllllgggl', 'krwwwwwgww', 'wrlgggggll', 'wrgwgggwgw', 'krllgllgll', 'wrwwgwwwgw', 'wrllllllll', 'wrwwwwwwww', 'wrllllllll']],
+      p: { w: '#fbfbf4', l: '#a8c8ec', r: '#e86a6a', k: '#5a5f7a', g: '#2f9a3a' } },
+    /* ─ la bouteille d'eau percée (T133c) : plastique transparent, bouchon percé, sans marque ni étiquette ─ */
+    bouteille_percee: { ou: 'main', a: [1, 9], r: ['.cc.', '.cc.', '.pp.', 'pwPp', 'pPPp', 'bbbb', 'pwPp', 'pPPp', 'bbbb', 'pPPp', '.pp.'],
+      p: { c: '#2f7fd8', p: '#8fd0ee', P: '#d8f2ff', w: '#ffffff', b: '#5aa8d0' } },
     /* ─ les objets des applications (T133b) : accrochés au corps, ils suivent la main, la tête et les épaules ─ */
     de_flottille: { ou: 'main', a: [1, 5], f: [
       ['wwwwwwg', 'wkwwwwg', 'wwwwwwg', 'wwwkwwg', 'wwwwwwg', 'wwwwwkg', 'ggggggg'],
@@ -1497,6 +1516,22 @@
       }
     }
     var d = o.dos;
+    if (d === 'ailes_circuit') {
+      /* des ailes en pistes de circuit imprimé : traits à angles droits et pastilles, la pastille du bout s'allume */
+      var cu = '#c8902a', pad = '#f2c14e', on = n % 2;
+      [[-1, c.tx0 - 1], [1, c.tx1 + 1]].forEach(function (w) {
+        var sx = w[1], s = w[0];
+        /* [départ en y, coude en x, haut du coude, bout en x, bout en y] : chaque piste sort du dos, monte en biais, puis file */
+        [[-2, 4, -9, 10, -15], [1, 6, -4, 13, -7], [4, 5, 1, 12, 1]].forEach(function (t, j) {
+          var y0 = TY + t[0], xa = sx + s * t[1], x1 = sx + s * (t[1] + (t[0] - t[2])), y1 = TY + t[2], x2 = sx + s * t[3], y2 = TY + t[4];
+          ligne(c, sx, y0, xa, y0, cu);
+          ligne(c, xa, y0, x1, y1, cu);
+          ligne(c, x1, y1, x2, y2, cu);
+          c.L.rect(x2 - (s < 0 ? 1 : 0), y2 - 1, 2, 2, pad);
+          if (j === on || j === on + 1) c.glow(x2, y2, c.cfg.accent, 2, 0.45);
+        });
+      });
+    }
     if (d === 'ailes_fee') {
       var f = n % 2 ? 1 : 0, wc = '#d4f4ff';
       [[c.tx0 - 5, -1], [c.tx1 + 6, 1]].forEach(function (w) {
@@ -1881,6 +1916,16 @@
       base.map(function (v, i) { return 1 + mod(v + dec * (i + 2), 5); }).forEach(function (hh, i) { for (var k = 0; k < hh; k++) c.fx(x0 + 1 + i * 2, y0 - 5 - k, cols[i], 0.9 - k * 0.12); });
     }
     var levee = pose === 'tenir' || pose === 'haut' || pose === 'salut' || pose === 'salut2' || pose === 'ouvert';
+    if (acc === 'bouteille_percee') {
+      sprite(c, acc);
+      /* pendant un geste (bras levé ou ouvert), un mince jet monte du bouchon : toujours vers le haut, jamais vers quelqu'un */
+      if (pose === 'haut' || pose === 'salut' || pose === 'salut2' || pose === 'ouvert') {
+        var jx = hx, jy = hy - 10, lg = 9 + (n % 2) * 2;
+        for (k = 0; k < lg; k++) c.px(jx + (k > 5 ? 1 : 0), jy - k, k % 3 === 2 ? '#e8f8ff' : '#4ab8f0');
+        [[-1, 0], [2, 1], [n % 2 ? 3 : -2, 3]].forEach(function (g) { c.px(jx + g[0], jy - lg + g[1], '#4ab8f0'); });
+      }
+      return;
+    }
     if (sprite(c, acc)) return;
     if (!levee) return;
     if (acc === 'baton_lumineux') { c.L.rect(hx, hy - 7, 2, 7, cfg.accent); c.L.rect(hx, hy - 6, 1, 5, clair(cfg.accent, 0.6)); c.glow(hx, hy - 4, cfg.accent, 3, n % 2 ? 0.5 : 0.3); }
@@ -1917,8 +1962,46 @@
   var FLAMME = [['...r...', '..rr...', '..ror..', '.rooor.', '.royor.', 'rokyoko', 'royyyor', '.ryyyr.', '..rrr..'],
     ['....r..', '...rr..', '..ror..', '.rooor.', '.royor.', 'rokyoko', 'royyyor', '.ryyyr.', '..rrr..']];
   var GUIRLANDE = ['#ff4fb8', '#3ff0ff', '#ffe14a', '#5dff8a', '#8a5bff', '#ff9a3a'];
+  /* les auras de fidélité (T133c) : une montée en puissance par paliers, en étoiles et en orbites de pixels
+     (jamais des flammes ni des cheveux dressés) ; contour sombre : lisibles en noir et blanc */
+  var ETOILE = ['.x.', 'xwx', '.x.'], ETOILE2 = ['..x..', '..x..', 'xxwxx', '..x..', '..x..'];
+  function orbite(c, cx, cy, rx, ry, col, pas, decal) {
+    for (var t = 0; t < 360; t += 4) {
+      var a = t * Math.PI / 180, x = Math.round(cx + Math.cos(a) * rx), y = Math.round(cy + Math.sin(a) * ry);
+      if (mod(fdiv(t, 4) + decal, pas) === 0) continue;                    /* une orbite en pointillés */
+      if (Math.sin(a) < 0 && c.L.plein(x, y)) continue;                     /* la moitié arrière passe derrière le corps */
+      c.px(x, y, col);
+    }
+  }
+  function auraFidelite(c, v, n) {
+    var a = c.cfg.accent, b = c.cfg.accent2, pts, i;
+    if (v === 'aura_etincelle') {
+      pts = n % 2 ? [[6, 24], [41, 30], [9, 46]] : [[8, 30], [39, 22], [40, 46]];
+      pts.forEach(function (p, k) { c.L.carte(p[0] - 1, p[1] - 1, ETOILE, { x: k % 2 ? b : a, w: '#ffffff' }); });
+    }
+    if (v === 'aura_halo') {
+      orbite(c, CX, 44, 19, 5, a, 3, n);
+      pts = n % 2 ? [[5, 22], [42, 28], [7, 36], [40, 52]] : [[7, 26], [41, 22], [4, 40], [42, 38]];
+      pts.forEach(function (p, k) { c.L.carte(p[0] - 1, p[1] - 1, ETOILE, { x: k % 2 ? b : a, w: '#ffffff' }); });
+    }
+    if (v === 'aura_supernova') {
+      /* des rayons en pointillés qui partent du centre, derrière le corps (calque des lueurs) */
+      for (i = 0; i < 12; i++) {
+        var an = i * Math.PI / 6 + (n % 2) * Math.PI / 12;
+        for (var r = 17; r < 26; r += 2) {
+          var x = Math.round(CX + Math.cos(an) * r), y = Math.round(40 + Math.sin(an) * r * 0.9);
+          if (!c.L.plein(x, y)) c.fx(x, y, i % 2 ? b : a, 0.75);
+        }
+      }
+      orbite(c, CX, 44, 20, 5, a, 3, n);
+      orbite(c, CX, 40, 22, 9, b, 3, n + 1);   /* une seconde orbite, plus ouverte, autour du buste (jamais une auréole au-dessus de la tête) */
+      pts = [[4, 18], [43, 20], [3, 50], [44, 48]];
+      pts.forEach(function (p, k) { c.L.carte(p[0] - 2, p[1] - 2 - ((n + k) % 2), ETOILE2, { x: k % 2 ? b : a, w: '#ffffff' }); });
+    }
+  }
   function objetsApplisAutour(c, v, n) {
     var x, y;
+    auraFidelite(c, v, n);
     if (v === 'flamme_apprivoisee') poser(c, FLAMME[n % 2], { r: '#e8402a', o: '#ff9a3a', y: '#ffe14a', k: '#1b1530' }, 5, 28 - (n % 2), [0, 0]);
     if (v === 'projecteur_poursuite') {
       /* le faisceau : une trame légère, jamais sur l'avatar (calque des lueurs, hors des pixels pleins) */
@@ -2037,6 +2120,19 @@
       } else if (f[0] === 'ampoule') {
         E.carte(CX + 12, 8, ['.yyy.', 'yywyy', 'yyyyy', 'yyyyy', '.yyy.', '.ggg.', '.ggg.'], { y: '#ffe14a', w: '#ffffff', g: '#9aa3b8' });
         [[CX + 9, 9], [CX + 18, 9], [CX + 10, 5], [CX + 17, 5], [CX + 14, 4]].forEach(function (p) { E.px(p[0], p[1], '#ffe14a'); });
+      } else if (f[0] === 'tourbillon') {
+        /* trois traits de vent qui tournent autour du corps, quelques feuilles et gouttes emportées */
+        [[24, 15, 3], [38, 19, 4], [52, 17, 3]].forEach(function (l, j) {
+          for (var t = 0; t < 360; t += 6) {
+            var ang = (t + n * 90 + j * 40) * Math.PI / 180;
+            if (Math.sin(ang) < -0.2 || mod(t + j * 60, 180) > 100) continue;
+            E.px(Math.round(CX + Math.cos(ang) * l[1]), Math.round(l[0] + Math.sin(ang) * l[2]), '#dfe8f5');
+          }
+        });
+        [[0, '#3fae4a'], [120, '#7ad8ff'], [240, '#e8b84a']].forEach(function (q, j) {
+          var ang = (q[0] + n * 90) * Math.PI / 180, x = Math.round(CX + Math.cos(ang) * 21), y = 30 + j * 10 + Math.round(Math.sin(ang) * 2);
+          E.rect(x, y, 2, 1, q[1]); E.px(x + (j % 2), y - 1, q[1]);
+        });
       } else if (f[0] === 'vent' && main) {
         var hx = main[0] + 3, hy = main[1], dx = n % 2;
         [[0, -2], [1, -1], [1, 0], [0, 1]].forEach(function (d) { E.px(hx + dx + d[0], hy + d[1], '#e8f0ff'); });
@@ -2331,7 +2427,15 @@
       I(900, { bras: 'repos', yeux: 'doux', bouche: 'petit', tete: 'baisse' }, { fx: [['zzz', 3], ['bulle_nez', 2]] }),
       I(900, { bras: 'repos', yeux: 'doux', bouche: 'neutre', tete: 'baisse', souffle: 1 }, { fx: [['zzz', 1], ['bulle_nez', 3]] }),
       I(250, { bras: 'repos', yeux: 'doux', bouche: 'o', tete: 'baisse' }, { fx: [['zzz', 2], ['bulle_nez', 4]] }),
-      I(900, { bras: 'repos', yeux: 'doux', bouche: 'petit', tete: 'baisse' }, { fx: [['zzz', 3], ['bulle_nez', 1]] })] }
+      I(900, { bras: 'repos', yeux: 'doux', bouche: 'petit', tete: 'baisse' }, { fx: [['zzz', 3], ['bulle_nez', 1]] })] },
+    /* le geste « tempête » (T133c) : un tour sur soi-même dans un petit tourbillon ; l'image fixe garde le tourbillon */
+    tempete: { nom: 'tourbillonne', comp: 'content', images: [
+      I(300, { bras: 'ouvert', yeux: 'grands', bouche: 'o' }, { fx: [['tourbillon', 0]] }),
+      I(240, { bras: 'ouvert', yeux: 'grands', bouche: 'o' }, { dy: -1, tourne: 'fin', fx: [['tourbillon', 1]] }),
+      I(240, { bras: 'ouvert', yeux: 'rieurs', bouche: 'rire' }, { dy: -2, tourne: 'miroir', fx: [['tourbillon', 2]] }),
+      I(240, { bras: 'ouvert', yeux: 'rieurs', bouche: 'rire' }, { dy: -2, tourne: 'fin_miroir', fx: [['tourbillon', 3]] }),
+      I(240, { bras: 'ouvert', yeux: 'grands', bouche: 'grand_rire' }, { dy: -1, fx: [['tourbillon', 0]] }),
+      I(240, { bras: 'ouvert', yeux: 'grands', bouche: 'o' }, { tourne: 'fin', fx: [['tourbillon', 1]] })] }
   };
   var LISTE_ETATS = Object.keys(ETATS);
 
@@ -2344,9 +2448,23 @@
   };
   var _id = 0;
 
+  /* le tour sur soi-même : de face, de profil (resserré), de face en miroir */
+  function tourner(R, mode) {
+    if (!mode) return R;
+    var T = new Calque(R.w, R.h), fin = /fin/.test(mode), miroir = /miroir/.test(mode);
+    R.p.forEach(function (v, k) {
+      var x = k % K, y = (k - x) / K, X = x;
+      if (miroir) X = 2 * CX - 1 - X;
+      if (fin) { var d = X + 0.5 - CX; X = Math.floor(CX + d * 0.5); if (T.p.has(y * K + X) && Math.abs(d) > 2) return; }
+      if (X < 0 || X >= R.w) return;
+      T.p.set(y * K + X, v); if (R.m.has(k)) T.m.add(y * K + X);
+    });
+    T.main = R.main;
+    return T;
+  }
   function imageAvatar(cfg, img, etat, avecComp, i) {
     var pose = { n: i || 0 }; for (var k in img.pose) pose[k] = img.pose[k];
-    var R = dessiner(cfg, pose);
+    var R = tourner(dessiner(cfg, pose), img.tourne);
     var S = new Calque(avecComp ? 74 : 48, 64);
     var dy = img.dy || 0;
     S.sur(R, 0, dy);
@@ -2491,7 +2609,8 @@
   /* les gestes du lobby : un état joué un moment, puis retour à l'état d'avant */
   var GESTES = [
     { id: 'salue', nom: 'Saluer', etat: 'salue' }, { id: 'saute', nom: 'Sauter de joie', etat: 'tres_content' },
-    { id: 'rit', nom: 'Rire', etat: 'content' }, { id: 'sieste', nom: 'Petite sieste', etat: 'dort' }
+    { id: 'rit', nom: 'Rire', etat: 'content' }, { id: 'sieste', nom: 'Petite sieste', etat: 'dort' },
+    { id: 'tempete', nom: 'Tempête', etat: 'tempete', duree: 1800 }
   ];
   var GESTE_DE = {}; GESTES.forEach(function (g) { GESTE_DE[g.id] = g; });
   /* les 21 phrases du lobby : liste FERMÉE, envoyée par numéro (de 0 à 20).
@@ -2659,7 +2778,7 @@
       geste: function (nom, opt) {
         var g = own(GESTE_DE, nom) ? GESTE_DE[nom] : null;
         if (!g || v.mort) return false;
-        var duree = opt && +opt.duree > 0 ? Math.min(+opt.duree, 20000) : 3000;
+        var duree = opt && +opt.duree > 0 ? Math.min(+opt.duree, 20000) : (g.duree || 3000);
         clearTimeout(minuterie);
         v.geste = g.etat; repartir(true); rendre();
         minuterie = setTimeout(function () { v.geste = null; if (!v.mort) { repartir(true); rendre(); } }, duree);
@@ -2786,7 +2905,7 @@
     var proba = { tete: 0.5, visage: 0.3, cou: 0.3, dos: 0.35, main: 0.5, epaule: 0.25, pieds: 0.25, autour: 0.25 };
     /* les objets des applications ne sortent jamais au hasard : ce sont des trophées (tirages inchangés) */
     EMPLACEMENTS.forEach(function (e) {
-      var l = CATALOGUE.objets[e].filter(function (x) { return x.famille !== 'applis'; });
+      var l = CATALOGUE.objets[e].filter(auHasard);
       RETIRES.forEach(function (x) { if (x[0] === e) l.splice(x[2], 0, { id: 'aucun' }); });
       d.objets[e] = r() < proba[e] ? l[1 + Math.floor(r() * (l.length - 1))].id : 'aucun';
     });
@@ -2831,10 +2950,11 @@
     ETATS: LISTE_ETATS.map(function (k) { return { id: k, nom: ETATS[k].nom }; }),
     defaut: function () { return copie(DEFAUT); }, compat: copie(COMPAT),
     /* T133b : l'interface des applications */
-    USAGES: copie(USAGES), gestes: GESTES.map(function (g) { return { id: g.id, nom: g.nom, etat: g.etat }; }),
+    USAGES: copie(USAGES), gestes: GESTES.map(function (g) { return { id: g.id, nom: g.nom, etat: g.etat, duree: g.duree || 3000 }; }),
     phrases: PHRASES.slice(), phrasesVersion: PHRASES_VERSION, adresse: adresse, phrase: function (n) { return typeof n === 'number' && n % 1 === 0 && n >= 0 && n < PHRASES.length ? phrase(n) : null; },
     variantes: Object.keys(VARIANTES).map(Number),
     applis: APPLIS.map(function (a) { return { id: a[0], nom: a[1], emplacement: a[2], application: a[3], haut_fait: a[4], haut_fait_nom: a[5], categorie: a[6], condition: a[7] }; }),
+    fidelite: FIDELITE.map(function (f) { return { id: f[0], nom: f[1], emplacement: f[2], haut_fait_nom: f[3] }; }),
     neutre: function () { return copie(NEUTRE); },
     calme: calme, plafond: plafond, pause: pause, viderCache: function () { _cache = {}; _nCache = 0; }
   };

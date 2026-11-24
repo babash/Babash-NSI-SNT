@@ -60,7 +60,7 @@ if (refChemin) {
   ok(E.texte(descs[0], 'repos') === R.texte(descs[0], 'repos'), 'texte a changé');
   ['tete', 'visage', 'cou', 'dos', 'main', 'epaule', 'pieds', 'autour'].forEach(function (e) {
     var avant = R.catalogue.objets[e].map(function (o) { return o.id; }).join();
-    var apres = E.catalogue.objets[e].filter(function (o) { return o.famille !== 'applis'; }).map(function (o) { return o.id; }).join();
+    var apres = E.catalogue.objets[e].filter(function (o) { return o.famille !== 'applis' && o.famille !== 'fidelite' && o.id !== 'bouteille_percee' && o.id !== 'dessin_karim'; }).map(function (o) { return o.id; }).join();
     avant = R.catalogue.objets[e].filter(function (o) { return !RETIRES[e + ':' + o.id]; }).map(function (o) { return o.id; }).join();
     ok(avant === apres, 'les objets « ' + e + ' » existants ont changé');
   });
@@ -96,7 +96,7 @@ E.applis.filter(function (a) { return a.emplacement === 'main'; }).forEach(funct
 /* aucun objet des applications ne sort au hasard */
 for (var s = 0; s < 400; s++) {
   var d = E.aleatoire(s);
-  E.applis.forEach(function (a) { ok(d.objets[a.emplacement] !== a.id, 'aleatoire(' + s + ') donne ' + a.id); });
+  E.applis.concat(E.fidelite, [{ id: 'bouteille_percee', emplacement: 'main' }, { id: 'dessin_karim', emplacement: 'main' }]).forEach(function (a) { ok(d.objets[a.emplacement] !== a.id, 'aleatoire(' + s + ') donne ' + a.id); });
 }
 
 /* ── 3. états d'usage, gestes, phrases, neutre ── */
@@ -104,7 +104,25 @@ var ref = E.normaliser({ teint: 3 });
 [['lobby', 'repos'], ['attente', 'concentre'], ['repondu', 'repos'], ['fete', 'tres_content'], ['applaudit', 'content']].forEach(function (p) {
   ok(E.svg(ref, { etat: p[0], decalage: 0, alt: '' }) === E.svg(ref, { etat: p[1], decalage: 0, alt: '' }), 'l\'état ' + p[0] + ' n\'est pas ' + p[1]);
 });
-ok(E.gestes.map(function (g) { return g.id; }).join() === 'salue,saute,rit,sieste', 'les quatre gestes');
+ok(E.gestes.map(function (g) { return g.id; }).join() === 'salue,saute,rit,sieste,tempete', 'les cinq gestes');
+
+/* T133c : la bouteille d'eau percée, le geste « tempête », les objets de fidélité */
+var bt = avec('main', 'bouteille_percee');
+var cb = E.catalogue.objets.main.filter(function (o) { return o.id === 'bouteille_percee'; })[0];
+ok(cb && cb.famille === 'lycee' && E.normaliser(bt).objets.main === 'bouteille_percee', 'bouteille_percee au catalogue (famille lycee)');
+ok(image(bt, 'repos').indexOf('#4ab8f0') < 0, 'bouteille : pas de jet au repos');
+['salue', 'tres_content', 'content'].forEach(function (e) { ok(image(bt, e).indexOf('#4ab8f0') > 0, 'bouteille : un jet pendant le geste ' + e); });
+ok(E.gestes[4].etat === 'tempete' && E.gestes[4].duree >= 1500 && E.gestes[4].duree <= 2000, 'tempête : 1,5 à 2 s');
+var tp = E.svg(nu, { etat: 'tempete', decalage: 0, alt: '' }), nimg = (tp.match(/class="eq-img/g) || []).length;
+ok(nimg >= 4, 'tempête : au moins 4 images (' + nimg + ')');
+ok(E.svg(nu, { etat: 'tempete', anime: false, alt: '' }) !== E.svg(nu, { etat: 'repos', anime: false, alt: '' }), 'tempête : l\'image fixe garde le tourbillon');
+ok(/tourbillonne/.test(E.texte(nu, 'tempete')), 'tempête : texte alternatif');
+ok(E.fidelite.length === 4 && E.fidelite.map(function (f) { return f.emplacement + ':' + f.id; }).join() === 'autour:aura_etincelle,autour:aura_halo,autour:aura_supernova,dos:ailes_circuit', 'les 4 objets de fidélité');
+var auras = ['aura_etincelle', 'aura_halo', 'aura_supernova'].map(function (id) { var im = image(avec('autour', id), 'repos'); ok(E.catalogue.objets.autour.some(function (o) { return o.id === id && o.famille === 'fidelite'; }), id + ' au catalogue'); return im; });
+ok(auras[0] !== auras[1] && auras[1] !== auras[2] && auras[0].length < auras[1].length && auras[1].length < auras[2].length, 'les trois auras grandissent d\'un palier à l\'autre');
+ok(image(avec('dos', 'ailes_circuit'), 'repos') !== image(nu, 'repos'), 'ailes de circuit visibles');
+ok(E.catalogue.objets.main.some(function (o) { return o.id === 'dessin_karim' && o.famille === 'classe'; }), 'dessin_karim : trophée de la famille classe');
+ok(image(avec('main', 'dessin_karim'), 'repos') !== image(nu, 'repos') && image(avec('main', 'dessin_karim'), 'fete') !== image(nu, 'fete'), 'dessin_karim visible');
 ok(E.phrases.length === 21 && Object.isFrozen(E.phrases), '21 phrases gelées');
 ok(!E.phrases.some(function (p) { return /bouchon/i.test(p); }), 'plus de bouchon dans les phrases');
 E.adresse('madame'); ok(E.phrase(19) === 'Ne vous inquiétez pas, Madame.', 'variante Madame');

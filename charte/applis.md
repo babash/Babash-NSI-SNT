@@ -62,7 +62,7 @@ Déjà là (inchangé) : `Equipage.creer(element, description, options)`, `svg`,
 | Ajout | Rôle |
 |---|---|
 | `etat: 'lobby' \| 'attente' \| 'repondu' \| 'fete' \| 'applaudit'` | états d'usage, alias de `repos`, `concentre`, `repos` avec le fanion, `tres_content`, `content` (`Equipage.USAGES`) |
-| `poignee.geste(nom, { duree })` | `'salue'`, `'saute'`, `'rit'`, `'sieste'` (`Equipage.gestes`) : joue l'état (3 s par défaut, 20 s au plus), puis revient ; nom inconnu : `false` |
+| `poignee.geste(nom, { duree })` | `'salue'`, `'saute'`, `'rit'`, `'sieste'`, `'tempete'` (`Equipage.gestes`) : joue l'état (3 s par défaut, 1,8 s pour la tempête, 20 s au plus), puis revient ; nom inconnu : `false` ; un geste compte dans le plafond d'avatars animés |
 | `poignee.bulle(numero, { duree })` | une phrase de la liste FERMÉE du moteur, `Equipage.phrases` (21 phrases, de 0 à 20) ; le 2e argument ne peut être que `undefined`, `null` ou `'lobby'` : tout tableau ou objet fourni par l'appelant est refusé (`false`, rien d'affiché), jamais de texte libre ; numéro non entier ou inconnu : ignoré (`false`) ; 6 bulles au plus par page, les autres attendent ; 5 s par défaut (`{ duree }` en 3e argument) ; texte posé avec `textContent`, jamais du HTML |
 | `poignee.marque('repondu' \| null)` | le fanion « a répondu » |
 | `poignee.serie(n)` | la flamme et son chiffre, à partir de 2 ; `serie(0)` l'enlève |
@@ -118,6 +118,14 @@ Dessinés dans le moteur, accrochés au corps (l'objet tenu suit la main dans ch
 | `palmes_lagon` | pieds | `lagon` | `le-parcours` | exploration |
 
 Les noms, les noms des hauts faits et leurs conditions : `Equipage.applis` et `assets/equipage/applis.json`. Récompense au compte commun : `<emplacement>:<id>` (par exemple `main:de_flottille`).
+
+## 5 bis. Ajouts du 24/11 (T133c)
+
+- **La bouteille d'eau percée**, `main:bouteille_percee` (famille `lycee`, à acheter : 40 crédits) : une bouteille en plastique transparent au bouchon percé, sans marque ni étiquette. Tenue au repos ; pendant un geste (bras levé ou ouvert), un mince jet monte du bouchon, toujours vers le haut, jamais vers quelqu'un.
+- **Le geste « tempête »**, `geste('tempete')` (5e geste, état du moteur `tempete`, « tourbillonne ») : un tour sur soi-même (de face, de profil, en miroir) dans un petit tourbillon de traits de vent, avec une feuille, une goutte et une graine emportées ; 6 images, 1,8 s, puis retour à l'état d'avant. Image fixe (de face, avec le tourbillon) avec « mouvement réduit » ou `Equipage.calme(true)`.
+- **Les objets des hauts faits de fidélité** (famille `fidelite`, des trophées ; noms à confirmer par l'enseignant ; `Equipage.fidelite`) : `autour:aura_etincelle` (« Deuxième saison » : trois étoiles), `autour:aura_halo` (« Troisième saison » : une orbite en pointillés à la taille, qui passe derrière le corps, et quatre étoiles), `autour:aura_supernova` (« Supernova » : deux orbites, des rayons en pointillés derrière le corps et quatre grandes étoiles), `dos:ailes_circuit` (« Nouveau palier » : des pistes de cuivre à angles droits, des pastilles qui s'allument). Une montée en puissance par paliers, sans flammes ni cheveux dressés ; contour sombre, lisible en noir et blanc.
+- **Le dessin de Karim**, `main:dessin_karim` (famille `classe` : un trophée offert, jamais acheté) : une feuille de classeur (trous, marge rouge, lignes bleues) où est griffonné un margouillat, tenue levée. Haut fait proposé : « Coup de crayon » (catégorie `creation`, accord de l'enseignant·e : un dessin, un schéma ou une illustration qui aide la classe). Le nom affiché est une donnée du catalogue (il peut devenir « Le dessin du fond de la classe » si l'élève préfère ne pas être nommé) : l'identifiant, lui, ne change pas.
+- Ces objets ne sortent jamais de `Equipage.aleatoire` : les tirages au hasard des pages existantes ne changent pas.
 
 ## 6. Vérifier
 
