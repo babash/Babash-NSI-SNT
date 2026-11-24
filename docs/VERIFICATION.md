@@ -89,8 +89,10 @@ Le fichier `.github/workflows/verifier.yml` lance cinq contrôles, visibles dans
   passagères. Un lien qui ne répond pas à temps aux deux passes compte aussi comme mort.
   Le résumé liste les liens morts, avec le fichier et la ligne, et les pannes passagères.
   Ne sont pas testés : les pages qui demandent une connexion (Capytale, claude.ai),
-  algorea.org, qui refuse les robots, et kenney.nl, qui répond « introuvable » (404) aux
-  machines de GitHub alors que la page existe. Les sites qui répondent « accès refusé » (403) ou
+  algorea.org, qui refuse les robots, kenney.nl, qui répond « introuvable » (404) aux
+  machines de GitHub alors que la page existe, et la racine de l'adresse de la base Supabase
+  (`https://<projet>.supabase.co`, dans `reglages.js` depuis le compte commun), qui n'est pas une
+  page et répond 404 par nature. Les sites qui répondent « accès refusé » (403) ou
   « trop de requêtes » (429) aux robots sont comptés comme valides.
 - **Site en ligne**, après chaque modification de `main` : le contrôle attend que « Publier le
   site » ait réellement mis en ligne ce commit (`scripts/attendre_deploiement.py`), puis télécharge
