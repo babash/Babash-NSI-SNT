@@ -1437,11 +1437,11 @@
        ]
       },
       {
-       "code": "def h(t):\n    return t[0] + t[-1]\nprint(h(\"lagon\") + h(\"bus\"))",
-       "reponse": "lnbs",
-       "explication": "h colle la première et la dernière lettre : \"ln\" + \"bs\".",
+       "code": "def h(a, b):\n    return a * 10 + b\nprint(h(4, 2) + h(1, 3))",
+       "reponse": "55",
+       "explication": "h(4, 2) = 42 et h(1, 3) = 13 : 42 + 13 = 55.",
        "aides": [
-        "t[-1] est la dernière lettre."
+        "a reçoit le premier argument, b le second."
        ]
       }
      ]
@@ -1510,11 +1510,11 @@
        "verifier": "r == 3"
       },
       {
-       "texte": "Après ce code, age vaut toujours 15.",
+       "texte": "Après ce code, total vaut 25.",
        "reponse": true,
-       "explication": "La fonction change son paramètre, pas la variable du programme ; et son résultat n'est pas gardé.",
-       "code": "def vieillir(age):\n    age = age + 1\n    return age\nage = 15\nvieillir(age)",
-       "verifier": "age == 15"
+       "explication": "prix reçoit 20 et frais reçoit 5 : la fonction renvoie 25.",
+       "code": "def total_prix(prix, frais):\n    return prix + frais\ntotal = total_prix(20, 5)",
+       "verifier": "total == 25"
       },
       {
        "texte": "Après ce code, r vaut 16.",
@@ -1555,18 +1555,18 @@
        "verifier": "r == 7"
       },
       {
-       "texte": "Après ce code, n vaut toujours 1.",
+       "texte": "Après ce code, r vaut 12.",
        "reponse": true,
-       "explication": "Le paramètre n est une autre variable, locale à f : le n du programme ne change pas.",
-       "code": "n = 1\ndef f(n):\n    n = n * 100\n    return n\nm = f(n)",
-       "verifier": "n == 1"
+       "explication": "a reçoit 4 et b reçoit 2 : c vaut 6, et la fonction renvoie 6 x 2.",
+       "code": "def f(a, b):\n    c = a + b\n    return c * 2\nr = f(4, 2)",
+       "verifier": "r == 12"
       },
       {
-       "texte": "Après ce code, r vaut None.",
+       "texte": "Après ce code, r vaut \"positif\".",
        "reponse": true,
-       "explication": "Pour -2, aucun return n'est atteint : la fonction renvoie None.",
-       "code": "def f(x):\n    if x > 0:\n        return \"positif\"\nr = f(-2)",
-       "verifier": "r is None"
+       "explication": "5 > 0 est vrai : le premier return renvoie \"positif\".",
+       "code": "def f(x):\n    if x > 0:\n        return \"positif\"\n    return \"négatif\"\nr = f(5)",
+       "verifier": "r == \"positif\""
       },
       {
        "texte": "Un paramètre existe encore après la fin de l'appel.",
@@ -1726,7 +1726,7 @@
        "corrections": [
         "return double(6)",
         "print(double(6))",
-        "double(print(6))"
+        "print(double(3))"
        ],
        "bonne": 1,
        "affiche": "12",
@@ -2288,22 +2288,22 @@
        ]
       },
       {
-       "code": "def f(x):\n    print(x + 1)\nprint(f(1))",
+       "code": "def f(x):\n    return x + 1\ny = f(1)\nprint(y, f(y))",
        "options": [
-        "2",
-        "None",
-        "2 / 2",
-        "2 / None"
+        "2 2",
+        "1 2",
+        "y f(y)",
+        "2 3"
        ],
        "bonne": 3,
        "retours": [
-        "print(f(1)) affiche aussi ce que renvoie f : sans return, c'est None.",
-        "L'appel exécute d'abord print(x + 1).",
-        "f ne renvoie pas x + 1 : elle l'affiche seulement.",
-        "Juste : L'appel affiche 2, puis print(f(1)) affiche ce que f renvoie : None."
+        "f(y) : y vaut 2, et la fonction renvoie 3.",
+        "y reçoit le résultat de f(1), soit 2.",
+        "print affiche les valeurs, pas les noms.",
+        "Juste : y reçoit f(1) = 2, puis f(y) = f(2) = 3."
        ],
        "aides": [
-        "Il y a deux print : lequel s'exécute en premier ?"
+        "Calcule y d'abord."
        ]
       }
      ]
@@ -2374,19 +2374,20 @@
      "duree": 6,
      "items": [
       {
-       "code": "def f(x):\n    if x > 5:\n        return \"grand\"\nprint(f(2))",
-       "reponse": "None",
-       "explication": "2 n'est pas plus grand que 5 : aucun return n'est atteint, la fonction renvoie None.",
+       "code": "def f(x):\n    if x > 5:\n        return \"grand\"\n    return \"petit\"\nprint(f(2) + f(8))",
+       "reponse": "petitgrand",
+       "explication": "f(2) renvoie petit et f(8) renvoie grand : les deux textes sont collés, petitgrand.",
        "aides": [
-        "Que renvoie une fonction qui n'atteint aucun return ?"
+        "Calcule chaque appel séparément.",
+        "+ colle deux textes."
        ]
       },
       {
-       "code": "def f(x):\n    x = x + 1\n    return x\nx = 5\nf(x)\nprint(x)",
-       "reponse": "5",
-       "explication": "f(x) renvoie 6, mais le résultat n'est pas gardé, et le x du programme ne change pas : 5.",
+       "code": "def f(x):\n    x = x + 1\n    return x * 2\ny = f(5)\nprint(y)",
+       "reponse": "12",
+       "explication": "x vaut 5, puis 6, et la fonction renvoie 6 x 2 = 12.",
        "aides": [
-        "Le x de la fonction est un paramètre, une autre variable."
+        "Suis la fonction ligne par ligne, avec x = 5."
        ]
       },
       {
@@ -2404,8 +2405,8 @@
   {
    "id": "py-fonctions-016",
    "type": "vraifaux",
-   "titre": "La portée des variables",
-   "objectif": "Savoir où une variable existe : dans la fonction ou dans le programme.",
+   "titre": "Variables locales",
+   "objectif": "Savoir qu'une variable créée dans une fonction n'existe que pendant l'appel.",
    "notions": [
     "prog.fonction",
     "prog.variable",
@@ -2423,11 +2424,11 @@
        "explication": "On dit qu'elle est locale : elle disparaît à la fin de l'appel."
       },
       {
-       "texte": "Après ce code, x vaut 1.",
+       "texte": "Après ce code, r vaut 8.",
        "reponse": true,
-       "explication": "x = 99 crée une variable locale à f : le x du programme ne change pas.",
-       "code": "x = 1\ndef f():\n    x = 99\nf()",
-       "verifier": "x == 1"
+       "explication": "b vaut 3 + 5 = 8, et la fonction le renvoie.",
+       "code": "def f(a):\n    b = a + 5\n    return b\nr = f(3)",
+       "verifier": "r == 8"
       },
       {
        "texte": "Un paramètre peut s'utiliser en dehors de sa fonction.",
@@ -2450,25 +2451,23 @@
      "duree": 3,
      "items": [
       {
-       "texte": "Une fonction peut lire une variable du programme sans la recevoir en paramètre.",
+       "texte": "Une fonction reçoit ses données par ses paramètres.",
        "reponse": true,
-       "explication": "f lit taux, défini dans le programme : r vaut 10.",
-       "code": "taux = 2\ndef f(x):\n    return x * taux\nr = f(5)",
-       "verifier": "r == 10"
+       "explication": "Les paramètres sont l'entrée de la fonction ; return est sa sortie."
       },
       {
-       "texte": "Après ce code, n vaut toujours 10.",
+       "texte": "Après ce code, r vaut 11.",
        "reponse": true,
-       "explication": "f change son paramètre n, et le résultat de f(n) n'est pas gardé.",
-       "code": "n = 10\ndef f(n):\n    n = n + 1\n    return n\nf(n)",
-       "verifier": "n == 10"
+       "explication": "n reçoit 10, et la fonction renvoie 11.",
+       "code": "def f(n):\n    return n + 1\nr = f(10)",
+       "verifier": "r == 11"
       },
       {
-       "texte": "Après ce code, n vaut toujours 10.",
+       "texte": "Après ce code, a vaut 6.",
        "reponse": false,
-       "explication": "Ici, on range le résultat dans n : n = f(n) donne 11.",
-       "code": "n = 10\ndef f(n):\n    return n + 1\nn = f(n)",
-       "verifier": "n == 10"
+       "explication": "Le résultat n'est rangé nulle part : a vaut toujours 5. Il faudrait écrire a = f(a).",
+       "code": "def f(n):\n    return n + 1\na = 5\nf(a)",
+       "verifier": "a == 6"
       },
       {
        "texte": "Deux appels de la même fonction partagent leurs variables locales.",
@@ -2488,11 +2487,11 @@
      "duree": 5,
      "items": [
       {
-       "texte": "Après ce code, y vaut 2.",
+       "texte": "Après ce code, r vaut 14.",
        "reponse": true,
-       "explication": "f lit x, qui vaut 1, et renvoie 2.",
-       "code": "x = 1\ndef f():\n    return x + 1\ny = f()",
-       "verifier": "y == 2"
+       "explication": "s vaut 3 + 4 = 7, et la fonction renvoie 7 x 2.",
+       "code": "def f(a, b):\n    s = a + b\n    return s * 2\nr = f(3, 4)",
+       "verifier": "r == 14"
       },
       {
        "texte": "Après ce code, compteur vaut 3.",
@@ -2509,23 +2508,25 @@
        "verifier": "compteur == 3"
       },
       {
-       "texte": "Dans une fonction, n = n + 1 sur un n du programme provoque une erreur, sauf si n est un paramètre.",
+       "texte": "Après ce code, total vaut 10.",
        "reponse": true,
-       "explication": "Écrire n = … dans la fonction rend n locale : Python la lit avant de lui avoir donné une valeur (UnboundLocalError)."
+       "explication": "On range le résultat dans total à chaque tour : 0 + 1 + 2 + 3 + 4 = 10.",
+       "code": "def ajoute(t, x):\n    return t + x\ntotal = 0\nfor i in range(5):\n    total = ajoute(total, i)",
+       "verifier": "total == 10"
       },
       {
-       "texte": "Après ce code, r vaut 6.",
+       "texte": "Après ce code, m vaut 9.",
        "reponse": true,
-       "explication": "f calcule son propre y, local : 3 x 2 = 6.",
-       "code": "def f(x):\n    y = x * 2\n    return y\ny = 100\nr = f(3)",
-       "verifier": "r == 6"
+       "explication": "maxi renvoie le plus grand des deux nombres : 9.",
+       "code": "def maxi(a, b):\n    if a > b:\n        return a\n    return b\nm = maxi(4, 9)",
+       "verifier": "m == 9"
       },
       {
-       "texte": "Après ce code, y vaut 6.",
+       "texte": "Après ce code, m vaut 4.",
        "reponse": false,
-       "explication": "Le y de f est local ; le y du programme vaut toujours 100.",
-       "code": "def f(x):\n    y = x * 2\n    return y\ny = 100\nr = f(3)",
-       "verifier": "y == 6"
+       "explication": "maxi renvoie le plus grand des deux nombres : 9.",
+       "code": "def maxi(a, b):\n    if a > b:\n        return a\n    return b\nm = maxi(4, 9)",
+       "verifier": "m == 4"
       }
      ]
     }
@@ -2797,27 +2798,27 @@
      "duree": 6,
      "items": [
       {
-       "but": "Ajouter les points d'un essai (3) à un score de 10, et afficher 13.",
+       "but": "Ajouter 3 points à un score de 10, puis afficher le nouveau score (13).",
        "lignes": [
-        "score = 10",
-        "def marquer(points):",
-        "    score = score + points",
-        "    return score",
-        "print(marquer(3))"
-       ],
-       "ligne": 2,
-       "corrections": [
+        "def marquer(score, points):",
         "    return score + points",
-        "    score = points",
-        "    points = score + points"
+        "s = 10",
+        "s = marquer(3)",
+        "print(s)"
+       ],
+       "ligne": 3,
+       "corrections": [
+        "s = marquer(s, 3)",
+        "marquer(s, 3)",
+        "s = marquer(s + 3)"
        ],
        "bonne": 0,
        "affiche": "13",
-       "explication": "Écrire score = … dans la fonction rend score locale, et Python la lit avant qu'elle ait une valeur. On renvoie le calcul ; mieux encore, on passerait score en paramètre.",
+       "explication": "marquer attend deux arguments, le score et les points, et on range le résultat dans s.",
        "aides": [
-        "Lis le message : quelle variable n'a pas encore de valeur ?"
+        "Lis le message : quel argument manque ?"
        ],
-       "message": "UnboundLocalError: cannot access local variable 'score' where it is not associated with a value"
+       "message": "TypeError: marquer() missing 1 required positional argument: 'points'"
       },
       {
        "but": "Afficher le nombre de voyelles de « Mayotte » (3).",
@@ -3329,14 +3330,14 @@
        "options": [
         "18.0",
         "15",
-        "18",
+        "6.0",
         "17.0"
        ],
        "bonne": 0,
        "retours": [
         "Juste : ttc(10) = 12.0 et ttc(5) = 6.0 : 18.0.",
         "total passe chaque prix dans ttc avant d'additionner.",
-        "* 1.2 donne un nombre décimal : Python écrit le résultat avec .0.",
+        "total additionne ttc(a) et ttc(b) : il faut les deux prix.",
         "ttc s'applique aux deux prix, pas seulement au premier."
        ],
        "aides": [
@@ -4433,11 +4434,11 @@
        "explication": "Les parenthèses restent, même vides."
       },
       {
-       "texte": "Après ce code, r vaut \"ok\".",
+       "texte": "Après ce code, r vaut 6.",
        "reponse": false,
-       "explication": "Sans parenthèses, r reçoit la fonction elle-même, pas son résultat.",
-       "code": "def f():\n    return \"ok\"\nr = f",
-       "verifier": "r == \"ok\""
+       "explication": "x reçoit 2, et la fonction renvoie 2 + 2 = 4.",
+       "code": "def f(x):\n    return x + 2\nr = f(2)",
+       "verifier": "r == 6"
       }
      ]
     },
@@ -4452,17 +4453,17 @@
        "verifier": "r == 4"
       },
       {
-       "texte": "Après ce code, x vaut toujours 2.",
+       "texte": "Après ce code, y vaut 20.",
        "reponse": true,
-       "explication": "La fonction change son paramètre x, pas le x du programme.",
-       "code": "x = 2\ndef f(x):\n    x = x * 10\n    return x\ny = f(x)",
-       "verifier": "x == 2"
+       "explication": "x reçoit 2, et la fonction renvoie 2 x 10.",
+       "code": "def f(x):\n    return x * 10\ny = f(2)",
+       "verifier": "y == 20"
       },
       {
        "texte": "Après ce code, y vaut 2.",
        "reponse": false,
        "explication": "y reçoit ce que renvoie f(2) : 20.",
-       "code": "x = 2\ndef f(x):\n    x = x * 10\n    return x\ny = f(x)",
+       "code": "def f(x):\n    return x * 10\ny = f(2)",
        "verifier": "y == 2"
       },
       {
@@ -4511,17 +4512,17 @@
        "verifier": "r == 8"
       },
       {
-       "texte": "Après ce code, r vaut None.",
+       "texte": "Après ce code, r vaut \"non\".",
        "reponse": true,
-       "explication": "0 > 0 est faux : aucun return n'est atteint.",
-       "code": "def f(n):\n    if n > 0:\n        return n\nr = f(0)",
-       "verifier": "r is None"
+       "explication": "0 > 0 est faux : on va au dernier return.",
+       "code": "def f(n):\n    if n > 0:\n        return \"oui\"\n    return \"non\"\nr = f(0)",
+       "verifier": "r == \"non\""
       },
       {
        "texte": "Après ce code, total vaut 6.",
        "reponse": false,
-       "explication": "f renvoie total + x sans changer total, et rien n'est rangé : total reste à 0.",
-       "code": "total = 0\ndef f(x):\n    return total + x\nfor i in range(4):\n    f(i)",
+       "explication": "total = f(i) remplace total à chaque tour sans rien ajouter : à la fin, total vaut 3.",
+       "code": "def f(x):\n    return x\ntotal = 0\nfor i in range(4):\n    total = f(i)",
        "verifier": "total == 6"
       }
      ]
@@ -4582,8 +4583,8 @@
          "6"
         ],
         [
-         "def f(x):\n    print(x * 2)\nprint(f(3))",
-         "6, None"
+         "def f(x):\n    print(x * 2)\nf(3)\nf(4)",
+         "6, 8"
         ],
         [
          "def f(x):\n    return x * 2\nf(3)\nprint(\"fin\")",
@@ -4597,7 +4598,7 @@
        "explication": "print affiche pendant l'appel ; return renvoie, et rien ne s'affiche si le résultat n'est pas passé à print.",
        "executer": true,
        "aides": [
-        "Une fonction sans return renvoie None."
+        "Cherche les print : dans la fonction, ou autour de l'appel ?"
        ]
       }
      ]
@@ -4609,26 +4610,27 @@
        "consigne": "Associe chaque programme à ce qu'il affiche.",
        "paires": [
         [
-         "x = 5\ndef f(x):\n    x = x + 1\n    return x\nf(x)\nprint(x)",
+         "def f(x):\n    return x * x\nfor i in range(1, 4):\n    print(f(i))",
+         "1, 4, 9"
+        ],
+        [
+         "def f(x):\n    return x * x\ns = 0\nfor i in range(1, 4):\n    s = s + f(i)\nprint(s)",
+         "14"
+        ],
+        [
+         "def f(x):\n    return x * x\nprint(f(1 + 2))",
+         "9"
+        ],
+        [
+         "def f(x):\n    return x * x\nprint(f(2) + f(1))",
          "5"
-        ],
-        [
-         "x = 5\ndef f(x):\n    return x + 1\nx = f(x)\nprint(x)",
-         "6"
-        ],
-        [
-         "x = 5\ndef f(y):\n    return x + y\nprint(f(10))",
-         "15"
-        ],
-        [
-         "x = 5\ndef f(x):\n    return x * 2\nprint(f(1), x)",
-         "2 5"
         ]
        ],
-       "explication": "Le x d'une fonction est son paramètre, local ; le x du programme ne change que si on lui affecte un résultat.",
+       "explication": "La même fonction carré, quatre usages : dans une boucle, dans une somme, avec un calcul en argument, dans une addition.",
        "executer": true,
        "aides": [
-        "Dans le troisième, f lit le x du programme."
+        "f(1 + 2) : on calcule 1 + 2 d'abord.",
+        "La somme ajoute 1, 4 et 9."
        ]
       }
      ]
