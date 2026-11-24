@@ -38,14 +38,15 @@ D'autres outils du même dossier servent au cas par cas. Pour le site :
   de `charte/imprimer-td.py`, de `charte/tester-outils.py` (les outils doivent voir une correction, une sortie attendue ou un
   coup de pouce imprimés sur des témoins, et une correction partielle doit être posée à sa place sur le code de départ)
   et de `charte/numeroter-feuilles.py --tout --verifier` (numéros des feuilles 2, 3…) ;
-  depuis le 24 novembre 2026 (T123d : questions courtes en tableau, codes coupables, robot à côté de sa grille), **aucun PDF
-  de TD publié n'est encore fait avec le moteur publié** : la feuille régénérée par `charte/imprimer-td.py` en diffère
-  (60 PDF sur 77 à l'image, le 24/11). D'ici la prochaine régénération, on compare un PDF publié au PDF régénéré avec le
-  moteur de `0b44455` (`assets/td-en-ligne.js` et `.css` de ce commit, `charte/imprimer-td.py` inchangé) : 69 PDF sur 77 lui
-  sont identiques en texte et en pages ; les 8 autres (`golden-sac`, `dm-cryptographie`, `exercices-liste-ou-dictionnaire`,
-  `dm-conversion-binaire-liste`, `dm-poo-fraction`, `dm-poo-itineraire`, `dm-recherche-lineaire-dict`, `dm-trouver-max`)
-  n'ont pas encore eu leur passe finale et se comparent au moteur d'avant le 21 novembre au soir ; ou on contrôle le fond
-  seul (réponses, questions, pages). Un TD nouveau, lui, se contrôle avec les outils de `main` ; `bandeau_td.py` mesure le bandeau d'une page à seize largeurs d'écran et
+  depuis le 24 novembre 2026 (T123d, puis T123e : questions courtes en tableau, cases à la mesure de la réponse, codes coupables,
+  robot à côté de sa grille), **aucun PDF de TD publié n'est encore fait avec le moteur publié** : la feuille régénérée par
+  `charte/imprimer-td.py` en diffère. D'ici la prochaine régénération, on compare un PDF publié au PDF régénéré avec le
+  moteur de `0b44455` (`assets/td-en-ligne.js` et `.css` de ce commit ; `charte/imprimer-td.py` de `main` imprime de même) : 77 PDF sur 85 lui
+  sont identiques en texte et en pages (dont les 8 des TD type bac publiés le 24/11) ; les 8 autres (`golden-sac`,
+  `dm-cryptographie`, `exercices-liste-ou-dictionnaire`, `dm-conversion-binaire-liste`, `dm-poo-fraction`, `dm-poo-itineraire`,
+  `dm-recherche-lineaire-dict`, `dm-trouver-max`) n'ont pas encore eu leur passe finale et se comparent au moteur d'avant le
+  21 novembre au soir ; ou on contrôle le fond seul (réponses, questions, pages). Un TD nouveau, lui, se contrôle avec les outils de `main`,
+  dont `imprimer-td.py`, qui signale chaque réponse à l'étroit sur papier (T123e) ; `bandeau_td.py` mesure le bandeau d'une page à seize largeurs d'écran et
   sur papier (rien de coupé, rien de recouvert) ; `qcu_forme.py` dit si la bonne option d'un choix
   unique se repère à sa forme, la consigne étant qu'elle ne le soit jamais : un TD est à revoir quand
   elle est nettement la plus longue (10 % de plus que chacune des autres) dans au moins la moitié de
