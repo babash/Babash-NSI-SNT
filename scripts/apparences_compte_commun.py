@@ -36,6 +36,9 @@ PRIX = {"tete": 40, "visage": 40, "cou": 40, "main": 40, "epaule": 40, "pieds": 
 # viennent d'un haut fait, de l'enseignant·e (avec un motif) ou d'un jeu, comme élément d'histoire.
 # Décision de l'enseignant du 20/11 (19:00) : « Les gimmicks de la classe » ne sont pas dans la boutique.
 FAMILLES_TROPHEES = {"classe"}
+# Les objets retirés par l'enseignant (24/11, T133) : ils restent peut-être dans le catalogue
+# du moteur le temps que le Designer publie le sien, mais ne sont jamais proposés ici.
+RETIRES = {"tete:bouchon_mamoudzou", "main:perche_extensible"}
 IDENTIFIANT = re.compile(r"^[a-z0-9_]{1,40}$")
 
 
@@ -57,7 +60,7 @@ def construire(chemin):
         if e not in PRIX:
             erreur(f"emplacement d'objet inconnu du barème des prix : {e}")
         for o in cat["objets"][e]:
-            if o["id"] == "aucun":
+            if o["id"] == "aucun" or f"{e}:{o['id']}" in RETIRES:
                 continue
             if not IDENTIFIANT.match(o["id"]):
                 erreur(f"identifiant d'objet illisible : {e}:{o['id']}")
