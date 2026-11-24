@@ -1438,6 +1438,8 @@
       return q;
     });
     this.auteurs();
+    // la réponse modèle de chaque question, lue avant le montage (T123e : la place sur papier)
+    this.questions.forEach(function (q) { try { q.modele = q.lireModele(); } catch (e) { q.modele = null; } });
     this.questions.forEach(function (q) {
       try { q.monter(); } catch (e) { q.s.classList.add('td-q-cassee'); if (window.console) console.error('Question ' + q.id + ' :', e); }
     });
@@ -1477,16 +1479,68 @@
      « Regrouper les questions courtes ») ; en deux colonnes de questions si toutes les consignes sont courtes.
      Automatique, à partir de 2 questions ; data-regrouper="non" sur <main>, une partie ou une question l'empêche.
      Les numéros restent ceux de la suite papier. À l'écran, rien ne change : le tableau est papier seul, et les
-     questions regroupées sont cachées à l'impression seulement. */
-  var GROUPE_COURT = 48, GROUPE_ETIQ = 22;
+     questions regroupées sont cachées à l'impression seulement.
+     T123e : la réponse modèle doit tenir dans sa case, écrite à la main. Place demandée : 2,5 mm par caractère de la
+     réponse modèle (la variante acceptée la plus longue ; pour une « libre », sa jumelle d'écran ou sa correction),
+     20 mm au moins. Place d'une étiquette imprimée (10 pt) : 1,9 mm par caractère, plus 1 mm. La case « Réponse »
+     fait 58 mm (64 mm avec une réponse rédigée) et s'élargit jusqu'à 100 mm pour la plus longue réponse du tableau ;
+     une question qui ne tiendrait pas dans 100 mm reste hors tableau, avec sa ligne pleine. L'étiquette passe
+     au-dessus de la zone d'écriture quand elle en prendrait plus du tiers, ou quand elle ne laisserait pas la place
+     de la réponse. Deux colonnes (case de 30 mm, 40 mm avec une réponse rédigée, élargie jusqu'à 44 mm) seulement si
+     chaque réponse y tient, avec son étiquette sur une ligne. Une « libre » seule garde sa ligne pleine ; une « courte » seule reste sur la
+     rangée de sa consigne si sa réponse y tient (ligne de 64 à 110 mm), sinon elle a sa ligne pleine. */
+  var GROUPE_COURT = 48;
+  var MM_CAR_MAIN = 2.5, MM_CAR_ETIQ = 1.9, MM_UTILE_MIN = 20, MM_MARGES = 4;
+  var CASE_MM = 58, CASE_REDIGE_MM = 64, CASE_MAX_MM = 100, CASE2_MM = 30, CASE2_REDIGE_MM = 40, CASE2_MAX_MM = 44, RANGEE_MM = 64, RANGEE_MAX_MM = 110;
+  // la réponse modèle d'une question, lue avant le montage (les options sont encore dans la page) : null si aucune
+  function texteNet(e) { return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; }
+  function plusLongue(s) { return alternatives(s).map(function (x) { return x.trim(); }).reduce(function (a, b) { return b.length > a.length ? b : a; }, ''); }
+  Question.prototype.lireModele = function () {
+    if (this.type === 'courte') return plusLongue(this.s.getAttribute('data-reponse'));
+    if (this.type !== 'libre') return null;
+    // la jumelle d'écran : la question data-support="ecran" qui la précède (sans autre question entre elles)
+    var p = this.s.previousElementSibling;
+    while (p && !p.matches('.td-q[data-support="ecran"]')) { if (p.matches('.td-q')) { p = null; break; } p = p.previousElementSibling; }
+    if (p) {
+      if (p.getAttribute('data-type') === 'courte') return plusLongue(p.getAttribute('data-reponse'));
+      var justes = p.querySelectorAll('.td-options > li[data-juste]');
+      if (justes.length) return Array.prototype.map.call(justes, texteNet).join(' ; ');
+      if (p.querySelector('.td-correction')) return texteNet(p.querySelector('.td-correction'));
+    }
+    var c = this.s.querySelector('.td-correction, .td-attendu');
+    return c ? texteNet(c) : null;
+  };
+  // place demandée (mm) par la réponse modèle, à la main ; Infinity si elle est inconnue (une « libre » sans modèle)
+  Question.prototype.placeMain = function () {
+    if (this.modele === null || this.modele === undefined) return Infinity;
+    return Math.max(MM_UTILE_MIN, this.modele.length * MM_CAR_MAIN);
+  };
+  function largeurEtiq(t) { return t ? t.length * MM_CAR_ETIQ + 1 : 0; }
+  // dans une case de largeur utile u (mm) : l'étiquette sur la ligne d'écriture, ou au-dessus ; null si rien ne tient
+  function placerEtiq(besoin, etiqMm, u, uneLigne) {
+    if (!etiqMm) return besoin <= u ? 'aucune' : null;
+    if (etiqMm <= u / 3 && u - etiqMm - 1 >= besoin) return 'ligne';
+    if (besoin <= u && (!uneLigne || etiqMm <= u)) return 'dessus';
+    return null;
+  }
+  // largeur utile (mm) qu'il faut à une case pour la réponse : l'étiquette sur la ligne d'écriture si elle n'en prend
+  // pas plus du tiers (et si la case reste sous max), sinon au-dessus (sur une ligne si uneLigne)
+  function utileMin(besoin, etiqMm, max, uneLigne) {
+    if (!etiqMm) return besoin;
+    var u = besoin + etiqMm + 1;
+    if (etiqMm <= u / 3 && u + MM_MARGES <= max) return u;
+    return uneLigne ? Math.max(besoin, etiqMm) : besoin;
+  }
   Feuille.prototype.regrouperPapier = function () {
     var groupes = [], cur = [], prec = null;
     function papierVisible(e) { return !e.matches('script, template, noscript, [hidden], [data-support="ecran"], .td-ecran-seul, .td-memo:not([data-support="papier"]), .td-plus-loin:not([data-support="papier"])'); }
     function suivantImprime(e) { var n = e.nextElementSibling; while (n && !papierVisible(n)) n = n.nextElementSibling; return n; }
     this.questions.forEach(function (q) {
       if (q.support === 'ecran') return;      // invisible sur papier : elle ne sépare pas deux questions
+      var base = q.type === 'libre' ? CASE_REDIGE_MM : CASE_MM;
       var ok = q.s.classList.contains('td-courte-ligne') && q.support !== 'ecran' && q.numPapier &&
-        (q.s.closest('[data-regrouper]') || { getAttribute: function () { return ''; } }).getAttribute('data-regrouper') !== 'non';
+        (q.s.closest('[data-regrouper]') || { getAttribute: function () { return ''; } }).getAttribute('data-regrouper') !== 'non' &&
+        utileMin(q.placeMain(), largeurEtiq(q.s.getAttribute('data-etiquette') || ''), CASE_MAX_MM) + MM_MARGES <= CASE_MAX_MM;
       if (ok && prec && suivantImprime(prec.s) === q.s) cur.push(q);
       else { if (cur.length > 1) groupes.push(cur); cur = ok ? [q] : []; }
       prec = ok ? q : null;
@@ -1495,13 +1549,21 @@
     groupes.forEach(function (g) {
       var lignes = g.map(function (q) {
         var c = q.s.querySelector(':scope > p.td-consigne'), etiq = q.s.getAttribute('data-etiquette') || '';
-        return { q: q, c: c, etiq: etiq, long: c ? c.textContent.replace(/\s+/g, ' ').trim().length : 0 };
+        return { q: q, c: c, etiq: etiq, etiqMm: largeurEtiq(etiq), besoin: q.placeMain(), long: c ? c.textContent.replace(/\s+/g, ' ').trim().length : 0 };
       });
-      var deux = g.length >= 4 && lignes.every(function (l) { return l.long <= GROUPE_COURT && l.etiq.length <= GROUPE_ETIQ; });
-      var parCol = deux ? Math.ceil(g.length / 2) : g.length, cols = deux ? 2 : 1;
       // une réponse rédigée (libre) a besoin de plus de place qu'un mot ou une valeur
       var redige = g.some(function (q) { return q.type === 'libre'; });
+      // deux colonnes de questions : la case fait 30 mm (40 mm avec une réponse rédigée), élargie jusqu'à 44 mm pour
+      // la plus longue réponse ; l'étiquette y tient sur une ligne
+      var base1 = redige ? CASE_REDIGE_MM : CASE_MM, base2 = redige ? CASE2_REDIGE_MM : CASE2_MM;
+      var u2 = Math.max(base2, Math.ceil(Math.max.apply(null, lignes.map(function (l) { return utileMin(l.besoin, l.etiqMm, CASE2_MAX_MM, true); })) + MM_MARGES));
+      var deux = g.length >= 4 && u2 <= CASE2_MAX_MM && lignes.every(function (l) { return l.long <= GROUPE_COURT; });
+      // une colonne : la case s'élargit pour la plus longue réponse du tableau (58 ou 64 mm, jusqu'à 100 mm)
+      var largeur = deux ? u2 : Math.min(CASE_MAX_MM, Math.max(base1,
+        Math.ceil(Math.max.apply(null, lignes.map(function (l) { return utileMin(l.besoin, l.etiqMm, CASE_MAX_MM); })) + MM_MARGES)));
+      var parCol = deux ? Math.ceil(g.length / 2) : g.length, cols = deux ? 2 : 1;
       var table = el('table', { class: 'td-groupe' + (deux ? ' td-groupe-2' : '') + (redige ? ' td-groupe-redige' : '') });
+      if (largeur !== (deux ? base2 : base1)) table.style.setProperty('--td-groupe-r', largeur + 'mm');
       var tete = el('tr');
       for (var k = 0; k < cols; k++) ['N°', 'Consigne', 'Réponse'].forEach(function (t, i) { tete.appendChild(el('th', { scope: 'col', class: ['td-groupe-n', 'td-groupe-q', 'td-groupe-r'][i], text: t })); });
       table.appendChild(el('thead', null, [tete]));
@@ -1513,9 +1575,12 @@
           if (!l) { tr.appendChild(el('td', { colspan: '3', class: 'td-groupe-rien' })); continue; }
           var cons = el('td', { class: 'td-groupe-q' });
           if (l.c) Array.prototype.forEach.call(l.c.childNodes, function (n) { cons.appendChild(n.cloneNode(true)); });
+          insecables(cons);
           tr.appendChild(el('th', { scope: 'row', class: 'td-groupe-n' }, [el('span', { class: 'td-q-num', text: String(l.q.numPapier) }), l.q.bonus ? el('span', { class: 'td-groupe-bonus', text: ' ★' }) : null]));
           tr.appendChild(cons);
-          tr.appendChild(el('td', { class: 'td-groupe-r td-vide' }, l.etiq ? [el('span', { class: 'td-groupe-etiq', text: l.etiq })] : []));
+          var place = l.etiq ? placerEtiq(l.besoin, l.etiqMm, largeur - MM_MARGES, deux) : 'aucune';
+          tr.appendChild(el('td', { class: 'td-groupe-r td-vide' + (place === 'dessus' ? ' td-groupe-etiq-dessus' : '') },
+            l.etiq ? [el('span', { class: 'td-groupe-etiq', text: l.etiq }), place === 'dessus' ? el('span', { class: 'td-groupe-ligne' }) : null] : []));
           l.q.s.classList.add('td-groupe-membre');
         }
         corps.appendChild(tr);
@@ -1523,7 +1588,32 @@
       table.appendChild(corps);
       g[0].s.parentNode.insertBefore(el('div', { class: 'td-table td-groupe-boite td-papier-seul', 'aria-hidden': 'true' }, [table]), g[0].s);
     });
+    // hors tableau : une « libre » garde sa ligne pleine ; une « courte » reste sur sa rangée si sa réponse y tient
+    this.questions.forEach(function (q) {
+      if (q.type === 'courte' && q.support !== 'ecran' && q.placeMain() > 45) q.s.style.setProperty('--td-champ-l', Math.ceil(q.placeMain() + 2) + 'mm');
+      if (!q.s.classList.contains('td-courte-ligne') || q.s.classList.contains('td-groupe-membre')) return;
+      if (q.type === 'libre') { q.s.classList.remove('td-courte-ligne'); return; }
+      var etiqMm = largeurEtiq(q.s.getAttribute('data-etiquette') || '');
+      // la rangée : l'étiquette, 2,5 mm d'écart, la ligne (2 mm de marges)
+      var besoin = q.placeMain() + (etiqMm ? etiqMm + 2.5 : 0) + 2;
+      if (besoin > RANGEE_MAX_MM) q.s.classList.remove('td-courte-ligne');
+      else if (besoin > RANGEE_MM) q.s.style.setProperty('--td-rangee-r', Math.ceil(besoin) + 'mm');
+    });
   };
+  // dans une case étroite, un code de la consigne ne se coupe qu'à une espace, jamais au milieu d'une expression
+  // (pokemons[1] / ["types"]) ; un mot de code de plus de 24 caractères peut encore se couper (sinon il déborderait)
+  function insecables(cellule) {
+    cellule.querySelectorAll('code').forEach(function (c) {
+      if (c.children.length) return;
+      var t = c.textContent;
+      c.textContent = '';
+      t.split(/(\s+)/).forEach(function (m) {
+        if (!m) return;
+        if (/^\s+$/.test(m) || m.length > 24) c.appendChild(document.createTextNode(m));
+        else c.appendChild(el('span', { class: 'td-insecable', text: m }));
+      });
+    });
+  }
   /* sur papier, « Écris le programme » avec une grille ou un schéma (le robot) : la figure à droite, le cadre à remplir
      à sa gauche, si le code de départ est étroit (48 caractères au plus) ; data-cote="non" l'empêche (T123d) */
   Feuille.prototype.codeACoteDeLaFigure = function () {

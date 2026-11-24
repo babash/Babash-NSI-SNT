@@ -28,7 +28,9 @@ Le script :
    comprises), aucun texte imprimé sous 10 pt, aucune ligne de code coupée en deux (trop longue pour
    la page), rien qui déborde de la page, le bandeau et le pied présents, seules les polices du site
    dans le PDF (pdffonts), et tout ce que l'élève remplit (lignes, cases du code, cases à cocher,
-   ronds, cadres) tracé d'un trait plein d'au moins 0,5 pt et de contraste 7:1 au moins.
+   ronds, cadres) tracé d'un trait plein d'au moins 0,5 pt et de contraste 7:1 au moins ;
+6. signale (« Attention », sans bloquer) une réponse à l'étroit : réponse modèle plus longue que sa place sur
+   papier, à 2,5 mm par caractère écrit à la main (T123e).
 Il dit le nombre de pages (4 au plus pour un TD).
 """
 import os
@@ -197,6 +199,55 @@ def main():
     print('PDF vierge : ' + ('oui' if not total else f'NON ({len(total)} problème(s), voir les lignes « - » ci-dessus)'))
     sys.exit(1 if total else 0)
 
+# T123e : les réponses à l'étroit sur papier. Pour chaque « courte » et chaque « libre » à data-lignes="1" imprimées :
+# la place pour écrire (case d'un tableau de questions, moins l'étiquette si elle est sur la ligne ; rangée ; ligne
+# pleine) et la réponse modèle (variante acceptée la plus longue ; pour une « libre », sa jumelle d'écran ou sa
+# correction), à 2,5 mm par caractère écrit à la main. Le moteur règle les tableaux et les rangées ; une ligne
+# pleine trop courte se règle dans la page (data-lignes="2" sur une « libre »).
+ETROIT = r"""async () => {
+  const doc = new DOMParser().parseFromString(await (await fetch(location.href)).text(), 'text/html');
+  const mm = px => Math.round(px * 25.4 / 96 * 10) / 10, norm = s => (s || '').replace(/\s+/g, ' ').trim();
+  const vis = e => !!(e && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden');
+  const longue = s => (s || '').split('|').map(x => x.trim()).reduce((a, b) => b.length > a.length ? b : a, '');
+  function modele(so) {
+    if (!so) return '';
+    if (so.dataset.type === 'courte') return longue(so.dataset.reponse);
+    let p = so.previousElementSibling;
+    while (p && !p.matches('.td-q[data-support="ecran"]')) { if (p.matches('.td-q')) { p = null; break; } p = p.previousElementSibling; }
+    if (p) {
+      if (p.dataset.type === 'courte') return longue(p.dataset.reponse);
+      const j = [...p.querySelectorAll('.td-options > li[data-juste]')];
+      if (j.length) return j.map(x => norm(x.textContent)).join(' ; ');
+      if (p.querySelector('.td-correction')) return norm(p.querySelector('.td-correction').textContent);
+    }
+    const c = so.querySelector('.td-correction, .td-attendu'); return c ? norm(c.textContent) : '';
+  }
+  const out = [], membres = new Set();
+  document.querySelectorAll('table.td-groupe').forEach(tab => {
+    const qs = []; let n = tab.closest('.td-groupe-boite').nextElementSibling;
+    while (n) { if (n.matches('.td-q.td-groupe-membre')) qs.push(n); else if (n.matches('.td-q[data-support="ecran"], script, template') || (!vis(n) && !n.matches('.td-q'))) { } else break; n = n.nextElementSibling; }
+    const cases = [...tab.querySelectorAll('tbody td.td-groupe-r')];
+    const nums = [...tab.querySelectorAll('tbody th.td-groupe-n .td-q-num')].map(e => +norm(e.textContent));
+    const ordre = nums.map((x, i) => [x, i]).sort((a, b) => a[0] - b[0]).map(x => x[1]);
+    qs.forEach((s, k) => {
+      membres.add(s); const r = cases[ordre[k]]; if (!r) return;
+      const cs = getComputedStyle(r), rb = r.getBoundingClientRect();
+      let place = rb.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - parseFloat(cs.borderLeftWidth) - parseFloat(cs.borderRightWidth);
+      const et = r.querySelector('.td-groupe-etiq');
+      if (et) { const rg = document.createRange(); rg.selectNodeContents(et); const rs = [...rg.getClientRects()], der = rs[rs.length - 1];
+        const l = r.querySelector('.td-groupe-ligne'), bas = l ? l.getBoundingClientRect().bottom : rb.bottom - parseFloat(cs.paddingBottom);
+        if (bas - der.bottom < 6 * 96 / 25.4 - 0.5) place -= der.width + 96 / 25.4; }
+      out.push({ id: s.id, num: nums[ordre[k]], ou: 'tableau', place: mm(place), modele: modele(doc.getElementById(s.id)) });
+    });
+  });
+  document.querySelectorAll('.td-q[data-type="courte"], .td-q[data-type="libre"][data-lignes="1"]').forEach(s => {
+    if (membres.has(s) || !vis(s)) return;
+    const ch = s.querySelector(s.dataset.type === 'courte' ? 'input.td-champ' : 'textarea.td-libre'); if (!vis(ch)) return;
+    const t = s.querySelector('.td-num-papier') || s.querySelector('.td-q-num');
+    out.push({ id: s.id, num: norm(t ? t.textContent : ''), ou: s.classList.contains('td-courte-ligne') ? 'rangée' : 'ligne pleine', place: mm(ch.getBoundingClientRect().width), modele: modele(doc.getElementById(s.id)) });
+  });
+  return out.filter(x => x.modele.length * 2.5 > x.place);
+}"""
 
 def controler(b, url, sortie, html=None):
     """Contrôle une page (ou les feuilles réunies, html) et écrit son PDF. Renvoie (erreurs, pages, pages au plus)."""
@@ -272,6 +323,12 @@ def controler(b, url, sortie, html=None):
         p.set_viewport_size({'width': 794, 'height': 1123})
         p.evaluate('document.fonts.ready')
         mesures = p.evaluate(MESURES.replace('(BANDEAU_SRC)', BANDEAU_JS))
+        # (feuilles réunies : chaque feuille a été mesurée seule)
+        etroit = p.evaluate(ETROIT) if html is None else []
+        for x in etroit:
+            print(f"  Attention : réponse à l'étroit, {x['id']} ({x['num']}, {x['ou']}) : réponse modèle de {len(x['modele'])} caractères, "
+                  f"environ {len(x['modele']) * 2.5:.0f} mm à la main, pour {x['place']} mm"
+                  + (' : data-lignes="2"' if x['ou'] == 'ligne pleine' else ' : à signaler au Designer (le moteur doit la régler)'))
         # un texte caché rendu sur papier (une règle d'impression qui l'affiche) : la fuite elle-même, sans lire le PDF
         rendus = p.evaluate("""() => [...document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu, .td-retour-zone, .td-explication')]
             .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && e.textContent.trim())

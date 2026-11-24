@@ -14,6 +14,12 @@ Usage (à la racine du dépôt) : python3 -I charte/tester-outils.py
    sur le code de départ, comme l'élève : la fonction à sa place, la méthode dans sa classe. Les 10 cas des TD type
    bac (charte/essais/corrections-partielles.json) passent leurs tests cachés, et le départ seul ne les passe pas ;
    plus 4 cas écrits ici (méthode nouvelle, fonction nouvelle avant les instructions, correction en retrait, classe).
+6. Correction posée qui échoue (T123e) : une page témoin (effacée ensuite) dont la correction partielle est fausse ;
+   verifier-td.py doit la refuser et rapporter l'échec de la correction POSÉE (« posée sur le code de départ »,
+   l'assertion des tests cachés), et non d'abord le NameError de la correction seule.
+7. Réponses à l'étroit sur papier (T123e) : imprimer-td.py ne signale aucune réponse à l'étroit dans un tableau ni
+   sur une rangée sur les pages des tableaux (le gabarit, « Décimal et binaire » de SNT, les conditions) ; et le
+   signale sur un témoin dont les cases « Réponse » sont réduites à 15 mm.
 Code de sortie : 0 si tout est conforme.
 """
 import functools
@@ -76,6 +82,67 @@ def essayer_corrections_partielles(noter):
               + ('' if rc0 != 0 else ' (le départ seul passe déjà : essai sans valeur)'))
 
 
+TEMOIN_POSE = '''<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Témoin</title></head><body>
+<main class="td" data-td="temoin"><section class="td-q" data-type="code" id="q1" data-obligatoire>
+<p class="td-consigne">Écris la méthode <code>empiler</code>.</p>
+<pre class="td-depart">
+class Pile:
+    def __init__(self):
+        self.t = []
+
+    def empiler(self, x):
+        ...
+</pre>
+<script type="text/x-python" class="td-tests">
+_p = Pile()
+_p.empiler(1)
+_p.empiler(2)
+assert _p.t == [1, 2], "Après empiler(1) puis empiler(2), t doit valoir [1, 2]. Il vaut : " + repr(_p.t)
+</script>
+<pre class="td-code" data-verifier="correction">
+def empiler(self, x):
+    self.t.insert(0, x)
+</pre>
+</section></main></body></html>
+'''
+PAGES_ETROIT = ['charte/gabarit-td/index.html', 'snt/fichiers/binaire-seance/activite-conversion-binaire/index.html',
+                'nsi-premiere/fichiers/python-exercices-bases-premiere/exercices-conditions-2.html']
+
+
+def essayer_correction_posee_fausse(noter):
+    temoin = os.path.join(ICI, 'essais', '.temoin-posee.html')
+    open(temoin, 'w', encoding='utf-8').write(TEMOIN_POSE)
+    try:
+        rc, out = lancer('charte/verifier-td.py', os.path.relpath(temoin, RACINE))
+    finally:
+        os.remove(temoin)
+    ligne = next((l.strip() for l in out.splitlines() if 'q1' in l), '')
+    # le NameError de la correction seule n'est donné qu'en second, après « la correction seule »
+    nom = ligne.find('NameError')
+    vu = rc != 0 and 'posée sur le code de départ' in ligne and 'Il vaut' in ligne and (nom < 0 or nom > ligne.find('la correction seule') >= 0)
+    noter(vu, 'correction posée fausse : refusée, échec de la correction posée rapporté (' + ligne[:110] + ')')
+
+
+def essayer_etroit(noter, base, pdf):
+    for page in PAGES_ETROIT:
+        if not os.path.exists(os.path.join(RACINE, page)):
+            continue
+        rc, out = lancer('charte/imprimer-td.py', base + page, pdf)
+        moteur = [l.strip() for l in out.splitlines() if "réponse à l'étroit" in l and 'ligne pleine' not in l]
+        noter(not moteur, f'{page} : aucune réponse à l\'étroit dans un tableau ni sur une rangée' + (f' ({moteur[0][:100]})' if moteur else ''))
+    page = PAGES_ETROIT[1]
+    source = open(os.path.join(RACINE, page), encoding='utf-8').read()
+    temoin = os.path.join(os.path.dirname(os.path.join(RACINE, page)), '.temoin-etroit.html')
+    regle = '<style>@media print { .td table.td-groupe .td-groupe-r { width: 15mm !important; } }</style>'
+    open(temoin, 'w', encoding='utf-8').write(source.replace('</head>', regle + '</head>', 1))
+    try:
+        rc, out = lancer('charte/imprimer-td.py', base + os.path.relpath(temoin, RACINE).replace(os.sep, '/'), pdf)
+    finally:
+        os.remove(temoin)
+    vus = [l for l in out.splitlines() if "réponse à l'étroit" in l]
+    noter(len(vus) >= 2, f'témoin aux cases de 15 mm : {len(vus)} réponse(s) à l\'étroit signalée(s)')
+
+
 def main():
     serveur = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Silencieux, directory=RACINE))
     threading.Thread(target=serveur.serve_forever, daemon=True).start()
@@ -107,6 +174,8 @@ def main():
     rc, out = lancer('charte/verifier-td.py', 'charte/gabarit-td/index.html')
     noter(rc == 0 and 'tout est juste' in out, 'gabarit : verifier-td.py, tout est juste')
     essayer_corrections_partielles(noter)
+    essayer_correction_posee_fausse(noter)
+    essayer_etroit(noter, base, pdf)
     rc, out = lancer('charte/numeroter-feuilles.py', '--tout', '--verifier')
     noter('Problème' not in out and 'Traceback' not in out, 'numeroter-feuilles.py --tout --verifier : tout le dépôt, sans problème (' + out.strip().splitlines()[-1] + ')')
     if os.path.exists(pdf):
