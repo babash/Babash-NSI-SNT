@@ -14,6 +14,7 @@ spec = importlib.util.spec_from_file_location("ce", os.path.join(ICI, "..", "cal
 ce = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(ce)
 EXEMPLE = json.load(open(os.path.join(ICI, "calendrier", "exemple-boucles.json"), encoding="utf-8"))
+NOUVEAUX = json.load(open(os.path.join(ICI, "calendrier", "exemple-nouveaux-types.json"), encoding="utf-8"))
 SCHEMA = json.load(open(ce.SCHEMA, encoding="utf-8"))
 
 
@@ -120,6 +121,65 @@ class Controle(unittest.TestCase):
         self.assertTrue(any("réponse annoncée" in e for e in erreurs(d)))
         out, err = ce.executer_sql(base, "UPDATE t SET n = n * 10; SELECT n FROM t ORDER BY n;")
         self.assertEqual((out, err), ("10\n20", None))
+
+
+def un_nouveau(t):
+    """L'exercice d'exemple du type t (trace, combien, paniers, intrus, memo, bits), seul dans sa banque."""
+    d = copy.deepcopy(NOUVEAUX)
+    d["exercices"] = [e for e in d["exercices"] if e["type"] == t]
+    d["exercices"][0]["id"] = d["theme"]["id"] + "-001"
+    return d
+
+
+class NouveauxTypes(unittest.TestCase):
+    def test_exemples_justes(self):
+        for t in ("trace", "combien", "paniers", "intrus", "memo", "bits"):
+            with self.subTest(t=t):
+                self.assertEqual(erreurs(un_nouveau(t)), [])
+
+    def test_trace_fausse(self):
+        d = un_nouveau("trace")
+        d["exercices"][0]["niveaux"][0]["items"][0]["tours"][2][1] = "4"
+        self.assertTrue(any("ne suit pas le code" in e for e in erreurs(d)))
+
+    def test_trace_depart(self):
+        d = un_nouveau("trace")
+        d["exercices"][0]["niveaux"][1]["items"][0]["depart"] = False
+        self.assertTrue(any("ne suit pas le code" in e for e in erreurs(d)))
+
+    def test_combien_faux(self):
+        d = un_nouveau("combien")
+        d["exercices"][0]["niveaux"][1]["items"][0]["reponse"] = 7
+        self.assertTrue(any("réponse annoncée" in e for e in erreurs(d)))
+
+    def test_combien_depart_sur_la_reponse(self):
+        d = un_nouveau("combien")
+        d["exercices"][0]["niveaux"][0]["items"][0]["depart"] = 4
+        self.assertTrue(any("commence sur la réponse" in e for e in erreurs(d)))
+
+    def test_paniers_un_seul(self):
+        d = un_nouveau("paniers")
+        for c in d["exercices"][0]["niveaux"][0]["items"][0]["cartes"]:
+            c["panier"] = 0
+        self.assertTrue(any("au moins une carte" in e for e in erreurs(d)))
+
+    def test_intrus_execute(self):
+        d = un_nouveau("intrus")
+        d["exercices"][0]["niveaux"][0]["items"][0]["intrus"] = 0
+        self.assertTrue(any("intrus" in e for e in erreurs(d)))
+
+    def test_memo_execute(self):
+        d = un_nouveau("memo")
+        d["exercices"][0]["niveaux"][0]["items"][0]["paires"][0][1] = "0 1"
+        self.assertTrue(erreurs(d))
+
+    def test_bits_cible(self):
+        d = un_nouveau("bits")
+        d["exercices"][0]["niveaux"][0]["items"][0]["reponse"] = "1100"
+        self.assertTrue(any("pas la cible" in e for e in erreurs(d)))
+        d = un_nouveau("bits")
+        d["exercices"][0]["niveaux"][2]["items"][0]["reponse"] = "11111111"
+        self.assertTrue(erreurs(d))
 
 
 if __name__ == "__main__":

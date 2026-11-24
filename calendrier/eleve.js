@@ -254,6 +254,7 @@
   function exercice(c) {
     var b = banques[c.theme]; if (!b || !c.rang) return null;
     var n = b.exercices.length; if (!n) return null;
+    // une banque plus courte que le calendrier : les exercices reviennent dans l'ordre, en révision (jamais de case vide)
     return { ex: b.exercices[(c.rang - 1) % n], revision: c.rang > n, langage: CV.themeDe(b).langage, titreTheme: CV.themeDe(b).titre || c.theme, tables: tables[c.theme] };
   }
   function calendrier() {
@@ -316,7 +317,7 @@
   function carteCase(c) {
     var x = exercice(c), d = CV.versDate(c.jour);
     return '<button class="case-carte" data-act="case" data-n="' + c.numero + '"><span class="date"><span>' + esc(CV.jourCourt(c.jour)) + "</span><b>" + d.getUTCDate() + "</b></span>" +
-      '<span class="quoi"><b>' + (x ? esc(x.ex.titre) : "Case " + c.numero) + "</b><span>" + (x ? esc(CV.NOMS_TYPES[x.ex.type]) + " · " + esc(x.titreTheme) + " · " : "") +
+      '<span class="quoi"><b>' + (x ? esc(x.ex.titre) : "Case " + c.numero) + "</b><span>" + (x ? esc(CV.NOMS_TYPES[x.ex.type] || "Mini-jeu") + " · " + esc(x.titreTheme) + (x.revision ? " · révision" : "") + " · " : "Exercice introuvable : préviens ton enseignant·e.<br>") +
       "10 min au plus<br>Corrigé le " + esc(CV.dateCourte(c.corrige_le)) + "</span></span></button>";
   }
   function tuile(c, auj) {
@@ -343,6 +344,7 @@
       var cor = c.etat === "corrigee";
       html = "<h2>" + esc(x.ex.titre) + '</h2><p class="doux">' + esc(CV.dateLongue(c.jour)) + " · " + esc(CV.NOMS_TYPES[x.ex.type]) + " · " + esc(x.titreTheme) + (x.revision ? " · révision" : "") + "</p>" +
         '<p class="objectif">Objectif : ' + esc(x.ex.objectif) + "</p>" +
+        (x.revision ? '<p class="message info">Révision : cet exercice est déjà passé dans le calendrier. Il revient pour t\'entraîner encore ; il compte comme une nouvelle case.</p>' : "") +
         (c.etat === "en_attente" ? '<p class="message info">Cette case attend son tour : fais d\'abord les plus anciennes. Tu peux quand même la jouer.</p>' : "") +
         (cor ? '<p class="message info">Le corrigé est ouvert. Tu peux encore jouer : c\'est un rattrapage, il compte comme case faite.</p>'
              : '<p class="doux">Choisis ton niveau. Un niveau suffit ; les autres sont des bonus. Corrigé le ' + esc(CV.dateLongue(c.corrige_le)) + ".</p>") +

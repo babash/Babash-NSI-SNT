@@ -85,12 +85,15 @@
     }
     return out + CV.esc(texte.slice(i));
   };
-  // une ligne de code, avec un guide par niveau d'indentation (4 espaces)
+  // une ligne de code, avec un guide par niveau d'indentation (4 espaces) : une bande grise et un filet
+  // de tracé différent par niveau (plein, tirets, points, fin), comme dans les TD (règle 20)
   CV.ligneCode = function (texte) {
     var m = /^( *)/.exec(texte)[1].length, g = "";
-    for (var k = 0; k < Math.floor(m / 4); k++) g += '<span class="guide"></span>';
+    for (var k = 0; k < Math.floor(m / 4); k++) g += '<span class="guide n' + (k % 4) + '"></span>';
     return g + CV.colorer(texte.slice(Math.floor(m / 4) * 4));
   };
+  // un petit programme de plusieurs lignes (dans une carte ou une option), avec ses guides
+  CV.blocLignes = function (texte) { return String(texte).split("\n").map(CV.ligneCode).join("\n"); };
   CV.blocCode = function (lignes, o) {
     o = o || {};
     return '<div class="code' + (o.touchable ? " touchable" : "") + '">' + lignes.map(function (l, i) {
@@ -163,16 +166,32 @@
   CV.themeDe = function (b) { return (b && (b.theme || b.chapitre)) || {}; };
 
   // ------------------------------------------------------------ affichage clair ou obscur
-  var th = CV.lire("theme", null); if (th) document.documentElement.setAttribute("data-theme", th);
+  // le même réglage que le site (clé « theme » : light, dark, ou rien pour suivre l'appareil),
+  // pour qu'un choix fait sur le site vaille aussi ici ; l'ancienne clé « cv:theme » est reprise une fois
+  function lireMode() {
+    try {
+      var v = localStorage.getItem("theme"), ancien = localStorage.getItem("cv:theme");
+      if (!v && ancien) { v = JSON.parse(ancien); localStorage.setItem("theme", v); }
+      if (ancien != null) localStorage.removeItem("cv:theme");
+      return v === "light" || v === "dark" ? v : null;
+    } catch (e) { return null; }
+  }
+  var th = lireMode(); if (th) document.documentElement.setAttribute("data-theme", th);
   CV.basculerTheme = function () {
     var r = document.documentElement, a = r.getAttribute("data-theme");
-    var sombre = a ? a === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches;
-    r.setAttribute("data-theme", sombre ? "light" : "dark"); CV.ecrire("theme", sombre ? "light" : "dark");
+    var sombre = a ? a === "dark" : window.matchMedia("(prefers-color-scheme: dark)").matches, m = sombre ? "light" : "dark";
+    r.setAttribute("data-theme", m);
+    try { localStorage.setItem("theme", m); } catch (e) { /* navigation privée */ }
   };
   CV.ICONE_THEME = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
   CV.ICONE_COMPTE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>';
+  // le pied de page, comme celui du site : auteur, licences, dépôt, mention de l'IA (décisions du 07/11, 10/11 et 20/11)
   CV.pied = function () {
-    return '<footer class="pied">Babash - NSI Tani Malandi · exercices CC BY-SA 4.0, code MIT · <a href="' + CV.esc(C.DEPOT || "#") + '">Code source sur GitHub</a></footer>';
+    var nbsp = String.fromCharCode(0xA0);
+    return '<footer class="pied"><p class="pied-ligne">Babash' + nbsp + "-" + nbsp + "NSI Tani Malandi · exercices " +
+      '<a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license">CC BY-SA 4.0</a> · code <a href="https://opensource.org/license/mit" rel="license">MIT</a> · ' +
+      '<a href="' + CV.esc(C.DEPOT || "#") + '">Code source sur GitHub</a> · conçu avec l\'aide de l\'IA</p>' +
+      '<p class="pied-ligne"><a href="../">Ressources NSI et SNT</a></p></footer>';
   };
   CV.horsService = function () {
     return '<div class="message info" role="status">Le calendrier n\'est pas encore en service. Il ouvrira bientôt, à la même adresse.</div>';
