@@ -109,7 +109,7 @@ ok(E.gestes.map(function (g) { return g.id; }).join() === 'salue,saute,rit,siest
 /* T133c : la bouteille d'eau percée, le geste « tempête », les objets de fidélité */
 var bt = avec('main', 'bouteille_percee');
 var cb = E.catalogue.objets.main.filter(function (o) { return o.id === 'bouteille_percee'; })[0];
-ok(cb && cb.famille === 'lycee' && E.normaliser(bt).objets.main === 'bouteille_percee', 'bouteille_percee au catalogue (famille lycee)');
+ok(cb && cb.famille === 'classe' && E.normaliser(bt).objets.main === 'bouteille_percee', 'bouteille_percee au catalogue (famille classe, un trophée)');
 ok(image(bt, 'repos').indexOf('#4ab8f0') < 0, 'bouteille : pas de jet au repos');
 ['salue', 'tres_content', 'content'].forEach(function (e) { ok(image(bt, e).indexOf('#4ab8f0') > 0, 'bouteille : un jet pendant le geste ' + e); });
 ok(E.gestes[4].etat === 'tempete' && E.gestes[4].duree >= 1500 && E.gestes[4].duree <= 2000, 'tempête : 1,5 à 2 s');

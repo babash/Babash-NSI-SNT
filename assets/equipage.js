@@ -244,6 +244,8 @@
     /* T133c : un clin d'œil affectueux à un élève qui dessine souvent et bien ; le nom affiché est une donnée
        (il peut devenir « Le dessin du fond de la classe ») : l'identifiant ne change pas */
     ['dessin_karim', 'Le dessin de Karim', 'main', 'classe'],
+    /* T133c : la bouteille d'eau percée, un gimmick de la classe (décision de l'enseignant du 24/11, 12:33) */
+    ['bouteille_percee', 'La bouteille d\'eau percée', 'main', 'classe'],
 
     ['meches_vives', 'Mèches électriques', 'tete', 'heros'], ['bandeau_noue', 'Bandeau noué au vent', 'tete', 'heros'],
     ['loup', 'Loup de justicier·e', 'visage', 'heros'], ['monocle_pixels', 'Le monocle à pixels', 'visage', 'heros'],
@@ -258,7 +260,7 @@
 
     ['casquette_mabawa', 'Casquette « PLATA O MABAWA »', 'tete', 'lycee', 'PLATA O MABAWA'], ['ski_front', 'Lunettes de ski sur le front', 'tete', 'lycee'],
     ['peigne', 'Peigne planté dans les cheveux', 'tete', 'lycee'], ['ski_yeux', 'Lunettes de ski sur les yeux', 'visage', 'lycee'],
-    ['coelacanthe', 'Cœlacanthe en peluche', 'epaule', 'lycee'], ['bouteille_percee', 'La bouteille d\'eau percée', 'main', 'lycee'],
+    ['coelacanthe', 'Cœlacanthe en peluche', 'epaule', 'lycee'],
     /* dessinés mais hors catalogue pour l'instant (T112d) : casquette_barge, casquette_pilaou, bob, perles, ecouteurs, sacoche,
        sac_devant, telephone, bouteille_glacee, bracelet, claquettes, et le haut maillot_foot */
 
