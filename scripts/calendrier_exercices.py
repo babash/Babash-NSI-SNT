@@ -14,7 +14,12 @@ Pour chaque thème du catalogue (calendrier/exercices/catalogue.json) :
      - ordre    : les lignes dans l'ordre affichent « affiche » ;
      - completer: les bonnes pièces donnent « affiche » ; chaque mauvaise pièce le change ;
      - associer : avec "executer", chaque programme affiche son élément de droite ;
-     - vraifaux : avec "code" et "verifier", l'expression vaut « reponse ».
+     - vraifaux : avec "code" et "verifier", l'expression vaut « reponse » ;
+     - trace    : le tableau est celui des variables à chaque retour sur la ligne de la boucle ;
+     - combien  : avec "code" et "verifier", l'expression vaut « reponse » ;
+     - intrus   : avec "executer", tous les programmes affichent la même chose, sauf l'intrus ;
+     - memo     : avec "executer", chaque programme affiche sa carte ;
+     - bits     : les bits valent la cible (base 10, 16 ou couleur RVB).
      Python : python3 -I dans un processus à part, 3 s au plus (une boucle infinie
      voulue dans un programme fautif compte comme « différent »). SQL : SQLite en
      mémoire, sur la base_sql du chapitre ; une ligne par enregistrement, les
@@ -28,6 +33,7 @@ Usage :
   python3 scripts/calendrier_exercices.py --fichier chemin/vers/brouillon.json
   python3 scripts/calendrier_exercices.py --sans-execution
   python3 scripts/calendrier_exercices.py --bundle        écrit aussi calendrier/exercices/<id>.js
+  python3 scripts/calendrier_exercices.py --catalogue     remet à jour le nombre d'exercices de catalogue.json
 Code de sortie : 1 s'il y a une erreur. Python 3 standard.
 """
 import argparse
@@ -42,7 +48,7 @@ RACINE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DOSSIER = os.path.join(RACINE, "calendrier", "exercices")
 SCHEMA = os.path.join(DOSSIER, "exercice.schema.json")
 CATALOGUE = os.path.join(DOSSIER, "catalogue.json")
-TYPES = ("associer", "erreur", "vraifaux", "sortie", "ordre", "completer")
+TYPES = ("associer", "erreur", "vraifaux", "sortie", "ordre", "completer", "trace", "combien", "paniers", "intrus", "memo", "bits")
 # caractères invisibles ou de contrôle, écrits par leur code (CLAUDE.md, § 4)
 INVISIBLES = set([0xAD, 0x200B, 0x200C, 0x200D, 0x200E, 0x200F, 0x2028, 0x2029, 0x202A, 0x202B, 0x202C,
                   0x202D, 0x202E, 0x2060, 0x2066, 0x2067, 0x2068, 0x2069, 0xFEFF])
@@ -190,6 +196,51 @@ def executer(chap, code):
     return executer_python(code)
 
 
+TRACEUR = r"""
+import json, sys
+d = json.load(sys.stdin)
+code, cols, ligne = d["code"], d["colonnes"], d["ligne"] + 1
+vus = []
+def montre(v):
+    return v if isinstance(v, str) else repr(v) if not isinstance(v, (int, float, bool)) or v is None else str(v)
+def suivre(f, e, a):
+    if f.f_code.co_filename != "<p>":
+        return None
+    if e == "line" and f.f_lineno == ligne:
+        vus.append([montre(f.f_locals[c]) if c in f.f_locals else "?" for c in cols])
+        if len(vus) > 50:
+            raise RuntimeError("plus de 50 tours")
+    return suivre
+c = compile(code, "<p>", "exec")
+sys.settrace(suivre)
+try:
+    exec(c, {"__name__": "__main__"})
+finally:
+    sys.settrace(None)
+print(json.dumps(vus))
+"""
+
+
+def tracer(it):
+    """Les valeurs des colonnes à chaque passage sur la ligne de la boucle : le premier passage
+    est « Avant la boucle », les suivants « Après le tour k » (le retour sur la ligne de la boucle)."""
+    lignes = it["code"].split("\n")
+    b = it.get("boucle")
+    if b is None:
+        b = next((i for i, l in enumerate(lignes) if re.match(r"\s*(for|while)\b", l)), None)
+    if b is None or not 0 <= b < len(lignes):
+        return None, "aucune ligne de boucle (for ou while) : préciser « boucle »"
+    try:
+        r = subprocess.run([sys.executable, "-I", "-c", TRACEUR], input=json.dumps({"code": it["code"], "colonnes": it["colonnes"], "ligne": b}),
+                           capture_output=True, text=True, timeout=3)
+    except subprocess.TimeoutExpired:
+        return None, SANS_FIN
+    if r.returncode:
+        return None, (r.stderr.strip().splitlines() or ["erreur"])[-1]
+    vus = json.loads(r.stdout.strip().splitlines()[-1])
+    return (vus if it.get("depart") else vus[1:]), None
+
+
 def opt_sortie(o):
     return "\n".join(x.strip() for x in o.split(" / "))
 
@@ -260,13 +311,66 @@ def forme(chap, ex, ou, rp):
             elif t == "vraifaux":
                 if "verifier" in it and "code" not in it:
                     rp.erreur(o2, "« verifier » demande un « code »")
+            elif t == "trace":
+                nc = len(it.get("colonnes", []))
+                if any(len(l) != nc for l in it.get("tours", [])):
+                    rp.erreur(o2, f"chaque ligne de « tours » a {nc} valeur(s), une par colonne")
+                for v in it.get("visibles", []):
+                    if not (0 <= v[0] < len(it.get("tours", [])) and 0 <= v[1] < nc):
+                        rp.erreur(o2, f"« visibles » {v} hors du tableau")
+                if len(it.get("visibles", [])) >= len(it.get("tours", [])) * nc:
+                    rp.erreur(o2, "toutes les cases sont déjà remplies : rien à écrire")
+            elif t == "combien":
+                if not it.get("min", 0) <= it.get("reponse", 0) <= it.get("max", 0):
+                    rp.erreur(o2, "« reponse » hors de [min, max]")
+                if it.get("depart", it.get("min")) == it.get("reponse"):
+                    rp.erreur(o2, "le compteur commence sur la réponse : changer « depart » ou « min »")
+                if "verifier" in it and "code" not in it:
+                    rp.erreur(o2, "« verifier » demande un « code »")
+                if "code" in it and "verifier" not in it:
+                    rp.avert(o2, "« combien » avec un code sans « verifier » : à relire à la main")
+            elif t == "paniers":
+                cartes = it.get("cartes", [])
+                if len(set(c.get("texte") for c in cartes)) != len(cartes):
+                    rp.erreur(o2, "deux cartes ont le même texte")
+                if len(set(c.get("panier") for c in cartes)) < 2:
+                    rp.erreur(o2, "les deux paniers doivent recevoir au moins une carte")
+                if len(set(it.get("paniers", []))) != 2:
+                    rp.erreur(o2, "deux paniers de noms différents")
+            elif t == "intrus":
+                if not 0 <= it.get("intrus", -1) < len(it.get("elements", [])):
+                    rp.erreur(o2, "« intrus » hors des éléments")
+                pq = it.get("pourquoi", {})
+                if not 0 <= pq.get("bonne", -1) < len(pq.get("options", [])) or len(pq.get("retours", [])) != len(pq.get("options", [])):
+                    rp.erreur(o2, "« pourquoi » : « bonne » dans les options et un retour par option")
+                if "retours" in it and len(it["retours"]) != len(it.get("elements", [])):
+                    rp.erreur(o2, "« retours » : un par élément")
+            elif t == "memo":
+                cartes = [c for p in it.get("paires", []) for c in p]
+                if len(set(cartes)) != len(cartes):
+                    rp.erreur(o2, "deux cartes ont le même texte : la paire ne serait pas unique")
+            elif t == "bits":
+                b = it.get("reponse", "")
+                if len(b) % 4:
+                    rp.erreur(o2, "« reponse » : un nombre de bits multiple de 4 (4, 8, 16 ou 24)")
+                if it.get("base") == "rvb" and len(b) != 24:
+                    rp.erreur(o2, "une couleur RVB a 24 bits")
+                try:
+                    c = it.get("cible", "")
+                    v = int(c.lstrip("#").removeprefix("0x"), 16) if it.get("base") in ("16", "rvb") else int(c)
+                    if v != int(b or "0", 2):
+                        rp.erreur(o2, f"les bits {b} valent {int(b or '0', 2)}, pas la cible {c}")
+                except ValueError:
+                    rp.erreur(o2, f"« cible » illisible en base {it.get('base', '10')}")
+                if b and b == "0" * len(b):
+                    rp.erreur(o2, "tous les bits éteints : la page commence ainsi, la réponse serait déjà là")
             if chap["langage"] == "python":
                 for champ in ("code", "lignes"):
                     v = it.get(champ)
                     v = "\n".join(v) if isinstance(v, list) else v
                     if v and INTERDITS_PY.search(v):
                         rp.erreur(o2, "input, open, eval, exec ou un module (random, os, time…) : le résultat doit être le même à chaque exécution, sans clavier ni fichier")
-            if t in ("sortie", "erreur", "ordre", "completer") and not it.get("aides") and n < 3:
+            if t in ("sortie", "erreur", "ordre", "completer", "trace", "combien", "bits") and not it.get("aides") and n < 3:
                 rp.avert(o2, "aucun coup de pouce")
 
 
@@ -355,6 +459,37 @@ def fond(chap, ex, ou, rp):
                     s, err = executer(chap, g)
                     if err or s.replace("\n", ", ") != d:
                         rp.erreur(o2, f"« {g[:30]}… » affiche {err or repr(s)}, pas « {d} »")
+            elif t == "trace":
+                tours, err = tracer(it)
+                if err:
+                    rp.erreur(o2, f"le code ne marche pas : {err}")
+                elif tours != it["tours"]:
+                    rp.erreur(o2, f"le tableau annoncé ne suit pas le code ; relevé à chaque retour sur la boucle : {tours}")
+            elif t == "combien" and "verifier" in it:
+                if chap["langage"] == "sql":
+                    s, err = executer_sql(chap.get("_base", ""), it["code"], it["verifier"])
+                else:
+                    s, err = executer_python("import contextlib as _c, io as _i\n_f = _i.StringIO()\nwith _c.redirect_stdout(_f):\n    exec(" + repr(it["code"]) + ")\nsortie = _f.getvalue()",
+                                             "\nprint(" + it["verifier"] + ")")
+                if err:
+                    rp.erreur(o2, f"code ou « verifier » en erreur : {err}")
+                elif s.splitlines()[-1].strip() != str(it["reponse"]):
+                    rp.erreur(o2, f"« {it['verifier']} » vaut {s.splitlines()[-1]}, la réponse annoncée est {it['reponse']}")
+            elif t == "intrus" and it.get("executer"):
+                sorties = []
+                for e in it["elements"]:
+                    s, err = executer(chap, e)
+                    sorties.append(err or s)
+                autres = set(x for k, x in enumerate(sorties) if k != it["intrus"])
+                if len(autres) != 1:
+                    rp.erreur(o2, f"les éléments qui ne sont pas l'intrus n'affichent pas tous la même chose : {sorties}")
+                elif sorties[it["intrus"]] in autres:
+                    rp.erreur(o2, "l'intrus affiche la même chose que les autres")
+            elif t == "memo" and it.get("executer"):
+                for g, d in it["paires"]:
+                    s, err = executer(chap, g)
+                    if err or s.replace("\n", ", ") != d:
+                        rp.erreur(o2, f"« {g[:30]}… » affiche {err or repr(s)}, pas « {d} »")
             elif t == "vraifaux" and "code" in it:
                 if "verifier" in it and chap["langage"] == "sql":
                     s, err = executer_sql(chap.get("_base", ""), it["code"], it["verifier"])
@@ -391,6 +526,8 @@ def places(cid, exercices, rp):
                     lignes_fautives.append("dernière" if it.get("ligne") == len(it["lignes"]) - 1 else "première" if it.get("ligne") == 0 else "milieu")
                 if t in ("sortie", "erreur") and "bonne" in it:
                     bonnes[t].append(it["bonne"])
+                if t == "intrus":
+                    bonnes.setdefault("intrus", []).append(it.get("intrus"))
                 if t == "completer":
                     bonnes[t].extend(tr.get("bonne") for tr in it.get("trous", []))
     if len(lignes_fautives) >= 6 and len(set(lignes_fautives)) == 1:
@@ -495,6 +632,7 @@ def main():
     ap.add_argument("--sans-execution", action="store_true")
     ap.add_argument("--bundle", action="store_true")
     ap.add_argument("--tables", action="store_true", help="écrit <id>.tables.json pour les thèmes SQL")
+    ap.add_argument("--catalogue", action="store_true", help="remet à jour le nombre d'exercices de catalogue.json")
     a = ap.parse_args()
     rp = Rapport()
     schema = json.load(open(SCHEMA, encoding="utf-8"))
@@ -519,9 +657,20 @@ def main():
                     print(f"{c['id']} : pas encore de fichier (statut {c.get('statut')})")
                 continue
             info = controler(chemin, rp, c["id"], not a.sans_execution, schema)
+            if info and c.get("exercices") != info["exercices"]:
+                if a.catalogue:
+                    c["exercices"] = info["exercices"]
+                    a.catalogue_change = True
+                else:
+                    rp.avert(c["fichier"], f"catalogue.json annonce {c.get('exercices')} exercices, le fichier en a {info['exercices']} : relancer avec --catalogue")
             if info and c.get("statut") == "pret" and info["exercices"] < 8:
                 rp.erreur(c["fichier"], f"« pret » demande 8 exercices au moins ({info['exercices']})")
             infos.append(info)
+    if getattr(a, "catalogue_change", False):
+        with open(CATALOGUE, "w", encoding="utf-8") as f:
+            json.dump(cat, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+        print("catalogue.json : nombres d'exercices mis à jour")
     for i in filter(None, infos):
         print(f"{i['id']} : {i['exercices']} exercices ({i['relus']} relus), {i['questions']} questions, types {', '.join(i['types'])} ; "
               f"assez pour {i['exercices']} cases ; un calendrier de 30 jours en alternance demande {-(-30 // 1)} exercices pour 1 thème, 15 pour 2, 10 pour 3, 8 pour 4")

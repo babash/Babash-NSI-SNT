@@ -17,6 +17,8 @@
       '<button class="icone" data-act="theme" aria-label="Changer l\'affichage clair ou obscur">' + CV.ICONE_THEME + "</button></header>" + html + CV.pied();
     window.scrollTo(0, 0);
   }
+  // le jour de Mayotte selon la base (cv_prof_ouvrir), et non l'horloge de l'appareil, qui peut être fausse
+  function aujourdhui() { return (espace && espace.aujourdhui) || CV.aujourdhuiMayotte(); }
   function message(msg, cls) { return '<div class="message ' + (cls || "ko") + '" role="' + (cls === "ok" ? "status" : "alert") + '">' + esc(msg || "") + "</div>"; }
 
   // ------------------------------------------------------------ entrer ou créer son espace
@@ -76,7 +78,7 @@
   // cal : le calendrier à modifier (sinon, un nouveau). Après le premier jour, le premier jour ne change plus,
   // et seules les cases de demain et des jours suivants sont refaites (la base y veille).
   function nouveau(msg, cal) {
-    var auj = CV.aujourdhuiMayotte();
+    var auj = aujourdhui();
     var vac = (C.VACANCES || []).filter(function (v) { return v.fin >= auj; });
     var debut = vac[0] ? (vac[0].debut < auj ? auj : vac[0].debut) : auj, fin = vac[0] ? vac[0].fin : CV.ajouter(auj, 13);
     var commence = cal && cal.debut <= auj;
@@ -89,7 +91,7 @@
       '<p class="doux" id="duree"></p></section>' +
       '<section class="carte"><h3>Les thèmes</h3><p class="doux">Cochez librement, quel que soit le niveau de la classe. Les cases alternent entre les thèmes, dans l\'ordre où vous les cochez.</p><div id="themes">Chargement du catalogue…</div><p id="besoin" class="doux"></p></section>' +
       '<section class="carte"><label class="case-a-cocher"><input type="checkbox" id="jauge"' + (!cal || cal.affichage_classe === "jauge" ? " checked" : "") + '> Montrer aux élèves la jauge de toute la classe (des nombres, aucun nom). Décochez pour une très petite classe.</label></section>' +
-      '<div class="pile"><button class="btn plein large" data-act="' + (cal ? "modifier-cal" : "creer-cal") + '">' + (cal ? "Enregistrer les changements" : "Créer le calendrier") + "</button></div>");
+      '<div id="msg-cal"></div><div class="pile"><button class="btn plein large" data-act="' + (cal ? "modifier-cal" : "creer-cal") + '">' + (cal ? "Enregistrer les changements" : "Créer le calendrier") + "</button></div>");
     nouveau.ordre = cal ? (cal.themes || []).slice() : []; nouveau.vac = vac; nouveau.cal = cal || null;
     CV.catalogue().then(function (cat) {
       // « pret » : relu ; « en_cours » : écrit et contrôlé, pas encore relu (proposé avec la mention « à relire »)
@@ -107,6 +109,7 @@
           majBesoin();
         });
     }, function () { document.getElementById("themes").innerHTML = message("Le catalogue des thèmes est illisible : rechargez la page."); });
+    racine.removeEventListener("change", majBesoin);
     racine.addEventListener("change", majBesoin);
     majBesoin();
   }
@@ -120,21 +123,54 @@
     document.getElementById("duree").textContent = jours > 0 ? jours + " jours sur 30 au plus" + (jours > 30 ? " : trop long." : ".") : "Les dates ne vont pas.";
     var o2 = nouveau.ordre || [], b = document.getElementById("besoin");
     if (!b) return;
+    nouveau.courts = [];
     if (!o2.length) { b.textContent = "Aucun thème coché."; return; }
-    var parTheme = o2.map(function (id, i) {
-      var t = (nouveau.themes || []).filter(function (x) { return x.id === id; })[0] || { titre: id, n: 0 };
-      var besoin = Math.floor(jours / o2.length) + (i < jours % o2.length ? 1 : 0);
-      return esc(t.titre) + " : " + besoin + " case" + (besoin > 1 ? "s" : "") + (besoin > t.n ? ' <b class="ko-texte">(' + t.n + " exercices seulement : les derniers jours reprennent les premiers, en révision)</b>" : "");
+    if (jours < 1 || jours > 30) { b.textContent = ""; return; }
+    var sim = simuler(d.value, f.value, o2), trouver = function (id) { return (nouveau.themes || []).filter(function (x) { return x.id === id; })[0] || { id: id, titre: id, n: 0, relus: 0 }; };
+    var parTheme = o2.map(function (id) {
+      var t = trouver(id), besoin = sim.rangs[id] || 0;
+      if (besoin > t.n) nouveau.courts.push({ titre: t.titre, n: t.n, besoin: besoin });
+      return "<li>" + esc(t.titre) + " : " + (sim.cases[id] || 0) + " case" + ((sim.cases[id] || 0) > 1 ? "s" : "") + ", " + t.n + " exercices" +
+        (besoin > t.n ? ' <b class="ko-texte">(pas assez)</b>' : "") + (t.relus < t.n ? ", " + (t.n - t.relus) + " à relire" : "") + "</li>";
     });
-    b.innerHTML = "Ordre des cases : " + o2.map(function (id) { var t = (nouveau.themes || []).filter(function (x) { return x.id === id; })[0]; return esc(t ? t.titre : id); }).join(", puis ") + ".<br>" + parTheme.join("<br>");
+    var alerte = nouveau.courts.length ? '<div class="alerte-banque" role="alert"><b>Pas assez d\'exercices.</b><ul>' + nouveau.courts.map(function (c) {
+      return "<li>« " + esc(c.titre) + " » n'a que " + c.n + " exercices pour " + c.besoin + " cases : à partir de la case n° " + (c.n + 1) + " de ce thème, les exercices 1 à " + c.n +
+        " reviennent, en révision (leur corrigé est déjà ouvert). Aucune case ne reste vide.</li>";
+    }).join("") + "</ul><p class=\"mt\">Pour l'éviter : cochez un thème de plus, ou raccourcissez le calendrier. Vous pouvez aussi enregistrer ainsi.</p></div>" : "";
+    b.innerHTML = "Ordre des cases : " + o2.map(function (id) { return esc(trouver(id).titre); }).join(", puis ") + ".<ul class=\"liste\">" + parTheme.join("") + "</ul>" + alerte;
+  }
+  // les cases que fabriquera la base (vacances.generer_cases, mode « alternance ») : le rang le plus haut
+  // demandé à chaque thème. Un calendrier commencé garde ses cases jusqu'à aujourd'hui, et la suite
+  // continue la rotation des thèmes et le rang des exercices.
+  function simuler(debut, fin, themes) {
+    var auj = aujourdhui(), c = nouveau.cal, gardees = [], rangs = {}, cases = {};
+    if (c && c.debut <= auj && tableau && tableau.cases && calCourant && calCourant.id === c.id) gardees = tableau.cases.filter(function (x) { return x.jour <= auj; });
+    gardees.forEach(function (x) { rangs[x.theme] = Math.max(rangs[x.theme] || 0, x.rang); cases[x.theme] = (cases[x.theme] || 0) + 1; });
+    var k = gardees.length, depart = gardees.length ? CV.ajouter(auj, 1) : debut;
+    for (var j = depart; j <= fin; j = CV.ajouter(j, 1)) {
+      var t = themes[k % themes.length]; k++;
+      rangs[t] = (rangs[t] || 0) + 1; cases[t] = (cases[t] || 0) + 1;
+    }
+    return { rangs: rangs, cases: cases };
+  }
+  // une erreur à l'enregistrement : dite sous le formulaire, sans rien effacer de ce qui a été saisi
+  // un seul envoi à la fois : le bouton se grise pendant l'enregistrement (pas de calendrier en double)
+  function occupe(oui) { var b = document.querySelector("[data-act=creer-cal], [data-act=modifier-cal]"); if (b) { b.disabled = oui; b.textContent = oui ? "Enregistrement…" : (nouveau.cal ? "Enregistrer les changements" : "Créer le calendrier"); } }
+  function erreurCal(msg) { var z = document.getElementById("msg-cal"); if (!z) return; z.innerHTML = message(msg); z.scrollIntoView({ block: "center" }); }
+  function confirmerCourts() {
+    var c = nouveau.courts || [];
+    return !c.length || window.confirm("Pas assez d'exercices pour " + c.map(function (x) { return "« " + x.titre + " » (" + x.n + " pour " + x.besoin + " cases)"; }).join(", ") +
+      " : les derniers exercices reprendront les premiers, en révision. Enregistrer quand même ?");
   }
   function creerCalendrier() {
     var nom = document.getElementById("nomc").value.trim(), d = document.getElementById("debut").value, f = document.getElementById("fin").value;
     var o = nouveau.ordre || [];
-    if (!o.length) return nouveau("Cochez au moins un thème.");
+    if (!o.length) return erreurCal("Cochez au moins un thème.");
+    if (!confirmerCourts()) return;
+    occupe(true);
     CV.rpc("cv_prof_creer_calendrier", { p_code: code, p_nom: nom, p_debut: d, p_fin: f, p_themes: o, p_mode: "alternance",
       p_affichage_classe: document.getElementById("jauge").checked ? "jauge" : "aucun" }).then(function (r) {
-      if (!r.ok) return nouveau(r.message);
+      if (!r.ok) { occupe(false); return erreurCal(r.message); }
       racine.removeEventListener("change", majBesoin);
       CV.rpc("cv_prof_ouvrir", { p_code: code }).then(function (e) { if (e.ok) espace = e; voir(r.id); });
     });
@@ -142,11 +178,13 @@
 
   function modifierCalendrier() {
     var c = nouveau.cal, o = nouveau.ordre || [];
-    if (!o.length) return nouveau("Cochez au moins un thème.", c);
+    if (!o.length) return erreurCal("Cochez au moins un thème.");
+    if (!confirmerCourts()) return;
+    occupe(true);
     CV.rpc("cv_prof_modifier_calendrier", { p_code: code, p_calendrier: c.id, p_nom: document.getElementById("nomc").value.trim(),
       p_debut: document.getElementById("debut").value, p_fin: document.getElementById("fin").value, p_themes: o, p_mode: c.mode || "alternance",
       p_affichage_classe: document.getElementById("jauge").checked ? "jauge" : "aucun" }).then(function (r) {
-      if (!r.ok) return nouveau(r.message, c);
+      if (!r.ok) { occupe(false); return erreurCal(r.message); }
       racine.removeEventListener("change", majBesoin);
       CV.rpc("cv_prof_ouvrir", { p_code: code }).then(function (e) { if (e.ok) espace = e; voir(c.id, "Calendrier modifié : " + r.cases + " cases."); });
     });
@@ -276,7 +314,7 @@
     if (a === "quitter") { code = null; espace = null; CV.ecrire("prof", null); return accueil("Espace fermé sur cet appareil.", "ok"); }
     if (a === "liste") { racine.removeEventListener("change", majBesoin); calCourant = null; return CV.rpc("cv_prof_ouvrir", { p_code: code }).then(function (r) { if (r.ok) espace = r; listeCalendriers(); }); }
     if (a === "nouveau") return nouveau();
-    if (a === "vac") { var v = nouveau.vac[+el.getAttribute("data-i")], auj = CV.aujourdhuiMayotte(); document.getElementById("debut").value = v.debut < auj ? auj : v.debut; document.getElementById("fin").value = v.fin; return majBesoin(); }
+    if (a === "vac") { var v = nouveau.vac[+el.getAttribute("data-i")], auj = aujourdhui(); document.getElementById("debut").value = v.debut < auj ? auj : v.debut; document.getElementById("fin").value = v.fin; return majBesoin(); }
     if (a === "creer-cal") return creerCalendrier();
     if (a === "modifier") { clearInterval(minuterie); return nouveau("", calCourant); }
     if (a === "modifier-cal") return modifierCalendrier();

@@ -85,8 +85,15 @@
             "vraifaux",
             "sortie",
             "ordre",
-            "completer"
-          ]
+            "completer",
+            "trace",
+            "combien",
+            "paniers",
+            "intrus",
+            "memo",
+            "bits"
+          ],
+          "description": "Le mini-jeu (spécification, § 5.2). Les six premiers depuis le 20/11 ; trace, combien, paniers, intrus, memo et bits depuis T135 (24/11). Un exemple complet de chacun : calendrier/exercices/LISEZMOI.md."
         },
         "titre": {
           "type": "string",
@@ -287,6 +294,150 @@
               }
             }
           }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "trace"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/trace"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "combien"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/combien"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "paniers"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/paniers"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "intrus"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/intrus"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "memo"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/memo"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "bits"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "niveaux": {
+                "items": {
+                  "properties": {
+                    "items": {
+                      "items": {
+                        "$ref": "#/$defs/bits"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       ]
     },
@@ -327,6 +478,10 @@
         },
         "explication": {
           "$ref": "#/$defs/texte"
+        },
+        "code_gauche": {
+          "type": "boolean",
+          "description": "Vrai : les éléments de gauche sont du code, montrés avec coloration et guides d'indentation (c'est déjà le cas avec executer)."
         }
       }
     },
@@ -404,6 +559,12 @@
         "boucle_infinie": {
           "const": true,
           "description": "Le programme fautif ne s'arrête pas : la page le dit sous le code."
+        },
+        "etiquette": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40,
+          "description": "Facultative : le titre de la console sous le code fautif (par défaut « Python affiche », « SQLite répond », ou, sans programme, « Message » et « Ce qui se passe »)."
         }
       }
     },
@@ -491,6 +652,12 @@
         },
         "arbre": {
           "$ref": "#/$defs/arbre"
+        },
+        "consigne": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 120,
+          "description": "Facultative : la question posée au-dessus du code. Par défaut « Qu'affiche ce programme ? », ou « Que montre le navigateur ? » pour un thème sans programme (langage aucun)."
         }
       },
       "oneOf": [
@@ -733,6 +900,394 @@
               "type": "null"
             }
           ]
+        }
+      }
+    },
+    "trace": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "code",
+        "colonnes",
+        "tours",
+        "explication"
+      ],
+      "description": "Tableau de trace : l'élève écrit la valeur des variables à la fin de chaque tour de la boucle. Le contrôle exécute le code et relève les variables à chaque retour sur la ligne de la boucle.",
+      "properties": {
+        "consigne": {
+          "$ref": "#/$defs/texte",
+          "description": "Facultative : par défaut, « Remplis le tableau : la valeur de chaque variable à la fin de chaque tour. »"
+        },
+        "code": {
+          "$ref": "#/$defs/code"
+        },
+        "boucle": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Indice (à partir de 0) de la ligne de la boucle suivie. Par défaut : la première ligne qui commence par for ou while."
+        },
+        "colonnes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+            "maxLength": 20
+          },
+          "description": "Les variables suivies (3 au plus, pour tenir à 320 px)."
+        },
+        "depart": {
+          "type": "boolean",
+          "description": "Vrai : la première ligne du tableau est « Avant la boucle » (les valeurs au premier passage sur la ligne de la boucle)."
+        },
+        "tours": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 8,
+          "items": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 20
+            }
+          },
+          "description": "Une ligne par tour (et « Avant la boucle » d'abord si depart est vrai) ; une valeur par colonne, écrite comme Python l'affiche avec print (une chaîne sans ses guillemets)."
+        },
+        "visibles": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "description": "Les cases déjà remplies, [ligne, colonne] à partir de 0 ; les autres sont à écrire."
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
+        }
+      }
+    },
+    "combien": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "texte",
+        "reponse",
+        "min",
+        "max",
+        "explication"
+      ],
+      "description": "Combien ? : un compteur + et − (et ±10 si l'écart min-max atteint 20), sans clavier.",
+      "properties": {
+        "texte": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 200
+        },
+        "code": {
+          "$ref": "#/$defs/code"
+        },
+        "reponse": {
+          "type": "integer",
+          "minimum": -999,
+          "maximum": 999
+        },
+        "min": {
+          "type": "integer",
+          "minimum": -999,
+          "maximum": 999
+        },
+        "max": {
+          "type": "integer",
+          "minimum": -999,
+          "maximum": 999
+        },
+        "depart": {
+          "type": "integer",
+          "description": "La valeur affichée au début (par défaut : min). Jamais la réponse."
+        },
+        "verifier": {
+          "type": "string",
+          "maxLength": 300,
+          "description": "Python : une expression évaluée après le code, qui doit valoir « reponse » ; la variable sortie contient ce que le code a affiché (sortie.count(\"*\")). SQL : une requête d'une seule valeur, exécutée après le code."
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
+        }
+      }
+    },
+    "paniers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consigne",
+        "paniers",
+        "cartes",
+        "explication"
+      ],
+      "description": "Deux paniers : chaque carte a deux boutons, un par panier ; une erreur est dite tout de suite, avec le retour de la carte.",
+      "properties": {
+        "consigne": {
+          "$ref": "#/$defs/texte"
+        },
+        "paniers": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 30
+          }
+        },
+        "cartes": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 8,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "texte",
+              "panier"
+            ],
+            "properties": {
+              "texte": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120
+              },
+              "panier": {
+                "enum": [
+                  0,
+                  1
+                ]
+              },
+              "retour": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 200,
+                "description": "Dit quand la carte est mise dans le mauvais panier : l'idée qui trompe, sans donner la réponse."
+              }
+            }
+          }
+        },
+        "code_cartes": {
+          "type": "boolean",
+          "description": "Vrai : les cartes sont du code (police à chasse fixe, coloration)."
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        }
+      }
+    },
+    "intrus": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consigne",
+        "elements",
+        "intrus",
+        "pourquoi"
+      ],
+      "description": "L'intrus : toucher l'élément qui ne va pas avec les autres, puis choisir pourquoi.",
+      "properties": {
+        "consigne": {
+          "$ref": "#/$defs/texte"
+        },
+        "elements": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "intrus": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "executer": {
+          "type": "boolean",
+          "description": "Vrai : les éléments sont des programmes ; le contrôle vérifie que tous affichent la même chose, sauf l'intrus."
+        },
+        "retours": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "items": {
+            "type": "string",
+            "maxLength": 200
+          },
+          "description": "Facultatif : un retour par élément, dit quand on le prend pour l'intrus (celui de l'intrus n'est jamais montré)."
+        },
+        "pourquoi": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "options",
+            "bonne",
+            "retours"
+          ],
+          "properties": {
+            "options": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 4,
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 160
+              }
+            },
+            "bonne": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3
+            },
+            "retours": {
+              "type": "array",
+              "minItems": 3,
+              "maxItems": 4,
+              "items": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 200
+              }
+            }
+          }
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        },
+        "arbre": {
+          "$ref": "#/$defs/arbre"
+        }
+      }
+    },
+    "memo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "consigne",
+        "paires",
+        "explication"
+      ],
+      "description": "Mémo des paires : les cartes sont retournées deux par deux ; une paire trouvée reste visible. Aucun chrono, le nombre de coups est seulement montré.",
+      "properties": {
+        "consigne": {
+          "$ref": "#/$defs/texte"
+        },
+        "paires": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 6,
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            }
+          },
+          "description": "[carte A, carte B] ; les 2 × n textes sont tous différents. Courts : une carte fait le tiers de 320 px."
+        },
+        "executer": {
+          "type": "boolean",
+          "description": "Vrai : la carte A est un programme, et ce qu'il affiche (lignes jointes par « , ») est la carte B."
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
+        }
+      }
+    },
+    "bits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "texte",
+        "cible",
+        "reponse",
+        "explication"
+      ],
+      "description": "Allume les bits : toucher les ampoules (bits de poids 2^k, groupés par 4) pour écrire un nombre ou une couleur.",
+      "properties": {
+        "texte": {
+          "type": "string",
+          "minLength": 5,
+          "maxLength": 200,
+          "description": "La consigne, avec la cible (« Allume les bits pour écrire 13. »)."
+        },
+        "cible": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 12,
+          "description": "La cible, comme dans la consigne : « 13 » (base 10), « 2F » ou « 0x2F » (base 16), « #FF8000 » (rvb)."
+        },
+        "base": {
+          "enum": [
+            "10",
+            "16",
+            "rvb"
+          ],
+          "description": "Comment lire la cible ; 10 par défaut. rvb : 24 bits, la page montre la couleur obtenue."
+        },
+        "reponse": {
+          "type": "string",
+          "pattern": "^[01]{4,24}$",
+          "description": "Les bits, de poids fort à poids faible : 4, 8, 16 ou 24 bits."
+        },
+        "poids": {
+          "type": "boolean",
+          "description": "Faux : les poids (128, 64…) ne sont pas écrits au-dessus des ampoules (niveau Costaud). Vrai par défaut."
+        },
+        "valeur": {
+          "type": "boolean",
+          "description": "Vrai : la valeur des bits allumés s'affiche en direct (niveau Facile)."
+        },
+        "explication": {
+          "$ref": "#/$defs/texte"
+        },
+        "aides": {
+          "$ref": "#/$defs/aides"
         }
       }
     }

@@ -2,7 +2,7 @@
 
 Cette page est pour l'Atelier qui écrit la banque d'un **thème**. Un thème est un chapitre (« Listes et dictionnaires ») ou une notion plus fine (« Les boucles », « Le binaire »). L'enseignant·e coche librement plusieurs thèmes pour un calendrier, quel que soit le niveau de sa classe (une terminale peut recevoir des thèmes de première), et les cases alternent entre eux, tour à tour. Une case du calendrier est un exercice : un mini-jeu de **10 minutes au plus**, en **3 niveaux** (Facile, Moyen, Costaud). L'élève choisit son niveau, et un niveau suffit pour valider la case.
 
-**État au 20/11/2026 :** 8 banques, **135 exercices, 1 178 questions** (le contrôle complet : 0 erreur). Les arbres s'écrivent de deux façons, que les élèves doivent connaître toutes les deux (décision de l'enseignant du 20/11) : la classe courte `Noeud(v, g, d)` et la classe du cours `ArbreBinaire(valeur, gauche, droit)` ; un thème qui parle d'arbres les fait alterner.
+**État au 24/11/2026 :** 9 banques de 30 exercices (dont `snt-internet-web`, la première sans programme : `langage` « aucun »), **270 exercices** (le contrôle complet : 0 erreur). **Le moteur joue 12 types de mini-jeux** depuis le 24/11 (T135). Les arbres s'écrivent de deux façons, que les élèves doivent connaître toutes les deux (décision de l'enseignant du 20/11) : la classe courte `Noeud(v, g, d)` et la classe du cours `ArbreBinaire(valeur, gauche, droit)` ; un thème qui parle d'arbres les fait alterner.
 
 ## Les fichiers
 
@@ -12,7 +12,8 @@ Cette page est pour l'Atelier qui écrit la banque d'un **thème**. Un thème es
 | `catalogue.json` | La liste des thèmes, leur nature (chapitre ou notion), leurs niveaux indicatifs et leur statut (`prevu`, `en_cours`, `pret`) | Architecte |
 | `<thème>.json` | La banque d'un thème | l'Atelier de ce thème, sur sa branche `atelier/t105-<thème>` |
 | `<thème>.js` | La même banque, fabriquée par `--bundle` | personne à la main |
-| `../../scripts/tests/calendrier/exemple-boucles.json` | **Le gabarit** : 6 exercices justes, un de chaque type | Architecte |
+| `../../scripts/tests/calendrier/exemple-boucles.json` | **Le gabarit des six premiers types** : 6 exercices justes, un de chaque type, en 3 niveaux | Architecte |
+| `../../scripts/tests/calendrier/exemple-nouveaux-types.json` | **Le gabarit des six types ajoutés le 24/11** (trace, combien, paniers, intrus, memo, bits) : 6 exercices justes, en 3 niveaux | Architecte |
 
 Un Atelier ne touche **qu'à son fichier**. Il ne modifie ni `catalogue.json` ni le schéma : il demande dans son rapport.
 
@@ -47,11 +48,12 @@ L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place 
 
 ## Les règles d'un thème
 
-1. **De 8 à 30 exercices**, numérotés `<thème>-001`, `-002`… dans l'ordre : une notion en a de 8 à 12, un chapitre de 15 à 30. Les thèmes alternent : un calendrier de 30 jours avec 3 thèmes demande 10 exercices à chacun. C'est l'ordre des cases : l'exercice 1 sert à la première case du thème. Si un calendrier demande plus d'exercices que la banque n'en a, la page enseignant·e le signale avant la création.
+1. **De 8 à 30 exercices** (le compte de `catalogue.json` se remet à jour avec `python3 scripts/calendrier_exercices.py --catalogue`), numérotés `<thème>-001`, `-002`… dans l'ordre : **30 de préférence**, notion comme chapitre, pour qu'un thème coché seul remplisse les 30 jours des vacances de Noël sans révision ; une notion peut commencer à 8, un chapitre à 15, et l'on complète ensuite jusqu'à 30. Les thèmes alternent : un calendrier de 30 jours avec 3 thèmes demande 10 exercices à chacun. C'est l'ordre des cases : l'exercice 1 sert à la première case du thème. Si un calendrier demande plus d'exercices que la banque n'en a, la page enseignant·e le signale en rouge avant d'enregistrer et demande confirmation ; les exercices reviennent alors dans l'ordre, en révision (l'élève voit « Révision »), et aucune case ne reste vide.
    - Un exercice publié ne change jamais de rang ni d'identifiant.
    - On peut corriger un exercice, et on ajoute toujours à la fin.
-2. **Les types tournent.** Six exercices de suite couvrent les 6 types. Ordre conseillé, répété : vraifaux, sortie, associer, erreur, completer, ordre.
+2. **Les types tournent.** Le moteur sait jouer **12 types** (voir plus bas). Deux exercices de suite n'ont jamais le même type, et six exercices de suite en couvrent au moins cinq. Ordre conseillé, à adapter au thème : vraifaux, sortie, associer, erreur, completer, ordre, puis un des nouveaux (trace pour une boucle, combien pour un nombre de tours, paniers pour classer, intrus pour une notion d'ensemble, memo pour du vocabulaire, bits pour le binaire).
 3. **La difficulté monte doucement** : le cœur du thème d'abord, puis les combinaisons et les révisions. L'exercice 1 se réussit au niveau Facile en 2 minutes.
+   - **Pas de pièges, même au niveau Costaud** (règle de l'enseignant du 24/11) : rien qui repose sur une bizarrerie du langage ou un détail hors programme, non pertinent pour le bac ; le but est de mettre les élèves en confiance. Costaud = un programme un peu plus long ou une réponse à taper.
 4. **Les trois niveaux d'un exercice portent sur la même notion :**
 
    | Niveau | Durée | Questions | Forme |
@@ -82,7 +84,11 @@ L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place 
    - En « ordre », une seule disposition doit être juste : deux lignes indépendantes (`a = 5` et `b = 8`) se réunissent sur une seule (`a, b = 5, 8`).
 10. **`relu`** reste `false`. L'enseignant·e passe à `true` après relecture, et la page enseignant·e signale un calendrier qui contient des exercices non relus.
 
-## Les six types (voir le gabarit pour un exemple juste de chacun)
+## Les douze types
+
+Les six premiers ont un exemple juste dans `exemple-boucles.json`, les six suivants dans `exemple-nouveaux-types.json`. Tous se jouent au doigt à 320 px (on touche, jamais de glisser-déposer obligatoire) et au clavier, les retours sont annoncés aux lecteurs d'écran, et aucun chrono ne fait perdre.
+
+### Les six premiers
 
 | Type | Champs d'une question | Ce que le contrôle vérifie |
 |---|---|---|
@@ -92,6 +98,68 @@ L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place 
 | `erreur` | `but` (sans le message), `lignes`, `ligne` (indice de la ligne fausse, à partir de 0), `corrections` (3), `bonne`, `affiche` (sortie du programme corrigé), `explication`, `aides`, et **un seul** champ pour ce que montre le programme fautif : `message` (le message réel : « IndexError: list index out of range », « Error: near "plage": syntax error »), `affiche_fautif` (sa sortie, pour une erreur de logique ; vide s'il n'affiche rien) ou `boucle_infinie: true` | la correction juste donne `affiche` ; les autres et le programme fautif, non ; le programme fautif donne bien `message`, `affiche_fautif` ou ne s'arrête pas |
 | `ordre` | `but`, `lignes` dans le bon ordre (toutes différentes), `affiche`, `aides` | le programme dans l'ordre donne `affiche`, et **aucune autre disposition** ne le donne (toutes les permutations sont essayées jusqu'à 8 lignes) |
 | `completer` | `but`, `lignes` avec `{0}`, `{1}`…, `trous` [{`options`, `bonne`}], `affiche`, `explication`, `aides` | les bonnes pièces donnent `affiche` ; chaque mauvaise le change |
+
+### Les six types ajoutés le 24/11 (T135)
+
+| Type | Comment on joue | Champs d'une question | Ce que le contrôle vérifie |
+|---|---|---|---|
+| `trace` | Remplir un petit tableau : la valeur des variables à la fin de chaque tour | `code`, `colonnes` (3 variables au plus), `tours` (une ligne par tour, une valeur par colonne, écrite comme `print` l'affiche), `visibles` (cases déjà remplies, `[ligne, colonne]`), `depart` (vrai : une première ligne « Avant la boucle »), `boucle` (indice de la ligne suivie ; par défaut la première `for` ou `while`), `explication`, `aides` | il exécute le code et relève les variables **à chaque retour sur la ligne de la boucle** : le tableau doit être exactement celui-là |
+| `combien` | Un compteur − et + (et −10, +10 si l'écart min-max atteint 20), au doigt ou avec les flèches | `texte`, `code` (facultatif), `reponse` (entier), `min`, `max`, `depart` (jamais la réponse), `verifier`, `explication`, `aides` | avec `verifier` : l'expression, évaluée après le code, vaut `reponse` ; la variable `sortie` contient ce que le code a affiché (`sortie.count("*")`) |
+| `paniers` | Chaque carte a deux boutons, un par panier ; une erreur est dite tout de suite | `consigne`, `paniers` (2 noms courts), `cartes` [{`texte`, `panier` (0 ou 1), `retour`}], `code_cartes` (vrai : les cartes sont du code), `explication` | 4 à 8 cartes toutes différentes, les deux paniers servent |
+| `intrus` | Toucher l'intrus, puis choisir pourquoi (QCU) | `consigne`, `elements` (3 à 5), `intrus` (indice), `executer`, `retours` (facultatif : un par élément), `pourquoi` {`options`, `bonne`, `retours`}, `explication` | avec `executer` : tous les programmes affichent la même chose, sauf l'intrus |
+| `memo` | Retourner deux cartes ; une paire trouvée reste visible ; le nombre de coups est montré, sans chrono | `consigne`, `paires` (3 à 6, textes courts : une carte fait le tiers de 320 px), `executer`, `explication` | les 2 × n textes sont tous différents ; avec `executer`, chaque programme affiche sa carte |
+| `bits` | Toucher les ampoules d'un nombre binaire (poids écrits au-dessus, groupés par 4) | `texte`, `cible` (« 13 », « 2F », « #FF8000 »), `base` (`10`, `16` ou `rvb`), `reponse` (les bits, 4 à 24), `poids` (faux : poids cachés, niveau Costaud), `valeur` (vrai : la valeur s'affiche en direct, niveau Facile), `explication`, `aides` | les bits valent la cible ; jamais tous éteints (la page commence ainsi) |
+
+Une question de chaque, juste (le contrôle passe) :
+
+```json
+{ "code": "s = 0\nfor i in range(3):\n    s = s + i", "colonnes": ["i", "s"],
+  "tours": [["0", "0"], ["1", "1"], ["2", "3"]], "visibles": [[0, 0]],
+  "aides": ["Au premier tour, i vaut 0 : s devient 0 + 0."],
+  "explication": "s accumule 0, puis 1, puis 2 : il vaut 0, 1, puis 3." }
+```
+
+```json
+{ "texte": "Combien d'étoiles ce programme affiche-t-il ?",
+  "code": "for i in range(3):\n    for j in range(4):\n        print(\"*\", end=\"\")\n    print()",
+  "reponse": 12, "min": 0, "max": 30, "verifier": "sortie.count(\"*\")",
+  "aides": ["La boucle intérieure fait 4 tours à chaque tour de la boucle extérieure."],
+  "explication": "3 tours dehors × 4 tours dedans : 12 étoiles, sur 3 lignes." }
+```
+
+```json
+{ "consigne": "Range chaque boucle dans le bon panier.", "paniers": ["Bornée", "Non bornée"], "code_cartes": true,
+  "cartes": [ { "texte": "for i in range(5):", "panier": 0 },
+              { "texte": "while n > 0:", "panier": 1 },
+              { "texte": "for c in \"barge\":", "panier": 0, "retour": "Une chaîne a un nombre fixe de caractères." },
+              { "texte": "while reponse != \"oui\":", "panier": 1 } ],
+  "explication": "for parcourt une suite connue ; while répète tant qu'une condition est vraie." }
+```
+
+```json
+{ "consigne": "Trois programmes affichent la même chose. Lequel est l'intrus ?", "executer": true,
+  "elements": ["for i in range(3):\n    print(i)", "for i in range(0, 3):\n    print(i)",
+               "for i in range(1, 4):\n    print(i)", "i = 0\nwhile i < 3:\n    print(i)\n    i = i + 1"],
+  "intrus": 2,
+  "pourquoi": { "options": ["Il commence à 1 au lieu de 0.", "Il utilise une boucle while.", "Il affiche 4 nombres."], "bonne": 0,
+                "retours": ["Juste : range(1, 4) donne 1, 2, 3.", "Le while affiche bien 0, 1, 2.", "range(1, 4) donne 3 nombres."] },
+  "explication": "Les trois autres affichent 0, 1, 2." }
+```
+
+```json
+{ "consigne": "Retrouve chaque range et ses valeurs.", "executer": true,
+  "paires": [["print(*range(3))", "0 1 2"], ["print(*range(1, 3))", "1 2"], ["print(*range(2))", "0 1"]],
+  "explication": "range(n) commence à 0 ; range(a, b) commence à a ; les deux s'arrêtent avant la fin." }
+```
+
+```json
+{ "texte": "Allume les bits de la couleur #FF8000 (orange) : rouge, vert, bleu.", "cible": "#FF8000", "base": "rvb",
+  "reponse": "111111111000000000000000", "poids": false,
+  "aides": ["Chaque couleur a 8 bits : FF, puis 80, puis 00."],
+  "explication": "FF = 11111111, 80 = 10000000, 00 = 00000000." }
+```
+
+**L'essai dans le navigateur.** `python3 -I -B scripts/tests/test_calendrier_jeux.py` joue chaque niveau des deux gabarits avec le vrai moteur, dans Chromium : une erreur volontaire (le retour doit être annoncé), puis la bonne réponse au doigt et au clavier, le corrigé, la reprise d'une partie gardée, 320 px en clair et en obscur, et l'animation coupée si l'appareil demande moins de mouvement. Un Atelier peut y ajouter sa banque pour la jouer d'un bout à l'autre.
 
 ## Les compléments
 
