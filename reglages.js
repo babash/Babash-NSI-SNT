@@ -40,7 +40,7 @@ reglages({
   // alors des codes des applications, du lien d'un espace d'application et des crédits qu'elles donnent.
   COMPTE_COMMUN_APPLICATIONS: false,
   // Vrai après l'application de la migration 0010 (catalogue des avatars) : « Offrir un trophée » et « Archiver la classe ».
-  COMPTE_COMMUN_CATALOGUE: false,
+  COMPTE_COMMUN_CATALOGUE: true,
 
   // Les rubriques. Depuis T51b, le site prend la liste et l'ordre des rubriques dans la vitrine
   // (donnees/vitrine.json, réglée dans l'admin) : cette liste n'est plus lue par les pages.
