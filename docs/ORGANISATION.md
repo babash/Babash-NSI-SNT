@@ -31,11 +31,12 @@ bibliotheque/               l'onglet Bibliothèque (ne pas toucher)
                             depuis la bibliothèque
 admin/                      l'espace administrateur (ADMIN.md ; ne pas toucher)
 eleve/                      le compte commun, côté élève (« Ma planque » : l'avatar, la boutique, les
-                            trophées, les hauts faits, la classe), en démonstration depuis le 20/11/2026 :
-                            sans lien depuis le site, non indexé ; données fictives, rien n'est envoyé ni
-                            gardé (assets/planque.js, assets/compte-commun.js)
-enseignant/                 l'espace enseignant·e du compte commun, en démonstration de la même façon
-                            (assets/espace-enseignant.js ; QR codes : assets/qrcode-generator.js)
+                            trophées, les hauts faits, la classe), en service depuis le 24/11/2026 sur
+                            la base (fonctions commun_…) : sans lien depuis le site, non indexé
+                            (assets/planque.js, assets/compte-commun.js ; docs/COMPTE-COMMUN.md)
+enseignant/                 l'espace enseignant·e du compte commun, en service de la même façon
+                            (assets/espace-enseignant.js ; QR codes : assets/qrcode-generator.js) ;
+                            COMPTE_COMMUN_EN_LIGNE: false dans reglages.js les remet en démonstration
 calendrier/                 le Calendrier des vacances, en service depuis le 20/11/2026 : la page des élèves
                             (index.html), l'espace enseignant·e (prof.html), les banques d'exercices
                             (exercices/, contrôlées à chaque envoi et à chaque publication) et les migrations de sa base

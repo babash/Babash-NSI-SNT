@@ -39,7 +39,8 @@ Un document par type de ressource (à quoi ça sert, comment s'en servir en clas
 | [L'espace administrateur](ADMIN.md) | modifier les fiches et les onglets du site |
 | [Les données de la bibliothèque](BIBLIOTHEQUE.md) | le format des fiches, les référentiels, la validation |
 | [La publication et la vérification automatique](VERIFICATION.md) | la mise en ligne et ses contrôles |
-| [Les bases Supabase](SUPABASE.md) | ce que les applications enregistrent, et comment c'est protégé |
+| [Le compte commun](COMPTE-COMMUN.md) | un code pour toutes les applications : les pages `eleve/` et `enseignant/`, les règles du module, brancher une application, l'essayer sur une base locale |
+| [Les bases Supabase](SUPABASE.md) | ce que les applications et le compte commun enregistrent, et comment c'est protégé |
 | [L'équipe d'agents](AGENTS.md) | les rôles, qui possède quels fichiers |
 | [Les outils du Gardien](GARDIEN.md) | les contrôles avant et après chaque publication |
 | [Contribuer](../CONTRIBUTING.md) | les règles du travail sur GitHub |

@@ -16,7 +16,7 @@ Le réglage `COMPTE_COMMUN_EN_LIGNE` de `reglages.js` choisit le mode : `false`,
 ## Les règles que le module garantit
 
 - **Jamais de code ni de jeton dans une adresse.** Les appels partent en `POST`, dans le corps. Un `?code=` ou un `?jeton=` trouvé dans l'adresse est retiré et ignoré. Seul le code de classe (4 lettres, public) peut être dans un lien.
-- **La garde du jeton** : dans l'onglet seulement (`sessionStorage`, 1 jour au plus) ; avec « C'est mon téléphone », dans le navigateur (`localStorage`, 30 jours après le dernier usage). Tous les sites de `babash.github.io` ont la même origine : une application lit le jeton posé par une autre.
+- **La garde du jeton** : dans l'onglet seulement (`sessionStorage`, 1 jour au plus) ; avec « C'est mon téléphone », dans le navigateur (`localStorage`, 30 jours après l'entrée du code sur l'appareil ; la base, elle, accepte le jeton jusqu'à 30 jours après son dernier usage). Tous les sites de `babash.github.io` ont la même origine : une application lit le jeton posé par une autre.
 - **Le code de l'enseignant·e** reste en mémoire de la page ; avec « Rester ouvert dans cet onglet », dans l'onglet. Jamais dans le navigateur.
 - **Lecture tolérante d'un code** : majuscules ou minuscules, espaces, tirets ou rien, accents : `pirate etrave 772` vaut `PIRATE-ETRAVE-772`.
 - **Jamais d'exception** : chaque appel rend une promesse `{ ok: true, … }` ou `{ ok: false, message }`, avec un message en français (code faux, trop d'essais, hors ligne, base injoignable). Une page ne s'arrête jamais à cause du compte commun.

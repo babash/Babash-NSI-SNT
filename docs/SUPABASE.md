@@ -12,6 +12,9 @@ Quatre ressources passent par **Supabase** :
 - le Calendrier des vacances, en service depuis le 20 novembre 2026, y garde le compte de l'élève
   (un prénom ou un pseudo, et son code) et ses résultats, case par case.
 
+Depuis le 24 novembre 2026, le **compte commun** du site (pages `eleve/` et `enseignant/`) y garde
+aussi ses comptes, ses espaces enseignant·e et ses classes communes (voir plus bas).
+
 | Application | Dossier | Projet Supabase | Tables |
 |---|---|---|---|
 | Alien Python (SNT, Programmation) | `snt/fichiers/alien-python/` | « Babash - applications », la base commune des applications (nommée « SNT-1er Jour » jusqu'au 20 novembre 2026) | `alien_classes`, `alien_students`, `alien_progress` |
@@ -161,6 +164,38 @@ Quatre ressources passent par **Supabase** :
   et ses jours différents.
 - Le détail, les fonctions et les contrôles après application : `calendrier/supabase/LISEZMOI.md`.
 
+**Le compte commun** (pages `eleve/` et `enseignant/`, module `assets/compte-commun.js`)
+
+- **La base** : le schéma `commun` (23 tables, toutes fermées, sans aucune règle d'accès) et
+  33 fonctions d'entrée `commun_…`, les seules qu'appelle la page, avec la clé publique
+  (« publishable ») du projet. Le SQL (`supabase/0007-compte-commun.sql`, version 2.3, et
+  `supabase/0008-enseignants-communs.sql`) a été collé par l'enseignant lui-même dans l'éditeur
+  SQL, le 24 novembre 2026 vers 11:20, après un fichier qui retirait une première version collée
+  par erreur ; il n'est pas inscrit dans l'historique des migrations du projet (la requête qui l'y
+  inscrirait est dans `supabase/LISEZMOI.md`). La base a été comparée aux fichiers, objet par objet.
+- **Ce qui est gardé en ligne** : pour l'élève, le prénom ou le pseudo qu'il ou elle choisit (jamais
+  le nom de famille), son code (2 mots et 3 chiffres), son avatar, ses classes et ses sessions ;
+  pour l'enseignant·e, son nom affiché, son établissement (facultatif) et l'empreinte de son code
+  (3 mots et 4 chiffres), jamais le code lui-même ; pour une classe, son nom et son code de 4
+  lettres, public. L'XP qu'attribue l'enseignant·e, avec un motif, est gardée dans un journal ;
+  l'élève n'en voit que son solde de crédits. Les hauts faits et les objets gagnés ont leurs
+  tables, vides tant que leur catalogue et les applications n'y sont pas branchés.
+- **Sur l'appareil** : le jeton de session de l'élève, dans l'onglet (1 jour au plus), ou 30 jours
+  avec « C'est mon téléphone » ; tous les sites de `babash.github.io` partagent ce stockage, pour
+  que les applications reconnaissent l'élève quand elles seront branchées. Le code de l'élève n'y
+  est jamais gardé. Le code de l'enseignant·e reste dans la page, ou dans l'onglet avec « Rester
+  ouvert dans cet onglet », jamais dans le navigateur.
+- **Les essais de code** sont comptés par réseau (une empreinte du jour, jamais l'adresse) : au-delà
+  de 20 codes d'élève faux en une heure (10 pour un code d'enseignant·e, 30 pour un code de classe),
+  ce réseau attend la fin de l'heure, même avec le bon code ; l'enseignant·e, sur le même réseau,
+  le débloque dans « Réglages de mon espace » (« Débloquer le réseau de la salle »).
+- **Effacer** : l'élève, avec « Effacer mes données » ; l'enseignant·e retire un·e élève d'une
+  classe, supprime une classe ou tout son espace (les comptes des élèves restent). Un compte est
+  effacé au premier usage du compte commun après 12 mois sans visite, et une session après 1 jour,
+  ou 30 jours sans usage.
+- **Pas encore** : aucune application ne lit encore ce compte ; chacune garde ses propres codes.
+  Le détail : [docs/COMPTE-COMMUN.md](COMPTE-COMMUN.md) et `supabase/LISEZMOI.md`.
+
 **Le socle commun de la base (dossier `supabase/`)**
 
 - La base commune porte SNT 1er jour, Expédition Gombessa, Alien Python, Court-circuit (son
@@ -189,10 +224,13 @@ Quatre ressources passent par **Supabase** :
   - `0009` (le 20 novembre 2026, sur la délégation de l'enseignant pour le Calendrier) ajoute au
     registre le Calendrier des vacances : son schéma, `vacances`, et son préfixe, `cv_`. Sa vue
     reprend celle de `0006` (Hello GO, appliquée le 17 novembre 2026), dont les fichiers ne sont
-    pas encore sur `main` ; les numéros `0007` et `0008` sont réservés au compte commun, pas
-    appliqué. Ses pages, `eleve/` et `enseignant/`, existent en démonstration depuis le
-    20 novembre 2026 : sans base, rien n'est envoyé ni gardé (`COMPTE_COMMUN_EN_LIGNE: false`
-    dans `reglages.js`, adresse et clé vides).
+    pas encore sur `main` ;
+  - `0007` (version 2.3) et `0008` créent le compte commun (voir plus haut) : collés par
+    l'enseignant dans l'éditeur SQL le 24 novembre 2026, hors de l'historique des migrations,
+    après `2026-11-24-retour-avant-socle.sql`, qui a retiré une première version collée par
+    erreur. Ses pages, `eleve/` et `enseignant/`, en démonstration depuis le 20 novembre 2026,
+    sont branchées sur la base depuis le 24 novembre (`COMPTE_COMMUN_EN_LIGNE: true` dans
+    `reglages.js`, avec l'adresse du projet et sa clé publique).
 - Chaque migration a son fichier inverse. [`supabase/LISEZMOI.md`](../supabase/LISEZMOI.md) donne l'ordre, les contrôles
   et le retour en arrière. Les migrations d'une application restent dans son propre dépôt.
 - Pour ta propre copie : lance `supabase/schema.sql` dans *SQL Editor* d'un projet neuf, avant le
