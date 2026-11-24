@@ -34,7 +34,7 @@ de la version publiée.
 
 ## Les contrôles
 
-Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dans l'onglet
+Le fichier `.github/workflows/verifier.yml` lance quatre contrôles, visibles dans l'onglet
 **Actions** du dépôt (coche verte : tout va bien ; croix rouge : clique pour voir le détail) :
 
 - **Données de la bibliothèque**, à chaque modification, sur toutes les branches, et à la
@@ -63,6 +63,16 @@ Le fichier `.github/workflows/verifier.yml` lance trois contrôles, visibles dan
   publiée qui a disparu fait échouer le contrôle, car un identifiant publié est définitif. Une
   branche en retard sur `main` y échoue aussi quand `main` a reçu des notions depuis (elles
   manquent à la branche) : la rebaser sur `main` le règle.
+- **Calendrier des vacances**, depuis le 24 novembre 2026 (T135), à chaque modification, sur toutes
+  les branches, et à la demande : le contrôle des banques d'exercices (`scripts/calendrier_exercices.py`,
+  le même que « Publier le site » : la forme, puis chaque programme exécuté avec Python ou SQLite),
+  ses tests (`scripts/tests/test_calendrier_exercices.py`), puis le moteur des 12 mini-jeux joué
+  dans Chromium (`scripts/tests/test_calendrier_jeux.py`, avec Playwright 1.63.0) : chaque niveau
+  des deux gabarits d'exemple, une erreur puis la bonne réponse, au doigt et au clavier, à 320 px
+  en clair et en obscur, sans aucune requête hors de la machine. Une banque fautive est ainsi
+  vue sur la branche de l'Atelier, avant d'arriver sur `main`. Une erreur fait échouer le contrôle ;
+  les avertissements (exercices pas encore relus, puzzles trop longs pour essayer toutes les
+  dispositions) se lisent dans le journal du job.
 - **Liens des ressources**, à chaque modification et chaque lundi : tous les liens des
   fichiers `ressources.js` et des fiches de la bibliothèque (`donnees/ressources/*.json` : les
   documents, les auteurs et autrices, les crédits) sont testés. Un lien en échec est revérifié par un second job,

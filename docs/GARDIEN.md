@@ -9,7 +9,9 @@ après (comme « Publier le site »), puis contrôle les données sensibles (une
 électronique est reconnue même écrite sous une forme masquée pour les robots, avec « [point] »,
 « (at) » ou « [sur] » ; un code de classe, trois capitales ou chiffres, un tiret et trois autres,
 est signalé, et sa valeur masquée dans le rapport), les liens internes, le rendu avant et après de l'accueil, des rubriques et de
-la bibliothèque (320, 768 et 1440 px, clair et obscur), les contrastes (mesurés sur la partie affichée
+la bibliothèque (320, 768 et 1440 px, clair et obscur ; depuis le 24 novembre 2026, `rendu.py` rejoue à
+l'identique les tirages au hasard des pages, le paysage du bandeau et la place du margouillat, par un
+`Math.random` à graine fixe : avant et après ne diffèrent plus que par de vraies différences), les contrastes (mesurés sur la partie affichée
 de chaque texte), la
 navigation au clavier et l'impression A4 des documents touchés. Depuis la bascule des rubriques vers
 la vitrine (T51b), ses outils comptent les ressources attendues d'après la vitrine et les fiches, et
