@@ -261,4 +261,226 @@ var = 2 * autres + nb_ouv + 4 * nb_ferm + 1
 print("Q7 variante (2 tests par caractère ordinaire, 4 par fermante) :", var)
 assert var == 50
 # pire cas de cette variante : n/2 ouvrantes puis n/2 fermantes : n/2 + 4n/2 + 1 = 5n/2 + 1
+
+print("=== Variantes acceptées et erreurs fréquentes citées dans le corrigé ===")
+
+
+def message(instr, env):
+    try:
+        exec(instr, env)
+    except Exception as e:
+        return f"{type(e).__name__}: {e}"
+    return None
+
+
+# Ex. 1, Q2 : variante acceptée et erreurs
+b2 = Barge("Corail", 400)
+Barge.embarquer(b2, 120)
+assert b2.passagers == 120
+m = message('Barge(self, "Corail", 400)', {"Barge": Barge})
+print("Q2 erreur self :", m)
+assert m.startswith("NameError")  # self n'existe pas hors de la classe
+m = message("embarquer(b1, 120)", {"b1": b2})
+print("Q2 erreur sans point :", m)
+assert m == "NameError: name 'embarquer' is not defined"
+# Q3 erreur : la 2e ligne ne modifie rien
+b3 = Barge("Lagon", 300)
+b3.embarquer(250)
+assert b3.embarquer(80) is False and b3.passagers == 250
+
+# Ex. 2, Q4 : variante acceptée et erreur
+class Playlist2(Playlist):
+    def ajouter(self, titre, duree):
+        self.morceaux = self.morceaux + [(titre, duree)]
+
+
+q = Playlist2("x")
+q.ajouter("rap", 190)
+assert q.morceaux == [("rap", 190)]
+m = message("[].append('rap', 190)", {})
+print("Q4 erreur :", m)
+assert m == "TypeError: list.append() takes exactly one argument (2 given)"
+# Q5 : variante m[1], erreur return dans la boucle, erreur total + m
+tot = 0
+for mo in pl.morceaux:
+    tot = tot + mo[1]
+assert tot == 647
+
+
+def duree_return_dans_boucle(morceaux):
+    total = 0
+    for titre, duree in morceaux:
+        total = total + duree
+        return total
+
+
+assert duree_return_dans_boucle(pl.morceaux) == 245  # s'arrête au 1er morceau
+m = message("t = 0\nfor m in M:\n    t = t + m", {"M": pl.morceaux})
+print("Q5 erreur :", m)
+assert m == "TypeError: unsupported operand type(s) for +: 'int' and 'tuple'"
+
+# Ex. 3, Q8 erreur : sommet ne retire rien
+p = creer_pile_vide()
+for x in [4, 7, 1, 9]:
+    empiler(p, x)
+sommet(p)
+assert taille(p) == 4
+# Q9 erreur : tete dans la boucle ne vide jamais la file (on arrête au bout de 100 tours)
+f = creer_file_vide()
+enfiler(f, "Anli")
+p = creer_pile_vide()
+tours = 0
+while not est_vide(f) and tours < 100:
+    empiler(p, tete(f))
+    tours = tours + 1
+assert tours == 100 and taille(f) == 1  # boucle infinie sans la limite
+# Q9 erreur : return p renvoie une pile, pas une file
+assert p[0] == "pile"
+
+# Ex. 4, Q10 : bananes et manioc non affichés ; Q11 : variante items() et erreur KeyError
+assert [k for k in prix if prix[k] >= 2.5] == ["mangues", "tomates"]
+
+
+def cout_items(panier, prix):
+    total = 0
+    for produit, masse in panier.items():
+        total = total + masse * prix[produit]
+    return total
+
+
+assert cout_items({"mangues": 2, "tomates": 0.5}, prix) == 7.0
+m = message("t = 0\nfor k in prix:\n    t = t + panier[k] * prix[k]",
+            {"prix": prix, "panier": {"mangues": 2, "tomates": 0.5}})
+print("Q11 erreur :", m)
+assert m == "KeyError: 'bananes'"
+
+# Ex. 5 : chaque exemple et contre-exemple du corrigé
+assert compte_ouvrante(ex_bon) == 3  # Q13
+assert not bon_compte(q1)  # Q12 : 3 ouvrantes, 4 fermantes
+for contre in [")(", "(]", "([)]"]:  # Q16 : réponse et autres exemples
+    assert bon_compte(contre), contre
+    assert not est_bien_parenthesee(contre), contre
+# Q16 erreur : l'expression fautive de l'énoncé n'est pas un contre-exemple
+assert compte_ouvrante(ex_mauvais) == 3 and compte_fermante(ex_mauvais) == 2
+assert bon_compte(ex_mauvais) is False
+print("Q16 : 'tab[2*(i + 4] - tab[3)' ->", compte_ouvrante(ex_mauvais), "ouvrantes,",
+      compte_fermante(ex_mauvais), "fermantes, bon_compte", bon_compte(ex_mauvais))
+
+
+# Q13 erreur : c == "(" or "[" or "{" est toujours vrai
+def compte_ouvrante_faux(txt):
+    n = 0
+    for c in txt:
+        if c == "(" or "[" or "{":
+            n = n + 1
+    return n
+
+
+assert compte_ouvrante_faux(ex_bon) == len(ex_bon) == 23
+
+
+# Q13 variante acceptée
+def compte_ouvrante_or(txt):
+    n = 0
+    for c in txt:
+        if c == "(" or c == "[" or c == "{":
+            n = n + 1
+    return n
+
+
+assert all(compte_ouvrante_or(t) == compte_ouvrante(t) for t in [ex_bon, ex_mauvais, q1])
+
+
+# Q15 variante if / else
+def bon_compte_if(txt):
+    if compte_ouvrante(txt) == compte_fermante(txt):
+        return True
+    else:
+        return False
+
+
+assert all(bon_compte_if(t) == bon_compte(t) for t in [ex_bon, ex_mauvais, q1, ")("])
+
+
+# Q17 variante acceptée : sommet au début (insert(0) et pop(0))
+class PileDebut(Pile):
+    def empiler(self, elt):
+        self.contenu.insert(0, elt)
+
+    def depiler(self):
+        if self.est_vide():
+            return "La pile est vide."
+        return self.contenu.pop(0)
+
+
+pd = PileDebut()
+pd.empiler(1)
+pd.empiler(2)
+assert pd.depiler() == 2 and pd.depiler() == 1
+
+
+# Q17 erreurs : append + pop(0) donne une file ; contenu[-1] ne retire pas
+class PileFausse(Pile):
+    def depiler(self):
+        if self.est_vide():
+            return "La pile est vide."
+        return self.contenu.pop(0)
+
+
+pf = PileFausse()
+pf.empiler(1)
+pf.empiler(2)
+assert pf.depiler() == 1  # premier entré : comportement de file
+pl2 = Pile()
+pl2.empiler(1)
+assert pl2.contenu[-1] == 1 and len(pl2.contenu) == 1
+
+
+# Q19 variante sans dictionnaire
+def est_bien_parenthesee_or(txt):
+    p = Pile()
+    for c in txt:
+        if c in "([{":
+            p.empiler(c)
+        elif c in ")]}":
+            o = p.depiler()
+            if not ((o == "(" and c == ")") or (o == "[" and c == "]") or (o == "{" and c == "}")):
+                return False
+    return p.est_vide()
+
+
+tests = [ex_bon, ex_mauvais, q1, "((", ")", "", "{[()]}()", ")(", "(]", "([)]"]
+assert all(est_bien_parenthesee_or(t) == est_bien_parenthesee(t) for t in tests)
+# Tableau de la question 19
+assert [est_bien_parenthesee(t) for t in [ex_bon, ex_mauvais, q1, "((", ")"]] == [True, False, False, False, False]
+
+
+# Q19 erreurs fréquentes
+def erreur_compare_c(txt):
+    p = Pile()
+    for c in txt:
+        if c in "([{":
+            p.empiler(c)
+        elif c in ")]}":
+            if p.depiler() != c:
+                return False
+    return p.est_vide()
+
+
+assert erreur_compare_c(ex_bon) is False  # une expression juste est refusée
+
+
+def erreur_sans_test_final(txt):
+    p = Pile()
+    for c in txt:
+        if c in "([{":
+            p.empiler(c)
+        elif c in ")]}":
+            if p.depiler() != COUPLES[c]:
+                return False
+    return True
+
+
+assert erreur_sans_test_final("((") is True  # déclarée à tort bien parenthésée
+print("Variantes et erreurs fréquentes : toutes exécutées.")
 print("Tout est vérifié.")
