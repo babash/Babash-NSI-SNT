@@ -1378,24 +1378,24 @@
        "message": "NameError: name 'Score' is not defined. Did you mean: 'score'?"
       },
       {
-       "but": "Afficher J'ai 15 ans.",
+       "but": "Afficher 15 ans.",
        "lignes": [
         "age = 15",
-        "print(\"J'ai \" + age + \" ans\")"
+        "print(age + \" ans\")"
        ],
        "ligne": 1,
        "corrections": [
-        "print(\"J'ai \" + str(age) + \" ans\")",
-        "print(\"J'ai \" + \"age\" + \" ans\")",
-        "print(\"J'ai \" + int(age) + \" ans\")"
+        "print(str(age) + \" ans\")",
+        "print(\"age\" + \" ans\")",
+        "print(int(age) + \" ans\")"
        ],
        "bonne": 0,
-       "affiche": "J'ai 15 ans",
+       "affiche": "15 ans",
        "explication": "Le signe + ne colle que des textes : str(age) transforme le nombre 15 en texte \"15\".",
        "aides": [
         "Le message parle de str et de int : quel est le type de age ?"
        ],
-       "message": "TypeError: can only concatenate str (not \"int\") to str"
+       "message": "TypeError: unsupported operand type(s) for +: 'int' and 'str'"
       },
       {
        "but": "La pluie du jour : 12 mm, plus 3 mm l'après-midi. Afficher le total (15).",
@@ -1469,11 +1469,11 @@
        "but": "Écrire 200 secondes en minutes et secondes (3 20).",
        "lignes": [
         "secondes = 200",
-        "minutes = secondes / 60",
         "reste = secondes % 60",
+        "minutes = secondes / 60",
         "print(minutes, reste)"
        ],
-       "ligne": 1,
+       "ligne": 2,
        "corrections": [
         "minutes = secondes % 60",
         "minutes = secondes // 60",
@@ -1600,10 +1600,10 @@
        ]
       },
       {
-       "but": "Afficher Il reste 7 places.",
+       "but": "Afficher 7 places.",
        "lignes": [
         "n = 7",
-        "print(\"Il reste \" + {0}(n) + \" places\")"
+        "print({0}(n) + \" places\")"
        ],
        "trous": [
         {
@@ -1615,7 +1615,7 @@
          "bonne": 1
         }
        ],
-       "affiche": "Il reste 7 places",
+       "affiche": "7 places",
        "explication": "Pour coller avec +, il faut deux textes : str(7) donne \"7\".",
        "aides": [
         "Le + colle des textes : quel type faut-il ?"
@@ -1663,7 +1663,8 @@
        "lignes": [
         "h = 9",
         "m = 5",
-        "print({0}(h) + \" h \" + {1}(m) + \" min\")"
+        "t = {0}(h) + \" h \"",
+        "print(t + {1}(m) + \" min\")"
        ],
        "trous": [
         {
@@ -1855,14 +1856,14 @@
       {
        "but": "Une playlist : 3 morceaux de 210 secondes et un de 45. Afficher sa durée (11 min 15 s).",
        "lignes": [
-        "secondes = 3 * 210 + 45",
-        "minutes = secondes // 60",
-        "secondes = secondes % 60",
-        "print(minutes, \"min\", secondes, \"s\")"
+        "s = 3 * 210 + 45",
+        "m = s // 60",
+        "s = s % 60",
+        "print(m, \"min\", s, \"s\")"
        ],
        "affiche": "11 min 15 s",
        "aides": [
-        "Il faut les minutes avant de changer secondes.",
+        "Il faut les minutes m avant de changer s.",
         "// donne les minutes, % les secondes qui restent."
        ]
       }
@@ -2315,15 +2316,16 @@
       {
        "but": "Afficher le nombre de joueur·euse·s de 2 équipes de 11 (22).",
        "lignes": [
-        "equipe = 11",
-        "total = equipe + 2",
+        "equipes = 2",
+        "joueurs = 11",
+        "total = joueurs + equipes",
         "print(total)"
        ],
-       "ligne": 1,
+       "ligne": 2,
        "corrections": [
-        "total = equipe // 2",
-        "total = equipe * 2",
-        "total = equipe ** 2"
+        "total = joueurs // equipes",
+        "total = joueurs * equipes",
+        "total = joueurs ** equipes"
        ],
        "bonne": 1,
        "affiche": "22",
@@ -2337,14 +2339,15 @@
        "but": "La batterie est à 60 % ; une vidéo en prend 25. Afficher 35.",
        "lignes": [
         "batterie = 60",
-        "batterie = 25 - batterie",
+        "video = 25",
+        "batterie = video - batterie",
         "print(batterie)"
        ],
-       "ligne": 1,
+       "ligne": 2,
        "corrections": [
-        "batterie = batterie - 25",
-        "batterie = batterie + 25",
-        "batterie == batterie - 25"
+        "batterie = batterie - video",
+        "batterie = batterie + video",
+        "batterie == batterie - video"
        ],
        "bonne": 0,
        "affiche": "35",
@@ -2650,11 +2653,11 @@
        ]
       },
       {
-       "code": "mot = \"ko\"\nprint(mot * 2 + str(len(mot * 3)))",
+       "code": "mot = \"ko\"\nn = len(mot * 3)\nprint(mot * 2 + str(n))",
        "reponse": "koko6",
        "explication": "mot * 2 donne \"koko\" ; mot * 3 a 6 lettres ; str(6) donne \"6\" : koko6.",
        "aides": [
-        "Calcule d'abord len(mot * 3).",
+        "Calcule d'abord n.",
         "str transforme le nombre en texte pour pouvoir le coller."
        ]
       },
@@ -2833,8 +2836,8 @@
        "but": "La barge met 20 minutes. Elle part à 13 h 50 : afficher l'heure d'arrivée (14 10).",
        "lignes": [
         "depart = 13 * 60 + 50",
-        "arrivee = depart + 20",
-        "print(arrivee {0} 60, arrivee {1} 60)"
+        "a = depart + 20",
+        "print(a {0} 60, a {1} 60)"
        ],
        "trous": [
         {
@@ -2855,9 +2858,9 @@
         }
        ],
        "affiche": "14 10",
-       "explication": "arrivee vaut 850 minutes : 850 // 60 = 14 heures et 850 % 60 = 10 minutes.",
+       "explication": "a vaut 850 minutes : 850 // 60 = 14 heures et 850 % 60 = 10 minutes.",
        "aides": [
-        "arrivee est en minutes depuis minuit.",
+        "a est en minutes depuis minuit.",
         "L'heure : un quotient ; les minutes : un reste."
        ]
       }
@@ -3376,7 +3379,7 @@
        ]
       },
       {
-       "code": "p = 0.1 + 0.2\nprint(p == 0.3, round(p, 1) == 0.3)",
+       "code": "p = 0.1 + 0.2\nr = round(p, 1)\nprint(p == 0.3, r == 0.3)",
        "reponse": "False True",
        "explication": "0.1 + 0.2 vaut 0.30000000000000004 en machine : False ; arrondi au dixième, c'est 0.3 : True.",
        "aides": [
@@ -3519,11 +3522,12 @@
       {
        "but": "Afficher la moyenne entière de 15 et 16 (15).",
        "lignes": [
-        "a, b = 15, 16",
+        "a = 15",
+        "b = 16",
         "moy = (a + b) / 2",
         "print(moy)"
        ],
-       "ligne": 1,
+       "ligne": 2,
        "corrections": [
         "moy = (a + b) % 2",
         "moy = a + b // 2",
@@ -3780,10 +3784,10 @@
        ]
       },
       {
-       "but": "Afficher Total : 8 euros.",
+       "but": "Afficher 8 euros.",
        "lignes": [
         "total = 8",
-        "print(\"Total :\", {0}, \"euros\")"
+        "print({0}, \"euros\")"
        ],
        "trous": [
         {
@@ -3795,7 +3799,7 @@
          "bonne": 2
         }
        ],
-       "affiche": "Total : 8 euros",
+       "affiche": "8 euros",
        "explication": "Sans guillemets, total est la variable : print affiche sa valeur.",
        "aides": [
         "On veut la valeur, pas le mot."
@@ -3838,10 +3842,10 @@
        ]
       },
       {
-       "but": "Afficher 2 mangues + 3 avocats = 5",
+       "but": "2 mangues et 3 avocats : afficher 2 + 3 = 5.",
        "lignes": [
         "m, a = 2, 3",
-        "print(m, \"mangues +\", a, \"avocats =\", {0})"
+        "print(m, \"+\", a, \"=\", {0})"
        ],
        "trous": [
         {
@@ -3853,7 +3857,7 @@
          "bonne": 0
         }
        ],
-       "affiche": "2 mangues + 3 avocats = 5",
+       "affiche": "2 + 3 = 5",
        "explication": "Sans guillemets, m + a est calculé : 5.",
        "aides": [
         "Entre guillemets, rien n'est calculé."
@@ -4440,8 +4444,8 @@
        "texte": "type(10 / 2) et type(10 // 2) sont le même type.",
        "reponse": false,
        "explication": "/ donne un float, // un int.",
-       "code": "r = type(10 / 2) == type(10 // 2)",
-       "verifier": "r == True"
+       "code": "a = type(10 / 2)\nb = type(10 // 2)",
+       "verifier": "a == b"
       },
       {
        "texte": "Après a, b = 1, 2 puis a, b = b, a + b, a vaut 1.",
@@ -4654,12 +4658,12 @@
       {
        "but": "Afficher le prix de 4 cahiers à 3 euros (12).",
        "lignes": [
-        "prix = 3",
         "quantite = \"4\"",
+        "prix = 3",
         "total = prix * quantite",
         "print(total)"
        ],
-       "ligne": 1,
+       "ligne": 0,
        "corrections": [
         "quantite = str(4)",
         "quantite = 4",
