@@ -12,7 +12,8 @@ Le test sert le dépôt en local et joue, dans Chromium, à 320 px en obscur et 
 - l'offre avec un bon motif affiche un message de réussite, et le trophée apparaît, avec son motif,
   dans la fiche de Nour sur la même page ; il n'est plus proposé ensuite ;
 - aucune erreur JavaScript.
-La démonstration garde son état en mémoire pendant la visite, sans aucun stockage.
+La démonstration garde son état en mémoire pendant la visite, sans aucun stockage. reglages.js est servi
+avec COMPTE_COMMUN_EN_LIGNE: false, et tout appel à Supabase est coupé (T132d).
 Il faut Playwright et Chromium. Code de retour : 0 si tous les cas passent, 1 sinon.
 """
 import argparse
@@ -37,6 +38,11 @@ class Discret(http.server.SimpleHTTPRequestHandler):
 
 async def scenario(navigateur, base, largeur, theme, captures, verifier):
     pg = await navigateur.new_page(viewport={"width": largeur, "height": 900}, color_scheme=theme)
+    # La démonstration, quel que soit reglages.js (T132d : le site est en ligne) ; aucun appel à la base réelle
+    with open(os.path.join(RACINE_DEFAUT, "reglages.js"), encoding="utf-8") as f:
+        demo = f.read().replace("COMPTE_COMMUN_EN_LIGNE: true", "COMPTE_COMMUN_EN_LIGNE: false")
+    await pg.route("**/reglages.js", lambda r: r.fulfill(status=200, body=demo, headers={"Content-Type": "application/javascript"}))
+    await pg.route("https://*.supabase.co/**", lambda r: r.abort())
     erreurs = []
     pg.on("pageerror", lambda e: erreurs.append(str(e)))
     n = f"{largeur}-{theme}"
