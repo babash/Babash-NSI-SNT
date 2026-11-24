@@ -42,12 +42,12 @@ calendrier/                 le Calendrier des vacances, en service depuis le 20/
                             (supabase/, voir SUPABASE.md)
 assets/                     mise en page et fonctionnement (ne pas toucher)
   signal-commun.css         la palette et les polices communes au site et aux TD (style « Signal
-                            pirate », 21/11/2026) ; style.css, chargé après lui : la mise en page
-                            du site
+                            pirate », 21/11/2026), leur seule source depuis le 24/11/2026 ;
+                            style.css, chargé après lui : la mise en page du site
   td-en-ligne.js, .css      le moteur des TD en ligne auto-correctifs (Python, avec Pyodide, chargé
                             à la demande depuis jsDelivr, jamais copié dans le dépôt) et leur style
                             « Signal pirate » : une seule feuille de style pour l'écran clair,
-                            l'écran obscur et le papier
+                            l'écran obscur et le papier, qui charge signal-commun.css (@import)
   td/                       les dessins des TD, repris par le bandeau du site : les 4 bandeaux qui
                             tournent (avec leurs variantes de 20 mm pour les contrôles et leurs
                             versions obscures), la marge et le margouillat caché
@@ -118,7 +118,11 @@ jamais deux fois de suite le même ; `?bandeau=1` à `?bandeau=4`, ajouté à l'
 Le margouillat vert s'y cache à l'une des places prévues pour ce paysage
 (`assets/td/places-margouillat.json`). Aucune couleur n'est propre à une rubrique : le niveau est
 écrit dans une puce (SNT, 1re, Tle, PP, Tous). La palette et les polices, en clair et en obscur,
-sont dans `assets/signal-commun.css`, commune au site et aux TD (ses lignes 18 à 133 sont les lignes
-19 à 134 de `assets/td-en-ligne.css`) ; la mise en page du site est dans `assets/style.css`. Le
-Calendrier des vacances la charge aussi depuis le 24 novembre 2026 : sa feuille
-(`calendrier/calendrier.css`) ne garde que la mise en page de ses écrans, sans couleur propre.
+sont dans `assets/signal-commun.css`, commune au site et aux TD ; la mise en page du site est dans
+`assets/style.css`. Depuis le 24 novembre 2026 (T123d), `assets/td-en-ligne.css` charge
+`signal-commun.css` par `@import` (sa première règle) : la palette n'a plus qu'une source, et la règle
+« les lignes 18 à 133 de `signal-commun.css` sont les lignes 19 à 134 de `td-en-ligne.css` » n'a plus
+cours (il n'y a plus de copie à garder identique). Une couleur ou une police se change donc dans
+`signal-commun.css` seulement, et le changement vaut à la fois pour le site, les TD et le Calendrier
+des vacances, qui la charge aussi depuis le 24 novembre 2026 : sa feuille (`calendrier/calendrier.css`)
+ne garde que la mise en page de ses écrans, sans couleur propre.
