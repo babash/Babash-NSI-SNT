@@ -60,7 +60,7 @@ publiée après chaque envoi sur `main` ([VERIFICATION.md](VERIFICATION.md)).
 ```
 donnees/
   README.md                     le format en détail, pour l'enseignant et pour les agents
-  ressources/<id>.json          une fiche par ressource : 231 fiches. Les 174 premières : 82 pour les 90 entrées des
+  ressources/<id>.json          une fiche par ressource : 235 fiches. Les 174 premières : 82 pour les 90 entrées des
                                 listes (une ressource placée dans deux rubriques n'a qu'une fiche),
                                 8 pour des fichiers récupérés des conversations de l'enseignant,
                                 19 pour des activités Capytale, 4 pour des ressources tirées d'une
@@ -86,9 +86,10 @@ donnees/
                                 révision ferment le leur (21 novembre 2026) ; et les 16 QCM Pronote
                                 du dossier qcm/, dans la bibliothèque seulement : l'aperçu élève en
                                 lien principal, puis le corrigé enseignant·e, le fichier XML et la
-                                source (21 novembre 2026). Puis 9 : les 7 TD type bac (dictionnaires,
-                                graphes, piles et files, processus, routage, SQL 1 et SQL 2 ;
-                                21 novembre 2026) et, le 24 novembre 2026, le contrôle de terminale
+                                source (21 novembre 2026). Puis 13 : les 11 TD type bac (dictionnaires,
+                                graphes, piles et files, processus, routage, SQL 1 et SQL 2,
+                                21 novembre 2026 ; arbres binaires, arbres binaires de recherche,
+                                POO et récursivité, 24 novembre 2026) et, le 24 novembre 2026, le contrôle de terminale
                                 « POO, pile, file et rappels de 1re », dans la bibliothèque seulement,
                                 et le quiz de révision « POO, piles, files et rappels » de QuizzNSI,
                                 qui ferme les piles et les files dans l'onglet NSI Terminale
