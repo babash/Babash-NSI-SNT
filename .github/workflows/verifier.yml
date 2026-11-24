@@ -3,6 +3,9 @@
 #    bibliothèque (dossier donnees/, scripts/valider_donnees.py). Une erreur fait échouer le job ;
 #    les avertissements sont dans le résumé, sans échec. Puis un essai de la construction de
 #    bibliotheque.json (celle de publier.yml) et les tests du thésaurus et de la recherche.
+#  - à chaque modification, sur toutes les branches, et à la demande : le Calendrier des vacances
+#    (T135) : ses banques d'exercices (chaque programme exécuté), les tests de ce contrôle, et le
+#    moteur des mini-jeux joué dans Chromium. Une erreur fait échouer le job.
 #  - à chaque modification, puis chaque lundi : tous les liens des listes de ressources et des
 #    fiches de la bibliothèque (donnees/ressources/*.json : documents, auteurs ; constat N59).
 #    Un lien en échec est revérifié par un second job, donc sur une autre machine, une à deux
@@ -110,6 +113,47 @@ jobs:
           node scripts/tests/test_recherche.js
           node scripts/tests/test_admin_donnees.js
           python3 -I -B scripts/tests/test_depots_renommes.py
+
+  # T135 (accord du Gardien 34, 24/11/2026, sur la décision du chef d'orchestre) : le Calendrier des
+  # vacances contrôlé sur chaque branche, avant qu'elle n'arrive sur main. Les banques sont déjà
+  # contrôlées par « Publier le site », mais seulement au moment de publier.
+  calendrier:
+    name: Calendrier des vacances
+    # Les banques et le moteur ne changent pas sans envoi : rien à revérifier le lundi.
+    if: github.event_name != 'schedule'
+    runs-on: ubuntu-26.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v5
+
+      # Chaque banque d'exercices : la forme, puis chaque programme exécuté (le même contrôle que
+      # « Publier le site »). Une erreur fait échouer le job ; les avertissements se relisent.
+      - name: Contrôler les banques d'exercices
+        timeout-minutes: 15
+        run: python3 -B scripts/calendrier_exercices.py
+
+      - name: Tests du contrôle des banques
+        timeout-minutes: 5
+        run: python3 -I -B scripts/tests/test_calendrier_exercices.py
+
+      # Le moteur des 12 mini-jeux, joué dans Chromium avec les deux gabarits d'exemple : une erreur,
+      # puis la bonne réponse, au doigt et au clavier, à 320 px en clair et en obscur, sans aucune
+      # requête hors de la machine. Playwright à version fixée, dans un environnement à part.
+      - name: Installer Playwright et Chromium
+        timeout-minutes: 8
+        run: |
+          python3 -m venv "$RUNNER_TEMP/playwright"
+          "$RUNNER_TEMP/playwright/bin/python" -m pip install --quiet --disable-pip-version-check "playwright==1.63.0"
+          for essai in 1 2 3; do
+            "$RUNNER_TEMP/playwright/bin/python" -m playwright install chromium && exit 0
+            echo "Téléchargement de Chromium manqué (essai $essai sur 3) : nouvel essai dans 20 s"
+            sleep 20
+          done
+          exit 1
+
+      - name: Jouer les mini-jeux dans Chromium
+        timeout-minutes: 8
+        run: '"$RUNNER_TEMP/playwright/bin/python" -I -B scripts/tests/test_calendrier_jeux.py'
 
   liens:
     name: Liens des ressources
