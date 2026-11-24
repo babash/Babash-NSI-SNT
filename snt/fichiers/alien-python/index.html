@@ -91,7 +91,7 @@ function lignes(src,num){return String(src).split("\n").map(function(l,i){var in
 for(var j=0;j<k;j++)gd+='<span class="al-ind n'+(j%4)+'">    </span>';
 return '<span class="ligne">'+(num?'<span class="num" aria-hidden="true">'+(i+1)+'</span>':'')+gd+colorer(l.slice(k*4))+'</span>'}).join("")}
 function bloc(src){return '<pre class="al-code"><code>'+lignes(src,true)+'</code></pre>'}
-function miroir(src){return lignes(src,true)}
+function miroir(src){return '<span class="al-miroir-in">'+lignes(src,true)+'</span>'}
 /* ---------- grille ---------- */
 var g='<rect style="fill:var(--td-fond)" width="160" height="160"/><rect style="fill:var(--td-panneau-2)" width="160" height="10"/><rect style="fill:var(--td-panneau-2)" width="10" height="160"/><rect style="fill:var(--td-bande-2)" x="80" y="80" width="10" height="10"/>';
 for(var i=0;i<=16;i++){g+='<path style="stroke:var(--td-encre)" d="M'+10*i+' 0V160M0 '+10*i+'H160" stroke-width="'+((i<2||i==16)?.9:(i==6||i==11)?.7:.3)+'"/>'}
@@ -203,8 +203,17 @@ function marque(v){Array.prototype.forEach.call(bs,function(b){b.setAttribute("a
 marque(m==="light"||m==="dark"?m:"");
 Array.prototype.forEach.call(bs,function(b){b.addEventListener("click",function(){var v=b.getAttribute("data-theme-choix"),h=document.documentElement;
 if(v)h.setAttribute("data-theme",v);else h.removeAttribute("data-theme");try{if(v)localStorage.setItem("theme",v);else localStorage.removeItem("theme")}catch(e){}marque(v)})});
-function cale(t){var p=t.previousElementSibling;if(p&&p.classList.contains("al-miroir")){p.scrollTop=t.scrollTop;p.scrollLeft=t.scrollLeft}}
+/* Le miroir suit le champ : son contenu est décalé de la valeur exacte du défilement du champ (aucune limite
+   de défilement propre au miroir), et la place des barres de défilement classiques lui est retirée. */
+function cale(t){var p=t.previousElementSibling;if(!p||!p.classList.contains("al-miroir"))return;
+p.style.right=Math.max(0,t.offsetWidth-t.clientWidth)+"px";p.style.bottom=Math.max(0,t.offsetHeight-t.clientHeight)+"px";
+var c=p.firstElementChild;if(c)c.style.transform="translate("+(-t.scrollLeft)+"px,"+(-t.scrollTop)+"px)"}
+function caleTout(){var t=document.getElementById("txt");if(t)cale(t)}
 app.addEventListener("input",function(e){if(e.target.id=="txt"){var p=e.target.previousElementSibling;if(p&&p.classList.contains("al-miroir"))p.innerHTML=miroir(e.target.value);cale(e.target)}});
+["keyup","click","paste","select","focusin"].forEach(function(n){app.addEventListener(n,function(e){if(e.target.id=="txt")requestAnimationFrame(function(){cale(e.target)})})});
+window.addEventListener("resize",caleTout);
+if(window.ResizeObserver)new ResizeObserver(caleTout).observe(app);
+new MutationObserver(caleTout).observe(app,{childList:true});
 app.addEventListener("scroll",function(e){if(e.target.id=="txt")cale(e.target)},true)})();
 </script>
 </body>
