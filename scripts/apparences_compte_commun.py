@@ -37,7 +37,8 @@ PRIX = {"tete": 40, "visage": 40, "cou": 40, "main": 40, "epaule": 40, "pieds": 
 # Décision de l'enseignant du 20/11 (19:00) : « Les gimmicks de la classe » ne sont pas dans la boutique.
 # T133 (24/11) : les 15 objets des applications (famille « applis ») se gagnent chacun par un haut fait
 # de son application (Equipage.applis, charte/applis.md, § 5) : des trophées, jamais en boutique.
-FAMILLES_TROPHEES = {"classe", "applis"}
+# T133c (24/11) : les trophées de fidélité (famille « fidelite » : ailes et auras) se gagnent avec le temps, jamais en boutique.
+FAMILLES_TROPHEES = {"classe", "applis", "fidelite"}
 # Les objets retirés par l'enseignant (24/11, T133) : ils restent peut-être dans le catalogue
 # du moteur le temps que le Designer publie le sien, mais ne sont jamais proposés ici.
 RETIRES = {"tete:bouchon_mamoudzou", "main:perche_extensible"}
@@ -69,8 +70,16 @@ def construire(chemin):
             if o.get("famille") not in familles:
                 erreur(f"objet sans famille connue : {e}:{o['id']}")
             trophee = o["famille"] in FAMILLES_TROPHEES
+            # « libre » dans le catalogue du moteur (décision de l'enseignant du 24/11 : le kishali sur la tête,
+            # sur les épaules et le bandana) : à tout le monde dès le départ, jamais vendu ni gagné
+            if o.get("libre") is True:
+                if trophee:
+                    erreur(f"objet à la fois libre et trophée : {e}:{o['id']}")
+                acces = "libre"
+            else:
+                acces = "haut_fait" if trophee else "credits"
             elements.append({"id": f"{e}:{o['id']}", "emplacement": e, "nom": o["nom"], "famille": o["famille"],
-                             "acces": "haut_fait" if trophee else "credits", "prix": None if trophee else PRIX[e]})
+                             "acces": acces, "prix": PRIX[e] if acces == "credits" else None})
     for c in cat["compagnon"]:
         if c["id"] == "aucun":
             continue
