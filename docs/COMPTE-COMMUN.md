@@ -11,7 +11,10 @@ Un·e élève a **un seul code** (deux mots et trois chiffres, comme `PIRATE-ETR
 | `eleve/` (« Ma planque ») | l'élève | créer son code (seul·e ou par le lien de classe `eleve/?classe=ABCD`), entrer avec son code, « Mon avatar », ses hauts faits, sa classe, la carte de son code à imprimer, « Ce n'est pas moi », « Effacer mes données » |
 | `enseignant/` | l'enseignant·e | créer son espace (le code est montré une seule fois), ses classes (lien et QR code faits dans la page), ses élèves (avatar, hauts faits, nouveau code), le mode projection, les tableaux de bord des applications, supprimer son espace |
 
-Le réglage `COMPTE_COMMUN_EN_LIGNE` de `reglages.js` choisit le mode : `false`, une démonstration en mémoire (rien n'est envoyé) ; `true`, la base. `COMPTE_COMMUN_NIVEAU` montre le choix du niveau (après sa migration).
+Le réglage `COMPTE_COMMUN_EN_LIGNE` de `reglages.js` choisit le mode : `false`, une démonstration en mémoire (rien n'est envoyé) ; `true`, la base. Trois réglages taisent ce qui n'existe pas encore, et s'allument chacun après sa migration :
+- `COMPTE_COMMUN_NIVEAU` : le choix du niveau (migration du niveau) ;
+- `COMPTE_COMMUN_APPLICATIONS` : les codes et les espaces des applications, les crédits qu'elles donnent (première application branchée) ;
+- `COMPTE_COMMUN_CATALOGUE` : « Offrir un trophée » et « Archiver la classe » (migration 0010). Avant, la loge annonce les pièces libres (kishali, bandana) pour bientôt, sans les proposer : `commun_porter` les refuserait.
 
 ## Les règles que le module garantit
 

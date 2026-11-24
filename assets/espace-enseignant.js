@@ -148,13 +148,25 @@
       window.addEventListener('afterprint', fin);
       try { window.print(); } catch (e) { fin(); }
     });
-    b.addEventListener('click', function () {
-      Prof.ouvrir(codeAffiche).then(function (rep) { if (rep.ok) { espace = rep; router(); } else entree(rep.message); });
+    /* Comme l'élève retape ses 3 chiffres : on retape les 4 chiffres avant « Je l'ai noté »
+       (spécification des codes, § 1.5 ; la base n'en garde que l'empreinte) */
+    var chiffres = (codeAffiche.match(/(\d{4})$/) || [])[1] || '';
+    var saisie = P.champ({ etiquette: 'Retape les 4 chiffres de ton code', inputmode: 'numeric', max: 4, classe: 'cc-chiffres', autocomplete: 'off' });
+    var m = P.zoneMessage();
+    b.setAttribute('type', 'submit');
+    var form = P.formulaire([saisie, el('div', { class: 'cc-actions' }, [b, imprimer]), m], function () {
+      if (saisie.input.value.replace(/\D/g, '') !== chiffres) {
+        P.message(m, 'Ce ne sont pas les bons chiffres : regarde ton code et recopie-le, ou imprime-le.', 'erreur');
+        saisie.input.focus();
+        return;
+      }
+      P.occupe(b, true);
+      Prof.ouvrir(codeAffiche).then(function (rep) { P.occupe(b, false); if (rep.ok) { espace = rep; router(); } else entree(rep.message); });
     });
     main.appendChild(el('section', { class: 'cc-carte cc-ton-code' }, [titre, el('p', { class: 'cc-code cc-code-grand' }, codeAffiche),
       el('p', null, texte || 'Il n\'est montré qu\'une fois : note-le ou imprime-le.'),
-      el('p', { class: 'petit' }, 'Il ouvre ton espace depuis n\'importe quel appareil. Personne d\'autre ne peut le retrouver : ni la base, ni le site.'),
-      el('div', { class: 'cc-actions' }, [b, imprimer])]));
+      el('p', { class: 'petit' }, 'Il ouvre ton espace depuis n\'importe quel appareil. Personne d\'autre ne peut le retrouver : ni la base, ni le site. Perdu, il te coupe de tes classes.'),
+      form]));
     titre.focus();
   }
 
@@ -195,8 +207,10 @@
     main.appendChild(titre);
     if (espace.alarme) main.appendChild(el('p', { class: 'cc-message cc-erreur' }, 'Beaucoup d\'essais de codes ratés en une heure sur le compte commun : surveille la salle.'));
     var toutes = espace.classes || [];
-    var classes = toutes.filter(function (c) { return c.ouverte; });
-    var fermees = toutes.filter(function (c) { return !c.ouverte; });
+    /* Rangées à part : les classes archivées (migration 0010) ; avant, toutes ensemble */
+    var archivable = CC.disponible('commun_prof_archiver_classe');
+    var classes = toutes.filter(function (c) { return !(archivable && c.archivee); });
+    var fermees = toutes.filter(function (c) { return archivable && c.archivee; });
     function carteClasse(c) {
       return el('li', { class: 'cc-classe-carte' }, [
         el('a', { href: '#/classe/' + encodeURIComponent(c.id), class: 'cc-classe-lien-nom' }, c.nom),
@@ -208,9 +222,9 @@
       ]);
     }
     main.appendChild(classes.length ? el('ul', { class: 'cc-classes' }, classes.map(carteClasse))
-      : el('p', { class: 'vide' }, toutes.length ? 'Aucune classe ouverte.' : 'Pas encore de classe. Crée-en une : tu obtiens son lien et son QR code.'));
+      : el('p', { class: 'vide' }, toutes.length ? 'Toutes tes classes sont archivées.' : 'Pas encore de classe. Crée-en une : tu obtiens son lien et son QR code.'));
     if (fermees.length) main.appendChild(el('details', { class: 'cc-carte' }, [el('summary', null, 'Classes archivées (' + fermees.length + ')'),
-      el('p', { class: 'petit' }, 'Inscriptions fermées : leurs élèves gardent leur compte et tout ce qu\'ils ont gagné. « Rouvrir » dans les réglages de la classe.'),
+      el('p', { class: 'petit' }, 'Leurs élèves gardent leur compte et tout ce qu\'ils ont gagné. « Désarchiver » dans les réglages de la classe.'),
       el('ul', { class: 'cc-classes' }, fermees.map(carteClasse))]));
     main.appendChild(formNouvelleClasse());
     main.appendChild(blocTableaux());
@@ -379,7 +393,7 @@
     main.appendChild(el('section', { class: 'cc-inviter' }, [
       titre,
       qr ? el('div', { class: 'cc-qr cc-qr-grand', role: 'img', 'aria-label': 'QR code du lien de la classe', html: qr }) : null,
-      el('p', null, 'Ou va sur ' + c.lien.replace(/^https:\/\//, '').replace(/\?.*$/, '') + ' et tape le code de classe :'),
+      el('p', null, 'Ou va sur ' + c.lien.replace(/^https:\/\//, '').replace(/\?.*$/, '') + ', crée ton code (ou entre avec), puis « Ma classe », « Rejoindre une classe », et tape le code de classe :'),
       el('p', { class: 'cc-code cc-code-projete' }, c.code),
       el('p', { class: 'petit' }, c.ouverte ? 'Choisis un prénom ou un pseudo, jamais ton nom de famille. Note ton code dans ton cahier.' : 'Attention : les inscriptions de cette classe sont fermées.'),
       el('p', null, el('a', { href: '#/classe/' + encodeURIComponent(c.id) }, '← Retour à la classe'))
@@ -454,7 +468,7 @@
     var fAttr = P.formulaire([el('div', { class: 'cc-en-ligne' }, [xp, motif]), P.bouton('Attribuer', { type: 'submit', classe: 'cc-principal' }), m1], function () {
       Prof.attribuerXp(e.compte, parseInt(xp.input.value, 10), motif.input.value).then(function (rep) {
         if (!rep.ok) { P.message(m1, rep.message, 'erreur'); return; }
-        P.annoncer(e.pseudo + ' : +' + rep.xp + ' XP (« ' + motif.input.value.trim() + ' »).', 'ok');
+        P.annoncer(e.pseudo + ' : +' + rep.xp + ' XP (« ' + motif.input.value.trim() + ' »).', 'ok', { suivi: true });
         router();
       });
     });
@@ -480,7 +494,7 @@
     /* Offrir un trophée (un objet qui ne s'achète pas), avec un motif que l'élève lit */
     var m4 = P.zoneMessage();
     var dejaTr = (e.trophees || []).map(function (t) { return typeof t === 'string' ? t : t.element; });
-    var aOffrir = (cat.elements || []).filter(function (x) { return x.acces === 'haut_fait' && x.emplacement !== 'compagnon' && dejaTr.indexOf(x.id) < 0; });
+    var aOffrir = (cat.elements || []).filter(function (x) { return x.acces === 'haut_fait' && x.famille === 'classe' && dejaTr.indexOf(x.id) < 0; });
     var selTr = el('select', { id: P.idUnique('trophee'), class: 'cc-select' }, aOffrir.map(function (x) { return el('option', { value: x.id }, x.nom); }));
     var motifTr = P.champ({ etiquette: 'Motif', aide: 'De 3 à 80 caractères ; l\'élève le lit dans ses trophées.', max: 80, exemple: 'A rangé la salle informatique' });
     var fTr = !CC.disponible('commun_prof_offrir') ? el('p', { class: 'petit' }, 'Offrir un trophée arrive avec le catalogue des avatars.')
@@ -489,7 +503,7 @@
       Prof.offrir(e.compte, selTr.value, motifTr.input.value).then(function (rep) {
         if (!rep.ok) { P.message(m4, rep.message, 'erreur'); return; }
         var texte = e.pseudo + ' : trophée offert (' + rep.nom + ', « ' + CC.nettoyerTexte(motifTr.input.value, 3, 80) + ' »).';
-        P.annoncer(texte, 'ok');
+        P.annoncer(texte, 'ok', { suivi: true });
         messageClasse = texte;
         router();
       });
@@ -586,6 +600,7 @@
   }
 
   function blocReglagesClasse(c) {
+    var archivable = CC.disponible('commun_prof_archiver_classe');
     var nom = P.champ({ etiquette: 'Nom de la classe', max: 40, valeur: c.nom });
     var ouverte = P.caseACocher('Inscriptions ouvertes');
     ouverte.input.checked = !!c.ouverte;
@@ -600,15 +615,18 @@
           rafraichirEspace().then(router);
         });
       }),
-      el('h3', null, c.ouverte ? 'Archiver la classe' : 'Rouvrir la classe'),
-      el('p', { class: 'petit' }, c.ouverte ? 'Ferme les inscriptions et range la classe à part. Rien n\'est effacé.' : 'Rouvre les inscriptions : la classe revient avec les autres.'),
-      (function () {
-        var b = P.bouton(c.ouverte ? 'Archiver la classe' : 'Rouvrir la classe');
+      /* Archiver (migration 0010, réglage COMPTE_COMMUN_CATALOGUE) : avant, seule la case
+         « Inscriptions ouvertes » existe, et la page ne prétend pas archiver */
+      archivable ? el('h3', null, c.archivee ? 'Désarchiver la classe' : 'Archiver la classe') : null,
+      archivable ? el('p', { class: 'petit' }, c.archivee ? 'La classe revient avec les autres ; ses inscriptions restent fermées (case ci-dessus pour les rouvrir).'
+        : 'Ferme les inscriptions et range la classe à part. Rien n\'est effacé.') : null,
+      !archivable ? null : (function () {
+        var b = P.bouton(c.archivee ? 'Désarchiver la classe' : 'Archiver la classe');
         var m3 = P.zoneMessage();
         b.addEventListener('click', function () {
-          Prof.modifierClasse(c.id, c.nom, !c.ouverte, c.applications).then(function (rep) {
+          Prof.archiverClasse(c.id, !c.archivee).then(function (rep) {
             if (!rep.ok) { P.message(m3, rep.message, 'erreur'); return; }
-            messageClasse = c.ouverte ? 'La classe est archivée : inscriptions fermées.' : 'La classe est rouverte.';
+            messageClasse = c.archivee ? 'La classe est désarchivée.' : 'La classe est archivée : inscriptions fermées.';
             rafraichirEspace().then(router);
           });
         });

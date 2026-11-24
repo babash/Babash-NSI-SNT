@@ -367,6 +367,13 @@
         redessiner();
       }));
     });
+    /* Les pièces libres du moteur (kishali sur la tête et sur les épaules, bandana) que la base ne connaît
+       pas encore (migration 0010) : annoncées, jamais proposées, car commun_porter les refuserait */
+    var bientot = (A.elements || []).filter(function (e) {
+      return e.acces === 'libre' && e.emplacement !== 'compagnon' && !cat.elements.some(function (x) { return x.id === e.id; });
+    });
+    if (bientot.length) objets.appendChild(el('p', { class: 'petit cc-bientot' }, 'Bientôt, gratuits pour tout le monde : '
+      + bientot.map(function (e) { return e.nom.charAt(0).toLowerCase() + e.nom.slice(1); }).join(', ') + '.'));
     objets.appendChild(el('p', { class: 'petit' }, boutiqueOuverte() ? 'D\'autres objets t\'attendent dans la boutique.'
       : 'Pour l\'instant : ton allure, ta tenue et le margouillat, gratuits. Les objets arrivent bientôt, avec la boutique.'));
 
