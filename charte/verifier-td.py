@@ -215,19 +215,96 @@ def sortie_norm(t, exact=False):
     return '\n'.join(l for l in lignes if l.strip())
 
 
-def sur_depart(depart, correction):
-    """Le code de départ sans ses blocs de premier niveau (def, class) que la correction réécrit, puis la correction."""
-    noms = set(re.findall(r'^(?:def|class)\s+(\w+)', correction, re.M))
+def _blocs_haut(code):
+    """Les blocs de premier niveau : [nom ou None, genre ('def', 'class' ou None), lignes]."""
     blocs, cur = [], []
-    for l in depart.split('\n'):
-        if l and not l[0].isspace() and cur:
+    for l in code.split('\n'):
+        if l.strip() and not l[0].isspace() and cur and not cur[-1].rstrip().endswith('\\'):
             blocs.append(cur)
             cur = []
         cur.append(l)
     if cur:
         blocs.append(cur)
-    garde = [b for b in blocs if not (re.match(r'(?:def|class)\s+(\w+)', b[0]) and re.match(r'(?:def|class)\s+(\w+)', b[0]).group(1) in noms)]
-    return '\n'.join('\n'.join(b) for b in garde) + '\n' + correction
+    out = []
+    for b in blocs:
+        m = re.match(r'(def|class)\s+(\w+)', b[0])
+        out.append([m.group(2) if m else None, m.group(1) if m else None, b])
+    return out
+
+
+def _sans_blancs_finaux(lignes):
+    """Sépare les lignes vides de fin (elles restent entre les blocs)."""
+    k = len(lignes)
+    while k > 0 and not lignes[k - 1].strip():
+        k -= 1
+    return lignes[:k], lignes[k:]
+
+
+def _methodes(classe_lignes):
+    """Les méthodes d'une classe : {nom: (début, fin, retrait)}, fin exclue, sans les lignes vides de fin."""
+    corps = [l for l in classe_lignes[1:] if l.strip()]
+    if not corps:
+        return {}, '    '
+    retrait = corps[0][:len(corps[0]) - len(corps[0].lstrip())]
+    res, i = {}, 1
+    while i < len(classe_lignes):
+        l = classe_lignes[i]
+        m = re.match(re.escape(retrait) + r'def\s+(\w+)', l)
+        if m and not l[len(retrait)].isspace():
+            j = i + 1
+            while j < len(classe_lignes) and (not classe_lignes[j].strip() or
+                                             len(classe_lignes[j]) - len(classe_lignes[j].lstrip()) > len(retrait)):
+                j += 1
+            while j > i + 1 and not classe_lignes[j - 1].strip():
+                j -= 1
+            res[m.group(1)] = (i, j, retrait)
+            i = j
+        else:
+            i += 1
+    return res, retrait
+
+
+def sur_depart(depart, correction):
+    """Pose une correction partielle sur le code de départ, comme l'élève qui complète le squelette dans le moteur :
+    une fonction ou une classe que le départ contient prend sa place (au même endroit) ; une méthode (une fonction
+    dont le départ a une méthode du même nom, ou dont le premier paramètre est self) remplace celle de sa classe ;
+    une fonction ou une classe nouvelle va avant la première instruction de premier niveau ; le reste, à la fin."""
+    import textwrap
+    corr = [b for b in _blocs_haut(textwrap.dedent(correction)) if any(l.strip() for l in b[2])]
+    dep = _blocs_haut(depart)
+    nouveaux, fin = [], []
+    for nom, genre, lignes in corr:
+        lignes, _ = _sans_blancs_finaux(lignes)
+        if nom is None:
+            if '\n'.join(lignes).strip() not in depart:
+                fin.append(lignes)
+            continue
+        haut = next((b for b in dep if b[0] == nom and b[1] == genre), None)
+        if haut is not None:
+            _, blancs = _sans_blancs_finaux(haut[2])
+            haut[2] = lignes + blancs
+            continue
+        classes = [b for b in dep if b[1] == 'class']
+        hote = None
+        if genre == 'def':
+            hote = next((b for b in classes if nom in _methodes(b[2])[0]), None)
+            if hote is None and re.match(r'def\s+\w+\s*\(\s*self\b', lignes[0]) and classes:
+                hote = classes[-1]
+        if hote is not None:
+            meth, retrait = _methodes(hote[2])
+            indente = [(retrait + l) if l.strip() else l for l in lignes]
+            if nom in meth:
+                i, j, _ = meth[nom]
+                hote[2] = hote[2][:i] + indente + hote[2][j:]
+            else:
+                tete, blancs = _sans_blancs_finaux(hote[2])
+                hote[2] = tete + [''] + indente + blancs
+            continue
+        nouveaux.append(lignes + [''])
+    k = next((i for i, b in enumerate(dep) if b[0] is None and any(
+        l.strip() and not l.lstrip().startswith(('#', 'from ', 'import ', '@')) for l in b[2])), len(dep))
+    morceaux = [b[2] for b in dep[:k]] + nouveaux + [b[2] for b in dep[k:]] + fin
+    return '\n'.join('\n'.join(m) for m in morceaux) + '\n'
 
 
 def classe(c):
@@ -339,7 +416,7 @@ def verifier(chemin):
                     dep = next((code_de(x.texte()) for x in s.tous(classe('td-depart'))), '')
                     if rc not in (0, None) and dep.strip() and tests_q:
                         # une correction qui ne donne que la partie à compléter : on la pose sur le code de départ
-                        # (sans les blocs qu'elle réécrit), comme l'élève qui complète le squelette
+                        # (chaque fonction à sa place, chaque méthode dans sa classe), comme l'élève qui complète le squelette
                         rc2, out2, err2 = lancer_q(sur_depart(dep, src), fichier, entrees=e_, graine=g_, tests=tests_q)
                         if rc2 == 0:
                             rc, out, err = rc2, out2, err2

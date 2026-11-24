@@ -342,6 +342,9 @@
     return { texte: out.join('\n'), suites: suites };
   }
   var CODE_LONG = 40;
+  // sur papier, un bloc de code qui dépasse un tiers de page avec sa consigne peut se couper entre deux lignes, 3 lignes
+  // au moins de chaque côté (T123d) : 16 lignes de code (4,7 mm chacune), 11 lignes de code à trous (6,2 mm chacune)
+  var CODE_SECABLE = 15, TROUS_SECABLE = 10;
   var DEPART_MAX = 20;      // squelette imprimé jusqu'à 20 lignes (data-depart-papier="oui" pour plus)       // au-delà (en lignes), un code peut être coupé entre deux lignes sur papier (T123c)
   // code affiché (non modifiable), avec numéros de ligne
   function afficherCode(pre, opts) {
@@ -357,7 +360,7 @@
     }).join('');
     pre.classList.add('td-code-pret');
     if (lignes.length < 2 || opts.sansNumeros) pre.classList.add('td-sans-num');
-    if (lignes.length > CODE_LONG) pre.classList.add('td-code-long');     // sur papier : peut passer à la page suivante
+    if (lignes.length > CODE_SECABLE) pre.classList.add('td-code-long');     // sur papier : peut passer à la page suivante (T123d)
     return code;
   }
 
@@ -958,7 +961,9 @@
   // sur une seule ligne : la consigne, puis la ligne à remplir (T123c, « Resserrer »). Écran inchangé.
   var IMPRIME_SANS = /^(td-aide|td-correction|td-retour|td-attendu|td-q-titre|td-consigne|td-reponse)$/;
   Question.prototype.courteSimple = function () {
-    if (this.type !== 'courte' || this.s.classList.contains('td-cote')) return false;
+    // une réponse rédigée d'une ligne (libre, data-lignes="1") tient aussi sur une rangée (T123d)
+    var uneLigne = this.type === 'libre' && (this.s.getAttribute('data-lignes') || '').trim() === '1';
+    if ((this.type !== 'courte' && !uneLigne) || this.s.classList.contains('td-cote')) return false;
     var consignes = 0, ok = true;
     Array.prototype.forEach.call(this.s.children, function (c) {
       if (c.matches('script, [data-support="ecran"], .td-plus-loin:not([data-support="papier"])')) return;
@@ -1114,7 +1119,7 @@
       });
     }
     pre.classList.add('td-code-pret', 'td-code-trous');
-    if (lignes.length > CODE_LONG) pre.classList.add('td-code-long');
+    if (lignes.length > TROUS_SECABLE) pre.classList.add('td-code-long');     // T123d : un tiers de page
     // largeur du code sur papier (chaque case compte pour sa largeur) : code étroit = réponse à côté
     this.sourceTrous = lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? new Array((parTrou ? Math.max.apply(null, alternatives(m).map(function (r) { return r.length; })) : largeurCommune) + 6).join('x') : m; }).join(''); }).join('\n');
     this.mettreDeCote();
@@ -1438,6 +1443,8 @@
     });
     this.questions.forEach(function (q) { if (q.courteSimple()) q.s.classList.add('td-courte-ligne'); });
     this.tableauxARemplir();
+    this.regrouperPapier();
+    this.codeACoteDeLaFigure();
     // le code affiché hors des questions (mémo, exemples)
     this.r.querySelectorAll('pre.td-code:not(.td-code-pret)').forEach(function (p) { afficherCode(p); });
     this.r.querySelectorAll('pre.td-erreur:not(.td-code-pret)').forEach(function (p) { p.parentNode.replaceChild(blocErreur(p.textContent.replace(/^\n/, '')), p); });
@@ -1464,6 +1471,69 @@
     var f = this;
     (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(ajuster);
     window.addEventListener('resize', function () { clearTimeout(minuterie); minuterie = setTimeout(ajuster, 150); });
+  };
+  /* sur papier, des questions courtes qui se suivent (réponse d'un mot, d'une valeur, d'une ligne : « courte », et
+     « libre » à data-lignes="1") s'impriment en un tableau « N° | Consigne | Réponse » (T123d, décision du 22/11
+     « Regrouper les questions courtes ») ; en deux colonnes de questions si toutes les consignes sont courtes.
+     Automatique, à partir de 2 questions ; data-regrouper="non" sur <main>, une partie ou une question l'empêche.
+     Les numéros restent ceux de la suite papier. À l'écran, rien ne change : le tableau est papier seul, et les
+     questions regroupées sont cachées à l'impression seulement. */
+  var GROUPE_COURT = 48, GROUPE_ETIQ = 22;
+  Feuille.prototype.regrouperPapier = function () {
+    var groupes = [], cur = [], prec = null;
+    function papierVisible(e) { return !e.matches('script, template, noscript, [hidden], [data-support="ecran"], .td-ecran-seul, .td-memo:not([data-support="papier"]), .td-plus-loin:not([data-support="papier"])'); }
+    function suivantImprime(e) { var n = e.nextElementSibling; while (n && !papierVisible(n)) n = n.nextElementSibling; return n; }
+    this.questions.forEach(function (q) {
+      if (q.support === 'ecran') return;      // invisible sur papier : elle ne sépare pas deux questions
+      var ok = q.s.classList.contains('td-courte-ligne') && q.support !== 'ecran' && q.numPapier &&
+        (q.s.closest('[data-regrouper]') || { getAttribute: function () { return ''; } }).getAttribute('data-regrouper') !== 'non';
+      if (ok && prec && suivantImprime(prec.s) === q.s) cur.push(q);
+      else { if (cur.length > 1) groupes.push(cur); cur = ok ? [q] : []; }
+      prec = ok ? q : null;
+    });
+    if (cur.length > 1) groupes.push(cur);
+    groupes.forEach(function (g) {
+      var lignes = g.map(function (q) {
+        var c = q.s.querySelector(':scope > p.td-consigne'), etiq = q.s.getAttribute('data-etiquette') || '';
+        return { q: q, c: c, etiq: etiq, long: c ? c.textContent.replace(/\s+/g, ' ').trim().length : 0 };
+      });
+      var deux = g.length >= 4 && lignes.every(function (l) { return l.long <= GROUPE_COURT && l.etiq.length <= GROUPE_ETIQ; });
+      var parCol = deux ? Math.ceil(g.length / 2) : g.length, cols = deux ? 2 : 1;
+      // une réponse rédigée (libre) a besoin de plus de place qu'un mot ou une valeur
+      var redige = g.some(function (q) { return q.type === 'libre'; });
+      var table = el('table', { class: 'td-groupe' + (deux ? ' td-groupe-2' : '') + (redige ? ' td-groupe-redige' : '') });
+      var tete = el('tr');
+      for (var k = 0; k < cols; k++) ['N°', 'Consigne', 'Réponse'].forEach(function (t, i) { tete.appendChild(el('th', { scope: 'col', class: ['td-groupe-n', 'td-groupe-q', 'td-groupe-r'][i], text: t })); });
+      table.appendChild(el('thead', null, [tete]));
+      var corps = el('tbody');
+      for (var r = 0; r < parCol; r++) {
+        var tr = el('tr');
+        for (var k2 = 0; k2 < cols; k2++) {
+          var l = lignes[k2 * parCol + r];
+          if (!l) { tr.appendChild(el('td', { colspan: '3', class: 'td-groupe-rien' })); continue; }
+          var cons = el('td', { class: 'td-groupe-q' });
+          if (l.c) Array.prototype.forEach.call(l.c.childNodes, function (n) { cons.appendChild(n.cloneNode(true)); });
+          tr.appendChild(el('th', { scope: 'row', class: 'td-groupe-n' }, [el('span', { class: 'td-q-num', text: String(l.q.numPapier) }), l.q.bonus ? el('span', { class: 'td-groupe-bonus', text: ' ★' }) : null]));
+          tr.appendChild(cons);
+          tr.appendChild(el('td', { class: 'td-groupe-r td-vide' }, l.etiq ? [el('span', { class: 'td-groupe-etiq', text: l.etiq })] : []));
+          l.q.s.classList.add('td-groupe-membre');
+        }
+        corps.appendChild(tr);
+      }
+      table.appendChild(corps);
+      g[0].s.parentNode.insertBefore(el('div', { class: 'td-table td-groupe-boite td-papier-seul', 'aria-hidden': 'true' }, [table]), g[0].s);
+    });
+  };
+  /* sur papier, « Écris le programme » avec une grille ou un schéma (le robot) : la figure à droite, le cadre à remplir
+     à sa gauche, si le code de départ est étroit (48 caractères au plus) ; data-cote="non" l'empêche (T123d) */
+  Feuille.prototype.codeACoteDeLaFigure = function () {
+    this.questions.forEach(function (q) {
+      if (q.type !== 'code' || q.s.getAttribute('data-cote') === 'non') return;
+      var figs = q.s.querySelectorAll(':scope > svg, :scope > figure, :scope > .td-schema');
+      if (figs.length !== 1 || q.s.querySelector(':scope > pre.td-code, :scope > .td-table')) return;
+      var large = Math.max.apply(null, String(q.depart || '').split('\n').map(function (l) { return l.length; }));
+      if (large <= 48) q.s.classList.add('td-code-figure');
+    });
   };
   // tableau à remplir (T123c) : data-case-largeur (mm) et data-case-hauteur (lignes d'écriture) sur <table>,
   // data-case-largeur sur un <th> pour sa colonne ; les cellules vides deviennent des cases à remplir

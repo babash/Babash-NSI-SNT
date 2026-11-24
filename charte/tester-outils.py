@@ -10,9 +10,15 @@ Usage (à la racine du dépôt) : python3 -I charte/tester-outils.py
    Gardien 25 (« La casse du siècle », corrections forcées à l'impression : 18 corrections imprimées).
 3. verifier-td.py sur le gabarit : « tout est juste ».
 4. numeroter-feuilles.py --tout --verifier : il passe sur tout le dépôt, sans « Problème ».
+5. Corrections partielles (T123d) : verifier-td.py pose une correction qui ne donne qu'une fonction ou une méthode
+   sur le code de départ, comme l'élève : la fonction à sa place, la méthode dans sa classe. Les 10 cas des TD type
+   bac (charte/essais/corrections-partielles.json) passent leurs tests cachés, et le départ seul ne les passe pas ;
+   plus 4 cas écrits ici (méthode nouvelle, fonction nouvelle avant les instructions, correction en retrait, classe).
 Code de sortie : 0 si tout est conforme.
 """
 import functools
+import importlib.util
+import json
 import http.server
 import os
 import subprocess
@@ -37,6 +43,37 @@ class Silencieux(http.server.SimpleHTTPRequestHandler):
 def lancer(*args):
     r = subprocess.run([sys.executable, '-I', *args], capture_output=True, text=True, cwd=RACINE)
     return r.returncode, r.stdout + r.stderr
+
+
+CAS_ECRITS = [
+    ('méthode nouvelle, mise dans sa classe',
+     'class Pile:\n    def __init__(self):\n        self.t = []\n\np = Pile()\np.empiler(3)\nprint(p.t)\n',
+     'def empiler(self, x):\n    self.t.append(x)\n', 'p2 = Pile(); p2.empiler(1); assert p2.t == [1]\n'),
+    ('fonction nouvelle, avant les instructions',
+     'def double(x):\n    return 2 * x\n\nprint(quadruple(3))\n',
+     'def quadruple(x):\n    return double(double(x))\n', 'assert quadruple(2) == 8\n'),
+    ('correction écrite en retrait, méthode remplacée à sa place',
+     'class A:\n    def f(self):\n        ...\n\n    def g(self):\n        return self.f() + 1\n\nprint(A().g())\n',
+     '    def f(self):\n        return 1\n', 'assert A().g() == 2\n'),
+    ('classe remplacée à sa place',
+     'class B:\n    ...\n\nb = B()\nprint(b.v)\n',
+     'class B:\n    def __init__(self):\n        self.v = 5\n', 'assert B().v == 5\n'),
+]
+
+
+def essayer_corrections_partielles(noter):
+    spec = importlib.util.spec_from_file_location('verifier_td', os.path.join(ICI, 'verifier-td.py'))
+    v = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(v)
+    cas = json.load(open(os.path.join(ICI, 'essais', 'corrections-partielles.json'), encoding='utf-8'))
+    cas = [(f"{c['page']} {c['question']}", c['depart'], c['correction'], c['tests'], c['fichier'], c['preambule']) for c in cas]
+    cas += [(n, d, c, t, 'mon_code.py', '') for n, d, c, t in CAS_ECRITS]
+    for nom, dep, corr, tests, fichier, pre in cas:
+        rc, out, err = v.lancer(v.sur_depart(dep, corr), fichier, pre=pre, tests=tests)
+        rc0, _, _ = v.lancer(dep, fichier, pre=pre, tests=tests)
+        noter(rc == 0 and rc0 != 0, f'correction partielle posée sur le départ : {nom}'
+              + ('' if rc == 0 else ' : ' + err.strip().splitlines()[-1][:120] if err.strip() else '')
+              + ('' if rc0 != 0 else ' (le départ seul passe déjà : essai sans valeur)'))
 
 
 def main():
@@ -69,6 +106,7 @@ def main():
             noter(vu, f'{page} : {nom} imprimés : fuite vue ({ligne[:110]})')
     rc, out = lancer('charte/verifier-td.py', 'charte/gabarit-td/index.html')
     noter(rc == 0 and 'tout est juste' in out, 'gabarit : verifier-td.py, tout est juste')
+    essayer_corrections_partielles(noter)
     rc, out = lancer('charte/numeroter-feuilles.py', '--tout', '--verifier')
     noter('Problème' not in out and 'Traceback' not in out, 'numeroter-feuilles.py --tout --verifier : tout le dépôt, sans problème (' + out.strip().splitlines()[-1] + ')')
     if os.path.exists(pdf):

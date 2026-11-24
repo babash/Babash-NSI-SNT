@@ -6,7 +6,50 @@ Un TD est **une seule page HTML** : à l'écran, elle se corrige toute seule ; i
 - Modèle : `charte/gabarit-td/modele.html` (commenté) ; exemple rendu : `charte/gabarit-td/index.html` ; TD complet : `charte/td-pilote/`.
 - Outils : `charte/nouveau-td.py` (le squelette), `charte/verifier-td.py` (le code exécuté pour de vrai), `charte/imprimer-td.py` (le PDF vierge et les contrôles de mise en page).
 
-## Nouveautés du 21/11 après-midi (T123c) : à lire d'abord
+## Nouveautés du 22/11 (T123d) : à lire d'abord
+
+Rien ne change **à l'écran** (comparé au pixel sur toutes les pages de TD, à 320, 768 et 1440 px, en clair et en obscur). Ce qui change : **l'impression** de toutes les pages (plus courte, sans rien écrire), un outil corrigé et deux options.
+
+### Moins de papier (décision du 22/11 « Regrouper les questions courtes »)
+
+Sans rien changer aux pages :
+
+| Quoi | Sur papier |
+|---|---|
+| **Questions courtes qui se suivent** : `courte` sur une rangée, et `libre` à `data-lignes="1"` à consigne courte (150 caractères au plus, sans code ni tableau) | **automatique** à partir de 2 : un tableau « N° \| Consigne \| Réponse » (numéros de la suite papier, `data-etiquette` dans la case de réponse, ★ pour un bonus) ; **deux colonnes de questions** à partir de 4 si chaque consigne a 48 caractères au plus. Case de réponse : 58 mm (64 mm s'il y a une réponse rédigée), une ligne de 7 mm. Le tableau peut passer d'une page à l'autre entre deux rangées (l'en-tête est répété). Les questions `data-support="ecran"` placées entre elles ne coupent pas le groupe. |
+| `libre` à `data-lignes="1"` et consigne courte, seule | sur **une rangée**, la consigne puis la ligne, comme une `courte` |
+| Code de **plus de 15 lignes**, code à trous de **plus de 10 lignes** (plus d'un tiers de page avec la consigne) | il peut se couper **entre deux lignes**, 3 lignes au moins de chaque côté (avant : 40 lignes) |
+| « Écris le programme » avec **une grille ou un schéma** (le robot), code de départ de 48 caractères au plus | la figure **à droite**, le cadre à remplir à sa gauche, la question entière |
+| « Trouve l'erreur » au code étroit (`data-cote`) | « Ligne n° » et la ligne corrigée **sous le code, à gauche**, à côté du message d'erreur |
+| Question à code étroit (`data-cote`, dont `data-cote-reponse="gauche"`) | reste **entière** : coupée, elle renvoyait tout le reste à la page suivante |
+| Titre de partie suivi de son paragraphe ; bande de titre d'une feuille 2, 3… | restent avec ce qui les suit (jamais seuls en bas de page) |
+
+Pourquoi automatique : la règle vaut pour tous les TD (cohérence), elle ne demande aucune retouche des 64 TD en ligne, et elle ne touche que le papier. Pour l'empêcher : **`data-regrouper="non"`** sur `<main>`, sur un bloc qui contient les questions, ou sur une question (elle reste seule et coupe le groupe) ; une question qui ne doit pas être dans un tableau (une consigne qui s'appuie sur la ligne de réponse) : `data-regrouper="non"`. `data-cote="non"` sur une question « Écris le programme » garde la figure au-dessus du cadre.
+
+Défaut corrigé (T123c) : une question sur une rangée (`courte`) restait collée à la question suivante (le `break-after` de sa consigne passait à toute la rangée) et partait avec elle à la page suivante, en laissant du blanc.
+
+**À faire par les Ateliers** : rien dans les pages. Dans la passe finale, **régénérez le PDF** (`imprimer-td.py`) et relisez-le : un tableau de questions courtes se lit-il bien ? une case de réponse suffit-elle ? Sinon, `data-regrouper="non"` ou `data-lignes="2"` (une question à deux lignes n'est jamais regroupée). Une feuille déjà au plus court peut, rarement, prendre une page de plus ou de moins : `imprimer-td.py` dit le nombre de pages.
+
+`numeroter-feuilles.py` : inchangé. Faire commencer la numérotation papier après un tableau numéroté à la main n'est plus utile : le regroupement remplace ces tableaux (une question courte par numéro, `data-support` inutile).
+
+### `verifier-td.py` : correction partielle posée comme le fait l'élève
+
+Une correction qui ne donne que la fonction ou la méthode à écrire est posée sur le code de départ **à sa place** : une fonction du départ est remplacée là où elle est (avant les instructions qui l'appellent) ; une méthode (même nom qu'une méthode du départ, ou premier paramètre `self`) va **dans sa classe** ; une fonction nouvelle va avant la première instruction de premier niveau ; une correction écrite en retrait est d'abord ramenée à gauche. Dix cas des TD type bac (abr, arbres, POO, récursivité) et quatre cas écrits sont dans les essais (`charte/tester-outils.py`, `charte/essais/corrections-partielles.json`).
+
+### `reattribuer-bandeaux.py` : limité à des pages ou à un dossier
+
+```
+python3 -I charte/reattribuer-bandeaux.py nsi-premiere/fichiers/bases-python                  # montre, pour ce dossier
+python3 -I charte/reattribuer-bandeaux.py --appliquer nsi-terminale/fichiers/td-bac-poo/index.html
+```
+
+La répartition est toujours calculée sur tous les TD du dépôt (le bandeau d'une page est celui d'un passage complet) ; seules les pages choisies sont rendues, montrées et écrites.
+
+### Une seule palette
+
+`assets/td-en-ligne.css` charge la palette et les polices par `@import url("signal-commun.css");` (sa première règle) : elles ne sont plus que dans `assets/signal-commun.css`, commun au site et aux TD. Rendu identique (comparé au pixel, écran et papier). Une copie de `td-en-ligne.css` hors du dossier `assets/` doit emporter `signal-commun.css`.
+
+## Nouveautés du 21/11 après-midi (T123c)
 
 Comme pour T123b : une page sans les nouveaux attributs garde son rendu à l'écran. Ce qui change pour toutes les pages : **l'impression** (plus courte, voir « Moins de papier »), et les défauts corrigés (liste à la fin).
 
