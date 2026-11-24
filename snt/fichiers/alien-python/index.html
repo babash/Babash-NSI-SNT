@@ -1,42 +1,69 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" data-appli="alien-python">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Alien Python – Entraînement</title>
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E0C14" media="(prefers-color-scheme: dark)">
+<script>/* le choix Auto / Clair / Obscur du site (clé « theme »), appliqué avant l'affichage */try{var m=localStorage.getItem("theme");if(m==="light"||m==="dark")document.documentElement.setAttribute("data-theme",m)}catch(e){}</script>
+<!-- Le style vient du site (une seule source) : la palette, puis le socle des applications (avec la touche « alien-python »). -->
+<link rel="stylesheet" href="../../../assets/signal-commun.css">
+<link rel="stylesheet" href="../../../assets/applis.css">
 <style>
-:root{--bg:#f3f6f4;--ink:#17211c;--card:#fff;--line:#cdd8d2;--acc:#0b6b4f;--acc2:#e8f5ef;--warn:#b45309;--soft:#58665f}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Atkinson Hyperlegible","Trebuchet MS",Verdana,system-ui,sans-serif}
-main{max-width:980px;margin:0 auto;padding:16px}
-h1{font-size:1.5rem;margin:.2em 0}h2{font-size:1.15rem;margin:1em 0 .4em}
-.card{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:16px;margin:12px 0}
-.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}.sp{justify-content:space-between}
-.col2{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:720px){.col2{grid-template-columns:1fr}}
-button,.btn{font:inherit;border:2px solid var(--acc);background:var(--acc);color:#fff;border-radius:8px;padding:8px 14px;cursor:pointer}
-button.alt{background:#fff;color:var(--acc)}button.ghost{border-color:var(--line);background:#fff;color:var(--ink)}
-button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
-input,textarea{font:inherit;width:100%;padding:8px;border:1.5px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
-label{display:block;margin:8px 0 2px;font-weight:700}
-pre,textarea.code{font:14px/1.5 ui-monospace,Menlo,Consolas,monospace;background:#f6f8f7;border:1px solid var(--line);border-radius:8px;padding:10px;white-space:pre-wrap;margin:0}
-.bar{height:12px;background:#e3eae6;border-radius:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+/* Alien Python : la mise en page propre à l'application, avec les couleurs du site seulement (--td-*). */
+.ap-page{max-width:64rem}
+#app h1{font:400 clamp(1.6rem,5vw,2.15rem)/1.1 var(--td-titres);letter-spacing:.01em;margin:.25em 0 .2em}
+#app h1 small{font:700 1rem/1.2 var(--td-texte);letter-spacing:0}
+#app h2{font:700 1.15rem/1.3 var(--td-texte);margin:0 0 .5em}
+.card{background:var(--td-panneau);border:1.4px solid var(--td-trait-fort);border-radius:var(--td-rayon);padding:14px 16px;margin:12px 0;min-width:0}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.sp{justify-content:space-between}
+.col2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px}@media(max-width:760px){.col2{grid-template-columns:minmax(0,1fr)}}
+#app button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 16px;font:700 1rem/1.2 var(--td-texte);border:1.4px solid var(--td-trait-fort);border-radius:var(--td-rayon);background:var(--td-principal-fond);color:var(--td-principal-encre);box-shadow:3px 3px 0 var(--ap-touche);cursor:pointer}
+#app button:hover{text-decoration:underline;text-underline-offset:3px}
+#app button.alt{background:var(--td-fond);color:var(--td-encre);box-shadow:none}
+#app button.ghost{background:var(--td-fond);color:var(--td-encre);border-color:var(--td-trait);box-shadow:none;font-weight:400}
+#app button.alt:hover,#app button.ghost:hover{background:var(--td-panneau-2)}
+#app button:disabled{border-style:dashed;color:var(--td-encre-douce);cursor:not-allowed;text-decoration:none}
+input,textarea{font:400 1.05rem/1.3 var(--td-mono);width:100%;min-height:44px;padding:8px 10px;border:1.4px solid var(--td-trait-fort);border-radius:var(--td-rayon);background:var(--td-fond);color:var(--td-encre)}
+input[name=c]{letter-spacing:.08em}
+label{display:block;margin:10px 0 4px;font-weight:700}
+#app a{color:var(--td-encre);text-underline-offset:3px}
+.bar{height:12px;border:1.4px solid var(--td-trait-fort);background:var(--td-panneau-2);overflow:hidden}.bar i{display:block;height:100%;background:var(--td-accent)}
 .tiles{display:flex;flex-wrap:wrap;gap:6px}
-.t{min-width:44px;padding:6px 8px;background:#fff;color:var(--ink);border:2px solid var(--line)}
-.t.tr{border-color:var(--warn)}.t.pk{background:#fde9cf;border-color:var(--warn)}.t.ok{background:var(--acc);border-color:var(--acc);color:#fff}
-.badge{display:inline-flex;gap:6px;align-items:center;background:var(--acc2);border:1.5px solid var(--acc);border-radius:20px;padding:3px 10px;margin:3px 4px 3px 0;font-size:.9rem}
-.badge.off{background:#f0f0f0;border-color:var(--line);color:#8a8f8c;filter:grayscale(1)}
-.fb{margin:10px 0;padding:10px 12px;border-radius:8px;background:var(--acc2);border:1.5px solid var(--acc)}.fb.no{background:#fdf1e2;border-color:var(--warn)}
-.gr{width:100%;max-width:460px;background:#fff;border:1.5px solid #17211c}.ck .c{fill:transparent;cursor:pointer}.ck .c:hover{fill:rgba(11,107,79,.25)}
-table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border:1px solid var(--line);padding:5px 8px;text-align:center}td:first-child,th:first-child{text-align:left}
-.tw{overflow-x:auto}small,.muted{color:var(--soft)}.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:#17211c;color:#fff;padding:10px 16px;border-radius:10px;z-index:9}
-.code{letter-spacing:.15em;font-weight:700}
-.pied{max-width:980px;margin:0 auto;padding:8px 16px 24px;font-size:.85rem;color:var(--soft)}.pied a{color:var(--acc)}
+/* l'état d'un exercice : une couleur ET un tracé (lisible en noir et blanc) */
+#app .t{position:relative;min-width:48px;padding:6px 8px;background:var(--td-fond);color:var(--td-encre);border:1.4px solid var(--td-trait);box-shadow:none;font-weight:700;font-family:var(--td-mono)}
+#app .t.tr{border:2px dashed var(--td-encore)}
+#app .t.pk{background:var(--td-encore-fond);border:2px solid var(--td-encore)}
+#app .t.pk::after{content:"";position:absolute;top:0;right:0;border-style:solid;border-width:0 11px 11px 0;border-color:transparent var(--td-encore) transparent transparent}
+#app .t.ok{background:var(--td-juste-fond);border:2px solid var(--td-juste);color:var(--td-encre)}
+#app .t.ok::before{content:"\2713";color:var(--td-juste);font-family:"TD Symboles",var(--td-texte)}
+.badge{display:inline-flex;gap:6px;align-items:center;border:1.4px solid var(--td-trait-fort);background:var(--td-panneau-2);border-radius:999px;padding:3px 12px;margin:3px 4px 3px 0;font-size:.92rem;font-weight:700}
+.badge.off{background:var(--td-fond);border:1.4px dashed var(--td-trait);color:var(--td-encre-douce);font-weight:400;filter:grayscale(1)}
+.fb{margin:10px 0;padding:10px 12px;border-left:4px solid var(--td-trait-fort);background:var(--td-info-fond);color:var(--td-encre)}
+.fb.no{border-left-color:var(--td-encore);background:var(--td-encore-fond)}
+.fb code{font-family:var(--td-mono);font-size:.92em;background:var(--td-code-fond);border:1px solid var(--td-trait);padding:0 .3em}
+table{border-collapse:collapse;width:100%;font-size:.92rem}th,td{border:1px solid var(--td-trait);padding:6px 8px;text-align:center}th{background:var(--td-panneau-2)}td:first-child,th:first-child{text-align:left}
+.tw{overflow-x:auto}small,.muted{color:var(--td-encre-douce)}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);max-width:calc(100vw - 32px);background:var(--td-principal-fond);color:var(--td-principal-encre);border:1.4px solid var(--td-trait-fort);box-shadow:4px 4px 0 var(--ap-touche-2);padding:10px 16px;z-index:9}
+.code{font-family:var(--td-signal);font-size:1.35em;letter-spacing:.12em;font-weight:400}
+td.code{font-size:1.2em}
+.pied{max-width:64rem;margin:0 auto;padding:12px 16px 28px;font-size:.88rem;color:var(--td-encre-douce);border-top:1px solid var(--td-trait)}.pied a{color:var(--td-encre)}
+.al-mode{display:flex;gap:4px}.al-mode .ap-bt{min-height:36px;padding:4px 8px}
+@media(max-width:420px){.al-mode .ap-bt{padding:4px 6px;font-size:.85rem}}
+@media print{.ap-barre .al-mode,.toast{display:none}}
 </style>
 </head>
-<body>
+<body class="ap">
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs id="defs"></defs></svg>
-<main id="app"></main>
-<footer class="pied">Alien Python · Babash - NSI Tani Malandi · code : MIT, documents : <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · exercices de Mathieu Degrange (licence MIT, <a href="LICENCE.txt">notice</a>) · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/snt/fichiers/alien-python" target="_blank" rel="noopener">Code source sur GitHub</a></footer>
+<header class="ap-barre">
+<span class="ap-logo">Alien<b>Python</b></span><span class="ap-lieu">SNT · lire du code Python</span><span class="ap-espace"></span>
+<div class="al-mode" role="group" aria-label="Affichage"><button type="button" class="ap-bt ap-bt-mini" data-theme-choix="" title="Suivre le réglage de l’appareil">Auto</button><button type="button" class="ap-bt ap-bt-mini" data-theme-choix="light">Clair</button><button type="button" class="ap-bt ap-bt-mini" data-theme-choix="dark">Obscur</button></div>
+</header>
+<div class="ap-touche" aria-hidden="true"></div>
+<!-- Emplacement prévu pour le compte commun (plus tard, rien n'est branché) : le bandeau « mes applications » (.ap-bandeau avec le bouton .ap-moi et l'avatar de l'élève) se place ici, sous la touche. -->
+<main id="app" class="ap-page"></main>
+<footer class="pied">Alien Python · Babash - NSI Tani Malandi · code : MIT, documents : <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · exercices de Mathieu Degrange (licence MIT, <a href="LICENCE.txt">notice</a>) · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/snt/fichiers/alien-python" target="_blank" rel="noopener">Code source sur GitHub</a> · conçu avec l’aide de l’IA · <a href="../../../">Ressources NSI et SNT</a></footer>
 <script src="config.js"></script>
 <script src="data.js"></script>
 <script>
@@ -50,20 +77,35 @@ function fk(id){for(var k=0;k<F.length;k++)if(F[k][1].indexOf(id)>-1)return k}
 function pick(a){return a[Math.floor(Math.random()*a.length)]}
 function note(t){var d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},3500)}
 try{S=JSON.parse(localStorage.getItem("ap_s")||"null")}catch(e){}
+/* ---------- affichage du code (mise en forme seulement : le texte reste le même) ----------
+   Coloration du Python reprise de QuizzNSI (js/commun.js, même auteur, MIT) : mots-clés en gras,
+   fonctions soulignées, chaînes en italique, nombres, commentaires ; guides d'indentation par niveau. */
+var MOTS={},NATIFS={};"False None True and as assert break class continue def del elif else except finally for from global if import in is lambda nonlocal not or pass raise return try while with yield".split(" ").forEach(function(m){MOTS[m]=1});
+"print len range list int str float bool min max sum abs input".split(" ").forEach(function(m){NATIFS[m]=1});
+function colorer(l){var h="",m,pr="",re=/(#.*$)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_À-ÿ][A-Za-z_0-9À-ÿ]*)|(\s+)|(.)/g;
+while((m=re.exec(l))!==null){if(m[0]===""){re.lastIndex++;continue}
+if(m[1])h+='<span class="tk-com">'+esc(m[1])+'</span>';else if(m[2])h+='<span class="tk-ch">'+esc(m[2])+'</span>';else if(m[3])h+='<span class="tk-nb">'+m[3]+'</span>';
+else if(m[4]){if(MOTS[m[4]])h+='<span class="tk-mot">'+m[4]+'</span>';else if(/^\s*\(/.test(l.slice(re.lastIndex)))h+='<span class="tk-fn'+(NATIFS[m[4]]?' tk-nat':'')+'">'+esc(m[4])+'</span>';else h+=esc(m[4])}
+else h+=esc(m[0]).replace(/>/g,"&gt;");if(m[4])pr=m[4];else if(!/^\s+$/.test(m[0]))pr=""}return h}
+function lignes(src,num){return String(src).split("\n").map(function(l,i){var ind=(l.match(/^ */)||[""])[0].length,k=Math.floor(ind/4),gd="";
+for(var j=0;j<k;j++)gd+='<span class="al-ind n'+(j%4)+'">    </span>';
+return '<span class="ligne">'+(num?'<span class="num" aria-hidden="true">'+(i+1)+'</span>':'')+gd+colorer(l.slice(k*4))+'</span>'}).join("")}
+function bloc(src){return '<pre class="al-code"><code>'+lignes(src,true)+'</code></pre>'}
+function miroir(src){return lignes(src,true)}
 /* ---------- grille ---------- */
-var g='<rect width="160" height="160" fill="#fff"/><rect width="160" height="10" fill="#e6ece8"/><rect width="10" height="160" fill="#e6ece8"/><rect x="80" y="80" width="10" height="10" fill="#cfd9d3"/>';
-for(var i=0;i<=16;i++){g+='<path d="M'+10*i+' 0V160M0 '+10*i+'H160" stroke="#17211c" stroke-width="'+((i<2||i==16)?.9:(i==6||i==11)?.7:.3)+'"/>'}
-for(i=0;i<15;i++){g+='<text x="'+(15+i*10)+'" y="7.4" font-size="6.6" text-anchor="middle" font-weight="700">'+String.fromCharCode(65+i)+'</text><text x="5" y="'+(17.4+i*10)+'" font-size="6.6" text-anchor="middle" font-weight="700">'+(i+1)+'</text>'}
-g+='<circle cx="85" cy="85" r="3.3" fill="#fff" stroke="#17211c" stroke-width=".7"/><circle cx="83.8" cy="84.4" r=".6"/><circle cx="86.2" cy="84.4" r=".6"/><path d="M83.8 86.2Q85 87.2 86.2 86.2" fill="none" stroke="#17211c" stroke-width=".5"/>';
+var g='<rect style="fill:var(--td-fond)" width="160" height="160"/><rect style="fill:var(--td-panneau-2)" width="160" height="10"/><rect style="fill:var(--td-panneau-2)" width="10" height="160"/><rect style="fill:var(--td-bande-2)" x="80" y="80" width="10" height="10"/>';
+for(var i=0;i<=16;i++){g+='<path style="stroke:var(--td-encre)" d="M'+10*i+' 0V160M0 '+10*i+'H160" stroke-width="'+((i<2||i==16)?.9:(i==6||i==11)?.7:.3)+'"/>'}
+for(i=0;i<15;i++){g+='<text style="fill:var(--td-encre);font-family:var(--td-texte)" x="'+(15+i*10)+'" y="7.4" font-size="6.6" text-anchor="middle" font-weight="700">'+String.fromCharCode(65+i)+'</text><text style="fill:var(--td-encre);font-family:var(--td-texte)" x="5" y="'+(17.4+i*10)+'" font-size="6.6" text-anchor="middle" font-weight="700">'+(i+1)+'</text>'}
+g+='<g><path d="M83.7 82.6 82.4 80.9M86.3 82.6 87.6 80.9" fill="none" stroke-width=".5" style="stroke:var(--td-encre)"/><circle cx="82.3" cy="80.8" r=".55" fill="#2FA84F" stroke-width=".3" style="stroke:var(--td-encre)"/><circle cx="87.7" cy="80.8" r=".55" fill="#2FA84F" stroke-width=".3" style="stroke:var(--td-encre)"/><circle cx="85" cy="85.4" r="3.1" fill="#2FA84F" stroke="#121016" stroke-width=".6"/><circle cx="83.8" cy="84.8" r=".6" fill="#121016"/><circle cx="86.2" cy="84.8" r=".6" fill="#121016"/><path d="M83.8 86.6Q85 87.6 86.2 86.6" fill="none" stroke="#121016" stroke-width=".5"/></g>';
 $("#defs").innerHTML='<g id="g">'+g+'</g>';
-function grid(o){var p=EX[o.id].p,n=o.n==null?p.length/2:o.n,s='<svg class="gr'+(o.click?" ck":"")+'" viewBox="0 0 160 160" role="img" aria-label="Grille A1 à O15"><use href="#g" width="160" height="160"/>';
+function grid(o){var p=EX[o.id].p,n=o.n==null?p.length/2:o.n,s='<div class="al-grille"><svg class="gr'+(o.click?" ck":"")+'" viewBox="0 0 160 160" role="img" aria-label="Grille A1 à O15"><use href="#g" width="160" height="160"/>';
 if(n>0){var q=[8,8].concat(p.slice(0,n*2)),pts=[];for(var j=0;j<q.length;j+=2)pts.push((10*q[j]+5)+","+(10*q[j+1]+5));
-s+='<polyline fill="none" stroke="#0b6b4f" stroke-width="1.4" stroke-linejoin="round" points="'+pts.join(" ")+'"/>';
-for(j=2;j<q.length;j+=2)s+='<circle cx="'+(10*q[j]+5)+'" cy="'+(10*q[j+1]+5)+'" r="1.2" fill="#0b6b4f"/><text x="'+(10*q[j]+9.3)+'" y="'+(10*q[j+1]+9.3)+'" font-size="3.8" text-anchor="end" font-weight="700" stroke="#fff" stroke-width=".9" paint-order="stroke">'+j/2+'</text>';
-if(o.final)s+='<circle cx="'+(10*q[q.length-2]+5)+'" cy="'+(10*q[q.length-1]+5)+'" r="3.8" fill="none" stroke="#0b6b4f" stroke-width="1.3"/>'}
-if(o.pick)s+='<circle cx="'+(10*o.pick[0]+5)+'" cy="'+(10*o.pick[1]+5)+'" r="4" fill="rgba(245,158,11,.35)" stroke="#b45309" stroke-width="1.2"/>';
+s+='<polyline class="g-chemin" fill="none" stroke-width="1.4" stroke-linejoin="round" points="'+pts.join(" ")+'"/>';
+for(j=2;j<q.length;j+=2)s+='<circle class="g-etape" cx="'+(10*q[j]+5)+'" cy="'+(10*q[j+1]+5)+'" r="1.2"/><text class="g-num" x="'+(10*q[j]+9.3)+'" y="'+(10*q[j+1]+9.3)+'" font-size="3.8" text-anchor="end" font-weight="700" stroke-width=".9" paint-order="stroke">'+j/2+'</text>';
+if(o.final)s+='<circle cx="'+(10*q[q.length-2]+5)+'" cy="'+(10*q[q.length-1]+5)+'" r="3.8" class="g-arrivee" fill="none" stroke-width="1.3"/>'}
+if(o.pick)s+='<circle cx="'+(10*o.pick[0]+5)+'" cy="'+(10*o.pick[1]+5)+'" r="4" class="g-choix" stroke-width="1.2"/>';
 if(o.click)for(var x=1;x<=15;x++)for(var y=1;y<=15;y++)s+='<rect class="c" data-act="pick" data-x="'+x+'" data-y="'+y+'" x="'+10*x+'" y="'+10*y+'" width="10" height="10"><title>'+cell(x,y)+'</title></rect>';
-return s+'</svg>'}
+return s+'</svg></div>'}
 /* ---------- API Supabase (REST/RPC) ---------- */
 function rpc(fn,a){if(!CFG.url||!CFG.key)return Promise.reject(new Error("Le site n’est pas encore relié à Supabase (voir config.js)."));
 return fetch(CFG.url.replace(/\/$/,"")+"/rest/v1/rpc/"+fn,{method:"POST",headers:Object.assign({apikey:CFG.key,"Content-Type":"application/json"},CFG.key.indexOf("eyJ")===0?{Authorization:"Bearer "+CFG.key}:{}),body:JSON.stringify(a)})
@@ -94,14 +136,14 @@ return '<div class="row sp"><h1>👽 Salut '+esc(S.n)+' !</h1><div><span class="
 BD.map(function(b){return '<span class="badge'+(bd.indexOf(b[1])<0?" off":"")+'">'+b[0]+' '+b[1]+'</span>'}).join("")+'</p></div>'+
 F.map(function(f,k){var n=nOK(f[1]);return '<div class="card"><div class="row sp"><b>Fiche '+(k+1)+' – '+esc(f[0])+'</b><span>'+n+'/'+f[1].length+'</span></div><div class="bar"><i style="width:'+100*n/f[1].length+'%"></i></div><p class="tiles">'+
 f[1].map(function(id){var o=st(id);return '<button class="t '+(o.solved?"ok":o.peeked?"pk":o.attempts?"tr":"")+'" data-act="ex" data-id="'+id+'">'+id+'</button>'}).join("")+'</p></div>'}).join("")+
-'<p class="muted"><small>Vert : réussi · orange : correction vue · contour orange : déjà essayé. Exercices : Alien-Python, M. Degrange (licence MIT).</small></p>'}
+'<p class="muted"><small>Vert et ✓ : réussi · orange et coin replié : correction vue · contour orange pointillé : déjà essayé. Exercices : Alien-Python, M. Degrange (licence MIT).</small></p>'}
 function vEx(){var id=cur.id,k=fk(id),i=ALL.indexOf(id),e=EX[id],iv=inv(id),o=st(id),full=cur.corr||o.solved&&cur.ok;
 var nav='<div class="row sp"><button class="ghost" data-act="home">← Fiches</button><span><button class="ghost" data-act="nav" data-id="'+(ALL[i-1]||"")+'"'+(i?"":" disabled")+'>Précédent</button> <button class="ghost" data-act="nav" data-id="'+(ALL[i+1]||"")+'"'+(i<ALL.length-1?"":" disabled")+'>Suivant</button></span></div>';
-var left=iv?'<p>Le parcours de l’alien est tracé. <b>Complète le programme</b> pour qu’il le produise.</p><textarea class="code" id="txt" rows="'+(e.c.split("\n").length+1)+'" spellcheck="false">'+esc(cur.txt)+'</textarea>':
-'<p>L’alien part de <b>H8</b>. Exécute le programme, puis <b>clique sur la case d’arrivée</b>.</p><pre>'+esc(e.c)+'</pre><p>'+(cur.pick?'Case choisie : <b>'+cell(cur.pick[0],cur.pick[1])+'</b>':'<span class="muted">Aucune case choisie</span>')+'</p>';
-var help=cur.h?'<div class="fb"><b>Aide</b><br>'+RAP[k].map(function(a){return(a[0]?'<code>'+esc(a[0])+'</code> ':'')+esc(a[1])}).join("<br>")+
-(cur.h>1?'<br><br>'+(iv?'Lignes de la solution dévoilées : '+cur.h2+'<pre>'+esc(e.s.split("\n").slice(0,cur.h2).join("\n"))+'</pre>':'Étape '+cur.n+' : l’alien est en <b>'+cell.apply(null,cur.n?[e.p[cur.n*2-2],e.p[cur.n*2-1]]:[8,8])+'</b>'):'')+'</div>':'';
-var corr=cur.corr?'<div class="fb no"><b>Correction</b><br>'+(iv?'<pre>'+esc(e.s)+'</pre>':'Case d’arrivée : <b>'+cell.apply(null,endOf(id))+'</b> (trajet tracé sur la grille).')+'</div>':'';
+var left=iv?'<p>Le parcours de l’alien est tracé. <b>Complète le programme</b> pour qu’il le produise.</p><div class="al-editeur"><pre class="al-code al-miroir" aria-hidden="true">'+miroir(cur.txt)+'</pre><textarea class="code" id="txt" rows="'+(e.c.split("\n").length+1)+'" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" aria-label="Programme à compléter">'+esc(cur.txt)+'</textarea></div>':
+'<p>L’alien part de <b>H8</b>. Exécute le programme, puis <b>clique sur la case d’arrivée</b>.</p>'+bloc(e.c)+'<p>'+(cur.pick?'Case choisie : <b>'+cell(cur.pick[0],cur.pick[1])+'</b>':'<span class="muted">Aucune case choisie</span>')+'</p>';
+var help=cur.h?'<div class="fb"><b>Aide</b><br>'+RAP[k].map(function(a){return(a[0]?'<code class="al-py">'+colorer(a[0])+'</code> ':'')+esc(a[1])}).join("<br>")+
+(cur.h>1?'<br><br>'+(iv?'Lignes de la solution dévoilées : '+cur.h2+bloc(e.s.split("\n").slice(0,cur.h2).join("\n")):'Étape '+cur.n+' : l’alien est en <b>'+cell.apply(null,cur.n?[e.p[cur.n*2-2],e.p[cur.n*2-1]]:[8,8])+'</b>'):'')+'</div>':'';
+var corr=cur.corr?'<div class="fb no"><b>Correction</b><br>'+(iv?bloc(e.s):'Case d’arrivée : <b>'+cell.apply(null,endOf(id))+'</b> (trajet tracé sur la grille).')+'</div>':'';
 return nav+'<h1>Exercice '+id+' <small class="muted">· Fiche '+(k+1)+'</small></h1><div class="col2"><div class="card">'+left+
 '<div class="row"><button data-act="ok">Valider</button><button class="alt" data-act="help">Un coup de pouce</button><button class="ghost" data-act="corr">Correction</button></div>'+
 (cur.fb?'<div class="fb'+(cur.fb[0]?"":" no")+'">'+esc(cur.fb[1])+'</div>':'')+help+corr+'</div><div class="card">'+
@@ -117,7 +159,7 @@ var D=T.d.students;
 return '<div class="row sp"><button class="ghost" data-act="home">← Élèves</button><div><button class="alt" data-act="refresh">Actualiser</button> <button class="ghost" data-act="tout">Quitter</button></div></div><h1>'+esc(T.d.name)+' <small class="muted">· code classe <span class="code">'+esc(T.c)+'</span></small></h1>'+
 (D.length?'<div class="card tw"><table><tr><th>Élève</th><th>Code</th>'+F.map(function(f,k){return '<th title="'+esc(f[0])+'">F'+(k+1)+'</th>'}).join("")+'<th>Total</th><th>Aides</th><th>Dernière activité</th></tr>'+
 D.map(function(s){var m={},h=0;s.ex.forEach(function(e){m[e.ex]=e;h+=e.hints+(e.peeked?1:0)});var t=0;
-return '<tr><td>'+esc(s.name)+'</td><td class="code">'+esc(s.code)+'</td>'+F.map(function(f){var n=f[1].filter(function(id){return m[id]&&m[id].solved}).length;t+=n;return '<td style="background:rgba(11,107,79,'+(.5*n/f[1].length)+')">'+n+'/'+f[1].length+'</td>'}).join("")+'<td><b>'+t+'</b>/'+ALL.length+'</td><td>'+h+'</td><td>'+(s.last?new Date(s.last).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):"–")+'</td></tr>'}).join("")+
+return '<tr><td>'+esc(s.name)+'</td><td class="code">'+esc(s.code)+'</td>'+F.map(function(f){var n=f[1].filter(function(id){return m[id]&&m[id].solved}).length;t+=n;return '<td class="al-jauge" style="--n:'+(n/f[1].length)+'">'+n+'/'+f[1].length+'</td>'}).join("")+'<td><b>'+t+'</b>/'+ALL.length+'</td><td>'+h+'</td><td>'+(s.last?new Date(s.last).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):"–")+'</td></tr>'}).join("")+
 '</table><p class="muted"><small>F1…F7 = fiches. « Aides » = coups de pouce + corrections consultées.</small></p></div>':'<div class="card">Aucun élève pour le moment. Donne-leur le code classe <b class="code">'+esc(T.c)+'</b>.</div>')}
 function draw(){app.innerHTML=({login:vLogin,home:vHome,ex:vEx,cls:vCls,prof:vProf})[V]();window.scrollTo(0,0)}
 function go(v,m){V=v;msg=m||"";draw()}
@@ -153,6 +195,17 @@ else if(a=="tout"){T=null;try{sessionStorage.removeItem("ap_t")}catch(x){};go("p
 if(location.hash=="#prof"){try{var tt=JSON.parse(sessionStorage.getItem("ap_t")||"null");if(tt)teacher(tt.c,tt.t).catch(function(){go("prof")});else go("prof")}catch(e){go("prof")}}
 else if(S)loadStudent(S.c,S.k).catch(function(){go("login")});
 else draw();
+</script>
+<script>
+/* Mise en forme seulement (aucun appel, aucune donnée) : le choix Auto / Clair / Obscur du site, et le miroir coloré de l'éditeur. */
+(function(){var bs=document.querySelectorAll("[data-theme-choix]"),m="";try{m=localStorage.getItem("theme")||""}catch(e){}
+function marque(v){Array.prototype.forEach.call(bs,function(b){b.setAttribute("aria-pressed",String(b.getAttribute("data-theme-choix")===v))})}
+marque(m==="light"||m==="dark"?m:"");
+Array.prototype.forEach.call(bs,function(b){b.addEventListener("click",function(){var v=b.getAttribute("data-theme-choix"),h=document.documentElement;
+if(v)h.setAttribute("data-theme",v);else h.removeAttribute("data-theme");try{if(v)localStorage.setItem("theme",v);else localStorage.removeItem("theme")}catch(e){}marque(v)})});
+function cale(t){var p=t.previousElementSibling;if(p&&p.classList.contains("al-miroir")){p.scrollTop=t.scrollTop;p.scrollLeft=t.scrollLeft}}
+app.addEventListener("input",function(e){if(e.target.id=="txt"){var p=e.target.previousElementSibling;if(p&&p.classList.contains("al-miroir"))p.innerHTML=miroir(e.target.value);cale(e.target)}});
+app.addEventListener("scroll",function(e){if(e.target.id=="txt")cale(e.target)},true)})();
 </script>
 </body>
 </html>
