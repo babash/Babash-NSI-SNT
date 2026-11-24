@@ -81,7 +81,8 @@ charte/                     les pages de démonstration du Designer, sans lien d
                             démonstration du moteur d'avatars (avatars.html), celle du socle des
                             applications (applis.html, avec son mode d'emploi applis.md) et les
                             essais du moteur (tester-equipage.js, joué à chaque envoi par
-                            « Vérifier le site », et tester-applis.py, dans Chromium)
+                            « Vérifier le site », et tester-applis.py, dans Chromium), et celui
+                            du miroir coloré de l'éditeur d'Alien Python (tester-alien-miroir.py)
 qcm/                        les QCM Pronote (qcm/LISEZMOI.md) : par niveau (snt/, nsi-premiere/,
                             nsi-terminale/), le fichier XML Moodle à importer dans Pronote, l'aperçu
                             élève et le corrigé enseignant·e de chaque quiz, liés depuis sa fiche de la
