@@ -1548,7 +1548,7 @@
        "corrections": [
         "print(mot[len(mot)])",
         "print(mot[4])",
-        "print(mot[-0])"
+        "print(mot[-2])"
        ],
        "bonne": 1,
        "affiche": "n",
@@ -2135,11 +2135,11 @@
        "verifier": "r == 456"
       },
       {
-       "texte": "int(-3.7) vaut -4.",
+       "texte": "int(\"20\") // 3 vaut 6.67.",
        "reponse": false,
-       "explication": "int coupe vers 0 : int(-3.7) vaut -3.",
-       "code": "r = int(-3.7)",
-       "verifier": "r == -4"
+       "explication": "int(\"20\") vaut 20, et // donne le quotient entier : 6.",
+       "code": "r = int(\"20\") // 3",
+       "verifier": "r == 6.67"
       },
       {
        "texte": "float(\"7\") == 7 vaut True.",
@@ -2149,18 +2149,18 @@
        "verifier": "r == True"
       },
       {
-       "texte": "str(1.50) vaut \"1.50\".",
+       "texte": "float(\"1.5\") * 2 vaut 3.5.",
        "reponse": false,
-       "explication": "1.50 et 1.5 sont le même nombre : Python l'écrit \"1.5\".",
-       "code": "r = str(1.50)",
-       "verifier": "r == \"1.50\""
+       "explication": "float lit 1.5, puis 1.5 * 2 = 3.0 : on multiplie, on n'ajoute pas 2.",
+       "code": "r = float(\"1.5\") * 2",
+       "verifier": "r == 3.5"
       },
       {
-       "texte": "bool(\"False\") vaut False.",
+       "texte": "str(3 * 4) vaut \"34\".",
        "reponse": false,
-       "explication": "\"False\" est un texte non vide : bool le change en True. Seul le texte vide \"\" donne False.",
-       "code": "r = bool(\"False\")",
-       "verifier": "r == False"
+       "explication": "Le calcul se fait d'abord : 3 * 4 = 12, puis str donne \"12\".",
+       "code": "r = str(3 * 4)",
+       "verifier": "r == \"34\""
       }
      ]
     }
@@ -2989,11 +2989,11 @@
        "verifier": "r == 2.0 and type(r) == float"
       },
       {
-       "texte": "7 / 2 // 1 donne l'entier 3 (int).",
+       "texte": "2 * 3 ** 2 vaut 36.",
        "reponse": false,
-       "explication": "7 / 2 vaut 3.5, un float ; 3.5 // 1 vaut 3.0, toujours un float.",
-       "code": "r = 7 / 2 // 1",
-       "verifier": "type(r) == int"
+       "explication": "** passe avant * : 3 ** 2 = 9, puis 2 * 9 = 18.",
+       "code": "r = 2 * 3 ** 2",
+       "verifier": "r == 36"
       }
      ]
     }
@@ -3379,12 +3379,12 @@
        ]
       },
       {
-       "code": "p = 0.1 + 0.2\nr = round(p, 1)\nprint(p == 0.3, r == 0.3)",
-       "reponse": "False True",
-       "explication": "0.1 + 0.2 vaut 0.30000000000000004 en machine : False ; arrondi au dixième, c'est 0.3 : True.",
+       "code": "p = 3.5\nprint(p * 2 == 7, int(p) == 4)",
+       "reponse": "True False",
+       "explication": "3.5 * 2 vaut 7.0, égal à 7 : True ; int(3.5) coupe la partie décimale, 3 : False.",
        "aides": [
-        "Les nombres à virgule sont rangés de façon approchée.",
-        "round(p, 1) arrondit au dixième."
+        "Calcule chaque côté, puis compare.",
+        "int coupe, il n'arrondit pas."
        ]
       }
      ]
@@ -3570,26 +3570,26 @@
        "message": "TypeError: can only concatenate str (not \"int\") to str"
       },
       {
-       "but": "Arrondir 7 / 2 à l'entier le plus proche, puis vérifier le type : afficher 4 True.",
+       "but": "Le côté d'un carré arrive en texte, \"4\". Afficher son aire (16).",
        "lignes": [
-        "x = 7 / 2",
-        "n = int(x)",
-        "print(n, type(n) == int)"
+        "cote = \"4\"",
+        "aire = cote * cote",
+        "print(aire)"
        ],
        "ligne": 1,
        "corrections": [
-        "n = round(x)",
-        "n = float(round(x))",
-        "n = x // 1"
+        "aire = int(cote) * int(cote)",
+        "aire = int(cote) * cote",
+        "aire = cote * 2"
        ],
        "bonne": 0,
-       "affiche": "4 True",
-       "explication": "int coupe la partie décimale (3) ; round arrondit (4) et donne un int ; x // 1 garde un float.",
+       "affiche": "16",
+       "explication": "On ne multiplie pas deux textes : chaque côté doit d'abord devenir un nombre avec int.",
        "aides": [
-        "Le programme affiche 3 True : int n'arrondit pas.",
-        "Lequel arrondit et donne un int ?"
+        "Le message dit qu'on ne peut pas multiplier par un str.",
+        "Les deux facteurs doivent être des nombres."
        ],
-       "affiche_fautif": "3 True"
+       "message": "TypeError: can't multiply sequence by non-int of type 'str'"
       },
       {
        "but": "La température \"28.6\" arrive en texte. Afficher l'écart avec 30 degrés, au dixième (1.4).",
@@ -3731,11 +3731,11 @@
        "verifier": "s == \"SAM\""
       },
       {
-       "texte": "\"10\" < \"9\" vaut True.",
+       "texte": "Avec s = \"Mayotte\", s[0:3] vaut \"May\".",
        "reponse": true,
-       "explication": "Les textes se comparent caractère par caractère : \"1\" vient avant \"9\".",
-       "code": "r = \"10\" < \"9\"",
-       "verifier": "r == True"
+       "explication": "s[0:3] prend les positions 0, 1 et 2.",
+       "code": "s = \"Mayotte\"",
+       "verifier": "s[0:3] == \"May\""
       },
       {
        "texte": "s[len(s)] donne la dernière lettre de s.",
@@ -3869,11 +3869,11 @@
      "duree": 6,
      "items": [
       {
-       "but": "Rendre la monnaie sur 10 euros pour 6.40 euros d'achats, arrondie au centime (3.6).",
+       "but": "Rendre la monnaie sur 10 euros pour 6.5 euros d'achats : afficher 3.5 euros.",
        "lignes": [
-        "achat = 6.40",
+        "achat = 6.5",
         "rendu = {0} - achat",
-        "print({1}(rendu, 2))"
+        "print({1}, \"euros\")"
        ],
        "trous": [
         {
@@ -3886,18 +3886,18 @@
         },
         {
          "options": [
-          "int",
-          "round",
-          "str"
+          "\"rendu\"",
+          "rendu",
+          "achat"
          ],
          "bonne": 1
         }
        ],
-       "affiche": "3.6",
-       "explication": "10 - 6.40 donne 3.5999999999999996 en machine : round(rendu, 2) arrondit au centime.",
+       "affiche": "3.5 euros",
+       "explication": "Le rendu, c'est ce qu'on donne moins ce qu'on achète ; print affiche la valeur de la variable rendu.",
        "aides": [
-        "Les calculs à virgule sont approchés.",
-        "Une seule fonction accepte le nombre de chiffres après la virgule."
+        "10 est un nombre : pas de guillemets.",
+        "On veut la valeur, pas le mot."
        ]
       },
       {
@@ -4035,15 +4035,15 @@
          "4"
         ],
         [
-         "print(str(round(4.5)) * 2)",
+         "print(str(round(4.4)) * 2)",
          "44"
         ]
        ],
-       "explication": "On calcule de l'intérieur vers l'extérieur. round(4.5) vaut 4 : pile au milieu, Python arrondit vers l'entier pair.",
+       "explication": "On calcule de l'intérieur vers l'extérieur : d'abord la conversion la plus à l'intérieur, puis la suivante.",
        "executer": true,
        "aides": [
         "Commence par la parenthèse la plus à l'intérieur.",
-        "round(4.5) ne donne pas 5 en Python."
+        "str fabrique un texte : * le répète."
        ]
       }
      ]
@@ -4427,11 +4427,11 @@
        "verifier": "n == 6"
       },
       {
-       "texte": "int(\"0012\") vaut 12.",
+       "texte": "int(\"7\") * 2 vaut 14.",
        "reponse": true,
-       "explication": "int lit le texte et ignore les zéros du début.",
-       "code": "r = int(\"0012\")",
-       "verifier": "r == 12"
+       "explication": "int lit 7, puis 7 * 2 = 14.",
+       "code": "r = int(\"7\") * 2",
+       "verifier": "r == 14"
       },
       {
        "texte": "len(str(2 ** 10)) vaut 4.",

@@ -1203,7 +1203,7 @@
   {
    "id": "py-conditions-009",
    "type": "erreur",
-   "titre": "Les pièges de l'écriture",
+   "titre": "Bien écrire un test",
    "objectif": "Corriger l'écriture d'un if, d'un elif ou d'un else.",
    "notions": [
     "prog.condition",
@@ -1895,10 +1895,10 @@
      "duree": 4,
      "items": [
       {
-       "texte": "1 < 3 < 2 vaut True.",
+       "texte": "3 > 1 and 3 < 2 vaut True.",
        "reponse": false,
-       "explication": "Python lit 1 < 3 and 3 < 2 : la seconde partie est fausse.",
-       "code": "r = 1 < 3 < 2",
+       "explication": "3 < 2 est faux : and demande les deux.",
+       "code": "r = 3 > 1 and 3 < 2",
        "verifier": "r == True"
       },
       {
@@ -1923,10 +1923,10 @@
        "verifier": "r == True"
       },
       {
-       "texte": "0.1 * 3 == 0.3 vaut True.",
+       "texte": "len(\"nsi\") == 4 vaut True.",
        "reponse": false,
-       "explication": "0.1 * 3 donne 0.30000000000000004 en machine : pas tout à fait 0.3.",
-       "code": "r = 0.1 * 3 == 0.3",
+       "explication": "nsi a 3 lettres : 3 == 4 est faux.",
+       "code": "r = len(\"nsi\") == 4",
        "verifier": "r == True"
       }
      ]
@@ -2667,16 +2667,16 @@
        "explication": "C'est une loi de De Morgan : non (a et b) = (non a) ou (non b)."
       },
       {
-       "texte": "not (a or b) a toujours la même valeur que not a or not b.",
-       "reponse": false,
-       "explication": "non (a ou b) = (non a) et (non b) : le or devient and."
+       "texte": "not (a or b) a toujours la même valeur que not a and not b.",
+       "reponse": true,
+       "explication": "C'est l'autre loi de De Morgan : non (a ou b) = (non a) et (non b)."
       },
       {
-       "texte": "Avec x = 0, x != 0 and 10 / x > 1 vaut False, sans erreur.",
-       "reponse": true,
-       "explication": "x != 0 est faux : and s'arrête là, sans calculer 10 / x.",
-       "code": "x = 0\nr = x != 0 and 10 / x > 1",
-       "verifier": "r == False"
+       "texte": "Avec x = 8, x % 2 == 0 and x > 10 vaut True.",
+       "reponse": false,
+       "explication": "8 est pair, mais 8 > 10 est faux : and demande les deux.",
+       "code": "x = 8",
+       "verifier": "(x % 2 == 0 and x > 10) == True"
       },
       {
        "texte": "Avec age = 15, age > 12 and age < 18 or age > 65 vaut True.",
@@ -3493,28 +3493,29 @@
      "duree": 4,
      "items": [
       {
-       "but": "Afficher 3 ou 4 si x vaut 3 ou 4, sinon autre (ici 7 : autre).",
+       "but": "Afficher repos en vacances ou le week-end (ici en vacances, un mardi).",
        "lignes": [
-        "x = 7",
-        "if x == 3 or 4:",
-        "    print(\"3 ou 4\")",
+        "vacances = True",
+        "weekend = False",
+        "if vacances and weekend:",
+        "    print(\"repos\")",
         "else:",
-        "    print(\"autre\")"
+        "    print(\"lycée\")"
        ],
-       "ligne": 1,
+       "ligne": 2,
        "corrections": [
-        "if x == 3 or x != 4:",
-        "if x or 4:",
-        "if x == 3 or x == 4:"
+        "if weekend:",
+        "if not vacances or weekend:",
+        "if vacances or weekend:"
        ],
        "bonne": 2,
-       "affiche": "autre",
-       "explication": "De chaque côté de or, il faut une comparaison complète : 4 tout seul est toujours vrai.",
+       "affiche": "repos",
+       "explication": "Une seule des deux raisons suffit pour se reposer : or.",
        "aides": [
-        "Le programme affiche 3 ou 4 pour 7.",
-        "Que vaut 4 seul dans un test ?"
+        "Le programme affiche lycée pendant les vacances.",
+        "« ou » s'écrit or."
        ],
-       "affiche_fautif": "3 ou 4"
+       "affiche_fautif": "lycée"
       },
       {
        "but": "Afficher fièvre au-dessus de 37.5 degrés (ici 38).",
@@ -3686,8 +3687,8 @@
        "consigne": "Associe chaque condition à celle qui veut dire la même chose.",
        "paires": [
         [
-         "x > 0 and x < 10",
-         "0 < x < 10"
+         "x >= 0",
+         "not x < 0"
         ],
         [
          "not (x > 0)",
@@ -3702,13 +3703,13 @@
          "not x == 5"
         ],
         [
-         "x >= 10 or x <= 2",
-         "not (2 < x < 10)"
+         "x < 2 or x > 9",
+         "not (x >= 2 and x <= 9)"
         ]
        ],
-       "explication": "Python accepte 0 < x < 10 ; un reste de division par 2 vaut 0 ou 1 ; être hors d'un intervalle, c'est ne pas être dedans.",
+       "explication": "not inverse une comparaison ; le reste d'une division par 2 vaut 0 ou 1 ; être hors d'un intervalle, c'est ne pas être dedans.",
        "aides": [
-        "x % 2 ne peut valoir que 0 ou 1."
+        "x % 2 ne peut valoir que 0 ou 1 pour un entier."
        ]
       }
      ]
@@ -4235,8 +4236,8 @@
   {
    "id": "py-conditions-028",
    "type": "vraifaux",
-   "titre": "Vrai ou faux : les pièges",
-   "objectif": "Déjouer les pièges classiques des conditions.",
+   "titre": "Vrai ou faux : erreurs fréquentes",
+   "objectif": "Repérer les erreurs fréquentes quand on écrit une condition.",
    "notions": [
     "prog.condition",
     "donnees.booleen"
@@ -4278,18 +4279,18 @@
      "duree": 3,
      "items": [
       {
-       "texte": "if 0: exécute son bloc.",
+       "texte": "Après ce code, x vaut \"oui\".",
        "reponse": false,
-       "explication": "0 compte comme faux dans un test : le bloc est sauté.",
-       "code": "x = \"non\"\nif 0:\n    x = \"oui\"",
+       "explication": "3 > 5 est faux : le bloc est sauté, x garde \"non\".",
+       "code": "x = \"non\"\nif 3 > 5:\n    x = \"oui\"",
        "verifier": "x == \"oui\""
       },
       {
-       "texte": "Avec x = 5, 1 < x < 10 vaut True.",
+       "texte": "Avec x = 5, x > 1 and x < 10 vaut True.",
        "reponse": true,
-       "explication": "Python lit 1 < x and x < 10 : les deux sont vrais.",
+       "explication": "5 > 1 et 5 < 10 sont vrais tous les deux.",
        "code": "x = 5",
-       "verifier": "(1 < x < 10) == True"
+       "verifier": "(x > 1 and x < 10) == True"
       },
       {
        "texte": "Après age = \"17\", age == 17 vaut True.",
@@ -4314,16 +4315,18 @@
      "duree": 4,
      "items": [
       {
-       "texte": "Avec x = 7, x > 5 or x / 0 > 1 vaut True, sans erreur.",
+       "texte": "Avec x = 7, x > 5 or x > 100 vaut True.",
        "reponse": true,
-       "explication": "x > 5 est vrai : or s'arrête là, sans calculer x / 0.",
-       "code": "x = 7\nr = x > 5 or x / 0 > 1",
-       "verifier": "r == True"
+       "explication": "x > 5 est vrai : pour or, un seul vrai suffit.",
+       "code": "x = 7",
+       "verifier": "(x > 5 or x > 100) == True"
       },
       {
-       "texte": "not x == 3 veut dire (not x) == 3.",
+       "texte": "Avec x = 3, not (x == 3) vaut True.",
        "reponse": false,
-       "explication": "== passe avant not : on lit not (x == 3)."
+       "explication": "x == 3 vaut True ; not le change en False.",
+       "code": "x = 3",
+       "verifier": "(not (x == 3)) == True"
       },
       {
        "texte": "Après ce code, m vaut \"grand\".",
@@ -4338,11 +4341,11 @@
        "explication": "Le elif n'est testé que si x > 3 est faux : son test est alors faux aussi."
       },
       {
-       "texte": "Ce code ne provoque aucune erreur, même si y n'existe pas.",
+       "texte": "Après ce code, n vaut 0 : le bloc du if est sauté.",
        "reponse": true,
-       "explication": "Python ne lit le bloc que si le test est vrai : 3 > 5 est faux.",
-       "code": "x = 3\nif x > 5:\n    print(y)\nr = True",
-       "verifier": "r"
+       "explication": "0 > 5 est faux : Python saute le bloc, n reste 0.",
+       "code": "n = 0\nif n > 5:\n    n = n + 1",
+       "verifier": "n == 0"
       }
      ]
     }
