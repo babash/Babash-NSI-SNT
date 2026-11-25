@@ -7,13 +7,18 @@ l'outil signale :
   - les fonctions entières à écrire ;
   - les questions sans points, ou dont les points ne sont pas répartis entre les parties ;
   - les questions qui dépendent d'une réponse précédente ;
+  - les fonctions entières non cadrées (sans signature donnée) ou, en terminale, hors du dernier exercice ;
+  - en seconde, toute question qui fait écrire ou compléter du code ;
   - le temps estimé pour un·e élève moyen·ne qui écrit à la main, relecture comprise.
-Puis il compare le total au temps annoncé et au nombre de fonctions permis (règle : LISEZMOI.md du même dossier).
+Puis il vérifie le début (un premier exercice de questions de cours de 4 ou 5 points) et compare le total
+au temps annoncé et au nombre de fonctions permis selon le niveau (règle : LISEZMOI.md du même dossier).
 
 Usage :
-    python3 -I charte/gabarit-controle/verifier-controle.py sujet.tex [autre.tex …] [--duree 2h] [--detail] [--strict]
+    python3 -I charte/gabarit-controle/verifier-controle.py sujet.tex [autre.tex …] [--duree 2h] [--niveau terminale] [--detail] [--strict]
 
   --duree   la durée annoncée, si elle n'est pas dans \\date{… Durée : 2h} du fichier (2h, 1h30, 45min, 90) ;
+  --niveau  seconde, premiere ou terminale, si le dossier (snt/, nsi-premiere/, nsi-terminale/) ne le dit pas :
+            les règles de code changent avec le niveau (LISEZMOI.md, « Par niveau ») ;
   --detail  une ligne par question (sinon : le résumé et les alertes) ;
   --strict  code de sortie 1 s'il reste une alerte (pour un contrôle automatique).
 
@@ -216,8 +221,9 @@ def duree_minutes(s):
     return None
 
 
-def analyser(chemin, duree_option=None):
+def analyser(chemin, duree_option=None, niveau=None):
     src = open(chemin, encoding="utf-8").read()
+    niveau = niveau or niveau_de(chemin, src)
     corps = src.split("\\begin{document}", 1)[-1]
     duree_txt = duree_option
     if not duree_txt:
@@ -318,8 +324,10 @@ def analyser(chemin, duree_option=None):
         if est_fonction:
             if not re.search(r"^\s*def \w+\(", "\n".join(m.group(2) for m in CODE_ENV.finditer(bloc)), re.M):
                 alertes.append((it["num"], "fonction", "fonction entière non cadrée : donner la signature, la docstring et un exemple dans le cadre de réponse", it["bac"]))
-            if it["section"] < len(sections):
+            if niveau == "terminale" and it["section"] < len(sections):
                 alertes.append((it["num"], "fonction", "fonction entière hors du dernier exercice : la mettre en fin de sujet, ou la transformer en code à compléter", it["bac"]))
+        if niveau == "seconde" and any(t.split("+")[0] in ("fonction", "programme", "instruction", "completer", "recopier", "corriger") for t, _ in dem):
+            alertes.append((it["num"], "seconde", "en seconde, on lit et on prévoit un programme très court : jamais écrire ni compléter du code", it["bac"]))
         nd = len(dem)
         if nd > 1:
             alertes.append((it["num"], "à tiroirs", f"{nd} demandes : " + " / ".join(t for t, _ in dem) + " ; découper en a, b, c…", it["bac"]))
@@ -341,30 +349,50 @@ def analyser(chemin, duree_option=None):
             alertes.append(("1", "début", f"le premier exercice ({pts1:g} pt) doit être des questions de cours courtes (vocabulaire, vrai ou faux, QCM, relier), 4 ou 5 points"
                             + (f" ; questions longues : {', '.join(longs)}" if longs else ""), False))
     total_min *= 1 + RELECTURE
-    return dict(chemin=chemin, duree=duree, lignes=lignes, alertes=alertes, minutes=total_min,
+    return dict(chemin=chemin, duree=duree, niveau=niveau, lignes=lignes, alertes=alertes, minutes=total_min,
                 fonctions=fonctions, points=total_pts, questions=len(lignes))
 
 
-def fonctions_permises(duree):
-    """Fonctions entières à écrire : 1 ou 2, cadrées, en fin de sujet (choix de l'enseignant du 25/11) ; aucune en 30 min."""
-    if duree is None:
-        return None
-    if duree <= 30:
+def niveau_de(chemin, src):
+    """seconde, premiere ou terminale : d'après le dossier (snt/, nsi-premiere/, nsi-terminale/), sinon le titre."""
+    c = chemin.replace("\\", "/")
+    if "/snt/" in c or c.startswith("snt/"):
+        return "seconde"
+    if "nsi-premiere" in c:
+        return "premiere"
+    if "nsi-terminale" in c:
+        return "terminale"
+    t = re.search(r"\\title\{([^}]*)\}", src)
+    t = t.group(1) if t else ""
+    if re.search(r"\bTerm", t):
+        return "terminale"
+    if re.search(r"\b(1re|Prem)", t):
+        return "premiere"
+    if re.search(r"\bSNT\b", t):
+        return "seconde"
+    return None
+
+
+def fonctions_permises(duree, niveau):
+    """Fonctions entières à écrire (choix de l'enseignant du 25/11) : seconde aucune (lire et prévoir seulement) ;
+    première une seule, courte (4 à 6 lignes) et cadrée ; terminale 1 ou 2, cadrées, en fin de sujet ; aucune en 30 min."""
+    if duree is not None and duree <= 30:
         return 0
-    return 2
+    return {"seconde": 0, "premiere": 1, "terminale": 2}.get(niveau, 2 if duree else None)
 
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("fichiers", nargs="+")
     ap.add_argument("--duree")
+    ap.add_argument("--niveau", choices=["seconde", "premiere", "terminale"])
     ap.add_argument("--detail", action="store_true")
     ap.add_argument("--strict", action="store_true")
     a = ap.parse_args()
     code = 0
     for f in a.fichiers:
-        r = analyser(f, a.duree)
-        print(f"== {f}")
+        r = analyser(f, a.duree, a.niveau)
+        print(f"== {f} ({r['niveau'] or 'niveau inconnu : --niveau'})")
         if a.detail:
             print(f"  {'Q':<6}{'pts':>5} {'dem.':>4} {'fct':>3} {'min':>5}  types")
             for num, pts, nd, fct, mins, types, bac in r["lignes"]:
@@ -375,9 +403,9 @@ def main():
         print(f"  temps estimé (élève moyen·ne, relecture comprise) : {r['minutes']:.0f} min"
               + (f" ; annoncé : {d} min ({100 * r['minutes'] / d:.0f} %)" if d else " ; durée annoncée introuvable (--duree)"))
         bloquantes = 0
-        fp = fonctions_permises(d)
+        fp = fonctions_permises(d, r["niveau"])
         if fp is not None and r["fonctions"] > fp:
-            print(f"  ALERTE fonctions : {r['fonctions']} fonctions entières pour {d} min (au plus {fp})")
+            print(f"  ALERTE fonctions : {r['fonctions']} fonctions entières ({r['niveau'] or 'niveau inconnu'}, {d} min) : au plus {fp}")
             bloquantes += 1
         if d and r["minutes"] > d * 1.0:
             print(f"  ALERTE durée : {r['minutes']:.0f} min estimées pour {d} min annoncées")
