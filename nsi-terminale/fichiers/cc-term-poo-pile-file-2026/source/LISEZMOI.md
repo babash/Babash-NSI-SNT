@@ -17,7 +17,7 @@ Contrôle de Terminale NSI de novembre 2026 (2 h, 20 points) : POO, pile, file e
 | Exercice de bac (24-NSIJ2JA1, exercice 2) | 8 questions, 10 points | questions 1, 2, 4, 5, 6 et 8, 7,5 points ; la question 3 (`compte_fermante`, copie de la question 2) est remplacée par une phrase de l'énoncé ; la question 7 (nombre de comparaisons, ambiguë au point qu'il avait fallu ajouter une précision) est retirée |
 | Retirés | « Après des travaux, la capacité passe à 350 » ; « Écrire un programme qui crée la playlist… et l'affiche » ; « Que contient `f` après l'appel ? » (gardé comme explication au corrigé) | |
 | Barème | 25 questions, des tiers et des trois-quarts de point cachés dans les parties | 27 réponses, chacune ½, 1, 1½ ou 3 points affichés à côté d'elle ; tableau des points et durées au début |
-| Temps estimé (outil / à la main × 3) | 157 min / environ 140 min pour 2 h | 90 min / environ 95 min pour 2 h |
+| Temps estimé (outil / à la main × 3) | 157 min / environ 140 min pour 2 h | 90 min / environ 85 min pour 2 h |
 | Pages | 6 (+ copies) | 8 (on répond sur le sujet) ; corrigé 9 |
 
 ## D'où vient chaque exercice

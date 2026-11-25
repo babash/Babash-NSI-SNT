@@ -70,7 +70,7 @@ L'outil additionne, pour chaque question : la lecture (100 mots par minute, 0,15
 | Contrôle (2 h) | À la main, × 3 | Outil |
 |---|---|---|
 | Version donnée le 25/11/2026 (6 fonctions, 9 questions à tiroirs) | 44 min × 3 = 132 min, plus la relecture : environ 140 min | 157 min (131 %) |
-| Version révisée (2 fonctions cadrées, aucune question à tiroirs hors bac) | 28 min × 3 = 85 min, plus la relecture : environ 95 min | 90 min (75 %) |
+| Version révisée (2 fonctions cadrées, aucune question à tiroirs hors bac) | 24 min × 3 = 72 min, plus la relecture : environ 85 min | 90 min (75 %) |
 
 L'outil estime un peu large : c'est voulu. Sur les contrôles d'origine de l'enseignant, il donne de 50 à 90 % du temps annoncé pour la plupart, et signale deux sujets un peu longs (piles et files 2025 : 103 min pour 1 h 30, 4 fonctions ; rattrapage 2025 : 45 min annoncées). La dernière décision reste ta passe à la main : **fais toujours le contrôle toi-même**.
 
@@ -102,5 +102,6 @@ Ce que l'outil ne sait pas faire : lire les contrôles en HTML (le contrôle de 
 |---|---|---|---|---|
 | Terminale, POO, piles, files, novembre 2026 : version donnée | agent (T130) | 9 | 6 (dont 2 dans l'exercice de bac) | 157 / 120 min |
 | Terminale, même contrôle, version révisée | agent (T142) | 0 (1 dans l'énoncé officiel) | 2, cadrées, en fin de sujet | 90 / 120 min |
-| Première, conditions, boucles, fonctions (HTML) | agent (T98b) | mesuré à la main : voir le rapport de T142 | | |
+| Première, conditions, boucles, fonctions (HTML), version du 20/11 | agent (T98b) | 6 (« entoure, corrige et explique » pour 0,25 point) et 2 trajets à deux réponses | 4 (2 fonctions, 2 programmes du robot) | à la main : environ 100 / 90 min |
+| Première, même contrôle, version révisée | agent (T142) | 0 | 1, cadrée (4 lignes) | à la main : environ 65 / 90 min |
 | Contrôles de notions (arbres, piles et files, POO ; en ligne) | agents (T108, T108b) | 0 | 0 | 20 min, 12 questions d'un point : conformes |
