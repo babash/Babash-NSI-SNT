@@ -1146,15 +1146,14 @@
     this.sourceTrous = lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? new Array((parTrou ? Math.max.apply(null, alternatives(m).map(function (r) { return r.length; })) : largeurCommune) + 6).join('x') : m; }).join(''); }).join('\n');
     this.mettreDeCote();
   };
-  /* cases liées (T140b, Critique T150). Dans une question à trous qui donne sa sortie attendue (pre.td-attendu, en
-     Python), le code rempli est EXÉCUTÉ, comme le fait verifier-td.py, quand la correction case par case ne suffit pas :
-     - une case refusée seule : le programme rempli est essayé ; s'il donne la sortie attendue, la réponse est juste
-       (« n != 0 », juste, était refusé) ;
-     - des cases liées, toutes acceptées seules : deux cases sur une même ligne dont l'une a plusieurs réponses permises
-       (« n >= 0 » accepté alors que le programme affiche 0 de trop), ou deux cases aux mêmes réponses permises remplies
-       de la même façon (la même ligne écrite deux fois) : le programme rempli doit donner la sortie attendue.
-     Sinon, rien ne change (pas de Python à charger). Sans Python (pas de connexion) : case par case.
-     data-execution="non" sur la question : jamais d'exécution ; data-execution="oui" : toujours. */
+  /* cases liées (T140b, Critique T150 ; retour du Gardien 45). Dans une question à trous qui donne sa sortie attendue
+     (pre.td-attendu, en Python), quand TOUTES les cases sont acceptées une par une mais qu'elles sont liées, le code rempli
+     est EXÉCUTÉ (comme le fait verifier-td.py) et doit donner la sortie attendue : l'exécution ne sert qu'à REFUSER une
+     combinaison fausse, jamais à accepter une case refusée. Cases liées : deux cases sur une même ligne dont l'une a
+     plusieurs réponses permises (« while n >= 0 » : chaque case est permise seule, le programme affiche 0 de trop), ou
+     deux cases aux mêmes réponses permises remplies de la même façon (la même ligne écrite deux fois). Sinon, rien ne
+     change (Python n'est pas chargé). Sans Python (pas de connexion) : case par case. data-execution="non" sur la
+     question : jamais d'exécution ; data-execution="oui" : exécution dès que toutes les cases sont acceptées. */
   Question.prototype.trousLies = function () {
     var t = this.trous, i, j;
     for (i = 0; i < t.length; i++) for (j = i + 1; j < t.length; j++) {
@@ -1183,7 +1182,7 @@
       if (r.etat === 'indisponible') { q.conclureTrous(faux); return; }      // sans Python : case par case
       if (r.etat !== 'trop-long') python.charge = true;
       var ok = r.etat === 'ok' && normSortie(r.sortie, ex) === normSortie(attendu, ex);
-      q.conclureTrous(ok ? [] : (faux.length ? faux : null));
+      q.conclureTrous(ok ? [] : null);
       if (r.etat === 'trop-long') q.retour.appendChild(el('p', { html: 'Le code rempli tourne encore après ' + DELAI_PYTHON / 1000 + ' secondes : c\'est sans doute une <b>boucle infinie</b>.' }));
       else if (!ok && !faux.length) q.retour.appendChild(el('p', { text: 'Chaque case, seule, peut sembler juste, mais le programme rempli ne fait pas ce qui est demandé : vérifie que les cases vont ensemble.' }));
     });
@@ -1202,7 +1201,7 @@
     var att = this.s.querySelector('pre.td-attendu');
     var exe = this.s.getAttribute('data-execution');
     if (att && !vides && exe !== 'non' && langue(this.s.querySelector('pre.td-code') || this.s) === 'python' &&
-        (exe === 'oui' || faux.length || this.trousLies())) {
+        !faux.length && (exe === 'oui' || this.trousLies())) {
       this.verifierTrousExecutes(faux, att);
       return;
     }
