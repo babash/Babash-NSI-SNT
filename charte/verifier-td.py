@@ -449,6 +449,7 @@ PROPORTIONS = {'1/2': (1, 1), '1/3': (1, 2), '2/3': (2, 1), '2/5': (2, 3), '3/5'
 GENRES = {'retenir', 'rappel', 'methode', 'attention', 'exemple'}
 PAGE_MM, ECART_MM, MM_CAR = 186, 6, 2.117          # largeur utile A4 ; entre deux colonnes ; un caractère de code à 10 pt
 CADRE_NUM_MM, CADRE_MM = 14.3, 4.1                 # cadre d'un code, avec ou sans ses numéros de ligne
+CADRE_CONSOLE_MM = 6.0                              # cadre d'une console (trait gauche, marges)
 CONTENEURS = {'td-cote-a-cote', 'td-colonnes', 'td-grille-reponses'}
 
 
@@ -522,6 +523,13 @@ def controler_mise_en_page(lu):
             if len(l.rstrip()) > cap:
                 err.append(f'ligne {i} de code ({len(l.rstrip())} caractères) trop longue pour sa colonne : {cap} au plus sur papier '
                            f'(« {l.strip()[:40]} ») ; élargir la colonne (data-proportions), data-numeros="non", ou couper la ligne')
+    # une console (sortie, extrait de terminal) dans une colonne passe à la ligne si elle est trop large : illisible
+    for pre in r.tous(lambda x: x.tag == 'pre' and ('td-sortie-exemple' in x.classes() or 'td-console' in x.classes()) and dans(x)):
+        cap = int((largeur_mm(pre) - CADRE_CONSOLE_MM) / MM_CAR)
+        for i, l in enumerate(code_de(pre.texte()).rstrip().split('\n'), 1):
+            if len(l.rstrip()) > cap:
+                err.append(f'ligne {i} de la console ({len(l.rstrip())} caractères) trop longue pour sa colonne : {cap} au plus sur papier '
+                           f'(« {l.strip()[:40]} ») ; élargir la colonne (data-proportions)')
     return err
 
 

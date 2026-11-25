@@ -899,7 +899,7 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-cote-a-cote > .td-col > :last-child { margin-bottom: 0; }
   /* un côte à côte et une grille restent entiers (sur une page) ; data-coupable les laisse passer d'une page à
      l'autre (un côte à côte plus haut qu'une page : chaque bloc garde ses éléments entiers) */
-  .td-cote-a-cote:not([data-coupable]), .td-grille-reponses:not([data-coupable]) { break-inside: avoid; }
+  .td-cote-a-cote:not([data-coupable]), .td-grille-reponses:not([data-coupable]), .td-colonnes:not([data-coupable]) { break-inside: avoid; }
   /* dans une colonne, une question ne se met plus elle-même en deux (code à gauche, réponse à droite) */
   .td-cote-a-cote .td-q.td-cote > pre.td-code, .td-colonnes .td-q.td-cote > pre.td-code, .td-grille-reponses .td-q.td-cote > pre.td-code { float: none; width: auto; margin-right: 0; }
   /* colonnes de questions (sur papier : l'ordre descend la première colonne, puis la suivante) */
@@ -967,11 +967,13 @@ textarea.td-libre { width: 100%; resize: vertical; }
     border: 0 !important; padding: 0 1mm;
     background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1.2px), var(--td-saisie) calc(7mm - 1.2px) 7mm) !important; }
 
+  /* data-zone="cadre" sur une réponse libre : un cadre vide (pour dessiner un arbre, un graphe, un schéma), au lieu de lignes */
+  .td .td-q[data-zone="cadre"] textarea.td-libre { background: none !important; border: var(--td-saisie-ep) solid var(--td-saisie) !important; }
+
   /* ── main[data-mise-en-page="2"] : la typographie de la feuille revue (T140) ──
      numéro de question court et net (« 7 », dans un cadre), consigne en graisse normale (le numéro et les mots
      en gras portent la hiérarchie), questions séparées par de l'air et un filet fin plutôt qu'un trait noir */
-  .td[data-mise-en-page="2"] { line-height: 1.34; }
-  .td[data-mise-en-page="2"] .td-q:not(.td-grille-reponses > .td-q) { border-top: .5pt solid #8C8796; padding: 1.4mm 0 .6mm; margin: 0 0 1.2mm; }
+  .td[data-mise-en-page="2"] .td-q:not(.td-grille-reponses > .td-q) { border-top: .5pt solid #8C8796; padding: 1.1mm 0 .4mm; margin: 0 0 1mm; }
   .td[data-mise-en-page="2"] :is(h2, h3, .td-encadre, .td-cote-a-cote, .td-colonnes) + .td-q,
   .td[data-mise-en-page="2"] .td-col > .td-q:first-child,
   .td[data-mise-en-page="2"] .td-colonnes > .td-q { border-top: 0; padding-top: .4mm; }
@@ -983,4 +985,6 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td[data-mise-en-page="2"] .td-consigne { font-weight: 400; }
   .td[data-mise-en-page="2"] .td-consigne b, .td[data-mise-en-page="2"] .td-consigne strong { font-weight: 700; }
   .td[data-mise-en-page="2"] .td-q > .td-consigne:first-of-type { min-height: 4.8mm; }
+  /* la consigne en retrait suspendu : ses lignes restent à droite du numéro */
+  .td[data-mise-en-page="2"] .td-q:not(.td-courte-ligne):not(.td-grille-reponses > .td-q) > .td-consigne:first-of-type { display: flow-root; }
   .td[data-mise-en-page="2"] h2.td-partie { margin-top: 3.4mm; 
