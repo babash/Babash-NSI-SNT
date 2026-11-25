@@ -156,7 +156,13 @@ const FAUTES_VITRINE = [
   ['thème en double', (v) => { const r = v.rubriques[0]; const s = r.sections.find((x) => x.programme); r.sections.push({ programme: s.programme, ressources: [] }); }],
   ['section libre sans titre', (v) => { v.rubriques[1].sections.push({ id: 'sans-titre', ressources: [] }); }],
   ['à la une : fiche inconnue', (v) => { v.a_la_une.push({ ressource: 'fiche-qui-n-existe-pas' }); }],
-  ['à la une : début après la fin', (v) => { v.a_la_une[0].debut = '2026-12-01'; v.a_la_une[0].fin = '2026-11-01'; }],
+  // T162 : une entrée d'essai, sans dépendre du contenu réel de « à la une » (vide depuis T155) ; une fiche
+  // placée et pas encore à la une, pour que la seule faute soit celle des dates
+  ['à la une : début après la fin', (v) => {
+    const deja = new Set(v.a_la_une.map((u) => u.ressource));
+    const rid = v.rubriques.flatMap((r) => r.sections).flatMap((s) => s.ressources).find((x) => !deja.has(x));
+    v.a_la_une.push({ ressource: rid, debut: '2026-12-01', fin: '2026-11-01' });
+  }],
   ['contenu d\'un autre thème', (v) => { const r = v.rubriques[0]; const s = r.sections.filter((x) => x.programme); s[1].sous_sections = (s[1].sous_sections || []).concat([{ programme: s[0].programme + '.x', ressources: [] }]); }],
   ['ressource en double dans une section', (v) => { const s = v.rubriques[0].sections.find((x) => x.ressources.length); s.ressources.push(s.ressources[0]); }]
 ];
@@ -201,6 +207,16 @@ try {
   }
   // La vitrine, faute par faute (une vitrine fausse arrête le contrôle de ses références au premier écart de schéma)
   const vOrig = JSON.parse(lire('donnees', 'vitrine.json'));
+  // Le témoin (T162) : la vitrine telle quelle, et avec une entrée d'essai « à la une » aux dates en ordre, est
+  // sans erreur ; une erreur trouvée plus bas vient donc de la faute
+  {
+    const vt = JSON.parse(JSON.stringify(vOrig));
+    verifier('admin, vitrine telle quelle : aucune erreur', Vc.vitrine(vt).length === 0, JSON.stringify(Vc.vitrine(vt)));
+    const deja = new Set(vt.a_la_une.map((u) => u.ressource));
+    const rid = vt.rubriques.flatMap((r) => r.sections).flatMap((s) => s.ressources).find((x) => !deja.has(x));
+    vt.a_la_une.push({ ressource: rid, debut: '2026-11-01', fin: '2026-12-01' });
+    verifier('admin, vitrine : une entrée « à la une » aux dates en ordre : aucune erreur', Vc.vitrine(vt).length === 0, JSON.stringify(Vc.vitrine(vt)));
+  }
   for (const [nom, faute] of FAUTES_VITRINE) {
     const vv = JSON.parse(JSON.stringify(vOrig));
     faute(vv);

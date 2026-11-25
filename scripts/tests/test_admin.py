@@ -362,12 +362,7 @@ def main():
             titres = cadre.locator(f"section.theme").nth(j).locator("li.res .titre").all_inner_texts()
             attendu = [json.load(open(os.path.join(copie, "donnees", "ressources", f"{x}.json")))["titre"] for x in premiers[::-1]]
             verifier("aperçu : le nouvel ordre", titres[:2] == attendu, (titres[:2], attendu))
-            page.goto(base + "/admin/#/onglets/a-la-une")
-            attendre(page, 400)
-            avant = page.locator(".admin-une > li").count()
-            page.click('[data-cle="une-0-retirer"]')
-            attendre(page)
-            verifier("à la une : une ressource retirée", page.locator(".admin-une > li").count() == avant - 1)
+            verifier("plus d'onglet « À la une » (retiré le 25/11)", page.locator("a[href='#/onglets/a-la-une']").count() == 0)
             # Une fiche Capytale Basthon ouverte et modifiée dans l'admin garde « Notebook » dans l'aperçu (T85)
             vit = json.load(open(os.path.join(copie, "donnees", "vitrine.json")))
             places = {(r["id"], x) for r in vit["rubriques"] for s_ in r["sections"]

@@ -817,7 +817,6 @@
         out.push(el('a', { href: r ? O.urlRubrique(r) : O.racine + rub.id + '/' }, (r ? r.nom : rub.id) + ', ' + titre));
       });
     });
-    if ((v.a_la_une || []).some(function (u) { return u.ressource === id; })) out.unshift(el('a', { href: O.urlAccueil() }, 'À la une de l\'accueil'));
     return out;
   }
 

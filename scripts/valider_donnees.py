@@ -1447,6 +1447,9 @@ class Validation:
                     self.rapport.attention(fichier, joindre(cr, "sections"),
                                            f"le thème « {t} » ({self.noeuds[t]['intitule']}) n'a pas de section dans la rubrique")
 
+        if v["a_la_une"]:
+            self.rapport.attention(fichier, "a_la_une", "« À la une » est abandonnée (décision de l'enseignant du 25/11/2026) : "
+                                                        "le site ne la montre plus ; vider la liste")
         for i, une in enumerate(v["a_la_une"]):
             c = joindre("a_la_une", i)
             rid = une["ressource"]

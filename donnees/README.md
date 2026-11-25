@@ -62,8 +62,8 @@ mot de passe, d'identifiant (ceux de démonstration de CyberCase compris) ni de 
 **La vitrine** choisit ce que montre la partie extérieure : pour chaque rubrique (SNT, NSI 1re…), ses
 sections dans l'ordre, et dans chaque section la liste ordonnée des ressources à montrer. Une section suit
 un thème du programme (« Internet », « Structures de données ») ou porte un titre libre (« Sites
-ressources », « Préparer le bac »). Une même ressource peut être à plusieurs endroits : CyberCase est en SNT
-et en NSI Terminale. « À la une » met quelques ressources en avant sur l'accueil (la ressource du mois).
+ressources », « Préparer le bac »). Une même ressource peut être à plusieurs endroits : Court-circuit est en SNT
+et en NSI Première. « À la une » (la ressource du mois sur l'accueil) est abandonnée depuis le 25/11/2026 : la liste reste vide.
 
 **Les programmes** sont rangés comme les textes officiels, chaque thème et chaque contenu ayant un
 identifiant qui ne changera plus (`snt-2019.internet.dns`). Quand la SNT révisée arrivera (annoncée pour
@@ -125,8 +125,8 @@ plateformes restera possible. Les `mots_cles` libres restent.
   et une fiche qui porte les deux est refusée par la validation (le script et l'admin).
 - **Étiquettes des onglets** (sous chaque ressource des rubriques) : tirées de la fiche, avec les libellés des
   anciennes listes : En ligne, À imprimer, Débranché, Connexion ENT, Cours (type), Jeu (type), Python, SQL,
-  Notebook (un document montré au format `notebook`), Rien à installer, Pour aller plus loin, À adapter, et
-  l'étiquette de « À la une » (`vitrine.json`). La liste est `ETIQUETTES`, dans `assets/site.js`.
+  Notebook (un document montré au format `notebook`), Rien à installer, Pour aller plus loin, À adapter ;
+  l'étiquette de « À la une » est retirée depuis le 25/11/2026. La liste est `ETIQUETTES`, dans `assets/site.js`.
 - **Compétences Pix** (facultatif, ressources de SNT) : `competences_pix`, identifiants de
   `referentiels/competences-pix.json` (les 16 compétences du cadre de référence, par exemple `programmer`).
   Les pages affichent les intitulés de la plateforme Pix, que voient les élèves.
@@ -170,8 +170,9 @@ plateformes restera possible. Les `mots_cles` libres restent.
   (« auteur (exomorphisme.fr, lycée de Sada) ») ; si on ne la connaît pas, un auteur au nom du site, rôle « site d'origine ».
 - **Crédits en chaîne** (décision du 07/11) : une ressource reprise et modifiée crédite toute la chaîne de ses auteurs
   et autrices, dans l'ordre, dans `auteurs` comme dans `credits` : la personne qui l'a faite, ses sources, puis la
-  reprise. Exemple, CyberCase : Etienne Clave (exomorphisme.fr, lycée de Sada), d'après une idée de Marion Dufour,
-  avec le moteur SQL Noir de Hristo Bogoev (licence MIT), repris par Babash - NSI Tani Malandi (rôle « reprise »).
+  reprise. Exemple, la fiche `sql-murder-mystery-capytale` : Joon Park et Cathy He (Knight Lab, Northwestern University),
+  adapté pour le Web par Joe Germuska, puis en notebook Capytale par Germain Becker, copie hébergée par Babash - NSI Tani
+  Malandi (rôle « reprise »).
 - **Documents** : `url` (lien direct) **ou** `fichier` (chemin depuis la racine du dépôt, par exemple
   `nsi-terminale/fichiers/td1-poo-premiers-pas.pdf`, ancre permise). Jamais de page GitHub, sauf pour le
   rôle `code-source`. Le `format` est déduit de l'adresse (règles dans `valeurs.json`) : ne l'écrire que pour
@@ -216,7 +217,7 @@ plateformes restera possible. Les `mots_cles` libres restent.
 
 | Fiche | Le cas qu'elle illustre |
 |---|---|
-| `cybercase` | ressource externe reprise, créditée en chaîne (auteur, idée originale, moteur, reprise), « à la une », placée en SNT et en NSI Tle, collecte facultative, aucun identifiant de démonstration |
+| `cybercase` | ressource externe, placée en NSI Tle, collecte facultative, aucun identifiant de démonstration |
 | `td1-poo` | ressource interne : page HTML du site et sa version PDF ; `td_en_ligne` (règle 19), avec ce qui manque |
 | `timeline-histoire-informatique` | placée en NSI 1re et en NSI Tle ; code source sur GitHub, en document secondaire |
 | `alien-python` | collecte de données d'élèves (`donnees_eleves`, à titre d'information), crédits d'un tiers, espace professeur ; usage `editeur-de-code` et `editeur_code` (règle 20), avec ce qui manque |

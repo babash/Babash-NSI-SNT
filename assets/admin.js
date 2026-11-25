@@ -877,7 +877,7 @@
     }
     var v = f.courant;
     var ids = v.rubriques.map(function (r) { return r.id; });
-    var choisi = arg === 'a-la-une' ? 'a-la-une' : (ids.indexOf(arg) >= 0 ? arg : ids[0]);
+    var choisi = ids.indexOf(arg) >= 0 ? arg : ids[0];
     function maj(redessiner, cle) { change(false); if (redessiner) rendre(cle); else majErreurs(); }
 
     vue.appendChild(el('h1', { id: 'contenu' }, 'Onglets du site'));
@@ -885,7 +885,8 @@
     vue.appendChild(el('nav', { class: 'admin-sous-onglets', 'aria-label': 'Onglets du site' }, el('ul', null,
       v.rubriques.map(function (r) {
         return el('li', null, el('a', { href: '#/onglets/' + r.id, 'aria-current': choisi === r.id ? 'page' : null }, r.court || r.titre));
-      }).concat([el('li', null, el('a', { href: '#/onglets/a-la-une', 'aria-current': choisi === 'a-la-une' ? 'page' : null }, 'À la une (accueil)'))]))));
+      }))));
+    /* « À la une » est retirée (décision de l'enseignant du 25/11, 10:50 : ni « Ressource du mois » ni promotion) */
 
     var zoneErreurs = el('div', { 'aria-live': 'polite' });
     vue.appendChild(zoneErreurs);
@@ -896,7 +897,6 @@
     }
     majErreurs();
 
-    if (choisi === 'a-la-une') return vueALaUne(v, maj);
     var rub = v.rubriques[ids.indexOf(choisi)];
 
     var tete = el('div', { class: 'admin-bloc-plat' });
@@ -1128,50 +1128,6 @@
     if (actif && (actif.indexOf(p + 'case-') === 0 || actif === p + 'q')) { choisir.open = true; majCases(); }
     bloc.appendChild(choisir);
     return bloc;
-  }
-
-  function vueALaUne(v, maj) {
-    vue.appendChild(el('p', { class: 'admin-aide' }, 'Les ressources mises en avant sur l\'accueil, dans l\'ordre, avec une étiquette facultative (« Ressource du mois ») et des dates facultatives.'));
-    var l = el('ol', { class: 'admin-ordre admin-une' });
-    v.a_la_une.forEach(function (u, i) {
-      var f = ficheCourante(u.ressource);
-      var nom = f ? f.titre : u.ressource;
-      var idc = 'une-' + i + '-etiquette';
-      var et = el('input', { type: 'text', id: idc, 'data-cle': idc, maxlength: 40, placeholder: 'Étiquette (facultative)' });
-      et.value = u.etiquette || '';
-      et.addEventListener('input', function () { if (et.value.trim()) u.etiquette = et.value; else delete u.etiquette; maj(false); });
-      function date(cle, nomD) {
-        var idd = 'une-' + i + '-' + cle;
-        var d = el('input', { type: 'date', id: idd, 'data-cle': idd });
-        d.value = u[cle] || '';
-        d.addEventListener('change', function () { if (d.value) u[cle] = d.value; else delete u[cle]; maj(false); });
-        return el('span', { class: 'admin-champ-ligne' }, [el('label', { for: idd }, nomD), d]);
-      }
-      l.appendChild(el('li', null, [
-        el('span', { class: 'admin-ordre-nom' }, [nom, ' ', el('code', null, u.ressource)]),
-        el('span', { class: 'admin-champ-ligne' }, [el('label', { for: idc }, 'Étiquette'), et]),
-        date('debut', 'Du'), date('fin', 'au'),
-        el('span', { class: 'admin-actions' }, [
-          bouton('↑', function () { v.a_la_une.splice(i - 1, 0, v.a_la_une.splice(i, 1)[0]); maj(true, 'une-' + (i - 1) + '-monter'); },
-            { aria: 'Monter « ' + nom + ' »', cle: 'une-' + i + '-monter', inactif: i === 0, classe: 'petit' }),
-          bouton('↓', function () { v.a_la_une.splice(i + 1, 0, v.a_la_une.splice(i, 1)[0]); maj(true, 'une-' + (i + 1) + '-descendre'); },
-            { aria: 'Descendre « ' + nom + ' »', cle: 'une-' + i + '-descendre', inactif: i === v.a_la_une.length - 1, classe: 'petit' }),
-          bouton('Retirer', function () { v.a_la_une.splice(i, 1); maj(true); }, { aria: 'Retirer « ' + nom + ' » de la une', cle: 'une-' + i + '-retirer', classe: 'petit' })
-        ])
-      ]));
-    });
-    vue.appendChild(l);
-    var ids = v.a_la_une.map(function (u) { return u.ressource; });
-    var proxy = ids.slice();
-    var bloc = listeRessources(proxy, 'une-choix-', function (redessiner, cle) {
-      // les cases ajoutent ou retirent des ressources de la une
-      v.a_la_une = proxy.map(function (rid) {
-        return v.a_la_une.filter(function (u) { return u.ressource === rid; })[0] || { ressource: rid };
-      });
-      maj(redessiner, cle);
-    }, null);
-    var choisir = bloc.querySelector('.admin-choisir');
-    if (choisir) vue.appendChild(choisir);
   }
 
   /* ── L'aperçu : l'onglet dessiné par site.js, dans un cadre ───── */
