@@ -78,7 +78,7 @@
     <div class="td-correction"><p><code>cp ../../../prof/notes.csv ../../projets</code> : trois remontées pour arriver dans <code>home</code>, puis <code>prof/notes.csv</code> ; deux remontées pour arriver dans <code>eleve</code>, puis <code>projets</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q3" data-comparer="exact" data-etiquette="$" data-reponse="touch ../../../prof/examens/exam1.txt|cd ../../../prof/examens &amp;&amp; touch exam1.txt|cd ../../../prof/examens; touch exam1.txt|cd ../../../prof/examens ; touch exam1.txt|touch /home/prof/examens/exam1.txt|cd /home/prof/examens &amp;&amp; touch exam1.txt|cd /home/prof/examens; touch exam1.txt|cd /home/prof/examens ; touch exam1.txt">
+  <section class="td-q" data-type="courte" id="q3" data-comparer="exact" data-etiquette="$" data-reponse="touch ../../../prof/examens/exam1.txt|cd ../../../prof/examens &amp;&amp; touch exam1.txt|cd ../../../prof/examens; touch exam1.txt|cd ../../../prof/examens ; touch exam1.txt|touch /home/prof/examens/exam1.txt|cd /home/prof/examens &amp;&amp; touch exam1.txt|cd /home/prof/examens; touch exam1.txt|cd /home/prof/examens ; touch exam1.txt|cd ../../../prof/examens/ &amp;&amp; touch exam1.txt|cd ../../../prof/examens/; touch exam1.txt|cd ../../../prof/examens/ ; touch exam1.txt|cd /home/prof/examens/ &amp;&amp; touch exam1.txt|cd /home/prof/examens/; touch exam1.txt|cd /home/prof/examens/ ; touch exam1.txt">
     <p class="td-consigne">Tu es toujours dans le dossier <code>nsi</code>. Donne la commande (ou la suite de commandes, sur une ligne) qui crée avec <code>touch</code> un fichier <code>exam1.txt</code> dans le dossier <code>examens</code>.</p>
     <p class="td-retour" data-si="touch exam1.txt">Cette commande crée exam1.txt là où tu es, dans nsi : il faut donner le chemin du dossier examens.</p>
     <p class="td-aide"><code>examens</code> est dans <code>prof</code>, lui-même dans <code>home</code> : depuis <code>nsi</code>, il faut remonter jusqu'à <code>home</code>.</p>
@@ -86,7 +86,7 @@
     <div class="td-correction"><p><code>touch ../../../prof/examens/exam1.txt</code>, ou bien <code>cd ../../../prof/examens</code> puis <code>touch exam1.txt</code>. Le chemin absolu <code>/home/prof/examens/exam1.txt</code> marche aussi.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q4" data-reponse="devoirs projets|projets devoirs">
+  <section class="td-q" data-type="courte" id="q4" data-comparer="code" data-reponse="devoirs projets|projets devoirs|devoirs/ projets/|projets/ devoirs/">
     <p class="td-consigne">Tu te déplaces dans l'arborescence, puis tu tapes la commande ci-dessous. Qu'affiche le terminal ?</p>
     <pre class="td-sortie-exemple">
 eleve@serveur:~/devoirs/nsi$ ls ../..</pre>
@@ -96,7 +96,7 @@ eleve@serveur:~/devoirs/nsi$ ls ../..</pre>
     <div class="td-correction"><p><code>../..</code> depuis <code>~/devoirs/nsi</code>, c'est <code>~</code>, soit <code>/home/eleve</code>. Le terminal affiche son contenu : <code>devoirs  projets</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q5" data-reponse="nsi">
+  <section class="td-q" data-type="courte" id="q5" data-comparer="code" data-reponse="nsi|nsi/">
     <p class="td-consigne">L'administrateur·rice tape ces commandes à partir de <code>/home/eleve</code>. Qu'affiche la dernière ?</p>
     <pre class="td-sortie-exemple">
 $ mkdir archives
@@ -129,7 +129,7 @@ $ ls ../archives</pre>
     <div class="td-correction"><p>Non aux deux. Les droits se lisent par trois : <code>rwx</code> pour le propriétaire <code>prof</code>, <code>rw-</code> pour le groupe <code>enseignants</code>, <code>r--</code> pour les autres. <code>eleve</code> fait partie des autres : lecture seule, ni <code>w</code> ni <code>x</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q7" data-comparer="exact" data-etiquette="$" data-reponse="chmod 666 notes.csv|chmod 0666 notes.csv|sudo chmod 666 notes.csv|sudo chmod 0666 notes.csv">
+  <section class="td-q" data-type="courte" id="q7" data-comparer="exact" data-etiquette="$" data-reponse="chmod 666 notes.csv|chmod 0666 notes.csv|sudo chmod 666 notes.csv|sudo chmod 0666 notes.csv|chmod 666 ./notes.csv|chmod 0666 ./notes.csv">
     <p class="td-consigne">Donne la commande <code>chmod</code>, en notation <b>octale</b>, qui rend ce fichier lisible et modifiable par tout le monde, mais exécutable par personne.</p>
     <p class="td-retour" data-si="chmod 777 notes.csv">777 donne aussi le droit d'exécution (x = 1) à tout le monde.</p>
     <p class="td-retour" data-si="chmod a=rw notes.csv">C'est juste, mais en notation symbolique. La consigne demande la notation octale (des chiffres).</p>
@@ -169,7 +169,7 @@ eleve   1050  500   0  -bash
 eleve   1210  1050  99 python3 calcul_pi.py
 eleve   1215  1050  0  ps -ef</pre>
 
-  <section class="td-q" data-type="courte" id="q9" data-reponse="1050">
+  <section class="td-q" data-type="courte" id="q9" data-reponse="1050|PID 1050|1050 (bash)|1050 (-bash)|bash (1050)|1050 bash|bash 1050|le processus 1050">
     <p class="td-consigne">Quel est le PID du processus parent de <code>python3</code> ?</p>
     <p class="td-retour" data-si="1210">1210 est le PID de python3 lui-même. Son parent est dans la colonne PPID.</p>
     <p class="td-aide">PPID : <i>Parent Process ID</i>, l'identifiant du processus parent.</p>
@@ -197,7 +197,7 @@ eleve   1215  1050  0  ps -ef</pre>
     </div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q11" data-reponse="1|init|/sbin/init|1 (/sbin/init)|1 (init)|init (1)|le processus 1">
+  <section class="td-q" data-type="courte" id="q11" data-reponse="1|init|/sbin/init|1 (/sbin/init)|1 (init)|init (1)|le processus 1|PID 1|systemd|1 (systemd)|systemd (1)|init ou systemd|le processus init">
     <p class="td-consigne">Un processus « orphelin » est un processus dont le parent est terminé. Si l'on tue le processus <code>bash</code> (PID 1050), quel processus devient le nouveau parent du processus 1210 ? Donne son PID ou son nom.</p>
     <p class="td-retour" data-si="500">sshd est le grand-parent, mais le système ne rattache pas un orphelin à son grand-parent.</p>
     <p class="td-aide">Un orphelin est « adopté » par l'ancêtre de tous les processus.</p>
@@ -226,13 +226,12 @@ eleve   1215  1050  0  ps -ef</pre>
     <p class="td-consigne">D'après le tableau, quelles lignes cette commande affiche-t-elle ? Coche toutes celles qui peuvent apparaître.</p>
     <ul class="td-options">
       <li data-juste>La ligne de <code>python3 calcul_pi.py</code> (PID 1210).</li>
-      <li data-juste>Une ligne pour <code>grep python3</code> lui-même : son texte contient « python3 ».</li>
+      <li data-retour="La ligne de ps -ef (PID 1215) ne contient pas le mot python3 : grep ne la garde pas.">La ligne de <code>ps -ef</code> (PID 1215).</li>
       <li data-retour="La ligne de bash ne contient pas le mot python3 : grep ne la garde pas.">La ligne de <code>-bash</code> (PID 1050).</li>
       <li data-retour="grep garde des lignes du résultat, il ne fait pas un nouveau tableau complet.">Tout le tableau, avec la ligne de <code>python3</code> en premier.</li>
     </ul>
     <p class="td-aide"><code>grep "python3"</code> garde chaque ligne qui contient le texte <code>python3</code>, n'importe où.</p>
-    <p class="td-aide">Pendant que <code>ps</code> photographie les processus, <code>grep</code> tourne déjà : il fait partie de la liste.</p>
-    <div class="td-correction"><p>La ligne <code>eleve 1210 1050 99 python3 calcul_pi.py</code> s'affiche. En pratique, une deuxième ligne apparaît aussi : celle de la commande <code>grep python3</code>, lancée en même temps que <code>ps</code> et qui contient le mot cherché (essai réel dans <code>source/verifier.py</code>).</p></div>
+    <div class="td-correction"><p>D'après le tableau, seule la ligne <code>eleve 1210 1050 99 python3 calcul_pi.py</code> s'affiche. En pratique, sur une vraie machine, une deuxième ligne apparaît aussi : celle de la commande <code>grep python3</code>, lancée en même temps que <code>ps</code> et qui contient le mot cherché (essai réel dans <code>source/verifier.py</code>).</p></div>
   </section>
   <section class="td-q" data-type="libre" id="q13-papier" data-support="papier" data-lignes="2">
     <p class="td-consigne">Prédis précisément la sortie de cette commande, à l'aide du tableau.</p>
@@ -306,9 +305,9 @@ procs = [{"pid": 1210, "nom": "python3", "cpu": 99.8, "user": "eleve"},
          {"pid": 1450, "nom": "bash", "cpu": 0.1, "user": "root"}]
 assert trouver_critiques(procs) == [1210], "Avec la liste de la feuille, la fonction doit renvoyer [1210] : une liste de PID, pas de dictionnaires."
 assert trouver_critiques([]) == [], "Avec une liste vide, la fonction doit renvoyer une liste vide."
-deux = [{"pid": 7, "nom": "a", "cpu": 85.0, "user": "x"}, {"pid": 8, "nom": "b", "cpu": 80.0, "user": "x"},
+deux = [{"pid": 7, "nom": "a", "cpu": 85.0, "user": "x"}, {"pid": 8, "nom": "b", "cpu": 79.5, "user": "x"},
         {"pid": 9, "nom": "c", "cpu": 95.5, "user": "y"}]
-assert trouver_critiques(deux) == [7, 9], "Il faut tous les PID au-dessus de 80 (strictement), dans l'ordre de la liste : ici [7, 9]."
+assert trouver_critiques(deux) == [7, 9], "Il faut tous les PID au-dessus de 80, dans l'ordre de la liste : ici [7, 9]."
 </script>
     <p class="td-aide">On part d'une liste vide, on parcourt <code>liste_proc</code>, et on ajoute le PID quand c'est critique.</p>
     <p class="td-aide">Pour un processus <code>p</code> : sa consommation est <code>p["cpu"]</code>, son PID <code>p["pid"]</code>.</p>
