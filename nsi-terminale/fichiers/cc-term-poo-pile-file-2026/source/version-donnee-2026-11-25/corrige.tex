@@ -1,0 +1,453 @@
+\documentclass[11pt, a4paper]{exam}
+\usepackage[a4paper,top=2.3cm,bottom=2.8cm,left=2cm,right=2cm,headheight=15pt,headsep=0.6cm,footskip=1.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[french]{babel}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{needspace}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes.multipart,arrows.meta}
+\usepackage[most]{tcolorbox}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{codegray}{$\hookrightarrow$}\space},
+    captionpos=b,
+    keepspaces=true,
+    columns=fullflexible,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    upquote=true,
+    tabsize=4,
+    xleftmargin=1.5em,
+    framexleftmargin=0.3em,
+    aboveskip=0.6em,
+    belowskip=0.6em,
+    extendedchars=true,
+    literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {ë}{{\"e}}1 {à}{{\`a}}1 {â}{{\^a}}1
+             {ç}{{\c c}}1 {ù}{{\`u}}1 {û}{{\^u}}1 {ô}{{\^o}}1 {î}{{\^i}}1 {ï}{{\"i}}1
+             {É}{{\'E}}1 {È}{{\`E}}1 {À}{{\`A}}1 {Ç}{{\c C}}1 {œ}{{\oe}}1
+             {«}{{\guillemotleft}}1 {»}{{\guillemotright}}1 {→}{{$\rightarrow$}}1
+}
+\lstset{style=mystyle, language=Python}
+% Console : sortie d'un programme, une ligne par ligne affichée
+\lstdefinestyle{console}{style=mystyle, language={}, numbers=none, backgroundcolor=\color{white}, frame=single, rulecolor=\color{codegray}, xleftmargin=0.3em}
+
+% Code en ligne
+\newcommand{\code}[1]{\texttt{#1}}
+
+% Titre d'une question : numéro et intitulé, barème à droite
+\newcommand{\Qt}[2]{\par\needspace{6\baselineskip}\subsection*{#1\hfill{\normalfont\small #2}}}
+% Rappel de la consigne en une ligne
+\newcommand{\rappel}[1]{\noindent\textit{Ce qui est demandé :} #1\par\smallskip}
+% Barème détaillé
+\newcommand{\bareme}[1]{\par\noindent\textbf{Barème.}\ #1\par\smallskip}
+
+% La réponse attendue, mise en évidence
+\newtcolorbox{reponse}[1][Réponse]{enhanced, breakable, colback=black!5, colframe=black, boxrule=0.9pt, arc=1mm,
+  title={#1}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=black!15, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+% Erreur fréquente
+\newtcolorbox{erreur}{enhanced, breakable, colback=white, colframe=black, boxrule=0.5pt, leftrule=3pt, arc=0mm,
+  title={Erreur fréquente}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=white, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+% Encadré « À retenir »
+\newtcolorbox{retenir}{enhanced, breakable, colback=white, colframe=black, boxrule=0.5pt, arc=1mm, boxsep=1mm,
+  borderline={0.4pt}{1.2pt}{black, dashed},
+  title={À retenir}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=white, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+% Remarque sur l'énoncé (erreur ou ambiguïté du sujet)
+\newtcolorbox{remarque}{enhanced, breakable, colback=white, colframe=black, boxrule=0.5pt, arc=0mm,
+  borderline={0.4pt}{1.2pt}{black, dotted},
+  title={Remarque sur l'énoncé}, fonttitle=\bfseries\small, coltitle=black, colbacktitle=black!8, left=2mm, right=2mm, top=1mm, bottom=1mm,
+  before skip=0.5em, after skip=0.7em}
+
+\newcommand{\methode}{\noindent\textbf{Méthode.}\ }
+\newcommand{\explication}{\noindent\textbf{Explication.}\ }
+
+\setlist{itemsep=0.15em, topsep=0.3em}
+\renewcommand{\arraystretch}{1.25}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.35em}
+\setlength{\emergencystretch}{3em}
+
+% Pile dessinée verticalement (sommet en haut) et file horizontale (tête à gauche)
+\newcommand{\pilev}[2]{\begin{tikzpicture}[baseline=(titre.base)]
+  \node[font=\scriptsize, align=center, text width=22mm] (titre) at (0,0) {#1};
+  \foreach \v [count=\k] in {#2} {\node[draw, minimum width=9mm, minimum height=5mm, inner sep=0pt, font=\small] at (0,-0.25-\k*0.5) {\v};}
+\end{tikzpicture}}
+\newcommand{\fileh}[2]{\begin{tikzpicture}[baseline=(titre.base)]
+  \node[font=\scriptsize, anchor=west] (titre) at (-0.45,0.55) {#1};
+  \foreach \v [count=\k] in {#2} {\node[draw, minimum width=9mm, minimum height=5mm, inner sep=0pt, font=\small] at (\k*0.9-0.9,0) {\v};}
+\end{tikzpicture}}
+
+\title{Corrigé — CC Term NSI - POO, Pile, File et rappels de 1re}
+\author{Babash - NSI Tani Malandi}
+\date{Novembre 2026 (2 h, sur 20 points)}
+
+\begin{document}
+\pagestyle{headandfoot}
+\firstpageheader{}{}{}
+\runningheader{\small Corrigé}{}{\small POO, pile, file et rappels de 1re -- novembre 2026}
+\runningheadrule
+\firstpagefooter{}{\footnotesize Babash - NSI Tani Malandi \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+\runningfooter{}{\footnotesize Babash - NSI Tani Malandi \textperiodcentered{} CC BY-SA 4.0 \textperiodcentered{} page \thepage}{}
+
+\maketitle
+\thispagestyle{headandfoot}
+\begin{center}\footnotesize\itshape Exercices 1 à 4 écrits pour ce contrôle. Exercice 5 : exercice 2 du sujet 24-NSIJ2JA1 (baccalauréat 2024, Asie, jour 2) ; corrigé rédigé pour ce contrôle, comparé au corrigé publié par l'AEIF.\end{center}
+
+\begin{tcolorbox}[colback=white, colframe=black, boxrule=0.5pt, arc=1mm, left=2mm, right=2mm]
+\small\textbf{Comment lire ce corrigé.} Pour chaque question : ce qui est demandé, puis la réponse attendue (encadrée), l'explication pas à pas, le barème détaillé et les erreurs fréquentes. Essaie d'abord seul·e, puis compare ta démarche, pas seulement ton résultat. Tous les codes et toutes les sorties de ce corrigé ont été obtenus en exécutant Python 3.13 (script \code{verifier.py}).
+Barème : 19 questions, 20 points ; on note au quart de point.
+\end{tcolorbox}
+
+\begin{center}\small
+\begin{tabular}{|l|l|c|c|}\hline
+Exercice & Notion & Points & Durée conseillée \\\hline
+1 & POO : lire une classe, instancier & 3 & 15 min \\\hline
+2 & POO : écrire une méthode & 2 & 12 min \\\hline
+3 & Pile et file & 3,5 & 20 min \\\hline
+4 & Rappels de 1re : dictionnaire & 1,5 & 8 min \\\hline
+5 & Bac Asie 2024 j2 ex 2 : parenthèses et pile & 10 & 50 min \\\hline
+ & Total & 20 & 1 h 45 \\\hline
+\end{tabular}
+\end{center}
+
+% =====================================================================
+\section*{Exercice 1 -- POO : lire une classe et créer des objets (3 points)}
+
+\begin{retenir}
+Une \textbf{classe} est un modèle ; un \textbf{objet} (ou \textbf{instance}) est fabriqué à partir de ce modèle. Les \textbf{attributs} sont les données de l'objet (\code{self.nom}…) ; les \textbf{méthodes} sont les fonctions définies dans la classe. On crée un objet en appelant la classe : \code{Barge("Corail", 400)} ; Python appelle alors \code{\_\_init\_\_}.
+\end{retenir}
+
+\Qt{Question 1 -- Questions de cours}{1 point}
+\begin{reponse}
+\textbf{a)} Attributs : \code{nom}, \code{capacite}, \code{passagers}. Méthodes : \code{\_\_init\_\_}, \code{places\_libres}, \code{embarquer}.\\
+\textbf{b)} \code{\_\_init\_\_} est le \textbf{constructeur} : il est appelé automatiquement à la création d'un objet et donne leur valeur de départ aux attributs (ici \code{passagers} vaut 0 au départ). \code{self} désigne l'objet lui-même, celui sur lequel la méthode est appelée.
+\end{reponse}
+\bareme{a) 0,5 (0,25 pour les attributs, 0,25 pour les méthodes ; on accepte que \code{\_\_init\_\_} ne soit pas cité parmi les méthodes) ; b) 0,5 (0,25 + 0,25).}
+\begin{erreur}
+Prendre les paramètres pour les attributs. Les attributs sont \code{self.nom}, \code{self.capacite} et \code{self.passagers} : un attribut s'écrit \code{self.quelque\_chose}. L'erreur est de citer \code{n}, qui n'est qu'un paramètre de \code{embarquer}, ou d'oublier \code{passagers}, qui est bien un attribut même s'il n'est pas un paramètre de \code{\_\_init\_\_}.
+\end{erreur}
+
+\Qt{Question 2 -- Écrire des instructions}{1 point}
+\begin{reponse}
+\begin{lstlisting}
+b1 = Barge("Corail", 400)   # a)
+b1.embarquer(120)           # b)
+b1.capacite = 350           # c)
+\end{lstlisting}
+\end{reponse}
+\explication On ne donne que \code{nom} et \code{capacite} : \code{self} est passé automatiquement, et \code{passagers} est fixé à 0 par \code{\_\_init\_\_}. Après ces trois lignes, \code{b1.passagers} vaut 120 et \code{b1.places\_libres()} vaut 230.
+\bareme{a) 0,5 ; b) 0,25 (\code{Barge.embarquer(b1, 120)} est juste aussi) ; c) 0,25.}
+\begin{erreur}
+\code{b1 = Barge(self, "Corail", 400)} : on n'écrit jamais \code{self} à l'appel. \code{embarquer(b1, 120)} sans le point : \code{embarquer} n'existe pas en dehors de la classe (\code{NameError: name 'embarquer' is not defined}).
+\end{erreur}
+
+\Qt{Question 3 -- Prévoir un affichage}{1 point}
+\begin{reponse}
+\begin{lstlisting}[style=console]
+True
+False
+50
+True 230
+\end{lstlisting}
+\end{reponse}
+\explication
+\begin{center}\small
+\begin{tabular}{|l|c|c|l|}\hline
+Instruction & \code{passagers} & places libres & affichage \\\hline
+\code{b = Barge("Lagon", 300)} & 0 & 300 & \\\hline
+\code{b.embarquer(250)} & 250 & 50 & \code{True} (250 $\leqslant$ 300) \\\hline
+\code{b.embarquer(80)} & 250 & 50 & \code{False} (80 $>$ 50 : rien ne change) \\\hline
+\code{b.places\_libres()} & 250 & 50 & \code{50} \\\hline
+\code{b.passagers = b.passagers - 100} & 150 & 150 & \\\hline
+\code{b.embarquer(80)}, \code{b.passagers} & 230 & 70 & \code{True 230} \\\hline
+\end{tabular}
+\end{center}
+\explication Les arguments de \code{print} sont évalués de gauche à droite : \code{b.embarquer(80)} s'exécute avant la lecture de \code{b.passagers}, d'où 230.
+\bareme{0,25 par ligne affichée juste et justifiée (une phrase ou un calcul).}
+\begin{erreur}
+Ajouter 80 à la deuxième ligne alors que l'embarquement est refusé : quand la condition est fausse, la méthode renvoie \code{False} sans modifier \code{passagers}.
+\end{erreur}
+
+% =====================================================================
+\section*{Exercice 2 -- POO : écrire une méthode (2 points)}
+
+\Qt{Question 4 -- La méthode \code{ajouter}}{0,5 point}
+\begin{reponse}
+\begin{lstlisting}
+    def ajouter(self, titre, duree):
+        self.morceaux.append((titre, duree))
+\end{lstlisting}
+\end{reponse}
+\bareme{0,5. On accepte \code{self.morceaux = self.morceaux + [(titre, duree)]}. 0,25 si l'on oublie \code{self.} ou les parenthèses du tuple.}
+\begin{erreur}
+\code{self.morceaux.append(titre, duree)} : \code{append} ne prend qu'un argument (\code{TypeError: list.append() takes exactly one argument (2 given)}). Il faut un tuple, donc des parenthèses en plus.
+\end{erreur}
+
+\Qt{Question 5 -- La méthode \code{duree\_totale}}{1 point}
+\begin{reponse}
+\begin{lstlisting}
+    def duree_totale(self):
+        total = 0
+        for titre, duree in self.morceaux:
+            total = total + duree
+        return total
+\end{lstlisting}
+\end{reponse}
+\explication On parcourt la liste de tuples ; chaque tuple est « déballé » en \code{titre} et \code{duree}. On accepte aussi \code{for m in self.morceaux: total = total + m[1]}. Pour une playlist vide, la boucle ne tourne pas et la méthode renvoie 0.
+\bareme{0,25 initialisation ; 0,25 parcours de \code{self.morceaux} ; 0,25 accès à la durée (\code{m[1]} ou déballage) ; 0,25 \code{return} (après la boucle).}
+\begin{erreur}
+Le \code{return} dans la boucle : la méthode s'arrête au premier morceau. Ou \code{total = total + m} : on ajoute un tuple à un entier (\code{TypeError: unsupported operand type(s) for +: 'int' and 'tuple'}).
+\end{erreur}
+
+\Qt{Question 6 -- Utiliser la classe}{0,5 point}
+\begin{reponse}
+\begin{lstlisting}
+p = Playlist("trajet")
+p.ajouter("mgodro", 245)
+p.ajouter("rap", 190)
+p.ajouter("zouk", 212)
+print(p.duree_totale())
+\end{lstlisting}
+Le programme affiche \code{647} (245 + 190 + 212 secondes, soit 10 min 47 s).
+\end{reponse}
+\bareme{0,25 création et ajouts ; 0,25 affichage et valeur 647.}
+
+% =====================================================================
+\section*{Exercice 3 -- Pile et file (3,5 points)}
+
+\Qt{Question 7 -- Questions de cours}{1 point}
+\begin{reponse}
+\textbf{a)} LIFO : \textit{Last In, First Out}, dernier entré, premier sorti : c'est la \textbf{pile}. FIFO : \textit{First In, First Out}, premier entré, premier sorti : c'est la file.\\
+\textbf{b)} 1. \textbf{File} : les documents s'impriment dans l'ordre d'envoi. 2. \textbf{Pile} : « Retour » ramène à la dernière page visitée, la plus récente. 3. \textbf{File} : le premier appel en attente est le premier pris.
+\end{reponse}
+\bareme{a) 0,25 ; b) 0,25 par situation justifiée (sans justification : 0).}
+
+\Qt{Question 8 -- Dérouler un programme}{1 point}
+\begin{reponse}
+\textbf{a)} Après la boucle :\quad
+\pilev{pile \code{p}\\(sommet en haut)}{9,1,7,4}\qquad
+\fileh{file \code{f} : tête à gauche, queue à droite}{4,7,1,9}
+
+\textbf{b)} \code{a} vaut 9 (le dernier empilé), \code{c} vaut 4 (le premier enfilé). On empile \code{a + c}, soit 13, puis on enfile le sommet de \code{p}, soit 13.\quad
+\pilev{pile \code{p} à la fin}{13,1,7,4}\qquad
+\fileh{file \code{f} à la fin}{7,1,9,13}
+
+La dernière ligne affiche :
+\begin{lstlisting}[style=console]
+13 7 4 4
+\end{lstlisting}
+\end{reponse}
+\bareme{a) 0,25 (les deux dessins orientés) ; b) 0,25 pour \code{a} et \code{c}, 0,25 pour les dessins de la fin, 0,25 pour l'affichage.}
+\begin{erreur}
+Inverser pile et file : dépiler renvoie le \textbf{dernier} entré (9), défiler le \textbf{premier} (4). Ou croire que \code{sommet(p)} retire l'élément : il le lit seulement, donc \code{taille(p)} vaut toujours 4.
+\end{erreur}
+
+\Qt{Question 9 -- La fonction \code{inverser}}{1,5 point}
+\begin{reponse}
+\begin{lstlisting}
+def inverser(f):
+    p = creer_pile_vide()
+    while not est_vide(f):
+        empiler(p, defiler(f))
+    g = creer_file_vide()
+    while not est_vide(p):
+        enfiler(g, depiler(p))
+    return g
+\end{lstlisting}
+\textbf{b)} \code{g} contient, de la tête à la queue : \code{"Zaïnaba"}, \code{"Mathis"}, \code{"Inès"}, \code{"Anli"}. La file \code{f} est \textbf{vide} après l'appel : la première boucle l'a vidée en la défilant, et la fonction travaille sur la même file que celle de l'appelant.
+\end{reponse}
+\explication La pile renverse l'ordre : le premier défilé (\code{"Anli"}) est au fond de la pile, il sort donc en dernier.
+\bareme{a) 1 : 0,25 par trou (\code{defiler(f)}, \code{not est\_vide(p)}, \code{depiler(p)}, \code{g}) ; b) 0,25 pour \code{g}, 0,25 pour \code{f} vide expliquée.}
+\begin{erreur}
+\code{empiler(p, tete(f))} : \code{tete} ne retire rien, la boucle \code{while} ne s'arrête jamais. Ou \code{return p} : on renvoie la pile, pas une file.
+\end{erreur}
+
+% =====================================================================
+\section*{Exercice 4 -- Rappels de 1re : dictionnaire (1,5 point)}
+
+\Qt{Question 10 -- Prévoir un affichage}{0,5 point}
+\begin{reponse}
+\begin{lstlisting}[style=console]
+mangues 2.5
+tomates 4
+\end{lstlisting}
+\end{reponse}
+\explication \code{for produit in prix} parcourt les \textbf{clés}, dans l'ordre d'insertion. Seuls les prix supérieurs ou égaux à 2,5 sont affichés : 2,5 (mangues, égalité comprise) et 4 (tomates).
+\bareme{0,25 par ligne ; on retire 0,25 si les bananes (2) ou le manioc (1,5) sont affichés, ou si les mangues sont oubliées ($\geqslant$).}
+
+\Qt{Question 11 -- La fonction \code{cout}}{1 point}
+\begin{reponse}
+\begin{lstlisting}
+def cout(panier, prix):
+    total = 0
+    for produit in panier:
+        total = total + panier[produit] * prix[produit]
+    return total
+\end{lstlisting}
+\code{cout(\{"mangues": 2, "tomates": 0.5\}, prix)} renvoie \code{7.0} (2 × 2,5 + 0,5 × 4).
+\end{reponse}
+\bareme{0,25 initialisation ; 0,25 parcours du panier (on accepte \code{for produit, masse in panier.items()}) ; 0,25 produit masse × prix ; 0,25 \code{return}.}
+\begin{erreur}
+Parcourir \code{prix} au lieu de \code{panier} : on cherche alors \code{panier["bananes"]}, qui n'existe pas (\code{KeyError: 'bananes'}).
+\end{erreur}
+
+% =====================================================================
+\section*{Exercice 5 -- Type bac : parenthèses et pile (10 points)}
+\begin{center}\footnotesize\itshape Sujet 24-NSIJ2JA1, baccalauréat 2024, Asie, jour 2, exercice 2 (6 points au bac). Le barème par question est celui de ce contrôle : le sujet officiel ne donne que le total.\end{center}
+
+\Qt{Question 12 (question 1 du bac) -- L'expression est-elle bien parenthésée ?}{1 point}
+\rappel{dire si \lstinline|'[2*(i+1)-3) for i in range(3, 10)]'| est bien parenthésée, et justifier.}
+\begin{reponse}
+\textbf{Non.} On lit \code{[} puis \code{(} : la pile des ouvrantes contient \code{[ (}. Le \code{)} après \code{i+1} ferme \code{(} : il reste \code{[}. Le \code{)} après \code{-3} devrait fermer la dernière ouvrante encore ouverte, qui est \code{[} : les deux ne forment pas un couple, l'expression n'est pas bien parenthésée.
+\end{reponse}
+\explication On peut aussi remarquer que l'expression contient 3 ouvrantes et 4 fermantes ; cet argument suffit ici, mais il ne suffit pas en général (question 16).
+\bareme{0,25 pour « non » ; 0,75 pour une justification qui désigne la parenthèse fautive (le \code{)} après \code{-3}) ou le décompte 3 ouvrantes / 4 fermantes.}
+
+\Qt{Question 13 (question 2 du bac) -- \code{compte\_ouvrante}}{1 point}
+\begin{reponse}
+\begin{lstlisting}
+def compte_ouvrante(txt):
+    n = 0
+    for c in txt:
+        if c in "([{":
+            n = n + 1
+    return n
+\end{lstlisting}
+\end{reponse}
+\explication \code{c in "([\{"} vaut \code{True} si le caractère \code{c} est l'un des trois caractères de la chaîne. On accepte \code{if c == "(" or c == "[" or c == "\{":}. Exemple : \code{compte\_ouvrante('tab[2*(i + 4)] - tab[3]')} renvoie 3.
+\bareme{0,25 compteur initialisé ; 0,25 parcours de la chaîne ; 0,25 test des trois types ; 0,25 \code{return} après la boucle. Un seul type de parenthèse testé : 0,5 au plus.}
+\begin{erreur}
+\code{if c == "(" or "[" or "\{":} : la condition est toujours vraie (\code{"["} est une chaîne non vide), on compte tous les caractères. Il faut répéter \code{c ==} à chaque fois.
+\end{erreur}
+
+\Qt{Question 14 (question 3 du bac) -- \code{compte\_fermante}}{0,5 point}
+\begin{reponse}
+\begin{lstlisting}
+def compte_fermante(txt):
+    n = 0
+    for c in txt:
+        if c in ")]}":
+            n = n + 1
+    return n
+\end{lstlisting}
+\end{reponse}
+\bareme{0,5 ; même code que la question 13 avec les fermantes. Mêmes erreurs : 0,25 au plus si un seul type est testé.}
+
+\Qt{Question 15 (question 4 du bac) -- \code{bon\_compte}}{1 point}
+\begin{reponse}
+\begin{lstlisting}
+def bon_compte(txt):
+    return compte_ouvrante(txt) == compte_fermante(txt)
+\end{lstlisting}
+\end{reponse}
+\explication La comparaison \code{==} vaut déjà \code{True} ou \code{False} : on peut la renvoyer directement. La version avec \code{if \ldots: return True else: return False} est juste aussi.
+\bareme{0,5 pour l'appel des deux fonctions avec \code{txt} ; 0,5 pour la comparaison et le \code{return}. Recompter sans utiliser les fonctions : 0,5 au plus (la consigne impose de les utiliser).}
+
+\Qt{Question 16 (question 5 du bac) -- Un contre-exemple}{0,5 point}
+\begin{reponse}
+Par exemple \code{')('} : une ouvrante et une fermante, donc \code{bon\_compte} renvoie \code{True}, mais la fermante arrive avant l'ouvrante. Autres exemples : \code{'(]'}, \code{'([)]'}.
+\end{reponse}
+\bareme{0,5 pour un exemple juste (vérifié par le script). 0,25 si l'exemple est juste mais que la réponse affirme une raison fausse.}
+\begin{erreur}
+\code{'tab[2*(i + 4] - tab[3)'} n'est pas un bon exemple : il a 3 ouvrantes et 2 fermantes, \code{bon\_compte} renvoie \code{False}.
+\end{erreur}
+
+\Qt{Question 17 (question 6 du bac) -- Lignes 9 et 14 de la classe \code{Pile}}{1,5 point}
+\begin{reponse}
+\begin{lstlisting}
+    def empiler(self, elt):
+        self.contenu.append(elt)
+
+    def depiler(self):
+        if self.est_vide():
+            return "La pile est vide."
+        return self.contenu.pop()
+\end{lstlisting}
+\end{reponse}
+\explication Le sommet de la pile est la fin de la liste \code{self.contenu} : \code{append} ajoute à la fin, \code{pop()} retire le dernier élément \textbf{et le renvoie}.
+\bareme{ligne 9 : 0,75 ; ligne 14 : 0,75. On accepte \code{self.contenu.insert(0, elt)} avec \code{self.contenu.pop(0)} (sommet au début), si les deux sont cohérents.}
+\begin{erreur}
+\code{self.contenu.pop(0)} avec \code{append} : on retire le premier entré, c'est une file. Ou \code{return self.contenu[-1]} : on lit le sommet sans le retirer.
+\end{erreur}
+
+\Qt{Question 18 (question 7 du bac) -- Nombre de comparaisons}{1,5 point}
+\begin{remarque}
+Le sujet officiel ne précise pas ce qu'on compte comme une comparaison ; ce contrôle ajoute une précision sous la question. Toute convention annoncée et appliquée avec cohérence reste acceptée. Ce corrigé suit la précision, qui est la convention du corrigé de l'AEIF.
+\end{remarque}
+\methode Convention (celle de la précision ajoutée au sujet, et du corrigé de l'AEIF) : 1 comparaison pour un caractère qui n'est pas une parenthèse (« est-ce une parenthèse ? ») ; 1 pour une ouvrante ; 3 pour une fermante (« est-ce une fermante ? », le test \code{est\_vide} dans \code{depiler}, puis « les deux forment-ils un couple ? ») ; 1 à la fin (la pile est-elle vide ?).
+\begin{reponse}
+\lstinline|'tab[2*(i + 4)] - tab[3]'| contient 23 caractères : 3 ouvrantes, 3 fermantes et 17 autres caractères.\\
+Nombre de comparaisons : $17 \times 1 + 3 \times 1 + 3 \times 3 + 1 = \mathbf{30}$.\\
+Pour une chaîne de taille $n$, le pire cas est une chaîne bien parenthésée formée de $n/2$ ouvrantes et de $n/2$ fermantes : $\dfrac{n}{2} + 3\times\dfrac{n}{2} + 1 = \mathbf{2n + 1}$ comparaisons au plus. Le nombre de comparaisons est donc proportionnel à $n$ (coût linéaire).
+\end{reponse}
+\explication Avec la convention « 2 tests par caractère ordinaire (ouvrante ? fermante ?), 1 par ouvrante, 4 par fermante, 1 à la fin », on trouve $2\times 17 + 3 + 4\times 3 + 1 = 50$ et un maximum de $\frac{5n}{2} + 1$ : c'est juste aussi. L'essentiel est de voir que le nombre est au plus proportionnel à $n$ et de ne pas oublier les comparaisons de \code{depiler} (\code{est\_vide}).
+\bareme{0,75 pour le décompte sur l'exemple (0,25 pour le nombre de caractères de chaque sorte, 0,5 pour le total avec sa convention) ; 0,75 pour le maximum en fonction de $n$ (0,5 si seulement « proportionnel à $n$ » sans formule).}
+
+\Qt{Question 19 (question 8 du bac) -- \code{est\_bien\_parenthesee}}{3 points}
+\begin{reponse}
+\begin{lstlisting}
+def est_bien_parenthesee(txt):
+    couples = {")": "(", "]": "[", "}": "{"}
+    p = Pile()
+    for c in txt:
+        if c in "([{":
+            p.empiler(c)
+        elif c in ")]}":
+            if p.depiler() != couples[c]:
+                return False
+    return p.est_vide()
+\end{lstlisting}
+\end{reponse}
+\explication
+\begin{itemize}
+\item Ligne 2 : le dictionnaire associe à chaque fermante son ouvrante. Sans dictionnaire, on accepte un test comme \code{(o == "(" and c == ")") or (o == "[" and c == "]") or (o == "\{" and c == "\}")}.
+\item Ligne 8 : si la pile est vide, \code{depiler} renvoie la chaîne \code{"La pile est vide."}, qui n'est égale à aucune ouvrante : la fonction renvoie bien \code{False}, sans erreur.
+\item Ligne 10 : à la fin, il ne doit rester aucune ouvrante non fermée.
+\end{itemize}
+Résultats obtenus en exécutant le code :
+\begin{center}\small
+\begin{tabular}{|l|c|}\hline
+Appel & Valeur renvoyée \\\hline
+\code{est\_bien\_parenthesee('tab[2*(i + 4)] - tab[3]')} & \code{True} \\\hline
+\code{est\_bien\_parenthesee('tab[2*(i + 4] - tab[3)')} & \code{False} \\\hline
+\code{est\_bien\_parenthesee('[2*(i+1)-3) for i in range(3, 10)]')} & \code{False} \\\hline
+\code{est\_bien\_parenthesee('((')} & \code{False} \\\hline
+\code{est\_bien\_parenthesee(')')} & \code{False} \\\hline
+\end{tabular}
+\end{center}
+\bareme{0,25 création de la pile ; 0,5 parcours ; 0,5 empiler les ouvrantes ; 0,5 dépiler sur une fermante ; 0,75 test du couple et \code{return False} ; 0,5 \code{return p.est\_vide()} après la boucle.}
+\begin{erreur}
+\code{if p.depiler() != c:} : on compare \code{"("} à \code{")"}, toujours différents ; il faut comparer l'ouvrante dépilée à l'ouvrante qui correspond à \code{c}. Autre erreur : \code{return True} à la fin sans tester la pile (\code{'(('} serait déclarée bien parenthésée).
+\end{erreur}
+
+\begin{retenir}
+Une pile sert à vérifier ce qui s'ouvre et se ferme dans l'ordre inverse : la dernière parenthèse ouverte est la première à fermer (LIFO). Le simple comptage ne voit pas l'ordre.
+\end{retenir}
+\end{document}

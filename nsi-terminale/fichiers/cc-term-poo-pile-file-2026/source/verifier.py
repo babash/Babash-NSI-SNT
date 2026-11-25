@@ -1,8 +1,10 @@
-# Vérification des réponses du corrigé (CC Term NSI, POO, pile, file, novembre 2026).
-# Exécution : python3 verifier.py (Python 3.13). Chaque assert doit passer.
+# Vérification des réponses du corrigé (CC Term NSI, POO, pile, file, novembre 2026, version révisée du 25/11/2026).
+# Exécution : python3.13 verifier.py, depuis ce dossier. Chaque assert doit passer.
+# Les numéros de question sont ceux du sujet révisé (controle.tex) ; la version donnée le 25/11/2026
+# a son propre script dans version-donnee-2026-11-25/.
 # Babash - NSI Tani Malandi, CC BY-SA 4.0.
 
-print("=== Exercice A : la classe Barge ===")
+print("=== Exercices 1 et 2 : la classe Barge ===")
 
 
 class Barge:
@@ -21,21 +23,42 @@ class Barge:
         return False
 
 
-# Question 2
+# Question 5 : attributs ; questions de cours 2 et 3 a), b) : self est l'objet, __init__ appelé à la création
+b0 = Barge("x", 1)
+assert sorted(vars(b0)) == ["capacite", "nom", "passagers"]
+assert [m for m in vars(Barge) if not m.startswith("__") or m == "__init__"] == ["__init__", "places_libres", "embarquer"]
+# Q2 : self est l'objet sur lequel la méthode est appelée ; Q3 a) : __init__ est appelé à la création
+class Temoin(Barge):
+    vu = []
+    def __init__(self, nom, capacite):
+        Temoin.vu.append(nom)
+        super().__init__(nom, capacite)
+    def moi(self):
+        return self
+t = Temoin("t", 1)
+assert Temoin.vu == ["t"] and t.moi() is t
+# Q3 b) : faux, un attribut n'est pas une fonction (vars de l'objet : des données)
+assert not any(callable(v) for v in vars(t).values())
+
+# Question 6 a), b)
 b1 = Barge("Corail", 400)
 b1.embarquer(120)
-b1.capacite = 350
-assert (b1.passagers, b1.capacite, b1.places_libres()) == (120, 350, 230)
+assert (b1.nom, b1.capacite, b1.passagers) == ("Corail", 400, 120)
 
-# Question 3 : programme de l'énoncé
-b = Barge("Lagon", 300)
-print(b.embarquer(250))
-print(b.embarquer(80))
-print(b.places_libres())
-b.passagers = b.passagers - 100
-print(b.embarquer(80), b.passagers)
+# Question 7 : programme de l'énoncé ; a) ligne 4, b) ligne 6
+import io, contextlib
+sortie = io.StringIO()
+with contextlib.redirect_stdout(sortie):
+    b = Barge("Lagon", 300)
+    print(b.embarquer(250))
+    print(b.embarquer(80))
+    print(b.places_libres())
+    b.passagers = b.passagers - 100
+    print(b.embarquer(80), b.passagers)
+print(sortie.getvalue(), end="")
+assert sortie.getvalue().splitlines() == ["True", "False", "50", "True 230"]
 
-print("=== Exercice B : la classe Playlist ===")
+print("=== Exercice 3 : la classe Playlist ===")
 
 
 class Playlist:
@@ -53,6 +76,7 @@ class Playlist:
         return total
 
 
+# Question 9 (avec les trous complétés) : le programme de l'énoncé de la version donnée, valeur 647
 pl = Playlist("trajet")
 assert pl.duree_totale() == 0
 pl.ajouter("mgodro", 245)
@@ -63,7 +87,7 @@ print(pl.duree_totale())
 assert pl.duree_totale() == 647
 print(pl.duree_totale() // 60, "min", pl.duree_totale() % 60, "s")
 
-print("=== Exercice C : pile et file (interface du cours) ===")
+print("=== Exercice 4 : pile et file (interface du cours) ===")
 
 
 # Implémentation de test de l'interface (listes Python).
@@ -107,12 +131,14 @@ def taille(s):
     return len(s[1])
 
 
-# Question 7 : programme de l'énoncé
+# Question 10 : programme de l'énoncé
 p = creer_pile_vide()
 f = creer_file_vide()
 for x in [4, 7, 1, 9]:
     empiler(p, x)
     enfiler(f, x)
+assert p[1][::-1] == [9, 1, 7, 4]  # a) du sommet vers le fond
+assert f[1] == [4, 7, 1, 9]        # b) de la tête vers la queue
 a = depiler(p)
 c = defiler(f)
 empiler(p, a + c)
@@ -122,7 +148,7 @@ print("pile (bas -> sommet) :", p[1], "; file (tete -> queue) :", f[1])
 assert (sommet(p), tete(f), taille(p), taille(f)) == (13, 7, 4, 4)
 
 
-# Question 8
+# Question 11
 def inverser(f):
     p = creer_pile_vide()
     while not est_vide(f):
@@ -140,7 +166,7 @@ g = inverser(f)
 print("file inversée :", g[1], "; f après l'appel :", f[1])
 assert g[1] == ["Zaïnaba", "Mathis", "Inès", "Anli"] and f[1] == []
 
-print("=== Exercice D : dictionnaire ===")
+print("=== Exercice 5 : dictionnaire ===")
 prix = {"mangues": 2.5, "bananes": 2, "manioc": 1.5, "tomates": 4}
 for produit in prix:
     if prix[produit] >= 2.5:
@@ -158,7 +184,29 @@ print(cout({"mangues": 2, "tomates": 0.5}, prix))
 assert cout({"mangues": 2, "tomates": 0.5}, prix) == 7.0
 assert cout({}, prix) == 0
 
-print("=== Exercice de bac : Asie 2024 jour 2, exercice 2 ===")
+# Question 13 : le programme fautif du sujet, exécuté pour de vrai ; le message affiché dans le sujet
+# doit être exactement celui de Python 3.13 (seul le dossier est retiré du chemin du fichier).
+import os, re, subprocess, sys, tempfile
+ici = os.path.dirname(os.path.abspath(__file__))
+sujet = open(os.path.join(ici, "controle.tex"), encoding="utf-8").read()
+blocs = re.findall(r"\\begin\{lstlisting\}(?:\[[^\]]*\])?\n(.*?)\\end\{lstlisting\}", sujet, re.S)
+programme = next(b for b in blocs if "def cout(panier, prix):" in b and "for produit in prix:" in b)
+console = next(b for b in blocs if b.startswith("Traceback"))
+with tempfile.TemporaryDirectory() as d:
+    chemin = os.path.join(d, "programme.py")
+    open(chemin, "w", encoding="utf-8").write(programme)
+    r = subprocess.run([sys.executable, "-I", chemin], capture_output=True, text=True, cwd=d)
+    reel = r.stderr.replace(chemin, "programme.py")
+assert sys.version_info[:2] == (3, 13), "lancer avec Python 3.13"
+assert reel.strip() == console.strip(), reel
+print("Q13 : message d'erreur du sujet identique à celui de Python 3.13")
+corrige = programme.replace("    for produit in prix:", "    for produit in panier:")
+sortie = subprocess.run([sys.executable, "-I", "-c", corrige], capture_output=True, text=True)
+assert sortie.stdout.strip() == "7.0", sortie
+corrige_keys = programme.replace("    for produit in prix:", "    for produit in panier.keys():")
+assert subprocess.run([sys.executable, "-I", "-c", corrige_keys], capture_output=True, text=True).stdout.strip() == "7.0"
+
+print("=== Exercice 6 (bac) : Asie 2024 jour 2, exercice 2 ===")
 
 
 def compte_ouvrante(txt):
@@ -214,14 +262,14 @@ def est_bien_parenthesee(txt):
 ex_bon = 'tab[2*(i + 4)] - tab[3]'
 ex_mauvais = 'tab[2*(i + 4] - tab[3)'
 q1 = '[2*(i+1)-3) for i in range(3, 10)]'
-print("Q1 :", q1, "->", est_bien_parenthesee(q1), "; bon_compte :", bon_compte(q1))
+print("Q14 :", q1, "->", est_bien_parenthesee(q1), "; bon_compte :", bon_compte(q1))
 assert est_bien_parenthesee(ex_bon) and not est_bien_parenthesee(ex_mauvais)
 assert not est_bien_parenthesee(q1)
 assert compte_ouvrante(q1) == 3 and compte_fermante(q1) == 4
-print("Q2-Q4 :", compte_ouvrante(ex_bon), compte_fermante(ex_bon), bon_compte(ex_bon))
+print("Q15-Q16 :", compte_ouvrante(ex_bon), compte_fermante(ex_bon), bon_compte(ex_bon))
 for contre in [")(", ")[", "(]", "([)]"]:
     assert bon_compte(contre) and not est_bien_parenthesee(contre)
-print("Q5 : contre-exemples vérifiés : ')(' '(]' '([)]'")
+print("Q17 : contre-exemples vérifiés : ')(' '(]' '([)]'")
 # Cas où la pile est vide quand on rencontre une fermante : depiler renvoie
 # le message, différent de toute ouvrante, donc False (pas d'erreur).
 assert est_bien_parenthesee(")") is False
@@ -229,38 +277,11 @@ assert est_bien_parenthesee("") is True
 assert est_bien_parenthesee("{[()]}()") is True
 assert est_bien_parenthesee("((") is False
 
-# Q6
+# Q18
 p6 = Pile()
 p6.empiler(1)
 p6.empiler(2)
 assert p6.depiler() == 2 and p6.depiler() == 1 and p6.depiler() == "La pile est vide."
-
-# Q7 : décompte des comparaisons, convention du corrigé AEIF :
-# 1 comparaison par caractère qui n'est pas une parenthèse (« est-ce une parenthèse ? »),
-# 1 par ouvrante, 3 par fermante (fermante ? / pile vide dans depiler / couple ?),
-# 1 finale (pile vide ?).
-n = len(ex_bon)
-nb_ouv = compte_ouvrante(ex_bon)
-nb_ferm = compte_fermante(ex_bon)
-autres = n - nb_ouv - nb_ferm
-total = autres + nb_ouv + 3 * nb_ferm + 1
-print("Q7 : longueur", n, "; autres", autres, "; ouvrantes", nb_ouv, "; fermantes", nb_ferm, "; total", total)
-assert (n, autres, nb_ouv, nb_ferm, total) == (23, 17, 3, 3, 30)
-# Pire cas : n/2 ouvrantes puis n/2 fermantes (n pair) : n/2 + 3n/2 + 1 = 2n + 1
-for m in range(1, 8):
-    s = "(" * m + ")" * m
-    assert est_bien_parenthesee(s)
-    assert m + 3 * m + 1 == 2 * len(s) + 1
-print("Q7 : pire cas 2n + 1 vérifié pour n = 2 à 14")
-
-# Variante : décompte avec les tests « in » vus comme une seule comparaison
-# chacun, en suivant le code de est_bien_parenthesee ci-dessus :
-# autre caractère : 2 tests (ouvrante ? fermante ?) ; ouvrante : 1 ;
-# fermante : 2 + 1 (est_vide) + 1 (égalité) = 4 ; plus 1 final.
-var = 2 * autres + nb_ouv + 4 * nb_ferm + 1
-print("Q7 variante (2 tests par caractère ordinaire, 4 par fermante) :", var)
-assert var == 50
-# pire cas de cette variante : n/2 ouvrantes puis n/2 fermantes : n/2 + 4n/2 + 1 = 5n/2 + 1
 
 print("=== Variantes acceptées et erreurs fréquentes citées dans le corrigé ===")
 
@@ -273,22 +294,22 @@ def message(instr, env):
     return None
 
 
-# Ex. 1, Q2 : variante acceptée et erreurs
+# Ex. 2, Q6 b) : variante acceptée et erreurs
 b2 = Barge("Corail", 400)
 Barge.embarquer(b2, 120)
 assert b2.passagers == 120
 m = message('Barge(self, "Corail", 400)', {"Barge": Barge})
-print("Q2 erreur self :", m)
+print("Q6a erreur self :", m)
 assert m.startswith("NameError")  # self n'existe pas hors de la classe
 m = message("embarquer(b1, 120)", {"b1": b2})
-print("Q2 erreur sans point :", m)
+print("Q6b erreur sans point :", m)
 assert m == "NameError: name 'embarquer' is not defined"
-# Q3 erreur : la 2e ligne ne modifie rien
+# Q7 erreur : la ligne 3 ne modifie rien
 b3 = Barge("Lagon", 300)
 b3.embarquer(250)
 assert b3.embarquer(80) is False and b3.passagers == 250
 
-# Ex. 2, Q4 : variante acceptée et erreur
+# Ex. 3, Q8 : variante acceptée et erreur
 class Playlist2(Playlist):
     def ajouter(self, titre, duree):
         self.morceaux = self.morceaux + [(titre, duree)]
@@ -298,9 +319,9 @@ q = Playlist2("x")
 q.ajouter("rap", 190)
 assert q.morceaux == [("rap", 190)]
 m = message("[].append('rap', 190)", {})
-print("Q4 erreur :", m)
+print("Q8 erreur :", m)
 assert m == "TypeError: list.append() takes exactly one argument (2 given)"
-# Q5 : variante m[1], erreur return dans la boucle, erreur total + m
+# Q9 : variante m[1], erreur return dans la boucle, erreur total + m
 tot = 0
 for mo in pl.morceaux:
     tot = tot + mo[1]
@@ -316,16 +337,16 @@ def duree_return_dans_boucle(morceaux):
 
 assert duree_return_dans_boucle(pl.morceaux) == 245  # s'arrête au 1er morceau
 m = message("t = 0\nfor m in M:\n    t = t + m", {"M": pl.morceaux})
-print("Q5 erreur :", m)
+print("Q9 erreur :", m)
 assert m == "TypeError: unsupported operand type(s) for +: 'int' and 'tuple'"
 
-# Ex. 3, Q8 erreur : sommet ne retire rien
+# Ex. 4, Q10 c) erreur : sommet ne retire rien
 p = creer_pile_vide()
 for x in [4, 7, 1, 9]:
     empiler(p, x)
 sommet(p)
 assert taille(p) == 4
-# Q9 erreur : tete dans la boucle ne vide jamais la file (on arrête au bout de 100 tours)
+# Q11 a) erreur : tete dans la boucle ne vide jamais la file (on arrête au bout de 100 tours)
 f = creer_file_vide()
 enfiler(f, "Anli")
 p = creer_pile_vide()
@@ -334,10 +355,10 @@ while not est_vide(f) and tours < 100:
     empiler(p, tete(f))
     tours = tours + 1
 assert tours == 100 and taille(f) == 1  # boucle infinie sans la limite
-# Q9 erreur : return p renvoie une pile, pas une file
+# Q11 a) erreur : return p renvoie une pile, pas une file
 assert p[0] == "pile"
 
-# Ex. 4, Q10 : bananes et manioc non affichés ; Q11 : variante items() et erreur KeyError
+# Ex. 5, Q12 : bananes et manioc non affichés ; Q13 : variante items() et erreur KeyError
 assert [k for k in prix if prix[k] >= 2.5] == ["mangues", "tomates"]
 
 
@@ -351,23 +372,23 @@ def cout_items(panier, prix):
 assert cout_items({"mangues": 2, "tomates": 0.5}, prix) == 7.0
 m = message("t = 0\nfor k in prix:\n    t = t + panier[k] * prix[k]",
             {"prix": prix, "panier": {"mangues": 2, "tomates": 0.5}})
-print("Q11 erreur :", m)
+print("Q13 : variante items() et erreur KeyError :", m)
 assert m == "KeyError: 'bananes'"
 
-# Ex. 5 : chaque exemple et contre-exemple du corrigé
-assert compte_ouvrante(ex_bon) == 3  # Q13
-assert not bon_compte(q1)  # Q12 : 3 ouvrantes, 4 fermantes
-for contre in [")(", "(]", "([)]"]:  # Q16 : réponse et autres exemples
+# Ex. 6 (questions 14 à 19) : chaque exemple et contre-exemple du corrigé
+assert compte_ouvrante(ex_bon) == 3  # Q15
+assert not bon_compte(q1)  # Q14 : 3 ouvrantes, 4 fermantes
+for contre in [")(", "(]", "([)]"]:  # Q17 : réponse et autres exemples
     assert bon_compte(contre), contre
     assert not est_bien_parenthesee(contre), contre
-# Q16 erreur : l'expression fautive de l'énoncé n'est pas un contre-exemple
+# Q17 erreur : l'expression fautive de l'énoncé n'est pas un contre-exemple
 assert compte_ouvrante(ex_mauvais) == 3 and compte_fermante(ex_mauvais) == 2
 assert bon_compte(ex_mauvais) is False
-print("Q16 : 'tab[2*(i + 4] - tab[3)' ->", compte_ouvrante(ex_mauvais), "ouvrantes,",
+print("Q17 : 'tab[2*(i + 4] - tab[3)' ->", compte_ouvrante(ex_mauvais), "ouvrantes,",
       compte_fermante(ex_mauvais), "fermantes, bon_compte", bon_compte(ex_mauvais))
 
 
-# Q13 erreur : c == "(" or "[" or "{" est toujours vrai
+# Q15 erreur : c == "(" or "[" or "{" est toujours vrai
 def compte_ouvrante_faux(txt):
     n = 0
     for c in txt:
@@ -379,7 +400,7 @@ def compte_ouvrante_faux(txt):
 assert compte_ouvrante_faux(ex_bon) == len(ex_bon) == 23
 
 
-# Q13 variante acceptée
+# Q15 variante acceptée
 def compte_ouvrante_or(txt):
     n = 0
     for c in txt:
@@ -391,7 +412,7 @@ def compte_ouvrante_or(txt):
 assert all(compte_ouvrante_or(t) == compte_ouvrante(t) for t in [ex_bon, ex_mauvais, q1])
 
 
-# Q15 variante if / else
+# Q16 variante if / else
 def bon_compte_if(txt):
     if compte_ouvrante(txt) == compte_fermante(txt):
         return True
@@ -402,7 +423,7 @@ def bon_compte_if(txt):
 assert all(bon_compte_if(t) == bon_compte(t) for t in [ex_bon, ex_mauvais, q1, ")("])
 
 
-# Q17 variante acceptée : sommet au début (insert(0) et pop(0))
+# Q18 variante acceptée : sommet au début (insert(0) et pop(0))
 class PileDebut(Pile):
     def empiler(self, elt):
         self.contenu.insert(0, elt)
@@ -419,7 +440,7 @@ pd.empiler(2)
 assert pd.depiler() == 2 and pd.depiler() == 1
 
 
-# Q17 erreurs : append + pop(0) donne une file ; contenu[-1] ne retire pas
+# Q18 erreurs : append + pop(0) donne une file ; contenu[-1] ne retire pas
 class PileFausse(Pile):
     def depiler(self):
         if self.est_vide():
@@ -484,38 +505,60 @@ def erreur_sans_test_final(txt):
 assert erreur_sans_test_final("((") is True  # déclarée à tort bien parenthésée
 print("Variantes et erreurs fréquentes : toutes exécutées.")
 
-print("=== Q18 : compteur exécuté selon la précision ajoutée au sujet ===")
-from itertools import product
+print("=== Codes à trous du sujet : trous remplis avec le corrigé, numéros de ligne contrôlés, code exécuté ===")
+TROU = re.compile(r"\(\*@\\trou\{[^}]*\}@\*\)")
 
 
-class PileComptee(Pile):
-    compteur = 0
-
-    def est_vide(self):
-        PileComptee.compteur += 1          # test est_vide (dans depiler ou final)
-        return len(self.contenu) == 0
-
-
-def est_bien_parenthesee_comptee(txt):
-    PileComptee.compteur = 0
-    p = PileComptee()
-    for c in txt:
-        PileComptee.compteur += 1          # reconnaître le caractère
-        if c in "([{":
-            p.empiler(c)
-        elif c in ")]}":
-            o = p.depiler()                # + 1 (est_vide dans depiler)
-            PileComptee.compteur += 1      # vérifier le couple
-            if o != COUPLES[c]:
-                return False, PileComptee.compteur
-    return p.est_vide(), PileComptee.compteur   # + 1 (test final)
+def remplir(nom_bloc, reponses, lignes_attendues):
+    bloc = next(b for b in blocs if nom_bloc in b)
+    lignes = bloc.rstrip("\n").split("\n")
+    trous = [i + 1 for i, l in enumerate(lignes) for _ in TROU.findall(l)]
+    assert trous == lignes_attendues, (nom_bloc, trous)
+    it = iter(reponses)
+    return "\n".join(TROU.sub(lambda m: next(it), l) for l in lignes) + "\n"
 
 
-r, nb = est_bien_parenthesee_comptee(ex_bon)
-print("Q18 :", ex_bon, "->", r, nb, "comparaisons")
-assert r is True and nb == 30
-for n in range(0, 9):
-    pire = max(est_bien_parenthesee_comptee("".join(t))[1] for t in product("()[a", repeat=n))
-    assert pire == 2 * n + 1, (n, pire)
-print("Q18 : maximum 2n + 1 vérifié sur toutes les chaînes de longueur 0 à 8 (alphabet ( ) [ a)")
+# Questions 8 et 9 : ligne 7, lignes 10 à 13
+code = remplir("class Playlist:", ["self.morceaux.append((titre, duree))", "0", "self.morceaux", "total + duree", "total"], [7, 10, 11, 12, 13])
+code_playlist = code
+env = {}
+exec(code, env)
+pl3 = env["Playlist"]("trajet")
+assert pl3.duree_totale() == 0
+for t, d in [("mgodro", 245), ("rap", 190), ("zouk", 212)]:
+    pl3.ajouter(t, d)
+assert pl3.morceaux[0] == ("mgodro", 245) and pl3.duree_totale() == 647
+# Question 11 a) : les quatre trous
+code = remplir("def inverser(f):", ["defiler(f)", "not est_vide(p)", "depiler(p)", "g"], [4, 6, 7, 8])
+env = dict(globals())
+exec(code, env)
+f = creer_file_vide()
+for nom in ["Anli", "Inès", "Mathis", "Zaïnaba"]:
+    enfiler(f, nom)
+assert env["inverser"](f)[1] == ["Zaïnaba", "Mathis", "Inès", "Anli"] and f[1] == []
+# Question 18 : lignes 9 et 14 de la classe Pile
+code = remplir("class Pile:", ["self.contenu.append(elt)", "self.contenu.pop()"], [9, 14])
+env = {}
+exec(code, env)
+p18 = env["Pile"]()
+p18.empiler("(")
+p18.empiler("[")
+assert p18.depiler() == "[" and p18.depiler() == "(" and p18.depiler() == "La pile est vide."
+# Question 9 : erreurs citées dans le corrigé
+faux = code_playlist.replace("in self.morceaux:", "in morceaux:")
+env = {}
+exec(faux, env)
+q9 = env["Playlist"]("x")
+q9.ajouter("rap", 190)
+m = message("q9.duree_totale()", {"q9": q9})
+print("Q9 erreur sans self :", m)
+assert m == "NameError: name 'morceaux' is not defined"
+faux = code_playlist.replace("total = total + duree", "total = duree")
+env = {}
+exec(faux, env)
+q9 = env["Playlist"]("x")
+for t, d in [("mgodro", 245), ("rap", 190), ("zouk", 212)]:
+    q9.ajouter(t, d)
+assert q9.duree_totale() == 212  # la dernière durée, pas la somme
+print("Trous des questions 8, 9, 11 a) et 18 : numéros de ligne justes, code complété exécuté.")
 print("Tout est vérifié.")
