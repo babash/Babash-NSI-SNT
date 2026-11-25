@@ -27,7 +27,7 @@ Les règles propres à un type (TD, quiz, application de jeu…) sont dans [le d
 
 ### 1.2 Lisible : des contrastes forts
 
-- **La règle.** Des documents clairs, avec des contrastes forts. La charte graphique du projet donne des repères : 7:1 au moins pour le texte courant, 4,5:1 pour le petit texte et pour chaque couleur de code sur son fond, 3:1 pour les traits utiles.
+- **La règle.** Des documents clairs, avec des contrastes forts : 7:1 au moins pour le texte courant et pour chaque couleur de code, sur tous les fonds (décision de l'enseignant du 20 novembre 2026), 4,5:1 pour le petit texte, 3:1 pour les traits utiles.
 - **La raison.** Le même document est lu sur une photocopie, projeté au tableau ou affiché sur un écran peu contrasté. Il doit rester lisible dans les trois cas.
 - **Un exemple.** Dans un quiz, le code est coloré, mais chaque couleur doit rester lisible sur un écran peu contrasté : c'est une des vérifications avant la livraison ([le quiz Pronote](types/quiz.md)).
 

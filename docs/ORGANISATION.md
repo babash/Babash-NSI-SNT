@@ -11,7 +11,8 @@ docs/                       la documentation : ce fichier et les autres (sommair
   pedagogie/                la pédagogie : philosophie, règles universelles, types de ressources
 LICENSE                     la licence MIT du code
 CLAUDE.md                   les règles communes de l'équipe d'agents
-.claude/agents/             la fiche de chaque rôle
+.claude/agents/             la fiche de chaque rôle (dont celle du ou de la Critique, depuis le 25/11/2026)
+.claude/consignes/          l'exigence de qualité de l'enseignant (25/11/2026), à lire avant toute production
 index.html                  l'accueil (ne pas toucher)
 reglages.js                 titre du site, liste des rubriques, textes du pied de page
 snt/

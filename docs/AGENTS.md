@@ -2,33 +2,64 @@
 
 *Qui entretient le site, qui possède quels fichiers, et les règles de conception que suit chaque ressource. Retour au [README](../README.md).*
 
-Le site est entretenu par une équipe d'agents Claude (Gardien, Architecte, Bibliothécaire,
+Le site est entretenu par une équipe d'agents Claude (Gardien, Critique, Architecte, Bibliothécaire,
 Designer, Atelier, Atelier des quiz et Vigie), coordonnés par un chef d'orchestre. Leurs règles communes sont
-dans `CLAUDE.md`, à la racine du dépôt, et la fiche de chaque rôle dans `.claude/agents/`.
+dans `CLAUDE.md`, à la racine du dépôt, la fiche de chaque rôle dans `.claude/agents/`, et
+l'exigence de qualité de l'enseignant dans `.claude/consignes/exigence-de-qualite.md`.
 Chaque tâche se fait sur sa propre branche ; seul le Gardien publie sur `main`, après ses contrôles,
-et dès que c'est sûr : un point d'écriture mineur ne bloque pas, il part dans une branche de suite.
+et dès que c'est sûr : un point d'écriture mineur ne bloque pas, il part dans une branche de suite ;
+un fait faux à l'écran (une phrase qui annonce ce que la page ou la base ne fait pas encore, un
+chiffre faux, une réponse fausse) renvoie toujours la branche. Plusieurs Gardiens peuvent publier
+en même temps, sur des branches différentes.
 Les règles du travail sur GitHub sont détaillées dans [CONTRIBUTING.md](../CONTRIBUTING.md).
+
+**L'exigence de qualité** (l'enseignant, 25 novembre 2026 : « tout ce que tu rends doit être
+d'une extrême qualité ») s'impose à tout agent, et le temps n'est pas une contrainte. Un outil
+vert ne suffit pas : chaque page rendue est regardée, à l'écran et sur papier. Une ressource
+reprise d'un ancien document de l'enseignant fait mieux que l'original : elle garde ses
+objectifs, ses exercices et ses bonnes réponses, et chaque changement de fond est listé (les
+énoncés officiels du bac, eux, restent mot pour mot). La mise en page d'un TD se pense feuille
+par feuille, avec des colonnes quand c'est pertinent. Deux ressources jumelles (le même TP en
+première et en terminale) ont la même structure et le même comportement. Dans un contrôle, une
+question ne demande qu'une chose, le sujet se fait dans le temps annoncé, et il y a peu de
+fonctions entières à écrire.
+
+**Le ou la Critique** (rôle créé le 25 novembre 2026, à la demande de l'enseignant) relit chaque
+ressource pédagogique avant le Gardien : TD, TP, cours, contrôle, quiz, fiche de révision,
+exercices d'une application (sauf accord du chef d'orchestre, inscrit au journal). Il ou elle fait la ressource en entier, comme un·e élève puis comme
+un·e correcteur·rice, et la juge du point de vue des attendus du bac, de la pédagogie, de la
+notation et de la compétence travaillée, au crible du registre des critiques de l'enseignant,
+que le chef d'orchestre tient dans le projet. Il ou elle ne modifie rien et n'a pas de branche :
+ses rapports vont dans le projet, avec un verdict par ressource, « à refaire », « à corriger » ou
+« bonne à publier ». Le Gardien vérifie ensuite, comme toujours, que la branche est sûre et
+conforme.
 
 Chaque fichier a un rôle propriétaire, indiqué dans le tableau « Qui possède quoi » de
 `CLAUDE.md` : par exemple, les anciennes listes `ressources.js` (plus lues depuis le 17 novembre 2026) au Bibliothécaire, le moteur
-(`assets/site.js`) et les pages `index.html` à l'Architecte, la feuille de style et l'icône
-du site (`assets/favicon.svg`) au Designer, le README, la documentation (`CONTRIBUTING.md` et `docs/`), le
-fichier de licence du dépôt (`LICENSE`) et les outils de `.github/gardien/` au Gardien. Le dossier `donnees/` de
+(`assets/site.js`) et les pages `index.html` à l'Architecte ; la palette et les polices communes
+(`assets/signal-commun.css`), la feuille de style et l'icône du site (`assets/favicon.svg`), le
+moteur, le gabarit et les outils des TD (`assets/td-en-ligne.js` et `.css`, `charte/`), le moteur
+d'avatars (`assets/equipage.js`) et l'habillage des applications (`assets/applis.css`) au
+Designer ; le README, la documentation (`CONTRIBUTING.md` et `docs/`), le
+fichier de licence du dépôt (`LICENSE`) et les outils de `.github/gardien/` au Gardien ;
+`CLAUDE.md`, les fiches des rôles et l'exigence de qualité (`.claude/`) au chef d'orchestre. Le dossier `donnees/` de
 la bibliothèque est à l'Architecte (notamment le format des données et les
 référentiels), sauf les fiches des ressources (`donnees/ressources/`) et la vitrine
 (`donnees/vitrine.json`), qui sont au Bibliothécaire ; l'Architecte peut y créer des fiches
 d'exemple pour illustrer le format, et un Atelier ou l'Atelier des quiz y écrit la fiche en
 brouillon de la ressource qu'il crée. Le dossier `qcm/` (les sources XML des quiz Pronote,
-leurs aperçus et leurs outils) est à l'Atelier des quiz. Depuis le 20 novembre 2026, le
-Calendrier des vacances (`calendrier/`) et le futur espace `enseignant/` sont à l'Architecte, sauf
-le contenu des exercices du Calendrier (`calendrier/exercices/<thème>.json`), écrit par les Ateliers.
+leurs aperçus et leurs outils) est à l'Atelier des quiz. Le compte commun (`eleve/`,
+`enseignant/`, `assets/compte-commun.js`), le Calendrier des vacances (`calendrier/`) et le socle
+de la base (`supabase/`) sont à l'Architecte, sauf les banques d'exercices du Calendrier
+(`calendrier/exercices/<thème>.json`), écrites par les Ateliers. Un Atelier ne modifie ni le
+moteur, ni la feuille de style, ni le gabarit des TD : un défaut ou un manque du moteur, il le
+décrit dans son rapport, pour le Designer.
 Un agent ne modifie que ses fichiers ; pour les autres, il le signale dans son rapport.
 Une session Claude que l'enseignant lance lui-même pour développer une application suit
 toutes ces règles, publication par le Gardien comprise.
-Le Gardien peut supprimer une branche déjà fusionnée ou devenue inutile, après avoir vérifié
-qu'il n'y a rien à récupérer et avec l'accord du chef d'orchestre ; en pratique, les sessions
-des agents n'en ont pas le droit sur GitHub : le Gardien prépare la liste, et l'enseignant
-supprime les branches.
+Les sessions des agents n'ont pas le droit de supprimer une branche sur GitHub : le Gardien
+prépare la liste des branches fusionnées ou devenues inutiles, après avoir vérifié qu'il n'y a
+rien à récupérer, et l'enseignant les supprime.
 
 Toute ressource produite ou retravaillée suit les règles de conception de la philosophie
 éducative de l'enseignant : une version en ligne utilisable sur téléphone et une version
@@ -52,8 +83,13 @@ l'enseignant :
 - une **application de jeu** (Lagon Arena, Expédition Gombessa, Alien Python…) donne à chaque
   élève un code unique en mots et chiffres (comme `CORAIL-MANTA-482`), qui suffit pour revenir
   depuis n'importe où ; l'enseignant·e a aussi un code et voit ceux de ses élèves, et un lien
-  de classe, avec son QR code, permet de rejoindre la classe. Les pages en ligne des TD, elles,
-  restent sans compte ni envoi de données ;
+  de classe, avec son QR code, permet de rejoindre la classe. Depuis le 24 novembre 2026, c'est
+  **le modèle commun** : chaque application se centralise sur le compte commun du site (les mêmes
+  codes, 2 mots de la liste « pirates » et 3 chiffres pour l'élève, un seul code pour
+  l'enseignant·e, les mêmes classes), reste utilisable sans compte, par une entrée discrète, et
+  ne laisse pas un téléphone se donner un gain : hauts faits et crédits viennent du serveur ou
+  de la séance que tient l'enseignant·e. Une application pas encore branchée garde son entrée et
+  ses codes. Les pages en ligne des TD, elles, restent sans compte ni envoi de données ;
 - un **quiz** (un QCM pour Pronote) part d'une note de cadrage validée avant toute génération :
   depuis le 20 novembre 2026, l'enseignant a délégué au chef d'orchestre la validation et la
   correction des QCM Pronote. Ses questions sont des QCU à 4 options : une juste et trois distracteurs
@@ -63,9 +99,9 @@ l'enseignant :
   balises obligatoires et le code coloré ; la bonne réponse n'est jamais mise en avant ni placée
   selon un motif. La révision d'un quiz existant ne touche que la forme, jamais le fond.
 
-Une ressource externe ne se modifie pas : sa fiche peut signaler ce qui lui manque. Le Gardien
-vérifie ces règles avant de publier une ressource. Les ressources déjà en ligne n'ont pas
-encore été revues sous cet angle.
+Une ressource externe ne se modifie pas : sa fiche peut signaler ce qui lui manque. Le ou la
+Critique, puis le Gardien, vérifient ces règles avant la publication d'une ressource. Depuis le
+25 novembre 2026, des Critiques relisent aussi les TD déjà en ligne.
 
 Les décisions de l'enseignant du 20 novembre 2026 s'y ajoutent (`CLAUDE.md`, § 4 à § 6) :
 - « On ne se compare pas, mais on peut être fier·e de ce qu'on a appris » : aucun classement,
@@ -83,13 +119,28 @@ Les décisions de l'enseignant du 20 novembre 2026 s'y ajoutent (`CLAUDE.md`, §
   feuilles, « Signal pirate », s'applique aux TD depuis le 21 novembre (gabarit
   `charte/gabarit-td/`, conversion des TD en cours) et, depuis le même soir, au site lui-même
   (accueil, rubriques, bibliothèque, annales, espaces élève et enseignant·e, admin : maquette
-  validée par l'enseignant), pas encore aux autres documents ;
+  validée par l'enseignant), puis, depuis le 24 novembre, aux applications (le socle du site et
+  une touche de l'univers propre à chacune) ; pas encore aux fiches de révision, et les contrôles
+  gardent le style LaTeX des contrôles de l'enseignant ;
 - le cours-quiz (dépôt QuizzNSI) vient en tête de séquence, avant le cours ou le TD ;
 - le soir : « on ne promeut aucune religion, mais on ne fait pas comme si c'était problématique
   qu'elles existent ou d'en avoir une » (un emblème national, comme le croissant et les étoiles du
   drapeau des Comores sur un maillot, est admis) ; un clin d'œil à une œuvre connue passe par le
   nom et l'idée, jamais par la forme ; « Imprimer la feuille », dans un TD en ligne, imprime la
   feuille vierge.
+
+Puis celles du 24 novembre 2026 : aucun piège propre au langage ni hors programme (« le but est
+de mettre les élèves en confiance ») ; un seul vocabulaire, celui des référentiels du site, dans
+le site et dans les applications (les synonymes ne servent qu'à la recherche) ; aucun numéro de
+chapitre ; le modèle commun des applications (plus haut) ; l'espace enseignant·e du compte
+commun reste « ouvert tel quel » : n'importe qui peut s'en créer un, et les résumés disent ce
+risque accepté.
+
+Et celles du 25 novembre 2026 : l'exigence de qualité et le ou la Critique (plus haut) ; les
+ressources seront groupées en séquences (en terminale, typiquement : cours-quiz, fiches, TD, TP et
+activités, TD type bac, contrôle) ; une ressource externe ne sera plus mise en avant sur le site,
+sauf quelques exceptions, chacune à son niveau (`CLAUDE.md`, § 4). Ces deux changements du site
+sont en cours.
 
 Règle d'écriture : les pages du site et les documents pour les élèves s'écrivent en langage
 inclusif chaque fois que c'est pertinent (formulations épicènes, double flexion, féminisation

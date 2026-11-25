@@ -40,7 +40,8 @@ Les préfixes, selon le rôle :
 
 - **Le Gardien** est le seul à fusionner une branche dans `main`. Il la contrôle d'abord (§ 6), la fusionne sans avance rapide (`git merge --no-ff`), vérifie ensuite le site en ligne, et note la publication au journal des publications. Une session Claude que l'enseignant lance lui-même pour développer une application, hors de l'équipe d'agents, suit les mêmes règles : son travail passe aussi par le Gardien (décision du 12 novembre 2026).
 - **L'enseignant**, propriétaire du dépôt, peut aussi modifier `main` directement depuis GitHub : une fiche de `donnees/ressources/`, ou le dossier `fichiers` d'une rubrique ([docs/LISTES.md](docs/LISTES.md)). Il modifie aussi les fiches et les onglets depuis l'espace administrateur, qui fait un commit « [admin] … » sur `main` à son nom ([docs/ADMIN.md](docs/ADMIN.md)). Chaque envoi sur `main` est mis en ligne par le workflow « Publier le site », qui valide d'abord les données ([la mise en ligne](docs/VERIFICATION.md#la-mise-en-ligne)).
-- **On publie dès que c'est sûr** (consigne de l'enseignant du 10 novembre 2026). Une branche conforme part tout de suite. Un point d'écriture mineur (une coquille, une apostrophe, un masculin générique oublié) ne bloque pas : il est corrigé ensuite, dans une branche de suite.
+- **Une ressource pédagogique passe d'abord par le ou la Critique** (depuis le 25 novembre 2026, à la demande de l'enseignant) : TD, TP, cours, contrôle, quiz, fiche de révision, exercices d'une application, sauf accord du chef d'orchestre, inscrit au journal. Le ou la Critique la juge (attendus du bac, pédagogie, notation, compétence travaillée, critiques déjà faites par l'enseignant), sans rien modifier, et rend « à refaire », « à corriger » ou « bonne à publier » ; le Gardien fait ensuite tous ses contrôles.
+- **On publie dès que c'est sûr** (consigne de l'enseignant du 10 novembre 2026). Une branche conforme part tout de suite. Un point d'écriture mineur (une coquille, une apostrophe, un masculin générique oublié) ne bloque pas : il est corrigé ensuite, dans une branche de suite. **Un fait faux à l'écran, jamais** : une phrase qui annonce ce que la page ou la base ne fait pas encore, un chiffre faux ou une réponse fausse renvoient la branche.
 - **Un changement structurel attend l'accord de l'enseignant** : le format des données, les référentiels, les adresses, les rubriques ou les thèmes, la charte graphique, une nouvelle partie du site, et tout ce qui touche aux données d'élèves. Un choix que le chef d'orchestre fait par délégation de l'enseignant, et qu'il inscrit au registre des décisions, vaut cet accord, sauf pour les bases de données : leur code SQL exact est toujours montré à l'enseignant avant d'être appliqué (décision du 12 novembre 2026).
 - **La structure du site suit les textes officiels** : les programmes de SNT et de NSI de 2019, et la circulaire n° 2018-108 pour la rubrique Professeur principal, qui garde ses thèmes actuels (décision du 7 novembre 2026). Tout autre écart se soumet à l'enseignant.
 
@@ -67,11 +68,11 @@ Avant de publier une branche, le Gardien vérifie :
 4. **Les données sensibles** (§ 7), cherchées dans tout ce que la branche ajoute.
 5. **Les liens et les fichiers** : chaque lien interne mène à un fichier qui existe ; les liens externes sont testés par la vérification automatique ; le lien « Code source sur GitHub » (§ 12).
 6. **Le rendu** : à 320, 768 et 1440 px de large, en clair et en obscur, sans erreur JavaScript ni défilement horizontal ; l'impression A4 des documents touchés, sans débordement.
-7. **L'accessibilité** : un contraste d'au moins 4,5:1 pour le texte, et une navigation complète au clavier.
+7. **L'accessibilité** : des contrastes d'au moins 7:1 pour le texte courant et pour le code, 4,5:1 pour le petit texte et 3:1 pour les traits utiles, et une navigation complète au clavier.
 8. **Les chiffres** : le nombre de ressources affichées, avant et après, correspond à ce qu'annonce la branche.
 9. **Le README** : à jour.
 
-Un contrôle rouge bloque la publication, même s'il semble mineur. Après la publication, le Gardien vérifie que la vérification automatique est au vert pour le nouveau commit, que les pages répondent et que les chiffres en ligne sont ceux du dépôt. Le détail : [docs/GARDIEN.md](docs/GARDIEN.md) et [docs/VERIFICATION.md](docs/VERIFICATION.md).
+Un outil vert ne suffit pas : le Gardien regarde aussi chaque page touchée, rendue à l'écran et sur papier (exigence de qualité de l'enseignant du 25 novembre 2026, `.claude/consignes/exigence-de-qualite.md`). Un contrôle rouge bloque la publication, même s'il semble mineur ; seule exception, la vérification automatique du site en ligne, quand elle est rouge pour une cause étrangère à la branche et que la branche n'ajoute aucun lien mort (le Gardien le dit). Après la publication, le Gardien vérifie que la vérification automatique est au vert pour le nouveau commit, que les pages répondent et que les chiffres en ligne sont ceux du dépôt. Le détail : [docs/GARDIEN.md](docs/GARDIEN.md) et [docs/VERIFICATION.md](docs/VERIFICATION.md).
 
 ## 7. Aucune donnée sensible
 
@@ -92,7 +93,8 @@ Le Gardien cherche ces motifs dans tout ce qu'ajoute une branche (`.github/gardi
 
 - **Toute ressource qui collecte des données d'élèves le signale** : sur sa fiche (le champ `donnees_eleves`), dans la ligne des propriétés de son README et dans sa section « Données des élèves ».
 - **Toute nouvelle collecte est soumise à l'enseignant** avant d'être publiée.
-- **Par défaut** : un pseudo ou un prénom, au choix de l'élève, jamais de nom de famille. Exceptions décidées : Alien Python et SNT 1er jour.
+- **Par défaut** : un pseudo ou un prénom, au choix de l'élève, jamais de nom de famille. Exception décidée : SNT 1er jour (prénom et nom). Alien Python demande encore un prénom : il passera à « prénom ou pseudo » avec sa centralisation sur le compte commun.
+- Sur la feuille papier d'un TD, « Nom et prénom » et « Classe » sont en tête ; rien de cela n'est demandé ni envoyé en ligne.
 - **Les bases** : aucune modification sans que l'enseignant ait vu le SQL exact. Les agents n'en lisent que les métadonnées (les tables, les colonnes, les droits, le nombre de lignes), jamais une valeur d'une table d'élèves, et ne font aucun essai sur une table d'élèves de la base en ligne : les essais d'écriture se font sur une reproduction locale, avec des données inventées ([docs/SUPABASE.md](docs/SUPABASE.md)).
 - Les mini-sites des TD restent sans compte ni envoi de données.
 
@@ -100,7 +102,8 @@ Le Gardien cherche ces motifs dans tout ce qu'ajoute une branche (`.github/gardi
 
 - Les **documents pédagogiques** de l'enseignant sont sous licence CC BY-SA 4.0, le **code** de ses applications sous licence MIT, et l'auteur affiché est « Babash - NSI Tani Malandi ». Pour ce dépôt : la section [Licence](README.md#licence) du README.
 - **Une ressource externe** est créditée à son site d'origine.
-- **Une ressource reprise et modifiée crédite toute la chaîne** de ses auteurs et autrices. Par exemple, CyberCase : d'Etienne Clave sur exomorphisme.fr, d'après une idée de Marion Dufour et le moteur SQL Noir de Hristo Bogoev.
+- **Une ressource reprise et modifiée crédite toute la chaîne** de ses auteurs et autrices. Par exemple, CyberCase : d'Etienne Clave sur exomorphisme.fr, d'après une idée de Marion Dufour et le moteur SQL Noir de Hristo Bogoev. C'est une ressource externe, à laquelle l'enseignant n'a pas participé (25 novembre 2026) : ses crédits sont à vérifier sur son site d'origine.
+- **Tout crédit présent dans les sources se garde, et aucun ne s'invente.** Un TD co-écrit porte tous les noms sur chaque page imprimée ; un contrôle co-écrit garde tous ses noms, et le contrôle écrit pour l'enseignant en novembre 2026 est à son seul nom.
 - **Ce qui vient d'ailleurs garde sa licence et sa notice** : bibliothèques, polices, exercices repris ([docs/REUTILISER.md](docs/REUTILISER.md#ce-que-tu-dois-garder)).
 - **La licence de l'original décide** : une ressource sans licence, ou dont la licence interdit la modification, ne se reprend pas sans l'accord de son auteur ou de son autrice ; le cas se soumet à l'enseignant.
 
@@ -128,5 +131,5 @@ Le Gardien cherche ces motifs dans tout ce qu'ajoute une branche (`.github/gardi
 
 ## 13. Le style et les dessins
 
-- Une ressource suit le style actuel du site.
-- Les dessins sont originaux : aucun personnage, aucun logo ni aucune illustration d'Android: Netrunner.
+- Le style « Signal pirate » est celui du site, des TD et des applications ; pas encore celui des fiches de révision, et les contrôles gardent le style LaTeX des contrôles de l'enseignant.
+- Les dessins sont originaux : aucun personnage, aucun logo, aucune illustration ni aucun cadre de carte d'une œuvre (Android: Netrunner, mangas, jeux).

@@ -123,7 +123,7 @@ aussi ses comptes, ses espaces enseignant·e et ses classes communes (voir plus 
   séance peut ouvrir une fausse page projetée, qui reçoit aussi les réponses (la vraie page le
   signale) ; il peut aussi faire sortir un·e élève, répondre à sa place ou lui afficher de faux
   points ; les bonnes réponses se lisent dans le fichier du cours, public. Le mode temps réel est
-  une demande de l'enseignant (décision P10, à confirmer).
+  une demande de l'enseignant (décision P10, donnée le 19 novembre 2026, avec ces risques acceptés).
 - **Sur l'appareil de l'élève** : le code de séance, le pseudo, l'identifiant et l'historique de la
   séance, pour revenir après une coupure. Ils sont effacés à la fin de la séance, au départ, au
   retrait du pseudo, et sinon au premier chargement d'une page de QuizzNSI après 12 heures.
@@ -144,7 +144,8 @@ aussi ses comptes, ses espaces enseignant·e et ses classes communes (voir plus 
   migration `vacances_0001_calendrier` (20 novembre 2026, 15:31), puis inscrit au registre des
   tables par `base_unique_0009_registre_vacances` (15:33), toutes deux appliquées sur délégation
   de l'enseignant, limitée au Calendrier. La migration `vacances_0002_index_resultats` (un index,
-  sans effacer aucune donnée) est écrite, et pas appliquée.
+  sans effacer aucune donnée) est appliquée depuis le 24 novembre 2026 (13:30) : c'est la dernière
+  de l'historique des migrations du projet.
 - **Ce qui est gardé en ligne** : le prénom ou le pseudo choisi par l'élève (jamais le nom de
   famille), son code et, pour chaque case jouée, le niveau, la réussite, les étoiles, le nombre
   d'essais et de coups de pouce, la durée et la date. Les réponses tapées ne sont jamais
@@ -203,9 +204,11 @@ aussi ses comptes, ses espaces enseignant·e et ses classes communes (voir plus 
   19 novembre 2026, Lagon Arena (schéma `lagon`, fonctions `public.lagon_…` ; son dépôt
   [babash/lagon-arena](https://github.com/babash/lagon-arena) garde ses migrations et la page
   publiée l'utilise depuis le 20 novembre 2026), et, depuis le 20 novembre 2026, le Calendrier des
-  vacances (schéma `vacances`, fonctions `public.cv_…`). L'ancien projet de Lagon Arena reste intact
-  30 jours, pour un retour en arrière, puis ses objets de Lagon Arena seront retirés, sans
-  toucher aux objets `guilde_*`. Le dossier `supabase/` du site garde les migrations qui ne
+  vacances (schéma `vacances`, fonctions `public.cv_…`) ; elle porte aussi Hello GO (schéma
+  `grand_oral`, fonctions `public.go_…`), suivi par une autre session. SNT 1er jour, Gombessa et
+  Alien Python ont encore leurs tables dans `public`, sans commentaire. L'ancien projet de Lagon
+  Arena garde encore ses tables de Lagon Arena : l'enseignant a approuvé leur retrait (SQL vu le
+  20 novembre 2026), qui est à coller par lui-même, sans toucher aux objets `guilde_*`. Le dossier `supabase/` du site garde les migrations qui ne
   relèvent d'aucune application, chacune appliquée après l'accord de l'enseignant sur le SQL :
   `0001` à `0004` (n° 2 du plan de la base unique) le 11 novembre 2026, et `0005` le
   13 novembre 2026 :
@@ -247,3 +250,30 @@ la progression de Court-circuit, le 19 novembre 2026, et pour le Calendrier des 
 métadonnées, jamais les données des élèves. Ils ne font aucun essai sur une table d'élèves de la
 base en ligne : les essais d'écriture se font sur une reproduction locale, avec des données
 inventées.
+
+**Comment une migration s'applique aujourd'hui** (constat des 20 et 24 novembre 2026 : l'outil
+d'application de la session annule de lui-même toute demande de confirmation de Supabase, et
+rien ne tourne) :
+
+1. l'Architecte écrit le fichier (avec `begin;` et `commit;`), son inverse, sa vérification en
+   lecture et un résumé exact pour l'enseignant, risques acceptés compris ;
+2. un Gardien relit le SQL avant qu'il soit montré à l'enseignant ; un fichier régénéré ensuite
+   est comparé à la version relue ;
+3. le chef d'orchestre envoie à l'enseignant des fichiers numérotés, dans l'ordre, un par un, et
+   l'enseignant colle lui-même chaque fichier, tel quel, dans l'éditeur SQL de Supabase (*SQL
+   Editor*, puis *Run*) ;
+4. après chaque collage, le chef d'orchestre lance la vérification en lecture, et un Gardien
+   contrôle les métadonnées et les conseillers, puis l'inscrit au journal.
+
+Seul un fichier sans instruction à confirmer, comme un simple index, passe par l'outil
+(`apply_migration`, au nom du fichier, sans `begin;` ni `commit;`). Un collage ne laisse aucune
+trace dans l'historique des migrations du projet : l'y inscrire est une écriture en base, à
+montrer aussi à l'enseignant.
+
+**L'état au 25 novembre 2026** (métadonnées lues ce jour-là) : le compte commun (`0007` v2.3 et
+`0008`) est en base, sans aucun compte d'élève ni d'enseignant·e ; son catalogue n'a encore que
+le margouillat. Relus par un Gardien et pas encore collés, dans cet ordre : Alien Python `0002`
+(son schéma `alien`), `0010` (le catalogue, les hauts faits, les trophées), `0012` (le niveau),
+`0011` (les séances de QuizzNSI), `vacances_0003` (le Calendrier relié au compte commun), puis
+Alien Python `0003` et `0004`. La remise à zéro des comptes (tous, sauf ceux de Hello GO) n'est
+pas appliquée : « pas encore » (20 novembre 2026).

@@ -37,6 +37,9 @@ Le contrôle de notions sert d'abord à l'élève et à l'enseignant·e : il dit
 | **En terminale, le format et le vocabulaire du bac** ; un exercice repris d'un sujet officiel cite ce sujet | [Les exercices de bac](exercices-de-bac.md) |
 | **Les réponses du corrigé sont vérifiées**, le code est exécuté | [Vérifié](../regles-universelles.md#41-vérifié--le-code-exécuté-les-faits-contrôlés-les-liens-testés) |
 | **Des consignes impersonnelles** | Comme au bac |
+| **Une question = une seule chose demandée**, une seule réponse attendue, notée d'un bloc ; sinon on découpe (a, b, c), chacune avec ses points | La correction reste simple, et une erreur ne pénalise qu'une fois (l'auteur, 25 novembre 2026) |
+| **Un sujet court** : faisable dans le temps annoncé par un·e élève moyen·ne, avec peu de fonctions entières à écrire (2 ou 3 courtes au plus pour 2 h) | Le reste se complète, se corrige, se prévoit, se déroule ou se justifie en une phrase |
+| **Le style LaTeX des contrôles de l'auteur** | Les contrôles ne prennent pas le style « Signal pirate » des TD (24 novembre 2026) |
 
 **Les corrigés sont publics.** Ils sont visibles de tout le monde sur le site, pour les collègues, en acceptant que des élèves puissent les trouver. L'espace administrateur permet de cacher un document. Si tu donnes un sujet tel quel, tiens-en compte.
 
@@ -47,7 +50,7 @@ Le contrôle de notions sert d'abord à l'élève et à l'enseignant·e : il dit
 - **En première** : le [contrôle sur les conditions et les boucles](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=cc-prem-conditions-boucles) (1 h), avec son rattrapage.
 - **Un contrôle blanc qui se corrige seul** : [les types construits](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=nsi-types-construits-controle), dans un notebook.
 
-Les contrôles de NSI du site sont de Babash - NSI Tani Malandi et Johanne Bakalara. Tu les trouves tous dans la bibliothèque, avec le filtre [« Évaluation »](https://babash.github.io/Babash-NSI-SNT/bibliotheque/).
+La plupart des contrôles de NSI du site sont de Babash - NSI Tani Malandi et Johanne Bakalara ; celui de novembre 2026 sur la POO, les piles et les files est de l'auteur seul. Tu les trouves tous dans la bibliothèque, avec le filtre [« Évaluation »](https://babash.github.io/Babash-NSI-SNT/bibliotheque/).
 
 ## Où on en est
 
