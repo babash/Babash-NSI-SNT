@@ -16,7 +16,12 @@ Deux parties :
       * tout est en place : code 0, « 2 pages citées par les fiches », compte des ressources inchangé ;
       * une page sans lien « Code source sur GitHub » : code 0, avertissement nommant la page ;
       * une page vide : code 1, déclarée après 3 essais, avec la longueur du texte rendu ;
-      * un document absent du dépôt, un fichier qui ne répond pas en ligne : code 1, messages clairs.
+      * un document absent du dépôt, un fichier qui ne répond pas en ligne : code 1, messages clairs ;
+      * une séquence publiée (T153) : la rubrique NSI Terminale gardée, réduite à une fiche fabriquée, est comptée dans
+        sa vue « Par thème » (?vue=themes ; sans ce paramètre, la vue « Par séquence » s'ouvrirait et ne compterait
+        rien), et la page de la séquence affiche « ok 1 / 1 ressources » : code 0 ;
+      * une séquence publiée mais absente de la bibliothèque construite : écart, code 1, message clair.
+    Les séquences du dépôt sont retirées de chaque copie : elles citent des fiches que la copie n'a plus.
 Il faut Chrome (google-chrome ou chromium). Compter une à deux minutes.
 Code de retour : 0 si tous les cas passent, 1 sinon.
 """
@@ -133,21 +138,37 @@ def unitaires(racine, travail):
                  [] if v.adresse(base, "a b/é.pdf") == base + "/a%20b/%C3%A9.pdf" else [v.adresse(base, "a b/é.pdf")])
 
 
-def copie(racine, travail, nom, fiches, fichiers, absents=()):
+def copie(racine, travail, nom, fiches, fichiers, absents=(), terminale=None, sequences=(), sequences_apres=()):
     """Une copie du dépôt réduite à la rubrique pp de la vitrine (ses fiches gardées), plus des fiches fabriquées
     qui citent les fichiers donnés ; la bibliothèque y est construite (le site la lit depuis T51b). Les fiches
-    de « absents » citent un fichier qui manque : elles sont ajoutées après la construction, qui les refuserait."""
+    de « absents » citent un fichier qui manque : elles sont ajoutées après la construction, qui les refuserait.
+    Les séquences du dépôt (donnees/sequences/) sont retirées : elles citent des fiches que la copie n'a plus (T153).
+    terminale : une liste de fiches fabriquées à placer dans la rubrique nsi-terminale, gardée avec ses sections
+    vidées ; sequences : des séquences à écrire avant la construction ; sequences_apres : après (absentes de la
+    bibliothèque construite)."""
     d = os.path.join(travail, nom)
     shutil.rmtree(d, ignore_errors=True)
     shutil.copytree(racine, d, ignore=shutil.ignore_patterns(".git", ".claude", "bibliotheque*.json"))
     vitrine = json.load(open(os.path.join(d, "donnees", "vitrine.json"), encoding="utf-8"))
-    vitrine["rubriques"] = [r for r in vitrine["rubriques"] if r["id"] == "pp"]
+    vitrine["rubriques"] = [r for r in vitrine["rubriques"] if r["id"] == "pp" or (terminale is not None and r["id"] == "nsi-terminale")]
     vitrine["a_la_une"] = []
     garder = {i for s in vitrine["rubriques"][0]["sections"] for i in s["ressources"] + [x for ss in s.get("sous_sections", []) for x in ss["ressources"]]}
+    for rub in vitrine["rubriques"][1:]:   # nsi-terminale : sections vidées, les fiches fabriquées dans la première
+        for s in rub["sections"]:
+            s["ressources"] = []
+            for ss in s.get("sous_sections", []):
+                ss["ressources"] = []
+        rub["sections"][0]["ressources"] = list(terminale)
     ecrire(os.path.join(d, "donnees", "vitrine.json"), json.dumps(vitrine, ensure_ascii=False, indent=2) + "\n")
     exemple = os.path.join(d, "donnees", "vitrine.exemple.json")   # il cite des fiches retirées de la copie
     if os.path.exists(exemple):
         os.remove(exemple)
+    shutil.rmtree(os.path.join(d, "donnees", "sequences"), ignore_errors=True)   # idem (T153)
+
+    def ecrire_sequences(liste):
+        for s in liste:
+            ecrire(os.path.join(d, "donnees", "sequences", s["id"] + ".json"), json.dumps(s, ensure_ascii=False, indent=2) + "\n")
+    ecrire_sequences(sequences)
     dossier = os.path.join(d, "donnees", "ressources")
     modele = json.load(open(os.path.join(dossier, sorted(garder)[0] + ".json"), encoding="utf-8"))
     for n in os.listdir(dossier):
@@ -172,7 +193,17 @@ def copie(racine, travail, nom, fiches, fichiers, absents=()):
         sys.exit("construction de la bibliothèque impossible :\n" + r.stdout[-2000:])
     for ident in absents:
         fabriquer(ident, fiches[ident])
+    ecrire_sequences(sequences_apres)
     return d
+
+
+def sequence_essai(ident, fiche):
+    """Une séquence publiée de terminale qui cite une fiche fabriquée (d'origine institutionnelle, comme la fiche
+    modèle de la rubrique pp : elle va donc dans « complements »)."""
+    return {"id": ident, "niveau": "terminale", "enseignement": "nsi", "titre": "Essai : piles et files",
+            "objectif": "Une séquence d'essai pour le contrôle en ligne.", "rang": 10,
+            "programme": ["nsi-tle-2019.structures-de-donnees.listes-piles-files"], "statut": "publiee",
+            "etapes": [{"type": "td", "ressources": [], "complements": [fiche]}]}
 
 
 def complet(racine, travail):
@@ -204,8 +235,24 @@ def complet(racine, travail):
           r"^ - pp/fichiers/essai-t35/carnet\.ipynb : cité par la fiche essai-b, ne répond pas en ligne \(code 404\)$",
           r"^Fichiers déposés \(PDF, notebooks, code…\) : 1 / 2 répondent en ligne$"], ["essai-c"]),
     ]
-    for titre, nom, fiches_cas, remplace, cache, code_attendu, motifs, absents in cas:
-        d = copie(racine, travail, nom, fiches_cas, dict(base_fichiers, **remplace), absents)
+    # T153 : les séquences publiées et la vue « Par thème » des rubriques
+    seq = {"terminale": ["essai-a"], "sequences": [sequence_essai("tle-essai", "essai-a")]}
+    cas += [
+        ("une séquence publiée : rubrique comptée dans sa vue par thème, page de la séquence ok : code 0", "sequence",
+         fiches, {}, None, 0,
+         [r"^nsi-terminale\s+1 ressources affichées /   1 dans la vitrine   ok$",
+          r"^Séquences publiées : 1$", r"^   ok\s+1 /   1 ressources   nsi-terminale/\?sequence=tle-essai$",
+          r"Tout s'affiche correctement"], [], seq),
+        ("une séquence publiée mais absente de la bibliothèque construite : écart, code 1", "sequence-absente",
+         fiches, {}, None, 1,
+         [r"^   ÉCART\s+0 /   1 ressources   nsi-terminale/\?sequence=tle-essai$",
+          r"^ - nsi-terminale/\?sequence=tle-essai : 0 ressources affichées au lieu de 1$"], [],
+         {"terminale": ["essai-a"], "sequences_apres": [sequence_essai("tle-essai", "essai-a")]}),
+    ]
+    for c in cas:
+        titre, nom, fiches_cas, remplace, cache, code_attendu, motifs, absents = c[:8]
+        options = c[8] if len(c) > 8 else {}
+        d = copie(racine, travail, nom, fiches_cas, dict(base_fichiers, **remplace), absents, **options)
         servi = d
         if cache:   # le fichier existe dans le dépôt mais pas en ligne : on sert une copie sans lui
             servi = d + "-en-ligne"
