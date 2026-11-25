@@ -69,6 +69,12 @@
   **
  ****
 ******</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("echauffement.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+assert not _noeuds or any(isinstance(_n, (_ast.For, _ast.While, _ast.comprehension)) or (isinstance(_n, _ast.Call) and getattr(_n.func, "id", "") == "sum") for _n in _noeuds), "Ton programme doit afficher le motif avec une boucle, sur le même principe que l'exemple."
+</script>
     <p class="td-aide"><code>"*" * 4</code> donne <code>"****"</code> et <code>" " * 2</code> donne deux espaces.</p>
     <p class="td-aide">Pour la ligne numéro i (0, 1, 2), il y a i espaces, puis 6 − 2 × i étoiles. Une boucle fait le haut, une autre le bas.</p>
     <div class="td-correction">
@@ -121,6 +127,38 @@ Gagné !
 Gagné !
 Gagné !
 Gagné !</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("juste_prix.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+import random as _random
+_vrai = _random.randint
+_random.randint = lambda a, b: 3
+_p = [8, 1, 3, 3, 3, 3, 3, 3, 3, 3]
+_g = {"__name__": "__main__", "input": lambda m="": str(_p.pop(0)), "randint": _random.randint}
+try:
+    _r = _essai("", "", _g)
+finally:
+    _random.randint = _vrai
+assert _r is None or _norm(_r) == _norm('Trop haut\nTrop bas\nGagné !\nGagné !\nGagné !\nGagné !\nGagné !\nGagné !\nGagné !\nGagné !'), "Avec un prix de 3 et les propositions 8, 1, puis 3, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour n'importe quel prix."
+</script>
     <p class="td-aide">La boucle : <code>for essai in range(10):</code>. Dans le bloc, <code>proposition = int(input("Ta proposition : "))</code>.</p>
     <p class="td-aide"><code>input</code> renvoie un texte : <code>int(...)</code> le change en nombre pour pouvoir le comparer au prix.</p>
     <p class="td-aide">Trois cas : <code>if proposition &gt; prix:</code>, <code>elif proposition &lt; prix:</code>, <code>else:</code>.</p>
@@ -165,6 +203,38 @@ Trop bas
 Trop haut
 Trop bas
 Perdu, le prix était 42</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("juste_prix.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+import random as _random
+_vrai = _random.randint
+_random.randint = lambda a, b: 77
+_p = [50, 90, 60, 80, 70, 78, 76, 1, 100, 75]
+_g = {"__name__": "__main__", "input": lambda m="": str(_p.pop(0)), "randint": _random.randint}
+try:
+    _r = _essai("", "", _g)
+finally:
+    _random.randint = _vrai
+assert _r is None or _norm(_r) == _norm('Trop bas\nTrop haut\nTrop bas\nTrop haut\nTrop bas\nTrop haut\nTrop bas\nTrop bas\nTrop haut\nTrop bas\nPerdu, le prix était 77'), "Avec un prix de 77 jamais trouvé, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour n'importe quel prix."
+</script>
     <p class="td-aide">Il faut savoir, après la boucle, si le prix a été trouvé : crée une variable <code>trouve = False</code> avant la boucle, et passe-la à <code>True</code> quand c'est gagné.</p>
     <p class="td-aide">Après la boucle (sans indentation) : <code>if not trouve:</code>, puis <code>print("Perdu, le prix était", prix)</code>.</p>
     <div class="td-correction">
@@ -207,6 +277,38 @@ Trop bas
 Trop haut
 Trop bas
 Gagné !</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("juste_prix.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+import random as _random
+_vrai = _random.randint
+_random.randint = lambda a, b: 77
+_p = [50, 90, 77, 77, 77, 77, 77, 77, 77, 77]
+_g = {"__name__": "__main__", "input": lambda m="": str(_p.pop(0)), "randint": _random.randint}
+try:
+    _r = _essai("", "", _g)
+finally:
+    _random.randint = _vrai
+assert _r is None or _norm(_r) == _norm('Trop bas\nTrop haut\nGagné !'), "Avec un prix de 77 trouvé au troisième essai, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour n'importe quel prix."
+</script>
     <p class="td-aide">Il faut compter les essais toi-même : <code>essai = 0</code> avant la boucle, et <code>essai = essai + 1</code> dans le bloc.</p>
     <p class="td-aide">La condition : on continue tant qu'il reste des essais <b>et</b> que le prix n'est pas trouvé : <code>while essai &lt; 10 and not trouve:</code>.</p>
     <div class="td-correction">
