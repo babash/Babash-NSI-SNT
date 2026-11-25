@@ -52,6 +52,48 @@ td.code{font-size:1.2em}
 .al-mode{display:flex;gap:4px}.al-mode .ap-bt{min-height:36px;padding:4px 8px}
 @media(max-width:420px){.al-mode .ap-bt{padding:4px 6px;font-size:.85rem}}
 @media print{.ap-barre .al-mode,.toast{display:none}}
+/* T145 : l'éditeur (aide, propositions), l'exécution par Python (erreur réelle, explication, sortie), la case au clavier.
+   Mêmes tracés que les TD en ligne : le texte garde son contraste, rien d'essentiel par la couleur seule. */
+.al-sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.al-ed-aide{margin:.2em 0 0;font-size:.86rem;color:var(--td-encre-douce)}
+.al-ed-info{margin:.1em 0 .4em;min-height:1.4em;font-size:.86rem;color:var(--td-encre-douce)}
+#app .al-ac{position:absolute;z-index:3;margin:0;padding:3px;list-style:none;min-width:11rem;max-width:min(19rem,100%);background:var(--td-panneau);color:var(--td-encre);border:1.4px solid var(--td-trait-fort);box-shadow:3px 3px 0 var(--ap-touche);font:400 .9rem/1.3 var(--td-texte)}
+#app .al-ac[hidden]{display:none}
+#app .al-ac li{display:flex;gap:.55rem;align-items:baseline;min-height:32px;padding:5px 7px;cursor:pointer}
+#app .al-ac li code{font-family:var(--td-mono);font-weight:700}
+#app .al-ac li.on{background:var(--td-principal-fond);color:var(--td-principal-encre)}
+.al-ac-role{font-size:.8rem}
+/* la ligne exécutée, la ligne en erreur : un fond, et un trait dans la marge (il ne couvre pas le numéro) ; le numéro en gras */
+.al-code .ligne.al-actif{background:var(--td-info-fond);box-shadow:-6px 0 0 var(--td-accent)}
+.al-code .ligne.al-err{background:var(--td-encore-fond);box-shadow:-6px 0 0 var(--td-erreur)}
+.al-code .ligne.al-actif .num,.al-code .ligne.al-err .num{color:var(--td-encre);font-weight:700}
+.al-res{margin:8px 0}
+.al-etiq{position:relative;z-index:1;display:table;margin:.5rem .6rem -.62rem auto;padding:0 .3rem;font:400 1.05rem/1 var(--td-signal);text-transform:uppercase;letter-spacing:.06em;color:var(--td-encre-douce);background:var(--td-code-fond)}
+.al-etiq.er{color:var(--td-erreur)}
+.al-console{margin:.2rem 0 .5rem;padding:.35rem .6rem .25rem;background:var(--td-code-fond);color:var(--td-code-encre);border:1.2px solid var(--td-trait-fort);border-left:4px solid var(--td-trait-fort);font:400 .9rem/1.3 var(--td-mono);font-variant-ligatures:none;overflow-x:auto;white-space:pre}
+.al-console.er{border-left-color:var(--td-erreur)}
+.al-console .al-l{display:block;min-height:1.3em}
+.er-entete,.er-fichier{color:var(--td-tk-com)}.er-entete{font-style:italic}
+.er-ligne,.er-fleche,.er-type{font-weight:700;color:var(--td-erreur)}
+.er-ligne,.er-type{text-decoration:underline;text-underline-offset:.2em}
+.er-msg{font-weight:700}
+#app button.al-petit{min-height:40px;padding:6px 12px;font-size:.92rem}
+.al-exp{margin:.4rem 0;padding:.45rem .7rem;background:var(--td-info-fond);border:1px solid var(--td-trait)}
+.al-exp p{margin:.2em 0}.al-exp code{font-family:var(--td-mono);font-size:.92em}
+.al-vocab{font-size:.88rem;color:var(--td-encre-douce)}
+.al-case{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:.6em 0}
+.al-case label{margin:0}
+.al-case input{width:5.5em;min-height:44px;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.al-case input[aria-invalid=true]{border:3px solid var(--td-encore)}
+.al-case-aide{flex-basis:100%;margin:0;font-size:.86rem;color:var(--td-encre-douce)}
+#app .gr:focus{outline:3px solid var(--td-focus);outline-offset:3px}
+#app .gr:focus:not(:focus-visible){outline:0}
+.g-eleve{fill:none;stroke:var(--td-focus);stroke-width:1;stroke-dasharray:2.2 1.3;stroke-linejoin:round}
+.g-eleve-fin{fill:none;stroke:var(--td-focus);stroke-width:1}
+.al-legende{margin:.3em 10px 0;font-size:.86rem;color:var(--td-encre-douce)}
+.al-trait{display:inline-block;width:2.2em;height:0;vertical-align:middle;border-top:2.4px solid var(--td-accent);margin-right:.35em}
+.al-trait.el{border-top:2.4px dashed var(--td-focus)}
+@media (prefers-reduced-motion:reduce){.al-ac,.g-alien{transition:none!important}}
 </style>
 </head>
 <body class="ap">
@@ -63,9 +105,12 @@ td.code{font-size:1.2em}
 <div class="ap-touche" aria-hidden="true"></div>
 <!-- Emplacement prévu pour le compte commun (plus tard, rien n'est branché) : le bandeau « mes applications » (.ap-bandeau avec le bouton .ap-moi et l'avatar de l'élève) se place ici, sous la touche. -->
 <main id="app" class="ap-page"></main>
+<div id="al-annonce" class="al-sr" aria-live="polite"></div>
 <footer class="pied">Alien Python · Babash - NSI Tani Malandi · code : MIT, documents : <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" target="_blank" rel="license noopener">CC BY-SA 4.0</a> · exercices de Mathieu Degrange (licence MIT, <a href="LICENCE.txt">notice</a>) · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/snt/fichiers/alien-python" target="_blank" rel="noopener">Code source sur GitHub</a> · conçu avec l’aide de l’IA · <a href="../../../">Ressources NSI et SNT</a></footer>
 <script src="config.js"></script>
 <script src="data.js"></script>
+<script src="python.js"></script>
+<script src="editeur.js"></script>
 <script>
 var CFG=window.CFG||{},$=function(s){return document.querySelector(s)},app=$("#app"),ALL=[],S=null,P={},V="login",cur=null,T=null,tab="join",msg="";
 F.forEach(function(f){ALL=ALL.concat(f[1])});
@@ -96,16 +141,21 @@ function miroir(src){return '<span class="al-miroir-in">'+lignes(src,true)+'</sp
 var g='<rect style="fill:var(--td-fond)" width="160" height="160"/><rect style="fill:var(--td-panneau-2)" width="160" height="10"/><rect style="fill:var(--td-panneau-2)" width="10" height="160"/><rect style="fill:var(--td-bande-2)" x="80" y="80" width="10" height="10"/>';
 for(var i=0;i<=16;i++){g+='<path style="stroke:var(--td-encre)" d="M'+10*i+' 0V160M0 '+10*i+'H160" stroke-width="'+((i<2||i==16)?.9:(i==6||i==11)?.7:.3)+'"/>'}
 for(i=0;i<15;i++){g+='<text style="fill:var(--td-encre);font-family:var(--td-texte)" x="'+(15+i*10)+'" y="7.4" font-size="6.6" text-anchor="middle" font-weight="700">'+String.fromCharCode(65+i)+'</text><text style="fill:var(--td-encre);font-family:var(--td-texte)" x="5" y="'+(17.4+i*10)+'" font-size="6.6" text-anchor="middle" font-weight="700">'+(i+1)+'</text>'}
-g+='<g><path d="M83.7 82.6 82.4 80.9M86.3 82.6 87.6 80.9" fill="none" stroke-width=".5" style="stroke:var(--td-encre)"/><circle cx="82.3" cy="80.8" r=".55" fill="#2FA84F" stroke-width=".3" style="stroke:var(--td-encre)"/><circle cx="87.7" cy="80.8" r=".55" fill="#2FA84F" stroke-width=".3" style="stroke:var(--td-encre)"/><circle cx="85" cy="85.4" r="3.1" fill="#2FA84F" stroke="#121016" stroke-width=".6"/><circle cx="83.8" cy="84.8" r=".6" fill="#121016"/><circle cx="86.2" cy="84.8" r=".6" fill="#121016"/><path d="M83.8 86.6Q85 87.6 86.2 86.6" fill="none" stroke="#121016" stroke-width=".5"/></g>';
-$("#defs").innerHTML='<g id="g">'+g+'</g>';
-function grid(o){var p=EX[o.id].p,n=o.n==null?p.length/2:o.n,s='<div class="al-grille"><svg class="gr'+(o.click?" ck":"")+'" viewBox="0 0 160 160" role="img" aria-label="Grille A1 à O15"><use href="#g" width="160" height="160"/>';
+var al='<g><path d="M83.7 82.6 82.4 80.9M86.3 82.6 87.6 80.9" fill="none" stroke-width=".5" style="stroke:var(--td-encre)"/><circle cx="82.3" cy="80.8" r=".55" fill="#2FA84F" stroke-width=".3" style="stroke:var(--td-encre)"/><circle cx="87.7" cy="80.8" r=".55" fill="#2FA84F" stroke-width=".3" style="stroke:var(--td-encre)"/><circle cx="85" cy="85.4" r="3.1" fill="#2FA84F" stroke="#121016" stroke-width=".6"/><circle cx="83.8" cy="84.8" r=".6" fill="#121016"/><circle cx="86.2" cy="84.8" r=".6" fill="#121016"/><path d="M83.8 86.6Q85 87.6 86.2 86.6" fill="none" stroke="#121016" stroke-width=".5"/></g>';
+/* l'alien est un dessin à part (T145) : il se place sur sa case, et peut suivre le programme */
+$("#defs").innerHTML='<g id="g">'+g+'</g><g id="al">'+al+'</g>';
+function grid(o){var p=EX[o.id].p,n=o.n==null?p.length/2:o.n,s='<div class="al-grille"><svg id="al-gr" class="gr'+(o.click?" ck":"")+'" viewBox="0 0 160 160" '+(o.click?'tabindex="0" role="application" aria-roledescription="grille" aria-label="Grille de A1 à O15 : les flèches déplacent la case choisie, Entrée valide." aria-describedby="al-case-aide"':'role="img" aria-label="Grille A1 à O15"')+'><use href="#g" width="160" height="160"/>';
 if(n>0){var q=[8,8].concat(p.slice(0,n*2)),pts=[];for(var j=0;j<q.length;j+=2)pts.push((10*q[j]+5)+","+(10*q[j+1]+5));
 s+='<polyline class="g-chemin" fill="none" stroke-width="1.4" stroke-linejoin="round" points="'+pts.join(" ")+'"/>';
 for(j=2;j<q.length;j+=2)s+='<circle class="g-etape" cx="'+(10*q[j]+5)+'" cy="'+(10*q[j+1]+5)+'" r="1.2"/><text class="g-num" x="'+(10*q[j]+9.3)+'" y="'+(10*q[j+1]+9.3)+'" font-size="3.8" text-anchor="end" font-weight="700" stroke-width=".9" paint-order="stroke">'+j/2+'</text>';
 if(o.final)s+='<circle cx="'+(10*q[q.length-2]+5)+'" cy="'+(10*q[q.length-1]+5)+'" r="3.8" class="g-arrivee" fill="none" stroke-width="1.3"/>'}
-if(o.pick)s+='<circle cx="'+(10*o.pick[0]+5)+'" cy="'+(10*o.pick[1]+5)+'" r="4" class="g-choix" stroke-width="1.2"/>';
+s+=trace(o.eleve);
+var a=o.alien||[8,8];s+='<use href="#al" class="g-alien" transform="translate('+10*(a[0]-8)+' '+10*(a[1]-8)+')"/>';
+if(o.click||o.pick)s+='<circle cx="'+(10*(o.pick||[8,8])[0]+5)+'" cy="'+(10*(o.pick||[8,8])[1]+5)+'" r="4" class="g-choix" stroke-width="1.2"'+(o.pick?'':' visibility="hidden"')+'/>';
 if(o.click)for(var x=1;x<=15;x++)for(var y=1;y<=15;y++)s+='<rect class="c" data-act="pick" data-x="'+x+'" data-y="'+y+'" x="'+10*x+'" y="'+10*y+'" width="10" height="10"><title>'+cell(x,y)+'</title></rect>';
-return s+'</svg></div>'}
+return s+'</svg>'+(o.legende?'<p class="al-legende"><span class="al-trait" aria-hidden="true"></span>parcours demandé · <span class="al-trait el" aria-hidden="true"></span>trajet de ton alien</p>':'')+'</div>'}
+/* le trajet de l'alien de l'élève (T145) : tirets, sur le parcours demandé */
+function trace(pas,k){if(!pas||!pas.length)return '<polyline class="g-eleve" points=""/>';var pts=["85,85"];pas.slice(0,k==null?pas.length:k).forEach(function(q){pts.push((10*q[1]+5)+","+(10*q[2]+5))});return '<polyline class="g-eleve" points="'+pts.join(" ")+'"/>'}
 /* ---------- API Supabase (REST/RPC) ---------- */
 function rpc(fn,a){if(!CFG.url||!CFG.key)return Promise.reject(new Error("Le site n’est pas encore relié à Supabase (voir config.js)."));
 return fetch(CFG.url.replace(/\/$/,"")+"/rest/v1/rpc/"+fn,{method:"POST",headers:Object.assign({apikey:CFG.key,"Content-Type":"application/json"},CFG.key.indexOf("eyJ")===0?{Authorization:"Bearer "+CFG.key}:{}),body:JSON.stringify(a)})
@@ -137,17 +187,28 @@ BD.map(function(b){return '<span class="badge'+(bd.indexOf(b[1])<0?" off":"")+'"
 F.map(function(f,k){var n=nOK(f[1]);return '<div class="card"><div class="row sp"><b>Fiche '+(k+1)+' – '+esc(f[0])+'</b><span>'+n+'/'+f[1].length+'</span></div><div class="bar"><i style="width:'+100*n/f[1].length+'%"></i></div><p class="tiles">'+
 f[1].map(function(id){var o=st(id);return '<button class="t '+(o.solved?"ok":o.peeked?"pk":o.attempts?"tr":"")+'" data-act="ex" data-id="'+id+'">'+id+'</button>'}).join("")+'</p></div>'}).join("")+
 '<p class="muted"><small>Vert et ✓ : réussi · orange et coin replié : correction vue · contour orange pointillé : déjà essayé. Exercices : Alien-Python, M. Degrange (licence MIT).</small></p>'}
-function vEx(){var id=cur.id,k=fk(id),i=ALL.indexOf(id),e=EX[id],iv=inv(id),o=st(id),full=cur.corr||o.solved&&cur.ok;
+function vEx(){var id=cur.id,k=fk(id),i=ALL.indexOf(id),e=EX[id],iv=inv(id),o=st(id),full=cur.corr||o.solved&&cur.ok,occ=cur.enCours?' aria-disabled="true"':'';
 var nav='<div class="row sp"><button class="ghost" data-act="home">← Fiches</button><span><button class="ghost" data-act="nav" data-id="'+(ALL[i-1]||"")+'"'+(i?"":" disabled")+'>Précédent</button> <button class="ghost" data-act="nav" data-id="'+(ALL[i+1]||"")+'"'+(i<ALL.length-1?"":" disabled")+'>Suivant</button></span></div>';
-var left=iv?'<p>Le parcours de l’alien est tracé. <b>Complète le programme</b> pour qu’il le produise.</p><div class="al-editeur"><pre class="al-code al-miroir" aria-hidden="true">'+miroir(cur.txt)+'</pre><textarea class="code" id="txt" rows="'+(e.c.split("\n").length+1)+'" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" aria-label="Programme à compléter">'+esc(cur.txt)+'</textarea></div>':
-'<p>L’alien part de <b>H8</b>. Exécute le programme, puis <b>clique sur la case d’arrivée</b>.</p>'+bloc(e.c)+'<p>'+(cur.pick?'Case choisie : <b>'+cell(cur.pick[0],cur.pick[1])+'</b>':'<span class="muted">Aucune case choisie</span>')+'</p>';
+var fige=cur.ok||cur.corr;
+var left=iv?'<p>Le parcours de l’alien est tracé. <b>Complète le programme</b> pour qu’il le produise.</p><div class="al-editeur"><pre class="al-code al-miroir" aria-hidden="true">'+miroir(cur.txt)+'</pre><textarea class="code" id="txt" rows="'+(e.c.split("\n").length+1)+'" spellcheck="false" wrap="off" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Programme à compléter" aria-describedby="al-ed-aide" aria-autocomplete="list" aria-controls="al-ac" aria-expanded="false">'+esc(cur.txt)+'</textarea><ul id="al-ac" class="al-ac" role="listbox" aria-label="Propositions" hidden></ul></div>'+
+'<p class="al-ed-aide" id="al-ed-aide">Entrée après « : » décale la ligne suivante. Tab décale la ligne, Maj+Tab la recule. Pour sortir du champ : Échap, puis Tab.</p><p class="al-ed-info" id="al-ed-info" aria-live="polite"></p>':
+'<p>L’alien part de <b>H8</b>. Exécute le programme, puis <b>clique sur la case d’arrivée</b> (ou écris-la).</p><div id="al-prog">'+bloc(e.c)+'</div>'+
+'<div class="al-case"><label for="al-case">Case d’arrivée</label><input id="al-case" value="'+(cur.pick?cell(cur.pick[0],cur.pick[1]):"")+'" maxlength="4" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="done" aria-describedby="al-case-aide"'+(fige?' readonly':'')+'><p class="al-case-aide" id="al-case-aide">Une lettre de A à O, puis un nombre de 1 à 15. Sur la grille, les flèches déplacent aussi la case choisie.</p></div>';
 var help=cur.h?'<div class="fb"><b>Aide</b><br>'+RAP[k].map(function(a){return(a[0]?'<code class="al-py">'+colorer(a[0])+'</code> ':'')+esc(a[1])}).join("<br>")+
 (cur.h>1?'<br><br>'+(iv?'Lignes de la solution dévoilées : '+cur.h2+bloc(e.s.split("\n").slice(0,cur.h2).join("\n")):'Étape '+cur.n+' : l’alien est en <b>'+cell.apply(null,cur.n?[e.p[cur.n*2-2],e.p[cur.n*2-1]]:[8,8])+'</b>'):'')+'</div>':'';
 var corr=cur.corr?'<div class="fb no"><b>Correction</b><br>'+(iv?bloc(e.s):'Case d’arrivée : <b>'+cell.apply(null,endOf(id))+'</b> (trajet tracé sur la grille).')+'</div>':'';
 return nav+'<h1>Exercice '+id+' <small class="muted">· Fiche '+(k+1)+'</small></h1><div class="col2"><div class="card">'+left+
-'<div class="row"><button data-act="ok">Valider</button><button class="alt" data-act="help">Un coup de pouce</button><button class="ghost" data-act="corr">Correction</button></div>'+
-(cur.fb?'<div class="fb'+(cur.fb[0]?"":" no")+'">'+esc(cur.fb[1])+'</div>':'')+help+corr+'</div><div class="card">'+
-grid({id:id,click:!iv&&!cur.ok&&!cur.corr,pick:iv?null:cur.pick,n:iv||full?null:cur.n,final:iv||full})+'</div></div>'}
+'<div class="row"><button data-act="ok"'+occ+'>Valider</button>'+(iv?'<button class="alt" data-act="run"'+occ+'>Lancer</button>':full?'<button class="alt" data-act="rejouer"'+occ+'>Voir l’alien suivre le programme</button>':'')+'<button class="alt" data-act="help">Un coup de pouce</button><button class="ghost" data-act="corr">Correction</button></div>'+
+(iv?'<p class="muted"><small>« Lancer » montre ce que fait ton programme, sans compter d’essai. Python se charge au premier lancement (une seule fois, environ '+POIDS_PYTHON+').</small></p>':'')+
+(cur.fb?'<div class="fb'+(cur.fb[0]?"":" no")+'">'+esc(cur.fb[1])+'</div>':'')+vRes()+help+corr+'</div><div class="card">'+
+grid({id:id,click:!iv&&!fige,pick:iv?null:cur.pick,n:iv||full?null:cur.n,final:iv||full,eleve:cur.trajet,alien:cur.trajet&&cur.trajet.length?cur.trajet[cur.trajet.length-1].slice(1):null,legende:iv})+'</div></div>'}
+/* ce que Python a dit du programme (T145) : un message, ce qu'il affiche, l'erreur telle quelle et son explication à la demande */
+var POIDS_PYTHON="10 Mo";
+function vRes(){var r=cur.res;if(!r)return "";var h=r.msg?'<p'+(r.attente?' class="muted"':'')+'>'+esc(r.msg)+'</p>':'';
+if(r.sortie)h+='<p class="al-etiq">ce qu’affiche ton programme</p><pre class="al-console">'+String(r.sortie).replace(/\s+$/,"").split("\n").map(function(l){return '<span class="al-l">'+(esc(l)||" ")+'</span>'}).join("")+'</pre>';
+if(r.erreur)h+='<p class="al-etiq er">erreur</p><pre class="al-console er">'+AlienPython.colorerErreur(r.erreur)+'</pre><button type="button" class="alt al-petit" data-act="exp" aria-expanded="'+!!cur.exp+'" aria-controls="al-exp">'+(cur.exp?'Masquer l’explication':'Explique-moi cette erreur')+'</button>'+
+'<div class="al-exp" id="al-exp"'+(cur.exp?'':' hidden')+'><p><b>En français :</b> '+AlienPython.expliquer(r.erreur,r.code,r.ligne)+'</p><p class="al-vocab">'+AlienPython.vocabulaire()+'</p></div>';
+return h?'<div class="al-res">'+h+'</div>':''}
 function vCls(){var d=cur&&cur.cls;
 return '<div class="row sp"><button class="ghost" data-act="home">← Retour</button><h1>Ma classe</h1></div>'+(!d?'<p>Chargement…</p>':(function(){var tot=d.reduce(function(a,s){return a+s.solved},0),max=d.length*ALL.length;
 return '<div class="card"><b>Ensemble, la classe a réussi '+tot+' exercices</b> <span class="muted">('+d.length+' élèves)</span><div class="bar"><i style="width:'+100*tot/Math.max(max,1)+'%"></i></div><p class="muted">Chacun avance à son rythme : les prénoms sont classés par ordre alphabétique.</p></div>'+
@@ -161,13 +222,37 @@ return '<div class="row sp"><button class="ghost" data-act="home">← Élèves</
 D.map(function(s){var m={},h=0;s.ex.forEach(function(e){m[e.ex]=e;h+=e.hints+(e.peeked?1:0)});var t=0;
 return '<tr><td>'+esc(s.name)+'</td><td class="code">'+esc(s.code)+'</td>'+F.map(function(f){var n=f[1].filter(function(id){return m[id]&&m[id].solved}).length;t+=n;return '<td class="al-jauge" style="--n:'+(n/f[1].length)+'">'+n+'/'+f[1].length+'</td>'}).join("")+'<td><b>'+t+'</b>/'+ALL.length+'</td><td>'+h+'</td><td>'+(s.last?new Date(s.last).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}):"–")+'</td></tr>'}).join("")+
 '</table><p class="muted"><small>F1…F7 = fiches. « Aides » = coups de pouce + corrections consultées.</small></p></div>':'<div class="card">Aucun élève pour le moment. Donne-leur le code classe <b class="code">'+esc(T.c)+'</b>.</div>')}
-function draw(){app.innerHTML=({login:vLogin,home:vHome,ex:vEx,cls:vCls,prof:vProf})[V]();window.scrollTo(0,0)}
+/* redessiner : en haut de la page seulement pour une nouvelle vue ; sinon, la page reste où elle est
+   et le clavier reste sur l'élément qu'il touchait (T145) */
+var dernVue="";
+function draw(){var a=document.activeElement,cle=null,sel=null,vue=V+"|"+(V=="ex"&&cur?cur.id:"");
+if(a&&a!==document.body&&app.contains(a)){if(a.id)cle="#"+a.id;else if(a.dataset&&a.dataset.act)cle='[data-act="'+a.dataset.act+'"]'+(a.dataset.id?'[data-id="'+a.dataset.id+'"]':'');if(a.id=="txt")sel=[a.selectionStart,a.selectionEnd,a.scrollLeft,a.scrollTop]}
+app.innerHTML=({login:vLogin,home:vHome,ex:vEx,cls:vCls,prof:vProf})[V]();
+if(vue!==dernVue)window.scrollTo(0,0);else if(cle){var b=app.querySelector(cle);if(b&&!b.disabled){b.focus({preventScroll:true});if(sel&&b.id=="txt"){b.setSelectionRange(sel[0],sel[1]);b.scrollLeft=sel[2];b.scrollTop=sel[3]}}}
+dernVue=vue;apres()}
+function apres(){if(V!="ex"||!cur||!cur.id)return;var t=$("#txt");if(t&&window.AlienEditeur)AlienEditeur.monter(t,{serie:cur.id.charAt(0),info:"al-ed-info"});marquer()}
+/* les lignes du programme affiché (le miroir de l'éditeur, ou le code à lire) */
+function lignesProg(){return Array.prototype.slice.call(document.querySelectorAll(inv(cur.id)?".al-miroir .ligne":"#al-prog .ligne"))}
+function marquer(){if(!cur||!cur.errLigne)return;var L=lignesProg(),l=L[cur.errLigne-1];if(l)l.classList.add("al-err")}
+function annoncer(t){var z=$("#al-annonce");if(!z)return;z.textContent="";setTimeout(function(){z.textContent=t},60)}
 function go(v,m){V=v;msg=m||"";draw()}
 function open(id){if(!id)return;cur={id:id,pick:null,n:0,h:0,h2:0,corr:false,ok:false,fb:null,txt:EX[id].c};go("ex")}
 function loadStudent(c,k){return rpc("alien_student_login",{p_class:c,p_code:k}).then(function(r){P={};r.progress.forEach(function(o){P[o.ex]=o});S={c:c.toUpperCase().trim(),k:k.trim(),n:r.name};try{localStorage.setItem("ap_s",JSON.stringify(S))}catch(e){};go("home")})}
 function teacher(c,t){return rpc("alien_teacher_overview",{p_class:c,p_teacher:t}).then(function(d){T={c:c.toUpperCase().trim(),t:t,d:d};try{sessionStorage.setItem("ap_t",JSON.stringify({c:T.c,t:t}))}catch(e){};go("prof")})}
 /* ---------- événements ---------- */
-app.addEventListener("input",function(e){if(e.target.id=="txt")cur.txt=e.target.value});
+app.addEventListener("input",function(e){if(e.target.id=="txt"){cur.txt=e.target.value;cur.errLigne=0}
+else if(e.target.id=="al-case"){var c=lireCase(e.target.value);e.target.setAttribute("aria-invalid",String(!c&&e.target.value.trim().length>1));if(c){cur.pick=c;majChoix(false)}}});
+/* la case d'arrivée au clavier (T145) : écrite (« H8 ») ou choisie avec les flèches sur la grille */
+function lireCase(v){var m=String(v).trim().toUpperCase().match(/^([A-O])\s*(1[0-5]|[1-9])$/);return m?[m[1].charCodeAt(0)-64,+m[2]]:null}
+function majChoix(dire){var c=$("#al-gr .g-choix"),f=$("#al-case"),p=cur.pick;if(!p)return;
+if(c){c.setAttribute("cx",10*p[0]+5);c.setAttribute("cy",10*p[1]+5);c.removeAttribute("visibility")}
+if(f&&document.activeElement!==f){f.value=cell(p[0],p[1]);f.removeAttribute("aria-invalid")}
+if(dire)annoncer("Case choisie : "+cell(p[0],p[1]))}
+app.addEventListener("keydown",function(e){var t=e.target;
+if(t.id=="al-case"&&e.key=="Enter"){e.preventDefault();var c=lireCase(t.value);if(t.value.trim()&&!c){t.setAttribute("aria-invalid","true");annoncer("Cette case n’existe pas : une lettre de A à O, puis un nombre de 1 à 15.");return}if(c)cur.pick=c;validerLecture()}
+else if(t.id=="al-gr"){var d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
+if(d){e.preventDefault();var p=cur.pick||[8,8];cur.pick=[Math.min(15,Math.max(1,p[0]+d[0])),Math.min(15,Math.max(1,p[1]+d[1]))];majChoix(true)}
+else if(e.key=="Enter"||e.key==" "){e.preventDefault();if(!cur.pick){cur.pick=[8,8];majChoix(true)}else validerLecture()}}});
 app.addEventListener("submit",function(e){e.preventDefault();var f=e.target,d=Object.fromEntries(new FormData(f)),w=f.dataset.f,p;
 if(w=="join")p=rpc("alien_join_class",{p_class:d.c,p_name:d.n}).then(function(r){return loadStudent(d.c,r.code).then(function(){note("Ton code personnel : "+r.code+" — note-le bien !")})});
 else if(w=="login")p=loadStudent(d.c,d.k);
@@ -183,14 +268,60 @@ else if(a=="ex"||a=="nav")open(id)
 else if(a=="pick"){cur.pick=[+b.dataset.x,+b.dataset.y];draw()}
 else if(a=="help"){cur.h++;if(cur.h>1){if(inv(cur.id))cur.h2=Math.min(cur.h2+1,EX[cur.id].s.split("\n").length);else cur.n=Math.min(cur.n+1,EX[cur.id].p.length/2)}save(cur.id,{hints:cur.h});draw()}
 else if(a=="corr"){if(cur.corr||confirm("Voir la correction ? Elle sera notée dans ta progression.")){cur.corr=true;save(cur.id,{peeked:true});draw()}}
-else if(a=="ok"){var id2=cur.id,e2=EX[id2],good,before=earned();
-if(inv(id2))good=cur.txt.replace(/\s+/g,"")==e2.s.replace(/\s+/g,"");
-else{if(!cur.pick){cur.fb=[false,"Clique d’abord sur la case où tu penses que l’alien arrive."];return draw()}var en=endOf(id2);good=cur.pick[0]==en[0]&&cur.pick[1]==en[1]}
-if(good){cur.ok=true;cur.fb=[true,pick(["Bravo, c’est exact !","Bien joué, l’alien est arrivé à bon port !","Exact ! Tu lis le code comme un pro.","Parfait !"])];save(id2,{solved:true,attempt:true,hints:cur.h});var nw=earned().filter(function(x){return before.indexOf(x)<0});if(nw.length)setTimeout(function(){note("🏅 Nouveau badge : "+nw.join(", "))},300)}
-else{cur.fb=[false,inv(id2)?"Ce n’est pas tout à fait ça. Compare avec le parcours, ou demande un coup de pouce.":pick(["Pas tout à fait… refais le trajet ligne par ligne.","Presque ! Essaie de suivre l’alien étape par étape (coup de pouce).","Ce n’est pas la bonne case, mais continue !"])];save(id2,{attempt:true,hints:cur.h})}draw()}
+else if(a=="ok"){if(cur.enCours)return;if(inv(cur.id))executer(true);else validerLecture()}
+else if(a=="run"){if(!cur.enCours)executer(false)}
+else if(a=="rejouer"){if(!cur.enCours)rejouer()}
+else if(a=="exp"){cur.exp=!cur.exp;draw()}
 else if(a=="cls"){cur={cls:null};V="cls";draw();rpc("alien_class_view",{p_class:S.c,p_code:S.k}).then(function(d){cur.cls=d;draw()}).catch(function(er){go("home");note(er.message)})}
 else if(a=="refresh")teacher(T.c,T.t).catch(function(er){note(er.message)});
 else if(a=="tout"){T=null;try{sessionStorage.removeItem("ap_t")}catch(x){};go("prof")}});
+/* ---------- valider, lancer, rejouer (T145) ----------
+   La réussite et l'essai sont enregistrés exactement comme avant (save) ; seule la façon de juger un programme change :
+   Python l'exécute, et l'on compare le trajet de l'alien, case par case, au parcours demandé. */
+var BRAVO=["Bravo, c’est exact !","Bien joué, l’alien est arrivé à bon port !","Exact ! Tu lis le code comme un pro.","Parfait !"];
+function conclure(c0,id2,good,before,faux){if(good){c0.ok=true;c0.fb=[true,pick(BRAVO)];save(id2,{solved:true,attempt:true,hints:c0.h});var nw=earned().filter(function(x){return before.indexOf(x)<0});if(nw.length)setTimeout(function(){note("🏅 Nouveau badge : "+nw.join(", "))},300)}
+else{c0.fb=[false,faux||(inv(id2)?"Ce n’est pas tout à fait ça. Compare avec le parcours, ou demande un coup de pouce.":pick(["Pas tout à fait… refais le trajet ligne par ligne.","Presque ! Essaie de suivre l’alien étape par étape (coup de pouce).","Ce n’est pas la bonne case, mais continue !"]))];save(id2,{attempt:true,hints:c0.h})}
+if(cur===c0){draw();annoncer(c0.fb[1]+(c0.res&&c0.res.msg&&!c0.res.attente?" "+c0.res.msg:""))}}
+function validerLecture(){var id2=cur.id,before=earned();if(cur.ok||cur.corr){var f0=$("#al-case");if(f0&&f0.readOnly)return}
+if(!cur.pick){cur.fb=[false,"Choisis d’abord la case où tu penses que l’alien arrive : clique sur la grille, ou écris-la."];draw();annoncer(cur.fb[1]);return}
+var en=endOf(id2);conclure(cur,id2,cur.pick[0]==en[0]&&cur.pick[1]==en[1],before)}
+var MSG_PY={erreur:"Python s’est arrêté sur une erreur. Lis son message ci-dessous.",hors:"ton alien sort de la grille.","trop-long":"ton programme ne s’arrête pas."};
+function executer(valider){var c0=cur,id2=cur.id,e2=EX[id2],code=cur.txt,before=earned();
+// la solution elle-même (même forme : mêmes lignes, mêmes décalages, espaces autour des signes non comptés) : juste tout de suite, sans attendre Python
+if(valider&&AlienPython.memeForme(code,e2.s)){c0.trajet=AlienPython.pasAttendus(e2.p);c0.res=null;c0.errLigne=0;conclure(c0,id2,true,before);animer(c0.trajet,null);return}
+c0.enCours=true;c0.exp=false;c0.res={attente:true,msg:AlienPython.etat().charge?"Ton programme tourne…":"Python se charge… La première fois, cela peut prendre quelques secondes."};draw();
+var lent=setTimeout(function(){if(c0.enCours&&cur===c0){c0.res={attente:true,msg:"Python se charge encore : la connexion est lente. Patiente un peu…"};draw()}},15000);
+AlienPython.lancer(code).then(function(r){clearTimeout(lent);c0.enCours=false;var res={code:code,ligne:r.ligne||0},vu=cur===c0;
+if(r.etat=="indisponible"){
+ if(valider){var good=AlienPython.memeForme(code,e2.s);res.msg="Python n’a pas pu se charger (pas de connexion, ou connexion trop lente) : ton programme a été comparé à la correction, ligne à ligne (les espaces autour des signes ne comptent pas, les décalages si). Avec Python, une solution juste écrite autrement est aussi acceptée.";c0.res=res;conclure(c0,id2,good,before)}
+ else{res.msg="Python n’a pas pu se charger (pas de connexion, ou connexion trop lente) : ton programme ne peut pas être lancé pour l’instant. Tu peux quand même le valider.";c0.res=res;if(vu){draw();annoncer(res.msg)}}
+ return}
+c0.trajet=r.pas;c0.errLigne=0;
+if(r.etat=="erreur"){res.erreur=r.detail;c0.errLigne=r.ligne;res.msg="Python s’est arrêté sur une erreur"+(r.ligne?", ligne "+r.ligne:"")+". Voici son message :"}
+else if(r.etat=="hors"){var h=r.hors;c0.errLigne=h[0];res.msg="Ligne "+h[0]+" : "+h[1]+"("+h[2]+") enverrait ton alien hors de la grille (elle va de A1 à O15). Il s’arrête en "+cell(h[3],h[4])+"."}
+else if(r.etat=="trop-long"){c0.errLigne=r.ligne;res.msg="Ton programme ne s’arrête pas : Python l’a arrêté"+(r.ligne?" à la ligne "+r.ligne:"")+", après "+(r.pas.length>5000?"5 000 déplacements":"20 000 lignes exécutées")+". Une boucle qui ne finit jamais ? Vérifie ce qui doit l’arrêter."}
+else res.msg=r.pas.length?"Ton alien a suivi ton programme : "+r.pas.length+" déplacement"+(r.pas.length>1?"s":"")+", il finit en "+cell(r.x,r.y)+".":"Ton programme s’est exécuté, mais ton alien n’a pas bougé : il reste en H8.";
+if(r.sortie)res.sortie=r.sortie;c0.res=res;
+if(valider){var cmp=AlienPython.comparer(e2,code,r);if(cmp.juste)res.msg=cmp.remarque||"";else if(r.etat=="erreur")res.msg="";
+ conclure(c0,id2,cmp.juste,before,cmp.juste?null:r.etat=="ok"?cmp.message+" Compare avec le parcours, ou demande un coup de pouce.":"Pas encore : "+MSG_PY[r.etat]+(cmp.message?" "+cmp.message:""))}
+else if(vu){draw();annoncer(res.msg)}
+if(vu){if(!valider&&r.pas.length&&window.innerWidth<=760){var g=$("#al-gr");if(g){var b=g.getBoundingClientRect();if(b.top<0||b.bottom>window.innerHeight)g.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}}animer(r.pas,true)}})}
+/* revoir l'alien exécuter le programme d'un exercice déjà réussi (ou dont la correction est ouverte) */
+function rejouer(){var c0=cur,id2=cur.id;c0.enCours=true;c0.res={attente:true,msg:AlienPython.etat().charge?"L’alien se prépare…":"Python se charge… La première fois, cela peut prendre quelques secondes."};draw();
+AlienPython.lancer(EX[id2].c).then(function(r){c0.enCours=false;if(cur!==c0)return;
+var ok=r.etat=="ok";c0.res={msg:ok?"L’alien refait le trajet : la ligne surlignée est celle qu’il exécute.":"Python n’a pas pu se charger : l’alien refait le trajet, sans montrer les lignes."};draw();
+animer(ok?r.pas:AlienPython.pasAttendus(EX[id2].p),ok)})}
+/* l'alien suit le trajet sur la grille, la ligne exécutée surlignée ; mouvement réduit : un saut par déplacement */
+var anim=0;
+function animer(pas,avecLignes){var t=++anim,svg=$("#al-gr");if(!svg||!pas||!pas.length)return;
+var pl=svg.querySelector(".g-eleve"),al=svg.querySelector(".g-alien"),L=avecLignes?lignesProg():[],reduit=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+var c=reduit?{cases:pas.map(function(q){return [q[1],q[2]]}),lignes:pas.map(function(q){return q[0]})}:AlienPython.cases(pas,8,8),n=c.cases.length,d=reduit?450:Math.max(30,Math.min(110,3600/n)),pts=["85,85"],k=0,avant=null;
+function pose(x,y){al.setAttribute("transform","translate("+10*(x-8)+" "+10*(y-8)+")")}
+function surligne(l){if(avant)avant.classList.remove("al-actif");avant=l?L[l-1]||null:null;if(avant)avant.classList.add("al-actif")}
+pose(8,8);pl.setAttribute("points","85,85");
+(function suite(){if(t!==anim||!document.body.contains(pl)){surligne(0);return}
+if(k>=n){setTimeout(function(){if(t===anim)surligne(0);marquer()},d);return}
+var q=c.cases[k];pts.push((10*q[0]+5)+","+(10*q[1]+5));pl.setAttribute("points",pts.join(" "));pose(q[0],q[1]);surligne(c.lignes[k]);k++;setTimeout(suite,d)})()}
 /* ---------- démarrage ---------- */
 if(location.hash=="#prof"){try{var tt=JSON.parse(sessionStorage.getItem("ap_t")||"null");if(tt)teacher(tt.c,tt.t).catch(function(){go("prof")});else go("prof")}catch(e){go("prof")}}
 else if(S)loadStudent(S.c,S.k).catch(function(){go("login")});

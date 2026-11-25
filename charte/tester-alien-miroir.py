@@ -6,7 +6,9 @@ les barres de défilement CLASSIQUES (celles des PC du lycée, pas les barres
 superposées), puis, de 320 à 1440 px et de 100 à 300 % de zoom :
   1. tape une ligne plus longue que le champ, caractère par caractère ;
   2. colle un long texte (30 lignes longues) ;
-  3. fait défiler le champ jusqu'au bout (à droite et en bas), puis au milieu.
+  3. fait défiler le champ jusqu'au bout (à droite et en bas), puis au milieu ;
+  4. (T145) écrit avec l'éditeur : Entrée après « : », Tab, Maj+Tab, une proposition de
+     l'autocomplétion, et surligne une ligne (erreur, ligne exécutée).
 À chaque étape, la position de caractères visibles dans le miroir est comparée
 à leur position dans le champ (calculée d'après la police, les marges et le
 défilement du champ) : l'écart doit rester d'un pixel au plus.
@@ -110,6 +112,21 @@ def main():
                 controle("défilement au milieu")
                 pg.keyboard.press("Control+Home")
                 controle("retour au début")
+                # T145 : ce que l'éditeur écrit lui-même (décalage automatique, Tab, Maj+Tab, autocomplétion)
+                pg.evaluate("() => { const t = document.getElementById('txt'); t.focus(); t.select(); document.execCommand('insertText', false, EX.B3.c); t.scrollLeft = 0; t.scrollTop = 0; }")
+                pg.keyboard.press("Control+End"); pg.keyboard.type("\nif a < 4 :\nhaut(2)")
+                if not pg.input_value("#txt").endswith("\nif a < 4 :\n    haut(2)"): erreurs.append("%s : Entrée après « : » n'a pas décalé la ligne" % nom)
+                controle("Entrée après « : » (décalage automatique)")
+                pg.keyboard.press("Shift+Tab"); controle("Maj+Tab : la ligne recule")
+                pg.keyboard.press("Tab"); pg.keyboard.press("Tab"); controle("Tab deux fois : la ligne avance")
+                pg.keyboard.press("End"); pg.keyboard.press("Enter"); pg.keyboard.type("dr")
+                if not pg.is_visible("#al-ac"): erreurs.append("%s : l'autocomplétion ne s'ouvre pas" % nom)
+                controle("liste des propositions ouverte")
+                pg.keyboard.press("Enter"); pg.keyboard.type("3")
+                if not pg.input_value("#txt").endswith("droite(3)"): erreurs.append("%s : la proposition n'est pas écrite (%r)" % (nom, pg.input_value("#txt")[-12:]))
+                controle("proposition choisie (droite())")
+                pg.evaluate("() => { const L = document.querySelectorAll('.al-miroir .ligne'); L[2].classList.add('al-err'); L[4].classList.add('al-actif'); }")
+                controle("lignes surlignées (erreur, ligne exécutée)")
                 ctx.close()
         nav.close()
     s.shutdown()
