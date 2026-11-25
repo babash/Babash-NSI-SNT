@@ -91,6 +91,17 @@ for i in range(1, 5):
 97
 94
 90</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("while1.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+assert not _noeuds or any(isinstance(_n, _ast.While) for _n in _noeuds), "La consigne demande une boucle while."
+assert not any(isinstance(_n, _ast.For) for _n in _noeuds), "La consigne demande une boucle while, sans for."
+def _a_la_main(_n):
+    _c = lambda a: isinstance(a, _ast.Constant) or (isinstance(a, _ast.UnaryOp) and isinstance(a.operand, _ast.Constant))
+    return isinstance(_n, _ast.Call) and getattr(_n.func, "id", "") == "print" and _n.args and all(_c(a) for a in _n.args)
+assert not any(_a_la_main(_n) for _n in _noeuds), "Ton programme doit calculer les valeurs affichées, pas les écrire à la main."
+</script>
     <pre class="td-depart">
 total = 100
 i = 1
@@ -148,6 +159,17 @@ for i in range(1, 3):
     <pre class="td-attendu">
 -1
 -2</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("while2.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+assert not _noeuds or any(isinstance(_n, _ast.While) for _n in _noeuds), "La consigne demande une boucle while."
+assert not any(isinstance(_n, _ast.For) for _n in _noeuds), "La consigne demande une boucle while, sans for."
+def _a_la_main(_n):
+    _c = lambda a: isinstance(a, _ast.Constant) or (isinstance(a, _ast.UnaryOp) and isinstance(a.operand, _ast.Constant))
+    return isinstance(_n, _ast.Call) and getattr(_n.func, "id", "") == "print" and _n.args and all(_c(a) for a in _n.args)
+assert not any(_a_la_main(_n) for _n in _noeuds), "Ton programme doit calculer les valeurs affichées, pas les écrire à la main."
+</script>
     <pre class="td-depart">
 total = 1
 i = 1
@@ -210,6 +232,13 @@ print("Total :", total)</pre>
     <p class="td-consigne">Calcule et affiche 1 + 2 + 3 + … + 100.</p>
     <pre class="td-attendu">
 5050</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("somme.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+assert not _noeuds or any(isinstance(_n, (_ast.For, _ast.While, _ast.comprehension)) or (isinstance(_n, _ast.Call) and getattr(_n.func, "id", "") == "sum") for _n in _noeuds), "Ton programme doit faire le calcul avec une boucle : afficher le résultat écrit à la main ne suffit pas."
+assert not any(isinstance(_n, _ast.Constant) and _n.value == 5050 for _n in _noeuds), "Ton programme doit calculer ce nombre, pas l'écrire à la main."
+</script>
     <pre class="td-depart">
 # Ton programme
 
@@ -231,6 +260,13 @@ print(somme)</pre>
     <p class="td-consigne">Calcule et affiche 1 + 3 + 5 + … + 99.</p>
     <pre class="td-attendu">
 2500</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("somme.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+assert not _noeuds or any(isinstance(_n, (_ast.For, _ast.While, _ast.comprehension)) or (isinstance(_n, _ast.Call) and getattr(_n.func, "id", "") == "sum") for _n in _noeuds), "Ton programme doit faire le calcul avec une boucle : afficher le résultat écrit à la main ne suffit pas."
+assert not any(isinstance(_n, _ast.Constant) and _n.value == 2500 for _n in _noeuds), "Ton programme doit calculer ce nombre, pas l'écrire à la main."
+</script>
     <pre class="td-depart">
 # Ton programme
 
@@ -252,6 +288,13 @@ print(somme)</pre>
     <p class="td-consigne">Calcule et affiche −1 + 2 − 3 + 4 − 5 + … − 99 + 100.</p>
     <pre class="td-attendu">
 50</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("somme.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+assert not _noeuds or any(isinstance(_n, (_ast.For, _ast.While, _ast.comprehension)) or (isinstance(_n, _ast.Call) and getattr(_n.func, "id", "") == "sum") for _n in _noeuds), "Ton programme doit faire le calcul avec une boucle : afficher le résultat écrit à la main ne suffit pas."
+assert not any(isinstance(_n, _ast.Constant) and _n.value == 50 for _n in _noeuds), "Ton programme doit calculer ce nombre, pas l'écrire à la main."
+</script>
     <pre class="td-depart">
 # Ton programme
 
