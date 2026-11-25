@@ -76,7 +76,7 @@ def page_route():
     s.append('<div class="duo plan"><div><table class="rp"><tr><th>Si mon point faible est…</th><th>…je refais</th></tr>'
              + "".join(f"<tr><td>{nomb}</td><td>{res}</td></tr>" for nomb, _, res in BLOCS)
              + '<tr><td>Le robot, le problème</td><td>TD récapitulatif, exercices 5 et 6 · les 4 défis de l\'atelier, sans regarder</td></tr></table></div>'
-             '<div><div class="info-box ctl"><b>Le contrôle : 1&nbsp;h&nbsp;30, sur 20.</b><br>Traduire 1,5 · Erreurs 1,5 · Compléter 4 · Robot 5 · <b>Problème 8</b> (écrire du code : une condition, une boucle, deux boucles à la suite, une boucle dans une boucle).</div>'
+             '<div><div class="info-box ctl"><b>Le contrôle : 1&nbsp;h&nbsp;30, sur 20, sur le sujet.</b><br>Cours 4 · Traduire 1 · Erreurs 4 (corriger, puis expliquer) · Robot 3 · Compléter 2,5 · <b>Problème 5,5</b> (une fonction à écrire sous son en-tête et sa docstring, des programmes du robot à compléter).</div>'
              '<p class="etape"><b>Mes deux priorités :</b></p><div class="prio"><span>1.</span><i></i></div><div class="prio"><span>2.</span><i></i></div></div></div>')
     # coupon
     s.append('<div class="coupon"><div class="ct">✂ &nbsp; Coupon à rendre en fin de séance</div>'

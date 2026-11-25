@@ -21,7 +21,7 @@ C'est un gros contrôle de terminale : sujet court, réponses sur copie, comme �
 | Pile et file | dessins de `p` et `f`, valeurs de `a` et `c`, affichage, en tiroirs | la pile dessinée sur la copie, l'affichage, les lignes de `inverser`, et « que contient `f` après l'appel ? » |
 | Exercice de bac (24-NSIJ2JA1, exercice 2) | 8 questions, 10 points | 6 questions, **10 points** : la question 3 (`compte_fermante`, copie de la question 2) est remplacée par une phrase de l'énoncé ; la question 7 (nombre de comparaisons, ambiguë) est retirée ; l'adaptation est dite en tête du sujet |
 | Barème | des tiers et des trois-quarts de point cachés | points entiers ou demi-points à côté de chaque question, total 20 (vérifié par `verifier.py`) ; le corrigé dit qu'une fonction juste a tous ses points et qu'une erreur de syntaxe mineure coûte peu ou rien |
-| Temps | outil 157 min, à la main environ 140 min pour 2 h | outil 80 min, à la main environ 90 min (copie comprise) |
+| Temps | outil 160 min, à la main environ 140 min pour 2 h | outil 80 min, à la main environ 90 min (copie comprise) |
 | Pages | sujet 6, corrigé 9 | sujet 6, corrigé 8 |
 
 ## D'où vient chaque exercice

@@ -178,7 +178,7 @@ def route():
     for nomb, _, res in R.BLOCS:
         o.append(f'      <tr><td>{E(nomb)}</td><td>{E(res)}</td></tr>')
     o.append('      <tr><td>Le robot, le problème</td><td>TD récapitulatif, exercices 5 et 6 · les 4 défis de l\'atelier, sans regarder</td></tr>\n    </tbody>\n  </table></div>')
-    o.append('  <p><b>Le contrôle : 1 h 30, sur 20.</b> Traduire 1,5 · Erreurs 1,5 · Compléter 4 · Robot 5 · <b>Problème 8</b> (écrire du code : une condition, une boucle, deux boucles à la suite, une boucle dans une boucle).</p>')
+    o.append('  <p><b>Le contrôle : 1 h 30, sur 20, sur le sujet.</b> Cours 4 (vrai ou faux, QCM, relier) · Traduire 1 · Erreurs 4 (corriger, puis expliquer) · Robot 3 · Compléter 2,5 · <b>Problème 5,5</b> (une fonction à écrire sous son en-tête, des programmes du robot à compléter). L\'en-tête d\'une fonction peut porter une <b>docstring</b> : le texte entre trois guillemets <code>"""…"""</code>, sous la ligne <code>def</code>, qui dit ce que fait la fonction et donne des exemples.</p>')
     o.append(libre2('r2', 'Mes deux priorités :', 2,
                     'Pars des blocs « à revoir », puis des « fragiles » : le tableau du 4 te dit quoi refaire.'))
     o.append('''  <div class="td-papier-seul">
