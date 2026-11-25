@@ -182,6 +182,30 @@ stock = {"Manette": 50, "Casque": 80, "Cable": 15, "Housse": 20}
     <pre class="td-attendu">
 Cable
 Housse</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("moins_de_30.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+_r = _essai('stock = {"Manette": 50, "Casque": 80, "Cable": 15, "Housse": 20}', 'stock = {"Clavier": 25, "Souris": 35, "Tapis": 10, "Ecran": 30}')
+assert _r is None or _norm(_r) == _norm('Clavier\nTapis'), "Avec un autre stock, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+</script>
     <p class="td-aide"><code>for article in stock:</code> donne les clés une par une.</p>
     <p class="td-aide">Le prix de l'article est <code>stock[article]</code> : compare-le à 30 avec un <code>if</code>.</p>
     <div class="td-correction"><pre class="td-code" data-verifier="correction">
@@ -199,6 +223,30 @@ stock = {"Manette": 50, "Casque": 80, "Cable": 15, "Housse": 20}
 </pre>
     <pre class="td-attendu">
 165</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("somme.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+_r = _essai('stock = {"Manette": 50, "Casque": 80, "Cable": 15, "Housse": 20}', 'stock = {"Clavier": 25, "Souris": 35, "Tapis": 10}')
+assert _r is None or _norm(_r) == _norm('70'), "Avec un autre stock, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+</script>
     <p class="td-aide">Prends une variable <code>total</code> qui vaut 0 avant la boucle.</p>
     <p class="td-aide">À chaque tour, ajoute à <code>total</code> le prix de l'article ; affiche <code>total</code> après la boucle.</p>
     <div class="td-correction"><pre class="td-code" data-verifier="correction">
@@ -231,6 +279,30 @@ magasin = {"Portal": [15, 4], "Doom": [20, 0], "Roblox": [0, 100]}
 </pre>
     <pre class="td-attendu">
 RUPTURE</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("rupture.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+_r = _essai('magasin = {"Portal": [15, 4], "Doom": [20, 0], "Roblox": [0, 100]}', 'magasin = {"Tetris": [5, 0], "Zelda": [30, 2], "Mario": [0, 0]}')
+assert _r is None or _norm(_r) == _norm('RUPTURE\nRUPTURE'), "Avec un autre magasin, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+</script>
     <p class="td-aide">Parcours les clés avec <code>for jeu in magasin:</code>.</p>
     <p class="td-aide">La quantité du jeu est <code>magasin[jeu][1]</code>.</p>
     <div class="td-correction"><pre class="td-code" data-verifier="correction">
