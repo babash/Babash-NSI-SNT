@@ -55,8 +55,8 @@
        "texte": "range(2, 5) donne 2, 3, 4, 5.",
        "reponse": false,
        "explication": "range s'arrête juste avant la fin : 2, 3, 4.",
-       "code": "r = list(range(2, 5))",
-       "verifier": "r == [2, 3, 4, 5]"
+       "code": "r = range(2, 5)",
+       "verifier": "list(r) == [2, 3, 4, 5]"
       },
       {
        "texte": "while répète tant que sa condition est vraie.",
@@ -72,22 +72,22 @@
        "texte": "range(0, 10, 3) donne 0, 3, 6, 9.",
        "reponse": true,
        "explication": "On part de 0 et on ajoute 3 tant qu'on reste avant 10.",
-       "code": "r = list(range(0, 10, 3))",
-       "verifier": "r == [0, 3, 6, 9]"
+       "code": "r = range(0, 10, 3)",
+       "verifier": "list(r) == [0, 3, 6, 9]"
       },
       {
        "texte": "range(5) donne 5 en dernier.",
        "reponse": false,
        "explication": "range(5) s'arrête juste avant 5 : il donne 0, 1, 2, 3, 4. La dernière valeur est 4.",
-       "code": "r = list(range(5))",
-       "verifier": "r[len(r) - 1] == 5"
+       "code": "r = range(5)",
+       "verifier": "list(r)[len(r) - 1] == 5"
       },
       {
        "texte": "range(5, 1) ne donne aucune valeur.",
        "reponse": true,
        "explication": "Avec le pas de 1, on ne va pas de 5 à 1 : aucun tour.",
-       "code": "r = list(range(5, 1))",
-       "verifier": "r == []"
+       "code": "r = range(5, 1)",
+       "verifier": "list(r) == []"
       },
       {
        "texte": "Une boucle while peut ne faire aucun tour.",
@@ -117,8 +117,8 @@
        "texte": "range(10, 0, -2) donne 10, 8, 6, 4, 2.",
        "reponse": true,
        "explication": "On descend de 2 en 2, et on s'arrête avant 0.",
-       "code": "r = list(range(10, 0, -2))",
-       "verifier": "r == [10, 8, 6, 4, 2]"
+       "code": "r = range(10, 0, -2)",
+       "verifier": "list(r) == [10, 8, 6, 4, 2]"
       },
       {
        "texte": "Cette boucle fait 3 tours.",
@@ -128,18 +128,18 @@
        "verifier": "t == 3"
       },
       {
-       "texte": "Ce code affiche 5 étoiles.",
+       "texte": "À la fin, e vaut 5.",
        "reponse": false,
-       "explication": "3 tours à l'extérieur, 2 à l'intérieur : 3 x 2 = 6 étoiles.",
+       "explication": "3 tours à l'extérieur, 2 à l'intérieur : la ligne e = e + 1 s'exécute 3 x 2 = 6 fois. e vaut 6.",
        "code": "e = 0\nfor i in range(3):\n    for j in range(2):\n        e = e + 1",
        "verifier": "e == 5"
       },
       {
-       "texte": "À la fin, t vaut 5.",
-       "reponse": false,
-       "explication": "Chaque tour ajoute 2 : 5 tours × 2 = 10. t vaut 10.",
-       "code": "t = 0\nfor i in range(5):\n    t = t + 2",
-       "verifier": "t == 5"
+       "texte": "À la fin, t vaut 20.",
+       "reponse": true,
+       "explication": "i vaut 0, 1, 2, 3, 4 : t = 0 + 2 + 4 + 6 + 8 = 20.",
+       "code": "t = 0\nfor i in range(5):\n    t = t + i * 2",
+       "verifier": "t == 20"
       }
      ]
     }
@@ -971,7 +971,7 @@
    "id": "py-boucles-007",
    "type": "sortie",
    "titre": "Trace mélangée",
-   "objectif": "Suivre un programme qui mélange boucle, condition et fonction.",
+   "objectif": "Suivre un programme qui mélange boucle et condition.",
    "notions": [
     "prog.trace",
     "prog.boucle",
@@ -1046,7 +1046,7 @@
      "duree": 4,
      "items": [
       {
-       "code": "def f(n):\n    if n > 3:\n        return n\n    return 0\ns = 0\nfor i in range(6):\n    s = s + f(i)\nprint(s)",
+       "code": "s = 0\nfor i in range(6):\n    if i > 3:\n        s = s + i\nprint(s)",
        "options": [
         "5",
         "15",
@@ -1056,8 +1056,8 @@
        "bonne": 3,
        "retours": [
         "i va jusqu'à 5 : 4 compte aussi.",
-        "f renvoie 0 pour 0, 1, 2 et 3.",
-        "f(4) et f(5) ne valent pas 0.",
+        "Seuls les i plus grands que 3 sont ajoutés.",
+        "4 et 5 sont plus grands que 3 : ils sont ajoutés.",
         "Juste : seuls 4 et 5 comptent : 4 + 5."
        ],
        "aides": [
@@ -1108,9 +1108,9 @@
      "duree": 6,
      "items": [
       {
-       "code": "def f(x):\n    return x * x - 1\nt = 0\nfor k in range(1, 4):\n    if f(k) % 2 == 0:\n        t = t + k\nprint(t)",
+       "code": "t = 0\nfor k in range(1, 4):\n    c = k * k - 1\n    if c % 2 == 0:\n        t = t + k\nprint(t)",
        "reponse": "4",
-       "explication": "f(1) = 0 (pair), f(2) = 3 (impair), f(3) = 8 (pair) : t = 1 + 3 = 4.",
+       "explication": "c vaut 0 (pair), 3 (impair), puis 8 (pair) : t = 1 + 3 = 4.",
        "aides": [
         "Calcule f(1), f(2), f(3).",
         "On ajoute k, pas f(k)."
@@ -1141,7 +1141,7 @@
    "id": "py-boucles-008",
    "type": "erreur",
    "titre": "Bug final",
-   "objectif": "Corriger un programme qui mélange boucle, condition et fonction.",
+   "objectif": "Corriger un programme qui mélange boucle et condition.",
    "notions": [
     "prog.debogage",
     "prog.trace"
@@ -1264,10 +1264,10 @@
        "message": "SyntaxError: invalid syntax"
       },
       {
-       "but": "Afficher le nombre de notes au-dessus de 10 dans 8, 12, 15 (2).",
+       "but": "Compter les nombres de 8 à 15 qui dépassent 10 (5).",
        "lignes": [
         "nb = 0",
-        "for note in (8, 12, 15):",
+        "for note in range(8, 16):",
         "    if note > 10:",
         "        nb = nb + note",
         "print(nb)"
@@ -1279,12 +1279,12 @@
         "        nb = note"
        ],
        "bonne": 1,
-       "affiche": "2",
-       "explication": "On compte les notes : on ajoute 1, pas la note.",
+       "affiche": "5",
+       "explication": "On compte : on ajoute 1, pas le nombre lui-même.",
        "aides": [
-        "Le programme affiche 27 : il additionne au lieu de compter."
+        "Le programme affiche 65 : il additionne au lieu de compter."
        ],
-       "affiche_fautif": "27"
+       "affiche_fautif": "65"
       }
      ]
     },
@@ -1296,46 +1296,46 @@
        "lignes": [
         "i = 1",
         "while i <= 4:",
-        "    i = i + 1",
-        "    print(i)"
+        "    print(i)",
+        "    i = i + 2"
        ],
        "ligne": 3,
        "corrections": [
-        "    print(i + 1)",
-        "    print(i - 1)",
-        "    print(i - 2)"
+        "    i = i * 2",
+        "    i = i + 1",
+        "    i = i + 3"
        ],
        "bonne": 1,
        "affiche": "1\n2\n3\n4",
-       "explication": "Le programme augmente i avant de l'afficher : il affiche 2 à 5. Sans changer l'ordre des lignes, on affiche i - 1. Mieux encore : afficher avant d'augmenter.",
+       "explication": "On veut tous les nombres : i avance de 1 à chaque tour. Avec + 2, on saute 2 et 4.",
        "aides": [
-        "Que vaut i au premier affichage ?"
+        "Le programme affiche 1 et 3 : de combien i avance-t-il ?"
        ],
-       "affiche_fautif": "2\n3\n4\n5"
+       "affiche_fautif": "1\n3"
       },
       {
-       "but": "La fonction renvoie True si le mot contient un z : True pour Mamoudzou, False pour Sada.",
+       "but": "Afficher True si Mamoudzou contient un z.",
        "lignes": [
-        "def a_un_z(mot):",
-        "    for c in mot:",
-        "        if c == \"z\":",
-        "            return True",
-        "        return False",
-        "print(a_un_z(\"Mamoudzou\"), a_un_z(\"Sada\"))"
+        "mot = \"Mamoudzou\"",
+        "z = False",
+        "for c in mot:",
+        "    if c == \"z\":",
+        "        z = False",
+        "print(z)"
        ],
        "ligne": 4,
        "corrections": [
-        "    return False",
-        "        return True",
-        "            return False"
+        "        z = c",
+        "        z == True",
+        "        z = True"
        ],
-       "bonne": 0,
-       "affiche": "True False",
-       "explication": "return False est dans la boucle : la fonction s'arrête après la première lettre. Il doit venir après la boucle.",
+       "bonne": 2,
+       "affiche": "True",
+       "explication": "z part de False ; il doit passer à True dès qu'on lit un z. Avec == on compare sans rien ranger.",
        "aides": [
-        "La fonction regarde-t-elle toutes les lettres ?"
+        "Le programme affiche False alors que le mot contient un z."
        ],
-       "affiche_fautif": "False False"
+       "affiche_fautif": "False"
       },
       {
        "but": "Calculer 2 puissance 5 avec une boucle (32).",
@@ -2062,12 +2062,11 @@
        ]
       },
       {
-       "but": "Compter les jours de pluie de la semaine (plus de 0 mm) : 3.",
+       "but": "Compter les nombres de 1 à 10 plus grands que 7 : 3.",
        "lignes": [
-        "pluie = [0, 4, 0, 12, 0, 0, 7]",
         "n = 0",
-        "for mm in pluie:",
-        "    if mm {0} 0:",
+        "for i in range(1, 11):",
+        "    if i {0} 7:",
         "        n = n + 1",
         "print(n)"
        ],
@@ -2082,9 +2081,9 @@
         }
        ],
        "affiche": "3",
-       "explication": "On compte un jour quand il est tombé plus de 0 mm : mm > 0.",
+       "explication": "8, 9 et 10 sont plus grands que 7 : 3 nombres.",
        "aides": [
-        "Un jour de pluie a plus de 0 mm."
+        "« Plus grand que » : quel signe ?"
        ]
       }
      ]
@@ -2126,12 +2125,11 @@
        ]
       },
       {
-       "but": "Compter les notes d'au moins 10 : 4.",
+       "but": "Compter les nombres de 1 à 20 qui valent au moins 15 : 6.",
        "lignes": [
-        "notes = [12, 8, 15, 10, 9, 14]",
         "n = {1}",
-        "for x in notes:",
-        "    if x {0} 10:",
+        "for x in range(1, 21):",
+        "    if x {0} 15:",
         "        n = n + 1",
         "print(n)"
        ],
@@ -2153,10 +2151,10 @@
          "bonne": 0
         }
        ],
-       "affiche": "4",
-       "explication": "« Au moins 10 » compte aussi 10 : on écrit >=. Le compteur part de 0.",
+       "affiche": "6",
+       "explication": "« Au moins 15 » compte aussi 15 : 15, 16, … 20, soit 6. Le compteur part de 0.",
        "aides": [
-        "La note 10 compte-t-elle ?"
+        "Le nombre 15 compte-t-il ?"
        ]
       }
      ]
@@ -2266,11 +2264,11 @@
        ]
       },
       {
-       "but": "Additionner les prix du panier, puis afficher le total.",
+       "but": "Additionner 1 + 2 + 3 + 4, puis afficher le total.",
        "lignes": [
         "total = 0",
-        "for prix in [2, 5, 3]:",
-        "    total = total + prix",
+        "for k in range(1, 5):",
+        "    total = total + k",
         "print(\"Total :\", total)"
        ],
        "affiche": "Total : 10",
@@ -2297,14 +2295,14 @@
        ]
       },
       {
-       "but": "Additionner la pluie de 4 jours, puis afficher le total et la moyenne.",
+       "but": "Additionner 2, 4, 6 et 8, puis afficher la somme et la moyenne.",
        "lignes": [
         "s = 0",
-        "for mm in [4, 0, 12, 8]:",
-        "    s = s + mm",
+        "for k in range(2, 10, 2):",
+        "    s = s + k",
         "print(s, s / 4)"
        ],
-       "affiche": "24 6.0",
+       "affiche": "20 5.0",
        "aides": [
         "On calcule la moyenne une fois la somme finie."
        ]
@@ -2329,15 +2327,15 @@
        ]
       },
       {
-       "but": "Au marché, afficher le total après chaque achat, puis Fini.",
+       "but": "Déposer 5 € trois fois : afficher le total après chaque dépôt, puis Fini.",
        "lignes": [
         "total = 0",
-        "for prix in [3, 2, 5]:",
-        "    total = total + prix",
+        "for i in range(3):",
+        "    total = total + 5",
         "    print(total)",
         "print(\"Fini\")"
        ],
-       "affiche": "3\n5\n10\nFini",
+       "affiche": "5\n10\n15\nFini",
        "aides": [
         "On ajoute le prix avant d'afficher le total.",
         "Fini ne s'affiche qu'une fois."
@@ -3010,12 +3008,12 @@
      "duree": 3,
      "items": [
       {
-       "but": "Afficher la plus haute température de la semaine (31).",
+       "but": "Afficher le plus grand chiffre de 3826 (8).",
        "lignes": [
         "maxi = 0",
-        "for t in [28, 31, 29, 30]:",
-        "    if t {0} maxi:",
-        "        maxi = t",
+        "for c in \"3826\":",
+        "    if int(c) {0} maxi:",
+        "        maxi = int(c)",
         "print(maxi)"
        ],
        "trous": [
@@ -3028,19 +3026,19 @@
          "bonne": 2
         }
        ],
-       "affiche": "31",
-       "explication": "On remplace maxi quand on trouve une température plus haute.",
+       "affiche": "8",
+       "explication": "On remplace maxi quand on trouve un chiffre plus grand.",
        "aides": [
-        "maxi garde la plus grande valeur vue jusque-là.",
-        "Il part de 0 : toutes les températures sont plus grandes."
+        "maxi garde le plus grand chiffre vu jusque-là.",
+        "int(c) change le caractère en nombre."
        ]
       },
       {
-       "but": "Afficher le plus petit prix (2).",
+       "but": "Afficher le plus petit chiffre de 5324 (2).",
        "lignes": [
-        "mini = 5",
-        "for p in [5, 3, 2, 4]:",
-        "    if p < mini:",
+        "mini = 9",
+        "for c in \"5324\":",
+        "    if int(c) < mini:",
         "        mini = {0}",
         "print(mini)"
        ],
@@ -3048,16 +3046,16 @@
         {
          "options": [
           "mini",
-          "prix",
-          "p"
+          "c",
+          "int(c)"
          ],
          "bonne": 2
         }
        ],
        "affiche": "2",
-       "explication": "Quand p est plus petit, il devient le nouveau minimum.",
+       "explication": "Quand int(c) est plus petit, il devient le nouveau minimum.",
        "aides": [
-        "mini part du premier prix, 5.",
+        "mini part de 9, le plus grand chiffre.",
         "Quelle valeur vient de battre le record ?"
        ]
       }
@@ -3067,15 +3065,16 @@
      "duree": 4,
      "items": [
       {
-       "but": "Afficher le meilleur score et le numéro de sa partie (la 1re partie a le numéro 0) : 42 2.",
+       "but": "Afficher le plus grand chiffre de 1742 et sa position (la 1re est la position 0) : 7 1.",
        "lignes": [
-        "scores = [17, 30, 42, 25]",
-        "meilleur, numero = scores[0], 0",
-        "for i in range(len(scores)):",
-        "    if scores[i] {0} meilleur:",
-        "        meilleur = scores[i]",
-        "        numero = {1}",
-        "print(meilleur, numero)"
+        "n = \"1742\"",
+        "m = int(n[0])",
+        "p = 0",
+        "for i in range(len(n)):",
+        "    if int(n[i]) {0} m:",
+        "        m = int(n[i])",
+        "        p = {1}",
+        "print(m, p)"
        ],
        "trous": [
         {
@@ -3089,50 +3088,50 @@
         {
          "options": [
           "i",
-          "scores[i]",
+          "n[i]",
           "0"
          ],
          "bonne": 0
         }
        ],
-       "affiche": "42 2",
-       "explication": "On parcourt les indices : quand scores[i] bat le record, on garde la valeur et son indice i.",
+       "affiche": "7 1",
+       "explication": "On parcourt les positions : quand int(n[i]) bat le record m, on garde la valeur et sa position i dans p.",
        "aides": [
-        "numero est une position, pas un score."
+        "p est une position, pas un chiffre."
        ]
       },
       {
-       "but": "Afficher le mot le plus long (pirogue).",
+       "but": "Afficher la plus grande valeur de k * (7 - k) pour k de 0 à 6 : 12.",
        "lignes": [
-        "mots = [\"bus\", \"pirogue\", \"taxi\"]",
-        "long = mots[0]",
-        "for m in mots:",
-        "    if {0}(m) > len(long):",
-        "        long = {1}",
-        "print(long)"
+        "m = 0",
+        "for k in range(7):",
+        "    v = k * (7 - k)",
+        "    if {0}:",
+        "        m = {1}",
+        "print(m)"
        ],
        "trous": [
         {
          "options": [
-          "len",
-          "max",
-          "str"
+          "v > m",
+          "v < m",
+          "m > v"
          ],
          "bonne": 0
         },
         {
          "options": [
-          "len(m)",
-          "mots",
+          "v",
+          "k",
           "m"
          ],
-         "bonne": 2
+         "bonne": 0
         }
        ],
-       "affiche": "pirogue",
-       "explication": "On compare les longueurs avec len, et on garde le mot lui-même.",
+       "affiche": "12",
+       "explication": "v vaut 0, 6, 10, 12, 12, 10, 6 : le record est 12, et c'est v qu'on garde.",
        "aides": [
-        "len(m) donne le nombre de lettres de m."
+        "v est la valeur du tour ; m garde le record."
        ]
       }
      ]
@@ -3141,14 +3140,15 @@
      "duree": 6,
      "items": [
       {
-       "but": "Afficher l'écart, en cm, entre la marée la plus haute et la plus basse (310).",
+       "but": "Afficher l'écart entre le plus grand et le plus petit chiffre de 30582 (8).",
        "lignes": [
-        "marees = [320, 60, 350, 40]",
-        "haut, bas = marees[0], marees[0]",
-        "for m in marees:",
-        "    if m > haut:",
-        "        haut = m",
-        "    if m {0} bas:",
+        "haut = 0",
+        "bas = 9",
+        "for c in \"30582\":",
+        "    x = int(c)",
+        "    if x > haut:",
+        "        haut = x",
+        "    if x {0} bas:",
         "        bas = {1}",
         "print(haut - bas)"
        ],
@@ -3164,26 +3164,26 @@
         {
          "options": [
           "haut",
-          "m",
-          "bas - m"
+          "x",
+          "bas - x"
          ],
          "bonne": 1
         }
        ],
-       "affiche": "310",
-       "explication": "Deux records en même temps : haut garde le plus grand, bas garde le plus petit. 350 - 40 = 310.",
+       "affiche": "8",
+       "explication": "Deux records en même temps : haut garde le plus grand chiffre (8), bas le plus petit (0) : 8 - 0 = 8.",
        "aides": [
         "bas suit la même idée que haut, à l'envers."
        ]
       },
       {
-       "but": "Afficher la position de la première note sous 10, ou -1 s'il n'y en a pas : 2.",
+       "but": "Afficher la position du premier chiffre plus petit que 5 dans 7926, ou -1 : 2.",
        "lignes": [
-        "notes = [12, 15, 8, 9]",
+        "n = \"7926\"",
         "pos = -1",
         "i = 0",
-        "while i < len(notes) and pos == -1:",
-        "    if notes[i] {0} 10:",
+        "while i < len(n) and pos == -1:",
+        "    if int(n[i]) {0} 5:",
         "        pos = i",
         "    i = i + {1}",
         "print(pos)"
@@ -3200,17 +3200,17 @@
         {
          "options": [
           "0",
-          "len(notes)",
+          "len(n)",
           "1"
          ],
          "bonne": 2
         }
        ],
        "affiche": "2",
-       "explication": "On avance d'une case à la fois, et on s'arrête dès qu'une note sous 10 est trouvée.",
+       "explication": "On avance d'une position à la fois, et on s'arrête dès qu'un chiffre plus petit que 5 est trouvé.",
        "aides": [
         "La boucle s'arrête dès que pos change.",
-        "i avance d'une case par tour."
+        "i avance d'une position par tour."
        ]
       }
      ]
@@ -3500,8 +3500,8 @@
   {
    "id": "py-boucles-022",
    "type": "vraifaux",
-   "titre": "Les pièges de range",
-   "objectif": "Déjouer les pièges de range : le départ, la fin et le pas.",
+   "titre": "Les bornes de range",
+   "objectif": "Prévoir les valeurs de range : le départ, la fin et le pas.",
    "notions": [
     "prog.boucle.bornee"
    ],
@@ -3515,15 +3515,15 @@
        "texte": "range(3) donne 1, 2, 3.",
        "reponse": false,
        "explication": "Sans départ, range commence à 0 : 0, 1, 2.",
-       "code": "r = list(range(3))",
-       "verifier": "r == [1, 2, 3]"
+       "code": "r = range(3)",
+       "verifier": "list(r) == [1, 2, 3]"
       },
       {
        "texte": "range(1, 4) donne 1, 2, 3.",
        "reponse": true,
        "explication": "On part de 1 et on s'arrête juste avant 4.",
-       "code": "r = list(range(1, 4))",
-       "verifier": "r == [1, 2, 3]"
+       "code": "r = range(1, 4)",
+       "verifier": "list(r) == [1, 2, 3]"
       },
       {
        "texte": "La valeur de fin de range n'est jamais atteinte.",
@@ -3534,15 +3534,15 @@
        "texte": "range(5) et range(0, 5) donnent les mêmes valeurs.",
        "reponse": true,
        "explication": "Sans départ, range part de 0.",
-       "code": "a = list(range(5))\nb = list(range(0, 5))",
-       "verifier": "a == b"
+       "code": "a = range(5)\nb = range(0, 5)",
+       "verifier": "list(a) == list(b)"
       },
       {
        "texte": "range(2, 2) donne la valeur 2.",
        "reponse": false,
        "explication": "Le départ et la fin sont égaux : range est vide.",
-       "code": "r = list(range(2, 2))",
-       "verifier": "r == [2]"
+       "code": "r = range(2, 2)",
+       "verifier": "list(r) == [2]"
       }
      ]
     },
@@ -3553,22 +3553,22 @@
        "texte": "range(1, 10, 2) donne les nombres impairs de 1 à 9.",
        "reponse": true,
        "explication": "1, 3, 5, 7, 9 : on part de 1 et on avance de 2.",
-       "code": "r = list(range(1, 10, 2))",
-       "verifier": "r == [1, 3, 5, 7, 9]"
+       "code": "r = range(1, 10, 2)",
+       "verifier": "list(r) == [1, 3, 5, 7, 9]"
       },
       {
        "texte": "range(10, 0) donne 10, 9, …, 1.",
        "reponse": false,
        "explication": "Sans pas négatif, range ne descend pas : il est vide.",
-       "code": "r = list(range(10, 0))",
-       "verifier": "r == [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]"
+       "code": "r = range(10, 0)",
+       "verifier": "list(r) == [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]"
       },
       {
        "texte": "range(0, 20, 5) donne 0, 5, 10, 15, 20.",
        "reponse": false,
        "explication": "20 est la fin : elle n'est pas atteinte. On a 0, 5, 10, 15.",
-       "code": "r = list(range(0, 20, 5))",
-       "verifier": "r == [0, 5, 10, 15, 20]"
+       "code": "r = range(0, 20, 5)",
+       "verifier": "list(r) == [0, 5, 10, 15, 20]"
       },
       {
        "texte": "range(3, 10) contient 7 valeurs.",
@@ -3578,9 +3578,11 @@
        "verifier": "n == 7"
       },
       {
-       "texte": "range accepte des nombres à virgule, comme 0.5.",
-       "reponse": false,
-       "explication": "range ne prend que des entiers ; range(0, 1, 0.5) provoque une TypeError."
+       "texte": "range(4, 0, -1) donne 4, 3, 2, 1.",
+       "reponse": true,
+       "explication": "On part de 4 et on descend de 1, en s'arrêtant avant 0.",
+       "code": "r = range(4, 0, -1)",
+       "verifier": "list(r) == [4, 3, 2, 1]"
       }
      ]
     },
@@ -3598,8 +3600,8 @@
        "texte": "range(10, 1, -3) donne 10, 7, 4, 1.",
        "reponse": false,
        "explication": "1 est la fin : elle n'est jamais atteinte. On a 10, 7, 4.",
-       "code": "r = list(range(10, 1, -3))",
-       "verifier": "r == [10, 7, 4, 1]"
+       "code": "r = range(10, 1, -3)",
+       "verifier": "list(r) == [10, 7, 4, 1]"
       },
       {
        "texte": "Avec n = 0, for i in range(n) ne fait aucun tour.",
@@ -3850,27 +3852,27 @@
        "message": "IndentationError: expected an indented block after 'if' statement on line 3"
       },
       {
-       "but": "Afficher la moyenne des notes 12, 15 et 9 (12.0).",
+       "but": "Afficher la somme des chiffres de 2046 (12).",
        "lignes": [
-        "notes = [12, 15, 9]",
+        "n = \"2046\"",
         "s = 0",
-        "for x in notes:",
-        "    s = s + notes",
-        "print(s / len(notes))"
+        "for c in n:",
+        "    s = s + n",
+        "print(s)"
        ],
        "ligne": 3,
        "corrections": [
-        "    s = s + x",
+        "    s = s + int(c)",
         "    s = s + 1",
-        "    s = x"
+        "    s = int(c)"
        ],
        "bonne": 0,
-       "affiche": "12.0",
-       "explication": "x est une note ; notes est toute la liste : on ajoute x.",
+       "affiche": "12",
+       "explication": "c est un chiffre ; n est tout le texte : on ajoute int(c), le chiffre changé en nombre.",
        "aides": [
         "Lis le message : on additionne un nombre et quoi ?"
        ],
-       "message": "TypeError: unsupported operand type(s) for +: 'int' and 'list'"
+       "message": "TypeError: unsupported operand type(s) for +: 'int' and 'str'"
       },
       {
        "but": "Afficher 1, 2, 4, 8, 16.",
@@ -3920,19 +3922,18 @@
        "affiche_fautif": "7 x 1 = 8\n7 x 2 = 9\n7 x 3 = 10"
       },
       {
-       "but": "Compter les mots de plus de 4 lettres, et afficher le nombre une seule fois (2).",
+       "but": "Compter les nombres de 1 à 9 divisibles par 4, et afficher le nombre une seule fois (2).",
        "lignes": [
-        "mots = [\"bus\", \"barge\", \"car\", \"taxis\"]",
         "n = 0",
-        "for m in mots:",
-        "    if len(m) > 4:",
+        "for i in range(1, 10):",
+        "    if i % 4 == 0:",
         "        n = n + 1",
         "    print(n)"
        ],
-       "ligne": 5,
+       "ligne": 4,
        "corrections": [
         "        print(n)",
-        "    print(m)",
+        "    print(i)",
         "print(n)"
        ],
        "bonne": 2,
@@ -3941,7 +3942,7 @@
        "aides": [
         "Combien de fois le programme affiche-t-il ?"
        ],
-       "affiche_fautif": "0\n1\n1\n2"
+       "affiche_fautif": "0\n0\n0\n1\n1\n1\n1\n2\n2"
       },
       {
        "but": "Un message est partagé : 1 personne, puis 2, 4, 8… Compter les heures pour dépasser 10 000 personnes (14).",
@@ -4075,28 +4076,28 @@
        ]
       },
       {
-       "but": "Afficher les initiales des prénoms : KIS.",
+       "but": "Afficher une lettre sur deux de « Mayotte », en partant de la première : Myte.",
        "lignes": [
-        "prenoms = [\"Kenza\", \"Ilan\", \"Sam\"]",
-        "init = \"\"",
-        "for p in prenoms:",
-        "    init = init + p[{0}]",
-        "print(init)"
+        "mot = \"Mayotte\"",
+        "res = \"\"",
+        "for i in range(0, len(mot), 2):",
+        "    res = res + mot[{0}]",
+        "print(res)"
        ],
        "trous": [
         {
          "options": [
-          "1",
-          "-1",
-          "0"
+          "i + 1",
+          "0",
+          "i"
          ],
          "bonne": 2
         }
        ],
-       "affiche": "KIS",
-       "explication": "La première lettre d'un texte est à l'indice 0.",
+       "affiche": "Myte",
+       "explication": "range(0, 7, 2) donne 0, 2, 4, 6 : on garde mot[i].",
        "aides": [
-        "Les indices commencent à 0."
+        "Que vaut i à chaque tour ?"
        ]
       }
      ]
@@ -4273,19 +4274,19 @@
        ]
       },
       {
-       "but": "Pour chaque mot, afficher le mot et son nombre de a.",
+       "but": "Pour chaque nombre de 1 à 4, afficher le nombre et son nombre de diviseurs.",
        "lignes": [
-        "for mot in [\"bus\", \"taxi\", \"banane\"]:",
-        "    n = 0",
-        "    for c in mot:",
-        "        if c == \"a\":",
-        "            n = n + 1",
-        "    print(mot, n)"
+        "for n in range(1, 5):",
+        "    d = 0",
+        "    for k in range(1, n + 1):",
+        "        if n % k == 0:",
+        "            d = d + 1",
+        "    print(n, d)"
        ],
-       "affiche": "bus 0\ntaxi 1\nbanane 2",
+       "affiche": "1 1\n2 2\n3 2\n4 3",
        "aides": [
-        "Le compteur repart de 0 pour chaque mot.",
-        "print est au niveau de la boucle sur les lettres."
+        "Le compteur repart de 0 pour chaque nombre.",
+        "print est au niveau de la boucle sur k."
        ]
       }
      ]
@@ -4505,8 +4506,8 @@
        "texte": "range(1, 3) donne 1, 2, 3.",
        "reponse": false,
        "explication": "range s'arrête avant la fin : 1, 2.",
-       "code": "r = list(range(1, 3))",
-       "verifier": "r == [1, 2, 3]"
+       "code": "r = range(1, 3)",
+       "verifier": "list(r) == [1, 2, 3]"
       }
      ]
     },
@@ -4554,15 +4555,15 @@
       {
        "texte": "Après ce code, m vaut 9.",
        "reponse": true,
-       "explication": "m garde le plus grand nombre vu : 9.",
-       "code": "m = 0\nfor x in [4, 9, 2, 7]:\n    if x > m:\n        m = x",
+       "explication": "m garde le plus grand chiffre vu : 9.",
+       "code": "m = 0\nfor c in \"4927\":\n    if int(c) > m:\n        m = int(c)",
        "verifier": "m == 9"
       },
       {
        "texte": "Après ce code, m vaut 2.",
        "reponse": false,
-       "explication": "m part de 0 : aucun nombre n'est plus petit que 0. Un minimum part du premier élément.",
-       "code": "m = 0\nfor x in [4, 9, 2, 7]:\n    if x < m:\n        m = x",
+       "explication": "m part de 0 : aucun chiffre n'est plus petit que 0. Un minimum part d'une valeur déjà vue, ou de la plus grande possible.",
+       "code": "m = 0\nfor c in \"4927\":\n    if int(c) < m:\n        m = int(c)",
        "verifier": "m == 2"
       },
       {
@@ -4651,27 +4652,27 @@
        "consigne": "Associe chaque programme à ce qu'il affiche.",
        "paires": [
         [
-         "s = 0\nfor x in [3, 8, 5]:\n    s = s + x\nprint(s)",
-         "16"
+         "s = 0\nfor x in range(3, 6):\n    s = s + x\nprint(s)",
+         "12"
         ],
         [
-         "n = 0\nfor x in [3, 8, 5]:\n    n = n + 1\nprint(n)",
+         "n = 0\nfor x in range(3, 6):\n    n = n + 1\nprint(n)",
          "3"
         ],
         [
-         "m = 0\nfor x in [3, 8, 5]:\n    if x > m:\n        m = x\nprint(m)",
-         "8"
+         "m = 0\nfor x in range(3, 6):\n    if x > m:\n        m = x\nprint(m)",
+         "5"
         ],
         [
-         "p = 1\nfor x in [3, 8, 5]:\n    p = p * x\nprint(p)",
-         "120"
+         "p = 1\nfor x in range(3, 6):\n    p = p * x\nprint(p)",
+         "60"
         ],
         [
-         "n = 0\nfor x in [3, 8, 5]:\n    if x > 4:\n        n = n + 1\nprint(n)",
-         "2"
+         "n = 0\nfor x in range(3, 6):\n    if x > 4:\n        n = n + 1\nprint(n)",
+         "1"
         ]
        ],
-       "explication": "Même liste, cinq calculs : la somme, le nombre d'éléments, le maximum, le produit, et le nombre d'éléments plus grands que 4.",
+       "explication": "Mêmes valeurs 3, 4, 5, cinq calculs : la somme, le nombre de valeurs, le maximum, le produit, et le nombre de valeurs plus grandes que 4.",
        "executer": true,
        "aides": [
         "Commence par reconnaître le rôle de chaque programme."
@@ -4822,12 +4823,12 @@
        "message": "IndexError: string index out of range"
       },
       {
-       "but": "Afficher le total des 3 premiers prix (10).",
+       "but": "Afficher la somme des 3 premiers chiffres de 2538 (10).",
        "lignes": [
-        "prix = [2, 5, 3, 8]",
+        "n = \"2538\"",
         "t = 0",
         "for i in range(1, 4):",
-        "    t = t + prix[i]",
+        "    t = t + int(n[i])",
         "print(t)"
        ],
        "ligne": 2,
@@ -4838,9 +4839,9 @@
        ],
        "bonne": 0,
        "affiche": "10",
-       "explication": "Le premier prix est à l'indice 0 : range(3) donne 0, 1 et 2.",
+       "explication": "Le premier chiffre est à la position 0 : range(3) donne 0, 1 et 2.",
        "aides": [
-        "Quel est l'indice du premier prix ?"
+        "Quelle est la position du premier chiffre ?"
        ],
        "affiche_fautif": "16"
       },
@@ -4872,53 +4873,52 @@
      "duree": 6,
      "items": [
       {
-       "but": "Compter les jours de chaleur (plus de 30 degrés) : 2.",
+       "but": "Compter les nombres de 28 à 33 plus grands que 30 : 3.",
        "lignes": [
-        "temp = [29, 31, 30, 33]",
         "n = 0",
-        "for t in temp:",
+        "for t in range(28, 34):",
         "    if t > 30",
         "        n = n + 1",
         "print(n)"
        ],
-       "ligne": 3,
+       "ligne": 2,
        "corrections": [
         "    if t >= 30:",
         "    if t > 30:",
         "    if t => 30:"
        ],
        "bonne": 1,
-       "affiche": "2",
+       "affiche": "3",
        "explication": "La ligne if se termine par deux-points ; > 30 ne compte pas 30.",
        "aides": [
         "Le message dit ce qui manque.",
-        "30 degrés compte-t-il ?"
+        "30 compte-t-il ?"
        ],
        "message": "SyntaxError: expected ':'"
       },
       {
-       "but": "Afficher la plus grande note (17).",
+       "but": "Afficher le plus grand chiffre de 1729 (9).",
        "lignes": [
-        "notes = [12, 17, 9]",
-        "m = notes[0]",
-        "for n in notes:",
-        "    if n > m:",
-        "        m == n",
+        "n = \"1729\"",
+        "m = 0",
+        "for c in n:",
+        "    if int(c) > m:",
+        "        m == int(c)",
         "print(m)"
        ],
        "ligne": 4,
        "corrections": [
-        "        m = n",
-        "        n = m",
-        "        m = notes"
+        "        m = int(c)",
+        "        c = m",
+        "        m = n"
        ],
        "bonne": 0,
-       "affiche": "17",
-       "explication": "m == n compare sans rien changer : pour garder le record, on affecte m = n.",
+       "affiche": "9",
+       "explication": "m == int(c) compare sans rien changer : pour garder le record, on affecte m = int(c).",
        "aides": [
         "m change-t-il un jour ?"
        ],
-       "affiche_fautif": "12"
+       "affiche_fautif": "0"
       },
       {
        "but": "Compter combien de fois on retire 3 à 20 avant de passer sous 0 (7).",

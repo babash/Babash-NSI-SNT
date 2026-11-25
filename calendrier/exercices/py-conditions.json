@@ -96,9 +96,7 @@
       {
        "texte": "not (x > 5) veut dire la même chose que x <= 5.",
        "reponse": true,
-       "explication": "Le contraire de « plus grand que 5 » est « inférieur ou égal à 5 ».",
-       "code": "r = all(not (x > 5) == (x <= 5) for x in range(10))",
-       "verifier": "r == True"
+       "explication": "Le contraire de « plus grand que 5 » est « inférieur ou égal à 5 »."
       }
      ]
     },
@@ -966,7 +964,7 @@
    "id": "py-conditions-007",
    "type": "vraifaux",
    "titre": "Vrai ou faux : révision",
-   "objectif": "Réviser les bases : types, conditions, boucles et fonctions.",
+   "objectif": "Réviser les bases : types, comparaisons et conditions.",
    "notions": [
     "prog.type",
     "prog.condition",
@@ -999,11 +997,11 @@
        "verifier": "type(r) == int"
       },
       {
-       "texte": "for i in range(3) et for i in range(0, 3) font la même chose.",
+       "texte": "Après x = 4, le test x % 2 == 0 vaut True.",
        "reponse": true,
-       "explication": "Le début vaut 0 si on ne le donne pas.",
-       "code": "a = list(range(3))\nb = list(range(0, 3))",
-       "verifier": "a == b"
+       "explication": "4 % 2 vaut 0, et 0 == 0 : le test vaut True.",
+       "code": "x = 4",
+       "verifier": "(x % 2 == 0) == True"
       },
       {
        "texte": "print(\"3 + 4\") affiche 7.",
@@ -1018,8 +1016,8 @@
       {
        "texte": "Après ce code, n vaut 3.",
        "reponse": true,
-       "explication": "Les nombres pairs de 1 à 6 sont 2, 4, 6.",
-       "code": "n = 0\nfor i in range(1, 7):\n    if i % 2 == 0:\n        n = n + 1",
+       "explication": "6 est pair : n devient 6 // 2 = 3.",
+       "code": "n = 6\nif n % 2 == 0:\n    n = n // 2",
        "verifier": "n == 3"
       },
       {
@@ -1039,16 +1037,16 @@
       {
        "texte": "Après ce code, s vaut \"aaa\".",
        "reponse": true,
-       "explication": "La boucle colle 3 fois \"a\".",
-       "code": "s = \"\"\nfor i in range(3):\n    s = s + \"a\"",
+       "explication": "len(\"a\") vaut 1, et 1 < 3 : on colle trois fois \"a\".",
+       "code": "s = \"a\"\nif len(s) < 3:\n    s = s + s + s",
        "verifier": "s == \"aaa\""
       },
       {
-       "texte": "Une fonction peut renvoyer un booléen.",
+       "texte": "Après ok = 4 % 2 == 0, ok vaut True.",
        "reponse": true,
-       "explication": "Par exemple return n % 2 == 0.",
-       "code": "def f(n):\n    return n % 2 == 0\nr = f(4)",
-       "verifier": "r is True"
+       "explication": "4 % 2 vaut 0, et 0 == 0 : ok reçoit True.",
+       "code": "ok = 4 % 2 == 0",
+       "verifier": "ok == True"
       }
      ]
     },
@@ -1058,15 +1056,15 @@
       {
        "texte": "Après ce code, t vaut 2.",
        "reponse": true,
-       "explication": "Seuls 10 et 12 sont supérieurs ou égaux à 10 : t vaut 2.",
-       "code": "t = 0\nfor x in (3, 7, 10, 12):\n    if x >= 10:\n        t = t + 1",
+       "explication": "12 >= 10 : t vaut 1 ; 12 est pair : t vaut 2. Les deux if sont testés.",
+       "code": "t = 0\nx = 12\nif x >= 10:\n    t = t + 1\nif x % 2 == 0:\n    t = t + 1",
        "verifier": "t == 2"
       },
       {
        "texte": "Après ce code, r vaut 3.",
-       "reponse": true,
-       "explication": "// donne le quotient entier : 7 // 2 vaut 3, car 7 = 3 × 2 + 1.",
-       "code": "r = 7 // 2",
+       "reponse": false,
+       "explication": "17 // 5 vaut 3 et 17 % 5 vaut 2 : r vaut 3 + 2 = 5.",
+       "code": "x = 17\nr = x // 5 + x % 5",
        "verifier": "r == 3"
       },
       {
@@ -1077,17 +1075,17 @@
        "verifier": "x == 1"
       },
       {
-       "texte": "La fonction renvoie True pour 9.",
-       "reponse": false,
-       "explication": "9 n'est pas divisible par 2 : la fonction renvoie False.",
-       "code": "def f(n):\n    return n % 2 == 0\nr = f(9)",
-       "verifier": "r == True"
+       "texte": "Avec n = 9, n % 2 == 0 or n > 8 vaut True.",
+       "reponse": true,
+       "explication": "9 est impair, mais 9 > 8 : or se contente d'un seul vrai.",
+       "code": "n = 9",
+       "verifier": "(n % 2 == 0 or n > 8) == True"
       },
       {
        "texte": "Après ce code, i vaut 4.",
        "reponse": true,
-       "explication": "i vaut 1, puis 2, puis 4 ; 4 < 3 est faux : la boucle s'arrête, et i vaut 4.",
-       "code": "i = 1\nwhile i < 3:\n    i = i * 2",
+       "explication": "1 < 3 : i devient 2 ; puis 2 < 3 : i devient 4.",
+       "code": "i = 1\nif i < 3:\n    i = i * 2\nif i < 3:\n    i = i * 2",
        "verifier": "i == 4"
       }
      ]

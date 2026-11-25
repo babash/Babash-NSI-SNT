@@ -530,17 +530,17 @@
        "lignes": [
         "SELECT longueur",
         "FROM tortue",
-        "WHERE nom = 'kai'"
+        "WHERE nom = 'Kia'"
        ],
        "ligne": 2,
        "corrections": [
         "WHERE nom = 'Kai'",
-        "WHERE nom = kai",
-        "WHERE nom == 'kai'"
+        "WHERE nom = Kai",
+        "WHERE longueur = 'Kai'"
        ],
        "bonne": 0,
        "affiche": "95",
-       "explication": "Avec =, SQLite compare les textes exactement : 'kai' et 'Kai' sont différents à cause de la majuscule.",
+       "explication": "Le texte doit être écrit comme dans la table : Kai, et non Kia. Aucune ligne ne passe le filtre.",
        "aides": [
         "Regarde comment le nom est écrit dans la table."
        ],
@@ -556,18 +556,18 @@
        "lignes": [
         "SELECT nom, commune",
         "FROM plage",
-        "WHERE commune = 'Bandrele'",
+        "WHERE commune = 'Bandélé'",
         "ORDER BY nom"
        ],
        "ligne": 2,
        "corrections": [
-        "WHERE commune LIKE 'Bandrele'",
+        "WHERE nom = 'Bandrélé'",
         "WHERE commune = Bandrélé",
         "WHERE commune = 'Bandrélé'"
        ],
        "bonne": 2,
        "affiche": "Sakouli | Bandrélé\nSaziley | Bandrélé",
-       "explication": "Pour SQLite, e et é sont deux lettres différentes : le texte doit être écrit comme dans la table, accents compris.",
+       "explication": "Le texte doit être écrit exactement comme dans la table : Bandrélé, avec son r. Et le nom de la commune est dans la colonne commune.",
        "affiche_fautif": ""
       },
       {
@@ -1387,7 +1387,7 @@
        "ligne": 2,
        "corrections": [
         "WHERE 'espece' = 'verte'",
-        "WHERE espece = 'Verte'",
+        "WHERE espece = 'vertes'",
         "WHERE espece = 'verte'"
        ],
        "bonne": 2,
@@ -1404,22 +1404,22 @@
         "SELECT nom",
         "FROM plage",
         "WHERE commune = 'Sada'",
-        "   OR 'Koungou'",
+        "  AND commune = 'Koungou'",
         "ORDER BY nom"
        ],
        "ligne": 3,
        "corrections": [
         "   OR commune = 'Koungou'",
-        "  AND commune = 'Koungou'",
-        "   OR commune 'Koungou'"
+        "  AND commune = 'Sada'",
+        "   OR commune = 'Tahiti'"
        ],
        "bonne": 0,
        "affiche": "Tahiti\nTrévani",
-       "explication": "Chaque côté de OR est une condition complète : commune = 'Koungou'. Seul, le texte 'Koungou' ne teste rien.",
+       "explication": "Une plage n'est jamais à la fois à Sada et à Koungou : avec AND, rien ne passe. L'une ou l'autre : OR.",
        "aides": [
-        "Le programme n'affiche que Tahiti."
+        "Le programme n'affiche rien."
        ],
-       "affiche_fautif": "Tahiti"
+       "affiche_fautif": ""
       },
       {
        "but": "Afficher le nom des tortues dont le nom commence par N, par ordre alphabétique.",
@@ -1563,18 +1563,22 @@
        "lignes": [
         "SELECT nom",
         "FROM tortue",
-        "WHERE nom LIKE 'K%' OR 'L%'",
+        "WHERE nom LIKE 'K%'",
+        "   OR nom LIKE '%L'",
         "ORDER BY nom"
        ],
-       "ligne": 2,
+       "ligne": 3,
        "corrections": [
-        "WHERE nom = 'K%' OR nom = 'L%'",
-        "WHERE nom LIKE 'K%' OR nom LIKE 'L%'",
-        "WHERE nom LIKE 'K%' AND nom LIKE 'L%'"
+        "   OR nom = 'L%'",
+        "   OR nom LIKE 'L%'",
+        "  AND nom LIKE 'L%'"
        ],
        "bonne": 1,
        "affiche": "Kai\nLulu",
-       "explication": "Chaque côté de OR est une condition complète : nom LIKE 'L%'. Avec =, le signe % n'est pas compris : il cherche le texte K%.",
+       "explication": "'%L' veut dire « finit par L » ; « commence par L » s'écrit 'L%'. Avec =, le signe % n'est pas compris ; avec AND, aucun nom ne commencerait par K et par L.",
+       "aides": [
+        "Le programme n'affiche que Kai."
+       ],
        "affiche_fautif": "Kai"
       }
      ]
@@ -1606,7 +1610,7 @@
          "options": [
           "DISTINCT",
           "*",
-          "ALL"
+          "nom,"
          ],
          "bonne": 0
         }
@@ -1671,15 +1675,15 @@
       {
        "but": "Afficher, sans doublon, les prénoms des bénévoles, par ordre alphabétique.",
        "lignes": [
-        "SELECT {0} benevole",
+        "SELECT {0}",
         "FROM observation",
         "ORDER BY benevole {1}"
        ],
        "trous": [
         {
          "options": [
-          "ALL",
-          "DISTINCT"
+          "benevole",
+          "DISTINCT benevole"
          ],
          "bonne": 1
         },
@@ -1784,7 +1788,7 @@
       {
        "but": "Afficher, sans doublon, les communes qui ont une plage dont le nom commence par S.",
        "lignes": [
-        "SELECT {0} commune",
+        "SELECT {0}",
         "FROM plage",
         "WHERE nom LIKE {1}",
         "ORDER BY commune"
@@ -1792,8 +1796,8 @@
        "trous": [
         {
          "options": [
-          "DISTINCT",
-          "ALL"
+          "DISTINCT commune",
+          "commune"
          ],
          "bonne": 0
         },
@@ -1812,7 +1816,7 @@
       {
        "but": "Afficher, sans doublon, les bénévoles qui ont vu une ponte de plus de 100 œufs, de Z à A.",
        "lignes": [
-        "SELECT {0} benevole",
+        "SELECT {0}",
         "FROM observation",
         "WHERE oeufs > {1}",
         "ORDER BY benevole {2}"
@@ -1820,8 +1824,8 @@
        "trous": [
         {
          "options": [
-          "ALL",
-          "DISTINCT"
+          "benevole",
+          "DISTINCT benevole"
          ],
          "bonne": 1
         },
@@ -2033,11 +2037,11 @@
      "duree": 4,
      "items": [
       {
-       "texte": "Cette requête affiche 0.",
+       "texte": "Cette requête affiche 3.",
        "reponse": true,
-       "explication": "Aucune tortue ne dépasse 200 cm : aucune ligne n'est gardée, et COUNT(*) affiche 0.",
-       "code": "SELECT COUNT(*)\nFROM tortue\nWHERE longueur > 200",
-       "verifier": "SELECT (SELECT COUNT(*) FROM tortue WHERE longueur > 200) = 0"
+       "explication": "Vertes et de moins de 100 cm : Nuru (98), Taya (87) et Kai (95). COUNT(*) affiche 3.",
+       "code": "SELECT COUNT(*)\nFROM tortue\nWHERE espece = 'verte'\n  AND longueur < 100",
+       "verifier": "SELECT (SELECT COUNT(*) FROM tortue WHERE espece = 'verte' AND longueur < 100) = 3"
       },
       {
        "texte": "Cette requête affiche 6.",
@@ -3357,13 +3361,13 @@
        ],
        "ligne": 1,
        "corrections": [
-        "VALUES (9, 'Wema', 'Verte', 90)",
+        "VALUES (9, 'Wema', 'vertes', 90)",
         "VALUES (9, 'Wema', 'verte', 90)",
         "VALUES (9, 'Wema', 'luth', 90)"
        ],
        "bonne": 1,
        "affiche": "",
-       "explication": "La contrainte CHECK limite le domaine de espece à 'verte' et 'imbriquée', écrits exactement ainsi.",
+       "explication": "La contrainte CHECK limite le domaine de espece à 'verte' et 'imbriquée', écrits exactement ainsi, au singulier.",
        "aides": [
         "Le message cite la règle qui n'est pas respectée."
        ],
@@ -3588,7 +3592,7 @@
       {
        "but": "Afficher, sans doublon, les bénévoles qui ont vu des tortues vertes, par ordre alphabétique.",
        "lignes": [
-        "SELECT {0} benevole",
+        "SELECT {0}",
         "FROM observation",
         "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
         "WHERE tortue.espece = {1}",
@@ -3597,8 +3601,8 @@
        "trous": [
         {
          "options": [
-          "ALL",
-          "DISTINCT"
+          "benevole",
+          "DISTINCT benevole"
          ],
          "bonne": 1
         },
@@ -3679,7 +3683,7 @@
       {
        "but": "Compter les tortues vertes qui ont été vues au moins une fois.",
        "lignes": [
-        "SELECT COUNT({0} tortue.id_tortue)",
+        "SELECT COUNT({0})",
         "FROM observation",
         "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
         "WHERE tortue.espece = 'verte'"
@@ -3687,8 +3691,8 @@
        "trous": [
         {
          "options": [
-          "DISTINCT",
-          "ALL"
+          "DISTINCT tortue.id_tortue",
+          "tortue.id_tortue"
          ],
          "bonne": 0
         }
@@ -4228,8 +4232,8 @@
          "acceptée : le numéro 9 est libre"
         ],
         [
-         "UPDATE tortue SET espece = 'Verte'\nWHERE id_tortue = 1",
-         "refusée : la majuscule sort du domaine"
+         "UPDATE tortue SET espece = 'luth'\nWHERE id_tortue = 1",
+         "refusée : luth sort du domaine"
         ]
        ],
        "explication": "La base vérifie chaque contrainte à chaque mise à jour : les liens, les domaines et l'unicité des clés."
@@ -4414,13 +4418,13 @@
        ],
        "ligne": 1,
        "corrections": [
-        "SET espece = 'Imbriquée'",
+        "SET espece = 'imbriquées'",
         "SET espece = 'imbriquée'",
         "SET espece = imbriquée"
        ],
        "bonne": 1,
        "affiche": "",
-       "explication": "La contrainte CHECK n'accepte que les deux textes exacts 'verte' et 'imbriquée', accent et e final compris.",
+       "explication": "La contrainte CHECK n'accepte que les deux textes exacts 'verte' et 'imbriquée' : accent compris, au singulier.",
        "message": "Error: CHECK constraint failed: espece = 'verte' OR espece = 'imbriquée'"
       },
       {
@@ -4652,7 +4656,7 @@
       {
        "but": "Compter les plages de Bandrélé où une tortue verte est venue.",
        "lignes": [
-        "SELECT COUNT({0} plage.id_plage)",
+        "SELECT COUNT({0})",
         "FROM observation",
         "JOIN tortue ON observation.id_tortue = tortue.id_tortue",
         "JOIN plage ON observation.id_plage = plage.id_plage",
@@ -4662,8 +4666,8 @@
        "trous": [
         {
          "options": [
-          "ALL",
-          "DISTINCT"
+          "plage.id_plage",
+          "DISTINCT plage.id_plage"
          ],
          "bonne": 1
         },

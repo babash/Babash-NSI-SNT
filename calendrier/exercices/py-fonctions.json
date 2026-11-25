@@ -135,11 +135,11 @@
        "verifier": "r == 25"
       },
       {
-       "texte": "Après ce code, r vaut 9.",
-       "reponse": true,
-       "explication": "a reçoit 3 et b reçoit 4 : 3 × 4 − 3 = 9.",
-       "code": "def f(a, b):\n    return a * b - a\nr = f(3, 4)",
-       "verifier": "r == 9"
+       "texte": "Après ce code, r vaut 8.",
+       "reponse": false,
+       "explication": "f(2, 3) = 2 × 3 − 2 = 4, puis f(4, 2) = 4 × 2 − 4 = 4 : r vaut 4.",
+       "code": "def f(a, b):\n    return a * b - a\nr = f(f(2, 3), 2)",
+       "verifier": "r == 8"
       }
      ]
     }
@@ -1028,12 +1028,11 @@
      "duree": 4,
      "items": [
       {
-       "but": "Compter les jours de pluie (plus de 5 mm) : 2.",
+       "but": "Compter les nombres de 1 à 10 plus grands que 6 : 4.",
        "lignes": [
-        "pluie = (0, 12, 3, 8, 1)",
         "n = 0",
-        "for p in pluie:",
-        "    if p {0} 5:",
+        "for p in range(1, 11):",
+        "    if p {0} 6:",
         "        n = n {1}",
         "print(n)"
        ],
@@ -1055,8 +1054,8 @@
          "bonne": 0
         }
        ],
-       "affiche": "2",
-       "explication": "12 et 8 dépassent 5 : on compte 2 jours.",
+       "affiche": "4",
+       "explication": "7, 8, 9 et 10 dépassent 6 : on compte 4 nombres, en ajoutant 1 à chaque fois.",
        "aides": [
         "On compte : + 1."
        ]
@@ -1098,21 +1097,21 @@
      "duree": 6,
      "items": [
       {
-       "but": "Afficher la plus grande valeur de la suite 7, 3, 12, 5 (12).",
+       "but": "Afficher le plus petit chiffre de 7325 (2).",
        "lignes": [
-        "def plus_grand(suite):",
-        "    m = suite[0]",
-        "    for x in suite:",
-        "        if x {0} m:",
+        "def plus_petit(n):",
+        "    m = 9",
+        "    for c in n:",
+        "        if int(c) {0} m:",
         "            m = {1}",
         "    return m",
-        "print(plus_grand((7, 3, 12, 5)))"
+        "print(plus_petit(\"7325\"))"
        ],
        "trous": [
         {
          "options": [
-          "<",
           ">",
+          "<",
           "=="
          ],
          "bonne": 1
@@ -1120,14 +1119,14 @@
         {
          "options": [
           "m",
-          "suite",
-          "x"
+          "n",
+          "int(c)"
          ],
          "bonne": 2
         }
        ],
-       "affiche": "12",
-       "explication": "On remplace le maximum provisoire par x quand x est plus grand.",
+       "affiche": "2",
+       "explication": "On remplace le minimum provisoire par int(c) quand ce chiffre est plus petit.",
        "aides": [
         "m garde le plus grand vu jusque-là."
        ]
@@ -2944,15 +2943,15 @@
      "duree": 4,
      "items": [
       {
-       "but": "Compter les nombres pairs d'une liste : 3.",
+       "but": "Compter les nombres pairs de 1 à 7 : 3.",
        "lignes": [
-        "def nb_pairs(t):",
-        "    n = 0",
-        "    for x in t:",
+        "def nb_pairs(n):",
+        "    c = 0",
+        "    for x in range(1, n + 1):",
         "        if x % 2 == {0}:",
-        "            n = n + 1",
+        "            c = c + 1",
         "    return {1}",
-        "print(nb_pairs([4, 7, 10, 3, 8]))"
+        "print(nb_pairs(7))"
        ],
        "trous": [
         {
@@ -2966,41 +2965,41 @@
         {
          "options": [
           "x",
-          "t",
-          "n"
+          "n",
+          "c"
          ],
          "bonne": 2
         }
        ],
        "affiche": "3",
-       "explication": "Un nombre est pair quand le reste par 2 vaut 0 ; la fonction renvoie le compteur n.",
+       "explication": "Un nombre est pair quand le reste par 2 vaut 0 ; la fonction renvoie le compteur c.",
        "aides": [
         "La fonction renvoie le compteur."
        ]
       },
       {
-       "but": "Afficher le plus grand nombre de la liste : 31.",
+       "but": "Afficher le plus grand chiffre de 2831 : 8.",
        "lignes": [
-        "def maximum(t):",
-        "    m = t[0]",
-        "    for x in t:",
-        "        if x > m:",
-        "            {0} = x",
+        "def maximum(n):",
+        "    m = 0",
+        "    for c in n:",
+        "        if int(c) > m:",
+        "            {0} = int(c)",
         "    return m",
-        "print(maximum([28, 31, 29]))"
+        "print(maximum(\"2831\"))"
        ],
        "trous": [
         {
          "options": [
-          "x",
+          "c",
           "m",
-          "t"
+          "n"
          ],
          "bonne": 1
         }
        ],
-       "affiche": "31",
-       "explication": "Quand x bat le record, il devient le nouveau maximum m.",
+       "affiche": "8",
+       "explication": "Quand int(c) bat le record, il devient le nouveau maximum m.",
        "aides": [
         "Quelle variable garde le record ?"
        ]
@@ -3135,15 +3134,15 @@
      "duree": 4,
      "items": [
       {
-       "but": "Compter les jours où la température dépasse 30, puis afficher 2.",
+       "but": "Compter les nombres de 29 à 32 qui dépassent 30, puis afficher 2.",
        "lignes": [
-        "def jours_chauds(t):",
+        "def compte(a, b):",
         "    n = 0",
-        "    for x in t:",
+        "    for x in range(a, b + 1):",
         "        if x > 30:",
         "            n = n + 1",
         "    return n",
-        "print(jours_chauds([29, 32, 31, 30]))"
+        "print(compte(29, 32))"
        ],
        "affiche": "2",
        "aides": [
@@ -3189,15 +3188,15 @@
        ]
       },
       {
-       "but": "Renvoyer le premier nombre pair d'une liste, ou -1 s'il n'y en a pas ; deux appels.",
+       "but": "Renvoyer le premier chiffre pair d'un nombre, ou -1 s'il n'y en a pas ; deux appels.",
        "lignes": [
-        "def premier_pair(t):",
-        "    for x in t:",
-        "        if x % 2 == 0:",
-        "            return x",
+        "def premier_pair(n):",
+        "    for c in n:",
+        "        if int(c) % 2 == 0:",
+        "            return int(c)",
         "    return -1",
-        "print(premier_pair([3, 7, 8, 4]))",
-        "print(premier_pair([1]))"
+        "print(premier_pair(\"3784\"))",
+        "print(premier_pair(\"1\"))"
        ],
        "affiche": "8\n-1",
        "aides": [
@@ -3359,9 +3358,9 @@
        ]
       },
       {
-       "code": "def est_pair(n):\n    return n % 2 == 0\ndef somme_pairs(t):\n    s = 0\n    for x in t:\n        if est_pair(x):\n            s = s + x\n    return s\nprint(somme_pairs([3, 4, 6, 7]))",
-       "reponse": "10",
-       "explication": "Seuls 4 et 6 sont pairs : 4 + 6 = 10.",
+       "code": "def est_pair(n):\n    return n % 2 == 0\ndef somme_pairs(n):\n    s = 0\n    for x in range(1, n + 1):\n        if est_pair(x):\n            s = s + x\n    return s\nprint(somme_pairs(7))",
+       "reponse": "12",
+       "explication": "De 1 à 7, seuls 2, 4 et 6 sont pairs : 2 + 4 + 6 = 12.",
        "aides": [
         "est_pair dit si x est pair.",
         "On ajoute x, pas 1."
@@ -3430,38 +3429,38 @@
      "duree": 4,
      "items": [
       {
-       "texte": "Après ce code, r vaut 1.",
+       "texte": "Après ce code, r vaut \"b\".",
        "reponse": true,
-       "explication": "Au premier tour, return x renvoie 1 et arrête tout.",
-       "code": "def premier(t):\n    for x in t:\n        return x\nr = premier([1, 2, 3])",
-       "verifier": "r == 1"
+       "explication": "Au premier tour, return c renvoie \"b\" et arrête tout.",
+       "code": "def premier(m):\n    for c in m:\n        return c\nr = premier(\"bus\")",
+       "verifier": "r == \"b\""
       },
       {
        "texte": "Après ce code, r vaut 3.",
        "reponse": true,
        "explication": "Le return est après la boucle : les 3 tours se font.",
-       "code": "def compte(t):\n    n = 0\n    for x in t:\n        n = n + 1\n    return n\nr = compte([5, 5, 5])",
+       "code": "def compte(m):\n    n = 0\n    for c in m:\n        n = n + 1\n    return n\nr = compte(\"aaa\")",
        "verifier": "r == 3"
       },
       {
        "texte": "Après ce code, r vaut True.",
        "reponse": false,
-       "explication": "Dès que -1 est lu, return False arrête la fonction.",
-       "code": "def tous_positifs(t):\n    for x in t:\n        if x < 0:\n            return False\n    return True\nr = tous_positifs([3, -1, 4])",
+       "explication": "Dès que le a est lu, return False arrête la fonction.",
+       "code": "def sans_a(m):\n    for c in m:\n        if c == \"a\":\n            return False\n    return True\nr = sans_a(\"lagon\")",
        "verifier": "r == True"
       },
       {
-       "texte": "Après ce code, r vaut 4.",
+       "texte": "Après ce code, r vaut \"a\".",
        "reponse": false,
-       "explication": "trouve renvoie la position, pas la valeur : 4 est à l'indice 1.",
-       "code": "def trouve(t, v):\n    for i in range(len(t)):\n        if t[i] == v:\n            return i\n    return -1\nr = trouve([7, 4, 9], 4)",
-       "verifier": "r == 4"
+       "explication": "trouve renvoie la position, pas la lettre : a est à l'indice 1.",
+       "code": "def trouve(m, v):\n    for i in range(len(m)):\n        if m[i] == v:\n            return i\n    return -1\nr = trouve(\"taxi\", \"a\")",
+       "verifier": "r == \"a\""
       },
       {
        "texte": "Après ce code, r vaut -1.",
        "reponse": true,
-       "explication": "5 n'est pas dans la liste : la boucle va au bout, puis return -1.",
-       "code": "def trouve(t, v):\n    for i in range(len(t)):\n        if t[i] == v:\n            return i\n    return -1\nr = trouve([7, 4, 9], 5)",
+       "explication": "e n'est pas dans taxi : la boucle va au bout, puis return -1.",
+       "code": "def trouve(m, v):\n    for i in range(len(m)):\n        if m[i] == v:\n            return i\n    return -1\nr = trouve(\"taxi\", \"e\")",
        "verifier": "r == -1"
       }
      ]
@@ -3491,25 +3490,25 @@
        "verifier": "r == \"b\""
       },
       {
-       "texte": "tous_pairs([2, 3, 5]) renvoie False, comme on le voudrait.",
+       "texte": "tous_pairs(\"235\") renvoie False, comme on le voudrait.",
        "reponse": false,
-       "explication": "Elle renvoie True dès le premier nombre pair : elle teste « au moins un pair », pas « tous pairs ».",
-       "code": "def tous_pairs(t):\n    for x in t:\n        if x % 2 == 0:\n            return True\n    return False",
-       "verifier": "tous_pairs([2, 3, 5]) == False"
+       "explication": "Elle renvoie True dès le premier chiffre pair : elle teste « au moins un pair », pas « tous pairs ».",
+       "code": "def tous_pairs(n):\n    for c in n:\n        if int(c) % 2 == 0:\n            return True\n    return False",
+       "verifier": "tous_pairs(\"235\") == False"
       },
       {
        "texte": "Après ce code, r vaut 3.",
        "reponse": true,
        "explication": "4, 8 et 1 sont lus avant le 0 : return 3.",
-       "code": "def avant_zero(t):\n    n = 0\n    for x in t:\n        if x == 0:\n            return n\n        n = n + 1\n    return n\nr = avant_zero([4, 8, 1, 0, 6])",
+       "code": "def avant_zero(n):\n    k = 0\n    for c in n:\n        if c == \"0\":\n            return k\n        k = k + 1\n    return k\nr = avant_zero(\"48106\")",
        "verifier": "r == 3"
       },
       {
-       "texte": "avant_zero([2, 2]) renvoie 2.",
+       "texte": "avant_zero(\"22\") renvoie 2.",
        "reponse": true,
-       "explication": "Pas de 0 : la boucle compte les 2 nombres, puis le dernier return renvoie 2.",
-       "code": "def avant_zero(t):\n    n = 0\n    for x in t:\n        if x == 0:\n            return n\n        n = n + 1\n    return n",
-       "verifier": "avant_zero([2, 2]) == 2"
+       "explication": "Pas de 0 : la boucle compte les 2 chiffres, puis le dernier return renvoie 2.",
+       "code": "def avant_zero(n):\n    k = 0\n    for c in n:\n        if c == \"0\":\n            return k\n        k = k + 1\n    return k",
+       "verifier": "avant_zero(\"22\") == 2"
       }
      ]
     }
@@ -3565,25 +3564,25 @@
        "consigne": "Associe chaque fonction à ce qu'elle fait.",
        "paires": [
         [
-         "def f(t):\n    s = 0\n    for x in t:\n        s = s + x\n    return s",
-         "renvoie la somme des éléments"
+         "def f(m):\n    s = 0\n    for c in m:\n        s = s + int(c)\n    return s",
+         "renvoie la somme des chiffres"
         ],
         [
-         "def f(t):\n    n = 0\n    for x in t:\n        n = n + 1\n    return n",
-         "renvoie le nombre d'éléments"
+         "def f(m):\n    n = 0\n    for c in m:\n        n = n + 1\n    return n",
+         "renvoie le nombre de caractères"
         ],
         [
-         "def f(t):\n    m = t[0]\n    for x in t:\n        if x > m:\n            m = x\n    return m",
-         "renvoie le plus grand élément"
+         "def f(m):\n    g = 0\n    for c in m:\n        if int(c) > g:\n            g = int(c)\n    return g",
+         "renvoie le plus grand chiffre"
         ],
         [
-         "def f(t, v):\n    for x in t:\n        if x == v:\n            return True\n    return False",
-         "renvoie True si v est dans t"
+         "def f(m, v):\n    for c in m:\n        if c == v:\n            return True\n    return False",
+         "renvoie True si v est dans m"
         ]
        ],
        "explication": "La ligne qui change la variable dans la boucle dit ce que la fonction calcule.",
        "aides": [
-        "Essaie chaque fonction avec la liste [4, 9, 2]."
+        "Essaie chaque fonction avec le texte \"492\"."
        ]
       }
      ]
@@ -3784,26 +3783,26 @@
      "duree": 6,
      "items": [
       {
-       "but": "Dire si tous les nombres sont positifs : afficher False pour [3, -1, 4].",
+       "but": "Dire si tous les chiffres sont impairs : afficher False pour 3847.",
        "lignes": [
-        "def tous_positifs(t):",
-        "    for x in t:",
-        "        if x < 0:",
+        "def tous_impairs(n):",
+        "    for c in n:",
+        "        if int(c) % 2 == 0:",
         "            return True",
         "    return True",
-        "print(tous_positifs([3, -1, 4]))"
+        "print(tous_impairs(\"3847\"))"
        ],
        "ligne": 3,
        "corrections": [
-        "            return x",
+        "            return c",
         "            return False",
         "            print(False)"
        ],
        "bonne": 1,
        "affiche": "False",
-       "explication": "Un seul nombre négatif suffit pour répondre non : on renvoie False dès qu'on le trouve.",
+       "explication": "Un seul chiffre pair suffit pour répondre non : on renvoie False dès qu'on le trouve.",
        "aides": [
-        "Que doit répondre la fonction quand elle trouve -1 ?"
+        "Que doit répondre la fonction quand elle trouve 8 ?"
        ],
        "affiche_fautif": "True"
       },
@@ -4127,12 +4126,12 @@
      "duree": 2,
      "items": [
       {
-       "but": "Définir bonjour, puis l'appeler pour chaque prénom de la liste.",
+       "but": "Définir bonjour, puis l'appeler pour Lou, puis pour Anli.",
        "lignes": [
         "def bonjour(p):",
         "    return \"Bonjour \" + p",
-        "for p in [\"Lou\", \"Anli\"]:",
-        "    print(bonjour(p))"
+        "print(bonjour(\"Lou\"))",
+        "print(bonjour(\"Anli\"))"
        ],
        "affiche": "Bonjour Lou\nBonjour Anli",
        "aides": [
@@ -4164,7 +4163,7 @@
         "    if h > 3:",
         "        return \"haute\"",
         "    return \"basse\"",
-        "for h in [1, 4]:",
+        "for h in range(1, 5, 3):",
         "    print(h, maree(h))"
        ],
        "affiche": "1 basse\n4 haute",
@@ -4209,16 +4208,16 @@
        ]
       },
       {
-       "but": "Une fonction qui renvoie la moyenne d'une liste ; afficher la moyenne de 12, 15 et 9.",
+       "but": "Une fonction qui renvoie la moyenne des entiers de 1 à n ; afficher la moyenne pour n = 5.",
        "lignes": [
-        "def moyenne(t):",
+        "def moyenne(n):",
         "    s = 0",
-        "    for x in t:",
+        "    for x in range(1, n + 1):",
         "        s = s + x",
-        "    return s / len(t)",
-        "print(moyenne([12, 15, 9]))"
+        "    return s / n",
+        "print(moyenne(5))"
        ],
-       "affiche": "12.0",
+       "affiche": "3.0",
        "aides": [
         "La somme se fait dans la boucle, la division après."
        ]
@@ -4500,8 +4499,8 @@
       {
        "texte": "Après ce code, r vaut 4.",
        "reponse": false,
-       "explication": "1 est présent 3 fois : r vaut 3.",
-       "code": "def f(t, v):\n    n = 0\n    for x in t:\n        if x == v:\n            n = n + 1\n    return n\nr = f([1, 3, 1, 1], 1)",
+       "explication": "a est présent 3 fois dans ananas : r vaut 3.",
+       "code": "def f(m, v):\n    n = 0\n    for c in m:\n        if c == v:\n            n = n + 1\n    return n\nr = f(\"ananas\", \"a\")",
        "verifier": "r == 4"
       },
       {
@@ -4641,7 +4640,7 @@
    "id": "py-fonctions-030",
    "type": "erreur",
    "titre": "Révision : la chasse finale",
-   "objectif": "Lire le message de Python, puis corriger une fonction ou son appel.",
+   "objectif": "Révision de fin de thème, avec des listes : lire le message de Python, puis corriger une fonction ou son appel.",
    "notions": [
     "prog.debogage",
     "prog.fonction",
