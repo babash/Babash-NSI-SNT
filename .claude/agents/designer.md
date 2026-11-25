@@ -30,7 +30,7 @@ Les règles sont dans `CLAUDE.md` (§ 4 et § 5, « Applications »). Ce qui te 
 - **sans personnage ni récit** sur une feuille : seul le margouillat vert, caché dans le décor, jamais dans un exercice ; le robot des exercices reste toujours un robot ;
 - aucune lignée n'est plus forte qu'une autre ; rien dans un avatar ne montre un rang, un score ou un classement ; toute pièce va sur tout avatar ;
 - **les familles du catalogue** : les objets à prix (40 ou 100 crédits) ; les pièces libres (kishali, bandana) ; les trophées de la classe, jamais à prix (un objet au prénom d'un·e élève seulement avec son accord, rapporté par l'enseignant) ; les objets des applications, gagnés par haut fait ; la fidélité ;
-- **les bulles** : un avatar ne dit que les phrases de la liste fermée du moteur ; le moteur refuse tout texte ou toute clé venus de l'appelant ; l'enseignant ajoute ou retire des phrases et des objets (24/11 : pas de « bouchon de Mamoudzou », pas de « perche à mangue ») ;
+- **les bulles** : un avatar ne dit que les phrases de la liste fermée du moteur ; le moteur refuse tout texte ou toute clé venus de l'appelant ; l'enseignant ajoute ou retire des phrases et des objets (24/11 : les objets « bouchon de Mamoudzou » et « perche à mangue extensible » sont retirés du catalogue) ;
 - **en séance** : avatar figé de la première question au podium ; sur le téléphone, le buste de l'élève à côté de la question, sans prendre de place sur l'énoncé à 320 px ; sans compte, « l'Esprit en capuche » ;
 - un objet ajouté au catalogue est annoncé à l'Architecte (apparences et migration du catalogue).
 

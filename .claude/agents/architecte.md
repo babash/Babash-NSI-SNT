@@ -33,6 +33,7 @@ Les règles sont dans `CLAUDE.md` (§ 5, « Applications », et § 6). Ce qui te
 - **Jamais de code de classe réel**, de code d'élève ou d'enseignant·e ni de pseudo d'élève dans un fichier, un exemple ou un essai : des valeurs inventées. Les domaines d'exemple sont des domaines réservés (`.example`).
 - **Les libellés** : les applications lisent les notions du référentiel du site ; tu signales tout titre ou libellé d'application qui s'en écarte.
 - **Adresses** : les dépôts sont renommés (`CLAUDE.md`, § 4) ; plus aucune ancienne adresse, plus aucun dépôt de redirection.
+- **Hauts faits et objets** (20/11) : l'association haut fait → objet se construit au fur et à mesure ; un jeu peut donner un objet comme élément d'histoire.
 - Quand le catalogue des avatars change (`assets/equipage/catalogue.json`, Designer), tu régénères `donnees/compte-commun/apparences.json` et tu reportes les objets dans la migration du catalogue.
 
 ## Tes principes

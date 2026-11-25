@@ -33,8 +33,8 @@ En plus :
 - Corriger toi-même le travail d'un autre agent. Tu le renvoies avec la liste précise des problèmes : fichier, ligne, règle non respectée.
 - Réécrire l'historique de `main`, ou supprimer une branche sans l'accord du chef d'orchestre. L'envoi forcé sur `main` est interdit à tous (`CLAUDE.md`, § 3).
 - Publier un changement structurel (`CLAUDE.md`, § 2) sans l'accord de l'enseignant, transmis par le chef d'orchestre. Un choix fait par délégation et inscrit au registre des décisions vaut cet accord, sauf pour les bases.
-- Publier une ressource pédagogique (TD, TP, cours, contrôle, quiz, exercices d'une application) sans le verdict « bonne à publier » du ou de la Critique, ou l'accord du chef d'orchestre. Ce verdict ne te dispense d'aucun de tes contrôles.
-- Publier si un contrôle est rouge, même « mineur », ou si une page affirme une chose fausse.
+- Publier une ressource pédagogique (TD, TP, cours, contrôle, quiz, fiche de révision, exercices d'une application) sans le verdict « bonne à publier » du ou de la Critique, ou l'accord du chef d'orchestre, inscrit au journal. Ce verdict ne te dispense d'aucun de tes contrôles.
+- Publier si un contrôle est rouge, même « mineur » (sauf l'exception de la l.18 : « Vérifier le site » rouge pour une cause étrangère à ta branche), ou si une page affirme une chose fausse.
 - Publier une page que tu n'as pas regardée rendue.
 - Modifier une base : tu lis les métadonnées seulement.
 
@@ -62,6 +62,7 @@ En plus :
     - les libellés des référentiels ; aucun numéro de chapitre ; aucune ancienne adresse de dépôt ;
     - énoncés du bac mot pour mot (tu compares au sujet officiel) ; noms et marques d'origine gardés ; crédits complets ;
     - feuilles sans personnage ni récit ; clins d'œil : tu regardes l'objet sans son nom, et s'il peut être pris pour celui d'une œuvre précise, tu le refuses ; religions, maillots, clichés : `CLAUDE.md`, § 4 (un mot isolé n'est jamais un motif de refus) ;
+    - cours-quiz : le gabarit déclaré (`introduction` ou `revision`) passe le vérificateur du dépôt ;
     - avatars : aucun texte libre dans une bulle, aucune pièce réservée à un type d'avatar, trophées de la classe jamais à prix ;
     - TD en ligne : tu cherches dans le texte de chaque PDF une réponse restée, même invisible ; rien n'est demandé ni envoyé en ligne ;
     - applications : l'entrée sans compte existe et reste discrète ; un téléphone ne peut ni se donner un gain, ni changer ou connaître la réponse d'un·e autre (tu l'essaies) ; ce que disent les documents sur les données est exact.

@@ -33,5 +33,5 @@ Ceux de ta ligne dans « Qui possède quoi » (`CLAUDE.md`, § 7). En plus, dans
 - **Les libellés** (24/11) : ceux des référentiels du site, partout ; un synonyme va dans les mots-clés de recherche, jamais dans un titre ou un classement. **Aucun numéro de chapitre** dans un titre, une description ou une vitrine (l'ordre des séances d'une ressource reste).
 - **Les adresses** : les dépôts sont renommés (`CLAUDE.md`, § 4) ; aucune fiche ne garde une ancienne adresse, et il n'y a pas de redirection.
 - **Les ressources jumelles** (le même TP en première et en terminale, les feuilles d'un même TD) ont des fiches écrites de la même façon ; tu signales celles dont le contenu diverge sans raison.
-- **La vitrine** : le cours-quiz vient en tête de chaque thème (20/11) ; les TD type bac en fin de section.
-- **Les crédits** : tous les auteurs et autrices d'un TD co-écrit ; un contrôle de l'enseignant est sous son seul nom d'auteur affiché.
+- **La vitrine et les séquences** : le cours-quiz vient en tête de chaque thème (20/11) ; les TD type bac en fin de section ; une ressource externe n'est pas mise en avant, sauf les exceptions par niveau de `CLAUDE.md` (§ 4, 25/11). Les crédits de CyberCase sont à vérifier sur son site d'origine : c'est une ressource externe.
+- **Les crédits** : tous les auteurs et autrices d'un TD co-écrit ; le contrôle écrit pour l'enseignant en novembre 2026 est à son seul nom ; un contrôle co-écrit garde tous ses noms.

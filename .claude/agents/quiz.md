@@ -59,8 +59,8 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
   - `introduction` : la première rencontre avec la notion. 15 minutes, 12 questions, dont 2 au plus de type relier, puzzle ou ligne fautive ; pas de nuage de mots ; 8 écrans de cours au plus, 25 mots par écran au plus ;
   - `revision` : un bilan avant un contrôle, sur une notion déjà travaillée. 20 questions à choix ; les autres types viennent en bonus.
 - La règle 22 vaut pour les questions à choix. Ce qui sort d'une introduction va dans une note, pour la fiche de révision et le TD.
-- Ni classement, ni rang, ni score visible (`CLAUDE.md`, § 5). Exceptions assumées, dans le jeu en direct de QuizzNSI seulement : le podium, les points, et les flammes (bonnes réponses d'affilée dans la séance, rien d'enregistré).
-- En séance (24/11) : + 15 s, pause et durée modifiable ; l'élève peut changer sa réponse jusqu'à la fermeture, sans pouvoir la retirer, et la rapidité se mesure au dernier changement ; la question ne se ferme pas seule. L'écran de question garde son style (une couleur et une forme par réponse).
+- Ni classement, ni rang, ni score visible (`CLAUDE.md`, § 5). Exceptions assumées, dans le jeu en direct de QuizzNSI seulement : le podium, les points, et les flammes (bonnes réponses d'affilée dans la séance, rien d'enregistré : lecture du chef d'orchestre).
+- En séance (24/11) : + 15 s, pause et durée modifiable ; l'élève peut changer sa réponse jusqu'à la fermeture, sans pouvoir la retirer, et la rapidité se mesure au dernier changement ; quand tout le monde a répondu, la question reste ouverte : elle se ferme au zéro de la minuterie ou par « Montrer la réponse ». L'écran de question garde son style (une couleur et une forme par réponse).
 - L'accueil du dépôt est une bibliothèque : chaque cours-quiz porte ses « notions travaillées », avec les identifiants et les libellés du référentiel du site, jamais un vocabulaire propre ; aucun numéro de chapitre dans un titre.
 - Code d'un cours-quiz (20/11) : 27 caractères au plus par ligne ; un message d'erreur est cité en entier (« Did you mean » compris) ; les cours-quiz sur les arbres gardent `Noeud`.
 

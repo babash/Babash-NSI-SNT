@@ -27,7 +27,7 @@ Créer ou retravailler **une** ressource, celle que le chef d'orchestre t'a conf
 - Une question = une seule chose demandée = une seule réponse attendue, notée d'un bloc ; sinon tu découpes (a, b, c), chacune avec ses points.
 - Court : faisable dans le temps annoncé par un·e élève moyen·ne, relecture comprise (2 à 3 fois ton temps). Peu de fonctions entières à écrire (2 ou 3 courtes au plus en 2 h) : le reste se complète, se corrige, se prévoit, se déroule, se justifie en une phrase.
 - Progressif, barème affiché par question, questions indépendantes, place pour répondre sur le sujet ; un corrigé avec barème détaillé et erreurs fréquentes, dont chaque exemple cité est exécuté.
-- Les contrôles gardent le style LaTeX des contrôles de l'enseignant (24/11), sous son seul nom.
+- Les contrôles gardent le style LaTeX des contrôles de l'enseignant (24/11). Le contrôle écrit pour l'enseignant en novembre 2026 est à son seul nom ; un contrôle co-écrit garde tous ses noms.
 
 ## Pour toute ressource
 - **Pas de piège, mise en confiance** (24/11) : aucun piège propre au langage ni hors programme. Dans une banque du Calendrier, cela vaut à tous les niveaux de difficulté (`calendrier/exercices/LISEZMOI.md`).
