@@ -9,8 +9,10 @@ Le site actuel ne lit pas encore ces fichiers : il continue d'utiliser les liste
 donnees/
   ressources/<id>.json        une fiche par ressource (6 fiches d'exemple pour l'instant)
   vitrine.exemple.json        la mise en avant de la partie extérieure (exemple ; deviendra vitrine.json)
+  sequences/<id>.json         une séquence par fichier : les ressources d'une notion dans l'ordre de la classe (T153)
   progressions/               plus tard : les progressions annuelles de la partie élève
   referentiels/
+    sequences.json            les étapes des séquences, leur ordre par niveau, les ressources externes mises en avant
     programmes.json           l'arbre des textes officiels : SNT 2019, NSI 1re et Tle 2019, missions du PP
     notions.json              le thésaurus des notions : boucle, dichotomie, routage… (modèle SKOS)
     valeurs.json              les listes de valeurs : types, usages, origines, rôles, langages…
@@ -237,6 +239,7 @@ python3 scripts/valider_donnees.py --avant F      compare le thésaurus à une v
 python3 scripts/valider_donnees.py --anciens-roles signaler  tolère les anciens rôles (copie pas encore convertie)
 python3 scripts/convertir_notions_t64.py           convertit les notions des fiches vers « travaillees » (T64)
 python3 -I -B scripts/tests/test_notions.py        les tests du validateur pour le thésaurus et les notions (57 cas)
+python3 -I -B scripts/tests/test_sequences.py      les tests des séquences (validateur et construction)
 ```
 
 Python 3 standard, sans dépendance (le module `jsonschema`, s'il est installé, sert de contrôle supplémentaire).
@@ -280,8 +283,21 @@ Ce qui est vérifié :
   autre licence que CC BY-SA 4.0 ou MIT, et une ressource externe sans crédit, donnent un avertissement ;
 - vitrine : ressources existantes, sections rangées dans le bon programme, contenus sous leur thème, thèmes du programme absents ;
 - progressions : ressources existantes et visibles des élèves ;
+- séquences (T153) : voir `docs/SEQUENCES.md`, « Vérifier » ;
 - motifs interdits : mots de passe, identifiants, identifiants de démonstration, clés secrètes (Supabase `service_role`
   ou `sb_secret_`, GitHub, AWS, Google…), jetons, paramètres secrets dans les adresses, adresses électroniques.
+
+### Les séquences (`donnees/sequences/`, T153)
+Format proposé le 25/11/2026, à valider par l'enseignant ; tout est décrit dans `docs/SEQUENCES.md`. En bref : une séquence
+(`donnees/sequences/<id>.json`, schéma `schema/sequence.schema.json`) a un niveau, un titre fait des libellés des référentiels
+(jamais de numéro), une phrase d'objectif, un rang dans l'année, ses prérequis (d'autres séquences), et des étapes ordonnées
+dont les types et l'ordre par niveau sont dans `referentiels/sequences.json`. Chaque étape cite des fiches par leur identifiant,
+au premier rang (`ressources`) ou au second (`complements` : les ressources externes, « Ailleurs sur le web ») ; une ressource
+a une seule séquence principale. La construction les met dans `bibliotheque.json` (« sequences »), avec les seules ressources
+visibles de l'extérieur, et marque `cache_eleves` les documents cachés aux élèves. Tests : `scripts/tests/test_sequences.py`.
+
+Une progression (plus tard, § 3.5 du cahier des charges) pourra citer des séquences plutôt que des ressources : une classe,
+une année, les séquences dans l'ordre avec leurs périodes.
 
 ### Les annales du bac NSI (`donnees/annales/`, T104 et T116)
 Ce dossier n'est lu ni par `scripts/valider_donnees.py` ni par la construction de la bibliothèque : seule la page

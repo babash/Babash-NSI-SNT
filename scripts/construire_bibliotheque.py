@@ -10,7 +10,10 @@ Fichiers produits, dans donnees/ (ou --sortie) :
   bibliotheque.json           la vue de l'extérieur (cahier des charges, § 3.2) : les ressources qui ont au moins
                               un document visible de l'extérieur, avec ces documents seulement ; le document principal
                               caché est remplacé par le premier visible ; ni notes, ni liens vers une ressource cachée.
-                              Avec les référentiels (valeurs, programmes, notions, compétences Pix) et la vitrine.
+                              Avec les référentiels (valeurs, programmes, notions, compétences Pix, séquences), la
+                              vitrine et les séquences (donnees/sequences/, T153) : leurs étapes ne citent que les
+                              ressources visibles de l'extérieur ; un document caché aux élèves porte « cache_eleves »,
+                              pour que les vues des séquences, faites pour la classe, ne le montrent pas.
   bibliotheque-complete.json  tout, documents cachés et notes compris, avec ce que voit chaque public : pour l'admin.
   bibliotheque-textes.json    le texte des documents hébergés sur le site et visibles de l'extérieur (pages HTML,
                               textes, PDF si pdftotext est installé), pour la recherche dans le contenu ; chargé à part.
@@ -154,12 +157,25 @@ class Construction:
             "programmes": programmes["programmes"],
             "notions": {k: notions[k] for k in ("version", "domaines", "referentiels_externes", "sources", "notions")},
             "competences_pix": {"domaines": pix.get("domaines", []), "competences": pix.get("competences", [])},
+            "sequences": self.ref_sequences(),
         }
 
+    def ref_sequences(self):
+        """Le référentiel des séquences, sans ce qui ne sert qu'à la validation (les exceptions par niveau restent :
+        les pages peuvent en avoir besoin pour ranger les ressources externes)."""
+        r = (self.v.ref_sequences or {}).get("brut")
+        if not r:
+            return None
+        return {k: v for k, v in r.items() if k not in ("$schema",)}
+
     def document(self, d, public=None):
-        """Un document, avec son format déduit ; pour un public, sans ses réglages de visibilité."""
+        """Un document, avec son format déduit ; pour un public, sans ses réglages de visibilité. Vu de l'extérieur, un
+        document caché aux élèves porte « cache_eleves » (T153) : les séquences, faites pour la classe, le taisent.
+        Ce n'est pas un secret : le document est public, et le dépôt aussi."""
         doc = {k: v for k, v in d.items() if k != "visible" or public is None}
         doc["format"] = d.get("format") or self.v.deduire_format(d)
+        if public == "exterieur" and d.get("visible", {}).get("eleve") is not True:
+            doc["cache_eleves"] = True
         return doc
 
     def vue(self, fiche, public):
@@ -198,9 +214,9 @@ class Construction:
             if f.get("liees"):
                 f["liees"] = [l for l in f["liees"] if l.get("ressource") in visibles]
         bib = {"format": FORMAT, "public": "exterieur", "construit": construit, "referentiels": refs,
-               "vitrine": vitrine, "ressources": publiques}
+               "vitrine": vitrine, "sequences": self.sequences(publiques), "ressources": publiques}
         tout = {"format": FORMAT, "public": "admin", "construit": construit, "referentiels": refs,
-                "vitrine": vitrine, "ressources": [self.complete(x) for x in fiches]}
+                "vitrine": vitrine, "sequences": self.sequences(None), "ressources": [self.complete(x) for x in fiches]}
 
         os.makedirs(sortie, exist_ok=True)
         ecrits = {"bibliotheque.json": bib, "bibliotheque-complete.json": tout}
@@ -218,6 +234,43 @@ class Construction:
         self.messages.append(f"bilan   {len(publiques)} ressources visibles de l'extérieur sur {len(fiches)} ; "
                              f"{sum(len(f['documents']) for f in publiques)} documents publics")
         return True
+
+    def sequences(self, publiques):
+        """Les séquences, rangées par niveau puis par « rang ». Pour l'extérieur (publiques : les fiches vues de
+        l'extérieur), une place ne cite qu'une ressource visible, et son « document » devient « doc », le rang du
+        document dans la fiche publique (absent s'il est caché : le document principal s'ouvre). Chaque séquence
+        porte « rubrique » : la page de niveau où elle s'affiche. Les notes de l'enseignant restent à l'admin."""
+        niveaux = list(self.v.valeurs.get("niveaux", {}))
+        par_id = {f["id"]: f for f in publiques} if publiques is not None else None
+        sortie = []
+        for sid, (_, s) in self.v.sequences.items():
+            seq = {k: v for k, v in s.items() if k not in ("$schema", "etapes") and (publiques is None or k != "notes")}
+            seq["rubrique"] = self.v.rubrique_de(s)
+            seq["etapes"] = []
+            for e in s["etapes"]:
+                etape = {"type": e["type"]}
+                for champ in ("ressources", "complements"):
+                    if champ not in e and champ != "ressources":
+                        continue
+                    places = []
+                    for place in e.get(champ, []):
+                        p = {"ressource": place} if isinstance(place, str) else dict(place)
+                        if par_id is not None:
+                            f = par_id.get(p["ressource"])
+                            if not f:
+                                continue  # cachée pour l'extérieur
+                            doc = p.pop("document", None)
+                            if doc:
+                                rang = next((i for i, d in enumerate(f["documents"]) if (d.get("url") or d.get("fichier")) == doc), None)
+                                if rang is not None:
+                                    p["doc"] = rang
+                        places.append(p)
+                    if places or champ == "ressources":
+                        etape[champ] = places
+                seq["etapes"].append(etape)
+            sortie.append(seq)
+        sortie.sort(key=lambda x: (niveaux.index(x["niveau"]) if x["niveau"] in niveaux else 99, x["rang"], x["id"]))
+        return sortie
 
     def textes(self, publiques, construit):
         pdf = shutil.which("pdftotext") is not None

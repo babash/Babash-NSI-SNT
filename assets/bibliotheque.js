@@ -22,6 +22,7 @@
   var fiches = [], parId = {};
   var derive = {};            // id → valeurs de chaque filtre (calculées une fois)
   var textes = { etat: 'absent' };
+  var sequences = null;       // le rendu des séquences (assets/sequences.js), pour « Dans la séquence… » (T153)
   var PAR_PAGE = 30;
 
   var etat = { q: '', filtres: {}, tri: '', vue: 'liste', r: '', nombre: PAR_PAGE };
@@ -300,7 +301,16 @@
         return rang(a) - rang(b) || cmp.titre(a, b);
       }
     };
-    return liste.sort(cmp[tri === 'pertinence' && !resultat ? 'titre' : tri]);
+    /* Décision de l'enseignant du 25/11 (10:21 et 10:50) : ses ressources d'abord, les ressources externes ensuite,
+       quel que soit le tri choisi (l'ordre choisi vaut dans chacun des deux groupes) */
+    var choisi = cmp[tri === 'pertinence' && !resultat ? 'titre' : tri];
+    return liste.sort(function (a, b) { return (externe(a) ? 1 : 0) - (externe(b) ? 1 : 0) || choisi(a, b); });
+  }
+
+  /* Une ressource externe : toute origine autre que « ma-creation » (referentiels/sequences.json, « origines_mises_en_avant ») */
+  function externe(f) {
+    var a_soi = ((bib.referentiels.sequences || {}).origines_mises_en_avant) || ['ma-creation'];
+    return a_soi.indexOf(f.origine) < 0;
   }
 
   /* ── La page ────────────────────────────────────────────────── */
@@ -873,6 +883,9 @@
     if (f.accroche) { var acc = el('p', { class: 'chapo' }); acc.appendChild(surligne(f.accroche, t)); art.appendChild(acc); }
     var d = principal(f), info = infoDocument(d);
     if (info) art.appendChild(el('p', { class: 'ouvrir' }, O.lienVers(info, 'Ouvrir : ' + (d.titre || libelle('roles', d.role)), 'bouton-ouvrir')));
+    /* T153 : la séquence de la ressource, avec celle d'avant et celle d'après */
+    var blocSeq = sequences ? sequences.blocFiche(f.id, function (g) { return lienFiche(g, g.titre); }) : null;
+    if (blocSeq) art.appendChild(blocSeq);
 
     // Synthèse
     var dl = el('dl', { class: 'synthese' });
@@ -1006,6 +1019,9 @@
     });
     index.preparer();
     fiches.forEach(deriver);
+    if (window.Sequences) {
+      try { sequences = new window.Sequences.Rendu(new window.Sequences.Modele(bib), O); } catch (e) { sequences = null; if (window.console) console.error(e); }
+    }
     definirFiltres();
     lireAdresse();
     ui.input.value = etat.q;

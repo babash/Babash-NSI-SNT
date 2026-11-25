@@ -15,6 +15,10 @@ Pour toutes les fiches de la bibliothèque (donnees/ressources/*.json, constat N
 La bibliothèque (bibliotheque/, T50) : donnees/bibliotheque.json se lit en ligne et correspond aux
 fiches visibles de l'extérieur de cette copie ; la page en affiche autant, sans erreur ; une recherche
 trouve une ressource par un mot de son titre ; trois fiches complètes s'ouvrent (?r=identifiant).
+Les rubriques sont affichées dans leur vue « Par thème » (?vue=themes, T153) : c'est elle qui suit la vitrine,
+quelle que soit la vue par défaut. Les séquences publiées (donnees/sequences/, T153) : la page de chaque séquence
+(<rubrique>/?sequence=<id>) s'affiche sans erreur, avec autant de ressources que la séquence en montre à la classe
+(ressources et compléments dont un document est visible des élèves et de l'extérieur).
 Les annales du bac (bibliotheque/annales/, T116) : la page affiche tous les exercices de
 donnees/annales/annales-bac-nsi.json, sans erreur ; la version imprimable d'un chapitre a un QR code par exercice.
 Une page déposée vue vide est réaffichée deux fois, à 15 s d'intervalle, avant d'être déclarée
@@ -325,6 +329,67 @@ def annales(base, problemes, lien_du_site):
             print(f"{'':15} version imprimable « {chapitre} » : {n} exercices, {qr} QR codes")
 
 
+def sequences_publiees():
+    """Les séquences publiées : [(identifiant, rubrique, nombre de ressources montrées à la classe)]. La rubrique est
+    celle de la vitrine qui suit le programme du premier thème ou contenu de la séquence (comme la construction)."""
+    try:
+        v = json.loads(lire("donnees/vitrine.json"))
+        programmes = json.loads(lire("donnees/referentiels/programmes.json"))["programmes"]
+    except (OSError, ValueError, KeyError):
+        return []
+    racines = {}
+    for prog in programmes:
+        racines[prog["id"]] = prog["id"]
+        for th in prog.get("themes", []):
+            racines[th["id"]] = prog["id"]
+            for c in th.get("contenus", []):
+                racines[c["id"]] = prog["id"]
+    rubrique = {}
+    for rub in v.get("rubriques", []):
+        if rub.get("programme"):
+            rubrique.setdefault(rub["programme"], rub["id"])
+    out = []
+    for chemin in sorted(glob.glob(os.path.join(RACINE, "donnees", "sequences", "*.json"))):
+        try:
+            s = json.loads(open(chemin, encoding="utf-8").read())
+        except (OSError, ValueError):
+            continue
+        if s.get("statut") != "publiee" or not s.get("programme"):
+            continue
+        rub = rubrique.get(racines.get(s["programme"][0]))
+        if not rub:
+            continue
+        n = 0
+        for e in s.get("etapes", []):
+            for place in e.get("ressources", []) + e.get("complements", []):
+                f = fiche(place if isinstance(place, str) else place.get("ressource"))
+                if f and any(isinstance(d, dict) and (d.get("visible") or {}).get("exterieur") is True
+                             and (d.get("visible") or {}).get("eleve") is True for d in f.get("documents", [])):
+                    n += 1
+        out.append((s["id"], rub, n))
+    return out
+
+
+def sequences(base, problemes):
+    """La page de chaque séquence publiée s'affiche, sans erreur, avec ses ressources (T153)."""
+    liste = sequences_publiees()
+    if not liste:
+        print("\nSéquences : aucune publiée")
+        return
+    print(f"\nSéquences publiées : {len(liste)}")
+    with concurrent.futures.ThreadPoolExecutor(PARALLELE) as pool:
+        pages = pool.map(lambda x: afficher(f"{base}/{x[1]}/?sequence={urllib.parse.quote(x[0])}"), liste)
+        for (sid, rub, attendu), page in zip(liste, pages):
+            affiche = len(re.findall(r'<li class="etape-res(?:\s[^"]*)?"', page))
+            erreur = 'class="alerte"' in page
+            etat = "ok" if affiche == attendu and not erreur else "ÉCART"
+            print(f"   {etat:5} {affiche:3} / {attendu:3} ressources   {rub}/?sequence={sid}")
+            if erreur:
+                problemes.append(f"{rub}/?sequence={sid} : la page affiche une erreur")
+            if affiche != attendu:
+                problemes.append(f"{rub}/?sequence={sid} : {affiche} ressources affichées au lieu de {attendu}")
+
+
 def main():
     base = sys.argv[1].rstrip("/") if len(sys.argv) > 1 else "https://babash.github.io/Babash-NSI-SNT"
     debut = time.time()
@@ -345,7 +410,7 @@ def main():
     # Les pages des rubriques et l'accueil, en parallèle ; les résultats sont lus dans l'ordre.
     with concurrent.futures.ThreadPoolExecutor(PARALLELE) as pool:
         places = vitrine()
-        vues = {rub: pool.submit(afficher, f"{base}/{rub}/") for rub, _ in places}
+        vues = {rub: pool.submit(afficher, f"{base}/{rub}/?vue=themes") for rub, _ in places}
         vue_accueil = pool.submit(afficher, f"{base}/")
 
         for rub, ids in places:
@@ -459,6 +524,7 @@ def main():
                   " page(s) déposée(s) sans le lien : " + ", ".join(sorted(sans_code)))
 
     bibliotheque(base, problemes, lien_du_site)
+    sequences(base, problemes)
     annales(base, problemes, lien_du_site)
     print(f"Durée : {round(time.time() - debut)} s")
 

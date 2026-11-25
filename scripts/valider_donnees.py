@@ -527,15 +527,18 @@ class Validation:
         self.champs_notions = {}    # id → emplacement de la notion dans notions.json
         self.historique = False     # le thésaurus a un historique
         self.ajouts_historique = {}  # id → numéro de la version de l'historique qui l'ajoute
-        self.compteurs = {"fiches": 0, "vitrines": 0, "progressions": 0, "caches": 0, "collecte": 0, "a_verifier": 0,
-                          "sans_notions": 0}
+        self.compteurs = {"fiches": 0, "vitrines": 0, "progressions": 0, "sequences": 0, "caches": 0, "collecte": 0,
+                          "a_verifier": 0, "sans_notions": 0}
+        self.sequences = {}     # id → (fichier, séquence), T153
+        self.ref_sequences = None   # referentiels/sequences.json, lu par charger_ref_sequences
+        self.rubriques_programme = {}   # programme → rubrique de vitrine.json qui le suit
 
     def nom(self, chemin):
         return relatif(self.racine, chemin)
 
     # Schémas -------------------------------------------------------------
     def charger_schemas(self):
-        for nom in ("ressource", "vitrine", "progression", "notions"):
+        for nom in ("ressource", "vitrine", "progression", "notions", "sequence"):
             chemin = os.path.join(self.donnees, "schema", f"{nom}.schema.json")
             if not os.path.exists(chemin):
                 self.rapport.erreur(self.nom(chemin), "", "schéma introuvable")
@@ -1392,6 +1395,8 @@ class Validation:
                 self.rapport.erreur(fichier, joindre(cr, "id"), f"la rubrique « {rub['id']} » figure deux fois")
             rubriques_vues.add(rub["id"])
             prog = rub.get("programme")
+            if prog and fichier.endswith("donnees/vitrine.json"):
+                self.rubriques_programme.setdefault(prog, rub["id"])
             if prog:
                 n = self.verifier_noeud(fichier, joindre(cr, "programme"), prog)
                 if n and n["niveau"] != "programme":
@@ -1494,6 +1499,306 @@ class Validation:
                 elif not self.visibles.get(rid, {}).get("eleve", False):
                     self.rapport.erreur(fichier, cj, f"« {rid} » n'a aucun document visible des élèves")
 
+    # Séquences (T153) ----------------------------------------------------
+    def charger_ref_sequences(self):
+        """referentiels/sequences.json : les étapes (liste fermée), leur ordre par niveau (« parcours ») et les
+        ressources externes mises en avant à chaque niveau. Rien n'est vérifié s'il manque et qu'il n'y a pas de séquence."""
+        chemin = os.path.join(self.donnees, "referentiels", "sequences.json")
+        fichier = self.nom(chemin)
+        if not os.path.exists(chemin):
+            if glob.glob(os.path.join(self.donnees, "sequences", "*.json")):
+                self.rapport.erreur(fichier, "", "référentiel introuvable : les séquences ne peuvent pas être vérifiées")
+            return False
+        r = lire_json(self.racine, chemin, self.rapport)
+        if r is None:
+            return False
+        chercher_secrets(fichier, r, self.rapport)
+        if not isinstance(r, dict):
+            self.rapport.erreur(fichier, "", "le référentiel des séquences est un objet { … }")
+            return False
+        motif = re.compile(r"^[a-z0-9]+(-[a-z0-9]+)*$")
+        etapes = {}
+        for i, e in enumerate(r.get("etapes") if isinstance(r.get("etapes"), list) else []):
+            c = joindre("etapes", i)
+            if not isinstance(e, dict) or not isinstance(e.get("id"), str) or not motif.match(e["id"]):
+                self.rapport.erreur(fichier, c, "chaque étape a un « id » en minuscules, sans accents, avec des tirets")
+                continue
+            if not isinstance(e.get("libelle"), str) or not e["libelle"].strip():
+                self.rapport.erreur(fichier, c, f"l'étape « {e['id']} » n'a pas de « libelle »")
+            if e["id"] in etapes:
+                self.rapport.erreur(fichier, c, f"l'étape « {e['id']} » figure deux fois")
+            for k, t in enumerate(e.get("types_attendus") or []):
+                if isinstance(t, str):
+                    self.verifier_valeur(fichier, joindre(joindre(c, "types_attendus"), k), t, "types")
+            etapes[e["id"]] = e
+        if not etapes:
+            self.rapport.erreur(fichier, "etapes", "liste manquante ou vide")
+            return False
+        parcours = r.get("parcours")
+        if not isinstance(parcours, dict) or not parcours:
+            self.rapport.erreur(fichier, "parcours", "il faut, pour chaque niveau, la liste ordonnée de ses étapes")
+            parcours = {}
+        for niv, liste in parcours.items():
+            c = joindre("parcours", niv)
+            self.verifier_valeur(fichier, c, niv, "niveaux")
+            if not isinstance(liste, list) or not liste:
+                self.rapport.erreur(fichier, c, "une liste non vide d'étapes")
+                parcours[niv] = []
+                continue
+            for k, eid in enumerate(liste):
+                if eid not in etapes:
+                    self.rapport.erreur(fichier, joindre(c, k), f"« {eid} » n'est pas une étape de « etapes »")
+            if len(set(liste)) != len(liste):
+                self.rapport.erreur(fichier, c, "une étape figure deux fois dans le parcours")
+        origines = r.get("origines_mises_en_avant")
+        if not isinstance(origines, list) or not origines:
+            self.rapport.erreur(fichier, "origines_mises_en_avant", "la liste des origines montrées au premier rang (« ma-creation »)")
+            origines = ["ma-creation"]
+        for k, o in enumerate(origines):
+            self.verifier_valeur(fichier, joindre("origines_mises_en_avant", k), o, "origines")
+        exceptions = {}
+        mea = r.get("mises_en_avant") if isinstance(r.get("mises_en_avant"), dict) else {}
+        for niv, liste in mea.items():
+            if niv == "explication":
+                continue
+            c = joindre("mises_en_avant", niv)
+            self.verifier_valeur(fichier, c, niv, "niveaux")
+            if not isinstance(liste, list):
+                self.rapport.erreur(fichier, c, "une liste d'identifiants de fiches")
+                continue
+            exceptions[niv] = set()
+            for k, rid in enumerate(liste):
+                if rid not in self.fiches:
+                    self.rapport.erreur(fichier, joindre(c, k), f"aucune fiche « {rid} » dans donnees/ressources/")
+                    continue
+                exceptions[niv].add(rid)
+                if self.fiches[rid][1].get("origine") in origines:
+                    self.rapport.attention(fichier, joindre(c, k), f"« {rid} » est déjà une ressource de l'enseignant : "
+                                                                   "inutile de la lister ici")
+        self.ref_sequences = {"etapes": etapes, "parcours": parcours, "exceptions": exceptions,
+                              "origines": set(origines), "brut": r}
+        return True
+
+    TITRE_NUMEROTE = re.compile(r"(?i)\b(chapitre|chap\.?|s[ée]quence|s[ée]q\.?|partie|th[èe]me)\s*[0-9IVX]+\b"
+                                r"|^\s*([0-9]+|[IVX]+)\s*[-.):–]")
+
+    def libelles_reference(self, seq):
+        """Les formes de recherche des libellés qu'une séquence peut reprendre dans son titre : ses thèmes et contenus
+        du programme (et le thème d'un contenu), ses notions (et leurs notions plus larges), avec leurs synonymes."""
+        formes = set()
+        for nid in seq.get("programme", []):
+            n = self.noeuds.get(nid)
+            while n:
+                for t in (n.get("intitule"), n.get("court")):
+                    if t:
+                        formes.add(cle_recherche(t))
+                n = self.noeuds.get(n.get("parent")) if n.get("niveau") == "contenu" else None
+        for nid in seq.get("notions", []):
+            for x in [nid] + sorted(self.ancetres.get(nid, ())):
+                notion = self.notions.get(x) or {}
+                alternatifs = notion.get("alternatifs") or []
+                if isinstance(alternatifs, dict):  # par langue
+                    alternatifs = [a for v in alternatifs.values() for a in (v or [])]
+                for t in [notion.get("libelle")] + list(alternatifs):
+                    if isinstance(t, str):
+                        formes.add(cle_recherche(t))
+        return {f for f in formes if f}
+
+    def verifier_sequences(self):
+        """Les séquences (donnees/sequences/<id>.json, T153) : schéma, références, ordre des étapes, mise en avant
+        des ressources externes, séquence principale de chaque ressource. Remplit self.sequences pour la construction."""
+        chemins = sorted(glob.glob(os.path.join(self.donnees, "sequences", "*.json")))
+        if not chemins or not self.charger_ref_sequences():
+            return
+        ref = self.ref_sequences
+        ordres = {}                 # (niveau, ordre) → id
+        appartenances = {}          # ressource → [(séquence, principale ?, fichier, champ)]
+        for chemin in chemins:
+            fichier = self.nom(chemin)
+            s = lire_json(self.racine, chemin, self.rapport)
+            self.compteurs["sequences"] += 1
+            if s is None:
+                continue
+            chercher_secrets(fichier, s, self.rapport)
+            chercher_anciens_depots(fichier, s, self._anciens, self.rapport)
+            if not isinstance(s, dict):
+                self.rapport.erreur(fichier, "", "une séquence est un objet { … }")
+                continue
+            if not self.conforme("sequence", s, fichier):
+                continue
+            sid = s["id"]
+            attendu = os.path.splitext(os.path.basename(chemin))[0]
+            if sid != attendu:
+                self.rapport.erreur(fichier, "id", f"l'identifiant « {sid} » ne correspond pas au nom du fichier ({attendu}.json)")
+            if sid in self.sequences:
+                self.rapport.erreur(fichier, "id", f"l'identifiant « {sid} » est déjà utilisé par {self.sequences[sid][0]}")
+                continue
+            niv = s["niveau"]
+            self.verifier_valeur(fichier, "niveau", niv, "niveaux")
+            self.verifier_valeur(fichier, "enseignement", s["enseignement"], "enseignements")
+
+            # Le titre : des libellés des référentiels, jamais de numéro (critique C3 de l'enseignant, 24/11)
+            if self.TITRE_NUMEROTE.search(s["titre"]):
+                self.rapport.erreur(fichier, "titre", f"« {s['titre']} » porte un numéro : jamais de numéro de chapitre ni de "
+                                                      "séquence (la place dans l'année est le champ « rang »)")
+            for k, nid in enumerate(s["programme"]):
+                n = self.verifier_noeud(fichier, joindre("programme", k), nid, [s["enseignement"]], [niv])
+                if n and n["niveau"] == "programme":
+                    self.rapport.erreur(fichier, joindre("programme", k), f"« {nid} » est un programme entier : citer un thème ou un contenu")
+            for k, nid in enumerate(s.get("notions", [])):
+                if self.notions and nid not in self.notions:
+                    self.rapport.erreur(fichier, joindre("notions", k), f"« {nid} » n'est pas dans le thésaurus (donnees/referentiels/notions.json)")
+            formes = self.libelles_reference(s)
+            mots_titre = f" {cle_recherche(s['titre'])} "
+            if formes and not any(f" {f} " in mots_titre for f in formes):
+                self.rapport.attention(fichier, "titre", f"« {s['titre']} » ne reprend aucun libellé de ses thèmes, contenus ou "
+                                                         "notions : un titre est fait des libellés des référentiels (même mot partout)")
+            cle = (niv, s["rang"])
+            if cle in ordres:
+                self.rapport.erreur(fichier, "rang", f"le rang {s['rang']} est déjà celui de la séquence « {ordres[cle]} » "
+                                                     "au même niveau : en choisir un autre (10, 20, 30… laissent de la place)")
+            ordres[cle] = sid
+            if not self.rubrique_de(s):
+                self.rapport.attention(fichier, "programme", "aucune rubrique de la vitrine ne suit le programme de « "
+                                                             f"{s['programme'][0]} » : la séquence ne s'affichera sur aucune page de niveau")
+            if s.get("exemple"):
+                self.rapport.info(fichier, "exemple", "séquence d'exemple, à remplacer")
+            if s["statut"] == "brouillon":
+                self.rapport.info(fichier, "statut", "brouillon : pas montrée sur le site (sauf avec ?brouillons dans l'adresse)")
+
+            # Les étapes : dans l'ordre du parcours du niveau, chacune au plus une fois
+            parcours = ref["parcours"].get(niv)
+            if parcours is None:
+                self.rapport.erreur(fichier, "niveau", f"le référentiel des séquences n'a pas de parcours pour « {niv} »")
+                parcours = []
+            rang_avant, vus, pleines, places_seq = -1, set(), 0, set()
+            for i, e in enumerate(s["etapes"]):
+                c = joindre("etapes", i)
+                t = e["type"]
+                if t not in ref["etapes"]:
+                    self.rapport.erreur(fichier, joindre(c, "type"), f"« {t} » n'est pas une étape du référentiel "
+                                                                     f"(possibles : {', '.join(ref['etapes'])})")
+                    continue
+                if t in vus:
+                    self.rapport.erreur(fichier, joindre(c, "type"), f"l'étape « {t} » figure deux fois : réunir ses ressources")
+                    continue
+                vus.add(t)
+                if parcours and t not in parcours:
+                    self.rapport.erreur(fichier, joindre(c, "type"), f"l'étape « {t} » n'est pas prévue en {niv} "
+                                                                     f"(parcours : {', '.join(parcours)})")
+                    continue
+                rang = parcours.index(t) if t in parcours else rang_avant
+                if rang < rang_avant:
+                    self.rapport.erreur(fichier, joindre(c, "type"), f"l'étape « {t} » est mal placée : l'ordre en {niv} est "
+                                                                     f"{', '.join(parcours)}")
+                rang_avant = max(rang, rang_avant)
+                attendus = set(ref["etapes"][t].get("types_attendus") or [])
+                for liste, champ in ((e["ressources"], "ressources"), (e.get("complements", []), "complements")):
+                    for k, place in enumerate(liste):
+                        ck = joindre(joindre(c, champ), k)
+                        rid = place if isinstance(place, str) else place["ressource"]
+                        secondaire = isinstance(place, dict) and place.get("secondaire") is True
+                        doc = place.get("document") if isinstance(place, dict) else None
+                        if rid not in self.fiches:
+                            self.rapport.erreur(fichier, ck, f"aucune fiche « {rid} » dans donnees/ressources/")
+                            continue
+                        f = self.fiches[rid][1]
+                        if doc is not None and doc not in [d.get("url") or d.get("fichier") for d in f.get("documents", [])
+                                                           if isinstance(d, dict)]:
+                            self.rapport.erreur(fichier, joindre(ck, "document"), f"« {doc} » n'est l'adresse d'aucun document de la "
+                                                                                  f"fiche « {rid} » (copier son « url » ou son « fichier »)")
+                        cle_place = (rid, doc)
+                        if cle_place in places_seq:
+                            self.rapport.erreur(fichier, ck, f"« {rid} » figure déjà dans la séquence" + (" avec ce document" if doc else "")
+                                                + " : une ressource n'y revient qu'avec un autre « document »")
+                            continue
+                        places_seq.add(cle_place)
+                        if not any(a[0] == sid for a in appartenances.get(rid, [])):
+                            appartenances.setdefault(rid, []).append((sid, not secondaire, fichier, ck))
+                        elif not secondaire:
+                            for i_a, a in enumerate(appartenances[rid]):
+                                if a[0] == sid and not a[1]:
+                                    appartenances[rid][i_a] = (sid, True, fichier, ck)
+                        vis = self.visibles.get(rid, {})
+                        if f.get("statut") == "obsolete":
+                            self.rapport.attention(fichier, ck, f"« {rid} » est marquée obsolète")
+                        if niv not in (f.get("niveaux") or []):
+                            self.rapport.attention(fichier, ck, f"« {rid} » n'a pas le niveau « {niv} » dans sa fiche")
+                        if not vis.get("exterieur", True):
+                            self.rapport.info(fichier, ck, f"« {rid} » n'a aucun document visible de l'extérieur : le site ne la montre pas")
+                        elif not vis.get("eleve", True):
+                            self.rapport.info(fichier, ck, f"« {rid} » n'a aucun document visible des élèves : la séquence ne la montre pas")
+                        if attendus and not attendus & set(f.get("types") or []) and not (t == "cours-quiz" and self.cours_quiz(f)):
+                            self.rapport.attention(fichier, ck, f"« {rid} » ({', '.join(f.get('types') or [])}) n'est pas d'un type attendu "
+                                                                f"à l'étape « {ref['etapes'][t]['libelle']} » ({', '.join(sorted(attendus))})")
+                        a_soi = f.get("origine") in ref["origines"]
+                        excepte = rid in ref["exceptions"].get(niv, set())
+                        if champ == "ressources" and not a_soi and not excepte:
+                            self.rapport.attention(fichier, ck, f"« {rid} » est une ressource externe ({f.get('origine')}) : la mettre "
+                                                                "dans « complements » (second plan, règle du 25/11), ou l'ajouter aux "
+                                                                f"exceptions de {niv} (referentiels/sequences.json, « mises_en_avant »)")
+                        if champ == "complements" and (a_soi or excepte):
+                            self.rapport.attention(fichier, ck, f"« {rid} » est mise en avant à ce niveau : la placer dans « ressources »")
+                if e["ressources"] or e.get("complements"):
+                    pleines += 1
+            if not pleines:
+                self.rapport.attention(fichier, "etapes", "aucune étape n'a de ressource")
+            self.sequences[sid] = (fichier, s)
+
+        # Les prérequis : des séquences existantes, d'un niveau égal ou antérieur, vues avant (rang), sans cycle
+        niveaux = list(self.valeurs.get("niveaux", {}))
+        for sid, (fichier, s) in self.sequences.items():
+            for k, pid in enumerate(s.get("prerequis", [])):
+                c = joindre("prerequis", k)
+                if pid == sid:
+                    self.rapport.erreur(fichier, c, "une séquence ne peut pas être son propre prérequis")
+                    continue
+                if pid not in self.sequences:
+                    self.rapport.erreur(fichier, c, f"aucune séquence « {pid} » dans donnees/sequences/")
+                    continue
+                q = self.sequences[pid][1]
+                rang_niv = lambda x: niveaux.index(x["niveau"]) if x["niveau"] in niveaux else -1
+                if rang_niv(q) > rang_niv(s):
+                    self.rapport.erreur(fichier, c, f"« {pid} » est d'un niveau plus avancé ({q['niveau']}) : elle ne peut pas venir avant")
+                elif q["niveau"] == s["niveau"] and q["rang"] >= s["rang"]:
+                    self.rapport.attention(fichier, c, f"« {pid} » est à voir avant, mais son rang ({q['rang']}) n'est pas avant "
+                                                       f"celui de cette séquence ({s['rang']}) : revoir les rangs")
+
+        def cycle(depart, sid, pile):
+            for pid in self.sequences.get(sid, (None, {}))[1].get("prerequis", []):
+                if pid == depart:
+                    return pile + [pid]
+                if pid in self.sequences and pid not in pile:
+                    trouve = cycle(depart, pid, pile + [pid])
+                    if trouve:
+                        return trouve
+            return None
+        for sid, (fichier, s) in sorted(self.sequences.items()):
+            boucle = cycle(sid, sid, [sid])
+            if boucle and sid == min(boucle):
+                self.rapport.erreur(fichier, "prerequis", "les prérequis tournent en rond : " + " → ".join(boucle))
+
+        # Une seule séquence principale par ressource
+        for rid, places in sorted(appartenances.items()):
+            principales = [p for p in places if p[1]]
+            if len(principales) > 1:
+                for p in principales[1:]:
+                    self.rapport.erreur(p[2], p[3], f"« {rid} » a déjà pour séquence principale « {principales[0][0]} » : ici, écrire "
+                                                    f"{{ \"ressource\": \"{rid}\", \"secondaire\": true }}")
+            elif not principales:
+                self.rapport.attention(places[0][2], places[0][3], f"« {rid} » est secondaire partout : choisir sa séquence principale")
+
+    def cours_quiz(self, f):
+        """Même règle que estCoursQuiz (assets/site.js) : le type « cours-quiz » ou le mot-clé « cours-quiz »."""
+        if "cours-quiz" in (f.get("types") or []) + (f.get("usages") or []):
+            return True
+        return any(isinstance(m, str) and m.strip().lower() == "cours-quiz" for m in f.get("mots_cles") or [])
+
+    def rubrique_de(self, seq):
+        """La rubrique de la vitrine (vitrine.json) qui suit le programme du premier thème ou contenu de la séquence."""
+        n = self.noeuds.get((seq.get("programme") or [None])[0])
+        return self.rubriques_programme.get(n["racine"]) if n else None
+
     # Ensemble ------------------------------------------------------------
     def lancer(self):
         if not os.path.isdir(self.donnees):
@@ -1513,6 +1818,7 @@ class Validation:
                 self.verifier_vitrine(chemin)
         for chemin in sorted(glob.glob(os.path.join(self.donnees, "progressions", "*.json"))):
             self.verifier_progression(chemin)
+        self.verifier_sequences()
         if self.compteurs["vitrines"]:
             for rid in sorted(set(self.fiches) - self.placees):
                 self.rapport.info(self.fiches[rid][0], "", "la ressource n'est placée nulle part dans la vitrine (elle reste dans la bibliothèque)")
@@ -1553,7 +1859,7 @@ def main():
     c = v.compteurs
     ne, na, ni = (v.rapport.nombre(n) for n in ("erreur", "attention", "info"))
     bilan = (f"Bilan : {pluriel(c['fiches'], 'fiche')}, {pluriel(c['vitrines'], 'vitrine')}, "
-             f"{pluriel(c['progressions'], 'progression')} ; "
+             f"{pluriel(c['progressions'], 'progression')}, {pluriel(c['sequences'], 'séquence')} ; "
              f"{pluriel(ne, 'erreur')}, {pluriel(na, 'avertissement')}, {pluriel(ni, 'information')}.")
     echec = ne > 0 or (args.strict and na > 0)
     if echec:

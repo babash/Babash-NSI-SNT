@@ -32,6 +32,7 @@
   var depotSite = null; // celui de reglages.js, vérifié ; null s'il manque ou s'il est mal écrit
   var rubriques = {};
   var nbRessources = null; // les ressources de la bibliothèque vues de l'extérieur (repère du bandeau de l'accueil)
+  var bibliotheque = null; // donnees/bibliotheque.json tel que lu (les séquences s'en servent, T153)
   var erreurs = [];
 
   /* ── Erreurs dans les listes : on les affiche sur la page ─────── */
@@ -185,6 +186,7 @@
       var refs = b.referentiels || {};
       var r2 = rubriquesDeVitrine({ vitrine: b.vitrine, ressources: b.ressources, programmes: refs.programmes, valeurs: refs.valeurs });
       nbRessources = liste(b.ressources).length;
+      bibliotheque = b;
       rubriques = r2.rubriques;
       reglagesSite.rubriques = r2.ordre;
       if (ici && !rubriques[ici]) {
@@ -450,6 +452,7 @@
       if (!d || !d.vitrine) return null;
       var r = rubriquesDeVitrine(d);
       nbRessources = liste(d.ressources).length;
+      bibliotheque = d;
       rubriques = r.rubriques;
       reglagesSite.rubriques = r.ordre;
       donneesApercu = d;
@@ -907,11 +910,12 @@
 
   /* ── Sommaire des thèmes (colonne de gauche sur grand écran) ──── */
 
-  function sommaire(themes) {
+  /* themes : les thèmes d'une rubrique ; ou, pour la vue « Par séquence » (T153), des entrées { id, court, nb } et le titre */
+  function sommaire(themes, titre) {
     var details = el('details', { class: 'sommaire' }, [
-      el('summary', null, ['Thèmes ', el('span', { class: 'nb' }, String(themes.length))]),
+      el('summary', null, [(titre || 'Thèmes') + ' ', el('span', { class: 'nb' }, String(themes.length))]),
       el('ul', null, themes.map(function (t) {
-        var nb = compterTheme(t);
+        var nb = t.nb != null ? t.nb : compterTheme(t);
         return el('li', null, el('a', {
           href: '#' + t.id,
           class: nb ? null : 'est-vide',
@@ -1096,7 +1100,62 @@
     ]);
   }
 
+  /* ── Les séquences d'une rubrique (T153, assets/sequences.js) ──
+     Deux vues sur une page de niveau : « Par séquence » (les ressources d'une notion dans l'ordre de la classe) et
+     « Par thème » (les sections de la vitrine, comme avant). La vue par séquence est l'entrée par défaut dès que la
+     rubrique a une séquence publiée ; reglages.js peut garder la vue par thème (vue_par_defaut: "themes").
+     L'adresse garde la vue (?vue=sequences ou ?vue=themes) : elle se partage telle quelle. */
+  function lireParam(nom) {
+    try { return new URLSearchParams(location.search).get(nom); } catch (e) { return null; }
+  }
+
+  function ecrireParam(nom, valeur) {
+    try {
+      var u = new URL(location.href);
+      if (valeur) u.searchParams.set(nom, valeur); else u.searchParams.delete(nom);
+      history.replaceState(null, '', u.href);
+    } catch (e) { /* sans importance */ }
+  }
+
+  function sequencesDe(rub) {
+    if (!window.Sequences || !bibliotheque) return null;
+    var m = new window.Sequences.Modele(bibliotheque);
+    var seqs = m.deRubrique(rub.id);
+    return { modele: m, liste: seqs, rendu: new window.Sequences.Rendu(m, OUTILS) };
+  }
+
+  /* La page d'une séquence : ?sequence=<id> sur la page de son niveau. Faite pour être donnée à la classe. */
+  function pageSequence(racine, rub, S, id) {
+    var seq = S && S.modele.parId[id] && S.modele.parId[id].rubrique === rub.id ? S.modele.parId[id] : null;
+    racine.appendChild(barreHaut(rub));
+    var page = el('div', { class: 'page' });
+    racine.appendChild(page);
+    var titre = seq ? seq.titre : 'Séquence introuvable';
+    document.title = titre + ' – ' + rub.nom + ' – ' + titreSite();
+    page.appendChild(bandeau({
+      puce: rub.puce || puceDe(''),
+      surTitre: [rub.nom, 'Séquence'],
+      titre: titre,
+      long: titre.length > 30
+    }));
+    var alerte = blocAlertes([rub.id + '/ressources.js', 'reglages.js', BIBLIOTHEQUE]);
+    if (alerte) page.appendChild(alerte);
+    var main = el('main', { id: 'contenu', class: 'sequence-seule' });
+    if (seq) main.appendChild(S.rendu.page(seq, rub));
+    else {
+      main.appendChild(el('p', { class: 'vide' }, 'Aucune séquence « ' + id + ' » sur cette page : elle a peut-être été renommée, '
+        + 'retirée, ou n\'est pas encore publiée.'));
+      main.appendChild(el('p', { class: 'vers-bibliotheque' }, el('a', { href: urlRubrique(rub) }, '← Toutes les ressources de ' + rub.nom)));
+    }
+    page.appendChild(main);
+    page.appendChild(piedDePage());
+  }
+
   function pageRubrique(racine, rub) {
+    var S = sequencesDe(rub);
+    var demandee = lireParam('sequence');
+    if (demandee) return pageSequence(racine, rub, S, demandee);
+
     document.title = rub.nom + ' – ' + titreSite();
     racine.appendChild(barreHaut(rub));
 
@@ -1105,10 +1164,12 @@
 
     var nommes = rub.themes.filter(function (t) { return t.nom; });
     var total = ressourcesDe(rub).length;
+    var seqs = S ? S.liste : [];
 
     page.appendChild(bandeau({
       puce: rub.puce || puceDe(''),
-      surTitre: [rub.niveau, total ? pluriel(total, 'ressource', 'ressources') : 'à venir'],
+      surTitre: [rub.niveau, total ? pluriel(total, 'ressource', 'ressources') : 'à venir',
+        seqs.length ? pluriel(seqs.length, 'séquence', 'séquences') : null],
       titre: rub.nom
     }));
 
@@ -1127,11 +1188,14 @@
     var main = el('main', { id: 'contenu' });
     var zone = el('div', { class: 'zone' });
     var recherche = null;
-    var details = nommes.length > 1 ? sommaire(nommes) : null;
+    var details = null;
 
-    function rendre(q) {
-      vider(zone);
-      var filtre = filtreRecherche(q || '');
+    /* La vue : celle de l'adresse, sinon celle des réglages, sinon « Par séquence » s'il y a des séquences */
+    var parDefaut = reglagesSite.vue_par_defaut === 'themes' ? 'themes' : 'sequences';
+    var vue = seqs.length ? (lireParam('vue') === 'themes' || lireParam('vue') === 'sequences' ? lireParam('vue') : parDefaut) : 'themes';
+    var choix = null;
+
+    function rendreThemes(filtre, q) {
       var trouvees = 0;
       rub.themes.forEach(function (t) {
         var s = sectionTheme(t, filtre);
@@ -1139,20 +1203,80 @@
         trouvees += s._n;
         zone.appendChild(s);
       });
+      return trouvees;
+    }
+
+    function rendreSequences(q) {
+      var mots = sansAccents(q || '').toLowerCase().split(/\s+/).filter(Boolean);
+      var filtre = mots.length ? function (texte) { return mots.every(function (m) { return texte.indexOf(m) >= 0; }); } : null;
+      var trouvees = 0;
+      seqs.forEach(function (s) {
+        var sec = S.rendu.section(s, filtre);
+        if (!sec) return;
+        trouvees += sec._n;
+        zone.appendChild(sec);
+      });
+      return trouvees;
+    }
+
+    function rendre(q) {
+      vider(zone);
+      var filtre = filtreRecherche(q || '');
+      var trouvees = vue === 'sequences' ? rendreSequences(q) : rendreThemes(filtre, q);
       if (recherche) {
         recherche.statut.textContent = filtre && trouvees ? pluriel(trouvees, 'ressource trouvée', 'ressources trouvées') : '';
       }
-      if (filtre && !trouvees) zone.appendChild(el('p', { class: 'vide' }, 'Aucune ressource ne correspond à « ' + q + ' ».'));
+      if (filtre && !trouvees) zone.appendChild(el('p', { class: 'vide' }, 'Aucune ressource ne correspond à « ' + q + ' »'
+        + (vue === 'sequences' ? ' dans les séquences.' : '.')));
     }
 
-    if (total >= SEUIL_RECHERCHE) {
+    function construireSommaire() {
+      var nouveau = null;
+      if (vue === 'sequences') {
+        nouveau = seqs.length > 1 ? sommaire(seqs.map(function (s) {
+          return { id: 'seq-' + s.id, court: s.titre, nb: S.rendu.compter(s) };
+        }), 'Séquences') : null;
+      } else {
+        nouveau = nommes.length > 1 ? sommaire(nommes) : null;
+      }
+      if (details && details.parentNode) details.parentNode.removeChild(details);
+      details = nouveau;
+      if (details) cote.appendChild(details);
+    }
+
+    function changerVue(v) {
+      if (v === vue) return;
+      vue = v;
+      ecrireParam('vue', v === parDefaut ? null : v);
+      Array.prototype.forEach.call(choix.querySelectorAll('button'), function (b) {
+        b.setAttribute('aria-pressed', b.getAttribute('data-vue') === vue ? 'true' : 'false');
+      });
+      construireSommaire();
+      rendre(recherche ? recherche.input.value.trim() : '');
+      suivreLecture(zone, details);
+    }
+
+    if (total >= SEUIL_RECHERCHE || seqs.length) {
       recherche = champRecherche('Chercher dans cette rubrique', rendre);
       cote.appendChild(recherche.bloc);
     }
-    if (details) cote.appendChild(details);
+    construireSommaire();
     if (cote.childNodes.length) corps.appendChild(cote);
     else corps.className += ' sans-cote';
 
+    if (seqs.length) {
+      /* Deux boutons à bascule (aria-pressed), comme « Liste » et « Cartes » de la bibliothèque */
+      choix = el('div', { class: 'vues-rubrique' }, [
+        el('span', { class: 'vues-nom', id: 'vues-nom' }, 'Afficher'),
+        el('div', { class: 'mode', role: 'group', 'aria-labelledby': 'vues-nom' }, [['sequences', 'Par séquence'], ['themes', 'Par thème']].map(function (x) {
+          var b = el('button', { type: 'button', class: 'mode-btn', 'data-vue': x[0], 'aria-pressed': x[0] === vue ? 'true' : 'false' },
+            el('span', { class: 'vues-libelle' }, x[1]));
+          b.addEventListener('click', function () { changerVue(x[0]); });
+          return b;
+        }))
+      ]);
+      main.appendChild(choix);
+    }
     main.appendChild(zone);
     corps.appendChild(main);
     page.appendChild(corps);

@@ -38,6 +38,7 @@ Un document par type de ressource (à quoi ça sert, comment s'en servir en clas
 | [L'organisation du dépôt](ORGANISATION.md) | les dossiers et les fichiers |
 | [L'espace administrateur](ADMIN.md) | modifier les fiches et les onglets du site |
 | [Les données de la bibliothèque](BIBLIOTHEQUE.md) | le format des fiches, les référentiels, la validation |
+| [Les séquences](SEQUENCES.md) | ranger les ressources d'une notion dans l'ordre de la classe : étapes, ressources externes, page pour la classe |
 | [La publication et la vérification automatique](VERIFICATION.md) | la mise en ligne et ses contrôles |
 | [Le compte commun](COMPTE-COMMUN.md) | un code pour toutes les applications : les pages `eleve/` et `enseignant/`, ses quatre réglages (`COMPTE_COMMUN_EN_LIGNE`, `_NIVEAU`, `_APPLICATIONS`, `_CATALOGUE` : les trois derniers taisent ce qui attend sa migration), les règles du module, brancher une application, l'essayer sur une base locale |
 | [Les bases Supabase](SUPABASE.md) | ce que les applications et le compte commun enregistrent, et comment c'est protégé |
