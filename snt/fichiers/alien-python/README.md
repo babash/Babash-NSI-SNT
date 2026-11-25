@@ -68,6 +68,7 @@ Dans un projet Supabase : *SQL Editor*, coller le contenu de [`supabase.sql`](su
 
 ### Limites actuelles
 - Dans les séries inversées, le programme complété est comparé à la solution attendue (espaces ignorés) ; une solution équivalente mais écrite autrement est refusée, et la correction reste disponible. Le programme n'est pas exécuté : aucune erreur de Python n'est affichée.
+- Dans les séries inversées, le champ de texte colore le code et montre les niveaux d'indentation, mais il n'indente pas tout seul après deux-points, ne propose pas de complétion et n'exécute rien.
 - Pas de mot de passe élève, et pas de suppression d'élève depuis le site.
 
 ## Contact
@@ -81,6 +82,6 @@ Une question, une idée, un bug ? Les [issues GitHub](https://github.com/babash/
 
 - **Le code** (`index.html`, `config.js`, `supabase.sql`) est sous licence MIT ([fichier `LICENSE` du site](../../../LICENSE)). C'est lui qui apporte la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
 - **Les documents** (ce README) sont sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr).
-- **Les exercices** (`data.js`, qui contient les 78 exercices et leur rangement en fiches) viennent d'Alien-Python : © 2021 Mathieu Degrange, licence MIT, notice dans [`LICENCE.txt`](LICENCE.txt), à garder avec `data.js` en cas de copie. Les images d'aliens du projet d'origine (Kenney, CC0) ne sont pas reprises : ici, l'alien est un emoji.
+- **Les exercices** (`data.js`, qui contient les 78 exercices et leur rangement en fiches) viennent d'Alien-Python : © 2021 Mathieu Degrange, licence MIT, notice dans [`LICENCE.txt`](LICENCE.txt), à garder avec `data.js` en cas de copie. Les images d'aliens du projet d'origine (Kenney, CC0) ne sont pas reprises : ici, l'alien et le bandeau sont dessinés pour ce site (l'alien : un rond vert à deux antennes).
 
 Tu peux les réutiliser et les modifier, y compris pour tes classes, en mentionnant Babash - NSI Tani Malandi et la licence ; un document modifié se partage sous la même licence. Si tu utilises l'IA pour les modifier, merci de le préciser.
