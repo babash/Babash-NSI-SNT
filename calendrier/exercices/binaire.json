@@ -525,11 +525,11 @@
          "1100"
         ],
         [
-         "print(len(bin(255)) - 2)",
+         "print(2 ** 3)",
          "8"
         ],
         [
-         "print(int(\"1\" * 4, 2))",
+         "print(int(\"1111\", 2))",
          "15"
         ],
         [
@@ -539,8 +539,8 @@
        ],
        "explication": "bin(n) donne un texte qui commence par 0b ; [2:] enlève ces deux caractères.",
        "aides": [
-        "\"1\" * 4 donne le texte \"1111\".",
-        "bin(255) donne \"0b11111111\"."
+        "2 ** 3 veut dire 2 × 2 × 2.",
+        "Les poids de 1111 : 8, 4, 2, 1."
        ],
        "executer": true
       },
@@ -556,18 +556,18 @@
          "1000000"
         ],
         [
-         "print(format(5, \"08b\"))",
-         "00000101"
+         "print(int(\"101\", 2) + 1)",
+         "6"
         ],
         [
          "print(bin(1 + 2 + 4)[2:])",
          "111"
         ]
        ],
-       "explication": "format(n, \"08b\") écrit n en binaire sur 8 chiffres, avec des 0 à gauche.",
+       "explication": "int(…, 2) lit un texte écrit en binaire ; bin(n)[2:] écrit n en binaire, sans le préfixe 0b.",
        "aides": [
         "2⁷ = 128 et 2⁶ = 64.",
-        "Le 08 de format veut dire : 8 chiffres, complétés par des 0."
+        "101 vaut 4 + 1."
        ],
        "executer": true
       }
@@ -654,25 +654,25 @@
      "duree": 4,
      "items": [
       {
-       "but": "Afficher 110, l'écriture binaire de 6, sans le préfixe 0b. Le programme affiche 0b110 : ce n'est pas le résultat voulu.",
+       "but": "Afficher 6, la valeur du nombre binaire 110. Le programme affiche 110 : ce n'est pas le résultat voulu.",
        "lignes": [
-        "n = 6",
-        "b = bin(n)",
-        "print(b)"
+        "bits = \"110\"",
+        "n = int(bits, 10)",
+        "print(n)"
        ],
        "ligne": 1,
        "corrections": [
-        "b = bin(n)[:2]",
-        "b = bin(n)[2:]",
-        "b = bin(n)[1:]"
+        "n = int(bits, 2)",
+        "n = int(bits)",
+        "n = bin(bits)"
        ],
-       "bonne": 1,
-       "affiche": "110",
-       "explication": "bin(6) donne \"0b110\". [2:] garde le texte à partir de l'indice 2, donc sans « 0b ».",
+       "bonne": 0,
+       "affiche": "6",
+       "explication": "Le deuxième nombre de int est la base : 2 pour le binaire. Avec 10, on lit 110 en décimal : cent dix.",
        "aides": [
-        "0b occupe les indices 0 et 1 du texte."
+        "Le programme marche, mais dans quelle base lit-il le texte ?"
        ],
-       "affiche_fautif": "0b110"
+       "affiche_fautif": "110"
       },
       {
        "but": "Écrire 6 en binaire par divisions successives : afficher 110. Le programme affiche 0 : ce n'est pas le résultat voulu.",
@@ -700,27 +700,28 @@
        "affiche_fautif": "0"
       },
       {
-       "but": "Afficher 11, la valeur du nombre binaire 1011. Le programme affiche 13 : ce n'est pas le résultat voulu.",
+       "but": "Afficher 11, la valeur du nombre binaire 1011. Le programme affiche 6 : ce n'est pas le résultat voulu.",
        "lignes": [
         "bits = \"1011\"",
         "n = 0",
-        "for b in bits[::-1]:",
-        "    n = n * 2 + int(b)",
+        "for b in bits:",
+        "    n = n + 2 * int(b)",
         "print(n)"
        ],
-       "ligne": 2,
+       "ligne": 3,
        "corrections": [
-        "for b in bits:",
-        "for b in bits[1:]:",
-        "for b in bits[:-1]:"
+        "    n = n * 2 + int(b)",
+        "    n = n * 2 + b",
+        "    n = (n + int(b)) * 2"
        ],
        "bonne": 0,
        "affiche": "11",
-       "explication": "bits[::-1] lit le texte à l'envers. Pour « doubler puis ajouter », on lit de gauche à droite.",
+       "explication": "À chaque bit lu, on double ce qu'on a déjà, puis on ajoute le bit : n = n * 2 + int(b). Ainsi, le premier bit lu finit par peser 8.",
        "aides": [
-        "13 s'écrit 1101 : c'est 1011 lu à l'envers."
+        "Le programme compte 2 pour chaque bit à 1, quelle que soit sa place.",
+        "Pour 10, on veut 1 × 2 + 0 = 2."
        ],
-       "affiche_fautif": "13"
+       "affiche_fautif": "6"
       }
      ]
     },
@@ -977,31 +978,34 @@
       {
        "but": "Afficher 13 sur un octet complet : 00001101.",
        "lignes": [
-        "print(format({0}, \"{1}\"))"
+        "b = bin(13)[2:]",
+        "while len(b) < {0}:",
+        "    b = {1} + b",
+        "print(b)"
        ],
        "trous": [
         {
          "options": [
-          "1101",
-          "\"13\"",
+          "8",
+          "4",
           "13"
          ],
-         "bonne": 2
+         "bonne": 0
         },
         {
          "options": [
-          "8b",
-          "08b",
-          "b"
+          "\"0\"",
+          "\"1\"",
+          "0"
          ],
-         "bonne": 1
+         "bonne": 0
         }
        ],
        "affiche": "00001101",
-       "explication": "format(13, \"08b\") : b pour binaire, 8 chiffres, complétés par des 0 à gauche.",
+       "explication": "Un octet a 8 bits : on ajoute des 0 à gauche tant qu'il en manque. Les 0 à gauche ne changent pas la valeur.",
        "aides": [
-        "format attend un nombre, puis un code de format.",
-        "Le 0 de « 08 » dit avec quoi remplir."
+        "Un octet a 8 bits.",
+        "Ajouter un 0 à gauche ne change pas la valeur."
        ]
       },
       {
@@ -1035,13 +1039,21 @@
        ]
       },
       {
-       "but": "Additionner 101 et 11 en binaire : afficher 1000.",
+       "but": "Additionner 101 et 11, deux nombres binaires : afficher 1000.",
        "lignes": [
         "a = int(\"101\", 2)",
-        "b = int(\"11\", 2)",
-        "print(bin(a {0} b)[{1}])"
+        "b = int(\"11\", {0})",
+        "print(bin(a {1} b)[2:])"
        ],
        "trous": [
+        {
+         "options": [
+          "2",
+          "10",
+          "16"
+         ],
+         "bonne": 0
+        },
         {
          "options": [
           "*",
@@ -1049,21 +1061,13 @@
           "-"
          ],
          "bonne": 1
-        },
-        {
-         "options": [
-          ":2",
-          "1:",
-          "2:"
-         ],
-         "bonne": 2
         }
        ],
        "affiche": "1000",
-       "explication": "5 + 3 = 8, qui s'écrit 1000 ; [2:] enlève le préfixe 0b.",
+       "explication": "Les deux textes se lisent en base 2 : a vaut 5 et b vaut 3. 5 + 3 = 8, qui s'écrit 1000.",
        "aides": [
-        "a vaut 5 et b vaut 3.",
-        "bin(8) donne \"0b1000\"."
+        "a vaut 5 ; b doit valoir 3.",
+        "5 + 3 = 8 = 2³."
        ]
       }
      ]
@@ -1280,8 +1284,8 @@
       {
        "texte": "À la fin, m vaut 32.",
        "reponse": false,
-       "explication": "\"1\" * 5 donne 11111, qui vaut 31 : c'est 2⁵ − 1, pas 2⁵.",
-       "code": "m = int(\"1\" * 5, 2)",
+       "explication": "11111 vaut 31 : c'est 2⁵ − 1, pas 2⁵.",
+       "code": "m = int(\"11111\", 2)",
        "verifier": "m == 32"
       },
       {
@@ -1299,10 +1303,10 @@
        "verifier": "len(b) == 8"
       },
       {
-       "texte": "Seize bits à 1 valent 65 535.",
+       "texte": "Seize bits à 1 valent 65 535 : c'est 2¹⁶ − 1.",
        "reponse": true,
        "explication": "C'est le plus grand nombre sur 16 bits : 2¹⁶ − 1.",
-       "code": "m = int(\"1\" * 16, 2)",
+       "code": "m = 2 ** 16 - 1",
        "verifier": "m == 65535"
       },
       {
@@ -1361,7 +1365,7 @@
         "Le − 1 compte : 256 est le nombre de valeurs, pas la plus grande.",
         "Juste : 256 − 1 = 255, le plus grand nombre sur un octet.",
         "2 ** 8 veut dire 2 × 2 × … × 2 (8 fois), pas 2 × 8.",
-        "2⁸ vaut 256, pas 255."
+        "Calcule d'abord 2 ** 8, puis enlève 1 une seule fois."
        ],
        "aides": [
         "Calcule d'abord 2 ** 8, puis enlève 1."
@@ -1501,27 +1505,27 @@
        ]
       },
       {
-       "code": "print(int(\"1\" * 6, 2) + 1)",
+       "code": "print(int(\"111111\", 2) + 1)",
        "reponse": "64",
        "explication": "Six 1 valent 2⁶ − 1 = 63 ; plus 1, on trouve 64.",
        "aides": [
-        "\"1\" * 6 donne 111111.",
+        "111111 a six bits à 1.",
         "111111 + 1 = 1000000 en binaire."
        ]
       },
       {
-       "code": "nb = 0\nfor n in range(256):\n    if len(bin(n)) - 2 == 8:\n        nb = nb + 1\nprint(nb)",
+       "code": "nb = 0\nfor n in range(256):\n    if n % 2 == 1:\n        nb = nb + 1\nprint(nb)",
        "reponse": "128",
-       "explication": "Les nombres de 128 à 255 ont exactement 8 bits : il y en a 256 − 128 = 128.",
+       "explication": "Un nombre est impair quand son bit de droite vaut 1. De 0 à 255, la moitié des nombres sont impairs : 128.",
        "aides": [
-        "len(bin(n)) - 2 est le nombre de bits de n.",
-        "Le plus petit nombre à 8 bits est 128."
+        "n % 2 == 1 est vrai pour un nombre impair.",
+        "Il y a autant de nombres pairs que d'impairs de 0 à 255."
        ]
       },
       {
-       "code": "print(len(bin(2 ** 10)) - 2)",
+       "code": "n = 2 ** 10\nk = 0\nwhile n > 0:\n    n = n // 2\n    k = k + 1\nprint(k)",
        "reponse": "11",
-       "explication": "2¹⁰ s'écrit 1 suivi de dix 0 : 11 chiffres.",
+       "explication": "2¹⁰ s'écrit 1 suivi de dix 0 : 11 chiffres. On divise donc 11 fois par 2 avant d'arriver à 0.",
        "aides": [
         "2³ = 8 s'écrit 1000 : 4 chiffres.",
         "Combien de chiffres pour 2¹⁰ ?"
@@ -1690,22 +1694,22 @@
          "26"
         ],
         [
-         "print(format(171, \"X\"))",
-         "AB"
+         "print(int(\"AB\", 16))",
+         "171"
         ],
         [
-         "print(format(10, \"02x\"))",
-         "0a"
+         "print(int(\"0A\", 16))",
+         "10"
         ],
         [
          "print(int(\"ff\", 16) + 1)",
          "256"
         ]
        ],
-       "explication": "hex donne un texte qui commence par 0x ; format avec X écrit en majuscules, avec x en minuscules.",
+       "explication": "hex donne un texte qui commence par 0x ; int(texte, 16) lit un texte écrit en base 16.",
        "aides": [
         "1A = 1 × 16 + 10.",
-        "171 = 10 × 16 + 11."
+        "AB = 10 × 16 + 11."
        ],
        "executer": true
       },
@@ -1725,8 +1729,8 @@
          "0xf"
         ],
         [
-         "print(format(int(\"C8\", 16), \"b\"))",
-         "11001000"
+         "print(bin(int(\"C8\", 16)))",
+         "0b11001000"
         ]
        ],
        "explication": "Un chiffre hexadécimal = 4 bits : C8 donne 1100 puis 1000.",
@@ -1794,24 +1798,24 @@
        "message": "ValueError: invalid literal for int() with base 16: '1G'"
       },
       {
-       "but": "Afficher ff, l'écriture hexadécimale de 255, sans 0x. Le programme affiche 0xff : ce n'est pas le résultat voulu.",
+       "but": "Afficher 0xff, l'écriture hexadécimale de 255. Le programme affiche 0b11111111 : ce n'est pas le résultat voulu.",
        "lignes": [
         "n = 255",
-        "print(hex(n))"
+        "print(bin(n))"
        ],
        "ligne": 1,
        "corrections": [
-        "print(bin(n)[2:])",
-        "print(hex(n)[2:])",
-        "print(hex(n)[:2])"
+        "print(hex(n))",
+        "print(int(n, 16))",
+        "print(hex(n, 16))"
        ],
-       "bonne": 1,
-       "affiche": "ff",
-       "explication": "hex(255) donne \"0xff\" ; [2:] enlève les deux premiers caractères.",
+       "bonne": 0,
+       "affiche": "0xff",
+       "explication": "hex écrit un nombre en base 16, avec le préfixe 0x ; bin l'écrit en base 2, avec le préfixe 0b.",
        "aides": [
-        "0x occupe les indices 0 et 1."
+        "Le programme marche, mais dans quelle base écrit-il ?"
        ],
-       "affiche_fautif": "0xff"
+       "affiche_fautif": "0b11111111"
       }
      ]
     },
@@ -1819,31 +1823,34 @@
      "duree": 4,
      "items": [
       {
-       "but": "Afficher 3F, en majuscules : l'écriture hexadécimale de 63.",
+       "but": "Afficher 63, la valeur du nombre hexadécimal 3F. Le programme affiche 45 : ce n'est pas le résultat voulu.",
        "lignes": [
-        "n = 63",
-        "print(format(n, \"H\"))"
+        "h = \"3F\"",
+        "gauche = int(h[0], 16)",
+        "droite = int(h[1], 16)",
+        "n = gauche * 10 + droite",
+        "print(n)"
        ],
-       "ligne": 1,
+       "ligne": 3,
        "corrections": [
-        "print(format(n, \"X\"))",
-        "print(format(n, \"b\"))",
-        "print(format(n, \"x\"))"
+        "n = gauche * 16 + droite",
+        "n = gauche + droite",
+        "n = gauche * 2 + droite"
        ],
        "bonne": 0,
-       "affiche": "3F",
-       "explication": "Le code de l'hexadécimal est X (ou x en minuscules), pas H. b veut dire binaire.",
+       "affiche": "63",
+       "explication": "En base 16, le chiffre de gauche compte pour 16 : 3F = 3 × 16 + 15 = 63.",
        "aides": [
-        "« Unknown format code » : Python ne connaît pas ce code."
+        "Le programme affiche 45 : par combien a-t-il multiplié le 3 ?"
        ],
-       "message": "ValueError: Unknown format code 'H' for object of type 'int'"
+       "affiche_fautif": "45"
       },
       {
-       "but": "Afficher A5, l'écriture hexadécimale de l'octet 10100101. Le programme affiche 10100101 : ce n'est pas le résultat voulu.",
+       "but": "Afficher 0xa5, l'écriture hexadécimale de l'octet 10100101. Le programme affiche 0x10100101 : ce n'est pas le résultat voulu.",
        "lignes": [
         "bits = \"10100101\"",
         "n = int(bits, 16)",
-        "print(format(n, \"X\"))"
+        "print(hex(n))"
        ],
        "ligne": 1,
        "corrections": [
@@ -1852,12 +1859,12 @@
         "n = int(bits, 2)"
        ],
        "bonne": 2,
-       "affiche": "A5",
-       "explication": "bits est écrit en binaire : il faut le lire en base 2. Ensuite, format le réécrit en base 16.",
+       "affiche": "0xa5",
+       "explication": "bits est écrit en binaire : il faut le lire en base 2. Ensuite, hex le réécrit en base 16.",
        "aides": [
         "Dans quelle base est écrit le texte bits ?"
        ],
-       "affiche_fautif": "10100101"
+       "affiche_fautif": "0x10100101"
       },
       {
        "but": "Afficher B, le chiffre hexadécimal qui vaut 11. Le programme affiche A : ce n'est pas le résultat voulu.",
@@ -1912,27 +1919,29 @@
        "affiche_fautif": "124925B6C"
       },
       {
-       "but": "Afficher la couleur (0, 128, 255) en hexadécimal : #0080FF. Le programme affiche #080FF : ce n'est pas le résultat voulu.",
+       "but": "Afficher la couleur (0, 128, 255) en hexadécimal : #0080FF. Le programme affiche #0088FF : ce n'est pas le résultat voulu.",
        "lignes": [
-        "r, v, b = 0, 128, 255",
+        "chiffres = \"0123456789ABCDEF\"",
         "code = \"#\"",
-        "for c in [r, v, b]:",
-        "    code = code + format(c, \"X\")",
+        "for c in [0, 128, 255]:",
+        "    code = code + chiffres[c // 16]",
+        "    code = code + chiffres[c // 16]",
         "print(code)"
        ],
-       "ligne": 3,
+       "ligne": 4,
        "corrections": [
-        "    code = code + format(c, \"02X\")",
-        "    code = code + format(c, \"2X\")",
-        "    code = code + hex(c)[2:]"
+        "    code = code + chiffres[c % 16]",
+        "    code = code + chiffres[c]",
+        "    code = code + str(c % 16)"
        ],
        "bonne": 0,
        "affiche": "#0080FF",
-       "explication": "Chaque couleur prend 2 chiffres : « 02X » complète par un 0 à gauche, donc 0 s'écrit 00.",
+       "explication": "Chaque octet donne 2 chiffres : le quotient par 16 (c // 16), puis le reste (c % 16). 128 = 8 × 16 + 0 s'écrit 80.",
        "aides": [
-        "Combien de chiffres a la couleur affichée ? Il en faut 6."
+        "Le deuxième chiffre de 128 est faux.",
+        "128 = 8 × 16 + 0."
        ],
-       "affiche_fautif": "#080FF"
+       "affiche_fautif": "#0088FF"
       },
       {
        "but": "Afficher 43, la valeur du nombre hexadécimal 2B. Le programme affiche 31 : ce n'est pas le résultat voulu.",
@@ -1999,48 +2008,47 @@
        ]
       },
       {
-       "but": "Afficher FFFFFF, le blanc : rouge, vert et bleu à 255.",
+       "but": "Afficher FFFFFF, le blanc : rouge, vert et bleu au maximum.",
        "lignes": [
-        "print(format({0}, \"X\") * 3)"
+        "maxi = \"{0}\"",
+        "print(maxi + maxi + maxi)"
        ],
        "trous": [
         {
          "options": [
+          "FF",
           "255",
-          "15",
-          "256"
+          "11"
          ],
          "bonne": 0
         }
        ],
        "affiche": "FFFFFF",
-       "explication": "255 s'écrit FF ; le blanc, c'est les trois couleurs au maximum.",
+       "explication": "Le maximum d'une couleur, sur un octet, est 255, qui s'écrit FF en hexadécimal. Le blanc, c'est les trois couleurs au maximum.",
        "aides": [
-        "Le maximum d'une couleur, sur un octet, est 255."
+        "Une couleur s'écrit en hexadécimal, avec 2 chiffres."
        ]
       },
       {
        "but": "Afficher 0, la quantité de bleu de la couleur #FF8800.",
        "lignes": [
-        "couleur = \"FF8800\"",
-        "bleu = couleur[{0}]",
-        "print(int(bleu, 16))"
+        "rouge, vert, bleu = \"FF\", \"88\", \"00\"",
+        "print(int({0}, 16))"
        ],
        "trous": [
         {
          "options": [
-          "0:2",
-          "2:4",
-          "4:6"
+          "rouge",
+          "vert",
+          "bleu"
          ],
          "bonne": 2
         }
        ],
        "affiche": "0",
-       "explication": "L'ordre est rouge, vert, bleu : le bleu, ce sont les deux derniers chiffres.",
+       "explication": "L'ordre est rouge, vert, bleu : le bleu, ce sont les deux derniers chiffres, 00.",
        "aides": [
-        "Rouge, puis vert, puis bleu : 2 chiffres chacun.",
-        "[4:6] garde les caractères d'indice 4 et 5."
+        "Rouge, puis vert, puis bleu : 2 chiffres chacun."
        ]
       }
      ]
@@ -2053,16 +2061,16 @@
        "lignes": [
         "couleur = \"1E90FF\"",
         "r = int(couleur[0:2], 16)",
-        "v = int(couleur[{0}], 16)",
+        "v = int(couleur[2:4], {0})",
         "b = int(couleur[4:6], {1})",
         "print(r, v, b)"
        ],
        "trous": [
         {
          "options": [
-          "2:4",
-          "2:3",
-          "1:3"
+          "16",
+          "2",
+          "10"
          ],
          "bonne": 0
         },
@@ -2076,45 +2084,45 @@
         }
        ],
        "affiche": "30 144 255",
-       "explication": "Chaque couleur prend 2 chiffres hexadécimaux : le vert est aux indices 2 et 3.",
+       "explication": "Chaque couleur prend 2 chiffres hexadécimaux, qui se lisent en base 16 : 1E = 30, 90 = 144, FF = 255.",
        "aides": [
-        "[2:4] garde les indices 2 et 3.",
-        "Les trois parties se lisent en base 16."
+        "Les trois parties se lisent en base 16.",
+        "90 en base 16 vaut 9 × 16."
        ]
       },
       {
        "but": "Écrire la couleur (255, 165, 0) en hexadécimal : #FFA500.",
        "lignes": [
-        "r, v, b = 255, 165, 0",
+        "chiffres = \"0123456789ABCDEF\"",
         "code = \"#\"",
-        "code = code + format(r, \"02X\")",
-        "code = code + format(v, {0})",
-        "code = code + format(b, {1})",
+        "for c in [255, 165, 0]:",
+        "    code = code + chiffres[c // {0}]",
+        "    code = code + chiffres[c {1} 16]",
         "print(code)"
        ],
        "trous": [
         {
          "options": [
-          "\"02x\"",
-          "\"b\"",
-          "\"02X\""
+          "16",
+          "10",
+          "2"
          ],
-         "bonne": 2
+         "bonne": 0
         },
         {
          "options": [
-          "\"2X\"",
-          "\"02X\"",
-          "\"X\""
+          "%",
+          "//",
+          "-"
          ],
-         "bonne": 1
+         "bonne": 0
         }
        ],
        "affiche": "#FFA500",
-       "explication": "« 02X » : en hexadécimal (X majuscule), sur 2 chiffres complétés par des 0.",
+       "explication": "Chaque octet donne 2 chiffres hexadécimaux : le quotient par 16, puis le reste. 165 = 10 × 16 + 5 s'écrit A5.",
        "aides": [
-        "X donne des lettres majuscules, x des minuscules.",
-        "0 doit s'écrire 00."
+        "165 = 10 × 16 + 5.",
+        "Le reste d'une division se calcule avec %."
        ]
       }
      ]
@@ -2157,9 +2165,10 @@
       {
        "but": "Écrire le gris moyen (128, 128, 128) : #808080.",
        "lignes": [
+        "chiffres = \"0123456789ABCDEF\"",
         "g = {0}",
-        "code = \"#\" + format(g, \"02X\") * {1}",
-        "print(code)"
+        "h = chiffres[g // 16] + chiffres[g % {1}]",
+        "print(\"#\" + h + h + h)"
        ],
        "trous": [
         {
@@ -2172,17 +2181,17 @@
         },
         {
          "options": [
-          "2",
-          "3",
-          "6"
+          "16",
+          "10",
+          "100"
          ],
-         "bonne": 1
+         "bonne": 0
         }
        ],
        "affiche": "#808080",
-       "explication": "128 s'écrit 80 en hexadécimal ; un gris a la même quantité de rouge, de vert et de bleu.",
+       "explication": "128 = 8 × 16 + 0 s'écrit 80 en hexadécimal ; un gris a la même quantité de rouge, de vert et de bleu.",
        "aides": [
-        "g est un nombre décimal ; format le convertit.",
+        "g est un nombre décimal : la ligne suivante le convertit.",
         "Il y a trois couleurs."
        ]
       },
@@ -2190,35 +2199,28 @@
        "but": "Afficher l'inverse (le négatif) de #1E90FF : #E16F00.",
        "lignes": [
         "couleur = \"1E90FF\"",
+        "chiffres = \"0123456789ABCDEF\"",
         "inverse = \"#\"",
-        "for i in range(0, 6, {1}):",
-        "    c = int(couleur[i:i + 2], 16)",
-        "    inverse = inverse + format({0} - c, \"02X\")",
+        "for c in couleur:",
+        "    k = chiffres.index(c)",
+        "    inverse = inverse + chiffres[{0} - k]",
         "print(inverse)"
        ],
        "trous": [
         {
          "options": [
           "16",
-          "255",
-          "256"
+          "15",
+          "255"
          ],
          "bonne": 1
-        },
-        {
-         "options": [
-          "2",
-          "1",
-          "3"
-         ],
-         "bonne": 0
         }
        ],
        "affiche": "#E16F00",
-       "explication": "Le négatif d'une couleur, c'est 255 moins chaque quantité. On avance de 2 chiffres à chaque tour.",
+       "explication": "Le négatif, c'est 255 moins chaque octet. Chiffre par chiffre, cela revient à 15 moins chaque chiffre hexadécimal : 1 devient E, 9 devient 6.",
        "aides": [
-        "Une quantité va de 0 à 255.",
-        "Chaque couleur occupe 2 chiffres."
+        "F vaut 15 : c'est le plus grand chiffre.",
+        "15 − 1 = 14, soit E."
        ]
       }
      ]

@@ -451,7 +451,7 @@
        ],
        "bonne": 2,
        "affiche": "Bahari | imbriquée",
-       "explication": "Les colonnes du SELECT se séparent par une virgule. Sans virgule, SQLite prend espece pour un autre nom de la colonne nom.",
+       "explication": "Les colonnes du SELECT se séparent par une virgule. Sans virgule, une seule colonne s'affiche : la requête ne fait pas ce qu'on veut.",
        "aides": [
         "Combien de colonnes la requête affiche-t-elle ?"
        ],
@@ -1058,9 +1058,9 @@
        "explication": "On souligne la clé primaire id_obs et on marque d'un # les clés étrangères."
       },
       {
-       "texte": "Quand SQLite contrôle les clés étrangères, on peut supprimer la tortue n° 1 sans toucher aux observations.",
+       "texte": "On peut supprimer la tortue n° 1 de la table tortue sans toucher aux observations.",
        "reponse": false,
-       "explication": "Des observations renvoient à la tortue n° 1 : SQLite refuse (FOREIGN KEY constraint failed)."
+       "explication": "Des observations renvoient à la tortue n° 1 : la base refuse la suppression, pour qu'aucune observation ne cite une tortue qui n'existe plus."
       },
       {
        "texte": "On peut supprimer la tortue n° 8, Kai, sans casser de lien.",
@@ -1073,9 +1073,9 @@
        "explication": "Elle contient les mêmes valeurs : ici des entiers, comme id_tortue dans tortue."
       },
       {
-       "texte": "Par défaut, SQLite ne vérifie pas les clés étrangères : on l'active avec PRAGMA foreign_keys = ON.",
+       "texte": "Une même table peut contenir deux clés étrangères.",
        "reponse": true,
-       "explication": "C'est une particularité de SQLite. La base de ce calendrier commence par cette ligne."
+       "explication": "observation en a deux : id_tortue renvoie vers tortue, id_plage renvoie vers plage."
       }
      ]
     }
@@ -1235,7 +1235,7 @@
        ]
       },
       {
-       "code": "SELECT nom\nFROM tortue\nWHERE longueur > 100\nOR espece = 'imbriquée'\nAND longueur < 70\nORDER BY nom",
+       "code": "SELECT nom\nFROM tortue\nWHERE longueur > 100\nOR (espece = 'imbriquée'\n    AND longueur < 70)\nORDER BY nom",
        "options": [
         "Nyota / Zawadi",
         "Bahari / Nyota / Zawadi",
@@ -1244,13 +1244,13 @@
        ],
        "bonne": 1,
        "retours": [
-        "Bahari, imbriquée de 68 cm, vérifie la partie après OR.",
-        "Juste : AND passe avant OR. On garde les plus de 100 cm, OU les imbriquées de moins de 70 cm.",
-        "Tu as calculé (longueur > 100 OR imbriquée) AND longueur < 70. Or AND passe avant OR, comme × avant +.",
-        "La condition longueur < 70 compte : elle s'applique aux imbriquées."
+        "Bahari, imbriquée de 68 cm, vérifie la condition entre parenthèses.",
+        "Juste : on garde les tortues de plus de 100 cm, OU les imbriquées de moins de 70 cm.",
+        "Avec OR, une seule partie vraie suffit : Nyota et Zawadi, de plus de 100 cm, sont gardées aussi.",
+        "Lulu (81 cm) et Mira (76 cm) ne mesurent pas moins de 70 cm."
        ],
        "aides": [
-        "AND se calcule avant OR, comme la multiplication avant l'addition."
+        "On calcule d'abord la parenthèse, puis OR : une des deux parties vraie suffit."
        ]
       }
      ]
@@ -1274,19 +1274,19 @@
        "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
        "paires": [
         [
-         "SELECT nom FROM plage WHERE nom LIKE 'S%' ORDER BY nom",
+         "SELECT nom\nFROM plage\nWHERE nom LIKE 'S%'\nORDER BY nom",
          "Sakouli, Saziley"
         ],
         [
-         "SELECT nom FROM plage WHERE nom LIKE '%i' ORDER BY nom",
+         "SELECT nom\nFROM plage\nWHERE nom LIKE '%i'\nORDER BY nom",
          "Iloni, Sakouli, Tahiti, Trévani"
         ],
         [
-         "SELECT nom FROM plage WHERE commune IN ('Sada', 'Koungou') ORDER BY nom",
+         "SELECT nom\nFROM plage\nWHERE commune IN ('Sada', 'Koungou')\nORDER BY nom",
          "Tahiti, Trévani"
         ],
         [
-         "SELECT nom FROM plage WHERE id_plage BETWEEN 2 AND 4 ORDER BY nom",
+         "SELECT nom\nFROM plage\nWHERE id_plage BETWEEN 2 AND 4\nORDER BY nom",
          "Sakouli, Saziley, Tahiti"
         ]
        ],
@@ -1305,26 +1305,26 @@
        "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
        "paires": [
         [
-         "SELECT nom FROM tortue WHERE longueur BETWEEN 80 AND 95 ORDER BY nom",
+         "SELECT nom\nFROM tortue\nWHERE longueur BETWEEN 80 AND 95\nORDER BY nom",
          "Kai, Lulu, Taya"
         ],
         [
-         "SELECT nom FROM tortue WHERE nom LIKE '%a%' ORDER BY nom",
+         "SELECT nom\nFROM tortue\nWHERE nom LIKE '%a%'\nORDER BY nom",
          "Bahari, Kai, Mira, Nyota, Taya, Zawadi"
         ],
         [
-         "SELECT nom FROM tortue WHERE nom LIKE '_a%' ORDER BY nom",
-         "Bahari, Kai, Taya, Zawadi"
+         "SELECT nom\nFROM tortue\nWHERE nom LIKE 'N%' OR nom LIKE 'K%'\nORDER BY nom",
+         "Kai, Nuru, Nyota"
         ],
         [
-         "SELECT nom FROM tortue WHERE id_tortue IN (2, 5, 7) ORDER BY nom",
+         "SELECT nom\nFROM tortue\nWHERE id_tortue IN (2, 5, 7)\nORDER BY nom",
          "Bahari, Lulu, Mira"
         ]
        ],
-       "explication": "Le tiret bas _ remplace exactement une lettre : '_a%' veut dire « a en deuxième lettre ». BETWEEN 80 AND 95 garde 95.",
+       "explication": "Avec LIKE, % remplace n'importe quelle suite de lettres : '%a%' veut dire « contient un a ». BETWEEN 80 AND 95 garde 95.",
        "executer": true,
        "aides": [
-        "_ vaut une seule lettre, % vaut zéro, une ou plusieurs lettres."
+        "'%a%' : un a n'importe où dans le nom."
        ]
       }
      ]
@@ -1336,23 +1336,23 @@
        "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
        "paires": [
         [
-         "SELECT id_obs FROM observation WHERE date_obs BETWEEN '2026-02-01' AND '2026-02-28' ORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE date_obs BETWEEN '2026-02-01' AND '2026-02-28'\nORDER BY id_obs",
          "4, 5, 6"
         ],
         [
-         "SELECT id_obs FROM observation WHERE date_obs LIKE '2026-03%' ORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE date_obs LIKE '2026-03%'\nORDER BY id_obs",
          "7, 8, 9"
         ],
         [
-         "SELECT id_obs FROM observation WHERE benevole IN ('Sam', 'Lou') ORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE benevole IN ('Sam', 'Lou')\nORDER BY id_obs",
          "3, 7, 9"
         ],
         [
-         "SELECT id_obs FROM observation WHERE benevole NOT IN ('Kenza', 'Lou', 'Naïma', 'Soilihi') ORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE benevole NOT IN ('Kenza', 'Lou', 'Naïma', 'Soilihi')\nORDER BY id_obs",
          "2, 7, 8"
         ],
         [
-         "SELECT id_obs FROM observation WHERE oeufs BETWEEN 100 AND 120 ORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE oeufs BETWEEN 100 AND 120\nORDER BY id_obs",
          "1, 4, 5, 10"
         ]
        ],
@@ -1519,7 +1519,7 @@
      "duree": 6,
      "items": [
       {
-       "but": "Afficher le nom des tortues vertes de plus de 100 cm ou de moins de 90 cm, dans l'ordre croissant.",
+       "but": "Afficher le nom des tortues vertes de plus de 100 cm ou de moins de 90 cm, par ordre alphabétique.",
        "lignes": [
         "SELECT nom",
         "FROM tortue",
@@ -1557,7 +1557,7 @@
        "affiche_fautif": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
       },
       {
-       "but": "Afficher le nom des tortues dont le nom commence par K ou par L, dans l'ordre croissant.",
+       "but": "Afficher le nom des tortues dont le nom commence par K ou par L, par ordre alphabétique.",
        "lignes": [
         "SELECT nom",
         "FROM tortue",
@@ -1962,7 +1962,8 @@
        "texte": "Cette requête affiche 8.",
        "reponse": true,
        "explication": "COUNT(*) compte les lignes : la table tortue en a 8.",
-       "code": "SELECT COUNT(*) FROM tortue"
+       "code": "SELECT COUNT(*) FROM tortue",
+       "verifier": "SELECT (SELECT COUNT(*) FROM tortue) = 8"
       },
       {
        "texte": "COUNT(*) compte des lignes ; SUM(oeufs) additionne les valeurs de la colonne oeufs.",
@@ -1973,7 +1974,8 @@
        "texte": "Cette requête affiche Nyota.",
        "reponse": false,
        "explication": "MAX(longueur) donne la plus grande valeur de la colonne, 112, pas le nom de la tortue.",
-       "code": "SELECT MAX(longueur) FROM tortue"
+       "code": "SELECT MAX(longueur) FROM tortue",
+       "verifier": "SELECT (SELECT MAX(longueur) FROM tortue) = 'Nyota'"
       },
       {
        "texte": "AVG calcule la moyenne d'une colonne.",
@@ -1984,7 +1986,8 @@
        "texte": "Cette requête affiche 76.",
        "reponse": false,
        "explication": "Deux montées n'ont donné aucun œuf : le plus petit nombre est 0.",
-       "code": "SELECT MIN(oeufs) FROM observation"
+       "code": "SELECT MIN(oeufs) FROM observation",
+       "verifier": "SELECT (SELECT MIN(oeufs) FROM observation) = 76"
       }
      ]
     },
@@ -1995,13 +1998,15 @@
        "texte": "Cette requête affiche 3.",
        "reponse": true,
        "explication": "Kenza a fait les observations n° 1, 6 et 11.",
-       "code": "SELECT COUNT(*) FROM observation\nWHERE benevole = 'Kenza'"
+       "code": "SELECT COUNT(*) FROM observation\nWHERE benevole = 'Kenza'",
+       "verifier": "SELECT (SELECT COUNT(*) FROM observation WHERE benevole = 'Kenza') = 3"
       },
       {
        "texte": "Cette requête affiche 2.",
        "reponse": false,
        "explication": "Nuru a été vue 2 fois, mais SUM additionne ses œufs : 110 + 102 = 212.",
-       "code": "SELECT SUM(oeufs) FROM observation\nWHERE id_tortue = 1"
+       "code": "SELECT SUM(oeufs) FROM observation\nWHERE id_tortue = 1",
+       "verifier": "SELECT (SELECT SUM(oeufs) FROM observation WHERE id_tortue = 1) = 2"
       },
       {
        "texte": "Une requête SELECT COUNT(*) FROM … affiche une seule ligne.",
@@ -2012,7 +2017,8 @@
        "texte": "Cette requête affiche 99.4.",
        "reponse": true,
        "explication": "Les 5 tortues vertes mesurent en tout 497 cm : 497 / 5 = 99,4. SQLite écrit un point à la place de la virgule.",
-       "code": "SELECT AVG(longueur) FROM tortue\nWHERE espece = 'verte'"
+       "code": "SELECT AVG(longueur) FROM tortue\nWHERE espece = 'verte'",
+       "verifier": "SELECT (SELECT AVG(longueur) FROM tortue WHERE espece = 'verte') = 99.4"
       },
       {
        "texte": "COUNT(*) compte les valeurs différentes d'une colonne.",
@@ -2025,33 +2031,39 @@
      "duree": 4,
      "items": [
       {
-       "texte": "SQLite accepte la requête SELECT benevole FROM observation WHERE COUNT(*) > 2.",
-       "reponse": false,
-       "explication": "Une fonction d'agrégation est interdite dans WHERE : SQLite répond « misuse of aggregate function COUNT() »."
+       "texte": "Cette requête affiche 0.",
+       "reponse": true,
+       "explication": "Aucune tortue ne dépasse 200 cm : aucune ligne n'est gardée, et COUNT(*) affiche 0.",
+       "code": "SELECT COUNT(*)\nFROM tortue\nWHERE longueur > 200",
+       "verifier": "SELECT (SELECT COUNT(*) FROM tortue WHERE longueur > 200) = 0"
       },
       {
        "texte": "Cette requête affiche 6.",
        "reponse": true,
        "explication": "Il y a 12 observations, mais seulement 6 bénévoles différent·e·s.",
-       "code": "SELECT COUNT(DISTINCT benevole)\nFROM observation"
+       "code": "SELECT COUNT(DISTINCT benevole)\nFROM observation",
+       "verifier": "SELECT (SELECT COUNT(DISTINCT benevole) FROM observation) = 6"
       },
       {
        "texte": "Cette requête affiche 8.",
        "reponse": false,
        "explication": "Kai, la tortue n° 8, n'a jamais été vue : 7 tortues différentes seulement.",
-       "code": "SELECT COUNT(DISTINCT id_tortue)\nFROM observation"
+       "code": "SELECT COUNT(DISTINCT id_tortue)\nFROM observation",
+       "verifier": "SELECT (SELECT COUNT(DISTINCT id_tortue) FROM observation) = 8"
       },
       {
        "texte": "Cette requête affiche 2026-04-18.",
        "reponse": true,
        "explication": "MAX marche aussi sur les textes. Les dates AAAA-MM-JJ se rangent comme des dates : la plus grande est la plus récente.",
-       "code": "SELECT MAX(date_obs)\nFROM observation"
+       "code": "SELECT MAX(date_obs)\nFROM observation",
+       "verifier": "SELECT (SELECT MAX(date_obs) FROM observation) = '2026-04-18'"
       },
       {
        "texte": "Cette moyenne est plus grande que AVG(oeufs) calculé sur toutes les observations.",
        "reponse": true,
        "explication": "On retire les deux observations à 0 œuf : la moyenne passe de 87.75 à 105.3.",
-       "code": "SELECT AVG(oeufs)\nFROM observation\nWHERE oeufs > 0"
+       "code": "SELECT AVG(oeufs)\nFROM observation\nWHERE oeufs > 0",
+       "verifier": "SELECT (SELECT AVG(oeufs) FROM observation WHERE oeufs > 0) > (SELECT AVG(oeufs) FROM observation)"
       }
      ]
     }
@@ -2278,11 +2290,11 @@
          "87.75"
         ],
         [
-         "SELECT COUNT(*) FROM tortue WHERE espece = 'imbriquée'",
+         "SELECT COUNT(*)\nFROM tortue\nWHERE espece = 'imbriquée'",
          "3"
         ],
         [
-         "SELECT SUM(oeufs) FROM observation WHERE id_plage = 1",
+         "SELECT SUM(oeufs)\nFROM observation\nWHERE id_plage = 1",
          "235"
         ],
         [
@@ -2305,27 +2317,27 @@
        "consigne": "Associe chaque requête à ce qu'elle affiche.",
        "paires": [
         [
-         "SELECT COUNT(DISTINCT id_tortue) FROM observation",
+         "SELECT COUNT(DISTINCT id_tortue)\nFROM observation",
          "7"
         ],
         [
-         "SELECT COUNT(DISTINCT id_plage) FROM observation",
+         "SELECT COUNT(DISTINCT id_plage)\nFROM observation",
          "5"
         ],
         [
-         "SELECT COUNT(*) FROM observation WHERE oeufs > 0",
+         "SELECT COUNT(*)\nFROM observation\nWHERE oeufs > 0",
          "10"
         ],
         [
-         "SELECT AVG(oeufs) FROM observation WHERE oeufs > 0",
+         "SELECT AVG(oeufs)\nFROM observation\nWHERE oeufs > 0",
          "105.3"
         ],
         [
-         "SELECT MIN(date_obs) FROM observation WHERE benevole = 'Soilihi'",
+         "SELECT MIN(date_obs)\nFROM observation\nWHERE benevole = 'Soilihi'",
          "2026-02-14"
         ],
         [
-         "SELECT MAX(longueur) - MIN(longueur) FROM tortue WHERE espece = 'imbriquée'",
+         "SELECT MAX(longueur) - MIN(longueur)\nFROM tortue\nWHERE espece = 'imbriquée'",
          "13"
         ]
        ],
@@ -2930,9 +2942,9 @@
        "explication": "JOIN tortue ON observation.id_tortue = tortue.id_tortue."
       },
       {
-       "texte": "SQLite relie tout seul observation et tortue, même sans condition ON.",
+       "texte": "Pour relier observation et tortue, on écrit ON observation.id_tortue = tortue.nom.",
        "reponse": false,
-       "explication": "Sans ON, SQLite associe chaque observation à chaque tortue : 12 × 8 = 96 lignes, presque toutes fausses."
+       "explication": "On compare deux numéros de tortue : la clé étrangère observation.id_tortue et la clé primaire tortue.id_tortue."
       },
       {
        "texte": "Dans ON observation.id_tortue = tortue.id_tortue, on relie une clé étrangère à une clé primaire.",
@@ -2948,13 +2960,15 @@
        "texte": "Cette requête affiche 12.",
        "reponse": true,
        "explication": "Chaque observation trouve exactement une tortue : 12 lignes.",
-       "code": "SELECT COUNT(*)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue"
+       "code": "SELECT COUNT(*)\nFROM observation\nJOIN tortue ON observation.id_tortue = tortue.id_tortue",
+       "verifier": "SELECT (SELECT COUNT(*) FROM observation JOIN tortue ON observation.id_tortue = tortue.id_tortue) = 12"
       },
       {
-       "texte": "Cette requête affiche 12.",
+       "texte": "Cette requête affiche 2.",
        "reponse": false,
-       "explication": "Sans ON, chaque observation est associée à chacune des 8 tortues : 96 lignes.",
-       "code": "SELECT COUNT(*)\nFROM observation\nJOIN tortue"
+       "explication": "Saziley apparaît dans trois observations (n° 2, 5 et 9) : la jointure garde une ligne par observation, donc 3.",
+       "code": "SELECT COUNT(*)\nFROM observation\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE plage.nom = 'Saziley'",
+       "verifier": "SELECT (SELECT COUNT(*) FROM observation JOIN plage ON observation.id_plage = plage.id_plage WHERE plage.nom = 'Saziley') = 2"
       },
       {
        "texte": "Kai n'apparaît dans aucune ligne de observation JOIN tortue ON observation.id_tortue = tortue.id_tortue.",
@@ -2980,7 +2994,8 @@
        "texte": "Cette requête provoque une erreur, car la colonne nom est ambiguë.",
        "reponse": false,
        "explication": "Ici, seule la table plage a une colonne nom : il n'y a pas d'ambiguïté. La requête affiche N'Gouja.",
-       "code": "SELECT nom\nFROM observation\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE id_obs = 1"
+       "code": "SELECT nom\nFROM observation\nJOIN plage ON observation.id_plage = plage.id_plage\nWHERE id_obs = 1",
+       "verifier": "SELECT (SELECT nom FROM observation JOIN plage ON observation.id_plage = plage.id_plage WHERE id_obs = 1) <> 'N''Gouja'"
       },
       {
        "texte": "Dans une requête qui joint observation, tortue et plage, SELECT nom provoque l'erreur « ambiguous column name: nom ».",
@@ -3222,7 +3237,7 @@
          "la base compte une plage de plus"
         ],
         [
-         "UPDATE tortue SET longueur = 99 WHERE id_tortue = 1",
+         "UPDATE tortue SET longueur = 99\nWHERE id_tortue = 1",
          "Nuru mesure maintenant 99 cm"
         ],
         [
@@ -3230,7 +3245,7 @@
          "l'observation n° 3 disparaît"
         ],
         [
-         "UPDATE observation SET benevole = 'Sam' WHERE id_obs = 3",
+         "UPDATE observation SET benevole = 'Sam'\nWHERE id_obs = 3",
          "l'observation n° 3 est attribuée à Sam"
         ]
        ],
@@ -3245,7 +3260,7 @@
      "duree": 6,
      "items": [
       {
-       "consigne": "Associe chaque requête à son effet. SQLite contrôle les clés étrangères.",
+       "consigne": "Associe chaque requête à son effet. La base contrôle les clés étrangères.",
        "paires": [
         [
          "UPDATE tortue SET longueur = 99",
@@ -3260,7 +3275,7 @@
          "2 lignes sont supprimées"
         ],
         [
-         "UPDATE tortue SET longueur = longueur + 2 WHERE espece = 'verte'",
+         "UPDATE tortue SET longueur = longueur + 2\nWHERE espece = 'verte'",
          "5 tortues gagnent 2 cm"
         ],
         [
@@ -3268,11 +3283,11 @@
          "refusée : des observations citent cette tortue"
         ],
         [
-         "INSERT INTO tortue (nom, espece, longueur) VALUES ('Wema', 'verte', 90)",
+         "INSERT INTO tortue VALUES (9, 'Wema', 'verte', 90)",
          "une tortue n° 9 est ajoutée"
         ]
        ],
-       "explication": "Sans WHERE, UPDATE et DELETE touchent toutes les lignes. Une clé primaire INTEGER oubliée est choisie par SQLite : le numéro suivant."
+       "explication": "Sans WHERE, UPDATE et DELETE touchent toutes les lignes. Une suppression est refusée si des lignes d'une autre table citent la ligne supprimée."
       }
      ]
     }
@@ -3358,7 +3373,7 @@
      "duree": 4,
      "items": [
       {
-       "but": "Ajouter l'observation n° 13 : Kai (n° 8) à Trévani (n° 6), le 2026-05-02, 104 œufs, par Lou. (SQLite contrôle les clés étrangères.)",
+       "but": "Ajouter l'observation n° 13 : Kai (n° 8) à Trévani (n° 6), le 2026-05-02, 104 œufs, par Lou. (La base contrôle les clés étrangères.)",
        "lignes": [
         "INSERT INTO observation",
         "VALUES (13, 8, 7, '2026-05-02', 104, 'Lou')"
@@ -3458,7 +3473,7 @@
        "message": "Error: CHECK constraint failed: espece IN ('verte', 'imbriquée')"
       },
       {
-       "but": "Ajouter l'observation n° 13 : Nyota (n° 6) à Iloni (n° 5), le 2026-05-03, 118 œufs, par Sam. (SQLite contrôle les clés étrangères.)",
+       "but": "Ajouter l'observation n° 13 : Nyota (n° 6) à Iloni (n° 5), le 2026-05-03, 118 œufs, par Sam. (La base contrôle les clés étrangères.)",
        "lignes": [
         "INSERT INTO observation",
         "VALUES (12, 6, 5, '2026-05-03', 118, 'Sam')"
@@ -3870,7 +3885,7 @@
        "explication": "Clé primaire, clé étrangère, NOT NULL, UNIQUE, CHECK : la base refuse ce qui ne les respecte pas."
       },
       {
-       "texte": "SQLite accepte une nouvelle tortue avec un id_tortue déjà utilisé.",
+       "texte": "La base accepte une nouvelle tortue avec un id_tortue déjà utilisé.",
        "reponse": false,
        "explication": "La clé primaire doit être unique : SQLite répond « UNIQUE constraint failed: tortue.id_tortue »."
       }
@@ -3890,14 +3905,14 @@
        "explication": "benevole est NOT NULL : « NOT NULL constraint failed: observation.benevole »."
       },
       {
-       "texte": "Dans cette base, SQLite refuse une observation de la tortue n° 9, qui n'existe pas.",
+       "texte": "La base refuse une observation de la tortue n° 9, qui n'existe pas.",
        "reponse": true,
-       "explication": "La base active le contrôle (PRAGMA foreign_keys = ON) : « FOREIGN KEY constraint failed »."
+       "explication": "id_tortue est une clé étrangère : elle doit renvoyer à une tortue qui existe (« FOREIGN KEY constraint failed »)."
       },
       {
-       "texte": "Sans la ligne PRAGMA foreign_keys = ON, SQLite accepterait l'observation de la tortue n° 9.",
+       "texte": "La base accepte une nouvelle observation de la tortue n° 1 sur la plage n° 1.",
        "reponse": true,
-       "explication": "Par défaut, SQLite ne contrôle pas les clés étrangères : c'est pour cela que la base l'active."
+       "explication": "Une clé étrangère peut se répéter : une tortue revient pondre plusieurs fois, sur la même plage ou non."
       },
       {
        "texte": "UPDATE tortue SET id_tortue = 1 WHERE id_tortue = 8 est accepté.",
@@ -4124,7 +4139,7 @@
      "duree": 3,
      "items": [
       {
-       "consigne": "Associe chaque requête refusée au message de SQLite. SQLite contrôle les clés étrangères.",
+       "consigne": "Associe chaque requête refusée au message de SQLite. La base contrôle les clés étrangères.",
        "paires": [
         [
          "INSERT INTO tortue VALUES (1, 'Wema', 'verte', 90)",
@@ -4154,14 +4169,14 @@
      "duree": 4,
      "items": [
       {
-       "consigne": "Associe chaque requête refusée à la contrainte qu'elle viole. SQLite contrôle les clés étrangères.",
+       "consigne": "Associe chaque requête refusée à la contrainte qu'elle viole. La base contrôle les clés étrangères.",
        "paires": [
         [
          "INSERT INTO plage VALUES (7, 'Iloni', 'Chiconi')",
          "UNIQUE sur plage.nom"
         ],
         [
-         "UPDATE tortue SET longueur = -5 WHERE id_tortue = 1",
+         "UPDATE tortue SET longueur = -5\nWHERE id_tortue = 1",
          "CHECK sur longueur"
         ],
         [
@@ -4169,7 +4184,7 @@
          "clé étrangère de observation vers plage"
         ],
         [
-         "UPDATE observation SET benevole = NULL WHERE id_obs = 1",
+         "UPDATE observation SET benevole = NULL\nWHERE id_obs = 1",
          "NOT NULL sur benevole"
         ],
         [
@@ -4188,7 +4203,7 @@
      "duree": 6,
      "items": [
       {
-       "consigne": "Associe chaque requête à ce que répond la base. SQLite contrôle les clés étrangères.",
+       "consigne": "Associe chaque requête à ce que répond la base. La base contrôle les clés étrangères.",
        "paires": [
         [
          "DELETE FROM tortue WHERE id_tortue = 8",
@@ -4199,19 +4214,19 @@
          "refusée : une observation cite cette tortue"
         ],
         [
-         "UPDATE observation SET id_plage = 6 WHERE id_obs = 7",
+         "UPDATE observation SET id_plage = 6\nWHERE id_obs = 7",
          "acceptée : la plage n° 6 existe"
         ],
         [
-         "UPDATE observation SET id_plage = 7 WHERE id_obs = 7",
+         "UPDATE observation SET id_plage = 7\nWHERE id_obs = 7",
          "refusée : la plage n° 7 n'existe pas"
         ],
         [
-         "INSERT INTO tortue (nom, espece, longueur) VALUES ('Wema', 'verte', 90)",
-         "acceptée : SQLite choisit le numéro 9"
+         "INSERT INTO tortue VALUES (9, 'Wema', 'verte', 90)",
+         "acceptée : le numéro 9 est libre"
         ],
         [
-         "UPDATE tortue SET espece = 'Verte' WHERE id_tortue = 1",
+         "UPDATE tortue SET espece = 'Verte'\nWHERE id_tortue = 1",
          "refusée : la majuscule sort du domaine"
         ]
        ],
@@ -4303,7 +4318,7 @@
      "duree": 4,
      "items": [
       {
-       "but": "Supprimer la tortue Kai (n° 8). (SQLite contrôle les clés étrangères.)",
+       "but": "Supprimer la tortue Kai (n° 8). (La base contrôle les clés étrangères.)",
        "lignes": [
         "DELETE FROM tortue",
         "WHERE id_tortue = 7"
@@ -4323,7 +4338,7 @@
        "message": "Error: FOREIGN KEY constraint failed"
       },
       {
-       "but": "Corriger l'observation n° 7 : elle a eu lieu à Trévani (plage n° 6). (SQLite contrôle les clés étrangères.)",
+       "but": "Corriger l'observation n° 7 : elle a eu lieu à Trévani (plage n° 6). (La base contrôle les clés étrangères.)",
        "lignes": [
         "UPDATE observation",
         "SET id_plage = 7",
@@ -4370,22 +4385,23 @@
      "duree": 6,
      "items": [
       {
-       "but": "Changer le numéro de Kai : il passe de 8 à 10.",
+       "but": "Corriger l'observation n° 9 : la tortue vue était Kai (n° 8), et c'est Sam qui l'a vue.",
        "lignes": [
-        "UPDATE tortue",
-        "SET id_tortue = 1",
-        "WHERE nom = 'Kai'"
+        "UPDATE observation",
+        "SET id_tortue = 9,",
+        "    benevole = 'Sam'",
+        "WHERE id_obs = 9"
        ],
        "ligne": 1,
        "corrections": [
-        "SET id_tortue = NULL",
-        "SET id_tortue = 10",
-        "SET id_tortue = 'dix'"
+        "SET id_tortue = 'Kai',",
+        "SET id_tortue = 8,",
+        "SET id_tortue = 8 AND"
        ],
        "bonne": 1,
        "affiche": "",
-       "explication": "La clé primaire doit rester unique (1 est pris par Nuru) et être un entier : « datatype mismatch » refuse un texte ou NULL.",
-       "message": "Error: UNIQUE constraint failed: tortue.id_tortue"
+       "explication": "id_tortue est une clé étrangère : elle prend le numéro d'une tortue qui existe, ici 8. Deux modifications se séparent par une virgule, pas par AND.",
+       "message": "Error: FOREIGN KEY constraint failed"
       },
       {
        "but": "Corriger la tortue n° 4 : c'est une imbriquée.",
@@ -4600,28 +4616,39 @@
      "duree": 6,
      "items": [
       {
-       "but": "Afficher le total des œufs pondus sur la plage N'Gouja.",
+       "but": "Afficher le total des œufs pondus dans la commune de Sada.",
        "lignes": [
-        "SELECT SUM(oeufs)",
+        "SELECT {0}(oeufs)",
         "FROM observation",
-        "JOIN plage ON observation.id_plage = plage.id_plage",
-        "WHERE plage.nom = {0}"
+        "JOIN plage",
+        "ON observation.id_plage",
+        "   = plage.{1}",
+        "WHERE plage.commune",
+        "   = 'Sada'"
        ],
        "trous": [
         {
          "options": [
-          "N'Gouja",
-          "'N''Gouja'",
-          "'N'Gouja'"
+          "COUNT",
+          "SUM",
+          "MAX"
          ],
          "bonne": 1
+        },
+        {
+         "options": [
+          "id_plage",
+          "nom",
+          "commune"
+         ],
+         "bonne": 0
         }
        ],
-       "affiche": "235",
-       "explication": "Dans un texte SQL, une apostrophe s'écrit en double : 'N''Gouja'. Sinon, le texte s'arrête après N."
+       "affiche": "245",
+       "explication": "SUM additionne les œufs (130 + 115). La jointure relie la clé étrangère observation.id_plage à la clé primaire plage.id_plage."
       },
       {
-       "but": "Compter les plages différentes d'une commune où une tortue verte est venue : Bandrélé.",
+       "but": "Compter les plages de Bandrélé où une tortue verte est venue.",
        "lignes": [
         "SELECT COUNT({0} plage.id_plage)",
         "FROM observation",

@@ -410,15 +410,15 @@
          "3"
         ],
         [
-         "print(-7 // 2)",
-         "-4"
+         "print(7 // 2 * 2)",
+         "6"
         ]
        ],
-       "explication": "Les priorités : ** d'abord, puis *, /, // et %, puis + et -. Les parenthèses passent avant tout. -7 // 2 arrondit vers le bas : -4.",
+       "explication": "Les priorités : ** d'abord, puis *, /, // et %, puis + et -. Les parenthèses passent avant tout. À priorité égale, on calcule de gauche à droite.",
        "executer": true,
        "aides": [
         "Les parenthèses d'abord, puis ** , puis * // %, puis + -.",
-        "// arrondit toujours vers le bas, même pour un nombre négatif."
+        "7 // 2 vaut 3, puis 3 * 2."
        ]
       }
      ]
@@ -488,7 +488,7 @@
        ],
        "ligne": 0,
        "corrections": [
-        "n := 10",
+        "N = 10",
         "n = 10",
         "10 = n"
        ],
@@ -1011,9 +1011,11 @@
        "verifier": "r == \"50\""
       },
       {
-       "texte": "\"ab\" * 3 provoque une erreur.",
+       "texte": "type(\"12\") est int.",
        "reponse": false,
-       "explication": "Un texte multiplié par un entier se répète : \"ababab\"."
+       "explication": "Entre guillemets, \"12\" est un texte : son type est str.",
+       "code": "t = type(\"12\")",
+       "verifier": "t == int"
       }
      ]
     },
@@ -1047,10 +1049,10 @@
        "explication": "On ne peut pas ajouter un texte et un nombre : TypeError. Il faut convertir avec int() ou str()."
       },
       {
-       "texte": "bool(0) vaut False.",
+       "texte": "not True vaut False.",
        "reponse": true,
-       "explication": "Le nombre 0 est considéré comme faux ; les autres nombres comme vrais.",
-       "code": "r = bool(0)",
+       "explication": "not inverse un booléen : not True vaut False, et not False vaut True.",
+       "code": "r = not True",
        "verifier": "r == False"
       }
      ]
@@ -1166,29 +1168,29 @@
         "b est s[0].",
         "Les indices négatifs sont permis : on compte depuis la fin.",
         "Juste : -1 désigne le dernier caractère.",
-        "g est s[-2]."
+        "g est l'avant-dernier caractère, s[3]."
        ],
        "aides": [
         "-1, c'est le dernier."
        ]
       },
       {
-       "code": "print(\"ha\" * 3 + \"!\")",
+       "code": "n = 3\nprint(\"ha\" + str(n) + \"!\")",
        "options": [
-        "ha ha ha !",
-        "ha!ha!ha!",
-        "ha3!",
-        "hahaha!"
+        "ha 3 !",
+        "ha + 3 + !",
+        "hahaha!",
+        "ha3!"
        ],
        "bonne": 3,
        "retours": [
-        "Aucun espace n'est ajouté.",
-        "* est calculé avant + : on répète \"ha\", puis on ajoute \"!\".",
-        "* répète le texte, il n'écrit pas le nombre.",
-        "Juste : * répète, puis + colle."
+        "Aucun espace n'est ajouté : + colle les textes.",
+        "Le + est calculé, il ne s'affiche pas.",
+        "str(n) écrit le nombre 3 en texte : on colle \"3\", on ne répète rien.",
+        "Juste : str(n) vaut \"3\", et + colle les trois textes."
        ],
        "aides": [
-        "* passe avant +."
+        "str(n) transforme le nombre en texte."
        ]
       }
      ]
@@ -1197,12 +1199,12 @@
      "duree": 6,
      "items": [
       {
-       "code": "s = \"informatique\"\nprint(s[2] + s[-1] + s[5])",
+       "code": "s = \"informatique\"\nprint(s[2] + s[11] + s[5])",
        "reponse": "fem",
-       "explication": "s[2] = f, s[-1] = e, s[5] = m : on obtient fem.",
+       "explication": "s[2] = f, s[11] = e (le dernier caractère), s[5] = m : on obtient fem.",
        "aides": [
         "i n f o r m a t i q u e : numérote à partir de 0.",
-        "s[-1] est le dernier caractère."
+        "Le texte a 12 caractères : le dernier a l'indice 11."
        ]
       },
       {
@@ -1276,30 +1278,30 @@
        "consigne": "Associe chaque programme à ce qu'il affiche.",
        "paires": [
         [
-         "s = \"Mayotte\"\nprint(s[1:4])",
-         "ayo"
+         "s = \"Mayotte\"\nprint(s[1] + s[2])",
+         "ay"
         ],
         [
-         "s = \"Mayotte\"\nprint(s[:3])",
-         "May"
+         "s = \"Mayotte\"\nprint(len(s) - 1)",
+         "6"
         ],
         [
-         "s = \"Mayotte\"\nprint(s[4:])",
-         "tte"
+         "s = \"Mayotte\"\nprint(s[len(s) - 1])",
+         "e"
         ],
         [
-         "s = \"Mayotte\"\nprint(s.lower())",
-         "mayotte"
+         "s = \"Mayotte\"\nprint(\"y\" in s)",
+         "True"
         ],
         [
-         "s = \"Mayotte\"\nprint(s.count(\"t\"))",
-         "2"
+         "s = \"Mayotte\"\nprint(s + \"!\")",
+         "Mayotte!"
         ]
        ],
-       "explication": "s[a:b] donne les caractères de a à b exclu ; sans début, on part de 0 ; sans fin, on va au bout.",
+       "explication": "s[i] lit le caractère d'indice i ; len compte les caractères ; in teste la présence ; + colle deux textes.",
        "executer": true,
        "aides": [
-        "s[1:4] donne les indices 1, 2 et 3."
+        "Les indices commencent à 0 : M est s[0]."
        ]
       }
      ]
@@ -1311,30 +1313,31 @@
        "consigne": "Associe chaque programme à ce qu'il affiche.",
        "paires": [
         [
-         "s = \"Bonjour\"\nprint(s[::-1])",
-         "ruojnoB"
+         "s = \"Bonjour\"\nprint(s[0] + s[len(s) - 1])",
+         "Br"
         ],
         [
-         "s = \"Bonjour\"\nprint(s.replace(\"o\", \"0\"))",
-         "B0nj0ur"
+         "s = \"Bonjour\"\nprint(len(s + s))",
+         "14"
         ],
         [
          "s = \"Bonjour\"\nprint(\"j\" in s)",
          "True"
         ],
         [
-         "s = \"Bonjour\"\nprint(s.find(\"j\"))",
-         "3"
+         "s = \"Bonjour\"\nprint(str(len(s)) + s[0])",
+         "7B"
         ],
         [
          "s = \"Bonjour\"\nprint(s[1] + s[3])",
          "oj"
         ]
        ],
-       "explication": "s[::-1] retourne le texte ; replace remplace ; in teste la présence ; find donne l'indice de la première apparition.",
+       "explication": "On calcule d'abord ce qui est entre crochets ou entre parenthèses ; + colle des textes ; str(…) change un nombre en texte.",
        "executer": true,
        "aides": [
-        "find donne un indice, qui commence à 0."
+        "len(s) vaut 7.",
+        "str(7) est le texte \"7\"."
        ]
       }
      ]

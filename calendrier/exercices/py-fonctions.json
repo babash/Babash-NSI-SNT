@@ -95,11 +95,11 @@
        "verifier": "r == 13"
       },
       {
-       "texte": "Le paramètre x et la variable x du programme sont toujours la même variable.",
+       "texte": "Après ce code, r vaut 11.",
        "reponse": false,
-       "explication": "Le paramètre est une variable locale : il n'existe que pendant l'appel.",
-       "code": "x = 1\ndef f(x):\n    x = x + 10\n    return x\nr = f(5)",
-       "verifier": "x != 1"
+       "explication": "Le paramètre x reçoit 5, la valeur donnée à l'appel : la fonction renvoie 5 + 10 = 15.",
+       "code": "def f(x):\n    x = x + 10\n    return x\nr = f(5)",
+       "verifier": "r == 11"
       }
      ]
     },
@@ -135,11 +135,11 @@
        "verifier": "r == 25"
       },
       {
-       "texte": "Une fonction sans return renvoie None.",
+       "texte": "Après ce code, r vaut 9.",
        "reponse": true,
-       "explication": "None est la valeur « rien » de Python.",
-       "code": "def f():\n    a = 1\nr = f()",
-       "verifier": "r is None"
+       "explication": "a reçoit 3 et b reçoit 4 : 3 × 4 − 3 = 9.",
+       "code": "def f(a, b):\n    return a * b - a\nr = f(3, 4)",
+       "verifier": "r == 9"
       }
      ]
     }
@@ -404,19 +404,19 @@
          "4"
         ],
         [
-         "def f(x):\n    print(x)\nprint(f(4))",
-         "4, None"
+         "def f(x):\n    return x + 1\nprint(f(4) * 2)",
+         "10"
         ],
         [
          "def f(x):\n    return x * 2\nf(4)\nprint(\"ok\")",
          "ok"
         ]
        ],
-       "explication": "print affiche, return renvoie. Une fonction qui affiche sans return renvoie None, et print(f(4)) affiche alors aussi None. Un résultat renvoyé et pas utilisé ne s'affiche pas.",
+       "explication": "print affiche, return renvoie. Un résultat renvoyé s'utilise dans un calcul ; s'il n'est pas utilisé, il ne s'affiche pas.",
        "executer": true,
        "aides": [
         "print affiche ; return renvoie une valeur, sans rien afficher.",
-        "Une fonction sans return renvoie None."
+        "f(4) vaut 5 : on affiche 5 * 2."
        ]
       }
      ]
@@ -464,7 +464,7 @@
        "lignes": [
         "def double(x):",
         "    return 2 * x",
-        "print(double)"
+        "print(double[7])"
        ],
        "ligne": 2,
        "corrections": [
@@ -474,11 +474,11 @@
        ],
        "bonne": 0,
        "affiche": "14",
-       "explication": "Pour appeler une fonction, on écrit des parenthèses avec l'argument.",
+       "explication": "Pour appeler une fonction, on met l'argument entre parenthèses, pas entre crochets.",
        "aides": [
-        "Le programme affiche quelque chose comme <function double…>."
+        "« not subscriptable » : on a mis des crochets [ ] là où il faut des parenthèses."
        ],
-       "affiche_fautif": "<function double at 0x…>"
+       "message": "TypeError: 'function' object is not subscriptable"
       },
       {
        "but": "Afficher la somme de 2 et 3 (5).",

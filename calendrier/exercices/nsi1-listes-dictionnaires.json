@@ -112,11 +112,11 @@
      "duree": 4,
      "items": [
       {
-       "texte": "L[-2] vaut \"barge\".",
+       "texte": "L[len(L) - 2] vaut \"barge\".",
        "reponse": true,
-       "explication": "-1 est le dernier (bus), -2 l'avant-dernier (barge).",
+       "explication": "len(L) vaut 3 : L[1] est \"barge\", l'avant-dernier élément.",
        "code": "L = [\"taxi\", \"barge\", \"bus\"]",
-       "verifier": "L[-2] == \"barge\""
+       "verifier": "L[len(L) - 2] == \"barge\""
       },
       {
        "texte": "Après ce code, L vaut [5, 7, 2].",
@@ -349,12 +349,12 @@
        ]
       },
       {
-       "code": "L = [1, 2, 3, 4, 5]\ni = 1\nprint(L[i] * L[-i])",
+       "code": "L = [1, 2, 3, 4, 5]\ni = 1\nprint(L[i] * L[i + 3])",
        "reponse": "10",
-       "explication": "L[1] vaut 2 et L[-1] vaut 5 : 2 × 5 = 10.",
+       "explication": "L[1] vaut 2 et L[4] vaut 5 : 2 × 5 = 10.",
        "aides": [
-        "-i vaut -1 ici.",
-        "L[-1] est le dernier élément."
+        "i + 3 vaut 4 ici.",
+        "L[4] est le cinquième élément : on compte à partir de 0."
        ]
       },
       {
@@ -447,7 +447,7 @@
          "\"manioc\""
         ],
         [
-         "L[-2]",
+         "L[2]",
          "\"papaye\""
         ],
         [
@@ -506,7 +506,7 @@
          "10"
         ],
         [
-         "L[1] - L[-1]",
+         "L[1] - L[4]",
          "6"
         ],
         [
@@ -514,8 +514,8 @@
          "5"
         ],
         [
-         "L[-len(L)]",
-         "3"
+         "L[len(L) - 1]",
+         "2"
         ],
         [
          "L[4] * 4",
@@ -1141,7 +1141,7 @@
       {
        "texte": "Après la boucle, L vaut [50, 20, 80].",
        "reponse": false,
-       "explication": "x reçoit une copie de chaque valeur : changer x ne change pas la liste.",
+       "explication": "x est une variable à part, qui reçoit chaque valeur : lui donner une nouvelle valeur ne change pas la liste.",
        "code": "L = [5, 2, 8]\nfor x in L:\n    x = x * 10",
        "verifier": "L == [50, 20, 80]"
       },
@@ -1189,11 +1189,11 @@
        "verifier": "s == 20"
       },
       {
-       "texte": "Après la boucle, L vaut [3, 2, 3].",
+       "texte": "À la fin, i_max vaut 1.",
        "reponse": true,
-       "explication": "L[0] reçoit 1, puis 2, puis 3 : seule la première case change.",
-       "code": "L = [1, 2, 3]\nfor x in L:\n    L[0] = x",
-       "verifier": "L == [3, 2, 3]"
+       "explication": "Le plus grand élément, 8, est à l'indice 1 : i_max garde cet indice.",
+       "code": "L = [3, 8, 5, 2]\ni_max = 0\nfor i in range(len(L)):\n    if L[i] > L[i_max]:\n        i_max = i",
+       "verifier": "i_max == 1"
       },
       {
        "texte": "À la fin, c vaut 3.",
@@ -1203,11 +1203,11 @@
        "verifier": "c == 3"
       },
       {
-       "texte": "Après la boucle, L vaut [7, 3, 7, 3].",
+       "texte": "Après la boucle, M vaut [7, 7, 3, 3].",
        "reponse": true,
-       "explication": "range(len(L)) est calculé une fois, avec 2 éléments : 2 tours, qui recopient 7 puis 3.",
-       "code": "L = [7, 3]\nfor i in range(len(L)):\n    L.append(L[i])",
-       "verifier": "L == [7, 3, 7, 3]"
+       "explication": "Chaque tour ajoute deux fois x à la fin de M : d'abord 7, 7, puis 3, 3.",
+       "code": "L = [7, 3]\nM = []\nfor x in L:\n    M.append(x)\n    M.append(x)",
+       "verifier": "M == [7, 7, 3, 3]"
       },
       {
        "texte": "for i in range(len(L)) et for x in L font le même nombre de tours.",
@@ -1311,7 +1311,7 @@
         "in répond vrai ou faux, il ne renvoie pas l'élément.",
         "Relis la liste : elle ne contient pas \"orange\".",
         "Juste : \"orange\" n'est pas dans la liste.",
-        "Chercher un élément absent n'est pas une erreur : in répond False."
+        "Chercher un élément absent n'est pas une erreur : in répond seulement vrai ou faux."
        ],
        "aides": [
         "in répond True ou False."
@@ -1373,7 +1373,7 @@
         "On affiche trouve, un booléen, pas x.",
         "Juste : on a trouvé 2, et trouve reste True.",
         "print est après la boucle : il s'exécute une seule fois.",
-        "Quand x vaut 2, trouve passe à True, et rien ne le remet à False."
+        "Quand x vaut 2, trouve change de valeur, et rien ne le remet à False ensuite."
        ],
        "aides": [
         "trouve est un drapeau : il se lève quand on trouve 2."
@@ -1384,14 +1384,14 @@
        "options": [
         "450",
         "150.0",
-        "150",
+        "total / len(prix)",
         "3"
        ],
        "bonne": 1,
        "retours": [
         "450 est le total ; on le divise ensuite par 3.",
         "Juste : 450 / 3 = 150.0 ; la division / donne un nombre à virgule.",
-        "Presque : la division / donne toujours un nombre à virgule (un flottant).",
+        "print affiche la valeur calculée, pas le calcul écrit.",
         "3 est le nombre de prix, pas la moyenne."
        ],
        "aides": [
@@ -1498,15 +1498,15 @@
          "False"
         ],
         [
-         "print([3, 1, 2][-1])",
-         "2"
+         "print([3, 1, 2][1])",
+         "1"
         ],
         [
          "print(1 in [3, 1, 2])",
          "True"
         ]
        ],
-       "explication": "len compte, in répond vrai ou faux, et [-1] lit le dernier élément.",
+       "explication": "len compte, in répond vrai ou faux, et [1] lit l'élément d'indice 1.",
        "aides": [
         "in répond True (vrai) ou False (faux)."
        ],
@@ -2292,11 +2292,11 @@
        "verifier": "n == 2"
       },
       {
-       "texte": "g[-1][0] vaut 4.",
+       "texte": "g[len(g) - 1][0] vaut 4.",
        "reponse": false,
-       "explication": "g[-1] est la dernière ligne, [3, 4] ; son indice 0 donne 3.",
+       "explication": "g[len(g) - 1] est la dernière ligne, [3, 4] ; son indice 0 donne 3.",
        "code": "g = [[1, 2], [3, 4]]",
-       "verifier": "g[-1][0] == 4"
+       "verifier": "g[len(g) - 1][0] == 4"
       },
       {
        "texte": "Pour lire 2, on écrit g[1][0].",
@@ -2444,7 +2444,7 @@
        ]
       },
       {
-       "code": "g = [[1, 2, 3], [4, 5, 6]]\nprint(g[1][-1])",
+       "code": "g = [[1, 2, 3], [4, 5, 6]]\nprint(g[1][2])",
        "options": [
         "6",
         "4",
@@ -2453,10 +2453,10 @@
        ],
        "bonne": 0,
        "retours": [
-        "Juste : dernière case de la ligne 1.",
-        "-1 désigne la dernière case, pas la première.",
-        "3 est la dernière case de la ligne 0.",
-        "-1 est le dernier, pas l'avant-dernier."
+        "Juste : ligne 1, case d'indice 2.",
+        "L'indice 2 est la troisième case, pas la première.",
+        "3 est la case d'indice 2 de la ligne 0 ; ici, on lit la ligne 1.",
+        "Les indices commencent à 0 : l'indice 2 est la troisième case."
        ],
        "aides": [
         "g[1] vaut [4, 5, 6]."
@@ -3317,7 +3317,7 @@
        "texte": "À la fin, m vaut \"b\".",
        "reponse": true,
        "explication": "m garde la clé de la plus grande valeur : 5, sous la clé \"b\".",
-       "code": "d = {\"a\": 3, \"b\": 5, \"c\": 1}\nm = \"\"\nfor k, v in d.items():\n    if m == \"\" or v > d[m]:\n        m = k",
+       "code": "d = {\"a\": 3, \"b\": 5, \"c\": 1}\nm = \"a\"\nfor k in d:\n    if d[k] > d[m]:\n        m = k",
        "verifier": "m == \"b\""
       },
       {
@@ -3335,11 +3335,11 @@
        "verifier": "d[\"a\"] == 3"
       },
       {
-       "texte": "L vaut [\"Lou\", \"Sam\"].",
+       "texte": "d.keys() donne les clés \"Lou\" et \"Sam\".",
        "reponse": true,
-       "explication": "keys veut dire « clés » : list en fait une liste.",
-       "code": "d = {\"Lou\": 12, \"Sam\": 9}\nL = list(d.keys())",
-       "verifier": "L == [\"Lou\", \"Sam\"]"
+       "explication": "keys veut dire « clés » : on obtient \"Lou\" et \"Sam\".",
+       "code": "d = {\"Lou\": 12, \"Sam\": 9}",
+       "verifier": "set(d.keys()) == {\"Lou\", \"Sam\"}"
       },
       {
        "texte": "Après la boucle, d vaut {\"a\": 2, \"b\": 3}.",
@@ -3513,14 +3513,14 @@
       {
        "code": "d = {\"x\": 1}\nd[\"y\"] = 2\nd[\"x\"] = 3\nprint(d)",
        "options": [
-        "{'y': 2, 'x': 3}",
+        "{'x': 3}",
         "{'x': 1, 'y': 2}",
         "{'x': 3, 'y': 2}",
         "{'x': 1, 'y': 2, 'x': 3}"
        ],
        "bonne": 2,
        "retours": [
-        "Modifier une clé ne la déplace pas à la fin.",
+        "La ligne 2 a ajouté la clé \"y\" : elle est toujours là.",
         "La dernière ligne change bien la valeur de \"x\".",
         "Juste : \"x\" garde sa place, sa valeur devient 3.",
         "Une clé est unique : sa valeur est remplacée."
@@ -3691,21 +3691,21 @@
          "{2: 'a', 3: 'b'}"
         ],
         [
-         "d = {\"a\": 2, \"b\": 3}\nL = []\nfor k in d:\n    L.append(k * d[k])\nprint(L)",
-         "['aa', 'bbb']"
+         "d = {\"a\": 2, \"b\": 3}\nL = []\nfor k in d:\n    L.append(k + str(d[k]))\nprint(L)",
+         "['a2', 'b3']"
         ],
         [
          "d = {\"a\": 2, \"b\": 3}\nprint(list(d.items()))",
          "[('a', 2), ('b', 3)]"
         ],
         [
-         "d = {\"a\": 2, \"b\": 3}\nprint(list(d))",
+         "d = {\"a\": 2, \"b\": 3}\nprint(list(d.keys()))",
          "['a', 'b']"
         ]
        ],
-       "explication": "Un texte multiplié par un nombre se répète ; r[v] = k échange clés et valeurs ; list(d) donne les clés.",
+       "explication": "str(…) change un nombre en texte ; r[v] = k échange clés et valeurs ; keys() donne les clés.",
        "aides": [
-        "\"a\" * 2 vaut \"aa\".",
+        "str(2) vaut \"2\".",
         "Dans r[v] = k, la valeur devient la clé."
        ],
        "executer": true
@@ -3790,7 +3790,7 @@
        "affiche": "Lou 15\nSam 9",
        "explication": "Pour avoir la clé et la valeur à chaque tour, on parcourt notes.items().",
        "aides": [
-        "« too many values to unpack » : Python ne reçoit pas un couple, mais un texte de 3 lettres."
+        "« too many values to unpack » : à chaque tour, Python reçoit une clé seule, pas un couple (clé, valeur)."
        ],
        "message": "ValueError: too many values to unpack (expected 2)"
       }
@@ -4390,11 +4390,11 @@
        "verifier": "a[\"x\"] == 1"
       },
       {
-       "texte": "Après ce code, a vaut [1, 2].",
+       "texte": "À la fin, s vaut 21.",
        "reponse": true,
-       "explication": "list(a) fabrique une copie : b change, a ne change pas.",
-       "code": "a = [1, 2]\nb = list(a)\nb.append(3)",
-       "verifier": "a == [1, 2]"
+       "explication": "Chaque élément est un dictionnaire : e[\"note\"] donne 12, puis 9. s vaut 21.",
+       "code": "eleves = [{\"nom\": \"Lou\", \"note\": 12},\n          {\"nom\": \"Sam\", \"note\": 9}]\ns = 0\nfor e in eleves:\n    s = s + e[\"note\"]",
+       "verifier": "s == 21"
       },
       {
        "texte": "Après ce code, t vaut [[0, 7], [0, 0]].",
@@ -4406,8 +4406,8 @@
       {
        "texte": "Après ce code, t vaut [[0, 7], [0, 0]].",
        "reponse": false,
-       "explication": "Les deux lignes de t sont la même liste ligne : t vaut [[0, 7], [0, 7]].",
-       "code": "ligne = [0, 0]\nt = [ligne, ligne]\nt[0][1] = 7",
+       "explication": "t[1][0] est la case de la ligne 1, colonne 0 : t vaut [[0, 0], [7, 0]].",
+       "code": "t = [[0, 0], [0, 0]]\nt[1][0] = 7",
        "verifier": "t == [[0, 7], [0, 0]]"
       },
       {
@@ -4507,14 +4507,14 @@
         "2",
         "['a', 'b']",
         "[1, 2]",
-        "['b', 'a']"
+        "['a']"
        ],
        "bonne": 1,
        "retours": [
         "On affiche la liste des clés, pas leur nombre.",
-        "Juste : les clés, dans l'ordre où elles ont été ajoutées.",
+        "Juste : les deux clés du dictionnaire.",
         "keys donne les clés, pas les valeurs.",
-        "La nouvelle clé se place à la fin."
+        "La ligne 2 a ajouté la clé \"b\"."
        ],
        "aides": [
         "keys veut dire « clés »."
@@ -4625,17 +4625,18 @@
        ]
       },
       {
-       "code": "ligne = [0, 0]\nt = [ligne, ligne]\nt[1][0] = 5\nprint(t[0][0])",
-       "reponse": "5",
-       "explication": "t[0] et t[1] sont la même liste ligne : la changer par t[1] la change aussi pour t[0].",
+       "code": "t = [[1, 2], [3, 4]]\nt[1][0] = t[0][1] + 3\nprint(t[1][0] + t[1][1])",
+       "reponse": "9",
+       "explication": "t[0][1] vaut 2, donc t[1][0] devient 5. La ligne 1 vaut [5, 4] : 5 + 4 = 9.",
        "aides": [
-        "Combien de listes différentes y a-t-il vraiment ?"
+        "Calcule d'abord t[0][1] + 3.",
+        "Écris la ligne 1 après la modification."
        ]
       },
       {
-       "code": "d = {\"Lou\": 15, \"Sam\": 9, \"Ali\": 12}\nL = []\nfor k in d:\n    if d[k] > 10:\n        L.append(k)\nprint(len(L), L[-1])",
+       "code": "d = {\"Lou\": 15, \"Sam\": 9, \"Ali\": 12}\nL = []\nfor k in d:\n    if d[k] > 10:\n        L.append(k)\nprint(len(L), L[1])",
        "reponse": "2 Ali",
-       "explication": "Lou et Ali dépassent 10 : L vaut [\"Lou\", \"Ali\"], de longueur 2, et son dernier élément est Ali.",
+       "explication": "Lou et Ali dépassent 10 : L vaut [\"Lou\", \"Ali\"], de longueur 2, et L[1] est Ali.",
        "aides": [
         "Construis L tour par tour.",
         "print affiche deux valeurs séparées par une espace."
