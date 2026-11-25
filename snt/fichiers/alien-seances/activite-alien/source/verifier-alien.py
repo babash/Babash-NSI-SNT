@@ -4,9 +4,10 @@
 1. Pour chaque « La position finale est » : le script affiché est exécuté avec des fonctions
    haut/bas/gauche/droite/colonne qui déplacent l'alien (départ en H8, grille A-O x 1-15),
    et la case obtenue doit être la première réponse attendue de la page.
-2. Pour chaque « Donne les instructions » : le code de départ + la correction passe les tests
-   de la page (comme le moteur : le code, puis les tests, dans le même espace), et un chemin
-   faux (une case de trop vers le bas) est refusé.
+2. Pour chaque « Donne les instructions » : le préambule caché de la page (script.td-preambule :
+   la position de départ et les fonctions de déplacement), puis la correction, passe les tests
+   de la page (comme le moteur : préambule, code, puis tests, dans le même espace), et un chemin
+   faux (une case de trop vers le bas) est refusé. Aucun code de départ n'est montré à l'élève.
 Usage : python3 -I verifier-alien.py
 """
 import html
@@ -30,8 +31,9 @@ def position(src):
     return L[pos["l"]] + str(pos["c"])
 
 
-def moteur(code, tests):
+def moteur(pre, code, tests):
     g = {"__name__": "__main__"}
+    exec(compile(pre, "preambule.py", "exec"), g)
     exec(compile(code, "alien.py", "exec"), g)
     try:
         exec(compile(tests, "tests.py", "exec"), g)
@@ -48,13 +50,17 @@ for nom in ("index.html", "feuille-2.html", "feuille-3.html"):
         ok = calc == rep
         erreurs += not ok
         print(f"{nom} {qid} : exécution -> {calc} ; page -> {rep} {'juste' if ok else 'FAUX'}")
-    for qid, dep, tests, corr in re.findall(r'id="([^"]+)" data-fichier="alien.py">.*?<pre class="td-depart">\n(.*?)</pre>\s*<script type="text/x-python" class="td-tests">\n(.*?)</script>.*?data-verifier="correction">\n(.*?)</pre>', page, re.S):
-        dep, corr = html.unescape(dep), html.unescape(corr)
-        r1 = moteur(corr, tests)
-        r2 = moteur(corr + "\nbas(1)\n", tests)
+    pre = re.findall(r'<script type="text/x-python" class="td-preambule">\n(.*?)</script>', page, re.S)
+    questions = re.findall(r'id="([^"]+)" data-fichier="alien.py"[^>]*>(.*?)</section>', page, re.S)
+    for qid, corps in questions:
+        assert len(pre) == 1, "un seul préambule caché, pour toute la page"
+        assert "td-depart" not in corps and "global" not in corps, qid + " : la mécanique ne doit pas être montrée (règle R1)"
+        tests = re.search(r'<script type="text/x-python" class="td-tests">\n(.*?)</script>', corps, re.S).group(1)
+        corr = html.unescape(re.search(r'data-verifier="correction">\n(.*?)</pre>', corps, re.S).group(1))
+        r1 = moteur(pre[0], corr, tests)
+        r2 = moteur(pre[0], corr + "\nbas(1)\n", tests)
         ok = r1 == "accepté" and r2.startswith("refusé")
         erreurs += not ok
         print(f"{nom} {qid} : correction {r1} ; chemin faux {r2} {'juste' if ok else 'FAUX'}")
-        assert corr.startswith(dep), "la correction reprend le code de départ"
 print("tout est juste" if not erreurs else f"{erreurs} erreur(s)")
 raise SystemExit(1 if erreurs else 0)
