@@ -163,7 +163,14 @@ print("Vous marquez ",score," points")</pre>
       <li data-juste>Non : il faut 30. On place le test des 3 dés égaux et sa ligne <code>score = 30</code> en premier.</li>
     </ul>
     <p class="td-aide">Dès qu'une condition est vraie, Python saute les suivantes. Quel test doit passer en premier ?</p>
-    <div class="td-correction"><p>On place <code>de1 == de2 == de3</code> (et <code>score = 30</code>) en premier : <code>if de1 == de2 == de3 :</code>, puis <code>elif de1 != de2 != de3 :</code>…</p><p>Attention : <code>de1 != de2 != de3</code> ne compare pas <code>de1</code> et <code>de3</code>. Avec 3, 4, 3, ce programme donne 10 au lieu de 20. Le test sûr : <code>de1 != de2 and de2 != de3 and de1 != de3</code>.</p></div>
+    <div class="td-correction"><p>On place <code>de1 == de2 == de3</code> (et <code>score = 30</code>) en premier : <code>if de1 == de2 == de3 :</code>, puis <code>elif de1 != de2 != de3 :</code>…</p><p>Avec ce déplacement, 4, 4, 4 donne bien 30. <b>Mais le programme n'est pas encore juste pour tous les lancers</b> : <code>de1 != de2 != de3</code> ne compare pas <code>de1</code> et <code>de3</code>. Avec 3, 4, 3, il donne 10 au lieu de 20 ; c'est faux pour 30 lancers sur les 216 possibles (ceux où seuls le premier et le troisième dé sont égaux). Le programme juste pour tous les lancers écrit le test des dés différents avec <code>and</code> :</p>
+      <pre class="td-code">
+if de1 == de2 and de2 == de3 :
+    score = 30
+elif de1 != de2 and de2 != de3 and de1 != de3 :
+    score = de1 + de2 + de3
+else :
+    score = 20</pre></div>
   </section>
 
   <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="2">
