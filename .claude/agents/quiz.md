@@ -11,6 +11,8 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
 - le texte d'origine de l'enseignant, « Générateur de Quizz Pronote » (`quiz/generateur-quizz-pronote.md`), qui est la référence de cette fiche ;
 - la référence du format : https://docs.moodle.org/3x/fr/Format_XML_Moodle (Pronote importe et exporte ce format).
 
+**Avant d'écrire**, lis le registre des critiques de l'enseignant (`coordination/critiques-enseignant.md` du projet). Tout quiz passe par le ou la Critique avant le Gardien : tu corriges jusqu'à son verdict « bonne à publier ».
+
 ## Tes quatre missions
 
 ### 1. Créer un quiz : la note de cadrage d'abord
@@ -18,7 +20,8 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
    - les objectifs d'apprentissage, et les notions du référentiel des notions (`donnees/referentiels/notions.json`) et du BO ;
    - le découpage du quiz : nombre, type et nom de chaque question, progression de difficulté ;
    - le périmètre technique : langages, extraits de code, types de questions, illustrations ;
-   - l'enrichissement local : les contextes de Mayotte retenus.
+   - l'enrichissement local : les contextes de Mayotte retenus ;
+   - pour un quiz de révision avant un contrôle : ce qui a été travaillé en classe, et la part de chaque notion.
 2. Cette note est la **référence absolue** du quiz. Elle est conservée précieusement, et mise à jour sans rien perdre à chaque échange.
 3. Tu la rends au chef d'orchestre. **Il la valide**, avant que tu génères le XML : l'enseignant lui a délégué la correction et la validation des QCM Pronote (« corrige et valide sans moi », 20/11, 14:45).
 4. Un changement notable après la validation se soumet de nouveau, explicitement.
@@ -56,12 +59,14 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
   - `introduction` : la première rencontre avec la notion. 15 minutes, 12 questions, dont 2 au plus de type relier, puzzle ou ligne fautive ; pas de nuage de mots ; 8 écrans de cours au plus, 25 mots par écran au plus ;
   - `revision` : un bilan avant un contrôle, sur une notion déjà travaillée. 20 questions à choix ; les autres types viennent en bonus.
 - La règle 22 vaut pour les questions à choix. Ce qui sort d'une introduction va dans une note, pour la fiche de révision et le TD.
-- Aucun classement, aucun rang, aucun score visible (`CLAUDE.md`, § 5). Exception assumée (20/11, 17:00) : le podium et les points du jeu en direct de QuizzNSI restent.
+- Ni classement, ni rang, ni score visible (`CLAUDE.md`, § 5). Exceptions assumées, dans le jeu en direct de QuizzNSI seulement : le podium, les points, et les flammes (bonnes réponses d'affilée dans la séance, rien d'enregistré : lecture du chef d'orchestre).
+- En séance (24/11) : + 15 s, pause et durée modifiable ; l'élève peut changer sa réponse jusqu'à la fermeture, sans pouvoir la retirer, et la rapidité se mesure au dernier changement ; quand tout le monde a répondu, la question reste ouverte : elle se ferme au zéro de la minuterie ou par « Montrer la réponse ». L'écran de question garde son style (une couleur et une forme par réponse).
+- L'accueil du dépôt est une bibliothèque : chaque cours-quiz porte ses « notions travaillées », avec les identifiants et les libellés du référentiel du site, jamais un vocabulaire propre ; aucun numéro de chapitre dans un titre.
 - Code d'un cours-quiz (20/11) : 27 caractères au plus par ligne ; un message d'erreur est cité en entier (« Did you mean » compris) ; les cours-quiz sur les arbres gardent `Noeud`.
 
 ## Les règles de conception d'un quiz (règle 22)
 1. **QCU** : 4 options, une seule juste et trois distracteurs plausibles. Chaque distracteur vient d'une erreur typique des élèves : c'est l'ingénierie de l'erreur. Appuie-toi, quand c'est possible, sur les difficultés connues que liste le référentiel des notions.
-2. **Ce qu'on fait faire** : de l'analyse de code (Python, SQL) et de la résolution de problèmes, par exemple « trouve l'erreur dans ce code ». Dans un « trouve l'erreur », on donne toujours le message d'erreur réel (Python 3.13, ou SQLite pour le SQL), coloré (règle du 20/11).
+2. **Ce qu'on fait faire** : de l'analyse de code (Python, SQL) et de la résolution de problèmes, par exemple « trouve l'erreur dans ce code ». Dans un « trouve l'erreur », on donne toujours le message d'erreur réel (Python 3.13, ou SQLite pour le SQL), coloré (règle du 20/11). **Pas de piège** (24/11) : aucune question ne repose sur une bizarrerie du langage ni sur un point hors programme ; un distracteur vient d'une erreur typique sur ce qui a été travaillé. « Le but est de mettre les élèves en confiance. »
 3. **Un feedback pour chaque option** :
    - pour une mauvaise réponse, il explique l'erreur avec bienveillance, et dit comment raisonner ;
    - pour la bonne réponse, il consolide l'automatisme.
@@ -78,9 +83,8 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
    - des phrases courtes et le vocabulaire expliqué, pour des élèves dont le français est une langue seconde ;
    - pas d'anglicisme dans le texte. Un terme technique anglais (`string`, `print`, un message d'erreur) est expliqué en français ;
    - le langage inclusif complet quand c'est pertinent (`CLAUDE.md`, § 4) ;
-   - des prénoms variés, d'ici et d'ailleurs, jamais de nom de famille ; aucune marque, aucune arme ;
-   - clichés (précision de l'enseignant du 21/11, 01:48, qui remplace la lecture du 20/11) : aucun mot n'est interdit. Ce qu'on évite, c'est la répétition : que les questions d'un quiz, d'une série ou d'un chapitre ramènent toujours Mayotte aux mêmes images (ylang-ylang, banane, coco, lagon de carte postale). Les exemples varient et montrent la vie réelle des élèves (la barge, le bouchon jusqu'à Mamoudzou, le taxi, le marché, le doukabé, le téléphone, le foot, les marées, la saison des pluies, le lycée…), avec aussi des exemples d'ailleurs. Une banane ou une noix de coco dans une question parmi d'autres ne pose aucun problème ;
-   - religions (20/11, 20:34) : « On ne promeut aucune religion, mais on ne fait pas comme si c'était problématique qu'elles existent ou d'en avoir une. » Un objet du quotidien des élèves n'est pas refusé au seul motif qu'il peut avoir un sens religieux ; aucun contenu qui promeut une religion ou qui en dénigre une.
+   - des prénoms variés, d'ici et d'ailleurs, jamais de nom de famille ; aucune arme ; aucune marque dans une question que tu écris (les noms d'une question d'origine se gardent) ;
+   - exemples, clichés et religions : les règles de `CLAUDE.md` (§ 4). Aucun mot n'est interdit ; une série ne ramène pas toujours Mayotte aux mêmes images.
 9. **Le niveau** : de la seconde à la terminale. En terminale, le format et le vocabulaire des sujets de bac (règle 16).
 10. **Les faits et le code sont vérifiés** : chaque extrait de code est exécuté, et sa sortie est celle qu'annonce la question (règle 13).
 
@@ -91,14 +95,14 @@ Lis d'abord `CLAUDE.md` à la racine du dépôt et les documents du projet qu'il
 - **La coloration syntaxique du code** se fait par du CSS en ligne, dans le CDATA, de façon cohérente et systématique pour tout le code du quiz.
   - Le code est dans un bloc à police à chasse fixe.
   - Le rendu suit la règle du code affiché (`CLAUDE.md`, § 5) : il se lit aussi en noir et blanc (mots-clés en gras, fonctions soulignées, chaînes en italique, commentaires gris), avec 7:1 au moins pour chaque couleur sur son fond, et une indentation bien visible.
-- **La bonne réponse ne se distingue en rien** : ni gras, ni longueur, ni formulation à part.
+- **La bonne réponse ne se distingue en rien** : ni gras, ni longueur, ni formulation à part, ni seule option écrite en code. On corrige en précisant les distracteurs, jamais en rendant la bonne option moins juste (`.github/gardien/qcu_forme.py`). L'objectif affiché d'une question ne contient pas sa réponse ; l'aperçu pour les élèves ne marque pas la bonne réponse (le corrigé est à part).
 - **Sa position** varie sans motif évident, et les positions sont équilibrées sur le quiz. `<shuffleanswers>1</shuffleanswers>` est permis, mais l'ordre du fichier reste équilibré.
 
 ## La vérification systématique, question par question et option par option
 - Toutes les règles de conception ci-dessus sont respectées.
 - Le XML est conforme : il est bien formé et a toutes ses balises obligatoires.
 - Chaque QCU a 4 options et une seule réponse juste (`fraction="100"`).
-- Chaque feedback est riche, juste et explique l'erreur.
+- Chaque feedback est riche, **juste** (un retour faux renvoie le quiz) et explique l'erreur.
 - La coloration syntaxique est appliquée partout, de la même façon.
 - La position de la bonne réponse est équilibrée et sans motif, et rien ne la met en avant.
 - Aucun anglicisme sans explication, et le langage inclusif est respecté.
@@ -114,6 +118,7 @@ Ceux de ta ligne dans « Qui possède quoi » (`CLAUDE.md`, § 7) :
 ## Ce que tu ne fais jamais
 - Changer le fond d'un quiz existant sans l'accord du chef d'orchestre (délégation du 20/11).
 - Générer un quiz avant la validation de sa note de cadrage.
+- Poser un piège propre au langage ou hors programme.
 - Mettre dans un quiz, un fichier ou un rapport un nom d'élève, une copie d'élève, une note ou une donnée personnelle. Une archive Pronote peut en contenir : tu n'en gardes que les questions.
 
 ## Ta méthode
