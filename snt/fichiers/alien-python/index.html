@@ -311,17 +311,18 @@ function rejouer(){var c0=cur,id2=cur.id;c0.enCours=true;c0.res={attente:true,ms
 AlienPython.lancer(EX[id2].c).then(function(r){c0.enCours=false;if(cur!==c0)return;
 var ok=r.etat=="ok";c0.res={msg:ok?"L’alien refait le trajet : la ligne surlignée est celle qu’il exécute.":"Python n’a pas pu se charger : l’alien refait le trajet, sans montrer les lignes."};draw();
 animer(ok?r.pas:AlienPython.pasAttendus(EX[id2].p),ok)})}
-/* l'alien suit le trajet sur la grille, la ligne exécutée surlignée ; mouvement réduit : un saut par déplacement */
+/* l'alien suit le trajet sur la grille, la ligne exécutée surlignée, en 4 secondes au plus ;
+   mouvement réduit : un saut par déplacement (au-delà de 12, directement à l'arrivée) */
 var anim=0;
 function animer(pas,avecLignes){var t=++anim,svg=$("#al-gr");if(!svg||!pas||!pas.length)return;
 var pl=svg.querySelector(".g-eleve"),al=svg.querySelector(".g-alien"),L=avecLignes?lignesProg():[],reduit=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
-var c=reduit?{cases:pas.map(function(q){return [q[1],q[2]]}),lignes:pas.map(function(q){return q[0]})}:AlienPython.cases(pas,8,8),n=c.cases.length,d=reduit?450:Math.max(30,Math.min(110,3600/n)),pts=["85,85"],k=0,avant=null;
+var c=reduit?{cases:pas.map(function(q){return [q[1],q[2]]}),lignes:pas.map(function(q){return q[0]})}:AlienPython.cases(pas,8,8),n=c.cases.length,d=reduit?450:Math.max(30,Math.min(110,3600/n)),saut=reduit?(n>12?n:1):Math.max(1,Math.ceil(n*30/4000)),pts=["85,85"],k=0,avant=null;
 function pose(x,y){al.setAttribute("transform","translate("+10*(x-8)+" "+10*(y-8)+")")}
 function surligne(l){if(avant)avant.classList.remove("al-actif");avant=l?L[l-1]||null:null;if(avant)avant.classList.add("al-actif")}
 pose(8,8);pl.setAttribute("points","85,85");
 (function suite(){if(t!==anim||!document.body.contains(pl)){surligne(0);return}
 if(k>=n){setTimeout(function(){if(t===anim)surligne(0);marquer()},d);return}
-var q=c.cases[k];pts.push((10*q[0]+5)+","+(10*q[1]+5));pl.setAttribute("points",pts.join(" "));pose(q[0],q[1]);surligne(c.lignes[k]);k++;setTimeout(suite,d)})()}
+var q,fin=Math.min(n,k+saut);for(;k<fin;k++){q=c.cases[k];pts.push((10*q[0]+5)+","+(10*q[1]+5))}pl.setAttribute("points",pts.join(" "));pose(q[0],q[1]);surligne(c.lignes[k-1]);setTimeout(suite,d)})()}
 /* ---------- démarrage ---------- */
 if(location.hash=="#prof"){try{var tt=JSON.parse(sessionStorage.getItem("ap_t")||"null");if(tt)teacher(tt.c,tt.t).catch(function(){go("prof")});else go("prof")}catch(e){go("prof")}}
 else if(S)loadStudent(S.c,S.k).catch(function(){go("login")});
