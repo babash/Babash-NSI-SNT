@@ -150,11 +150,15 @@ def copie(racine, travail, nom, fiches, fichiers, absents=(), terminale=None, se
     shutil.rmtree(d, ignore_errors=True)
     shutil.copytree(racine, d, ignore=shutil.ignore_patterns(".git", ".claude", "bibliotheque*.json"))
     vitrine = json.load(open(os.path.join(d, "donnees", "vitrine.json"), encoding="utf-8"))
+    # Les rubriques se choisissent par leur identifiant, jamais par leur place dans la vitrine
     vitrine["rubriques"] = [r for r in vitrine["rubriques"] if r["id"] == "pp" or (terminale is not None and r["id"] == "nsi-terminale")]
     vitrine["a_la_une"] = []
-    garder = {i for s in vitrine["rubriques"][0]["sections"] for i in s["ressources"] + [x for ss in s.get("sous_sections", []) for x in ss["ressources"]]}
-    for rub in vitrine["rubriques"][1:]:   # nsi-terminale : sections vidées, les fiches fabriquées dans la première
-        for s in rub["sections"]:
+    pp = next(r for r in vitrine["rubriques"] if r["id"] == "pp")
+    garder = {i for s in pp["sections"] for i in s["ressources"] + [x for ss in s.get("sous_sections", []) for x in ss["ressources"]]}
+    for rub in vitrine["rubriques"]:
+        if rub["id"] != "nsi-terminale":
+            continue
+        for s in rub["sections"]:   # nsi-terminale : sections vidées, les fiches fabriquées dans la première
             s["ressources"] = []
             for ss in s.get("sous_sections", []):
                 ss["ressources"] = []
@@ -164,6 +168,11 @@ def copie(racine, travail, nom, fiches, fichiers, absents=(), terminale=None, se
     if os.path.exists(exemple):
         os.remove(exemple)
     shutil.rmtree(os.path.join(d, "donnees", "sequences"), ignore_errors=True)   # idem (T153)
+    ref_seq = os.path.join(d, "donnees", "referentiels", "sequences.json")   # ses exceptions citent des fiches retirées
+    if os.path.exists(ref_seq):
+        r_seq = json.load(open(ref_seq, encoding="utf-8"))
+        r_seq["mises_en_avant"] = {k: ([] if k != "explication" else v) for k, v in r_seq.get("mises_en_avant", {}).items()}
+        ecrire(ref_seq, json.dumps(r_seq, ensure_ascii=False, indent=2) + "\n")
 
     def ecrire_sequences(liste):
         for s in liste:
