@@ -10,7 +10,7 @@ Ce fichier s'applique à **toute session Claude qui travaille dans ce dépôt**.
   - `coordination/cahier-des-charges.md` : ce qu'on construit ;
   - `coordination/organisation-des-agents.md` : qui fait quoi ;
   - `coordination/decisions.md` : ce que l'enseignant a décidé ; la décision la plus récente l'emporte ;
-  - `coordination/critiques-enseignant.md` : le registre des critiques de l'enseignant, tenu par le chef d'orchestre, à lire avant tout travail sur une ressource pédagogique ;
+  - `coordination/critiques-enseignant.md` : le registre des critiques de l'enseignant et portrait de son goût (`coordination/gout-de-l-enseignant.md`), tenus par le chef d'orchestre, à lire avant tout travail sur une ressource pédagogique ;
   - `coordination/taches.md` : le tableau des tâches ;
   - `gardien/rapport.md` et `coordination/journal.md` : les contrôles et les publications ;
   - selon la tâche : `design/charte.md` et `design/univers.md` (l'univers « Mamoudzou 2046 »), `architecture/compte-commun.md`, `architecture/codes-acces.md`, `architecture/calendrier-vacances.md`, `architecture/regles-supabase.md`, `architecture/registre-tables.md`.
