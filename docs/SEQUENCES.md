@@ -109,7 +109,7 @@ scripts/tests/test_sequences.py  les tests du validateur et de la construction
 
 ```
 python3 scripts/valider_donnees.py                       les séquences avec le reste des données
-python3 -I -B scripts/tests/test_sequences.py            les tests (39 cas et la construction)
+python3 -I -B scripts/tests/test_sequences.py            les tests (37 cas et la construction)
 python3 scripts/construire_bibliotheque.py               les séquences dans bibliotheque.json
 ```
 
