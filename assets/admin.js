@@ -1131,7 +1131,7 @@
   }
 
   function vueALaUne(v, maj) {
-    vue.appendChild(el('p', { class: 'admin-aide' }, 'Les ressources mises en avant sur l\'accueil, dans l\'ordre, avec une étiquette facultative (« Ressource du mois ») et des dates facultatives.'));
+    vue.appendChild(el('p', { class: 'admin-aide' }, 'Les ressources mises en avant sur l\'accueil, dans l\'ordre, avec une étiquette facultative, courte et factuelle, et des dates facultatives.'));
     var l = el('ol', { class: 'admin-ordre admin-une' });
     v.a_la_une.forEach(function (u, i) {
       var f = ficheCourante(u.ressource);

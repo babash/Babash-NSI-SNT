@@ -382,7 +382,7 @@
         tags: tags, annexes: annexes, theme: t, groupe: groupe, rubrique: rub, coursQuiz: estCoursQuiz(f)
       };
     }
-    /* L'étiquette de « À la une » (« Ressource du mois »), en tête des étiquettes de la ressource, partout où
+    /* L'étiquette facultative de « À la une », en tête des étiquettes de la ressource, partout où
        elle s'affiche ; dans ses dates, si la vitrine en donne */
     var etiquettesUne = {};
     var jour = new Date().toISOString().slice(0, 10);
