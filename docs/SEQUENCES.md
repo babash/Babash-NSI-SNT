@@ -95,7 +95,8 @@ scripts/tests/test_sequences.py  les tests du validateur et de la construction
   par séquence est l'entrée par défaut dès que la rubrique a une séquence publiée ; `reglages.js` peut garder la vue par thème
   (`vue_par_defaut: "themes"`). L'adresse garde la vue (`?vue=themes`). La recherche et le sommaire marchent dans les deux vues.
 - **Page d'une séquence** (`nsi-terminale/?sequence=tle-piles-files`) : les étapes, puis « Pour la classe » : l'adresse, son
-  QR code, « Copier le lien » et « Imprimer la séquence » (une page A4 avec le QR code).
+  QR code, « Copier le lien » et « Imprimer la séquence » (une page A4 avec le QR code). L'adresse donnée n'a jamais
+  `?brouillons` : pour un brouillon, la page le dit (« ce QR code mènera à cette page quand la séquence sera publiée »).
 - **Fiche d'une ressource** (`bibliotheque/?r=…`) : « Dans la séquence … (Terminale), étape … », avec la ressource d'avant et
   celle d'après.
 - **Visibilité** : les séquences sont faites pour la classe. Elles ne montrent que les documents visibles **des élèves et de
@@ -110,6 +111,7 @@ scripts/tests/test_sequences.py  les tests du validateur et de la construction
 ```
 python3 scripts/valider_donnees.py                       les séquences avec le reste des données
 python3 -I -B scripts/tests/test_sequences.py            les tests (37 cas et la construction)
+node scripts/tests/test_sequences_page.js                le rendu, sans navigateur (9 cas)
 python3 scripts/construire_bibliotheque.py               les séquences dans bibliotheque.json
 ```
 

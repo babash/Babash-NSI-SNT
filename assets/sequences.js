@@ -334,7 +334,11 @@
       el('div', { class: 'sequence-partage-corps' }, [
         qr,
         el('div', null, [
-          el('p', { class: 'petit' }, 'À projeter ou à coller dans le cahier : le QR code ouvre cette page sur un téléphone.'),
+          /* Le lien et le QR code donnent l'adresse sans ?brouillons : pour un brouillon, ils ne mènent à la page qu'une
+             fois la séquence publiée (avant, la page répond « Aucune séquence… ») : le dire, pour ne pas tromper */
+          el('p', { class: 'petit sequence-partage-aide' }, seq.statut === 'publiee'
+            ? 'À projeter ou à coller dans le cahier : le QR code ouvre cette page sur un téléphone.'
+            : 'Brouillon : ce QR code mènera à cette page quand la séquence sera publiée.'),
           el('p', { class: 'sequence-url' }, el('a', { href: url }, url)),
           el('p', { class: 'actions-feuille' }, [copier, imprimer]),
           statut
