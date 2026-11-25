@@ -171,7 +171,7 @@ class Construction:
     def document(self, d, public=None):
         """Un document, avec son format déduit ; pour un public, sans ses réglages de visibilité. Vu de l'extérieur, un
         document caché aux élèves porte « cache_eleves » (T153) : les séquences, faites pour la classe, le taisent.
-        Ce n'est pas un secret : le document est public, et le dépôt aussi."""
+        Rien n'est dévoilé : le document est déjà public, et le dépôt aussi."""
         doc = {k: v for k, v in d.items() if k != "visible" or public is None}
         doc["format"] = d.get("format") or self.v.deduire_format(d)
         if public == "exterieur" and d.get("visible", {}).get("eleve") is not True:
