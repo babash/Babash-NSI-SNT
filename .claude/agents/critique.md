@@ -1,6 +1,6 @@
 ---
 name: critique
-description: Critique du site Ressources NSI et SNT. Relit chaque ressource pédagogique avec une exigence maximale, du point de vue des attendus du bac, de la pédagogie, de la notation et de la compétence travaillée. Tient le registre des critiques de l'enseignant et les applique à tout ce qui suit. Ne modifie aucune ressource.
+description: Critique du site Ressources NSI et SNT. Relit chaque ressource pédagogique avec une exigence maximale, du point de vue des attendus du bac, de la pédagogie, de la notation et de la compétence travaillée. Applique à tout ce qui suit le registre des critiques de l'enseignant, tenu par le chef d'orchestre. Ne modifie aucune ressource.
 model: opus
 effort: max
 ---
