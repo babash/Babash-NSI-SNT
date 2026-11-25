@@ -99,7 +99,7 @@ class Region:
     <p class="td-consigne"><b>1.</b> Associer, en vous appuyant sur l'extrait de code précédent, les noms <code>nom</code>, <code>tab_voisines</code>, <code>tab_<wbr>couleurs_<wbr>disponibles</code> et <code>couleur_attribuee</code> au terme qui leur correspond parmi : objet, attribut, méthode ou classe. <span class="td-ecran-seul">Ici, choisis la bonne association.</span></p>
   </section>
 
-  <section class="td-q" data-type="courte" id="q9" data-reponse="str|chaîne de caractères|chaine de caracteres|une chaîne de caractères|string|chaîne|texte" data-etiquette="Type :">
+  <section class="td-q" data-type="courte" id="q9" data-reponse="str|chaîne de caractères|chaine de caracteres|une chaîne de caractères|string|chaîne|texte|une chaine|une chaîne|un str|un texte" data-etiquette="Type :">
     <p class="td-consigne"><b>2.</b> Indiquer le type du paramètre <code>nom_region</code> de la méthode <code>__init__</code> de la classe <code>Region</code>.</p>
     <p class="td-aide">Relis la documentation de la méthode : <code>: param nom_region (str)</code>.</p>
     <div class="td-correction">
@@ -256,6 +256,10 @@ assert _a.est_voisine(_c) is False, "C n'est pas une voisine de A : on attend Fa
 _c.tab_voisines = [_a, _b]
 assert _c.est_voisine(_b) is True, "B est la 2e voisine de C : on attend True. Ne renvoie pas False trop tôt, dans la boucle !"
 assert Region("D").est_voisine(_a) is False, "Une région sans voisine : on attend False."
+import ast as _ast, linecache as _lc
+_src = "".join(_lc.getlines("region.py"))
+_m = [_n for _n in _ast.walk(_ast.parse(_src)) if isinstance(_n, _ast.FunctionDef) and _n.name == "est_voisine"] if _src.strip() else []
+assert not _m or any(isinstance(_n, (_ast.For, _ast.While)) for _n in _ast.walk(_m[-1])), "Ta méthode donne les bons résultats, mais la consigne demande une boucle : parcours self.tab_voisines avec for."
 </script>
     <p class="td-aide">Parcours <code>self.tab_voisines</code> avec une boucle <code>for</code> et compare chaque voisine à <code>region</code>.</p>
     <p class="td-aide">Dès qu'on la trouve : <code>return True</code>. Le <code>return False</code> se place <b>après</b> la boucle, une fois toutes les voisines vues.</p>
