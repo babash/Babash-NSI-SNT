@@ -198,14 +198,13 @@ input[type="text"], input[type="date"] { width: 100%; min-width: 0; max-width: 1
    par niveau d'indentation, de tracé différent (plein, tirets, points, fin) : lisible en noir et blanc. */
 .code { font-family: var(--td-mono); font-size: var(--td-taille-code); line-height: var(--td-interligne-code); font-variant-ligatures: none;
   background: var(--td-code-fond); color: var(--td-code-encre); border: var(--trait); border-left: 4px solid var(--td-encre); padding: 4px 0; margin: 6px 0 10px; overflow-x: auto; }
-.code .ligne { display: flex; align-items: stretch; min-height: calc(var(--td-interligne-code) * 1em); padding-right: 10px; white-space: pre; }
+.code .ligne { display: flex; align-items: stretch; min-height: calc(var(--td-interligne-code) * 1em); padding-right: 10px; }
 .code .num { width: 2.6em; flex: none; text-align: right; padding-right: .6em; margin-right: .5em; color: var(--td-code-num); border-right: 1px solid var(--td-trait); user-select: none; }
-.guide { display: inline-block; width: 4ch; height: calc(var(--td-interligne-code) * 1em); vertical-align: top; background: var(--td-bande); border-left: 1.6px solid var(--td-g0); }
+.guide { display: block; flex: none; width: 4ch; align-self: stretch; background: var(--td-bande); border-left: 1.6px solid var(--td-g0); }
 .guide.n1 { background: var(--td-bande-2); border-left: 1.6px dashed var(--td-g1); }
 .guide.n2 { border-left: 2.6px dotted var(--td-g2); }
 .guide.n3 { background: var(--td-bande-2); border-left: 1px solid var(--td-g3); }
 .code button.ligne { width: 100%; min-height: 2.4em; align-items: center; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; text-align: left; padding: 0 10px 0 0; margin: 0; cursor: pointer; }
-.code button.ligne .guide { height: 2.4em; }
 .code.touchable .ligne + .ligne { border-top: 1px dotted var(--td-trait); }
 .code.touchable .ligne:hover:not(.ko) { background: var(--td-panneau-2); }
 .code .ligne.ko { background: var(--td-encore-fond); box-shadow: inset 4px 0 0 var(--td-erreur); text-decoration: line-through; text-decoration-color: var(--td-erreur); }
@@ -216,19 +215,46 @@ input[type="text"], input[type="date"] { width: 100%; min-width: 0; max-width: 1
 .str { color: var(--td-tk-ch); font-style: italic; text-decoration: underline dotted; text-decoration-thickness: .1em; text-underline-offset: .28em; }
 .code .nb, .piece .nb, .option .nb, .mono .nb, .jeton .nb { color: var(--td-tk-nb); font-weight: 700; text-decoration: underline double; text-decoration-thickness: .06em; text-underline-offset: .24em; }
 .com { color: var(--td-tk-com); font-style: italic; }
+/* T165 : une ligne de code qui se replie au lieu de se cacher (CV.ligneCode : .lc > .ind + .txt).
+   Les guides (.ind) descendent sur toute la hauteur de la ligne ; le texte (.txt) se replie aux espaces,
+   et coupe un mot trop long en dernier recours ; la suite est décalée de deux caractères (retrait suspendu)
+   et marquée, à chaque ligne de suite, d'une petite flèche de continuation (en couleur des numéros) : on
+   voit que ce n'est pas une nouvelle ligne du programme. Une chaîne courte (.str.entier) ne se coupe jamais. */
+.lc { --lh: calc(var(--td-interligne-code) * 1em); display: flex; align-items: stretch; flex: 1 1 auto; min-width: 0; line-height: var(--lh); min-height: var(--lh); }
+.lc .ind { display: flex; flex: none; }
+.lc .txt { flex: 1 1 auto; min-width: 0; position: relative; white-space: pre-wrap; overflow-wrap: anywhere; padding-left: 2ch; text-indent: -2ch; }
+.lc .txt::before { content: ""; position: absolute; left: 0; top: var(--lh); bottom: 0; width: 2ch; background-color: var(--td-code-num); pointer-events: none;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 18'%3E%3Cpath d='M3 3.5v7h6.5M6.8 7.6l2.9 2.9-2.9 2.9' fill='none' stroke='%23000' stroke-width='1.7'/%3E%3C/svg%3E") 0 0 / 2ch var(--lh) repeat-y;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 18'%3E%3Cpath d='M3 3.5v7h6.5M6.8 7.6l2.9 2.9-2.9 2.9' fill='none' stroke='%23000' stroke-width='1.7'/%3E%3C/svg%3E") 0 0 / 2ch var(--lh) repeat-y; }
+.lc .str.entier { white-space: nowrap; }
+.code button.ligne .lc { align-self: stretch; align-items: stretch; }
+.code button.ligne .lc .txt { align-self: center; }
+.piece .lc { --lh: 1.4em; }
+/* une ligne à trous : chaque ligne (et chaque ligne de suite) a la hauteur d'un trou, pour que les flèches restent en face */
+.lc.a-trou { --lh: 40px; }
+.code .ligne.a-trou .num { line-height: 40px; }
+.lc.a-trou .trou { vertical-align: middle; margin: 0; min-height: 36px; line-height: 1.2; }
+.memo-carte .lc, .paires .lc, .carte-texte .lc { --lh: 1.35em; }
+/* un petit écran : le code un peu plus petit (14 px), la colonne des numéros plus étroite */
+@media (max-width: 420px) {
+  .page { --td-taille-code: .875rem; }
+  .code .num { width: 2.1em; padding-right: .35em; margin-right: .3em; }
+  .code .ligne, .code button.ligne { padding-right: 6px; }
+  .piece { padding: 8px 8px; }
+}
+
 /* une console compacte (règle du 20/11) : une ligne par ligne de texte, petite étiquette, jamais un grand aplat */
 .console { background: var(--td-console-fond); color: var(--td-code-encre); border: 1.2px solid var(--td-encre); border-left: 4px solid var(--td-erreur); padding: 2px 10px 4px; margin: -4px 0 10px; }
 .console-titre { display: block; font: 400 1rem/1.2 var(--td-signal); text-transform: uppercase; letter-spacing: .05em; color: var(--ink-soft); }
 .console pre { margin: 0; font: 400 var(--td-taille-code)/1.3 var(--td-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 .console .console-erreur { color: var(--td-erreur); font-weight: 700; }
-.affiche { font: 400 var(--td-taille-code)/1.3 var(--td-mono); white-space: pre; background: var(--td-console-fond); border: 1.2px solid var(--td-encre); border-left: 4px solid var(--td-console-trait); padding: 4px 10px; margin-top: 6px; overflow-x: auto; }
+.affiche { font: 400 var(--td-taille-code)/1.3 var(--td-mono); white-space: pre-wrap; overflow-wrap: anywhere; background: var(--td-console-fond); border: 1.2px solid var(--td-encre); border-left: 4px solid var(--td-console-trait); padding: 4px 10px; margin-top: 6px; }
 
 /* remettre dans l'ordre, compléter */
 .zone-ordre { min-height: 56px; border: 2px dashed var(--td-encre); padding: 6px; display: grid; gap: 6px; margin-bottom: 8px; }
-.piece { font: 400 var(--td-taille-code)/1.4 var(--td-mono); white-space: pre; text-align: left; min-height: 44px; padding: 8px 10px; border-radius: var(--td-rayon);
-  border: var(--trait); background: var(--td-code-fond); color: var(--td-code-encre); cursor: pointer; width: 100%; overflow-x: auto; }
+.piece { --lh: 1.4em; font: 400 var(--td-taille-code)/1.4 var(--td-mono); text-align: left; min-height: 44px; padding: 8px 10px; border-radius: var(--td-rayon);
+  border: var(--trait); background: var(--td-code-fond); color: var(--td-code-encre); cursor: pointer; width: 100%; }
 .piece:hover:not(:disabled) { box-shadow: 2px 2px 0 var(--td-neon-1); }
-.piece .guide { height: 1.4em; }
 .trou { font-family: var(--td-mono); font-size: var(--td-taille-code); min-width: 3.4em; min-height: 36px; padding: 2px 8px; border-radius: var(--td-rayon); border: 2px dashed var(--td-encre);
   background: var(--panel); color: var(--ink); cursor: pointer; margin: 2px 0; }
 .trou.sel { border-style: solid; border-width: 3px; box-shadow: 2px 2px 0 var(--td-neon-2); }
@@ -256,8 +282,8 @@ input[type="text"], input[type="date"] { width: 100%; min-width: 0; max-width: 1
 .cartes { display: grid; gap: 10px; margin-bottom: 12px; }
 .carte-jeu { border: var(--trait); border-radius: var(--td-rayon); padding: 8px 10px; background: var(--panel); }
 .carte-jeu.ko { border: 2px dashed var(--td-erreur); }
-.carte-texte { margin-bottom: 6px; overflow-x: auto; }
-.carte-texte code { white-space: pre; }
+.carte-texte { margin-bottom: 6px; }
+.carte-texte code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .vers { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .vers .btn { font-size: .9rem; padding: 6px 8px; overflow-wrap: anywhere; }
 .paniers { display: grid; gap: 10px; }

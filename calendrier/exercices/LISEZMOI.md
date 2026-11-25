@@ -77,17 +77,19 @@ L'ancienne forme (`"chapitre"` à la place de `"theme"`, `"niveau"` à la place 
 6. **Chaque retour explique, sans donner la réponse.**
    - Une mauvaise option : l'erreur de raisonnement qu'elle trahit (« range s'arrête juste avant la fin »).
    - Une bonne option : pourquoi elle est juste.
-   - Les coups de pouce vont du plus léger au plus fort, sans jamais être la réponse.
+   - Les coups de pouce vont du plus léger au plus fort, sans jamais être la réponse. **Ils n'apparaissent qu'après deux essais faux** sur la question (l'échelle d'aide de l'enseignant, 25/11 : essayer d'abord, seul·e ou à deux, puis un indice, puis la correction) : un coup de pouce dit ce qui n'a pas marché ou où regarder, pas quoi répondre.
+   - Après trois essais faux, la page propose « Voir la réponse » pour `sortie` (à taper), `erreur`, `completer`, `ordre`, `associer`, `trace`, `combien` et `bits` : elle montre la réponse et l'`explication`, puis la question revient une fois à la fin de la partie. L'`explication` doit donc se lire seule, à côté de la réponse (réglage : `CV.ECHELLE` dans `calendrier/jeux.js`).
+   - Une réponse à taper (`reponse`) s'écrit exactement comme `print` l'affiche. La page accepte la même valeur écrite autrement : les espaces autour des virgules, des crochets, des parenthèses et des accolades, les guillemets simples ou doubles, une virgule finale dans une liste. Elle refuse une autre casse (`true` pour `True`), des guillemets autour d'un texte affiché, une espace retirée entre deux mots ou deux nombres ; pour la casse et les guillemets, elle le dit à l'élève (« Presque : … »). Inutile, donc, de prévoir des variantes ; mais une réponse qui peut s'écrire de deux façons vraiment différentes (« 2 1 » ou « 2, 1 ») est à éviter.
 7. **L'explication est le corrigé**, montré à J + 3 : une ou deux phrases, le raisonnement plutôt que le résultat.
 8. **L'écriture.**
-   - Les consignes sont impersonnelles, comme au bac ; les retours tutoient.
+   - **On tutoie l'élève partout** : consignes, retours, coups de pouce (décision de l'enseignant, 25/11). Le « But : » d'un `erreur`, d'un `completer` ou d'un `ordre` décrit ce que fait le programme, à l'infinitif (« But : Afficher la moyenne »).
    - Les phrases sont courtes, et le mot technique anglais est expliqué.
    - Le langage inclusif est complet.
    - Les prénoms dans les programmes sont variés et épicènes (Kenza, Ibrahim, Soilihi, Naïma, Lou, Sam…) ; jamais un nom d'élève réel.
    - Le contexte de Mayotte se met par petites touches, sans cliché : le taxi-brousse, la barge, le marché de Mamoudzou, la météo, un club de football.
 9. **Le code.**
    - Python 3, indentation de 4 espaces, des noms de variables en français sans accent.
-   - Des programmes courts : 12 lignes au plus, 50 caractères par ligne de préférence, car la page sert au téléphone.
+   - Des programmes courts : 12 lignes au plus. **Une ligne de 28 caractères au plus (indentation comprise) tient sur un téléphone de 320 px** (33 à 360 px, 59 sur une tablette). Au-delà, la page replie la ligne sans rien cacher : la suite est décalée et marquée d'une flèche ↳, les guides d'indentation descendent avec elle, et une chaîne courte n'est jamais coupée. Le repli reste plus lent à lire : on coupe soi-même une ligne longue quand le langage le permet (`JOIN … ON …` sur deux lignes, une condition SQL par ligne avec `AND` en tête), et on évite qu'un trou ou ce que la question enseigne tombe au milieu d'un repli. Le script `scripts/calendrier_affichage.py` affiche chaque question à 320 px, à chaque étape, et liste ce qui serait caché.
    - SQL : SQLite, avec la base d'exemple du thème (`base_sql`, 3 tables, 30 lignes au plus), des mots-clés en majuscules et `ORDER BY` dès qu'il peut y avoir plusieurs lignes.
    - En « ordre », une seule disposition doit être juste : deux lignes indépendantes (`a = 5` et `b = 8`) se réunissent sur une seule (`a, b = 5, 8`).
 10. **`relu`** reste `false`. L'enseignant·e passe à `true` après relecture, et la page enseignant·e signale un calendrier qui contient des exercices non relus.

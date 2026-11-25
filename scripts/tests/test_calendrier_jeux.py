@@ -13,6 +13,8 @@ puis la bonne réponse, au doigt (clic) et au clavier (Entrée, flèches, Espace
 terminer avec son résultat. Puis le corrigé de chaque exercice, la reprise d'une partie gardée,
 l'absence de défilement horizontal à 320 px (clair et obscur), et l'animation coupée quand
 l'appareil demande moins de mouvement. Aucune requête ne sort de la machine.
+L'échelle d'aide (T165) : pour chaque type où la réponse peut être montrée, trois essais faux ; pas de
+coup de pouce avant le deuxième, « Voir la réponse » au troisième, la question revient une fois à la fin.
 Enfin, les ligatures (T165) : chaque question des vraies banques (calendrier/exercices/) qui contient
 `==`, `>=`, `!=`, `//`, `--`, `</`… est affichée (et sa seconde étape pour « erreur » et « compléter »,
 puis le corrigé) ; chaque style de texte qui montre l'une de ces suites est dessiné avec et sans
@@ -283,6 +285,87 @@ def ligatures_banques(page):
     return sum(len(lot["questions"]) for lot in a_voir)
 
 
+def faute_echelle(page, t, it, s):
+    """Un essai faux qui compte, répétable (pour l'échelle d'aide)."""
+    if t == "ordre":
+        if s["reserve"]:
+            for k in sorted(range(len(s["reserve"])), reverse=True):
+                page.click("[data-j=placer][data-i='%d']" % k)
+            if etat(page)["s"]["ordre"] == list(range(len(it["lignes"]))):  # par malchance dans l'ordre : on échange
+                page.click("[data-j=retirer][data-i='0']")
+                page.click("[data-j=placer][data-i='0']")
+        page.click("[data-j=verifier]")
+    elif t == "completer":
+        for d, tr in enumerate(it["trous"]):
+            page.click("[data-j=trou][data-d='%d']" % d)
+            page.click("[data-j=jeton][data-k='%d']" % ((tr["bonne"] + 1) % len(tr["options"])))
+        page.click("[data-j=verifier]")
+    elif t == "bits":
+        page.click("[data-j=bit][data-i='0']")  # une ampoule allumée : jamais la bonne réponse seule
+        if etat(page)["s"]["bits"] == it["reponse"]:
+            page.click("[data-j=bit][data-i='1']")
+        page.click("[data-j=verifier]")
+    elif t == "combien" and s["n"] == it["reponse"]:
+        page.click("[data-j=plus][data-v='1']" if it["reponse"] < it["max"] else "[data-j=plus][data-v='-1']")
+        page.click("[data-j=verifier]")
+    else:
+        return faute(page, t, it, s)
+    return True
+
+
+def echelle(page, exercices, mode):
+    """L'échelle d'aide (T165) : pas de coup de pouce avant 2 essais faux ; « Voir la réponse » après 3, pour
+    les types où la réponse ne se trouve pas seule par élimination ; la question revient une fois à la fin."""
+    vus = set()
+    for ex in exercices:
+        t = ex["type"]
+        if t not in ("sortie", "erreur", "completer", "ordre", "associer", "trace", "combien", "bits") or t in vus:
+            continue
+        for n, nv in enumerate(ex["niveaux"], 1):
+            k = next((k for k, it in enumerate(nv["items"]) if t != "sortie" or "options" not in it), None)
+            if k is None:
+                continue
+            vus.add(t)
+            nom = f"{mode} échelle d'aide {ex['id']} ({t}) niveau {n}"
+            seul = json.loads(json.dumps(ex))
+            seul["niveaux"][n - 1]["items"] = [nv["items"][k], nv["items"][(k + 1) % len(nv["items"])]]
+            page.evaluate("([ex, n]) => lancer(ex, n)", [seul, n])
+            it = nv["items"][k]
+            for essai in (1, 2, 3):
+                e = etat(page)
+                faute_echelle(page, t, e["item"], e["s"])
+                aide = page.locator("[data-j=aide]").count()
+                voir = page.locator("[data-j=devoiler]").count()
+                if essai == 1:
+                    verifier(aide == 0 and voir == 0, f"{nom} : une aide dès le premier essai faux")
+                if essai == 2:
+                    verifier(aide == (1 if it.get("aides") else 0) and voir == 0, f"{nom} : après 2 essais faux, coup de pouce {aide}, réponse {voir}")
+                if essai == 3:
+                    verifier(voir == 1, f"{nom} : pas de « Voir la réponse » après 3 essais faux")
+            if not page.locator("[data-j=devoiler]").count():
+                break
+            page.click("[data-j=devoiler]")
+            e = etat(page)
+            verifier(e["fini"] and "Voici la réponse" in annonce(page), f"{nom} : la réponse n'est pas montrée")
+            if t == "sortie":
+                verifier(page.input_value("#rep") == str(it["reponse"]), f"{nom} : la réponse tapée n'est pas montrée")
+            file = page.evaluate("window.SAUVE.file")
+            verifier(len(file) == 3 and file[-1] == 0, f"{nom} : la question ne revient pas à la fin ({file})")
+            fin = None
+            for _ in range(200):
+                fin = page.evaluate("window.FIN")
+                if fin:
+                    break
+                e = etat(page)
+                if e["fini"]:
+                    page.click("[data-j=suivant]")
+                    continue
+                juste(page, e["type"], e["item"], e["s"])
+            verifier(fin and fin["reussi"] and fin["coups"] >= 1 and fin["ratees"] >= 3, f"{nom} : fin de partie {fin}")
+            break
+    verifier(len(vus) == 8, f"échelle d'aide : types essayés {sorted(vus)}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--captures")
@@ -321,6 +404,7 @@ def main():
                 verifier(page.locator(".corrige-item").count() >= 3, f"{mode} {ex['id']} : corrigé incomplet")
                 if a.captures:
                     page.screenshot(path=os.path.join(a.captures, f"corrige-{ex['type']}-{mode}.png"), full_page=True)
+            echelle(page, exercices, mode)
             # la reprise d'une partie gardée (un « memo » à moitié joué)
             memo = [ex for ex in exercices if ex["type"] == "memo"][0]
             page.evaluate("([ex, n]) => lancer(ex, n)", [memo, 1])

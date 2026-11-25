@@ -18,6 +18,38 @@
     memo: "Mémo des paires", bits: "Allume les bits" };
   // une valeur tapée dans un tableau de trace : espaces et guillemets autour ignorés
   CV.normTrace = function (v) { return String(v == null ? "" : v).trim().replace(/\s+/g, " ").replace(/^(["'])(.*)\1$/, "$2"); };
+  // T165 : une réponse tapée, sous une forme qui ne change pas sa valeur : espaces autour des virgules, des
+  // crochets, des parenthèses et des accolades (et des deux-points entre accolades ou crochets), guillemets
+  // simples ou doubles, virgule finale d'une liste ou d'un dictionnaire. Jamais la casse, jamais le texte d'une
+  // chaîne, jamais la virgule d'un tuple d'un seul élément « (1,) », jamais une espace entre deux mots ou nombres.
+  CV.normReponse = function (v) {
+    var t = String(v == null ? "" : v).trim().replace(/\s+/g, " "), out = "", prof = 0, i = 0;
+    var SEP = ",[](){}", colle = function (c) { return c !== "" && (SEP.indexOf(c) >= 0 || (c === ":" && prof > 0)); };
+    while (i < t.length) {
+      var c = t.charAt(i);
+      if ((c === '"' || c === "'") && t.indexOf(c, i + 1) > i) { var j = t.indexOf(c, i + 1); out += "'" + t.slice(i + 1, j) + "'"; i = j + 1; continue; }
+      if (c === " ") { if (!colle(out.slice(-1)) && !colle(t.charAt(i + 1))) out += " "; i++; continue; }
+      if (c === "]" || c === "}") out = out.replace(/,$/, "");
+      if ("[({".indexOf(c) >= 0) prof++;
+      if ("])}".indexOf(c) >= 0) prof = Math.max(0, prof - 1);
+      out += c; i++;
+    }
+    return out;
+  };
+  // ce qui manque à une réponse « presque » juste (pour un retour qui aide, sans donner la réponse)
+  CV.presque = function (tape, attendu) {
+    var a = CV.normReponse(tape), b = CV.normReponse(attendu);
+    if (a.toLowerCase() === b.toLowerCase()) return "Presque : seules les majuscules et les minuscules diffèrent, et Python les distingue. Relis comment le programme écrit ce qu'il affiche.";
+    if (/^'.*'$/.test(a) && a.slice(1, -1) === b) return "Presque : print affiche un texte sans ses guillemets.";
+    return "";
+  };
+  // T165 : l'échelle d'aide après des essais faux sur une même question (G59 : essayer d'abord, puis un indice,
+  // puis voir la correction). indice : le coup de pouce n'apparaît qu'après ce nombre d'essais faux ;
+  // reponse : « Voir la réponse » apparaît après ce nombre d'essais faux (0 pour ne jamais la proposer).
+  // Pour les types où l'on élimine des propositions (vrai-faux, prévoir à choix, l'intrus, deux paniers,
+  // mémo), la réponse finit par se trouver seule : pas de bouton.
+  CV.ECHELLE = { indice: 2, reponse: 3 };
+  CV.DEVOILABLE = { sortie: 1, erreur: 1, completer: 1, ordre: 1, associer: 1, trace: 1, combien: 1, bits: 1 };
   // les bits d'une case « bits » (chaîne de 0 et de 1) en nombre
   CV.valeurBits = function (b) { var v = 0; for (var i = 0; i < b.length; i++) v = v * 2 + (b[i] === "1" ? 1 : 0); return v; };
 
@@ -81,7 +113,7 @@
     function nouvelleQuestion() {
       var q = it();
       G.aides = 0; G.fini = false; G.msg = ""; G.cls = "";
-      G.s = { ordre: [], reserve: [], choisis: [], sel: 0, phase: 1, desactives: {}, trouves: {}, g: null, fausse: null, faux: null };
+      G.s = { ordre: [], reserve: [], choisis: [], sel: 0, phase: 1, desactives: {}, trouves: {}, g: null, fausse: null, faux: null, rates: 0 };
       if (type === "ordre") G.s.reserve = CV.melange(q.lignes.map(function (_, i) { return i; }));
       if (type === "associer") G.s.droite = CV.melange(q.paires.map(function (_, i) { return i; }));
       if (type === "sortie" && q.options) G.s.opts = CV.melange(q.options.map(function (_, i) { return i; }));
@@ -112,8 +144,30 @@
         '<div id="zone">' + zone(q) + "</div>" +
         '<div class="message retour-jeu ' + (G.cls || "") + '" role="status" aria-live="polite">' + (G.msg || "") + "</div>" +
         aides.slice(0, G.aides).map(function (a) { return '<div class="aide">Coup de pouce : ' + esc(a) + "</div>"; }).join("") +
-        '<div class="actions">' + (aides.length && !G.fini ? '<button class="btn" data-j="aide"' + (G.aides >= aides.length ? " disabled" : "") + ">Coup de pouce (" + G.aides + "/" + aides.length + ")</button>" : "") +
+        '<div class="actions">' + (aides.length && !G.fini && (G.aides || rates() >= CV.ECHELLE.indice) ? '<button class="btn" data-j="aide"' + (G.aides >= aides.length ? " disabled" : "") + ">Coup de pouce (" + G.aides + "/" + aides.length + ")</button>" : "") +
+        (devoilable() ? '<button class="btn" data-j="devoiler">Voir la réponse</button>' : "") +
         bouton(q) + "</div>";
+    }
+    // l'échelle d'aide (T165) : les essais faux sur la question en cours
+    function rates() { return (G.s && G.s.rates) || 0; }
+    function devoilable() { return !G.fini && CV.DEVOILABLE[type] && CV.ECHELLE.reponse > 0 && rates() >= CV.ECHELLE.reponse; }
+    function devoiler() {
+      var q = it(), s = G.s, k = G.file[0];
+      if (type === "sortie") s.rep = String(q.reponse);
+      if (type === "erreur") { s.phase = 2; s.fausse = null; }
+      if (type === "completer") { s.choisis = q.trous.map(function (t) { return t.bonne; }); s.faux = null; }
+      if (type === "ordre") { s.ordre = q.lignes.map(function (_, i) { return i; }); s.reserve = []; }
+      if (type === "associer") { q.paires.forEach(function (_, i) { s.trouves[i] = true; }); s.g = null; }
+      if (type === "trace") s.faux = null;
+      if (type === "combien") s.n = q.reponse;
+      if (type === "bits") s.bits = q.reponse;
+      G.vues = G.vues || {};
+      var revient = !G.vues[k]; G.vues[k] = true;
+      if (revient) { G.file.push(k); G.repasse = true; }
+      G.fini = true; G.coups++;
+      G.msg = "Voici la réponse" + (type === "sortie" ? " : " + esc(q.reponse) : "") + ". " + esc(q.explication || "") +
+        (revient ? " Cette question reviendra à la fin : tu la referas seul·e." : "");
+      G.cls = "info"; dessiner(); sauver();
     }
     function bouton(q) {
       if (G.fini) return '<button class="btn plein" data-j="suivant">' + (G.file.length > 1 ? "Question suivante" : "Terminer") + "</button>";
@@ -173,13 +227,14 @@
       }
       if (type === "completer") {
         var lc = q.lignes.map(function (l, i) {
-          var html = l.split(/(\{\d+\})/).map(function (morceau, m) {
+          var html = l.slice(CV.indentation(l) * 4).split(/(\{\d+\})/).map(function (morceau) {
             var t = /^\{(\d+)\}$/.exec(morceau);
-            if (!t) return m === 0 ? CV.ligneCode(morceau) : CV.colorer(morceau);
+            if (!t) return CV.colorer(morceau);
             var d = +t[1], v = s.choisis[d], cls = f ? " ok" : s.faux && s.faux[d] ? " ko" : s.sel === d ? " sel" : "";
             return '<button class="trou' + cls + '" data-j="trou" data-d="' + d + '" aria-label="Trou ' + (d + 1) + '"' + (f ? " disabled" : "") + ">" + (v == null ? "&nbsp;?&nbsp;" : esc(q.trous[d].options[v])) + "</button>";
           }).join("");
-          return '<div class="ligne"><span class="num">' + (i + 1) + "</span><span>" + html + "</span></div>";
+          var trou = /\{\d+\}/.test(l) ? "a-trou" : "";
+          return '<div class="ligne ' + trou + '"><span class="num">' + (i + 1) + "</span>" + CV.ligneCode(l, html, trou) + "</div>";
         }).join("");
         var tr = q.trous[s.sel];
         return '<p class="consigne">But : ' + esc(q.but) + '</p><div class="code">' + lc + "</div>" +
@@ -306,7 +361,11 @@
     }
     function juste(msg) { G.fini = true; G.essais++; G.msg = "Juste. " + esc(msg || ""); G.cls = "ok"; dessiner(); sauver(); }
     function rate(msg) {
-      G.essais++; G.ratees++; G.msg = msg; G.cls = "ko"; dessiner(); sauver();
+      G.essais++; G.ratees++; G.s.rates = rates() + 1;
+      var q = it();
+      if (G.s.rates === CV.ECHELLE.indice && (q.aides || []).length && !G.aides) msg += " Un coup de pouce est disponible.";
+      if (G.s.rates === CV.ECHELLE.reponse && devoilable()) msg += " Si tu bloques, tu peux voir la réponse : elle reviendra à la fin.";
+      G.msg = msg; G.cls = "ko"; dessiner(); sauver();
       var z = racine.querySelector("#zone"); if (z) z.classList.add("secoue");
     }
     function info(msg) { G.msg = msg; G.cls = "info"; dessiner(); }
@@ -323,6 +382,7 @@
         nouvelleQuestion(); return sauver();
       }
       if (G.fini) return;
+      if (a === "devoiler") return devoilable() ? devoiler() : undefined;
       if (a === "vf") {
         if ((el.getAttribute("data-v") === "1") === q.reponse) return juste(q.explication);
         G.file.push(G.file[0]); G.fini = true; G.essais++; G.ratees++; G.repasse = true;
@@ -448,8 +508,9 @@
           var champ = racine.querySelector("#rep"), rep = (champ && champ.value || "").trim();
           s.rep = rep;
           if (!rep) return info("Écris ta réponse avant de vérifier.");
-          if (rep.replace(/\s+/g, " ") === String(q.reponse).trim()) return juste(q.explication);
-          return rate("Ce n'est pas " + esc(rep) + ". Refais la trace, ligne par ligne : note la valeur de chaque variable.");
+          if (CV.normReponse(rep) === CV.normReponse(q.reponse)) return juste(q.explication);
+          var presque = CV.presque(rep, q.reponse);
+          return rate(presque ? esc(presque) : "Ce n'est pas " + esc(rep) + ". Refais la trace, ligne par ligne : note la valeur de chaque variable.");
         }
       }
     }

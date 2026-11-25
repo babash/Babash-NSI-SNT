@@ -88,7 +88,8 @@
     var re = /("[^"]*"|'[^']*')|(#.*$|--.*$)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*)/g, out = "", i = 0, m;
     while ((m = re.exec(texte))) {
       out += CV.esc(texte.slice(i, m.index));
-      if (m[1]) out += '<span class="str">' + CV.esc(m[1]) + "</span>";
+      // une chaîne courte ne se coupe jamais en fin de ligne (une date '2026-02-01' reste entière)
+      if (m[1]) out += '<span class="str' + (m[1].length <= 14 ? " entier" : "") + '">' + CV.esc(m[1]) + "</span>";
       else if (m[2] && (sql ? m[2][0] === "-" : m[2][0] === "#")) out += '<span class="com">' + CV.esc(m[2]) + "</span>";
       else if (m[2]) out += CV.esc(m[2]);
       else if (m[3]) out += '<span class="nb">' + m[3] + "</span>";
@@ -101,20 +102,25 @@
     return out + CV.esc(texte.slice(i));
   };
   // une ligne de code, avec un guide par niveau d'indentation (4 espaces) : une bande grise et un filet
-  // de tracé différent par niveau (plein, tirets, points, fin), comme dans les TD (règle 20)
-  CV.ligneCode = function (texte) {
-    var m = /^( *)/.exec(texte)[1].length, g = "";
-    for (var k = 0; k < Math.floor(m / 4); k++) g += '<span class="guide n' + (k % 4) + '"></span>';
-    return g + CV.colorer(texte.slice(Math.floor(m / 4) * 4));
+  // de tracé différent par niveau (plein, tirets, points, fin), comme dans les TD (règle 20).
+  // T165 : la ligne se replie si l'écran est étroit, sans jamais rien cacher : les guides descendent sur
+  // toute la hauteur, la suite est décalée de deux caractères (retrait suspendu) et marquée d'une flèche
+  // de continuation (calendrier.css, .lc). `html`, s'il est donné, remplace le texte coloré (les trous).
+  CV.indentation = function (texte) { return Math.floor(/^( *)/.exec(texte)[1].length / 4); };
+  CV.ligneCode = function (texte, html, classe) {
+    var n = CV.indentation(texte), g = "";
+    for (var k = 0; k < n; k++) g += '<span class="guide n' + (k % 4) + '"></span>';
+    return '<span class="lc' + (classe ? " " + classe : "") + '">' + (n ? '<span class="ind" aria-hidden="true">' + g + "</span>" : "") +
+      '<span class="txt">' + (html != null ? html : CV.colorer(texte.slice(n * 4))) + "</span></span>";
   };
   // un petit programme de plusieurs lignes (dans une carte ou une option), avec ses guides
-  CV.blocLignes = function (texte) { return String(texte).split("\n").map(CV.ligneCode).join("\n"); };
+  CV.blocLignes = function (texte) { return String(texte).split("\n").map(function (l) { return CV.ligneCode(l); }).join(""); };
   CV.blocCode = function (lignes, o) {
     o = o || {};
     return '<div class="code' + (o.touchable ? " touchable" : "") + '">' + lignes.map(function (l, i) {
       var cls = o.classes && o.classes[i] ? " " + o.classes[i] : "";
       var debut = o.touchable ? '<button type="button" data-j="ligne" data-i="' + i + '" class="ligne' + cls + '" aria-label="Ligne ' + (i + 1) + '">' : '<div class="ligne' + cls + '">';
-      return debut + '<span class="num">' + (i + 1) + "</span><span>" + CV.ligneCode(l) + "</span>" + (o.touchable ? "</button>" : "</div>");
+      return debut + '<span class="num">' + (i + 1) + "</span>" + CV.ligneCode(l) + (o.touchable ? "</button>" : "</div>");
     }).join("") + "</div>";
   };
   CV.melange = function (t) { var a = t.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; };
