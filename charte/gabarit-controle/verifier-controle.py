@@ -65,12 +65,13 @@ RELECTURE = 0.10           # relecture : 10 % en plus
 #  - les tournures INTERROGATIVES (« qu'affiche », « quel », « pourquoi »…) comptent partout.
 V = r"(?:er|e|es|ez)"
 VERBES = [
+    (r"(?:e|é)cri(?:re|s|vez) sur (?:la|ta|votre) copie", "copie"),   # mode bac : dit où répondre, pas quoi
     (r"(?:re)?(?:e|é)cri(?:re|s|vez)\s+(?:une|la|les|deux|trois|le code (?:de|d'une|des?)\s+(?:la\s+)?)\s*(?:fonction|m(?:e|é)thode)s?", "fonction"),
     (r"propos" + V + r"\s+une\s+(?:fonction|m(?:e|é)thode)", "fonction"),
     (r"impl(?:e|é)ment" + V + r"\s+(?:une|la)\s+(?:fonction|m(?:e|é)thode)", "fonction"),
     (r"(?:e|é)cri(?:re|s|vez)\s+(?:un|le|deux)\s+(?:seul\s+)?(?:programme|code|boucles?|script)", "programme"),
     (r"(?:e|é)cri(?:re|s|vez)\s+(?:l'|les\s+|une\s+|la\s+|un\s+)?(?:instructions?|appel|ligne|expression|requ(?:e|ê)te)", "instruction"),
-    (r"(?:e|é)cri(?:re|s|vez)\b", "instruction"),
+    (r"(?:r(?:e|é))?(?:e|é)cri(?:re|s|vez)\b", "instruction"),
     (r"donn" + V + r"\s+(?:le code|l'instruction|les instructions)", "instruction"),
     (r"recopi" + V + r"\s+et\s+compl(?:e|é|è)t" + V, "recopier"),
     (r"compl(?:e|é|è)t" + V, "completer"),
@@ -86,7 +87,7 @@ VERBES = [
 ]
 INTERROGATIFS = [
     (r"qu(?:'|e |’)(?:affiche|renvoie|retourne|contient|vaut|obtient)|quelle (?:est la )?valeur", "prevoir"),
-    (r"sch(?:e|é)ma|tableau d'avancement", "tracer"),
+    (r"tableau d'avancement", "tracer"),
     (r"en une phrase", "phrase"),
     (r"pourquoi|comment\b", "expliquer"),
     (r"combien", "calculer"),
@@ -94,7 +95,8 @@ INTERROGATIFS = [
 ]
 VERBES_DONNER = r"donn(?:er|e|es|ez)|cit(?:er|e|ez)|nomm(?:er|e|ez)|indiqu(?:er|e|ez)|dire\b"
 DEBUT = r"(?:(?<=^)|(?<=\bet )|(?<=\bpuis )|(?<=, )|(?<=: )|(?<=; )|(?<=\) ))"
-VERBES = [(re.compile(DEBUT + "(?:" + m + ")", re.I), t) for m, t in VERBES] + \
+PRONOM = r"(?:(?:l'|la |le |les )\s*)?"   # « … et la tester », « ; la réécrire »
+VERBES = [(re.compile(DEBUT + PRONOM + "(?:" + m + ")", re.I), t) for m, t in VERBES] + \
          [(re.compile(r"(?<![\w'])(?:" + m + ")", re.I), t) for m, t in INTERROGATIFS]
 DEPEND = re.compile(r"(question|fonction|m(?:e|é)thode)s?\s+pr(?:e|é)c(?:e|é)dente|en utilisant (?:la|les|le) (?:fonction|r(?:e|é)sultat|question)|(?:a|à) l'aide (?:de la|des) (?:question|fonction)s? pr|avec (?:la|les) fonctions? (?:pr(?:e|é)c(?:e|é)dente|ci-dessus)", re.I)
 CODE_ENV = re.compile(r"\\begin\{(lstlisting|minted|verbatim|Verbatim)\}(?:\[[^\]]*\])?(?:\{[^}]*\})?(.*?)\\end\{\1\}", re.S)
@@ -147,6 +149,8 @@ def demandes(texte):
     for ph in phrases:
         if not ph.strip():
             continue
+        # « Indiquer la ligne fautive ; la réécrire » : le pronom devant le verbe ne cache pas la demande.
+        ph = re.sub(r"^(?:la|le|les|l')\s*(?=(?:r(?:e|é))?(?:e|é)cri|corrig|expliqu|justifi|dessin|compl)", "", ph, flags=re.I)
         # Une phrase d'information (« Par exemple… », « On rappelle… », « Indice : ») ne demande rien.
         if re.match(r"\s*(par exemple|on rappelle|on consid[eè]re|on dispose|on suppose|on appelle|on dit|on ex[eé]cute|indice|rappel|remarque|attention|exemples?\s*:)", ph, re.I):
             continue
@@ -182,13 +186,42 @@ def demandes(texte):
             vus.add(cle)
             garde.append((a, b, t))
         for a, b, t in garde:
+            if t == "choisir":   # le verbe est gardé : « entourer … et souligner … » font deux réponses
+                mv = re.search(r"(coch|choisi|entour|soulign|associ|reli)", ph[a:b], re.I)
+                t = "choisir:" + (mv.group(1).lower().replace("choisi", "coch") if mv else "coch")
             res.append((t, ph.strip()[:70]))
+        # « Donner les valeurs de a et de c », « la valeur de a, puis celle de b » : deux réponses dans une phrase.
+        if re.search(r"(?:valeurs?|contenus?|types?|r(?:e|é)sultats?) d(?:e|u|es)\s+\S+(?:\s+\S+)?\s+(?:et\s+(?:de|du|celle|celui)|,?\s*puis\s+(?:celle|celui|la|le))", ph, re.I):
+            res.append(((garde[-1][2] if garde else "donner"), ph.strip()[:70] + " (deuxième objet)"))
     # Un QCM, un vrai ou faux, un « relier » : la question posée et « Cocher la bonne réponse » ne font qu'une
     # réponse (la case cochée) ; les options proposées ne sont pas des demandes.
     if any(t.startswith("choisir") for t, _ in res):
         res = [x for x in res if not x[0].startswith("donner")]
-        premiers = [x for x in res if x[0].startswith("choisir")][:1]
-        res = premiers + [x for x in res if not x[0].startswith("choisir")]
+        # « Cocher » et « choisir » répétés font une réponse ; « entourer … et souligner … » en font deux.
+        vus, garde2 = set(), []
+        for t, e in res:
+            if t.startswith("choisir"):
+                if t in vus:
+                    continue
+                vus.add(t)
+            garde2.append((t, e))
+        res = garde2
+    # Mode bac : « Écrire sur la copie … » dit où répondre. Avec une autre demande, ce n'en est pas une de plus ;
+    # seul, c'est la demande elle-même (compléter des lignes, donner une lettre…).
+    if any(t == "copie" for t, _ in res):
+        autres = [x for x in res if x[0] != "copie"]
+        if autres:
+            res = autres
+        else:
+            e = next(e for t, e in res if t == "copie")
+            t = "completer" if re.search(r"compl(?:e|é)t", e, re.I) else "tracer" if re.search(r"dessin", e, re.I) else "choisir:coch" if re.search(r"lettre|\bV\b", e) else "instruction"
+            res = [(t, e)]
+    # « Trouve l'erreur » : corriger puis expliquer est UNE question, points moitié-moitié (choix de l'enseignant, G37).
+    if any(t.startswith("corriger") for t, _ in res) and any(t.split("+")[0] in ("expliquer", "phrase") for t, _ in res):
+        e0 = next(e for t, e in res if t.startswith("corriger"))
+        res = [x for x in res if not (x[0].startswith("corriger") or x[0].split("+")[0] in ("expliquer", "phrase")
+                                      or (x[0] == "instruction" and re.search(r"corrig", x[1], re.I)))]
+        res.insert(0, ("corriger+expliquer", e0))
     # « … pile ou file ? Justifier en une phrase. » : choisir puis justifier en une phrase = un seul bloc de réponse.
     if len(res) > 1 and any(t == "phrase" for t, _ in res):
         fusion = []
@@ -202,8 +235,8 @@ def demandes(texte):
 
 
 def temps_demande(t):
-    base = t.split("+")[0]
-    return TEMPS.get(base, 1.5) + (TEMPS["phrase"] if "+phrase" in t else 0)
+    base = t.split("+")[0].split(":")[0]
+    return TEMPS.get(base, 1.5) + (TEMPS["phrase"] if ("+phrase" in t or "+expliquer" in t) else 0)
 
 
 def duree_minutes(s):
@@ -276,14 +309,17 @@ def analyser(chemin, duree_option=None, niveau=None):
         bloc = it["bloc"]
         # Le texte d'une question qui a des parties : son énoncé, lu une fois (compté dans sa première partie).
         texte = nettoyer(bloc)
+        # Les listes (options d'un QCM, situations à relier) se lisent mais ne sont pas des demandes.
+        texte_dem = nettoyer(re.sub(r"\\begin\{(enumerate|itemize|tabular)\}.*?\\end\{\1\}", " ", bloc, flags=re.S))
         annot = re.findall(r"%!\s*([\w=\-.]+)", bloc)
+        it["savoir"] = [a.split("=", 1)[1] for a in annot if a.startswith("savoir=")]
         it["bac"] = "bac" in annot or (it["parent"] is not None and items[it["parent"]].get("bac"))
         lecture = len(texte.split()) / LECTURE_MOTS_MIN + lignes_code(bloc) * LECTURE_CODE_LIGNE
         if not it["feuille"]:
             it["lecture_parent"] = lecture
-            it["dem_parent"] = demandes(texte)
+            it["dem_parent"] = demandes(texte_dem)
             continue
-        dem = demandes(texte)
+        dem = demandes(texte_dem)
         if it["parent"] is not None:
             p = items[it["parent"]]
             if not p.get("lu"):
@@ -294,7 +330,13 @@ def analyser(chemin, duree_option=None, niveau=None):
         if not dem:
             dem = [("donner", texte[:70])]
         if "une-demande" in annot:
-            dem = dem[:1]
+            raison = re.search(r"%!\s*une-demande\s*\((.+?)\)", bloc)
+            if not raison:
+                alertes.append((it["num"], "annotation", "« une-demande » sans raison entre parenthèses : dire pourquoi c'est une seule réponse", it["bac"]))
+            elif len(dem) >= 3 or (len(dem) > 1 and any(t.startswith("fonction") for t, _ in dem)):
+                alertes.append((it["num"], "annotation", f"« une-demande » refusée : {len(dem)} demandes ({' / '.join(t for t, _ in dem)}), dont une fonction ou plus de deux : découper", it["bac"]))
+            else:
+                dem = dem[:1]
         est_fonction = any(t.startswith("fonction") for t, _ in dem)
         if "fonction" in annot:
             est_fonction = True
@@ -322,8 +364,12 @@ def analyser(chemin, duree_option=None, niveau=None):
             pts = 0
         total_pts += pts
         if est_fonction:
-            if not re.search(r"^\s*def \w+\(", "\n".join(m.group(2) for m in CODE_ENV.finditer(bloc)), re.M):
-                alertes.append((it["num"], "fonction", "fonction entière non cadrée : donner la signature, la docstring et un exemple dans le cadre de réponse", it["bac"]))
+            code_donne = "\n".join(m.group(2) for m in CODE_ENV.finditer(bloc))
+            manque = [n for n, ok in (("la signature", re.search(r"^\s*def \w+\(", code_donne, re.M)),
+                                       ("la docstring", '"""' in code_donne or "'''" in code_donne),
+                                       ("un exemple", re.search(r"exemple|>>>", code_donne, re.I))) if not ok]
+            if manque:
+                alertes.append((it["num"], "fonction", "fonction entière non cadrée : il manque " + ", ".join(manque) + " (en-tête donné dans l'énoncé ou le cadre de réponse)", it["bac"]))
             if niveau == "terminale" and it["section"] < len(sections):
                 alertes.append((it["num"], "fonction", "fonction entière hors du dernier exercice : la mettre en fin de sujet, ou la transformer en code à compléter", it["bac"]))
         if niveau == "seconde" and any(t.split("+")[0] in ("fonction", "programme", "instruction", "completer", "recopier", "corriger") for t, _ in dem):
@@ -333,7 +379,8 @@ def analyser(chemin, duree_option=None, niveau=None):
             alertes.append((it["num"], "à tiroirs", f"{nd} demandes : " + " / ".join(t for t, _ in dem) + " ; découper en a, b, c…", it["bac"]))
         if DEPEND.search(texte):
             alertes.append((it["num"], "dépendance", "s'appuie sur une réponse précédente : donner ce qu'il faut pour la faire sans elle", it["bac"]))
-        if re.search(r"\\begin\{(enumerate|itemize)\}", bloc) and re.search(r"pour chaque|pour chacun|pour chacune", texte, re.I):
+        if re.search(r"\\begin\{(enumerate|itemize)\}", bloc) and re.search(r"pour chaque|pour chacun|pour chacune", texte, re.I) \
+                and not any(t.startswith("choisir") for t, _ in dem):
             alertes.append((it["num"], "à tiroirs", "« pour chaque » + liste : une partie par élément, ou un tableau à remplir", it["bac"]))
         if pts and minutes / pts > 12:
             alertes.append((it["num"], "barème", f"{minutes:.0f} min pour {pts:g} pt : peu payé", it["bac"]))
@@ -348,6 +395,24 @@ def analyser(chemin, duree_option=None, niveau=None):
         if not (4 <= pts1 <= 5) or longs:
             alertes.append(("1", "début", f"le premier exercice ({pts1:g} pt) doit être des questions de cours courtes (vocabulaire, vrai ou faux, QCM, relier), 4 ou 5 points"
                             + (f" ; questions longues : {', '.join(longs)}" if longs else ""), False))
+    # Total sur 20 (G4) ; en terminale, un contrôle d'au moins 1 h 30 avec un exercice de bac : 10 points de bac (Tle-2).
+    if abs(total_pts - 20) > 1e-9:
+        alertes.append(("-", "barème", f"total {total_pts:g} points : le total doit faire exactement 20", False))
+    pts_bac = sum(it["pts_note"] for it in items if it.get("bac") and "pts_note" in it)
+    if niveau == "terminale" and duree and duree >= 90 and pts_bac and abs(pts_bac - 10) > 1e-9:
+        alertes.append(("-", "barème", f"exercice de bac à {pts_bac:g} points : en terminale, 10 points de type TD (dont 4 ou 5 de cours) et 10 points de bac", False))
+    # Un savoir, une fois (G29) : avec les annotations « %! savoir=… », deux questions sur le même savoir sont signalées.
+    vus_savoirs = {}
+    for it in items:
+        for sv in it.get("savoir", []):
+            vus_savoirs.setdefault(sv, []).append(it["num"])
+    for sv, nums in vus_savoirs.items():
+        if len(nums) > 1:
+            alertes.append((nums[1], "savoir", f"le savoir « {sv} » est noté par les questions {', '.join(nums)} : le payer (et le sanctionner) une seule fois", False))
+    if vus_savoirs:
+        sans = [it["num"] for it in items if it["feuille"] and "pts_note" in it and not it.get("savoir") and not it.get("bac")]
+        if sans:
+            alertes.append(("-", "savoir", "questions sans « %! savoir=… » : " + ", ".join(sans), False))
     total_min *= 1 + RELECTURE
     return dict(chemin=chemin, duree=duree, niveau=niveau, lignes=lignes, alertes=alertes, minutes=total_min,
                 fonctions=fonctions, points=total_pts, questions=len(lignes))

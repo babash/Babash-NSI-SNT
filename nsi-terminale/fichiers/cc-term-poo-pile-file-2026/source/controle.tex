@@ -2,15 +2,15 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
-\usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta}
 \usepackage[french]{babel}
 \usepackage{xcolor}
 \usepackage{listings}
-\usepackage{graphicx}
 \usepackage{array}
 \usepackage{needspace}
-\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+
+% Contrôle « mode bac » (choix de l'enseignant du 25/11, G41) : sujet court, réponses sur la copie.
+% Règle des contrôles : charte/gabarit-controle/LISEZMOI.md.
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -26,60 +26,25 @@
     basicstyle=\ttfamily\small,
     breakatwhitespace=false,
     breaklines=true,
-    captionpos=b,
     keepspaces=true,
     columns=fullflexible,
     numbers=left,
     numbersep=6pt,
     xleftmargin=1.6em,
-    showspaces=false,
     showstringspaces=false,
-    showtabs=false,
     upquote=true,
-    tabsize=4,
-    escapeinside={(*@}{@*)}
+    tabsize=4
 }
 \lstset{style=mystyle, language=Python}
 \lstset{extendedchars=true,literate={é}{{\'e}}1 {è}{{\`e}}1 {ê}{{\^e}}1 {à}{{\`a}}1 {ç}{{\c c}}1 {ù}{{\`u}}1 {ï}{{\"i}}1 {É}{{\'E}}1}
-% Code à compléter : interligne large pour écrire à la main dans les trous.
-\lstdefinestyle{trous}{style=mystyle, basicstyle=\ttfamily\small\linespread{1.45}\selectfont}
-% Console : message d'erreur ou sortie, sans numéros de ligne.
+% Console : message d'erreur, sans numéros de ligne.
 \lstdefinestyle{console}{style=mystyle, language={}, numbers=none, xleftmargin=0.3em, backgroundcolor=\color{white}, frame=single, rulecolor=\color{codegray}, basicstyle=\ttfamily\footnotesize}
+% En-tête donné d'une fonction à écrire (signature, docstring, exemple)
+\lstdefinestyle{entete}{style=mystyle, numbers=none, xleftmargin=0.3em, frame=single, rulecolor=\color{codegray}}
 
-% Case à cocher
-\newcommand{\case}{\framebox[0.95em]{\rule{0pt}{0.55em}}}
-% Cadre de réponse qui commence par l'en-tête de la fonction (signature, docstring, exemple)
-\newtcolorbox{cadre}{colback=white, colframe=black, boxrule=0.5pt, arc=0mm, left=1.5mm, right=1.5mm, top=0.5mm, bottom=1mm, before skip=0.3em, after skip=0.6em}
-% Zones de réponse
-\setlength\dottedlinefillheight{0.85cm}
-\newcommand{\trou}[1]{\makebox[#1]{\dotfill}}
-\newcommand{\finligne}{\leavevmode\unskip\ \dotfill\par}
-\newcommand{\rep}[1]{\par\nopagebreak\fillwithdottedlines{#1}}
-\newcommand{\court}{\par\nopagebreak\noindent\makebox[\linewidth]{\dotfill}\par}
-% Cadre pour écrire du code (lignes pointillées)
-\newcommand{\cadrecode}[1]{\par\nopagebreak\noindent\fbox{\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule}\fillwithdottedlines{#1}\end{minipage}}\par}
-% Pile vide à compléter (sommet en haut) et file vide à compléter (tête à gauche)
-\newcommand{\pilevide}{\begin{tikzpicture}
-  \foreach \k in {0,...,4} {\draw (0,\k*0.8) rectangle (1.5,\k*0.8+0.8);}
-  \draw (0,4) -- (0,4.4); \draw (1.5,4) -- (1.5,4.4);
-  \node[anchor=west, font=\small] at (1.6,3.6) {$\leftarrow$ sommet};
-  \node[font=\small] at (0.75,-0.35) {pile \texttt{p}};
-\end{tikzpicture}}
-\newcommand{\filevide}{\begin{tikzpicture}
-  \foreach \k in {0,...,5} {\draw (\k*0.95,0) rectangle (\k*0.95+0.95,0.8);}
-  \node[font=\small, anchor=south west] at (0,0.85) {tête};
-  \node[font=\small, anchor=south east] at (5.7,0.85) {queue};
-  \node[font=\small] at (2.85,-0.35) {file \texttt{f}};
-\end{tikzpicture}}
 % Deux colonnes : à gauche le code, à droite les questions qui en parlent.
 \newenvironment{gauche}[1][0.5]{\par\noindent\begin{minipage}[t]{#1\linewidth}\vspace{0pt}}{\end{minipage}}
 \newenvironment{droite}[1][0.47]{\hfill\begin{minipage}[t]{#1\linewidth}\vspace{0pt}\raggedright}{\end{minipage}\par}
-
-
-
-\title{CC Term NSI - POO, Pile, File et rappels de 1re}
-\author{Babash - NSI Tani Malandi}
-\date{Novembre 2026 (version révisée), Durée: 2h}
 
 \usepackage[a4paper,top=2.1cm,bottom=2.5cm,left=2cm,right=2cm,headsep=0.6cm,footskip=1.2cm]{geometry}
 \pointpoints{point}{points}
@@ -89,20 +54,19 @@
 \pagestyle{headandfoot}
 \firstpageheader{\makebox[\textwidth]{Nom : \dotfill\ Pr\'enom : \dotfill\ Classe : \makebox[3cm]{\dotfill}}}{}{}
 
-% Titre (même rendu que \maketitle, plus serré)
 \begin{center}
 {\LARGE CC Term NSI - POO, Pile, File et rappels de 1re\par}\vspace{0.6em}
 {\large Babash - NSI Tani Malandi\par}\vspace{0.4em}
-{\large Novembre 2026 (version révisée), Durée: 2h\par}
+{\large Novembre 2026, Durée: 2h\par}
 \end{center}
 \thispagestyle{headandfoot}
-\begin{center}\footnotesize\itshape Exercices 1 à 5 écrits pour ce contrôle. Exercice 6 : exercice 2 du sujet 24-NSIJ2JA1 (baccalauréat 2024, Asie, jour 2), dont on garde les questions 1, 2, 4, 5, 6 et 8, reprises telles quelles ; la question 3 est remplacée par une phrase de l'énoncé, la question 7 est retirée ; les cadres de réponse donnent l'en-tête des fonctions à écrire.\end{center}
+\begin{center}\footnotesize\itshape Exercices 1 à 4 écrits pour ce contrôle. Exercice 5 : exercice 2 du sujet 24-NSIJ2JA1 (baccalauréat 2024, Asie, jour 2), adapté : on garde les questions 1, 2, 4, 5, 6 et 8 ; la question 3 est remplacée par une phrase de l'énoncé, la question 7 est retirée ; l'en-tête des fonctions à écrire est donné.\end{center}
 
 \noindent\begin{minipage}[t]{0.55\linewidth}\vspace{0pt}
 \textbf{\large Consignes :}\par\smallskip
 \fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
-On répond directement sur le sujet, dans la place prévue.\\[2pt]
-Chaque question demande une seule chose : une réponse courte suffit, sauf si une phrase est demandée.\\[2pt]
+Le devoir est à rédiger sur une copie, en écrivant le numéro de chaque question.\\[2pt]
+Chaque question demande une seule chose : une réponse courte suffit, sauf si une explication est demandée.\\[2pt]
 Les exercices sont indépendants. Les durées indiquées sont des conseils.}}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.42\linewidth}\vspace{0pt}
@@ -111,57 +75,55 @@ Les exercices sont indépendants. Les durées indiquées sont des conseils.}}
 \begin{tabular}{|l|c|c|}\hline
 \textbf{Exercice} & \textbf{Points} & \textbf{Durée} \\\hline
 1. Cours & 4 & 12 min \\\hline
-2. POO : lire & 2,5 & 15 min \\\hline
-3. POO : compléter & 1,5 & 8 min \\\hline
-4. Pile et file & 3 & 20 min \\\hline
-5. Dictionnaire & 1,5 & 8 min \\\hline
-6. Type bac & 7,5 & 45 min \\\hline
-Relecture &  & 12 min \\\hline
+2. POO & 2,5 & 15 min \\\hline
+3. Pile et file & 2,5 & 15 min \\\hline
+4. Dictionnaire & 1 & 8 min \\\hline
+5. Type bac & 10 & 55 min \\\hline
+Relecture &  & 15 min \\\hline
 \textbf{Total} & \textbf{20} & \textbf{2 h} \\\hline
 \end{tabular}
 \end{minipage}
 
 % ---------------------------------------------------------------- 1
-\vspace{-0.3cm}
 \section{Questions de cours (4 points)}
 \begin{center}\textit{Thèmes abordés : programmation orientée objet, pile et file. Durée conseillée : 12 min.}\end{center}
 
 \begin{questions}
 \question[\half] Que signifie le sigle LIFO (en anglais ou en français) ?
-\court
+%! savoir=pile-lifo
 
-\question[\half] Dans une méthode, que désigne le paramètre \textit{self} ? Cocher la bonne réponse.
-\par\smallskip
-\begin{tabular}{@{}p{0.47\linewidth}p{0.47\linewidth}@{}}
-\case\ la classe où la méthode est écrite & \case\ l'objet sur lequel la méthode est appelée \\[3pt]
-\case\ le premier attribut de la classe & \case\ la valeur que la méthode renvoie \\
-\end{tabular}
+\question[\half] Dans une méthode, que désigne le paramètre \textit{self} ? Écrire sur la copie la lettre de la bonne réponse.
+%! savoir=poo-self
+\begin{enumerate}[label=\alph*), itemsep=0pt, topsep=2pt]
+\item la classe dans laquelle la méthode est définie ;
+\item l'objet sur lequel la méthode est appelée ;
+\item le premier attribut défini dans la classe ;
+\item la valeur que la méthode renvoie à la fin.
+\end{enumerate}
 
-\question Pour chaque affirmation, cocher V (vraie) ou F (fausse).
-\par\smallskip
+\question Pour chaque affirmation, écrire sur la copie V (vraie) ou F (fausse).
 \begin{parts}
-\part[\half] \parbox[t]{0.72\linewidth}{La méthode \texttt{\_\_init\_\_} est appelée automatiquement quand on crée un objet.}\hfill\case\,V\quad\case\,F
-\part[\half] \parbox[t]{0.72\linewidth}{Un attribut est une fonction définie à l'intérieur d'une classe.}\hfill\case\,V\quad\case\,F
-\part[\half] \parbox[t]{0.72\linewidth}{Dans une pile, l'élément retiré en premier est le dernier ajouté.}\hfill\case\,V\quad\case\,F
-\part[\half] \parbox[t]{0.72\linewidth}{Dans une file, l'élément retiré en premier est le dernier ajouté.}\hfill\case\,V\quad\case\,F
+\part[\half] La méthode \texttt{\_\_init\_\_} est appelée automatiquement quand on crée un objet.
+%! savoir=poo-constructeur
+\part[\half] Pour une pile \textit{p}, \texttt{sommet(p)} retire l'élément du sommet de la pile.
+%! savoir=pile-sommet-ne-retire-pas
+\part[\half] Une classe ne permet de créer qu'un seul objet.
+%! savoir=poo-classe-et-objets
+\part[\half] Une méthode peut modifier les attributs de l'objet sur lequel elle est appelée.
+%! savoir=poo-methode-modifie-attributs
 \end{parts}
 
-\question[1] Relier chaque situation à la structure qui la modélise.
-\par\smallskip
-\begin{center}
-\begin{tikzpicture}[every node/.style={font=\normalsize}]
-\node[anchor=east] (s1) at (0,1.5) {les documents envoyés à l'imprimante de la salle};
-\node[anchor=east] (s2) at (0,0.75) {le bouton « Retour » d'un navigateur web};
-\node[anchor=east] (s3) at (0,0) {l'annulation de la dernière action (Ctrl + Z)};
-\node[anchor=east] (s4) at (0,-0.75) {les clients qui attendent à la caisse d'un magasin};
-\foreach \k/\y in {1/1.5,2/0.75,3/0,4/-0.75} {\fill (0.25,\y) circle (2pt);}
-\fill (2.5,1.1) circle (2pt); \node[anchor=west] at (2.65,1.1) {pile};
-\fill (2.5,-0.35) circle (2pt); \node[anchor=west] at (2.65,-0.35) {file};
-\end{tikzpicture}
-\end{center}
+\question[1] Associer chaque situation à la structure qui la modélise, pile ou file. Écrire sur la copie, par exemple, « a : pile ».
+%! savoir=pile-file-choisir-structure
+\begin{enumerate}[label=\alph*), itemsep=0pt, topsep=2pt]
+\item les documents envoyés à l'imprimante de la salle informatique ;
+\item le bouton « Retour » d'un navigateur web, qui ramène à la page précédente ;
+\item l'annulation de la dernière action dans un traitement de texte (Ctrl + Z) ;
+\item les clients qui attendent à la caisse d'un magasin.
+\end{enumerate}
 
 % ---------------------------------------------------------------- 2
-\needspace{24\baselineskip}
+\needspace{10\baselineskip}
 \section{POO : lire une classe et créer des objets (2,5 points)}
 \begin{center}\textit{Thème abordé : programmation orientée objet. Durée conseillée : 15 min.}\end{center}
 
@@ -185,14 +147,15 @@ class Barge:
 \end{lstlisting}
 \end{minipage}\par
 
-\question[\half] Donner les noms des attributs de la classe \textit{Barge}. \finligne
+\question[\half] Donner les noms des attributs de la classe \textit{Barge}.
+%! savoir=poo-reperer-attributs
 
 \question Écrire l'instruction demandée (une ligne chacune).
 \begin{parts}
 \part[\half] Créer une barge nommée \textit{"Corail"}, qui peut transporter 400 personnes, et la stocker dans la variable \textit{b1}.
-\court
+%! savoir=poo-instancier
 \part[\half] Faire embarquer 120 personnes dans la barge \textit{b1}.
-\court
+%! savoir=poo-appeler-methode
 \end{parts}
 
 \needspace{9\baselineskip}
@@ -201,55 +164,30 @@ class Barge:
 \begin{gauche}[0.58]
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
 b = Barge("Lagon", 300)
-print(b.embarquer(250))
-print(b.embarquer(80))
+b.embarquer(250)
+b.embarquer(80)
 print(b.places_libres())
 b.passagers = b.passagers - 100
-print(b.embarquer(80), b.passagers)
+b.embarquer(80)
+print(b.passagers)
 \end{lstlisting}
 \end{gauche}
 \begin{droite}[0.39]
 \begin{parts}
-\part[\half] Qu'affiche la ligne 4 ?\\[3pt] \trou{4.5cm}
-\part[\half] Qu'affiche la ligne 6 ?\\[3pt] \trou{4.5cm}
+\part[\half] Qu'affiche la ligne 4 ?
+%! savoir=poo-trace-condition-refusee
+\part[\half] Qu'affiche la ligne 7 ?
+%! savoir=poo-trace-attribut-modifie
 \end{parts}
 \end{droite}
 
 % ---------------------------------------------------------------- 3
-\needspace{20\baselineskip}
-\section{POO : compléter une classe (1,5 point)}
-\begin{center}\textit{Thème abordé : programmation orientée objet, liste de tuples. Durée conseillée : 8 min.}\end{center}
+\needspace{10\baselineskip}
+\section{Pile et file (2,5 points)}
+\begin{center}\textit{Thème abordé : structures de données linéaires : pile et file. Durée conseillée : 15 min.}\end{center}
 
-Une application de musique range les morceaux d'une playlist dans une liste de tuples \textit{(titre, duree)}, où \textit{duree} est un nombre entier de secondes. La méthode \textit{duree\_totale} renvoie la durée totale de la playlist, en secondes ; une playlist vide a une durée totale de 0.
-\par\noindent\begin{minipage}{\linewidth}
-\begin{lstlisting}[style=trous]
-class Playlist:
-    def __init__(self, nom):
-        self.nom = nom
-        self.morceaux = []   # liste de tuples (titre, duree)
-
-    def ajouter(self, titre, duree):
-        (*@\trou{9cm}@*)
-
-    def duree_totale(self):
-        total = (*@\trou{3cm}@*)
-        for titre, duree in (*@\trou{5cm}@*):
-            total = (*@\trou{6cm}@*)
-        return (*@\trou{3cm}@*)
-\end{lstlisting}
-\end{minipage}\par
-
-\question[\half] Compléter la ligne 7 : la méthode \textit{ajouter} ajoute le tuple \textit{(titre, duree)} à la fin de la liste \textit{morceaux}.
-
-\question[1] Compléter les lignes 10 à 13 de la méthode \textit{duree\_totale}.
-
-% ---------------------------------------------------------------- 4
-\needspace{14\baselineskip}
-\section{Pile et file (3 points)}
-\begin{center}\textit{Thème abordé : structures de données linéaires : pile et file. Durée conseillée : 20 min.}\end{center}
-
-On utilise l'interface du cours :
-\begin{center}\small
+On utilise l'interface suivante :
+\begin{center}\footnotesize
 \begin{tabular}{|l|l|>{\raggedright\arraybackslash}p{6.4cm}|}\hline
 \textbf{Pile} & \textbf{File} & \textbf{Rôle} \\\hline
 \texttt{creer\_pile\_vide()} & \texttt{creer\_file\_vide()} & crée une structure vide \\\hline
@@ -261,7 +199,6 @@ On utilise l'interface du cours :
 \end{tabular}
 \end{center}
 
-\needspace{12\baselineskip}
 \question On exécute le programme suivant.
 \par\smallskip
 \begin{gauche}[0.58]
@@ -280,63 +217,42 @@ print(sommet(p), tete(f), taille(p), taille(f))
 \end{gauche}
 \begin{droite}[0.39]
 \begin{parts}
-\part[\half] Compléter le dessin de la pile \textit{p} ci-dessous, juste après la boucle \textit{for}.
-\part[\half] Compléter le dessin de la file \textit{f} ci-dessous, juste après la boucle \textit{for}.
-\part[\half] Qu'affiche la ligne 10 ?\\[4pt] \trou{4.5cm}
+\part[\half] Dessiner sur la copie la pile \textit{p} juste après la boucle \textit{for} (ligne 5) : verticalement, le sommet en haut.
+%! savoir=pile-ordre-apres-empilements
+\part[\half] Qu'affiche la ligne 10 ?
+%! savoir=pile-file-interface-trace
 \end{parts}
 \end{droite}
-\par\medskip
-\begin{center}\pilevide\hspace{1.2cm}\raisebox{1.5cm}{\filevide}\end{center}
 
 \needspace{16\baselineskip}
 \question La fonction \textit{inverser} prend en paramètre une file \textit{f} et renvoie une nouvelle file qui contient les mêmes éléments dans l'ordre inverse : celui qui était à la queue est maintenant en tête.
-\begin{parts}
-\part[1] Compléter les quatre trous du code de la fonction \textit{inverser}.
 \par\noindent\begin{minipage}{\linewidth}
-\begin{lstlisting}[style=trous]
+\begin{lstlisting}
 def inverser(f):
     p = creer_pile_vide()
     while not est_vide(f):
-        empiler(p, (*@\trou{4.5cm}@*))
+        empiler(p, ...)
     g = creer_file_vide()
-    while (*@\trou{5cm}@*):
-        enfiler(g, (*@\trou{4.5cm}@*))
-    return (*@\trou{3cm}@*)
+    while ...:
+        enfiler(g, ...)
+    return ...
 \end{lstlisting}
 \end{minipage}\par
-\part[\half] La file \textit{f} contient, de la tête à la queue : \textit{"Anli"}, \textit{"Inès"}, \textit{"Mathis"}, \textit{"Zaïnaba"}. On exécute \textit{g = inverser(f)}. Donner le contenu de \textit{g}, de la tête à la queue.
-\court
+\begin{parts}
+\part[1] Écrire sur la copie les lignes 4, 6, 7 et 8 complétées (sans recopier le reste du code).
+%! savoir=pile-file-utiliser-interface
+\part[\half] La file \textit{f} contient, de la tête à la queue, \textit{"Anli"}, \textit{"Inès"}, \textit{"Mathis"}, \textit{"Zaïnaba"}. On exécute \textit{g = inverser(f)}. Que contient la file \textit{f} après l'appel ?
+%! savoir=effet-de-bord-parametre
 \end{parts}
 
-% ---------------------------------------------------------------- 5
-\needspace{20\baselineskip}
-\section{Rappels de 1re : dictionnaire (1,5 point)}
-\begin{center}\textit{Thème abordé : dictionnaire, parcours. Durée conseillée : 8 min.}\end{center}
+% ---------------------------------------------------------------- 4
+\needspace{10\baselineskip}
+\section{Rappels de 1re : dictionnaire (1 point)}
+\begin{center}\textit{Thème abordé : dictionnaire, parcours, mise au point. Durée conseillée : 8 min.}\end{center}
 
-Un commerçant enregistre les prix au kilo (en euros) dans un dictionnaire :
+Un panier est un dictionnaire qui associe à chaque produit sa masse en kilos, par exemple \textit{\{"mangues": 2, "tomates": 0.5\}}. La fonction \textit{cout} doit renvoyer le prix total du panier, ici \textit{7.0}. Le programme ci-dessous s'arrête avec le message d'erreur affiché sous le code.
 \par\noindent\begin{minipage}{\linewidth}
-\begin{lstlisting}
-prix = {"mangues": 2.5, "bananes": 2, "manioc": 1.5, "tomates": 4}
-\end{lstlisting}
-\end{minipage}\par
-
-\question[\half] Qu'affiche le programme suivant ?
-\par\smallskip
-\begin{gauche}[0.58]
 \begin{lstlisting}[basicstyle=\ttfamily\footnotesize]
-for produit in prix:
-    if prix[produit] >= 2.5:
-        print(produit, prix[produit])
-\end{lstlisting}
-\end{gauche}
-\begin{droite}[0.39]
-\rep{1.7cm}
-\end{droite}
-
-\needspace{20\baselineskip}
-\question[1] Un panier est un dictionnaire qui associe à chaque produit sa masse en kilos, par exemple \textit{\{"mangues": 2, "tomates": 0.5\}}. La fonction \textit{cout} doit renvoyer le prix total du panier : ici, \textit{7.0}. Le programme ci-dessous s'arrête avec le message d'erreur affiché sous le code. Corriger la ligne 5.
-\par\noindent\begin{minipage}{\linewidth}
-\begin{lstlisting}
 prix = {"mangues": 2.5, "bananes": 2, "manioc": 1.5, "tomates": 4}
 
 def cout(panier, prix):
@@ -358,14 +274,15 @@ Traceback (most recent call last):
 KeyError: 'bananes'
 \end{lstlisting}
 \end{minipage}\par
-\medskip
-\noindent Ligne 5 corrigée : \trou{11cm}
+
+\question[1] Trouver l'erreur : écrire la ligne 5 corrigée, puis expliquer en une phrase pourquoi le programme s'arrête.
+%! savoir=dict-parcours-cles
 
 % ---------------------------------------------------------------- Bac
-\newpage
-\section{Exercice Type Bac : parenthèses et pile (7,5 points)}
+\needspace{20\baselineskip}
+\section{Exercice Type Bac : parenthèses et pile (10 points)}
 \begin{center}
-\textit{D'après le sujet 24-NSIJ2JA1, baccalauréat 2024, Asie, jour 2, exercice 2. Durée conseillée : 45 min.}
+\textit{D'après le sujet 24-NSIJ2JA1, baccalauréat 2024, Asie, jour 2, exercice 2 (adapté, voir en tête du sujet). Durée conseillée : 55 min.}
 \end{center}
 
 \textit{Cet exercice porte sur la programmation, la programmation orientée objet et les structures de données linéaires.}
@@ -384,50 +301,41 @@ Par exemple, l'expression \lstinline|'tab[2*(i + 4)] - tab[3]'| est bien parenth
 
 En revanche, l'expression \lstinline|'tab[2*(i + 4] - tab[3)'| n'est pas bien parenthésée, car la première parenthèse fermante \texttt{]} devrait correspondre à la dernière parenthèse ouvrante \texttt{(}.
 
-\question[1] Déterminer si l'expression \lstinline|'[2*(i+1)-3) for i in range(3, 10)]'| est bien parenthésée. Justifier votre réponse.
+\question[1\half] Déterminer si l'expression \lstinline|'[2*(i+1)-3) for i in range(3, 10)]'| est bien parenthésée. Justifier votre réponse.
 %! bac
-\rep{2.5cm}
 
 \subsection*{Partie A}
 On peut observer que, si les parenthèses vont par couple, une expression bien parenthésée contient autant de parenthèses ouvrantes que de parenthèses fermantes.
 
 On se propose d'écrire une fonction qui vérifie si une chaine de caractères est bien parenthésée.
 
-\question[1] Écrire une fonction \textit{compte\_ouvrante} qui prend en paramètre une chaine de caractères \textit{txt} et qui renvoie le nombre de parenthèses ouvrantes qu'il contient.
+\needspace{10\baselineskip}
+\question[1\half] Écrire une fonction \textit{compte\_ouvrante} qui prend en paramètre une chaine de caractères \textit{txt} et qui renvoie le nombre de parenthèses ouvrantes qu'il contient. On donne son en-tête :
 %! bac
-\begin{cadre}
-\begin{lstlisting}[numbers=none, xleftmargin=0pt, backgroundcolor=\color{white}]
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=entete]
 def compte_ouvrante(txt):
     """Renvoie le nombre de parenthèses ouvrantes ( [ { de txt.
     Exemple : compte_ouvrante('tab[2*(i + 4)] - tab[3]') renvoie 3."""
 \end{lstlisting}
-\fillwithdottedlines{4.3cm}
-\end{cadre}
+\end{minipage}\par
 
-\needspace{12\baselineskip}
-\noindent\textit{On dispose aussi d'une fonction} \textit{compte\_fermante}\textit{, écrite sur le même modèle, qui prend en paramètre une chaine de caractères} \textit{txt} \textit{et qui renvoie le nombre de parenthèses fermantes qu'il contient. (Phrase ajoutée au sujet d'origine, à la place de sa question 3.)}
+On dispose aussi d'une fonction \textit{compte\_fermante}, écrite sur le même modèle, qui prend en paramètre une chaine de caractères \textit{txt} et qui renvoie le nombre de parenthèses fermantes qu'il contient.
 
-\question[\half] En utilisant les deux fonctions précédentes, écrire une fonction \textit{bon\_compte} qui prend en paramètre une chaine de caractères \textit{txt} et qui renvoie \textit{True} si \textit{txt} a autant de parenthèses ouvrantes que parenthèses fermantes et \textit{False} sinon.
+\question[1] En utilisant les deux fonctions précédentes, écrire une fonction \textit{bon\_compte} qui prend en paramètre une chaine de caractères \textit{txt} et qui renvoie \textit{True} si \textit{txt} a autant de parenthèses ouvrantes que parenthèses fermantes et \textit{False} sinon.
 %! bac
 %! pas-fonction (une ligne à écrire : return compte_ouvrante(txt) == compte_fermante(txt))
-\begin{cadre}
-\begin{lstlisting}[numbers=none, xleftmargin=0pt, backgroundcolor=\color{white}]
-def bon_compte(txt):
-\end{lstlisting}
-\fillwithdottedlines{1.7cm}
-\end{cadre}
 
-\question[\half] Donner un exemple de chaine de caractères pour laquelle \textit{bon\_compte} renvoie \textit{True} alors qu'elle n'est pas bien parenthésée.
+\question[1] Donner un exemple de chaine de caractères pour laquelle \textit{bon\_compte} renvoie \textit{True} alors qu'elle n'est pas bien parenthésée.
 %! bac
-\court
 
-\needspace{20\baselineskip}
+\needspace{22\baselineskip}
 \subsection*{Partie B}
 Comme l'algorithme précédent n'est pas suffisant, on se propose d'implémenter un algorithme utilisant une structure linéaire de pile.
 
 On se propose d'écrire une classe \textit{Pile} qui implémente la structure de pile.
 \par\noindent\begin{minipage}{\linewidth}
-\begin{lstlisting}[style=trous]
+\begin{lstlisting}
 class Pile:
     def __init__(self):
         self.contenu = []
@@ -436,20 +344,20 @@ class Pile:
         return len(self.contenu) == 0
 
     def empiler(self, elt):
-        (*@\trou{8cm}@*)
+        ...
 
     def depiler(self):
         if self.est_vide():
             return "La pile est vide."
-        return (*@\trou{7cm}@*)
+        return ...
 \end{lstlisting}
 \end{minipage}\par
 
 \question[1\half] Compléter les lignes 9 et 14 du code précédent pour que la méthode \textit{empiler} permette d'empiler un élément \textit{elt} dans une pile et que la méthode \textit{depiler} permette de dépiler une pile en renvoyant l'élément dépilé. Vous n'écrirez que le code des deux méthodes.
 %! bac
-%! une-demande (deux lignes d'une même classe, complétées sur le sujet)
+%! une-demande (deux lignes d'une même classe ; texte officiel)
 
-\needspace{32\baselineskip}
+\needspace{26\baselineskip}
 Un algorithme permettant de vérifier si une expression est bien parenthésée consiste à
 \begin{itemize}
 \item créer une pile vide \textit{p} ;
@@ -466,18 +374,16 @@ Un algorithme permettant de vérifier si une expression est bien parenthésée c
 \end{itemize}
 Si l'expression a été entièrement parcourue, on teste la pile ; l'expression est bien parenthésée si la pile est vide.
 
-\needspace{14\baselineskip}
-\question[3] Écrire une fonction \textit{est\_bien\_parenthesee} qui prend en paramètre une chaine de caractères et qui implémente l'algorithme précédent.
+\question[3\half] Écrire une fonction \textit{est\_bien\_parenthesee} qui prend en paramètre une chaine de caractères et qui implémente l'algorithme précédent. On donne son en-tête :
 %! bac
-\begin{cadre}
-\begin{lstlisting}[numbers=none, xleftmargin=0pt, backgroundcolor=\color{white}]
+\par\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=entete]
 def est_bien_parenthesee(txt):
     """Renvoie True si txt est bien parenthésée, False sinon.
     Exemples : est_bien_parenthesee('tab[2*(i + 4)] - tab[3]') renvoie True ;
-               est_bien_parenthesee('(]') renvoie False."""
+               est_bien_parenthesee('tab[2*(i + 4] - tab[3)') renvoie False."""
 \end{lstlisting}
-\fillwithdottedlines{7.2cm}
-\end{cadre}
+\end{minipage}\par
 
 \end{questions}
 
