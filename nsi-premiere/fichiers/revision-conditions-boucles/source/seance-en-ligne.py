@@ -258,7 +258,7 @@ def mini():
         <li>compléter une boucle for ou while ;</li>
         <li>trouver la case d'arrivée du robot.</li>
       </ul>
-      <p class="td-duree">Feuille 2 sur 3 · 15 minutes · 10 questions · seul·e, sans aide</p>
+      <p class="td-duree">Feuille 2 sur 3 · 18 minutes · 13 questions · seul·e, sans aide</p>
     </div>''', '@@CORPS']
     o.append('  <p class="td-papier-seul">Ensuite, on échange les copies : chacun·e corrige celle de l\'autre avec le corrigé. <b>Copie corrigée par :</b> ……………………… · <b>Note :</b> …… / 10 · <b>La question que je refais :</b> ……</p>')
     o.append('  <h2 class="td-partie">1. Que veut dire ce code ? (2 points)</h2>')
@@ -267,10 +267,10 @@ def mini():
     o.append(libre('m1-papier', 'a) Que veut dire ce code ? Dis-le en français.', a['code'], 2, E(a['rep'])))
     o.append(qcu('m2', 'b) Robot. Que veut dire ce code ?', b['code'], TRAD[1], 'Regarde les décalages : quelle ligne est dans la boucle ?', E(b['rep'])))
     o.append(libre('m2-papier', 'b) Robot. Que veut dire ce code ? Dis-le en français.', b['code'], 2, E(b['rep'])))
-    o.append('  <h2 class="td-partie">2. Trouve l\'erreur (3 points)</h2>')
+    o.append('  <h2 class="td-partie">2. Trouve l\'erreur (3 points)</h2>\n  <p>Pour chaque programme : corrige l\'erreur, puis explique-la en quelques mots (0,5 point + 0,5 point), comme au contrôle.</p>')
     q = R.M2[0]
     o.append(f'''  <section class="td-q" data-type="erreur" id="m3" data-fichier="{q['fichier']}" data-ligne="2" data-reponse="{E(q['fix'].strip())}">
-    <p class="td-consigne">a) Ce programme ne se lance pas. Trouve la ligne fautive et corrige-la.</p>
+    <p class="td-consigne">a) Ce programme ne se lance pas. Trouve la ligne fautive et corrige-la, puis explique l\'erreur en quelques mots.</p>
     <script type="text/x-python" class="td-preambule">
 age = 20
 </script>
@@ -280,18 +280,20 @@ age = 20
     <p class="td-aide"><code>expected an indented block</code> : Python attendait un bloc décalé.</p>
     <div class="td-correction"><p>Ligne 2 : <code>{E(q['fix'].strip())}</code>, décalée de 4 espaces. {E(q['exp'])}</p></div>
   </section>''')
+    o.append(libre2('m3-exp', "a) Explique l'erreur en quelques mots.", 1, E(q['exp'])))
     q = R.M2[1]
     o.append(f'''  <section class="td-q" data-type="courte" id="m4" data-comparer="code" data-reponse="{E(q['fix'])}|for i in range(1,6):|for i in range(1, 5+1):|for i in range(1,5+1):">
-    <p class="td-consigne">b) {E(q['q'])} Réécris la ligne fautive, corrigée.</p>
+    <p class="td-consigne">b) {E(q['q'])} Réécris la ligne fautive, corrigée, puis explique l\'erreur en quelques mots.</p>
 {code(q['code'])}
     <p class="td-retour" data-si="for i in range(6):">range(6) commence à 0 : le programme afficherait 0, 1, 2, 3, 4, 5. Il faut commencer à 1.</p>
     <p class="td-retour" data-si="for i in range(0, 6):">range(0, 6) commence à 0 : le programme afficherait aussi 0. Il faut commencer à 1.</p>
     <p class="td-aide">range(a, b) s'arrête juste avant b.</p>
     <div class="td-correction"><p><code>{E(q['fix'])}</code> : {E(q['exp'])}</p></div>
   </section>''')
+    o.append(libre2('m4-exp', "b) Explique l'erreur en quelques mots.", 1, E(q['exp'])))
     q = R.M2[2]
     o.append(f'''  <section class="td-q" data-type="erreur" id="m5" data-fichier="{q['fichier']}" data-ligne="3" data-reponse="{E(q['fix'])}">
-    <p class="td-consigne">c) Ce programme ne se lance pas. Trouve la ligne fautive et corrige-la.</p>
+    <p class="td-consigne">c) Ce programme ne se lance pas. Trouve la ligne fautive et corrige-la, puis explique l\'erreur en quelques mots.</p>
     <script type="text/x-python" class="td-preambule">
 x = 7
 </script>
@@ -301,6 +303,7 @@ x = 7
     <p class="td-aide"><code>expected ':'</code> : Python attendait les deux-points juste après <code>else</code>.</p>
     <div class="td-correction"><p>Ligne 3 : <code>{E(q['fix'])}</code>. {E(q['exp'])}</p></div>
   </section>''')
+    o.append(libre2('m5-exp', "c) Explique l'erreur en quelques mots.", 1, E(q['exp'])))
     o.append('  <h2 class="td-partie">3. Complète le code (2 points)</h2>')
     for k, q in enumerate(R.M3):
         c = q['code']

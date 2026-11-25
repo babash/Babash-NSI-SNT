@@ -28,14 +28,14 @@ GD = [dict(depart="A5", obstacles=["C5", "E4", "B2", "D1"], cible="F2"),
 
 # Exercice 1 : questions de cours (4 points)
 VF = [  # (affirmation, vraie ?, explication du corrigé)
-    ("<code>range(5)</code> donne les entiers de 0 à 5.", False, "<code>range(5)</code> donne 0, 1, 2, 3, 4 : le 5 n'est pas compris."),
+    ("Le bloc d'un <code>if</code> est marqué par le décalage vers la droite (l'indentation).", True, "Les lignes décalées sous le <code>if</code> forment son bloc ; la première ligne revenue à gauche n'en fait plus partie."),
     ("Une boucle <code>while</code> se répète tant que sa condition est vraie.", True, "Elle s'arrête dès que la condition devient fausse."),
     ("Dans <code>if … elif … else</code>, un seul des blocs est exécuté.", True, "Python exécute le premier bloc dont la condition est vraie (ou le <code>else</code>), puis sort."),
     ("Une fonction s'exécute dès qu'on l'a définie avec <code>def</code>.", False, "<code>def</code> définit la fonction ; elle ne s'exécute que quand on l'appelle, par exemple <code>frais(45)</code>."),
 ]
 QCM_CODE = ['n = 0\nwhile n > 5:\n    print("Bonjour")\n    n = n + 1', None]
 QCM = [  # (question, options, indice de la bonne, explication)
-    ("La condition de cette boucle est fausse dès le départ. Combien de fois le programme affiche-t-il « Bonjour » ?",
+    ("Combien de fois ce programme affiche-t-il « Bonjour » ?",
      ["une seule fois", "aucune fois", "cinq fois", "sans jamais s'arrêter"], 1, "<code>0 > 5</code> est faux : on n'entre jamais dans la boucle."),
     ("Quelle condition est vraie quand <code>note</code> est comprise entre 10 et 15, bornes comprises ?",
      ["<code>note > 10 and note < 15</code>", "<code>note >= 10 or note <= 15</code>", "<code>note >= 10 and note <= 15</code>", "<code>note > 10 or note < 15</code>"], 2,
@@ -95,22 +95,18 @@ EX4 = [
     dict(code="pas = 0\nfor i in range(3):\n    nord()\nwhile not obstacleEst():\n    est()\n    pas = pas + 1\nprint(pas)", aff=True),
 ]
 
-# Problème (5,5 points) : une seule fonction à écrire (cadrée, docstring en mots) ; les programmes du robot se complètent.
+# Problème (5,5 points) : une seule fonction à écrire (cadrée, docstring en mots) ; le reste se complète.
 PB = [
     dict(titre="Les frais de livraison", pts="2 points", entete='def frais(montant):\n    """Renvoie le prix de la livraison, en euros, pour une commande de montant euros.\n    Exemples : frais(45) renvoie 0 ; frais(30) renvoie 0 ; frais(12) renvoie 3."""',
          stmt="La livraison est <b>gratuite</b> si le montant de la commande vaut <b>au moins 30&nbsp;€</b>. Sinon, elle coûte <b>3&nbsp;€</b>.<br>Écris le corps de la fonction <code>frais</code> sous son en-tête.",
          sol="def frais(montant):\n    if montant >= 30:\n        return 0\n    else:\n        return 3", lignes=6),
     dict(titre="Les tournées", pts="1 point",
          stmt="Le robot livre <b>8 colis par tournée</b>. La fonction <code>colis_livres(n)</code> affiche le nombre total de colis livrés après chaque tournée, de la 1<sup>re</sup> à la <code>n</code><sup>e</sup>. Exemple : <code>colis_livres(3)</code> affiche 8, puis 16, puis 24. Complète-la.",
-         code="def colis_livres(n):\n    total = 0\n    for i in range(1, n + 1):\n        total = ⟦total + 8⟧\n        print(⟦total⟧)",
-         sol="def colis_livres(n):\n    total = 0\n    for i in range(1, n + 1):\n        total = total + 8\n        print(total)"),
-    dict(titre="Aller chercher le colis", pts="1 point", g=GC,
-         stmt="Complète <b>ce programme</b> pour qu'il amène le robot jusqu'au colis <b>★</b> sur <b>les trois grilles</b>.",
-         code="while ⟦not obstacleEst()⟧:\n    est()\nwhile not obstacleNord():\n    ⟦nord()⟧",
-         sol="while not obstacleEst():\n    est()\nwhile not obstacleNord():\n    nord()", piege="for i in range(3):\n    est()\nfor i in range(2):\n    nord()"),
-    dict(titre="Livrer le client", pts="1,5 point", g=GD,
-         stmt="Sur chaque grille, le robot refait 3 fois le même trajet. Complète la première ligne de <b>ce programme</b> pour qu'il amène le robot jusqu'au client <b>★</b> sur <b>les trois grilles</b>.",
-         code="⟦for i in range(3):⟧\n    while not obstacleEst():\n        est()\n    nord()",
+         code="def colis_livres(n):\n    for i in range(1, n + 1):\n        print(⟦i * 8⟧)",
+         sol="def colis_livres(n):\n    for i in range(1, n + 1):\n        print(i * 8)"),
+    dict(titre="Livrer le client", pts="2,5 points", g=GD,
+         stmt="Sur chaque grille, le robot refait 3 fois le même trajet. Lis ce trajet sur les grilles, puis complète le corps de la boucle de <b>ce programme</b> pour qu'il amène le robot jusqu'au client <b>★</b> sur <b>les trois grilles</b>.",
+         code="for i in range(3):", corps=4,
          sol="for i in range(3):\n    while not obstacleEst():\n        est()\n    nord()", piege="for i in range(3):\n    for j in range(2):\n        est()\n    nord()"),
 ]
 
@@ -138,7 +134,7 @@ def message_python(code, entree=None):
 
 def verifier():
     r = {}
-    assert sum(1 for _, v, _ in VF if v) == 2 and len(VF) == 4
+    assert sum(1 for _, v, _ in VF if v) == 3 and len(VF) == 4
     assert sorted(RELIER_DROITE) == [0, 1, 2, 3] and all(RELIER_DROITE[k] != k for k in range(4))
     assert [b for _, _, b, _ in QCM] == [1, 2]
     assert lancer(QCM_CODE[0], "A1", [])[1] == []  # e) : aucune fois
@@ -186,11 +182,21 @@ def verifier():
     for k, v in parts.items():
         assert sum(b[1] for b in BAREME if b[0].startswith(k + " ")) == v, k
     assert [q["pts"] for q in EX3] == ["0,5 point", "1 point", "1 point"]
-    assert [q["pts"] for q in PB] == ["2 points", "1 point", "1 point", "1,5 point"]
+    assert [q["pts"] for q in PB] == ["2 points", "1 point", "2,5 points"]
     # erreurs fréquentes citées au barème, possibles sur la forme actuelle
     assert ("9" >= "18") is True  # 3 a) comparer des textes : « 9 » passerait pour majeur
     assert lancer("def double(x):\n    resultat = 2 * x\n    print(resultat)\n", "A1", [])[1] == []
-    assert lancer(plein(PB[1]["code"]).replace("total = total + 8", "total = 8") + "\ncolis_livres(3)", "A1", [])[1] == ["8", "8", "8"]
+    assert lancer(plein(PB[1]["code"]).replace("i * 8", "8") + "\ncolis_livres(3)", "A1", [])[1] == ["8", "8", "8"]
+    # partie C : nord() dans le while fait échouer au moins une grille (erreur fréquente citée)
+    mauvais = "for i in range(3):\n    while not obstacleEst():\n        est()\n        nord()"
+    rates = 0
+    for g in GD:
+        try:
+            ch, _ = lancer(mauvais, g["depart"], g["obstacles"], nc=6, nl=5)
+            rates += nom(ch[-1]) != g["cible"]
+        except (Ecrase, RuntimeError):
+            rates += 1
+    assert rates >= 1
     # docstring de A : en mots, sans la condition Python
     assert ">=" not in PB[0]["entete"] and "frais(30) renvoie 0" in PB[0]["entete"]
     # variantes et erreurs citées au barème
@@ -204,8 +210,8 @@ def verifier():
     assert len(PB[0]["sol"].split("\n")) - 1 <= 6, "première : fonction courte, 4 à 6 lignes"
     assert plein(PB[1]["code"]) == PB[1]["sol"]
     assert lancer(PB[1]["sol"] + "\ncolis_livres(3)\ncolis_livres(10)", "A1", [])[1] == ["8", "16", "24"] + [str(8 * i) for i in range(1, 11)]
+    assert PB[2]["sol"].startswith(PB[2]["code"] + "\n")
     for q in PB[2:]:
-        assert plein(q["code"]) == q["sol"], q["titre"]
         q["chemins"] = []
         ratés = 0
         for g in q["g"]:
@@ -343,10 +349,12 @@ def document(corrige):
             z = f'<div class="sol">{pre(q["sol"])}</div>'
         elif q.get("entete"):
             z = pre(q["entete"], cls="py tete") + lignes(q["lignes"])
+        elif q.get("corps"):
+            z = pre(q["code"], False, "py tete") + '<div class="corps">' + lignes(q["corps"]) + "</div>"
         else:
             z = pre(q["code"], False, "py fill")
         return (f'<div class="pi{" large" if g else ""}"><p class="stmt"><span class="lbl">Partie {"ABCD"[i]}. {q["titre"]}</span> <span class="pp">({q["pts"]})</span><br>{q["stmt"]}</p>'
-                f'<div class="pz{" avec" if g else ""}">{g}<div class="pl">{z}</div></div></div>')
+                f'<div class="pz{" avec" if g and not q.get("corps") else ""}">{g}<div class="pl">{z}</div></div></div>')
 
     # ---- page 4 : compléter, puis le début du problème
     s = ['<div class="page p4">', entete(T, 4, NP, corrige)]
@@ -358,7 +366,7 @@ def document(corrige):
     s.append("</div>")
     s.append('<h2><span class="exo-num">P</span> Problème : le robot livreur du doukabé<span class="pts">5,5 points</span></h2>')
     s.append('<div class="info-box"><p>Un doukabé de Mamoudzou s\'équipe d\'un petit robot pour préparer et livrer ses commandes. '
-             'Les quatre parties sont <b>indépendantes</b>. Pour les parties C et D, le robot se programme comme dans l\'exercice 4 et part toujours de A5.</p></div><div class="pb">')
+             'Les trois parties sont <b>indépendantes</b>. Pour la partie C, le robot se programme comme dans l\'exercice 4 et part toujours de A5.</p></div><div class="pb">')
     s.append(partie(0, PB[0]))
     s.append("</div>" + pied(4) + "</div>")
     P.append("".join(s))
@@ -388,7 +396,7 @@ def document(corrige):
 # Barème détaillé : (question, points, détail des points, ce qu'on accepte, erreur fréquente possible sur CETTE forme).
 # verifier() contrôle que chaque détail fait les points de sa ligne et que le tout fait 20 (règle « le corrigé se recalcule »).
 BAREME = [
-    ("1 a) à d) Vrai ou faux", 2, [0.5] * 4, "une case cochée par ligne", "a) : croire que <code>range(5)</code> va jusqu'à 5 ; d) : croire qu'une fonction s'exécute sans être appelée"),
+    ("1 a) à d) Vrai ou faux", 2, [0.5] * 4, "une case cochée par ligne", "a) : croire que l'indentation n'est qu'une mise en forme ; d) : croire qu'une fonction s'exécute sans être appelée"),
     ("1 e) QCM", 0.5, [0.5], "une seule case cochée", "« une seule fois » : croire qu'une boucle s'exécute toujours au moins une fois"),
     ("1 f) Relier", 1, [0.25] * 4, "un trait par mot-clé", "relier <code>while</code> à « sinon, si… » (confondre boucle et condition)"),
     ("1 g) QCM", 0.5, [0.5], "une seule case cochée", "<code>or</code> au lieu de <code>and</code> (la condition est alors toujours vraie)"),
@@ -403,9 +411,8 @@ BAREME = [
     ("5 b) Radar", 1, [0.25] * 4, "<code>&lt;</code>, <code>elif</code>, <code>&lt;=</code>, <code>else</code>", "<code>&lt;=</code> à la première case : 50 donnerait « OK »"),
     ("5 c) Bouchon", 1, [0.25, 0.5, 0.25], "<code>&gt;</code>, <code>voitures - 4</code>, <code>minutes + 1</code> ; <code>&gt;=</code> est accepté ici, mais il ne donne le bon résultat que parce que 30 n'est pas un multiple de 4 : le signaler à l'élève", "oublier <code>voitures =</code> : la file ne diminue jamais"),
     ("P A Frais", 2, [2], "toute fonction juste a les 2 points, même maladroite ; sinon : 0,5 le test, 0,5 chaque <code>return</code>, 0,5 la structure <code>if … else</code>. <code>&gt;</code> au lieu de <code>&gt;=</code> : 1,5 (<code>frais(30)</code> serait faux)", "<code>print</code> au lieu de <code>return</code> : 1 au plus"),
-    ("P B Tournées", 1, [0.5, 0.5], "<code>total + 8</code>, <code>total</code>", "<code>total = 8</code> : on affiche toujours 8"),
-    ("P C Colis", 1, [0.5, 0.5], "<code>not obstacleEst()</code>, <code>nord()</code>", "<code>obstacleEst()</code> sans <code>not</code> : le robot ne bouge pas vers l'est"),
-    ("P D Client", 1.5, [1.5], "<code>for i in range(3):</code> (toute boucle qui fait 3 tours)", "<code>while not obstacleNord():</code> : le robot s'arrête trop tôt ou s'écrase"),
+    ("P B Tournées", 1, [1], "<code>i * 8</code> (ou <code>8 * i</code>)", "<code>8</code> : on affiche toujours 8, la variable de boucle n'est pas utilisée"),
+    ("P C Client", 2.5, [1, 0.5, 1], "toute suite d'instructions qui amène le robot au client sur les trois grilles a les 2,5 points ; sinon : 1 pour <code>while not obstacleEst():</code>, 0,5 pour <code>est()</code> dans ce <code>while</code>, 1 pour <code>nord()</code> après le <code>while</code>", "<code>nord()</code> indenté dans le <code>while</code> : le robot monte à chaque pas ; ou un nombre fixe de pas vers l'est (<code>est()</code> deux fois) : faux sur au moins deux grilles"),
 ]
 
 PLUS2 = """
@@ -438,7 +445,10 @@ pre.console { white-space: pre; font-size: 7pt; margin: 0; overflow: visible; }
 .pz.avec { grid-template-columns: auto minmax(0, 1fr); }
 .pl { min-width: 0; }
 .page div.relier { grid-template-columns: auto auto !important; justify-content: start; }
+@media screen and (max-width: 840px) { pre.console { white-space: pre-wrap; word-break: normal; overflow-wrap: normal; } }
 @media (max-width: 840px) { .relier { column-gap: 8mm; } .cours { grid-template-columns: 1fr; } pre.fill { white-space: pre; overflow-x: auto; } }
+.corps { margin-left: 9mm; } .corps .lines i { height: 9mm !important; }
+.pz:not(.avec) .pg { display: flex; gap: 14px; justify-content: center; margin: 4px 0 6px; }
 .p4 pre.fill { line-height: 2.1; } .p4 .ex5 { gap: 6px; }
 .p4 .pi .lines i, .p5 .pi .lines i { height: 7.6mm; }
 .bar-c { width: 100%; border-collapse: collapse; font-size: 8.6pt; margin-top: 6px; }

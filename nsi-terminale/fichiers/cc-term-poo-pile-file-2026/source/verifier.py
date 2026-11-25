@@ -214,7 +214,7 @@ assert sortie_de(prog8, dict(INTERFACE)) == ["13 7 4 4"]  # 8 b)
 p = creer_pile_vide()
 empiler(p, 1)
 sommet(p)
-assert taille(p) == 1  # 3 b) F : sommet ne retire pas
+assert taille(p) == 1  # erreur fréquente de 8 b) : sommet ne retire pas
 
 # Question 9 : les trous du sujet (« ... ») remplis avec le corrigé, aux lignes annoncées
 code9 = bloc("def inverser(f):")
@@ -417,4 +417,13 @@ def erreur_sans_test_final(txt):
 
 
 assert erreur_compare_c(ex_bon) is False and erreur_sans_test_final("((") is True
+# Question 3 b) (V) : une même pile, deux implémentations (fonctions de l'exercice 3, classe Pile de l'exercice 5),
+# même comportement par la même interface.
+p1, p2 = creer_pile_vide(), Pile()
+for x in [4, 7, 1]:
+    empiler(p1, x)
+    p2.empiler(x)
+assert [depiler(p1) for _ in range(3)] == [p2.depiler() for _ in range(3)] == [1, 7, 4]
+# Question 4 : l'exemple de la consigne n'est pas une des situations a) à d)
+assert "« e : pile »" in SUJET
 print("Tout est vérifié.")
