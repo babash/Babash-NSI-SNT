@@ -1350,7 +1350,7 @@
       this.champ.value = this.etat.valeur || '';
       this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
       this.champ.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); q.verifier(); } });
-      this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id, text: this.erreurRetrait ? 'Écris cette ligne corrigée, avec ses espaces de début de ligne :' : 'Écris cette ligne corrigée :' }), this.champ]));
+      this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id }, this.erreurRetrait ? ['Écris cette ligne corrigée', el('span', { class: 'td-ecran-seul', text: ', avec ses espaces de début de ligne' }), ' :'] : ['Écris cette ligne corrigée :']), this.champ]));
     }
     if (this.s.getAttribute('data-cote') === 'oui') this.mettreDeCote();     // « trouve l'erreur » : sur demande seulement (T123c)
   };
