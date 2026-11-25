@@ -90,7 +90,7 @@ EX3 = [
 EX4 = [
     dict(code="est()\nif obstacleNord():\n    est()\nelse:\n    nord()"),
     dict(code="for i in range(2):\n    est()\n    nord()"),
-    dict(code="while not obstacleEst():\n    est()\nnord()"),
+    dict(code="while not obstacleNord():\n    nord()\nest()"),
     dict(code="def avancer(n):\n    for i in range(n):\n        est()\n\nnord()\navancer(4)\nnord()\navancer(2)"),
     dict(code="pas = 0\nfor i in range(3):\n    nord()\nwhile not obstacleEst():\n    est()\n    pas = pas + 1\nprint(pas)", aff=True),
 ]
@@ -405,7 +405,7 @@ BAREME = [
     ("3 b) Erreur", 1, [0.5, 0.5], "<code>n = n - 1</code> (ou <code>n -= 1</code>) dans la boucle ; explication : <code>n</code> ne change pas, la condition reste vraie", "la ligne ajoutée sans indentation, hors de la boucle (elle ne s'exécute jamais)"),
     ("3 c) Erreur", 1, [0.5, 0.5], "<code>return resultat</code> (ou <code>return 2 * x</code>) dans la fonction ; explication : sans <code>return</code>, la fonction renvoie <code>None</code>", "<code>print(resultat)</code> dans la fonction : on affiche au lieu de renvoyer, l'erreur reste"),
     ("3 d) Erreur", 1, [0.5, 0.5], "<code>total = 0</code> avant la boucle ; explication : il est remis à 0 à chaque tour", "supprimer la ligne : <code>total</code> n'existe plus (<code>NameError</code>)"),
-    ("4 a) à e) Arrivée", 2.5, [0.5] * 5, "la case seule (le tracé n'est pas noté)", "d) : oublier que <code>avancer(4)</code> fait 4 pas"),
+    ("4 a) à e) Arrivée", 2.5, [0.5] * 5, "la case seule (le tracé n'est pas noté)", "c) : mettre <code>est()</code> dans le <code>while</code> (il vient après la boucle) ; d) : oublier que <code>avancer(4)</code> fait 4 pas"),
     ("4 f) Affichage", 0.5, [0.5], "<code>3</code>", "compter les pas vers le nord avec ceux vers l'est"),
     ("5 a) De 1 à 10", 0.5, [0.5], "<code>11</code>", "<code>10</code> : la borne de fin n'est pas comprise"),
     ("5 b) Radar", 1, [0.25] * 4, "<code>&lt;</code>, <code>elif</code>, <code>&lt;=</code>, <code>else</code>", "<code>&lt;=</code> à la première case : 50 donnerait « OK »"),
