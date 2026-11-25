@@ -72,11 +72,11 @@
 # Liaison Ethernet standard : 10 000 000 bit/s, en Mbit/s
 ethernet = [[10]]
 # Liaison Fast Ethernet : 100 Mbit/s, en Gbit/s
-fast_ethernet = [[0.1|0,1|.1]]
+fast_ethernet = [[0.1|0,1|.1|1/10|10**-1]]
 # Liaison fibre : 10 Gbit/s, en Mbit/s
 fibre = [[10000|10_000|10 000]]
 # Liaison ADSL : 20 Mbit/s, en bit/s
-adsl = [[20000000|20_000_000|20 000 000|2*10**7]]</pre>
+adsl = [[20000000|20_000_000|20 000 000|2*10**7|20*10**6]]</pre>
     <p class="td-aide">Pour passer à l'unité plus grande (bit/s vers Mbit/s), on divise ; pour passer à l'unité plus petite, on multiplie.</p>
     <p class="td-aide">De bit/s à Mbit/s : diviser par 1 000 000. De Mbit/s à Gbit/s : diviser par 1 000.</p>
     <div class="td-correction"><p>10 000 000 bit/s = <b>10</b> Mbit/s ; 100 Mbit/s = <b>0,1</b> Gbit/s ; 10 Gbit/s = <b>10 000</b> Mbit/s ; 20 Mbit/s = <b>20 000 000</b> bit/s.</p></div>
@@ -99,18 +99,18 @@ deux_gbit = 2 * 10**[[9]]  # 2 Gbit/s en bit/s</pre>
   </section>
 
   <section class="td-q" data-type="trous" id="q3">
-    <p class="td-consigne">En résumé, calcule le coût des interfaces suivantes. Le débit de référence est 100 Mbit/s ; le coût est arrondi à l'entier supérieur. La première ligne est faite.</p>
+    <p class="td-consigne">En résumé, calcule le coût des interfaces suivantes. Le débit de référence est 100 Mbit/s. La première ligne est faite.</p>
     <pre class="td-code">
-# coût = 100 / (débit réel en Mbit/s), arrondi à l'entier supérieur
+# coût = 100 / (débit réel en Mbit/s)
 ethernet = 100 / 10              # 10 Mbit/s : coût 10
 fast_ethernet = 100 / [[100]]      # 100 Mbit/s : coût [[1]]
-giga_ethernet = 100 / [[1000|1 000]]     # 1 Gbit/s : coût [[1]]
-fibre = 100 / [[10000|10 000]]            # 10 Gbit/s : coût [[1]]</pre>
+giga_ethernet = 100 / [[1000|1 000]]     # 1 Gbit/s : coût [[0.1|0,1|.1|10**-1]]
+fibre = 100 / [[10000|10 000]]            # 10 Gbit/s : coût [[0.01|0,01|.01|10**-2]]</pre>
     <p class="td-aide">Avant de diviser, écris le débit réel en Mbit/s : 1 Gbit/s = 1 000 Mbit/s.</p>
-    <p class="td-aide">100 / 1 000 = 0,1. Arrondi à l'entier supérieur, cela donne 1.</p>
+    <p class="td-aide">Diviser par 1 000, c'est déplacer la virgule de trois rangs vers la gauche : 100 / 1 000 = 0,1.</p>
     <div class="td-correction">
-      <p>Fast Ethernet : 100 / 100 = <b>1</b>. Giga Ethernet : 100 / 1 000 = 0,1, arrondi à <b>1</b>. Fibre : 100 / 10 000 = 0,01, arrondi à <b>1</b>.</p>
-      <p>Avec une référence de 100 Mbit/s, toutes les liaisons à 100 Mbit/s ou plus ont le même coût, 1 : OSPF ne les distingue plus. C'est pourquoi on peut changer le débit de référence (voir le cas n° 4 de la partie 7).</p>
+      <p>Fast Ethernet : 100 / 100 = <b>1</b>. Giga Ethernet : 100 / 1 000 = <b>0,1</b>. Fibre : 100 / 10 000 = <b>0,01</b>. Ce sont les coûts de la fiche de cours sur les protocoles de routage : plus la liaison est rapide, plus son coût est petit.</p>
+      <p>Les sujets donnent toujours la formule à utiliser : certains prennent <code>10**9</code> au numérateur, pour que les liaisons rapides aient des coûts d'au moins 1 (voir le cas n° 4 de la partie 7). On applique toujours la formule de l'énoncé.</p>
     </div>
   </section>
 
@@ -147,9 +147,9 @@ cout = [[2]]</pre>
     <p class="td-consigne"><b>Liaison backbone</b> (le « cœur » du réseau). Débit de référence : <code>10**8</code> bit/s ; débit réel : 10 Gbit/s.</p>
     <pre class="td-code">
 debit_reel = [[10**10|10000000000|10_000_000_000|10 000 000 000]]   # en bit/s
-cout = [[0.01|0,01|.01|10**-2|1]]</pre>
+cout = [[0.01|0,01|.01|10**-2]]</pre>
     <p class="td-aide">10 Gbit/s = 10 × <code>10**9</code> bit/s = <code>10**10</code> bit/s.</p>
-    <div class="td-correction"><p>10 Gbit/s = <code>10**10</code> bit/s. Coût : <code>10**8</code> / <code>10**10</code> = <code>10**-2</code> = <b>0,01</b>. En pratique, un coût OSPF est un entier d'au moins 1 : le routeur l'arrondit à 1.</p></div>
+    <div class="td-correction"><p>10 Gbit/s = <code>10**10</code> bit/s. Coût : <code>10**8</code> / <code>10**10</code> = <code>10**-2</code> = <b>0,01</b>, comme dans la fiche de cours.</p></div>
   </section>
 
   <h2 class="td-partie">5. Défi inverse</h2>
@@ -174,12 +174,12 @@ debit_mbits = [[1]]   # en Mbit/s</pre>
       <li data-retour="On peut toujours diviser, à condition d'écrire les deux débits dans la même unité.">Non : on ne peut pas diviser deux débits, seulement les comparer.</li>
     </ul>
     <p class="td-aide">Écris les deux débits en Mbit/s, puis refais la division.</p>
-    <div class="td-correction"><p><b>Non.</b> 1 Gbit/s = 1 000 Mbit/s, donc le coût vaut 100 / 1 000 = 0,1 (arrondi à 1). En divisant des Mbit/s par des Gbit/s, on mélange les unités : la liaison la plus rapide semblerait la plus chère.</p></div>
+    <div class="td-correction"><p><b>Non.</b> 1 Gbit/s = 1 000 Mbit/s, donc le coût vaut 100 / 1 000 = 0,1. En divisant des Mbit/s par des Gbit/s, on mélange les unités : la liaison la plus rapide semblerait la plus chère.</p></div>
   </section>
 
   <section class="td-q" data-type="libre" id="q8-papier" data-support="papier" data-lignes="4">
     <p class="td-consigne"><b>Problème de cohérence.</b> Un·e élève divise un débit de référence de 100 Mbit/s par un débit réel de 1 Gbit/s sans convertir : il ou elle obtient un coût de 100. Est-ce logique ? Pourquoi ?</p>
-    <div class="td-correction"><p>Non : 1 Gbit/s = 1 000 Mbit/s, donc le coût est 100 / 1 000 = 0,1 (arrondi à 1). Un coût de 100 ferait passer cette liaison rapide pour très lente : on a divisé des unités différentes.</p></div>
+    <div class="td-correction"><p>Non : 1 Gbit/s = 1 000 Mbit/s, donc le coût est 100 / 1 000 = 0,1. Un coût de 100 ferait passer cette liaison rapide pour très lente : on a divisé des unités différentes.</p></div>
   </section>
 
   <p><b>Comparaison avec RIP.</b> Pour aller à destination, un paquet peut traverser 3 routeurs reliés en Giga Ethernet (1 Gbit/s), ou 2 routeurs reliés en Ethernet (10 Mbit/s). Le débit de référence est 100 Mbit/s.</p>
@@ -204,12 +204,12 @@ debit_mbits = [[1]]   # en Mbit/s</pre>
     <p class="td-consigne">Quel chemin choisit OSPF ?</p>
     <ul class="td-options">
       <li data-retour="OSPF additionne les coûts des liens : un lien Ethernet coûte déjà 10, plus que tout le chemin en Giga Ethernet.">Le chemin par 2 routeurs (Ethernet), car il a moins de liens à traverser.</li>
-      <li data-retour="Les coûts sont différents (1 par lien en Giga Ethernet, 10 en Ethernet) : OSPF prend le total le plus petit.">Les deux, car les coûts totaux des deux chemins sont égaux.</li>
-      <li data-juste>Le chemin par 3 routeurs (Giga Ethernet) : un lien y coûte 1, contre 10 en Ethernet.</li>
+      <li data-retour="Les coûts sont différents (0,1 par lien en Giga Ethernet, 10 en Ethernet) : OSPF prend le total le plus petit.">Les deux, car les coûts totaux des deux chemins sont égaux.</li>
+      <li data-juste>Le chemin par 3 routeurs (Giga Ethernet) : un lien y coûte 0,1, contre 10 en Ethernet.</li>
       <li data-retour="OSPF calcule un coût pour tous les liens : il compare les deux chemins.">Aucun : 1 Gbit/s dépasse le débit de référence de 100 Mbit/s.</li>
     </ul>
     <p class="td-aide">Calcule le coût d'un lien de chaque type, puis additionne le long de chaque chemin.</p>
-    <div class="td-correction"><p>Coût d'un lien Giga Ethernet : 100 / 1 000 = 0,1, arrondi à 1. Coût d'un lien Ethernet : 100 / 10 = 10. Le chemin en Giga Ethernet coûte au total 2 ou 3 (selon le nombre de liens), le chemin en Ethernet au moins 10 : OSPF choisit <b>le chemin en Giga Ethernet</b>.</p></div>
+    <div class="td-correction"><p>Coût d'un lien Giga Ethernet : 100 / 1 000 = 0,1. Coût d'un lien Ethernet : 100 / 10 = 10. Le chemin en Giga Ethernet coûte au total moins de 1 (0,1 par lien), le chemin en Ethernet au moins 10 : OSPF choisit <b>le chemin en Giga Ethernet</b>.</p></div>
   </section>
 
   <section class="td-q" data-type="libre" id="q10-papier" data-support="papier" data-lignes="1">
