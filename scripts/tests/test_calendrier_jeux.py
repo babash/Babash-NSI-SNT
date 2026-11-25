@@ -13,6 +13,10 @@ puis la bonne réponse, au doigt (clic) et au clavier (Entrée, flèches, Espace
 terminer avec son résultat. Puis le corrigé de chaque exercice, la reprise d'une partie gardée,
 l'absence de défilement horizontal à 320 px (clair et obscur), et l'animation coupée quand
 l'appareil demande moins de mouvement. Aucune requête ne sort de la machine.
+Enfin, les ligatures (T165) : chaque question des vraies banques (calendrier/exercices/) qui contient
+`==`, `>=`, `!=`, `//`, `--`, `</`… est affichée (et sa seconde étape pour « erreur » et « compléter »,
+puis le corrigé) ; chaque style de texte qui montre l'une de ces suites est dessiné avec et sans
+ligatures (scripts/tests/ligatures.py) : le test échoue si l'élève voit un autre signe que celui à taper.
 Il faut Playwright et Chromium. Code de retour : 0 si tout passe, 1 sinon.
 """
 import argparse
@@ -25,6 +29,9 @@ import threading
 
 from playwright.sync_api import sync_playwright
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from ligatures import _STYLES, SEQUENCES, controler, ligature_active  # noqa: E402
+
 RACINE = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 BANQUES = [os.path.join(RACINE, "scripts", "tests", "calendrier", f) for f in ("exemple-boucles.json", "exemple-nouveaux-types.json")]
 HARNAIS = """<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -32,16 +39,17 @@ HARNAIS = """<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta na
 <body><main class="page"><div id="jeu"></div></main><script src="config.js"></script><script src="commun.js"></script><script src="jeux.js"></script>
 <script>
 window.FIN = null; window.SAUVE = null;
-window.lancer = function (ex, niveau, sauvegarde) {
+window.lancer = function (ex, niveau, sauvegarde, langage, tables) {
   window.FIN = null;
   if (window.PARTIE) window.PARTIE.arreter();
   var vieux = document.getElementById("jeu"), neuf = document.createElement("div"); neuf.id = "jeu"; vieux.replaceWith(neuf);
-  window.PARTIE = CV.jouer(document.getElementById("jeu"), { exercice: ex, niveau: niveau, langage: "python", titreCase: "essai",
+  window.PARTIE = CV.jouer(document.getElementById("jeu"), { exercice: ex, niveau: niveau, langage: langage || "python", tables: tables || null, titreCase: "essai",
     sauvegarde: sauvegarde || null, surSauver: function (g) { window.SAUVE = g; }, surFin: function (r) { window.FIN = r; }, surQuitter: function () {} });
 };
 </script></body></html>"""
 
 ECHECS = []
+DEJA_LIG = {}  # les styles de texte déjà dessinés avec et sans ligatures
 
 
 def verifier(cond, quoi):
@@ -224,6 +232,57 @@ def jouer(page, ex, niveau, nom):
     return None
 
 
+def ligatures_banques(page):
+    """Chaque question des vraies banques qui contient une suite à ligature, à chaque étape où du code se
+    montre (relevé des styles dans la page, en une fois), puis chaque style distinct dessiné avec et sans ligatures."""
+    dossier = os.path.join(RACINE, "calendrier", "exercices")
+    a_voir = []
+    for nom in sorted(os.listdir(dossier)):
+        if not nom.endswith(".json") or nom.count(".") > 1 or nom in ("catalogue.json", "exercice.schema.json"):
+            continue
+        banque = json.load(open(os.path.join(dossier, nom), encoding="utf-8"))
+        langage = banque.get("theme", {}).get("langage", "python")
+        ft = os.path.join(dossier, nom[:-5] + ".tables.json")
+        tables = json.load(open(ft, encoding="utf-8"))["tables"] if os.path.exists(ft) else None
+        for ex in banque["exercices"]:
+            questions = []
+            for n, nv in enumerate(ex["niveaux"], 1):
+                for k, it in enumerate(nv["items"], 1):
+                    if any(sq in json.dumps(it, ensure_ascii=False) for sq in SEQUENCES):
+                        questions.append([n, k])
+            if questions:
+                a_voir.append({"ex": ex, "langage": langage, "tables": tables, "questions": questions})
+    releves = page.evaluate("""([lots, styles, sequences]) => {
+      const relever = eval(styles), out = [];
+      const garder = (quoi) => relever(["#jeu", sequences]).forEach(st => out.push(Object.assign(st, { quoi })));
+      const clic = (sel) => { const b = document.querySelector(sel); if (b) b.click(); };
+      for (const lot of lots) {
+        const ex = lot.ex;
+        for (const [n, k] of lot.questions) {
+          const it = ex.niveaux[n - 1].items[k - 1], seul = JSON.parse(JSON.stringify(ex)), quoi = ex.id + " N" + n + " Q" + k;
+          seul.niveaux[n - 1].items = [it];
+          lancer(seul, n, null, lot.langage, lot.tables);
+          garder(quoi);
+          if (ex.type === "erreur") { clic("[data-j=ligne][data-i='" + it.ligne + "']"); garder(quoi + " (corrections)"); }
+          if (ex.type === "completer") for (let d = 1; d < it.trous.length; d++) { clic("[data-j=trou][data-d='" + d + "']"); garder(quoi + " (pièces)"); }
+        }
+        document.getElementById("jeu").innerHTML = CV.corrige(ex, lot.langage, lot.tables);
+        garder(ex.id + " (corrigé)");
+      }
+      return out;
+    }""", [a_voir, _STYLES, SEQUENCES])
+    defauts = {}
+    for st in releves:
+        if st["cle"] not in DEJA_LIG:
+            DEJA_LIG[st["cle"]] = ligature_active(page, st["props"], st["suites"])[0]
+        if DEJA_LIG[st["cle"]]:
+            police = st["props"]["fontFamily"].split(",")[0]
+            defauts.setdefault((st["ou"], police), (st["quoi"], st["exemple"], set()))[2].update(st["suites"])
+    for (ou, police), (quoi, exemple, suites) in sorted(defauts.items()):
+        verifier(False, f"ligatures : {police} dessine {' '.join(sorted(suites))} en un seul signe dans « {ou} » (par exemple {quoi} : {exemple!r})")
+    return sum(len(lot["questions"]) for lot in a_voir)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--captures")
@@ -251,6 +310,8 @@ def main():
                     petits = page.evaluate("""[...document.querySelectorAll('#jeu button:not(.trou):not(.ligne), #jeu input')].filter(b => {
                         const r = b.getBoundingClientRect(); return r.width > 0 && (r.height < 43.5 || r.width < 43.5); }).map(b => b.outerHTML.slice(0, 60))""")
                     verifier(not petits, f"{nom} : cibles de moins de 44 px : {petits[:2]}")
+                    for d in controler(page, "#jeu", DEJA_LIG):
+                        verifier(False, f"{nom} : ligatures de {d['police']} ({' '.join(d['suites'])}) dans « {d['ou']} »")
                     if a.captures and niveau == 1:
                         page.screenshot(path=os.path.join(a.captures, f"jeu-{ex['type']}-{mode}.png"), full_page=True)
                     jouer(page, ex, niveau, nom)
@@ -277,6 +338,9 @@ def main():
             page.click("[data-j=opt][data-k='%d']" % ((it["bonne"] + 1) % 4))
             anim = page.evaluate("getComputedStyle(document.querySelector('#zone')).animationName")
             verifier(anim == ("none" if mode == "dark" else "secoue"), f"{mode} : animation « secoue » attendue {'coupée' if mode == 'dark' else 'jouée'} ({anim})")
+            if mode == "light":
+                vues = ligatures_banques(page)
+                verifier(vues > 100, f"ligatures : seulement {vues} questions avec un opérateur dans les banques")
             verifier(not erreurs, f"{mode} : erreurs dans la console : {erreurs[:3]}")
             ctx.close()
         nav.close()

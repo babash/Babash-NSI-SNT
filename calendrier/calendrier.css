@@ -28,6 +28,12 @@
 
 /* ── Page ── */
 *, *::before, *::after { box-sizing: border-box; }
+/* Ce qu'on voit est ce qu'on tape (T165) : la police de code (JetBrains Mono) dessine `==`, `>=`, `!=`,
+   `=>`, `<>`, `//`, `--`, `__`, `</`… en un seul signe (ligatures contextuelles « calt »). Coupées sur
+   CHAQUE élément, et en !important : une règle `font: …` (options, pièces, consoles, affichages) remet
+   à leur valeur initiale font-variant-ligatures ET font-feature-settings, qui rallumeraient « calt ».
+   Le test scripts/tests/test_calendrier_jeux.py dessine chaque style de texte avec et sans ligatures. */
+*, *::before, *::after { font-variant-ligatures: none !important; font-feature-settings: "liga" 0, "clig" 0, "calt" 0, "dlig" 0 !important; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin: 0; background: var(--td-fond); color: var(--td-encre); font-family: var(--td-texte); font-size: var(--td-taille); line-height: 1.5; }
 .page { max-width: 40rem; margin: 0 auto; padding: 12px var(--td-gouttiere) 24px; }
