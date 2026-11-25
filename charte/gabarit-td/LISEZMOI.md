@@ -6,7 +6,16 @@ Un TD est **une seule page HTML** : à l'écran, elle se corrige toute seule ; i
 - Modèle : `charte/gabarit-td/modele.html` (commenté) ; exemple rendu : `charte/gabarit-td/index.html` ; TD complet : `charte/td-pilote/`.
 - Outils : `charte/nouveau-td.py` (le squelette), `charte/verifier-td.py` (le code exécuté pour de vrai), `charte/imprimer-td.py` (le PDF vierge et les contrôles de mise en page).
 
-## Nouveautés du 24/11 (T123e) : à lire d'abord
+## Corrections justes (25/11, T140b) : à lire d'abord
+
+Deux défauts de correction en ligne, trouvés par la Critique T150, corrigés dans le moteur (aucune page à retoucher) :
+
+- **« Trouve l'erreur » d'indentation** (le message réel est une `IndentationError` ou une `TabError`) : le décalage de la ligne corrigée compte. Le code, avec la ligne de l'élève à sa place, doit avoir des blocs justes (comme les lit Python) ; et si `data-reponse` porte un décalage (`    nord()`), le même (une tabulation vaut 4 espaces). La ligne fautive recopiée telle quelle est refusée. L'étiquette devient « Écris cette ligne corrigée, avec ses espaces de début de ligne : ». Les autres « Trouve l'erreur » ne changent pas.
+- **Cases liées** d'une question `trous` qui a sa sortie attendue (`pre.td-attendu`, en Python) : le code rempli est **exécuté** (Python, comme dans `verifier-td.py`) quand la correction case par case ne suffit pas : une case refusée seule (le programme rempli est essayé : `while n != 0` est accepté s'il donne la sortie) ; deux cases sur une même ligne dont l'une a plusieurs réponses permises (`while n >= 0` accepté seul alors que le programme affiche 0 de trop : refusé) ; deux cases aux mêmes réponses permises remplies de la même façon (la même ligne écrite deux fois : refusé si la sortie est fausse). Sinon rien ne change (Python n'est pas chargé). Sans connexion, la correction case par case reprend. `data-execution="non"` sur la question l'empêche ; `data-execution="oui"` l'impose.
+
+Reste au contenu des pages (Ateliers) : « Écris le programme » validé par une seule sortie fixe (`print(5050)` passe) ; il faut un second essai (`pre.td-attendu` avec d'autres `data-entrees`) ou des tests cachés (`script.td-tests`).
+
+## Nouveautés du 24/11 (T123e)
 
 Rien ne change **à l'écran** (comparé au pixel sur toutes les pages de TD, à 320, 768 et 1440 px, en clair et en obscur). Ce qui change : **l'impression** des questions courtes regroupées (T123d), où beaucoup de réponses n'avaient plus la place d'être écrites, et deux outils.
 

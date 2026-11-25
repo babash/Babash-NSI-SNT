@@ -260,6 +260,27 @@
     return out + esc(code.slice(i));
   }
   function decalage(l) { return l.match(/^ */)[0].length; }
+  /* les blocs d'un code Python sont-ils justes (comme le lit Python) ? Après une ligne qui finit par « : », un bloc plus
+     décalé ; un retour en arrière revient à un décalage déjà ouvert ; jamais de décalage sans « : » avant. Les lignes vides,
+     les commentaires et les suites de lignes entre parenthèses ne comptent pas (T140b). */
+  function retraitsValides(lignes) {
+    var pile = [0], attendBloc = false, ouvertes = 0;
+    for (var i = 0; i < lignes.length; i++) {
+      var l = lignes[i].replace(/\t/g, '    '), t = l.trim();
+      if (!t || t[0] === '#') continue;
+      var suite = ouvertes > 0;
+      var sansCh = t.replace(/("([^"\\]|\\.)*"|'([^'\\]|\\.)*')/g, '""').replace(/#.*$/, '').trim();
+      ouvertes += (sansCh.match(/[([{]/g) || []).length - (sansCh.match(/[)\]}]/g) || []).length;
+      if (suite) { if (ouvertes <= 0) { ouvertes = 0; attendBloc = /:$/.test(sansCh); } continue; }
+      var d = decalage(l), haut = pile[pile.length - 1];
+      if (attendBloc) { if (d <= haut) return false; pile.push(d); }
+      else if (d > haut) return false;
+      else if (d < haut) { while (pile.length && d < pile[pile.length - 1]) pile.pop(); if (!pile.length || pile[pile.length - 1] !== d) return false; }
+      attendBloc = ouvertes <= 0 && /:$/.test(sansCh);
+      if (ouvertes < 0) ouvertes = 0;
+    }
+    return !attendBloc;
+  }
   // décalage « virtuel » des lignes vides : celui du bloc qui les entoure
   function decalages(lignes) {
     var d = lignes.map(function (l) { return l.trim() ? decalage(l) : -1; });
@@ -1056,6 +1077,7 @@
   Question.prototype.monter_trous = function () {
     var q = this, pre = this.s.querySelector('pre.td-code');
     var texte = pre.textContent.replace(/^\n/, '').replace(/\s+$/, '');
+    this.texteTrous = texte;
     this.trous = [];
     var lignes = texte.split('\n'), d = decalages(lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? 'x' : m; }).join(''); }));
     var lang = langue(pre);
@@ -1113,7 +1135,7 @@
           input.value = (q.etat.valeur || [])[num] || '';
           input.addEventListener('input', function () { q.etat.valeur = q.trous.map(function (t) { return t.input.value; }); q.enregistrer(); });
           input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); q.verifier(); } });
-          q.trous.push({ input: input, rep: rep });
+          q.trous.push({ input: input, rep: rep, ligne: n });
           cible.appendChild(input);
         }
       });
@@ -1124,10 +1146,66 @@
     this.sourceTrous = lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? new Array((parTrou ? Math.max.apply(null, alternatives(m).map(function (r) { return r.length; })) : largeurCommune) + 6).join('x') : m; }).join(''); }).join('\n');
     this.mettreDeCote();
   };
+  /* cases liées (T140b, Critique T150). Dans une question à trous qui donne sa sortie attendue (pre.td-attendu, en
+     Python), le code rempli est EXÉCUTÉ, comme le fait verifier-td.py, quand la correction case par case ne suffit pas :
+     - une case refusée seule : le programme rempli est essayé ; s'il donne la sortie attendue, la réponse est juste
+       (« n != 0 », juste, était refusé) ;
+     - des cases liées, toutes acceptées seules : deux cases sur une même ligne dont l'une a plusieurs réponses permises
+       (« n >= 0 » accepté alors que le programme affiche 0 de trop), ou deux cases aux mêmes réponses permises remplies
+       de la même façon (la même ligne écrite deux fois) : le programme rempli doit donner la sortie attendue.
+     Sinon, rien ne change (pas de Python à charger). Sans Python (pas de connexion) : case par case.
+     data-execution="non" sur la question : jamais d'exécution ; data-execution="oui" : toujours. */
+  Question.prototype.trousLies = function () {
+    var t = this.trous, i, j;
+    for (i = 0; i < t.length; i++) for (j = i + 1; j < t.length; j++) {
+      if (t[i].ligne === t[j].ligne && (t[i].rep.length > 1 || t[j].rep.length > 1)) return true;
+      if (t[i].rep.length > 1 && t[i].rep.slice().sort().join('|') === t[j].rep.slice().sort().join('|') &&
+          normCode(t[i].input.value) === normCode(t[j].input.value)) return true;
+    }
+    return false;
+  };
+  Question.prototype.codeRempli = function () {
+    var k = 0, trous = this.trous;
+    return this.texteTrous.split('\n').map(function (l) {
+      return decouperTrous(l).map(function (m, i) { return i % 2 ? trous[k++].input.value.trim() : m; }).join('');
+    }).join('\n');
+  };
+  Question.prototype.verifierTrousExecutes = function (faux, att) {
+    var q = this, s = this.s, premier = !python.charge;
+    var pre = s.querySelector('script.td-preambule') || (s.closest('[data-td]') || document).querySelector('script.td-preambule:not(.td-q script)');
+    var attr = function (n) { return att.hasAttribute(n) ? att.getAttribute(n) : s.getAttribute(n); };
+    var attendu = att.textContent.replace(/^\n/, '').replace(/\s+$/, ''), ex = s.getAttribute('data-espaces') === 'exact';
+    if (this.bVerifier) this.bVerifier.disabled = true;
+    this.dire(premier ? 'Python se charge pour exécuter ton code… (la première fois, cela peut prendre quelques secondes)' : 'Ton code tourne…', 'info');
+    lancerPython(this.f.pyodide, this.codeRempli(), '', s.getAttribute('data-fichier') || 'mon_code.py', premier,
+      { pre: pre ? pre.textContent : '', entrees: attr('data-entrees'), graine: attr('data-graine') }).then(function (r) {
+      if (q.bVerifier) q.bVerifier.disabled = false;
+      if (r.etat === 'indisponible') { q.conclureTrous(faux); return; }      // sans Python : case par case
+      if (r.etat !== 'trop-long') python.charge = true;
+      var ok = r.etat === 'ok' && normSortie(r.sortie, ex) === normSortie(attendu, ex);
+      q.conclureTrous(ok ? [] : (faux.length ? faux : null));
+      if (r.etat === 'trop-long') q.retour.appendChild(el('p', { html: 'Le code rempli tourne encore après ' + DELAI_PYTHON / 1000 + ' secondes : c\'est sans doute une <b>boucle infinie</b>.' }));
+      else if (!ok && !faux.length) q.retour.appendChild(el('p', { text: 'Chaque case, seule, peut sembler juste, mais le programme rempli ne fait pas ce qui est demandé : vérifie que les cases vont ensemble.' }));
+    });
+  };
+  // faux : les cases à marquer ; null : le programme est faux sans qu'une case seule le soit (cases liées)
+  Question.prototype.conclureTrous = function (faux) {
+    var juste = faux !== null && !faux.length;
+    this.trous.forEach(function (t) { t.input.setAttribute('aria-invalid', String(!!faux && faux.indexOf(t) >= 0)); });
+    this.conclure(juste, null);
+    if (faux && faux.length) this.retour.appendChild(el('p', { text: faux.length === 1 ? 'Une case est à revoir (elle est marquée d\'un trait épais).' : faux.length + ' cases sont à revoir (elles sont marquées d\'un trait épais).' }));
+  };
   Question.prototype.verifier_trous = function () {
     var vides = this.trous.filter(function (t) { return !t.input.value.trim(); }).length;
     if (vides === this.trous.length) return this.dire('Remplis les cases du code, puis vérifie.', 'info');
     var faux = this.trous.filter(function (t) { return !unParmi(t.input.value, t.rep, 'code'); });
+    var att = this.s.querySelector('pre.td-attendu');
+    var exe = this.s.getAttribute('data-execution');
+    if (att && !vides && exe !== 'non' && langue(this.s.querySelector('pre.td-code') || this.s) === 'python' &&
+        (exe === 'oui' || faux.length || this.trousLies())) {
+      this.verifierTrousExecutes(faux, att);
+      return;
+    }
     this.trous.forEach(function (t) { t.input.setAttribute('aria-invalid', String(faux.indexOf(t) >= 0)); });
     this.conclure(!faux.length, null);
     if (faux.length) this.retour.appendChild(el('p', { text: faux.length === 1 ? 'Une case est à revoir (elle est marquée d\'un trait épais).' : faux.length + ' cases sont à revoir (elles sont marquées d\'un trait épais).' }));
@@ -1253,6 +1331,8 @@
     var source = pre.getAttribute('data-source').split('\n'), nom = nouvelId('ligne');
     this.ligneJuste = +this.s.getAttribute('data-ligne');
     this.repLigne = this.s.getAttribute('data-reponse');
+    this.sourceErreur = source;
+    this.erreurRetrait = /\b(IndentationError|TabError)\b/.test(this.s.textContent);
     var fs = el('fieldset', { class: 'td-choix td-choix-lignes' }, [el('legend', { text: 'Quelle ligne faut-il corriger ?' })]);
     var choix = el('div', { class: 'td-lignes-choix' });
     this.radios = source.map(function (_, i) {
@@ -1270,7 +1350,7 @@
       this.champ.value = this.etat.valeur || '';
       this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
       this.champ.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); q.verifier(); } });
-      this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id, text: 'Écris cette ligne corrigée :' }), this.champ]));
+      this.zone.appendChild(el('div', { class: 'td-ligne-champ' }, [el('label', { for: id, text: this.erreurRetrait ? 'Écris cette ligne corrigée, avec ses espaces de début de ligne :' : 'Écris cette ligne corrigée :' }), this.champ]));
     }
     if (this.s.getAttribute('data-cote') === 'oui') this.mettreDeCote();     // « trouve l'erreur » : sur demande seulement (T123c)
   };
@@ -1279,6 +1359,15 @@
     if (!choisie) return this.dire('Choisis d\'abord la ligne à corriger.', 'info');
     var bonneLigne = +choisie.value === this.ligneJuste;
     var bonneCorr = !this.repLigne || unParmi(this.champ.value, alternatives(this.repLigne), 'code');
+    // erreur d'indentation (T140b, Critique T150) : le mode « code » ignore les espaces, la ligne fautive recopiée telle
+    // quelle passait. Le décalage compte : le code, avec la ligne de l'élève à sa place, doit avoir des blocs justes ; et si
+    // la réponse attendue porte un décalage, le même (une tabulation vaut 4 espaces).
+    if (bonneCorr && this.repLigne && this.erreurRetrait) {
+      var v = this.champ.value.replace(/\t/g, '    ').replace(/\s+$/, ''), d = decalage(v), L = this.sourceErreur.slice();
+      L[this.ligneJuste - 1] = v;
+      var avecDecalage = alternatives(this.repLigne).filter(function (a) { return /^\s/.test(a) && egal(v, a, 'code'); });
+      bonneCorr = retraitsValides(L) && (!avecDecalage.length || avecDecalage.some(function (a) { return decalage(a.replace(/\t/g, '    ')) === d; }));
+    }
     this.conclure(bonneLigne && bonneCorr, null);
     if (!bonneLigne) this.retour.appendChild(el('p', { html: 'Ce n\'est pas cette ligne. Le message de Python donne un indice : cherche <code>line …</code>, puis le type d\'erreur sur la dernière ligne.' }));
     else if (!bonneCorr) this.retour.appendChild(el('p', { text: this.champ.value.trim() ? 'C\'est bien la bonne ligne ! Ta correction n\'est pas encore juste : relis le message d\'erreur.' : 'C\'est bien la bonne ligne ! Écris maintenant la ligne corrigée.' }));
