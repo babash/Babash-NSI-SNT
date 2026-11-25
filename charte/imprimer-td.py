@@ -30,7 +30,11 @@ Le script :
    dans le PDF (pdffonts), et tout ce que l'élève remplit (lignes, cases du code, cases à cocher,
    ronds, cadres) tracé d'un trait plein d'au moins 0,5 pt et de contraste 7:1 au moins ;
 6. signale (« Attention », sans bloquer) une réponse à l'étroit : réponse modèle plus longue que sa place sur
-   papier, à 2,5 mm par caractère écrit à la main (T123e).
+   papier, à 2,5 mm par caractère écrit à la main (T123e) ;
+7. signale (« Attention : mise en page », sans bloquer, T140) les défauts de page, lus dans le PDF : une question
+   dont la consigne et la place pour répondre tombent sur deux pages, un titre (partie, exercice, encadré) orphelin
+   en bas de page, une page (sauf la dernière) avec plus d'un tiers de blanc en bas, une dernière page remplie à
+   moins d'un tiers. Une ligne de code trop longue pour sa colonne (elle passerait à la ligne) est une erreur (5).
 Il dit le nombre de pages (4 au plus pour un TD).
 """
 import os
@@ -184,7 +188,7 @@ def main():
             dossier_tmp = tempfile.mkdtemp(prefix='imprimer-td-', dir=os.path.dirname(os.path.abspath(sortie)))
             for k, u in enumerate(urls):
                 print(f'feuille {k + 1} : {u}')
-                erreurs, pages, maxi = controler(b, u, os.path.join(dossier_tmp, f'feuille-{k + 1}.pdf'))
+                erreurs, pages, maxi = controler(b, u, os.path.join(dossier_tmp, f'feuille-{k + 1}.pdf'), analyser=False)
                 if pages > maxi:
                     erreurs.append(f'feuille {k + 1} : {pages} pages, {maxi} au plus (data-pages-max)')
                     print('  -', erreurs[-1])
@@ -244,12 +248,118 @@ ETROIT = r"""async () => {
     if (membres.has(s) || !vis(s)) return;
     const ch = s.querySelector(s.dataset.type === 'courte' ? 'input.td-champ' : 'textarea.td-libre'); if (!vis(ch)) return;
     const t = s.querySelector('.td-num-papier') || s.querySelector('.td-q-num');
-    out.push({ id: s.id, num: norm(t ? t.textContent : ''), ou: s.classList.contains('td-courte-ligne') ? 'rangée' : 'ligne pleine', place: mm(ch.getBoundingClientRect().width), modele: modele(doc.getElementById(s.id)) });
+    // une « courte » à plusieurs lignes d'écriture (T140) : la place est la longueur de toutes ses lignes
+    const nl = +(ch.dataset.lignesPapier || 1);
+    out.push({ id: s.id, num: norm(t ? t.textContent : ''), ou: s.classList.contains('td-courte-ligne') ? 'rangée' : (nl > 1 ? nl + ' lignes' : 'ligne pleine'), place: mm(ch.getBoundingClientRect().width * nl), modele: modele(doc.getElementById(s.id)) });
   });
   return out.filter(x => x.modele.length * 2.5 > x.place);
 }"""
 
-def controler(b, url, sortie, html=None):
+# T140 : les défauts de page, vus dans le PDF lui-même. Des repères invisibles (texte blanc, en position absolue :
+# ils ne déplacent rien) sont posés en haut de chaque consigne, de chaque zone de réponse, de chaque titre et de ce qui
+# le suit ; un second PDF, identique au premier, dit sur quelle page tombe chacun (pdftotext -bbox).
+REPERES_POSER = r"""() => {
+  const vis = e => !!(e && e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && e.getBoundingClientRect().height > 1);
+  const st = document.createElement('style'); st.id = 'td-mep-style';
+  st.textContent = '[data-td-mep]::after { content: attr(data-td-mep) !important; position: absolute !important; left: 0 !important; top: 0 !important; '
+    + 'font: 10pt/1 monospace !important; color: #fff !important; white-space: nowrap !important; background: none !important; border: 0 !important; '
+    + 'margin: 0 !important; padding: 0 !important; width: auto !important; height: auto !important; display: inline !important; }';
+  document.head.appendChild(st);
+  let k = 0; const liste = [];
+  const libre = e => getComputedStyle(e, '::after').content === 'none';
+  const poser = (e, quoi) => { if (!vis(e) || !libre(e)) return null; const code = 'QXM' + (k++) + 'Q';
+    if (getComputedStyle(e).position === 'static') { e.setAttribute('data-td-mep-pos', ''); e.style.position = 'relative'; }
+    e.setAttribute('data-td-mep', code); liste.push({ code, quoi }); return code; };
+  const qs = [...document.querySelectorAll('.td-q[data-type]')].filter(s => vis(s) && !s.classList.contains('td-groupe-membre'));
+  const out = { questions: [], titres: [], liste };
+  qs.forEach(s => {
+    const n = s.querySelector('.td-num-papier') || s.querySelector('.td-q-num');
+    const num = n ? n.textContent.replace(/\s+/g, ' ').trim() : s.id;
+    const c = s.querySelector(':scope > .td-consigne') || s.querySelector('.td-q-titre');
+    let r = s.querySelector(':scope > .td-reponse');
+    if (r && !vis(r)) r = s.querySelector(':scope > pre.td-code-trous, :scope > .td-ordre, :scope > .td-erreur-bloc');
+    if (!c || !r || !vis(r)) return;
+    const a = poser(c, 'consigne'), b = poser(r, 'réponse');
+    if (a && b) out.questions.push({ num, a, b });
+  });
+  document.querySelectorAll('.td h2.td-partie, .td h3.td-exercice-titre, .td .td-encadre-titre').forEach(h => {
+    let x = h.nextElementSibling; while (x && !vis(x)) x = x.nextElementSibling;
+    if (!x && h.parentElement.matches('.td-exercice')) { x = h.parentElement.nextElementSibling; while (x && !vis(x)) x = x.nextElementSibling; }
+    if (!x) return;
+    // ce qui suit : sa consigne, s'il s'agit d'une question (le titre de la question, flottant, n'a pas de hauteur propre)
+    const cible = x.matches('.td-q') ? (x.querySelector(':scope > .td-consigne') || x) : x;
+    const a = poser(h, 'titre'), b = poser(cible, 'suite');
+    if (a && b) out.titres.push({ titre: h.textContent.replace(/\s+/g, ' ').trim().slice(0, 50), a, b });
+  });
+  return out;
+}"""
+REPERES_RETIRER = r"""() => { document.querySelectorAll('[data-td-mep]').forEach(e => e.removeAttribute('data-td-mep'));
+  document.querySelectorAll('[data-td-mep-pos]').forEach(e => { e.style.removeProperty('position'); e.removeAttribute('data-td-mep-pos'); });
+  const st = document.getElementById('td-mep-style'); if (st) st.remove(); }"""
+
+
+def pages_des_reperes(pdf):
+    """{code: page} des repères dans un PDF (pdftotext -bbox)."""
+    x = subprocess.run(['pdftotext', '-bbox', pdf, '-'], capture_output=True, text=True).stdout
+    out, page = {}, 0
+    for ligne in x.splitlines():
+        if '<page ' in ligne:
+            page += 1
+        for m in re.finditer(r'>(QXM\d+Q)<', ligne):
+            out.setdefault(m.group(1), page)
+    return out
+
+
+def remplissage(pdf, pages):
+    """Pour chaque page : la part de la hauteur utile qui porte de l'encre (du haut à la dernière encre), en %."""
+    out = []
+    for k in range(1, pages + 1):
+        img = subprocess.run(['pdftoppm', '-r', '40', '-gray', '-f', str(k), '-l', str(k), pdf], capture_output=True).stdout
+        entete, _, donnees = img.partition(b'\n255\n')
+        larg, haut = (int(v) for v in entete.split()[1:3])
+        mm = 40 / 25.4
+        haut_utile, bas_utile = int(5 * mm), haut - int(13 * mm)       # marges de la page (le pied A4 exclu)
+        der = haut_utile
+        for y in range(haut_utile, bas_utile):
+            if min(donnees[y * larg:(y + 1) * larg]) < 200:
+                der = y
+        out.append(round(100 * (der - haut_utile) / (bas_utile - haut_utile)))
+    return out
+
+
+def defauts_de_page(p, sortie, pages):
+    """Les défauts de page (T140), en « Attention » : question coupée de sa réponse, titre orphelin, page presque
+    vide, grand blanc en bas d'une page. Le PDF de repères est fait à côté, puis effacé."""
+    att = []
+    info = p.evaluate(REPERES_POSER)
+    tmp = sortie[:-4] + '.reperes.pdf'
+    try:
+        p.pdf(path=tmp, format='A4', print_background=True, prefer_css_page_size=True)
+        pg = pages_des_reperes(tmp)
+    finally:
+        p.evaluate(REPERES_RETIRER)
+        if os.path.exists(tmp):
+            os.remove(tmp)
+    for q in info['questions']:
+        a, b = pg.get(q['a']), pg.get(q['b'])
+        if a and b and b != a:
+            att.append(f"{q['num']} : la consigne (page {a}) et la place pour répondre (page {b}) sont séparées "
+                       "(côte à côte, data-ensemble, ou un saut de page voulu)")
+    for t in info['titres']:
+        a, b = pg.get(t['a']), pg.get(t['b'])
+        if a and b and b != a:
+            att.append(f"titre orphelin en bas de la page {a} : « {t['titre']} » (ce qui le suit est page {b})")
+    if pages > 1:
+        r = remplissage(sortie, pages)
+        for k, x in enumerate(r[:-1], 1):
+            if x < 67:
+                att.append(f'page {k} : {100 - x} % de blanc en bas (un bloc poussé à la page suivante ?)')
+        if r[-1] < 34:
+            att.append(f'page {pages} (la dernière) : remplie à {r[-1]} % seulement (moins d\'un tiers)')
+    return att
+
+
+def controler(b, url, sortie, html=None, analyser=True):
     """Contrôle une page (ou les feuilles réunies, html) et écrit son PDF. Renvoie (erreurs, pages, pages au plus)."""
     erreurs = []
     if True:
@@ -328,7 +438,7 @@ def controler(b, url, sortie, html=None):
         for x in etroit:
             print(f"  Attention : réponse à l'étroit, {x['id']} ({x['num']}, {x['ou']}) : réponse modèle de {len(x['modele'])} caractères, "
                   f"environ {len(x['modele']) * 2.5:.0f} mm à la main, pour {x['place']} mm"
-                  + (' : data-lignes="2"' if x['ou'] == 'ligne pleine' else ' : à signaler au Designer (le moteur doit la régler)'))
+                  + (' : data-lignes="2"' if x['ou'] == 'ligne pleine' else ' : data-lignes plus grand' if x['ou'].endswith('lignes') else ' : à signaler au Designer (le moteur doit la régler)'))
         # un texte caché rendu sur papier (une règle d'impression qui l'affiche) : la fuite elle-même, sans lire le PDF
         rendus = p.evaluate("""() => [...document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu, .td-retour-zone, .td-explication')]
             .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && e.textContent.trim())
@@ -342,6 +452,11 @@ def controler(b, url, sortie, html=None):
         maxi = p.evaluate("Math.max(...[...document.querySelectorAll('[data-td]')].map(m => +m.getAttribute('data-pages-max') || 4))")
         nb_feuilles = p.evaluate("document.querySelectorAll('[data-td]').length")
         p.pdf(path=sortie, format='A4', print_background=True, prefer_css_page_size=True)
+        nb_pages = int(next(l for l in subprocess.run(['pdfinfo', sortie], capture_output=True, text=True).stdout.splitlines()
+                            if l.startswith('Pages:')).split()[1])
+        mep = defauts_de_page(p, sortie, nb_pages) if analyser else []
+        for x in mep:
+            print('  Attention : mise en page, ' + x)
         p.set_viewport_size({'width': 1440, 'height': 900})
         p.emulate_media(media='screen')
         p.evaluate("window.dispatchEvent(new Event('afterprint'))")

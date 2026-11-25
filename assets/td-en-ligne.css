@@ -784,3 +784,203 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td h2.td-partie + p, .td h2.td-partie + p + p, .td h2.td-partie + .td-intro { break-after: avoid; break-inside: avoid; }
   .td.td-suite .td-entete, .td[data-feuille]:not([data-feuille="1"]) .td-entete { break-after: avoid; }
 }
+
+/* ══ Mise en page au cas par cas (T140, 25/11) ═══════════════════════════════════════════════════════
+   Des moyens que l'Atelier DÉCLARE dans la page, là où ils servent (mode d'emploi :
+   charte/gabarit-td/MISE-EN-PAGE.md ; exemple : charte/gabarit-td/mise-en-page.html). Toutes les règles
+   portent sur des classes ou des attributs nouveaux : une page qui ne les emploie pas ne change pas,
+   ni à l'écran ni sur papier.
+   - div.td-cote-a-cote > div.td-col + div.td-col : deux blocs côte à côte (code | questions, énoncé |
+     tableau, figure | texte), data-proportions="1/2" (défaut), "1/3", "2/3", "2/5", "3/5", "1/4", "3/4"
+     (la part du PREMIER bloc) ;
+   - div.td-colonnes : une suite de petits blocs (questions) en colonnes, data-colonnes="2" (défaut) ou "3" ;
+     sur papier, l'ordre descend la première colonne puis la deuxième ; data-sens="lignes" : de gauche à droite ;
+   - div.td-grille-reponses : des réponses courtes en grille compacte, data-colonnes="2" à "4" ;
+   - div.td-encadre[data-genre="rappel|methode|attention|exemple"] ; section.td-exercice > h3.td-exercice-titre ;
+   - data-saut="avant|apres", data-ensemble, data-avec-suivant (papier) ;
+   - pre.td-code[data-numeros="non"], pre.td-code[data-compact] ;
+   - main[data-mise-en-page="2"] : la typographie papier revue (numéros, consignes, séparations).
+   L'ordre de lecture est TOUJOURS celui de la page (DOM) : au clavier, au lecteur d'écran, sur téléphone
+   (une colonne) et dans la numérotation des questions. */
+
+/* ── Côte à côte ── */
+.td-cote-a-cote { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 1.5rem; margin: .4rem 0 .6rem; align-items: start; }
+.td-cote-a-cote > .td-col { min-width: 0; }
+.td-cote-a-cote > .td-col > :first-child { margin-top: 0; }
+.td-cote-a-cote[data-proportions="1/3"] { --td-p1: 1fr; --td-p2: 2fr; }
+.td-cote-a-cote[data-proportions="2/3"] { --td-p1: 2fr; --td-p2: 1fr; }
+.td-cote-a-cote[data-proportions="2/5"] { --td-p1: 2fr; --td-p2: 3fr; }
+.td-cote-a-cote[data-proportions="3/5"] { --td-p1: 3fr; --td-p2: 2fr; }
+.td-cote-a-cote[data-proportions="1/4"] { --td-p1: 1fr; --td-p2: 3fr; }
+.td-cote-a-cote[data-proportions="3/4"] { --td-p1: 3fr; --td-p2: 1fr; }
+/* écran large : le bloc sort de la colonne de lecture (48rem) pour prendre jusqu'à 72rem, centré ; le premier
+   bloc (le code, la figure) reste visible pendant qu'on répond à côté, s'il tient dans la fenêtre (le moteur le
+   mesure : classe td-collant) */
+@media screen and (min-width: 1000px) {
+  .td .td-cote-a-cote, .td .td-colonnes {
+    --td-large: min(72rem, 100vw - 10rem);
+    width: var(--td-large); margin-left: calc((100% - var(--td-large)) / 2); margin-right: calc((100% - var(--td-large)) / 2);
+  }
+  .td :is(.td-encadre, .td-col, .td-colonnes) :is(.td-cote-a-cote, .td-colonnes) { width: auto; margin-left: 0; margin-right: 0; }
+  .td-cote-a-cote { grid-template-columns: minmax(0, var(--td-p1, 1fr)) minmax(0, var(--td-p2, 1fr)); }
+  .td-cote-a-cote > .td-col.td-collant { position: sticky; top: var(--td-haut-collant, 3.5rem); }
+  /* dans une colonne de questions, le code des questions garde sa largeur (pas de réduction) */
+}
+
+/* ── Colonnes de petites questions : à l'écran, une grille (chaque rangée grandit avec ses retours, rien ne
+   saute d'une colonne à l'autre) ; sur papier, des colonnes de journal ── */
+.td-colonnes { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 1.5rem; margin: .4rem 0 .6rem; align-items: start; }
+@media screen and (min-width: 1000px) {
+  .td-colonnes { grid-template-columns: repeat(var(--td-ncol, 2), minmax(0, 1fr)); }
+}
+.td-colonnes[data-colonnes="3"], .td-grille-reponses[data-colonnes="3"] { --td-ncol: 3; }
+.td-colonnes[data-colonnes="2"], .td-grille-reponses[data-colonnes="2"] { --td-ncol: 2; }
+.td-grille-reponses[data-colonnes="4"] { --td-ncol: 4; }
+.td-grille-reponses[data-colonnes="5"] { --td-ncol: 5; }
+.td-grille-reponses[data-colonnes="6"] { --td-ncol: 6; }
+
+/* ── Grille de réponses courtes (conversions, valeurs, mots) ── */
+.td-grille-reponses { display: grid; grid-template-columns: minmax(0, 1fr); gap: .6rem 1rem; margin: .4rem 0 1rem; align-items: start; }
+@media screen and (min-width: 640px) {
+  .td-grille-reponses { grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr)); }
+}
+.td-grille-reponses > .td-q { margin: 0; padding: .6rem .7rem .7rem; }
+.td-grille-reponses > .td-q .td-q-titre { margin-bottom: .3rem; }
+.td-grille-reponses > .td-q .td-consigne { margin-bottom: .3rem; }
+.td-grille-reponses > .td-q .td-actions { margin-top: .5rem; }
+.td-grille-reponses > .td-q input.td-champ { flex-basis: 6rem; min-width: 0; }
+
+/* ── Encadrés : le genre se lit au mot et au trait, jamais à la couleur seule ── */
+.td-encadre {
+  position: relative; margin: .9rem 0; padding: .55rem .9rem .6rem;
+  border: var(--td-trait-ep) solid var(--td-encre); border-left-width: 5px; background: var(--td-panneau);
+}
+.td-encadre > :last-child { margin-bottom: 0; }
+.td-encadre p { margin: .3rem 0; }
+.td-encadre-titre {
+  margin: 0 0 .3rem !important; font-family: var(--td-mono); font-size: .88rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .05em;
+}
+.td-encadre-titre::before { font-family: var(--td-mono); margin-right: .45em; }
+.td-encadre[data-genre="rappel"] .td-encadre-titre::before { content: "■"; }
+/* « À retenir » (goût G6) : en tête de feuille, 5 à 8 lignes ; le plus marqué des encadrés (double trait), et sur
+   deux colonnes si data-colonnes="2" (papier et écran large) */
+.td-encadre[data-genre="retenir"] { border-width: 2px; border-left-width: 2px; outline: 1px solid var(--td-encre); outline-offset: 2px; box-shadow: calc(var(--td-ombre) + 2px) calc(var(--td-ombre) + 2px) 0 var(--td-neon-1); margin: 1rem 2px 1.2rem; }
+.td-encadre[data-genre="retenir"] .td-encadre-titre::before { content: "★"; }
+.td-encadre[data-genre="retenir"] ul { margin: .2rem 0; padding-left: 1.2rem; }
+.td-encadre[data-genre="retenir"] li { margin: .15rem 0; }
+@media screen and (min-width: 760px) { .td-encadre[data-colonnes="2"] > :not(.td-encadre-titre) { columns: 2; column-gap: 1.6rem; } }
+.td-encadre li { break-inside: avoid; }
+/* « À ton tour » : la question qui suit un exemple résolu */
+.td-q-tour { font-family: var(--td-mono); font-size: .85rem; font-weight: 700; padding: 0 .45rem; border: var(--td-trait-ep) dashed var(--td-encre); }
+.td-encadre[data-genre="methode"] { border-left-style: double; border-left-width: 7px; }
+.td-encadre[data-genre="methode"] .td-encadre-titre::before { content: "◆"; }
+.td-encadre[data-genre="attention"] { border-width: 2.5px; border-left-width: 7px; box-shadow: var(--td-ombre) var(--td-ombre) 0 var(--td-neon-2); }
+.td-encadre[data-genre="attention"] .td-encadre-titre::before { content: "▲"; }
+.td-encadre[data-genre="exemple"] { border-style: dashed; border-left-style: solid; }
+.td-encadre[data-genre="exemple"] .td-encadre-titre::before { content: "→"; }
+
+/* ── Exercice : un niveau entre la partie et la question ── */
+.td-exercice { margin: 1.2rem 0 .4rem; }
+.td h3.td-exercice-titre {
+  font-family: var(--td-titres); font-weight: 400; font-size: 1.2rem; line-height: 1.2; letter-spacing: .01em;
+  margin: 1.4rem 0 .6rem; padding-bottom: .15rem; border-bottom: 1px solid var(--td-encre);
+}
+.td-exercice > h3.td-exercice-titre:first-child { margin-top: 0; }
+.td h3.td-exercice-titre code { font-family: inherit; font-size: 1em; }
+.td-exercice-titre .td-exercice-points { float: right; font-family: var(--td-mono); font-size: .85rem; letter-spacing: 0; padding-top: .25rem; }
+
+/* ── Mise en page « 2 » à l'écran : rien ne change, sinon l'introduction d'une partie, plus aérée ── */
+
+@media print {
+  /* côte à côte : deux colonnes de la feuille, séparées de 6 mm, chacune avec ses blocs entiers */
+  .td-cote-a-cote { display: grid; grid-template-columns: minmax(0, var(--td-p1, 1fr)) minmax(0, var(--td-p2, 1fr)); column-gap: 6mm; margin: .8mm 0 1.6mm; }
+  .td-cote-a-cote > .td-col > :first-child { margin-top: 0; }
+  .td-cote-a-cote > .td-col > :last-child { margin-bottom: 0; }
+  /* un côte à côte et une grille restent entiers (sur une page) ; data-coupable les laisse passer d'une page à
+     l'autre (un côte à côte plus haut qu'une page : chaque bloc garde ses éléments entiers) */
+  .td-cote-a-cote:not([data-coupable]), .td-grille-reponses:not([data-coupable]) { break-inside: avoid; }
+  /* dans une colonne, une question ne se met plus elle-même en deux (code à gauche, réponse à droite) */
+  .td-cote-a-cote .td-q.td-cote > pre.td-code, .td-colonnes .td-q.td-cote > pre.td-code, .td-grille-reponses .td-q.td-cote > pre.td-code { float: none; width: auto; margin-right: 0; }
+  /* colonnes de questions (sur papier : l'ordre descend la première colonne, puis la suivante) */
+  .td-colonnes { display: block; columns: var(--td-ncol, 2); column-gap: 6mm; column-rule: .5pt solid #8C8796; margin: .8mm 0 1.6mm; }
+  .td-colonnes > * { break-inside: avoid; }
+  .td-colonnes > :first-child { margin-top: 0; }
+  .td-colonnes[data-sens="lignes"] { display: grid; columns: auto; grid-template-columns: repeat(var(--td-ncol, 2), minmax(0, 1fr)); column-gap: 6mm; }
+  /* une rangée (consigne | ligne) se replie dans une colonne : la ligne sous la consigne, pleine largeur */
+  :is(.td-cote-a-cote, .td-colonnes) .td-q.td-courte-ligne > .td-reponse { min-width: min(var(--td-rangee-r, 64mm), 100%); }
+  /* grille de réponses : des cases à trait fin, numéro, consigne et ligne d'écriture dans chaque case */
+  .td-grille-reponses { display: grid; grid-template-columns: repeat(var(--td-ncol, 3), minmax(0, 1fr)); gap: 0; margin: 1mm 0 2mm;
+    border-top: 1px solid #121016; border-left: 1px solid #121016; }
+  .td-grille-reponses { align-items: stretch; }
+  .td-grille-reponses > .td-q { margin: 0; padding: 1mm 2mm 2.6mm; border: 0 !important; border-right: 1px solid #121016 !important; border-bottom: 1px solid #121016 !important; break-inside: avoid; }
+  /* dans chaque case : le numéro et la consigne en haut, la ligne de réponse en bas (alignées d'une case à l'autre) */
+  .td-grille-reponses > .td-q, .td-grille-reponses > .td-q.td-courte-ligne { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 1.6mm; align-items: start; }
+  .td-grille-reponses > .td-q > .td-q-titre { grid-column: 1; grid-row: 1; float: none; margin: 0; }
+  .td-grille-reponses > .td-q .td-q-mot { display: none; }
+  /* un nombre ne se coupe jamais au milieu (seulement à une espace : « 1111 1111 » sur deux lignes) */
+  .td-grille-reponses > .td-q > .td-consigne code { overflow-wrap: normal; word-break: keep-all; }
+  .td-grille-reponses > .td-q > .td-consigne { grid-column: 2; grid-row: 1; min-height: 0; margin: 0 0 .6mm; }
+  .td-grille-reponses > .td-q > .td-reponse { grid-column: 1 / -1; grid-row: 2; align-self: end; clear: none; margin: 0; min-width: 0 !important; }
+  .td-grille-reponses > .td-q .td-ligne-champ { display: flex; flex-wrap: nowrap; margin: 0; }
+  .td-grille-reponses > .td-q .td-ligne-champ > label:not(.td-etiquette-defaut) { white-space: nowrap; }
+  /* la réponse : une case fermée (et non une ligne, qui doublerait le bord de la case) */
+  .td-grille-reponses > .td-q input.td-champ { flex: 1 1 auto; width: auto; min-width: 12mm; height: 7.5mm; min-height: 7.5mm; border: var(--td-saisie-ep) solid var(--td-saisie) !important; }
+  /* data-brouillon="1" à "5" : de la place pour le calcul (lignes de 7 mm, sans trait) au-dessus de la ligne de réponse */
+  .td-grille-reponses[data-brouillon="1"] { --td-brouillon: 1; }
+  .td-grille-reponses[data-brouillon="2"] { --td-brouillon: 2; }
+  .td-grille-reponses[data-brouillon="3"] { --td-brouillon: 3; }
+  .td-grille-reponses[data-brouillon="4"] { --td-brouillon: 4; }
+  .td-grille-reponses[data-brouillon="5"] { --td-brouillon: 5; }
+  .td-grille-reponses[data-brouillon] > .td-q > .td-reponse { padding-top: calc(var(--td-brouillon, 0) * 7mm); }
+  /* data-etiquette-papier="non" : l'étiquette du champ n'est pas imprimée (le titre de la partie dit déjà quoi écrire) */
+  .td-grille-reponses[data-etiquette-papier="non"] .td-ligne-champ > label { display: none; }
+  /* encadrés : trait noir fin, fond blanc ; le genre au mot, au symbole et au tracé */
+  .td-encadre { margin: 1.4mm 0 1.8mm; padding: 1.2mm 3mm 1.3mm; border-width: 1px; border-left-width: 3px; box-shadow: none !important; break-inside: avoid; }
+  /* un encadré de cours qui porte un code, une figure ou un côte à côte peut passer d'une page à l'autre entre ses blocs */
+  .td-encadre:has(pre, figure, .td-cote-a-cote, .td-table) { break-inside: auto; }
+  .td-encadre[data-genre="methode"] { border-left-width: 4px; }
+  .td-encadre[data-genre="attention"] { border-width: 1.6px; border-left-width: 4px; }
+  .td-encadre-titre { font-size: 10pt; margin-bottom: .6mm !important; }
+  .td-encadre[data-genre="retenir"] { border-width: 1.4px; outline: .8px solid #121016; outline-offset: .6mm; margin: 2mm .8mm 2.6mm; box-shadow: none !important; }
+  .td-encadre[data-colonnes="2"] > :not(.td-encadre-titre) { columns: 2; column-gap: 6mm; }
+  .td-encadre ul { margin: .4mm 0; padding-left: 4.5mm; }
+  .td-encadre li { margin: .2mm 0; }
+  .td-q-tour { font-size: 10pt; border-width: 1px; }
+  .td-encadre p { margin: .5mm 0; }
+  /* exercices */
+  .td-exercice { margin: 2mm 0 .6mm; }
+  .td h3.td-exercice-titre { font-size: 12pt; margin: 2.6mm 0 1.2mm; padding-bottom: .3mm; border-bottom-width: .8pt; break-after: avoid; }
+  .td-exercice > h3.td-exercice-titre:first-child { margin-top: 0; }
+  .td-exercice-titre .td-exercice-points { font-size: 10pt; padding-top: .8mm; }
+  /* sauts de page voulus, blocs gardés ensemble */
+  .td [data-saut="avant"] { break-before: page; }
+  .td [data-saut="apres"] { break-after: page; }
+  .td [data-ensemble] { break-inside: avoid; }
+  .td [data-avec-suivant] { break-after: avoid; }
+  /* code compact : interligne serré (10 pt toujours) */
+  .td pre.td-code[data-compact] { line-height: 1.18; }
+  /* une réponse courte plus longue que sa ligne : deux lignes (ou plus) d'écriture de 7 mm (T140) */
+  .td-q.td-courte-multi .td-ligne-champ { align-items: flex-start; flex-wrap: nowrap; }
+  .td-q.td-courte-multi .td-ligne-champ > label { line-height: 7mm; white-space: nowrap; }
+  .td-q.td-courte-multi input.td-champ { flex: 1 1 auto; align-self: stretch; height: calc(var(--td-lignes-courte, 2) * 7mm) !important; min-height: 0;
+    border: 0 !important; padding: 0 1mm;
+    background: repeating-linear-gradient(to bottom, transparent 0 calc(7mm - 1.2px), var(--td-saisie) calc(7mm - 1.2px) 7mm) !important; }
+
+  /* ── main[data-mise-en-page="2"] : la typographie de la feuille revue (T140) ──
+     numéro de question court et net (« 7 », dans un cadre), consigne en graisse normale (le numéro et les mots
+     en gras portent la hiérarchie), questions séparées par de l'air et un filet fin plutôt qu'un trait noir */
+  .td[data-mise-en-page="2"] { line-height: 1.34; }
+  .td[data-mise-en-page="2"] .td-q:not(.td-grille-reponses > .td-q) { border-top: .5pt solid #8C8796; padding: 1.4mm 0 .6mm; margin: 0 0 1.2mm; }
+  .td[data-mise-en-page="2"] :is(h2, h3, .td-encadre, .td-cote-a-cote, .td-colonnes) + .td-q,
+  .td[data-mise-en-page="2"] .td-col > .td-q:first-child,
+  .td[data-mise-en-page="2"] .td-colonnes > .td-q { border-top: 0; padding-top: .4mm; }
+  .td[data-mise-en-page="2"] .td-colonnes > .td-q { margin-bottom: 2mm; }
+  .td[data-mise-en-page="2"] .td-q-mot { display: none; }
+  .td[data-mise-en-page="2"] .td-q-num { font-size: 10.5pt; min-width: 6mm; text-align: center; padding: 0 1.2mm; color: #121016; background: #fff;
+    border: 1.2px solid #121016; box-shadow: .6mm .6mm 0 var(--td-neon-2); }
+  .td[data-mise-en-page="2"] .td-q-titre { margin-right: 2mm; }
+  .td[data-mise-en-page="2"] .td-consigne { font-weight: 400; }
+  .td[data-mise-en-page="2"] .td-consigne b, .td[data-mise-en-page="2"] .td-consigne strong { font-weight: 700; }
+  .td[data-mise-en-page="2"] .td-q > .td-consigne:first-of-type { min-height: 4.8mm; }
+  .td[data-mise-en-page="2"] h2.td-partie { margin-top: 3.4mm; 

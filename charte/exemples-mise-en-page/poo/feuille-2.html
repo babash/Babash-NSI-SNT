@@ -1,0 +1,280 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>La POO : penser en objets : TD en ligne (modèle de mise en page)</title>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="TD en ligne auto-correctif : La POO : penser en objets (Tle NSI, Programmation objet).">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="modele-t140-tle-poo-td1-2" data-mise-en-page="2" data-premiere-question="13" data-td-version="1" data-ordre="melange" data-code="obligatoire" data-auteurs="Babash - NSI Tani Malandi ; Johanne Bakalara" data-feuille="2">
+
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="2">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:39.76%;--y:86.61%;--r:-4deg;--l:2.8%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Programmation objet</span></p>
+        <h1>La POO : penser en objets</h1>
+        <p class="td-accroche">TD 1 · feuille 2 sur 2</p>
+      </div>
+      
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+        <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> décoder le point « <code>.</code> » : appel de méthode ou accès à une donnée, objet modifié ou valeur renvoyée.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>dire de quelle classe vient une méthode ;</li>
+        <li>dire si une méthode modifie l'objet ou renvoie une valeur ;</li>
+        <li>donner le type et la valeur de ce que renvoie une méthode ;</li>
+        <li>reconnaître que listes, dictionnaires et chaînes sont des objets.</li>
+      </ul>
+      <p class="td-duree">Feuille 2 sur 2 · 20 minutes · 9 questions · après la feuille 1</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <div class="td-encadre" data-genre="retenir">
+    <p>Une méthode appartient à la classe de l'objet écrit avant le point. Elle peut <b>modifier l'objet</b> (et renvoyer <code>None</code>) ou <b>renvoyer une valeur</b> sans le modifier. Listes, dictionnaires et chaînes sont des objets.</p>
+  </div>
+
+  <p class="td-ecran-seul">Cette feuille fait suite à la <a href="index.html">feuille 1 (classes, objets, attributs, méthodes)</a>.</p>
+
+  <h2 class="td-partie">Exercice 3 · L'interprétation de Grace Hopper (années 1950)</h2>
+  <p><i>Le rôle du point « . » et des méthodes qui modifient <code>self</code>.</i> Grace Hopper, amirale et informaticienne, fut la pionnière du premier <b>compilateur</b>, un programme qui <b>traduit</b> le code source (lisible par l'humain) en langage machine (exécutable par l'ordinateur). Une tâche cruciale du compilateur est de décoder les instructions : à quel objet on s'adresse, et quelle action on lui demande.</p>
+  <p><b>Ton rôle :</b> tu es le compilateur. Décode les instructions de la classe <code>Code</code> et détermine leur effet.</p>
+  <pre class="td-code">
+class Code:
+    def __init__(self, lignes):
+        self.lignes = lignes
+        self.est_nettoye = False  # état initial : non nettoyé
+
+    def preparer_compilation(self):
+        # La méthode .upper() transforme le texte en MAJUSCULES.
+        self.lignes = self.lignes.upper()
+        self.est_nettoye = True
+
+    def afficher_etat(self):
+        return (self.lignes, self.est_nettoye)
+
+mon_code = Code("while True:"
+                "    print('Mouhahah !')")</pre>
+
+<div class="td-colonnes">
+    <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
+      <p class="td-consigne">La méthode <code>upper()</code> est une méthode de quelle classe ?</p>
+      <ul class="td-options">
+        <li data-juste>de la classe <code>str</code> : on l'appelle sur <code>self.lignes</code>, une chaîne de caractères</li>
+        <li data-retour="upper n'est pas définie dans la classe Code : on ne la trouve dans aucun def de Code.">de la classe <code>Code</code>, puisqu'elle est appelée dans une de ses méthodes</li>
+        <li data-retour="upper est appelée sur self.lignes, pas sur self.est_nettoye.">de la classe <code>bool</code></li>
+        <li data-retour="Ce n'est pas une fonction seule : elle s'écrit après un point, sur un objet. C'est donc une méthode.">d'aucune classe : c'est une fonction de Python</li>
+      </ul>
+      <div class="td-correction"><p><code>self.lignes.upper()</code> : on appelle <code>upper</code> sur <code>self.lignes</code>, qui contient une chaîne. C'est une méthode de la classe <code>str</code>.</p></div>
+    </section>
+    <section class="td-q" data-type="libre" id="q1-papier" data-support="papier" data-lignes="2">
+      <p class="td-consigne">La méthode <code>upper()</code> est une méthode de quelle classe ? Justifie.</p>
+      <div class="td-correction"><p>De la classe <code>str</code> : on l'appelle sur <code>self.lignes</code>, une chaîne de caractères.</p></div>
+    </section>
+
+    <section class="td-q" data-type="qcu" id="q2" data-support="ecran" data-ordre="fixe">
+      <p class="td-consigne">Si l'on crée l'objet <code>mon_code = Code("while true")</code>, quelle est la valeur de l'attribut <code>lignes</code> après l'appel <code>mon_code.preparer_compilation()</code> ?</p>
+      <ul class="td-options">
+        <li data-retour="preparer_compilation remplace self.lignes par sa version en majuscules : la valeur change.">"while true"</li>
+        <li data-retour="upper() met en majuscules toutes les lettres, pas seulement la première de chaque mot.">"While True"</li>
+        <li data-juste>"WHILE TRUE"</li>
+        <li data-retour="True est rangé dans est_nettoye ; lignes garde un texte.">True</li>
+      </ul>
+      <div class="td-correction"><p><code>lignes</code> vaut <b>"WHILE TRUE"</b> : tout le texte est passé en majuscules, et l'attribut <code>est_nettoye</code> vaut <code>True</code>.</p></div>
+    </section>
+    <section class="td-q" data-type="libre" id="q2-papier" data-support="papier" data-lignes="1">
+      <p class="td-consigne">Si l'on crée l'objet <code>mon_code = Code("while true")</code>, quelle sera la valeur de l'attribut <code>lignes</code> après l'appel <code>mon_code.preparer_compilation()</code> ?</p>
+      <div class="td-correction"><p><code>lignes</code> vaut <b>"WHILE TRUE"</b> : tout le texte est passé en majuscules, et l'attribut <code>est_nettoye</code> vaut <code>True</code>.</p></div>
+    </section>
+
+    <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
+      <p class="td-consigne">Quel est le type de la valeur renvoyée par la méthode <code>afficher_etat()</code> ?</p>
+      <ul class="td-options">
+        <li data-juste>un tuple (<code>tuple</code>)</li>
+        <li data-retour="Une liste s'écrit avec des crochets [ ]. Ici, ce sont des parenthèses.">une liste (<code>list</code>)</li>
+        <li data-retour="La méthode renvoie deux valeurs regroupées, pas seulement le texte.">une chaîne (<code>str</code>)</li>
+        <li data-retour="est_nettoye est un booléen, mais il n'est qu'un des deux éléments renvoyés.">un booléen (<code>bool</code>)</li>
+      </ul>
+      <div class="td-correction"><p><code>(self.lignes, self.est_nettoye)</code> est un <b>tuple</b> de deux éléments : une chaîne et un booléen.</p></div>
+    </section>
+    <section class="td-q" data-type="libre" id="q3-papier" data-support="papier" data-lignes="1">
+      <p class="td-consigne">Quel est le type de la valeur renvoyée par la méthode <code>afficher_etat()</code> ?</p>
+      <div class="td-correction"><p><code>(self.lignes, self.est_nettoye)</code> est un <b>tuple</b> de deux éléments : une chaîne et un booléen.</p></div>
+    </section>
+  </div>
+
+    <p><b>Eurêka !</b> Tu utilises déjà des objets : les listes (<code>l.append()</code>), les dictionnaires (<code>d.keys()</code>) et les chaînes de caractères sont des objets en Python.</p>
+
+  <h2 class="td-partie">Exercice 4 · Les données universelles d'Alan Turing (1936)</h2>
+  <p><i>Le point : méthode ou accès ?</i> En 1936, Alan Turing décrit la <b>machine universelle</b>, capable de traiter toute information. En Python, le point (<code>.</code>) est l'opérateur universel pour atteindre cette information, qu'elle soit dans une liste, une chaîne ou un nombre flottant.</p>
+  <p><b>Ton rôle :</b> pour chaque ligne, détermine si le point appelle une action sur un objet (une méthode) ou s'il donne accès à une donnée.</p>
+<div class="td-cote-a-cote" data-coupable>
+    <div class="td-col">
+      <pre class="td-code">
+# Données universelles :
+ma_liste = [10, 20, 30]
+mon_dict = {'a': 1, 'b': 2}
+mon_texte = "TURING"
+mon_chiffre = 3.14
+
+# Instructions à décoder :
+A = ma_liste.append(40)
+B = mon_dict.keys()
+C = mon_texte.lower()
+D = mon_chiffre.is_integer()
+E = mon_dict['a']</pre>
+    </div>
+    <div class="td-col">
+      <section class="td-q" data-type="cases" id="q4" data-support="ecran" data-ordre="fixe">
+        <p class="td-consigne">Dans quelles lignes le point (<code>.</code>) sert-il à appeler une méthode ?</p>
+        <ul class="td-options">
+          <li data-juste>A</li>
+          <li data-juste>B</li>
+          <li data-juste>C</li>
+          <li data-juste>D</li>
+          <li data-retour="La ligne E n'a pas de point : elle lit une valeur du dictionnaire avec des crochets.">E</li>
+        </ul>
+        <div class="td-correction"><p>A, B, C et D appellent une méthode : <code>append</code>, <code>keys</code>, <code>lower</code>, <code>is_integer</code>. La ligne E n'utilise pas le point.</p></div>
+      </section>
+      <section class="td-q" data-type="libre" id="q4-papier" data-support="papier" data-lignes="1">
+        <p class="td-consigne">Dans quelles lignes (A, B, C, D ou E) le point (<code>.</code>) est-il utilisé pour appeler une méthode ?</p>
+        <div class="td-correction"><p>A, B, C et D appellent une méthode : <code>append</code>, <code>keys</code>, <code>lower</code>, <code>is_integer</code>. La ligne E n'utilise pas le point.</p></div>
+      </section>
+
+      <section class="td-q" data-type="qcu" id="q5" data-support="ecran" data-ordre="fixe">
+        <p class="td-consigne">Laquelle de ces instructions modifie l'objet sur lequel elle est appelée ?</p>
+        <ul class="td-options">
+          <li data-juste>A</li>
+          <li data-retour="keys() donne les clés sans rien changer au dictionnaire.">B</li>
+          <li data-retour="lower() renvoie une nouvelle chaîne : mon_texte reste &quot;TURING&quot; (une chaîne ne se modifie pas).">C</li>
+          <li data-retour="is_integer() répond à une question, sans changer le nombre.">D</li>
+          <li data-retour="E lit une valeur du dictionnaire sans le modifier.">E</li>
+        </ul>
+        <div class="td-correction"><p>Seule <b>A</b> modifie son objet : <code>append(40)</code> ajoute 40 à la fin de <code>ma_liste</code>.</p></div>
+      </section>
+      <section class="td-q" data-type="libre" id="q5-papier" data-support="papier" data-lignes="1">
+        <p class="td-consigne">Laquelle des instructions (A, B, C, D ou E) a pour effet de modifier l'objet sur lequel elle est appelée ?</p>
+        <div class="td-correction"><p>Seule <b>A</b> modifie son objet : <code>append(40)</code> ajoute 40 à la fin de <code>ma_liste</code>.</p></div>
+      </section>
+    </div>
+  </div>
+
+    <section class="td-q" data-type="trous" id="q6">
+    <p class="td-consigne">Complète les commentaires : le type de A, B, C, D et E.</p>
+    <script type="text/x-python" class="td-preambule">
+ma_liste = [10, 20, 30]
+mon_dict = {'a': 1, 'b': 2}
+mon_texte = "TURING"
+mon_chiffre = 3.14
+</script>
+    <pre class="td-code">
+A = ma_liste.append(40)       # type de A : [[NoneType]]
+B = mon_dict.keys()           # type de B : [[dict_keys]]
+C = mon_texte.lower()         # type de C : [[str]]
+D = mon_chiffre.is_integer()  # type de D : [[bool]]
+E = mon_dict['a']             # type de E : [[int]]</pre>
+    <div class="td-correction"><p>A : <code>NoneType</code> (<code>append</code> ne renvoie rien) ; B : <code>dict_keys</code> ; C : <code>str</code> ; D : <code>bool</code> ; E : <code>int</code>. On le vérifie avec <code>type(A)</code>, <code>type(B)</code>…</p></div>
+  </section>
+
+<div class="td-colonnes">
+    <section class="td-q" data-type="sortie" id="q7">
+      <p class="td-consigne">Quelles sont les valeurs de A, B, C, D et E ? Écris ce qu'affichent ces lignes, écrites après le programme.</p>
+      <script type="text/x-python" class="td-preambule">
+ma_liste = [10, 20, 30]
+mon_dict = {'a': 1, 'b': 2}
+mon_texte = "TURING"
+mon_chiffre = 3.14
+A = ma_liste.append(40)
+B = mon_dict.keys()
+C = mon_texte.lower()
+D = mon_chiffre.is_integer()
+E = mon_dict['a']
+</script>
+      <pre class="td-code">
+print(A)
+print(B)
+print(C)
+print(D)
+print(E)</pre>
+      <pre class="td-attendu">
+None
+dict_keys(['a', 'b'])
+turing
+False
+1</pre>
+      <div class="td-correction"><p>A vaut <code>None</code> ; B, <code>dict_keys(['a', 'b'])</code> ; C, <code>'turing'</code> (affiché sans guillemets) ; D, <code>False</code> ; E, <code>1</code>.</p></div>
+    </section>
+
+    <section class="td-q" data-type="sortie" id="q8">
+      <p class="td-consigne">Que valent <code>ma_liste</code>, <code>mon_dict</code>, <code>mon_texte</code> et <code>mon_chiffre</code> à la fin du code ? Écris ce qu'affichent ces lignes.</p>
+      <script type="text/x-python" class="td-preambule">
+ma_liste = [10, 20, 30]
+mon_dict = {'a': 1, 'b': 2}
+mon_texte = "TURING"
+mon_chiffre = 3.14
+A = ma_liste.append(40)
+B = mon_dict.keys()
+C = mon_texte.lower()
+D = mon_chiffre.is_integer()
+E = mon_dict['a']
+</script>
+      <pre class="td-code">
+print(ma_liste)
+print(mon_dict)
+print(mon_texte)
+print(mon_chiffre)</pre>
+      <pre class="td-attendu">
+[10, 20, 30, 40]
+{'a': 1, 'b': 2}
+TURING
+3.14</pre>
+      <div class="td-correction"><p>Seule la liste a changé : <code>[10, 20, 30, 40]</code>. <code>lower()</code> a renvoyé une nouvelle chaîne sans changer <code>mon_texte</code>, qui vaut toujours <code>"TURING"</code>.</p></div>
+    </section>
+  </div>
+
+    <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
+    <p class="td-consigne">L'instruction E utilise-t-elle le point pour accéder à une valeur ? Pour quels types les crochets <code>[]</code> sont-ils courants ?</p>
+    <ul class="td-options">
+      <li data-juste>Non : les crochets accèdent à un élément par sa clé ou son indice (dictionnaires, listes, tuples, chaînes)</li>
+      <li data-retour="Il n'y a aucun point dans mon_dict['a'] : ce sont des crochets.">Oui : le point est caché dans les crochets ; c'est courant pour tous les objets, quelle que soit leur classe</li>
+      <li data-retour="Les crochets servent aussi aux listes (ma_liste[0]), aux tuples et aux chaînes.">Non : les crochets ne servent qu'aux dictionnaires, pour lire la valeur d'une clé</li>
+      <li data-retour="Un nombre n'a pas d'éléments : 3.14[0] provoque une erreur.">Non : les crochets sont courants pour les nombres entiers et flottants, pour lire leurs chiffres</li>
+    </ul>
+    <div class="td-correction"><p>E n'utilise pas le point : <code>mon_dict['a']</code> lit la valeur associée à la clé <code>'a'</code>. Les crochets donnent accès à un élément d'une collection : une clé pour un dictionnaire, un indice pour une liste, un tuple ou une chaîne.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q9-papier" data-support="papier" data-lignes="3">
+    <p class="td-consigne">L'instruction E utilise-t-elle le point pour accéder à une valeur ? Explique brièvement pourquoi les crochets (<code>[]</code>) sont une autre manière d'accéder aux données, et pour quels types ils sont courants.</p>
+    <div class="td-correction"><p>Non. Les crochets donnent accès à un élément d'une collection : par sa clé (dictionnaire) ou par son indice (liste, tuple, chaîne).</p></div>
+  </section>
+
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi ; Johanne Bakalara · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>

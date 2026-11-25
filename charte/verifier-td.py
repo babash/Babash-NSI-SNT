@@ -31,6 +31,10 @@ Ajouts du 21/11 (mêmes attributs que le moteur) :
 - « erreur » : si la ligne corrigée garde un décalage fautif (IndentationError),
   le décalage juste est cherché (0, 4, 8… espaces).
 
+Mise en page déclarée (T140) : td-cote-a-cote (deux div.td-col), data-proportions, data-colonnes,
+data-genre des encadrés, data-saut, section.td-exercice et son titre sont bien écrits ; et, dans une
+colonne, chaque ligne de code tient sur papier (la largeur de la colonne, à 10 pt).
+
 Ajouts du 21/11, T123c :
 - les tests cachés (script.td-tests) d'une question « code » sont exécutés après chaque correction,
   comme dans le moteur (leurs print n'entrent pas dans la sortie comparée) ;
@@ -436,7 +440,89 @@ def verifier(chemin):
                 ko(q, 'une option devait s\'arrêter : ' + (err or 'elle tourne encore après 2 s'))
             if v == 'infini' and rc is not None:
                 ko(q, 'une option devait tourner sans fin, elle s\'arrête')
+    erreurs += ['mise en page : ' + e for e in controler_mise_en_page(lu)]
     return n, erreurs, notes
+
+
+# ── Mise en page déclarée (T140) : attributs bien écrits, et code qui tient dans sa colonne sur papier ──
+PROPORTIONS = {'1/2': (1, 1), '1/3': (1, 2), '2/3': (2, 1), '2/5': (2, 3), '3/5': (3, 2), '1/4': (1, 3), '3/4': (3, 1)}
+GENRES = {'retenir', 'rappel', 'methode', 'attention', 'exemple'}
+PAGE_MM, ECART_MM, MM_CAR = 186, 6, 2.117          # largeur utile A4 ; entre deux colonnes ; un caractère de code à 10 pt
+CADRE_NUM_MM, CADRE_MM = 14.3, 4.1                 # cadre d'un code, avec ou sans ses numéros de ligne
+CONTENEURS = {'td-cote-a-cote', 'td-colonnes', 'td-grille-reponses'}
+
+
+def largeur_mm(n):
+    """Largeur sur papier (mm) à l'endroit du nœud n : 186 mm, ou la part de sa colonne."""
+    chaine = list(ancetres(n, None))[::-1] + [n]
+    w = PAGE_MM
+    for x in chaine:
+        if not isinstance(x, Noeud):
+            continue
+        par = x.parent
+        if 'td-col' in x.classes() and par is not None and 'td-cote-a-cote' in par.classes():
+            p = PROPORTIONS.get(par.attrs.get('data-proportions', '1/2'), (1, 1))
+            cols = [e for e in par.enfants if isinstance(e, Noeud) and 'td-col' in e.classes()]
+            k = cols.index(x) if x in cols else 0
+            w = (w - ECART_MM) * p[0 if k == 0 else 1] / sum(p)
+        elif par is not None and ('td-colonnes' in par.classes() or 'td-grille-reponses' in par.classes()):
+            nc = int(par.attrs.get('data-colonnes', '2' if 'td-colonnes' in par.classes() else '3'))
+            w = (w - ECART_MM * (nc - 1)) / nc
+    return w
+
+
+def capacite(n, numeros=True):
+    """Caractères de code qui tiennent sur une ligne, sur papier, à l'endroit du nœud n."""
+    return int((largeur_mm(n) - (CADRE_NUM_MM if numeros else CADRE_MM)) / MM_CAR)
+
+
+def controler_mise_en_page(lu):
+    """Erreurs d'écriture des moyens de mise en page (T140) et lignes de code trop longues pour leur colonne."""
+    err = []
+    r = lu.racine
+    for c in r.tous(classe('td-cote-a-cote')):
+        cols = [e for e in c.enfants if isinstance(e, Noeud)]
+        if len(cols) != 2 or not all(e.tag == 'div' and 'td-col' in e.classes() for e in cols):
+            err.append("td-cote-a-cote : il faut exactement deux blocs div.td-col (et rien d'autre) ; trouvé : "
+                       + ', '.join(e.tag + '.' + '.'.join(e.classes()) for e in cols))
+        v = c.attrs.get('data-proportions')
+        if v is not None and v not in PROPORTIONS:
+            err.append(f'data-proportions="{v}" inconnu (permis : {", ".join(PROPORTIONS)})')
+    for c in r.tous(lambda x: 'td-colonnes' in x.classes() or 'td-grille-reponses' in x.classes()):
+        nom = 'td-colonnes' if 'td-colonnes' in c.classes() else 'td-grille-reponses'
+        v = c.attrs.get('data-colonnes')
+        permis = ('2', '3') if nom == 'td-colonnes' else ('2', '3', '4', '5', '6')
+        if v is not None and v not in permis:
+            err.append(f'{nom} : data-colonnes="{v}" (permis : {", ".join(permis)})')
+        if nom == 'td-grille-reponses':
+            for q in c.enfants:
+                if isinstance(q, Noeud) and q.tag not in ('script', 'template') and not ('td-q' in q.classes() and q.attrs.get('data-type') == 'courte'):
+                    err.append(f'td-grille-reponses : seulement des questions « courte » (trouvé {q.tag} {q.attrs.get("id", "")})')
+    for e in r.tous(classe('td-encadre')):
+        if e.attrs.get('data-genre', 'rappel') not in GENRES:
+            err.append(f'td-encadre : data-genre="{e.attrs.get("data-genre")}" (permis : {", ".join(sorted(GENRES))})')
+    for e in r.tous(lambda x: 'data-saut' in x.attrs):
+        if e.attrs['data-saut'] not in ('avant', 'apres'):
+            err.append(f'data-saut="{e.attrs["data-saut"]}" (permis : avant, apres)')
+    for e in r.tous(lambda x: x.tag == 'section' and 'td-exercice' in x.classes()):
+        if not any(isinstance(h, Noeud) and h.tag == 'h3' and 'td-exercice-titre' in h.classes() for h in e.enfants):
+            err.append('section.td-exercice sans titre h3.td-exercice-titre')
+    # le code dans une colonne : chaque ligne doit tenir sur papier (sinon elle passe à la ligne, illisible)
+    dans = lambda x: any(isinstance(a, Noeud) and (CONTENEURS & set(a.classes())) for a in ancetres(x, None))
+    for pre in r.tous(lambda x: x.tag == 'pre' and ('td-code' in x.classes() or 'td-depart' in x.classes()) and dans(x)):
+        if any(isinstance(a, Noeud) and ('td-correction' in a.classes() or 'td-options' in a.classes()) for a in ancetres(pre, None)):
+            continue
+        q = next((a for a in ancetres(pre, None) if isinstance(a, Noeud) and 'td-q' in a.classes()), None)
+        if q is not None and q.attrs.get('data-type') == 'trous':
+            continue                    # les cases d'un code à trous s'élargissent : imprimer-td.py le mesure
+        if q is not None and 'td-depart' in pre.classes() and q.attrs.get('data-depart-papier') == 'non':
+            continue
+        cap = capacite(pre, pre.attrs.get('data-numeros') != 'non')
+        for i, l in enumerate(code_de(pre.texte()).rstrip().split('\n'), 1):
+            if len(l.rstrip()) > cap:
+                err.append(f'ligne {i} de code ({len(l.rstrip())} caractères) trop longue pour sa colonne : {cap} au plus sur papier '
+                           f'(« {l.strip()[:40]} ») ; élargir la colonne (data-proportions), data-numeros="non", ou couper la ligne')
+    return err
 
 
 def ancetres(n, jusqua):

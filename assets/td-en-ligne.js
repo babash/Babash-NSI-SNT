@@ -380,7 +380,7 @@
       return '<span class="td-l"><span class="td-num" aria-hidden="true">' + (++num) + '</span>' + (l || ' ') + '</span>';
     }).join('');
     pre.classList.add('td-code-pret');
-    if (lignes.length < 2 || opts.sansNumeros) pre.classList.add('td-sans-num');
+    if (lignes.length < 2 || opts.sansNumeros || pre.getAttribute('data-numeros') === 'non') pre.classList.add('td-sans-num');
     if (lignes.length > CODE_SECABLE) pre.classList.add('td-code-long');     // sur papier : peut passer à la page suivante (T123d)
     return code;
   }
@@ -848,13 +848,18 @@
     s.classList.add('td-q-prete');
     s.setAttribute('aria-labelledby', idTitre);
     // une question des deux supports peut avoir un autre numéro sur papier (après des questions d'un seul support)
+    // le mot « Question » dans sa propre boîte (T140) : une mise en page compacte peut ne garder que le numéro sur papier
+    var numero = function (n) { return [el('span', { class: 'td-q-mot', text: 'Question ' }), String(n)]; };
     var num = this.numPapier !== null && this.numPapier !== undefined && this.numPapier !== this.rang
-      ? el('span', { class: 'td-q-num' }, [el('span', { class: 'td-num-ecran', text: 'Question ' + this.rang }), el('span', { class: 'td-num-papier', 'aria-hidden': 'true', text: 'Question ' + this.numPapier })])
-      : el('span', { class: 'td-q-num', text: 'Question ' + this.rang });
-    var titre = el('h3', { class: 'td-q-titre', id: idTitre }, [
+      ? el('span', { class: 'td-q-num' }, [el('span', { class: 'td-num-ecran' }, numero(this.rang)), el('span', { class: 'td-num-papier', 'aria-hidden': 'true' }, numero(this.numPapier))])
+      : el('span', { class: 'td-q-num' }, numero(this.rang));
+    // dans un exercice (section.td-exercice, titre h3), la question est un titre de niveau 4 (T140)
+    var titre = el(s.closest('.td-exercice') ? 'h4' : 'h3', { class: 'td-q-titre', id: idTitre }, [
       num,
       this.type === 'libre' && this.support !== 'papier' ? el('span', { class: 'td-q-bonus td-ecran-seul', text: 'non corrigée en ligne' }) : null,
       this.bonus ? el('span', { class: 'td-q-bonus', text: '★ bonus' }) : null,
+      // après un exemple résolu (encadré « Exemple » juste avant, ou à côté) : « À ton tour » (T140, goût G5)
+      s.hasAttribute('data-a-ton-tour') ? el('span', { class: 'td-q-tour', text: 'À ton tour' }) : null,
       el('span', { class: 'td-q-etat', 'aria-hidden': 'true' })
     ]);
     s.insertBefore(titre, s.firstChild);
@@ -1046,6 +1051,8 @@
   Question.prototype.mettreDeCote = function () {
     var codes = Array.prototype.filter.call(this.s.children, function (c) { return c.matches('pre.td-code'); });
     var cote = this.s.getAttribute('data-cote');
+    // déjà dans une mise en page déclarée (colonnes, côte à côte, grille : T140) : la question reste d'un bloc
+    if (cote !== 'oui' && this.s.closest(CONTENEURS_MEP)) return;
     if (cote === 'non' || codes.length !== 1 || this.s.querySelector(':scope > table, :scope > .td-table')) return;
     if (this.options && this.options.some(function (o) { return o.input.parentNode.querySelector('pre'); })) return;
     var source = this.sourceTrous || codes[0].getAttribute('data-source') || codes[0].textContent;
@@ -1534,6 +1541,7 @@
     });
     this.questions.forEach(function (q) { if (q.courteSimple()) q.s.classList.add('td-courte-ligne'); });
     this.tableauxARemplir();
+    this.miseEnPage();
     this.regrouperPapier();
     this.codeACoteDeLaFigure();
     // le code affiché hors des questions (mémo, exemples)
@@ -1579,6 +1587,7 @@
      chaque réponse y tient, avec son étiquette sur une ligne. Une « libre » seule garde sa ligne pleine ; une « courte » seule reste sur la
      rangée de sa consigne si sa réponse y tient (ligne de 64 à 110 mm), sinon elle a sa ligne pleine. */
   var GROUPE_COURT = 48;
+  var CONTENEURS_MEP = '.td-cote-a-cote, .td-colonnes, .td-grille-reponses';
   var MM_CAR_MAIN = 2.5, MM_CAR_ETIQ = 1.9, MM_UTILE_MIN = 20, MM_MARGES = 4;
   var CASE_MM = 58, CASE_REDIGE_MM = 64, CASE_MAX_MM = 100, CASE2_MM = 30, CASE2_REDIGE_MM = 40, CASE2_MAX_MM = 44, RANGEE_MM = 64, RANGEE_MAX_MM = 110;
   // la réponse modèle d'une question, lue avant le montage (les options sont encore dans la page) : null si aucune
@@ -1622,12 +1631,14 @@
   }
   Feuille.prototype.regrouperPapier = function () {
     var groupes = [], cur = [], prec = null;
+    // une question placée dans une mise en page déclarée (colonnes, côte à côte, grille : T140) n'entre jamais
+    // dans un tableau automatique : l'Atelier a choisi sa place
     function papierVisible(e) { return !e.matches('script, template, noscript, [hidden], [data-support="ecran"], .td-ecran-seul, .td-memo:not([data-support="papier"]), .td-plus-loin:not([data-support="papier"])'); }
     function suivantImprime(e) { var n = e.nextElementSibling; while (n && !papierVisible(n)) n = n.nextElementSibling; return n; }
     this.questions.forEach(function (q) {
       if (q.support === 'ecran') return;      // invisible sur papier : elle ne sépare pas deux questions
       var base = q.type === 'libre' ? CASE_REDIGE_MM : CASE_MM;
-      var ok = q.s.classList.contains('td-courte-ligne') && q.support !== 'ecran' && q.numPapier &&
+      var ok = q.s.classList.contains('td-courte-ligne') && q.support !== 'ecran' && q.numPapier && !q.s.closest(CONTENEURS_MEP) &&
         (q.s.closest('[data-regrouper]') || { getAttribute: function () { return ''; } }).getAttribute('data-regrouper') !== 'non' &&
         utileMin(q.placeMain(), largeurEtiq(q.s.getAttribute('data-etiquette') || ''), CASE_MAX_MM) + MM_MARGES <= CASE_MAX_MM;
       if (ok && prec && suivantImprime(prec.s) === q.s) cur.push(q);
@@ -1685,10 +1696,46 @@
       var etiqMm = largeurEtiq(q.s.getAttribute('data-etiquette') || '');
       // la rangée : l'étiquette, 2,5 mm d'écart, la ligne (2 mm de marges)
       var besoin = q.placeMain() + (etiqMm ? etiqMm + 2.5 : 0) + 2;
-      if (besoin > RANGEE_MAX_MM) q.s.classList.remove('td-courte-ligne');
+      if (besoin > RANGEE_MAX_MM || besoin > largeurPapierMm(q.s)) q.s.classList.remove('td-courte-ligne');
       else if (besoin > RANGEE_MM) q.s.style.setProperty('--td-rangee-r', Math.ceil(besoin) + 'mm');
     });
+    // une « courte » sur sa ligne pleine dont la réponse modèle ne tient pas (GHOST, INSERT SQL : suite du Gardien 33) :
+    // deux lignes d'écriture, ou plus (T140) ; data-lignes="2" sur une « courte » le demande aussi
+    this.questions.forEach(function (q) {
+      if (q.type !== 'courte' || q.support === 'ecran' || !q.champ || q.s.classList.contains('td-groupe-membre')) return;
+      var voulu = parseInt(q.s.getAttribute('data-lignes'), 10) || 0, n = voulu;
+      if (!q.s.classList.contains('td-courte-ligne') && !q.s.closest('.td-grille-reponses')) {
+        var etiqMm = largeurEtiq(q.s.getAttribute('data-etiquette') || '');
+        var ligne = largeurPapierMm(q.s) - (etiqMm ? etiqMm + 2.5 : 0) - MM_MARGES;
+        if (isFinite(q.placeMain())) n = Math.max(n, Math.ceil(q.placeMain() / ligne));
+      }
+      if (n >= 2) {
+        q.s.classList.remove('td-courte-ligne');
+        q.s.classList.add('td-courte-multi');
+        q.s.style.setProperty('--td-lignes-courte', String(n));
+        q.champ.setAttribute('data-lignes-papier', String(n));
+      }
+    });
   };
+  /* largeur d'écriture sur papier (mm) à l'endroit d'un élément : 186 mm (A4 moins les marges), ou la part de sa
+     colonne dans une mise en page déclarée (T140) ; 6 mm entre deux colonnes */
+  var PAGE_UTILE_MM = 186, ECART_COL_MM = 6;
+  var PROPORTIONS = { '1/2': [1, 1], '1/3': [1, 2], '2/3': [2, 1], '2/5': [2, 3], '3/5': [3, 2], '1/4': [1, 3], '3/4': [3, 1] };
+  function largeurPapierMm(e) {
+    var w = PAGE_UTILE_MM, chaine = [];
+    for (var x = e; x && !(x.matches && x.matches('[data-td]')); x = x.parentElement) chaine.unshift(x);
+    chaine.forEach(function (x) {
+      if (x.matches('.td-cote-a-cote > .td-col')) {
+        var p = PROPORTIONS[x.parentElement.getAttribute('data-proportions') || '1/2'] || [1, 1];
+        var k = Array.prototype.indexOf.call(x.parentElement.querySelectorAll(':scope > .td-col'), x);
+        w = (w - ECART_COL_MM) * p[k === 0 ? 0 : 1] / (p[0] + p[1]);
+      } else if (x.parentElement && x.parentElement.matches('.td-colonnes, .td-grille-reponses')) {
+        var n = parseInt(x.parentElement.getAttribute('data-colonnes'), 10) || (x.parentElement.matches('.td-colonnes') ? 2 : 3);
+        w = (w - ECART_COL_MM * (n - 1)) / n;
+      }
+    });
+    return w;
+  }
   // dans une case étroite, un code de la consigne ne se coupe qu'à une espace, jamais au milieu d'une expression
   // (pokemons[1] / ["types"]) ; un mot de code de plus de 24 caractères peut encore se couper (sinon il déborderait)
   function insecables(cellule) {
@@ -1713,6 +1760,46 @@
       var large = Math.max.apply(null, String(q.depart || '').split('\n').map(function (l) { return l.length; }));
       if (large <= 48) q.s.classList.add('td-code-figure');
     });
+  };
+  /* mise en page déclarée (T140) : le titre des encadrés (un mot réel, lu par les lecteurs d'écran), le premier bloc
+     d'un côte à côte qui reste visible à l'écran large pendant qu'on répond à côté (s'il tient dans la fenêtre), et
+     les erreurs d'écriture signalées dans la console (verifier-td.py les refuse) */
+  var GENRES_ENCADRE = { retenir: 'À retenir', rappel: 'Rappel', methode: 'Méthode', attention: 'Attention', exemple: 'Exemple' };
+  Feuille.prototype.miseEnPage = function () {
+    var r = this.r;
+    r.querySelectorAll('.td-encadre').forEach(function (e) {
+      var g = e.getAttribute('data-genre') || 'rappel', mot = GENRES_ENCADRE[g] || GENRES_ENCADRE.rappel;
+      if (!GENRES_ENCADRE[g]) e.setAttribute('data-genre', 'rappel');
+      var t = e.querySelector(':scope > .td-encadre-titre');
+      if (!t) { t = el('p', { class: 'td-encadre-titre', text: mot }); e.insertBefore(t, e.firstChild); }
+      if (!t.id) t.id = nouvelId('encadre');
+      e.setAttribute('role', 'note');
+      e.setAttribute('aria-labelledby', t.id);
+    });
+    r.querySelectorAll('.td-cote-a-cote').forEach(function (c) {
+      var cols = c.querySelectorAll(':scope > .td-col');
+      if (cols.length !== 2 && window.console) console.warn('td-cote-a-cote : deux blocs div.td-col attendus, ' + cols.length + ' trouvé(s)', c);
+      if (c.hasAttribute('data-proportions') && !PROPORTIONS[c.getAttribute('data-proportions')] && window.console) console.warn('data-proportions inconnu : ' + c.getAttribute('data-proportions'));
+    });
+    var premiers = Array.prototype.map.call(r.querySelectorAll('.td-cote-a-cote:not([data-collant="non"]) > .td-col:first-child'), function (x) { return x; });
+    if (!premiers.length) return;
+    var barre = function () { var b = r.querySelector('.td-barre'); return b ? b.getBoundingClientRect().height : 0; };
+    function regler() {
+      var haut = Math.ceil(barre() + 12), fenetre = window.innerHeight;
+      premiers.forEach(function (x) {
+        x.classList.remove('td-collant');
+        var voisin = x.nextElementSibling;
+        // collant seulement à l'écran large (deux colonnes), s'il tient dans la fenêtre et si l'autre bloc est plus long
+        if (window.innerWidth < 1000 || !voisin) return;
+        if (x.getBoundingClientRect().height + haut + 12 <= fenetre && voisin.getBoundingClientRect().height > x.getBoundingClientRect().height) {
+          x.classList.add('td-collant');
+          x.parentElement.style.setProperty('--td-haut-collant', haut + 'px');
+        }
+      });
+    }
+    var minuterie = null;
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(regler);
+    window.addEventListener('resize', function () { clearTimeout(minuterie); minuterie = setTimeout(regler, 150); });
   };
   // tableau à remplir (T123c) : data-case-largeur (mm) et data-case-hauteur (lignes d'écriture) sur <table>,
   // data-case-largeur sur un <th> pour sa colonne ; les cellules vides deviennent des cases à remplir
