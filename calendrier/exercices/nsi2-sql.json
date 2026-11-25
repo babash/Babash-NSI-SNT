@@ -19,7 +19,7 @@
    "donnees.bdd.sql.mise-a-jour"
   ]
  },
- "base_sql": "PRAGMA foreign_keys = ON;\nCREATE TABLE plage (\n    id_plage INTEGER PRIMARY KEY,\n    nom TEXT NOT NULL UNIQUE,\n    commune TEXT NOT NULL\n);\nCREATE TABLE tortue (\n    id_tortue INTEGER PRIMARY KEY,\n    nom TEXT NOT NULL,\n    espece TEXT NOT NULL CHECK (espece IN ('verte', 'imbriquée')),\n    longueur INTEGER CHECK (longueur > 0)\n);\nCREATE TABLE observation (\n    id_obs INTEGER PRIMARY KEY,\n    id_tortue INTEGER NOT NULL REFERENCES tortue (id_tortue),\n    id_plage INTEGER NOT NULL REFERENCES plage (id_plage),\n    date_obs TEXT NOT NULL,\n    oeufs INTEGER NOT NULL CHECK (oeufs >= 0),\n    benevole TEXT NOT NULL\n);\nINSERT INTO plage VALUES\n    (1, 'N''Gouja', 'Kani-Kéli'),\n    (2, 'Saziley', 'Bandrélé'),\n    (3, 'Sakouli', 'Bandrélé'),\n    (4, 'Tahiti', 'Sada'),\n    (5, 'Iloni', 'Dembéni'),\n    (6, 'Trévani', 'Koungou');\nINSERT INTO tortue VALUES\n    (1, 'Nuru', 'verte', 98),\n    (2, 'Mira', 'imbriquée', 76),\n    (3, 'Zawadi', 'verte', 105),\n    (4, 'Taya', 'verte', 87),\n    (5, 'Bahari', 'imbriquée', 68),\n    (6, 'Nyota', 'verte', 112),\n    (7, 'Lulu', 'imbriquée', 81),\n    (8, 'Kai', 'verte', 95);\nINSERT INTO observation VALUES\n    (1, 1, 1, '2026-01-05', 110, 'Kenza'),\n    (2, 3, 2, '2026-01-12', 95, 'Ibrahim'),\n    (3, 2, 1, '2026-01-20', 0, 'Lou'),\n    (4, 4, 3, '2026-02-02', 120, 'Naïma'),\n    (5, 1, 2, '2026-02-14', 102, 'Soilihi'),\n    (6, 6, 4, '2026-02-28', 130, 'Kenza'),\n    (7, 5, 5, '2026-03-07', 88, 'Sam'),\n    (8, 3, 1, '2026-03-15', 0, 'Ibrahim'),\n    (9, 7, 2, '2026-03-21', 76, 'Lou'),\n    (10, 4, 4, '2026-04-03', 115, 'Naïma'),\n    (11, 2, 3, '2026-04-10', 92, 'Kenza'),\n    (12, 6, 1, '2026-04-18', 125, 'Soilihi');\n",
+ "base_sql": "PRAGMA foreign_keys = ON;\nCREATE TABLE plage (\n    id_plage INTEGER PRIMARY KEY,\n    nom TEXT NOT NULL UNIQUE,\n    commune TEXT NOT NULL\n);\nCREATE TABLE tortue (\n    id_tortue INTEGER PRIMARY KEY,\n    nom TEXT NOT NULL,\n    espece TEXT NOT NULL CHECK (espece = 'verte' OR espece = 'imbriquée'),\n    longueur INTEGER CHECK (longueur > 0)\n);\nCREATE TABLE observation (\n    id_obs INTEGER PRIMARY KEY,\n    id_tortue INTEGER NOT NULL REFERENCES tortue (id_tortue),\n    id_plage INTEGER NOT NULL REFERENCES plage (id_plage),\n    date_obs TEXT NOT NULL,\n    oeufs INTEGER NOT NULL CHECK (oeufs >= 0),\n    benevole TEXT NOT NULL\n);\nINSERT INTO plage VALUES\n    (1, 'N''Gouja', 'Kani-Kéli'),\n    (2, 'Saziley', 'Bandrélé'),\n    (3, 'Sakouli', 'Bandrélé'),\n    (4, 'Tahiti', 'Sada'),\n    (5, 'Iloni', 'Dembéni'),\n    (6, 'Trévani', 'Koungou');\nINSERT INTO tortue VALUES\n    (1, 'Nuru', 'verte', 98),\n    (2, 'Mira', 'imbriquée', 76),\n    (3, 'Zawadi', 'verte', 105),\n    (4, 'Taya', 'verte', 87),\n    (5, 'Bahari', 'imbriquée', 68),\n    (6, 'Nyota', 'verte', 112),\n    (7, 'Lulu', 'imbriquée', 81),\n    (8, 'Kai', 'verte', 95);\nINSERT INTO observation VALUES\n    (1, 1, 1, '2026-01-05', 110, 'Kenza'),\n    (2, 3, 2, '2026-01-12', 95, 'Ibrahim'),\n    (3, 2, 1, '2026-01-20', 0, 'Lou'),\n    (4, 4, 3, '2026-02-02', 120, 'Naïma'),\n    (5, 1, 2, '2026-02-14', 102, 'Soilihi'),\n    (6, 6, 4, '2026-02-28', 130, 'Kenza'),\n    (7, 5, 5, '2026-03-07', 88, 'Sam'),\n    (8, 3, 1, '2026-03-15', 0, 'Ibrahim'),\n    (9, 7, 2, '2026-03-21', 76, 'Lou'),\n    (10, 4, 4, '2026-04-03', 115, 'Naïma'),\n    (11, 2, 3, '2026-04-10', 92, 'Kenza'),\n    (12, 6, 1, '2026-04-18', 125, 'Soilihi');\n",
  "exercices": [
   {
    "id": "nsi2-sql-001",
@@ -102,7 +102,7 @@
       {
        "texte": "Dans la base, une contrainte CHECK limite le domaine de espece à 'verte' et 'imbriquée'.",
        "reponse": true,
-       "explication": "CHECK (espece IN ('verte', 'imbriquée')) refuse toute autre valeur."
+       "explication": "CHECK (espece = 'verte' OR espece = 'imbriquée') refuse toute autre valeur."
       },
       {
        "texte": "Une table de 3 attributs et 8 enregistrements contient 24 valeurs.",
@@ -426,7 +426,7 @@
        "corrections": [
         "FROM plage",
         "FROM plages",
-        "IN plage"
+        "WHERE plage"
        ],
        "bonne": 0,
        "affiche": "Sakouli",
@@ -1261,7 +1261,7 @@
    "id": "nsi2-sql-009",
    "type": "associer",
    "titre": "Filtres malins",
-   "objectif": "Lire des conditions avec LIKE, IN et BETWEEN.",
+   "objectif": "Lire des conditions avec LIKE, AND, OR et des bornes.",
    "notions": [
     "donnees.bdd.sql.interrogation"
    ],
@@ -1282,15 +1282,15 @@
          "Iloni, Sakouli, Tahiti, Trévani"
         ],
         [
-         "SELECT nom\nFROM plage\nWHERE commune IN ('Sada', 'Koungou')\nORDER BY nom",
+         "SELECT nom\nFROM plage\nWHERE commune = 'Sada'\n   OR commune = 'Koungou'\nORDER BY nom",
          "Tahiti, Trévani"
         ],
         [
-         "SELECT nom\nFROM plage\nWHERE id_plage BETWEEN 2 AND 4\nORDER BY nom",
+         "SELECT nom\nFROM plage\nWHERE id_plage >= 2\n  AND id_plage <= 4\nORDER BY nom",
          "Sakouli, Saziley, Tahiti"
         ]
        ],
-       "explication": "Avec LIKE, % remplace n'importe quelle suite de lettres. IN donne une liste de valeurs. BETWEEN garde les bornes.",
+       "explication": "Avec LIKE, % remplace n'importe quelle suite de lettres. OR garde une ligne dès qu'une condition est vraie ; >= et <= gardent les bornes.",
        "executer": true,
        "aides": [
         "'S%' : commence par S. '%i' : finit par i."
@@ -1305,7 +1305,7 @@
        "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
        "paires": [
         [
-         "SELECT nom\nFROM tortue\nWHERE longueur BETWEEN 80 AND 95\nORDER BY nom",
+         "SELECT nom\nFROM tortue\nWHERE longueur >= 80\n  AND longueur <= 95\nORDER BY nom",
          "Kai, Lulu, Taya"
         ],
         [
@@ -1317,11 +1317,11 @@
          "Kai, Nuru, Nyota"
         ],
         [
-         "SELECT nom\nFROM tortue\nWHERE id_tortue IN (2, 5, 7)\nORDER BY nom",
+         "SELECT nom\nFROM tortue\nWHERE id_tortue = 2\n   OR id_tortue = 5\n   OR id_tortue = 7\nORDER BY nom",
          "Bahari, Lulu, Mira"
         ]
        ],
-       "explication": "Avec LIKE, % remplace n'importe quelle suite de lettres : '%a%' veut dire « contient un a ». BETWEEN 80 AND 95 garde 95.",
+       "explication": "Avec LIKE, % remplace n'importe quelle suite de lettres : '%a%' veut dire « contient un a ». Avec >= et <=, 95 est gardé.",
        "executer": true,
        "aides": [
         "'%a%' : un a n'importe où dans le nom."
@@ -1336,7 +1336,7 @@
        "consigne": "Associe chaque requête à ce qu'elle affiche (une virgule sépare les lignes).",
        "paires": [
         [
-         "SELECT id_obs\nFROM observation\nWHERE date_obs BETWEEN '2026-02-01' AND '2026-02-28'\nORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE date_obs >= '2026-02-01'\n  AND date_obs <= '2026-02-28'\nORDER BY id_obs",
          "4, 5, 6"
         ],
         [
@@ -1344,19 +1344,19 @@
          "7, 8, 9"
         ],
         [
-         "SELECT id_obs\nFROM observation\nWHERE benevole IN ('Sam', 'Lou')\nORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE benevole = 'Sam'\n   OR benevole = 'Lou'\nORDER BY id_obs",
          "3, 7, 9"
         ],
         [
-         "SELECT id_obs\nFROM observation\nWHERE benevole NOT IN ('Kenza', 'Lou', 'Naïma', 'Soilihi')\nORDER BY id_obs",
-         "2, 7, 8"
+         "SELECT id_obs\nFROM observation\nWHERE benevole <> 'Kenza'\n  AND benevole <> 'Lou'\n  AND oeufs > 100\nORDER BY id_obs",
+         "4, 5, 10, 12"
         ],
         [
-         "SELECT id_obs\nFROM observation\nWHERE oeufs BETWEEN 100 AND 120\nORDER BY id_obs",
+         "SELECT id_obs\nFROM observation\nWHERE oeufs >= 100\n  AND oeufs <= 120\nORDER BY id_obs",
          "1, 4, 5, 10"
         ]
        ],
-       "explication": "BETWEEN garde ses deux bornes : le 28 février et les 120 œufs sont comptés. NOT IN garde ce qui n'est pas dans la liste.",
+       "explication": "Avec >= et <=, les bornes sont gardées : le 28 février et les 120 œufs comptent. <> veut dire « différent de ».",
        "executer": true
       }
      ]
@@ -1403,22 +1403,23 @@
        "lignes": [
         "SELECT nom",
         "FROM plage",
-        "WHERE commune IN 'Sada', 'Koungou'",
+        "WHERE commune = 'Sada'",
+        "   OR 'Koungou'",
         "ORDER BY nom"
        ],
-       "ligne": 2,
+       "ligne": 3,
        "corrections": [
-        "WHERE commune IN ('Sada', 'Koungou')",
-        "WHERE commune = 'Sada' AND commune = 'Koungou'",
-        "WHERE commune IN ('Sada' AND 'Koungou')"
+        "   OR commune = 'Koungou'",
+        "  AND commune = 'Koungou'",
+        "   OR commune 'Koungou'"
        ],
        "bonne": 0,
        "affiche": "Tahiti\nTrévani",
-       "explication": "Après IN, la liste des valeurs s'écrit entre parenthèses, séparées par des virgules.",
+       "explication": "Chaque côté de OR est une condition complète : commune = 'Koungou'. Seul, le texte 'Koungou' ne teste rien.",
        "aides": [
-        "Que manque-t-il autour de la liste ?"
+        "Le programme n'affiche que Tahiti."
        ],
-       "message": "Error: near \",\": syntax error"
+       "affiche_fautif": "Tahiti"
       },
       {
        "but": "Afficher le nom des tortues dont le nom commence par N, par ordre alphabétique.",
@@ -1452,22 +1453,23 @@
        "lignes": [
         "SELECT nom",
         "FROM tortue",
-        "WHERE longueur BETWEEN 90 AND 80",
+        "WHERE longueur >= 80",
+        "  AND longueur >= 90",
         "ORDER BY nom"
        ],
-       "ligne": 2,
+       "ligne": 3,
        "corrections": [
-        "WHERE longueur >= 80 OR longueur <= 90",
-        "WHERE longueur BETWEEN 80 AND 90",
-        "WHERE longueur BETWEEN 80 OR 90"
+        "  AND longueur <= 90",
+        "   OR longueur <= 90",
+        "  AND longueur <= 80"
        ],
-       "bonne": 1,
+       "bonne": 0,
        "affiche": "Lulu\nTaya",
-       "explication": "BETWEEN a AND b demande a <= longueur <= b : la plus petite borne vient en premier.",
+       "explication": "« Jusqu'à 90 cm » : la longueur est au plus 90, donc <= 90. Avec OR, toutes les tortues passeraient.",
        "aides": [
-        "Aucune longueur n'est à la fois >= 90 et <= 80."
+        "Le programme affiche les grandes tortues."
        ],
-       "affiche_fautif": ""
+       "affiche_fautif": "Kai\nNuru\nNyota\nZawadi"
       },
       {
        "but": "Afficher le numéro des observations de Lou ou de Sam, dans l'ordre croissant.",
@@ -1547,13 +1549,13 @@
        ],
        "ligne": 2,
        "corrections": [
-        "WHERE benevole NOT IN ('Kenza', 'Lou')",
+        "WHERE benevole <> 'Kenza' AND benevole <> 'Lou'",
         "WHERE NOT benevole = 'Kenza' OR benevole = 'Lou'",
-        "WHERE benevole NOT IN ('Kenza' OR 'Lou')"
+        "WHERE benevole <> 'Kenza' AND 'Lou'"
        ],
        "bonne": 0,
        "affiche": "2\n4\n5\n7\n8\n10\n12",
-       "explication": "Chaque prénom est différent de Kenza ou différent de Lou : la condition avec OR est toujours vraie. NOT IN écarte les deux.",
+       "explication": "Chaque prénom est différent de Kenza ou différent de Lou : la condition avec OR est toujours vraie. Il faut les deux à la fois : AND.",
        "affiche_fautif": "1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12"
       },
       {
@@ -1566,13 +1568,13 @@
        ],
        "ligne": 2,
        "corrections": [
-        "WHERE nom IN ('K%', 'L%')",
+        "WHERE nom = 'K%' OR nom = 'L%'",
         "WHERE nom LIKE 'K%' OR nom LIKE 'L%'",
         "WHERE nom LIKE 'K%' AND nom LIKE 'L%'"
        ],
        "bonne": 1,
        "affiche": "Kai\nLulu",
-       "explication": "Chaque côté de OR est une condition complète : nom LIKE 'L%'. IN compare exactement, sans comprendre le signe %.",
+       "explication": "Chaque côté de OR est une condition complète : nom LIKE 'L%'. Avec =, le signe % n'est pas compris : il cherche le texte K%.",
        "affiche_fautif": "Kai"
       }
      ]
@@ -3365,7 +3367,7 @@
        "aides": [
         "Le message cite la règle qui n'est pas respectée."
        ],
-       "message": "Error: CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+       "message": "Error: CHECK constraint failed: espece = 'verte' OR espece = 'imbriquée'"
       }
      ]
     },
@@ -3470,7 +3472,7 @@
        "bonne": 1,
        "affiche": "",
        "explication": "Les valeurs se placent dans l'ordre des colonnes écrites entre parenthèses : espece, puis longueur.",
-       "message": "Error: CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+       "message": "Error: CHECK constraint failed: espece = 'verte' OR espece = 'imbriquée'"
       },
       {
        "but": "Ajouter l'observation n° 13 : Nyota (n° 6) à Iloni (n° 5), le 2026-05-03, 118 œufs, par Sam. (La base contrôle les clés étrangères.)",
@@ -3973,7 +3975,7 @@
      "duree": 3,
      "items": [
       {
-       "code": "SELECT COUNT(*)\nFROM tortue\nWHERE longueur BETWEEN 80 AND 100",
+       "code": "SELECT COUNT(*)\nFROM tortue\nWHERE longueur >= 80\n  AND longueur <= 100",
        "options": [
         "4",
         "3",
@@ -3983,7 +3985,7 @@
        "bonne": 0,
        "retours": [
         "Juste : Lulu (81), Taya (87), Kai (95) et Nuru (98).",
-        "BETWEEN garde ses bornes, et Nuru (98 cm) est aussi dans l'intervalle.",
+        ">= et <= gardent les bornes, et Nuru (98 cm) est aussi dans l'intervalle.",
         "Compte toutes les longueurs de 80 à 100.",
         "Zawadi (105) et Nyota (112) dépassent 100 cm."
        ],
@@ -4054,7 +4056,7 @@
        ]
       },
       {
-       "code": "SELECT COUNT(*), SUM(oeufs)\nFROM observation\nWHERE benevole IN ('Kenza', 'Sam')",
+       "code": "SELECT COUNT(*), SUM(oeufs)\nFROM observation\nWHERE benevole = 'Kenza'\n   OR benevole = 'Sam'",
        "options": [
         "2 | 420",
         "4 | 332",
@@ -4064,12 +4066,12 @@
        "bonne": 3,
        "retours": [
         "COUNT(*) compte des observations, pas des personnes.",
-        "332, ce sont les œufs de Kenza seule : IN garde aussi Sam.",
+        "332, ce sont les œufs de Kenza seule : OR garde aussi Sam.",
         "Kenza a fait 3 observations, et Sam 1.",
         "Juste : 3 observations de Kenza et 1 de Sam ; 332 + 88 = 420 œufs."
        ],
        "aides": [
-        "IN garde les lignes de Kenza et celles de Sam."
+        "OR garde les lignes de Kenza et celles de Sam."
        ]
       },
       {
@@ -4147,7 +4149,7 @@
         ],
         [
          "INSERT INTO tortue VALUES (9, 'Wema', 'luth', 90)",
-         "CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+         "CHECK constraint failed: espece = 'verte' OR espece = 'imbriquée'"
         ],
         [
          "INSERT INTO plage VALUES (7, NULL, 'Chiconi')",
@@ -4419,7 +4421,7 @@
        "bonne": 1,
        "affiche": "",
        "explication": "La contrainte CHECK n'accepte que les deux textes exacts 'verte' et 'imbriquée', accent et e final compris.",
-       "message": "Error: CHECK constraint failed: espece IN ('verte', 'imbriquée')"
+       "message": "Error: CHECK constraint failed: espece = 'verte' OR espece = 'imbriquée'"
       },
       {
        "but": "L'observation n° 2 était fausse : on met son nombre d'œufs à 0.",
@@ -4786,7 +4788,7 @@
         "FROM observation",
         "JOIN tortue",
         "ON observation.id_tortue = tortue.id_tortue",
-        "WHERE oeufs > 110 AND benevole IN ('Kenza', 'Soilihi')",
+        "WHERE oeufs > 110 AND (benevole = 'Kenza' OR benevole = 'Soilihi')",
         "ORDER BY oeufs DESC"
        ],
        "affiche": "Nyota | 130\nNyota | 125"
@@ -4798,7 +4800,7 @@
         "FROM observation",
         "JOIN tortue",
         "ON observation.id_tortue = tortue.id_tortue",
-        "WHERE tortue.espece = 'imbriquée' AND observation.id_plage IN (2, 3)"
+        "WHERE tortue.espece = 'imbriquée' AND (observation.id_plage = 2 OR observation.id_plage = 3)"
        ],
        "affiche": "2"
       }

@@ -845,8 +845,8 @@
       {
        "but": "Calculer et afficher le prix de 4 croissants à 1 euro 50.",
        "lignes": [
-        "prix, quantite = 1.5, 4",
-        "total = prix * quantite",
+        "prix = 1.5",
+        "total = prix * 4",
         "print(total)"
        ],
        "affiche": "6.0",
@@ -1480,7 +1480,7 @@
        "corrections": [
         "minutes = secondes % 60",
         "minutes = secondes // 60",
-        "minutes = round(secondes / 60, 1)"
+        "minutes = secondes - 60"
        ],
        "bonne": 1,
        "affiche": "3 20",
@@ -1551,7 +1551,7 @@
        "corrections": [
         "print(mot[len(mot)])",
         "print(mot[4])",
-        "print(mot[-2])"
+        "print(mot[3])"
        ],
        "bonne": 1,
        "affiche": "n",
@@ -1699,35 +1699,36 @@
      "duree": 6,
      "items": [
       {
-       "but": "Afficher la moyenne de 47 points en 3 matchs, arrondie au centième (15.67).",
+       "but": "Afficher la moyenne de \"15.5\" et 12 (13.75).",
        "lignes": [
-        "total = 47",
-        "nb = 3",
-        "moy = {0}(total / nb, {1})",
+        "a = \"15.5\"",
+        "moy = {0}(a) + 12",
+        "moy = moy {1} 2",
         "print(moy)"
        ],
        "trous": [
         {
          "options": [
-          "float",
           "int",
-          "round"
+          "float",
+          "str"
          ],
-         "bonne": 2
+         "bonne": 1
         },
         {
          "options": [
-          "2",
-          "0",
-          "1"
+          "//",
+          "/",
+          "%"
          ],
-         "bonne": 0
+         "bonne": 1
         }
        ],
-       "affiche": "15.67",
-       "explication": "round(x, 2) arrondit avec 2 chiffres après la virgule ; int et float n'acceptent pas de deuxième valeur.",
+       "affiche": "13.75",
+       "explication": "15.5 a une virgule : float le lit ; puis / garde la partie décimale : 27.5 / 2 = 13.75.",
        "aides": [
-        "Le centième, c'est le 2e chiffre après la virgule."
+        "int ne lit que les entiers.",
+        "// couperait la partie décimale."
        ]
       },
       {
@@ -2228,7 +2229,7 @@
          "int"
         ],
         [
-         "\"7\" * 2",
+         "\"7\" + \"2\"",
          "str"
         ],
         [
@@ -2236,7 +2237,7 @@
          "bool"
         ]
        ],
-       "explication": "/ donne un float, // un int, un texte répété reste un texte, une comparaison donne un booléen.",
+       "explication": "/ donne un float, // un int, deux textes collés restent un texte, une comparaison donne un booléen.",
        "aides": [
         "Une comparaison répond par vrai ou faux."
        ]
@@ -2254,7 +2255,7 @@
          "14"
         ],
         [
-         "print(\"7\" * 2)",
+         "print(\"7\" + \"7\")",
          "77"
         ],
         [
@@ -2270,7 +2271,7 @@
          "9"
         ]
        ],
-       "explication": "Un nombre se multiplie, un texte se répète ; int coupe la partie décimale ; float garde le .0.",
+       "explication": "Un nombre se calcule, un texte se colle ; int coupe la partie décimale ; float garde le .0.",
        "executer": true,
        "aides": [
         "Repère d'abord le type de chaque valeur.",
@@ -2513,8 +2514,8 @@
   {
    "id": "py-variables-types-017",
    "type": "sortie",
-   "titre": "Coller et répéter",
-   "objectif": "Prévoir ce que font + et * avec des textes.",
+   "titre": "Coller des textes",
+   "objectif": "Prévoir ce que fait + avec des textes, et quand il faut str.",
    "notions": [
     "donnees.chaine",
     "prog.type"
@@ -2545,22 +2546,22 @@
        ]
       },
       {
-       "code": "print(\"do\" * 3)",
+       "code": "print(\"12\" + \"3\")",
        "options": [
-        "do3",
-        "Erreur",
-        "dododo",
-        "do do do"
+        "15",
+        "123",
+        "12 3",
+        "Erreur"
        ],
-       "bonne": 2,
+       "bonne": 1,
        "retours": [
-        "* 3 répète le texte, il ne colle pas le chiffre 3.",
-        "On peut multiplier un texte par un entier : il est répété.",
-        "Juste : * 3 répète le texte trois fois.",
-        "* répète le texte sans ajouter d'espace."
+        "Ce sont deux textes : + les colle, il n'additionne pas.",
+        "Juste : + colle les deux textes.",
+        "+ colle sans ajouter d'espace.",
+        "On peut coller deux textes avec +."
        ],
        "aides": [
-        "Texte * entier : le texte est répété."
+        "Regarde les guillemets."
        ]
       },
       {
@@ -2588,60 +2589,60 @@
      "duree": 4,
      "items": [
       {
-       "code": "print(\"Bon\" + \"jour\" * 2)",
+       "code": "a = \"Bon\"\nb = a + \"jour\"\nprint(b + a)",
        "options": [
-        "Bon jour jour",
-        "Bonjourjour",
-        "BonjourBonjour",
-        "Bonjour2"
+        "BonjourBon",
+        "Bonjour Bon",
+        "BonBonjour",
+        "b + a"
        ],
-       "bonne": 1,
+       "bonne": 0,
        "retours": [
-        "+ et * n'ajoutent pas d'espace.",
-        "Juste : * passe avant +, seul \"jour\" est répété.",
-        "* passe avant + : on ne répète pas tout.",
-        "* 2 répète le texte, il n'écrit pas le chiffre 2."
+        "Juste : b vaut \"Bonjour\", puis on colle a à la fin.",
+        "+ colle sans ajouter d'espace.",
+        "b vient en premier : \"Bonjour\", puis \"Bon\".",
+        "print affiche la valeur calculée, pas le calcul."
        ],
        "aides": [
-        "Comme pour les nombres, * passe avant +."
+        "Calcule b d'abord."
        ]
       },
       {
-       "code": "x = 3\nprint(\"x\" * x)",
+       "code": "x = 3\nprint(\"x\" + str(x))",
        "options": [
-        "9",
+        "33",
+        "6",
         "x3",
-        "xxx",
-        "333"
+        "x 3"
        ],
        "bonne": 2,
        "retours": [
-        "On répète un texte, on ne multiplie pas deux nombres.",
-        "* répète le texte, il ne colle pas la valeur de x.",
-        "Juste : le texte \"x\" répété 3 fois.",
-        "Entre guillemets, \"x\" est la lettre x, pas la variable."
+        "Entre guillemets, \"x\" est la lettre x, pas la variable.",
+        "On colle deux textes, on n'additionne pas.",
+        "Juste : la lettre x, puis le texte \"3\".",
+        "+ colle sans ajouter d'espace."
        ],
        "aides": [
         "\"x\" et x ne sont pas la même chose."
        ]
       },
       {
-       "code": "print(\"-\" * 3 + \">\")",
+       "code": "n = 7\nprint(\"n\" + \"=\" + str(n))",
        "options": [
-        "--->",
-        "-3>",
-        "-->",
-        "->->->"
+        "n=7",
+        "7=7",
+        "n = 7",
+        "n=n"
        ],
        "bonne": 0,
        "retours": [
-        "Juste : trois tirets, puis >.",
-        "* répète le tiret, il n'écrit pas le chiffre 3.",
-        "* 3 donne trois tirets, pas deux.",
-        "Seul \"-\" est répété : * passe avant +."
+        "Juste : trois textes collés : \"n\", \"=\" et \"7\".",
+        "\"n\" entre guillemets est la lettre n.",
+        "+ colle sans ajouter d'espace.",
+        "str(n) donne la valeur de n : \"7\"."
        ],
        "aides": [
-        "Calcule d'abord \"-\" * 3."
+        "Colle les trois morceaux de gauche à droite."
        ]
       }
      ]
@@ -2650,28 +2651,28 @@
      "duree": 6,
      "items": [
       {
-       "code": "a = \"12\"\nb = 3\nprint(a * b)",
-       "reponse": "121212",
-       "explication": "a est un texte : a * 3 le répète trois fois, \"121212\".",
+       "code": "a = \"12\"\nb = 3\nprint(a + str(b))",
+       "reponse": "123",
+       "explication": "a est un texte ; str(b) donne \"3\" : + colle, \"123\".",
        "aides": [
-        "Quel est le type de a ? et de b ?"
+        "Quel est le type de a ? et de str(b) ?"
        ]
       },
       {
-       "code": "mot = \"ko\"\nn = len(mot * 3)\nprint(mot * 2 + str(n))",
-       "reponse": "koko6",
-       "explication": "mot * 2 donne \"koko\" ; mot * 3 a 6 lettres ; str(6) donne \"6\" : koko6.",
+       "code": "mot = \"ko\"\nn = len(mot + mot)\nprint(mot + str(n))",
+       "reponse": "ko4",
+       "explication": "mot + mot donne \"koko\", qui a 4 lettres ; str(4) donne \"4\" : ko4.",
        "aides": [
         "Calcule d'abord n.",
         "str transforme le nombre en texte pour pouvoir le coller."
        ]
       },
       {
-       "code": "n = 4\nprint(str(n) * 2 + str(n * 2))",
-       "reponse": "448",
-       "explication": "str(n) * 2 donne \"44\" ; n * 2 vaut 8, puis \"8\" : 448.",
+       "code": "n = 4\nprint(str(n) + str(n * 2))",
+       "reponse": "48",
+       "explication": "str(n) donne \"4\" ; n * 2 vaut 8, puis \"8\" : on colle, 48.",
        "aides": [
-        "str(n) * 2 répète un texte ; n * 2 multiplie un nombre."
+        "str(n) est un texte ; n * 2 est un nombre."
        ]
       }
      ]
@@ -3090,7 +3091,7 @@
        "affiche": "22",
        "aides": [
         "On convertit avant de calculer.",
-        "Que donne \"7\" * 3 ?"
+        "Un texte ne se multiplie pas comme un nombre."
        ]
       },
       {
@@ -3208,7 +3209,7 @@
          "8"
         ],
         [
-         "m = \"ha\"\nm += \"!\"\nm *= 2\nprint(m)",
+         "m = \"ha\"\nm += \"!\"\nm += m\nprint(m)",
          "ha!ha!"
         ],
         [
@@ -3216,7 +3217,7 @@
          "3"
         ]
        ],
-       "explication": "Les lignes s'exécutent dans l'ordre, et chacune part de la valeur précédente ; avec un texte, += colle et *= répète.",
+       "explication": "Les lignes s'exécutent dans l'ordre, et chacune part de la valeur précédente ; avec un texte, += colle.",
        "executer": true,
        "aides": [
         "Note la valeur après chaque ligne.",
@@ -3715,18 +3716,18 @@
      "duree": 4,
      "items": [
       {
-       "texte": "Avec s = \"musique\", s[1:3] vaut \"us\".",
+       "texte": "Avec s = \"musique\", s[1] + s[2] vaut \"us\".",
        "reponse": true,
-       "explication": "s[1:3] prend les positions 1 et 2 : on s'arrête avant 3.",
+       "explication": "s[1] est u et s[2] est s : + les colle.",
        "code": "s = \"musique\"",
-       "verifier": "s[1:3] == \"us\""
+       "verifier": "s[1] + s[2] == \"us\""
       },
       {
-       "texte": "len(\"Bonjour\" * 2) vaut 14.",
+       "texte": "len(\"lycée \" + \"Bamana\") vaut 12.",
        "reponse": true,
-       "explication": "\"Bonjour\" a 7 caractères ; répété 2 fois : 14.",
-       "code": "r = len(\"Bonjour\" * 2)",
-       "verifier": "r == 14"
+       "explication": "L'espace compte : 6 + 6 = 12 caractères.",
+       "code": "r = len(\"lycée \" + \"Bamana\")",
+       "verifier": "r == 12"
       },
       {
        "texte": "Après t = s.upper(), s est écrit en majuscules.",
@@ -3736,11 +3737,11 @@
        "verifier": "s == \"SAM\""
       },
       {
-       "texte": "Avec s = \"Mayotte\", s[0:3] vaut \"May\".",
+       "texte": "Avec s = \"Mayotte\", s[0] + s[len(s) - 1] vaut \"Me\".",
        "reponse": true,
-       "explication": "s[0:3] prend les positions 0, 1 et 2.",
+       "explication": "s[0] est M ; la dernière position est len(s) - 1 = 6 : e.",
        "code": "s = \"Mayotte\"",
-       "verifier": "s[0:3] == \"May\""
+       "verifier": "s[0] + s[len(s) - 1] == \"Me\""
       },
       {
        "texte": "s[len(s)] donne la dernière lettre de s.",
@@ -4024,8 +4025,8 @@
        "consigne": "Associe chaque programme à ce qu'il affiche.",
        "paires": [
         [
-         "print(round(2.567, 1))",
-         "2.6"
+         "print(round(2.6))",
+         "3"
         ],
         [
          "print(int(\"2\" + \"5\") // 2)",
@@ -4040,7 +4041,7 @@
          "4"
         ],
         [
-         "print(str(round(4.4)) * 2)",
+         "print(str(round(4.4)) + \"4\")",
          "44"
         ]
        ],
@@ -4048,7 +4049,7 @@
        "executer": true,
        "aides": [
         "Commence par la parenthèse la plus à l'intérieur.",
-        "str fabrique un texte : * le répète."
+        "str fabrique un texte : + le colle."
        ]
       }
      ]
@@ -4217,7 +4218,7 @@
        ]
       },
       {
-       "code": "x = \"2\"\ny = 2\nprint(x * y)",
+       "code": "x = \"2\"\ny = \"2\"\nprint(x + y)",
        "options": [
         "4",
         "22",
@@ -4226,10 +4227,10 @@
        ],
        "bonne": 1,
        "retours": [
-        "x est un texte : * le répète.",
-        "Juste : un texte multiplié par 2 est répété.",
-        "La répétition n'ajoute pas d'espace.",
-        "Un texte peut être multiplié par un entier."
+        "x et y sont des textes : + les colle.",
+        "Juste : deux textes collés.",
+        "+ colle sans ajouter d'espace.",
+        "On peut coller deux textes avec +."
        ],
        "aides": [
         "Regarde les guillemets."
@@ -4304,11 +4305,11 @@
      "duree": 6,
      "items": [
       {
-       "code": "a = 7\nb = 2\na, b = a // b, a % b\nprint(a * 10 + b)",
+       "code": "a = 7\nb = 2\nq = a // b\nr = a % b\nprint(q * 10 + r)",
        "reponse": "31",
-       "explication": "La droite se calcule avec les anciennes valeurs : a = 7 // 2 = 3 et b = 7 % 2 = 1 ; 3 * 10 + 1 = 31.",
+       "explication": "q = 7 // 2 = 3 et r = 7 % 2 = 1 ; 3 * 10 + 1 = 31.",
        "aides": [
-        "a, b = … calcule toute la droite avant de ranger."
+        "7 = 3 x 2 + 1."
        ]
       },
       {
@@ -4389,11 +4390,11 @@
      "duree": 3,
      "items": [
       {
-       "texte": "3 * \"ab\" vaut \"ababab\".",
-       "reponse": true,
-       "explication": "Un texte multiplié par un entier est répété.",
-       "code": "r = 3 * \"ab\"",
-       "verifier": "r == \"ababab\""
+       "texte": "str(7) + str(3) vaut 10.",
+       "reponse": false,
+       "explication": "str donne deux textes, \"7\" et \"3\" : + les colle, \"73\".",
+       "code": "r = str(7) + str(3)",
+       "verifier": "r == 10"
       },
       {
        "texte": "x = x + 1 est impossible en Python, car x ne peut pas être égal à x + 1.",
@@ -4453,11 +4454,11 @@
        "verifier": "a == b"
       },
       {
-       "texte": "Après a, b = 1, 2 puis a, b = b, a + b, a vaut 1.",
+       "texte": "Après a = 1, b = 2, puis a = b, puis b = a + b, b vaut 3.",
        "reponse": false,
-       "explication": "La droite se calcule d'abord : b vaut 2 et a + b vaut 3 ; donc a reçoit 2.",
-       "code": "a, b = 1, 2\na, b = b, a + b",
-       "verifier": "a == 1"
+       "explication": "a vaut déjà 2 quand on calcule a + b : b vaut 2 + 2 = 4.",
+       "code": "a = 1\nb = 2\na = b\nb = a + b",
+       "verifier": "b == 3"
       }
      ]
     }
@@ -4648,15 +4649,15 @@
        "ligne": 1,
        "corrections": [
         "mot = \"B\" + mot",
-        "mot = mot.upper()",
-        "mot = \"B\" + mot[1:]"
+        "mot = mot + \"B\"",
+        "mot = \"B\" + \"arge\""
        ],
        "bonne": 2,
        "affiche": "Barge",
-       "explication": "Un texte ne se modifie pas lettre par lettre : on en fabrique un nouveau avec \"B\" et la fin du mot, mot[1:].",
+       "explication": "Un texte ne se modifie pas lettre par lettre : on en fabrique un nouveau, \"B\" + \"arge\".",
        "aides": [
         "Le message dit qu'un str ne permet pas de changer une lettre.",
-        "mot[1:] donne le mot sans sa première lettre."
+        "On fabrique un nouveau texte."
        ],
        "message": "TypeError: 'str' object does not support item assignment"
       },
