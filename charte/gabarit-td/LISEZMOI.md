@@ -6,7 +6,33 @@ Un TD est **une seule page HTML** : à l'écran, elle se corrige toute seule ; i
 - Modèle : `charte/gabarit-td/modele.html` (commenté) ; exemple rendu : `charte/gabarit-td/index.html` ; TD complet : `charte/td-pilote/`.
 - Outils : `charte/nouveau-td.py` (le squelette), `charte/verifier-td.py` (le code exécuté pour de vrai), `charte/imprimer-td.py` (le PDF vierge et les contrôles de mise en page).
 
-## Corrections justes (25/11, T140b) : à lire d'abord
+## Nouveautés du 25/11 (T140) : la mise en page au cas par cas, à lire d'abord
+
+**Guide : [`MISE-EN-PAGE.md`](MISE-EN-PAGE.md)** (comment décider, cas par cas, et la liste de contrôle à passer en regardant les pages). Exemple de chaque moyen : [`mise-en-page.html`](mise-en-page.html). Trois TD refaits comme modèles : `charte/exemples-mise-en-page/`.
+
+Une page qui n'emploie aucun des moyens nouveaux garde son rendu (comparé au pixel à l'écran). Les moyens, déclarés dans la page :
+
+| Attribut ou classe | Effet |
+|---|---|
+| `div.td-cote-a-cote` > deux `div.td-col`, `data-proportions` (`1/2`, `1/3`, `2/3`, `2/5`, `3/5`, `1/4`, `3/4`) | deux blocs côte à côte (code \| questions, figure \| texte, exemple \| question), sur papier et à l'écran large (élargi, premier bloc collant) ; une colonne à moins de 1000 px |
+| `div.td-colonnes`, `data-colonnes="2\|3"`, `data-sens="lignes"` | petites questions en colonnes (papier : colonne après colonne) |
+| `div.td-grille-reponses`, `data-colonnes="2"` à `"6"`, `data-brouillon="1"` à `"5"`, `data-etiquette-papier="non"` | réponses courtes en cases, avec la place du calcul |
+| `div.td-encadre`, `data-genre="retenir\|rappel\|methode\|attention\|exemple"`, `data-colonnes="2"` | encadrés (« À retenir » en tête de feuille) |
+| `data-a-ton-tour` (question) | « À ton tour », après un exemple résolu |
+| `section.td-exercice` > `h3.td-exercice-titre` | un niveau entre partie et question |
+| `data-saut="avant\|apres"`, `data-ensemble`, `data-avec-suivant`, `data-coupable` | sauts voulus, blocs gardés ensemble (papier) |
+| `pre.td-code[data-numeros="non"]`, `[data-compact]` | code sans numéros, interligne serré |
+| `data-zone="cadre"` (libre) | un cadre vide pour dessiner, au lieu de lignes |
+| `data-mise-en-page="2"` (`<main>`) | typographie papier revue : numéro court, consigne en graisse normale et retrait suspendu, filets fins |
+
+Automatique : une question placée dans une mise en page déclarée n'entre plus dans le tableau des questions courtes ; **une `courte` dont la réponse dépasse une ligne pleine a deux lignes d'écriture ou plus** (suite du Gardien 33 : GHOST q7 et q8, les `INSERT` de SQL 1 et 2), et `data-lignes` vaut aussi pour une `courte`.
+
+Outils :
+- `verifier-td.py` refuse une mise en page mal écrite (côte à côte sans ses deux blocs, proportion, colonnes ou genre inconnus) et une ligne de code ou de console **trop longue pour sa colonne** sur papier ;
+- `imprimer-td.py` signale les **défauts de page** lus dans le PDF (« Attention : mise en page ») : question dont la consigne et la place pour répondre sont sur deux pages, titre ou introduction orphelin en bas de page, page avec plus d'un tiers de blanc en bas (sauf avant un saut voulu), dernière page remplie à moins d'un tiers ; et une réponse à l'étroit dans une case de grille ;
+- `tester-outils.py` : l'ordre de lecture (papier, 320 px, clavier), les témoins de ces contrôles, GHOST.
+
+## Corrections justes (25/11, T140b)
 
 Deux défauts de correction en ligne, trouvés par la Critique T150, corrigés dans le moteur (aucune page à retoucher) :
 

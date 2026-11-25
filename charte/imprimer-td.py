@@ -250,7 +250,7 @@ ETROIT = r"""async () => {
     const t = s.querySelector('.td-num-papier') || s.querySelector('.td-q-num');
     // une « courte » à plusieurs lignes d'écriture (T140) : la place est la longueur de toutes ses lignes
     const nl = +(ch.dataset.lignesPapier || 1);
-    out.push({ id: s.id, num: norm(t ? t.textContent : ''), ou: s.classList.contains('td-courte-ligne') ? 'rangée' : (nl > 1 ? nl + ' lignes' : 'ligne pleine'), place: mm(ch.getBoundingClientRect().width * nl), modele: modele(doc.getElementById(s.id)) });
+    out.push({ id: s.id, num: norm(t ? t.textContent : ''), ou: s.closest('.td-grille-reponses') ? 'case de grille' : s.classList.contains('td-courte-ligne') ? 'rangée' : (nl > 1 ? nl + ' lignes' : 'ligne pleine'), place: mm(ch.getBoundingClientRect().width * nl), modele: modele(doc.getElementById(s.id)) });
   });
   return out.filter(x => x.modele.length * 2.5 > x.place);
 }"""
@@ -291,6 +291,9 @@ REPERES_POSER = r"""() => {
     const a = poser(h, 'titre'), b = poser(cible, 'suite');
     if (a && b) out.titres.push({ titre: h.textContent.replace(/\s+/g, ' ').trim().slice(0, 50), a, b });
   });
+  // les sauts de page voulus (data-saut, data-nouvelle-page) : la page d'avant peut finir tôt
+  out.sauts = [];
+  document.querySelectorAll('.td [data-saut="avant"], .td.td-suite[data-nouvelle-page] .td-entete').forEach(e => { const c = e.getAttribute('data-td-mep') || poser(e, 'saut'); if (c) out.sauts.push(c); });
   return out;
 }"""
 REPERES_RETIRER = r"""() => { document.querySelectorAll('[data-td-mep]').forEach(e => e.removeAttribute('data-td-mep'));
@@ -351,8 +354,9 @@ def defauts_de_page(p, sortie, pages):
             att.append(f"titre orphelin en bas de la page {a} : « {t['titre']} » (ce qui le suit est page {b})")
     if pages > 1:
         r = remplissage(sortie, pages)
+        voulues = {pg.get(c) for c in info.get('sauts', [])}
         for k, x in enumerate(r[:-1], 1):
-            if x < 67:
+            if x < 67 and (k + 1) not in voulues:
                 att.append(f'page {k} : {100 - x} % de blanc en bas (un bloc poussé à la page suivante ?)')
         if r[-1] < 34:
             att.append(f'page {pages} (la dernière) : remplie à {r[-1]} % seulement (moins d\'un tiers)')
@@ -438,7 +442,9 @@ def controler(b, url, sortie, html=None, analyser=True):
         for x in etroit:
             print(f"  Attention : réponse à l'étroit, {x['id']} ({x['num']}, {x['ou']}) : réponse modèle de {len(x['modele'])} caractères, "
                   f"environ {len(x['modele']) * 2.5:.0f} mm à la main, pour {x['place']} mm"
-                  + (' : data-lignes="2"' if x['ou'] == 'ligne pleine' else ' : data-lignes plus grand' if x['ou'].endswith('lignes') else ' : à signaler au Designer (le moteur doit la régler)'))
+                  + (' : data-lignes="2"' if x['ou'] == 'ligne pleine' else ' : data-lignes plus grand' if x['ou'].endswith('lignes')
+                     else ' : moins de colonnes dans la grille (data-colonnes), ou une variante acceptée plus courte' if x['ou'] == 'case de grille'
+                     else ' : à signaler au Designer (le moteur doit la régler)'))
         # un texte caché rendu sur papier (une règle d'impression qui l'affiche) : la fuite elle-même, sans lire le PDF
         rendus = p.evaluate("""() => [...document.querySelectorAll('.td-aide, .td-correction, .td-retour, pre.td-attendu, .td-retour-zone, .td-explication')]
             .filter(e => e.getClientRects().length && getComputedStyle(e).visibility !== 'hidden' && e.textContent.trim())

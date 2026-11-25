@@ -20,6 +20,18 @@ Usage (à la racine du dépôt) : python3 -I charte/tester-outils.py
 7. Réponses à l'étroit sur papier (T123e) : imprimer-td.py ne signale aucune réponse à l'étroit dans un tableau ni
    sur une rangée sur les pages des tableaux (le gabarit, « Décimal et binaire » de SNT, les conditions) ; et le
    signale sur un témoin dont les cases « Réponse » sont réduites à 15 mm.
+8. Mise en page déclarée (T140) :
+   - la page d'exemple charte/gabarit-td/mise-en-page.html : « PDF vierge : oui » et « tout est juste » ;
+   - l'ordre de lecture : sur papier, dans des colonnes (td-colonnes), les numéros descendent la première colonne puis
+     la deuxième ; dans une grille (td-grille-reponses) ou un côte à côte, ils vont de gauche à droite puis vers le
+     bas ; sur téléphone (320 px), une seule colonne dans l'ordre de la page ; au clavier (Tab), les champs viennent
+     dans l'ordre des numéros ;
+   - verifier-td.py refuse un témoin mal écrit (trois blocs dans un côte à côte, proportion inconnue, ligne de code
+     trop longue pour sa colonne, console trop large, genre d'encadré inconnu) ;
+   - imprimer-td.py signale les défauts de page d'un témoin (titre orphelin, consigne séparée de sa réponse, dernière
+     page presque vide) et n'en signale aucun sur un modèle soigné (charte/exemples-mise-en-page/conversions) ;
+   - une « courte » plus longue qu'une ligne pleine a deux lignes d'écriture (GHOST q7 et q8 : plus de réponse à
+     l'étroit).
 Code de sortie : 0 si tout est conforme.
 """
 import functools
@@ -143,6 +155,107 @@ def essayer_etroit(noter, base, pdf):
     noter(len(vus) >= 2, f'témoin aux cases de 15 mm : {len(vus)} réponse(s) à l\'étroit signalée(s)')
 
 
+TEMOIN_MEP = """<!doctype html><html lang="fr"><head><meta charset="utf-8"><title>Témoin</title></head><body>
+<main class="td" data-td="temoin-mep">
+<div class="td-cote-a-cote" data-proportions="5/7"><div class="td-col"></div><div class="td-col"></div><div class="td-col"></div></div>
+<div class="td-cote-a-cote"><div class="td-col"><pre class="td-code">
+une_variable_au_nom_bien_trop_long_pour_cette_colonne = 1</pre>
+<pre class="td-sortie-exemple">
+UID     PID   PPID  C  CMD           un extrait bien trop large</pre></div><div class="td-col"></div></div>
+<div class="td-encadre" data-genre="astuce"><p>?</p></div>
+</main></body></html>
+"""
+ORDRE_JS = r"""(sel) => {
+  const box = document.querySelector(sel); if (!box) return null;
+  const qs = [...box.querySelectorAll(':scope > .td-q, :scope > .td-col > .td-q')].filter(q => q.getClientRects().length);
+  return qs.map(q => { const r = q.getBoundingClientRect(), n = q.querySelector('.td-num-papier') || q.querySelector('.td-q-num');
+    return { n: parseInt(n.textContent.replace(/\D+/g, ''), 10), x: Math.round(r.left), y: Math.round(r.top) }; });
+}"""
+
+
+def essayer_mise_en_page(noter, base, pdf):
+    from playwright.sync_api import sync_playwright
+    page = 'charte/gabarit-td/mise-en-page.html'
+    rc, out = lancer('charte/imprimer-td.py', base + page, pdf)
+    noter(rc == 0 and 'PDF vierge : oui' in out, 'mise-en-page.html : PDF vierge')
+    rc, out = lancer('charte/verifier-td.py', page)
+    noter(rc == 0 and 'tout est juste' in out, 'mise-en-page.html : verifier-td.py, tout est juste')
+    with sync_playwright() as pw:
+        b = pw.chromium.launch()
+        p = b.new_page(viewport={'width': 794, 'height': 1123})
+        p.goto(base + page)
+        p.wait_for_selector('.td-pret', state='attached')
+        p.emulate_media(media='print')
+        col = p.evaluate(ORDRE_JS, '.td-colonnes')
+        # colonnes de journal : trié par (colonne, hauteur), les numéros croissent
+        ordre = [x['n'] for x in sorted(col, key=lambda x: (x['x'], x['y']))]
+        noter(len(col) >= 2 and ordre == sorted(ordre) and len({x['x'] for x in col}) >= 2,
+              f'papier, colonnes : numéros dans l\'ordre de lecture (colonne après colonne) {ordre}')
+        gr = p.evaluate(ORDRE_JS, '.td-grille-reponses')
+        ordre = [x["n"] for x in sorted(gr, key=lambda x: (round(x["y"] / 4), x["x"]))]
+        noter(len(gr) >= 3 and ordre == sorted(ordre) and len({x['y'] for x in gr}) == 1,
+              f'papier, grille : numéros de gauche à droite {ordre}')
+        cc = p.evaluate(ORDRE_JS, '.td-cote-a-cote[data-proportions="3/5"]')
+        noter(len(cc) == 3 and [x['n'] for x in cc] == sorted(x['n'] for x in cc), 'papier, côte à côte : les questions de la colonne dans l\'ordre')
+        p.emulate_media(media='screen')
+        p.set_viewport_size({'width': 320, 'height': 800})
+        p.wait_for_timeout(200)
+        tel = p.evaluate(ORDRE_JS, '.td-colonnes') + p.evaluate(ORDRE_JS, '.td-grille-reponses')
+        noter(len({x['x'] for x in tel}) == 1 and [x['n'] for x in tel] == sorted(x['n'] for x in sorted(tel, key=lambda x: x['y'])),
+              '320 px : une seule colonne, dans l\'ordre des numéros')
+        deb = p.evaluate('document.documentElement.scrollWidth - document.documentElement.clientWidth')
+        noter(deb <= 0, f'320 px : aucun défilement horizontal ({deb} px)')
+        # clavier : l'ordre de tabulation des champs suit l'ordre des numéros
+        p.set_viewport_size({'width': 1440, 'height': 900})
+        champs = p.evaluate("""() => [...document.querySelectorAll('.td-grille-reponses input.td-champ, .td-cote-a-cote input.td-champ')]
+            .map(c => c.id)""")
+        vus = []
+        p.focus('#' + champs[0])
+        for _ in range(60):
+            i = p.evaluate('document.activeElement.id')
+            if i in champs and i not in vus:
+                vus.append(i)
+            if len(vus) == len(champs):
+                break
+            p.keyboard.press('Tab')
+        noter(vus == champs, f'clavier : les champs dans l\'ordre de la page ({len(vus)}/{len(champs)})')
+        # écran large : le côte à côte sort de la colonne de lecture, sans dépasser la fenêtre
+        l = p.evaluate("(() => { const r = document.querySelector('.td-cote-a-cote').getBoundingClientRect(); return [r.left, r.right, innerWidth]; })()")
+        noter(l[0] >= 0 and l[1] <= l[2] and l[1] - l[0] > 800, f'1440 px : côte à côte élargi dans la fenêtre ({round(l[0])}..{round(l[1])})')
+        b.close()
+    # verifier-td.py : un témoin mal écrit est refusé, avec chaque raison
+    temoin = os.path.join(ICI, 'essais', '.temoin-mep.html')
+    open(temoin, 'w', encoding='utf-8').write(TEMOIN_MEP)
+    try:
+        rc, out = lancer('charte/verifier-td.py', os.path.relpath(temoin, RACINE))
+    finally:
+        os.remove(temoin)
+    attendus = ['exactement deux blocs', 'data-proportions="5/7"', 'trop longue pour sa colonne', 'ligne 1 de la console', 'data-genre="astuce"']
+    manque = [a for a in attendus if a not in out]
+    noter(rc != 0 and not manque, 'verifier-td.py : témoin de mise en page mal écrite refusé' + (f' (manque : {manque})' if manque else ''))
+    # imprimer-td.py : défauts de page vus dans le PDF (témoin : une règle force les sauts au mauvais endroit)
+    page = 'charte/gabarit-td/mise-en-page.html'
+    source = open(os.path.join(RACINE, page), encoding='utf-8').read()
+    regle = ('<style>@media print { .td h2.td-partie:nth-of-type(2) { break-after: page !important; } '
+             '#q4 > .td-consigne { break-after: page !important; } }</style>')
+    temoin = os.path.join(RACINE, 'charte', 'gabarit-td', '.temoin-pages.html')
+    open(temoin, 'w', encoding='utf-8').write(source.replace('</head>', regle + '</head>', 1))
+    try:
+        rc, out = lancer('charte/imprimer-td.py', base + 'charte/gabarit-td/.temoin-pages.html', pdf)
+    finally:
+        os.remove(temoin)
+    noter('titre orphelin' in out, 'imprimer-td.py : titre orphelin vu')
+    noter('sont séparées' in out, 'imprimer-td.py : consigne séparée de sa réponse vue')
+    rc, out = lancer('charte/imprimer-td.py', base + 'charte/exemples-mise-en-page/conversions/index.html', pdf)
+    mep = [l.strip() for l in out.splitlines() if 'mise en page' in l]
+    noter(rc == 0 and not mep, 'modèle « Conversions » : aucun défaut de page' + (f' ({mep[0][:100]})' if mep else ''))
+    ghost = 'nsi-premiere/fichiers/operation-ghost/fiche-eleve-ghost.html'
+    if os.path.exists(os.path.join(RACINE, ghost)):
+        rc, out = lancer('charte/imprimer-td.py', base + ghost, pdf)
+        etroit = [l for l in out.splitlines() if "réponse à l'étroit" in l and ('q7 ' in l or 'q8 ' in l)]
+        noter(rc == 0 and not etroit, 'GHOST q7 et q8 : deux lignes d\'écriture, plus de réponse à l\'étroit')
+
+
 def main():
     serveur = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Silencieux, directory=RACINE))
     threading.Thread(target=serveur.serve_forever, daemon=True).start()
@@ -176,6 +289,7 @@ def main():
     essayer_corrections_partielles(noter)
     essayer_correction_posee_fausse(noter)
     essayer_etroit(noter, base, pdf)
+    essayer_mise_en_page(noter, base, pdf)
     rc, out = lancer('charte/numeroter-feuilles.py', '--tout', '--verifier')
     noter('Problème' not in out and 'Traceback' not in out, 'numeroter-feuilles.py --tout --verifier : tout le dépôt, sans problème (' + out.strip().splitlines()[-1] + ')')
     if os.path.exists(pdf):

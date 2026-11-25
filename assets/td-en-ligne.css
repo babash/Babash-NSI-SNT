@@ -795,10 +795,12 @@ textarea.td-libre { width: 100%; resize: vertical; }
      (la part du PREMIER bloc) ;
    - div.td-colonnes : une suite de petits blocs (questions) en colonnes, data-colonnes="2" (défaut) ou "3" ;
      sur papier, l'ordre descend la première colonne puis la deuxième ; data-sens="lignes" : de gauche à droite ;
-   - div.td-grille-reponses : des réponses courtes en grille compacte, data-colonnes="2" à "4" ;
-   - div.td-encadre[data-genre="rappel|methode|attention|exemple"] ; section.td-exercice > h3.td-exercice-titre ;
-   - data-saut="avant|apres", data-ensemble, data-avec-suivant (papier) ;
-   - pre.td-code[data-numeros="non"], pre.td-code[data-compact] ;
+   - div.td-grille-reponses : des réponses courtes en grille compacte, data-colonnes="2" à "6", data-brouillon="1" à "5"
+     (place pour le calcul), data-etiquette-papier="non" ;
+   - div.td-encadre[data-genre="retenir|rappel|methode|attention|exemple"] (« À retenir » en tête de feuille, data-colonnes="2") ;
+     section.td-exercice > h3.td-exercice-titre ; question[data-a-ton-tour] après un exemple résolu ;
+   - data-saut="avant|apres", data-ensemble, data-avec-suivant, data-coupable (papier) ;
+   - pre.td-code[data-numeros="non"], pre.td-code[data-compact] ; libre[data-zone="cadre"] (un cadre pour dessiner) ;
    - main[data-mise-en-page="2"] : la typographie papier revue (numéros, consignes, séparations).
    L'ordre de lecture est TOUJOURS celui de la page (DOM) : au clavier, au lecteur d'écran, sur téléphone
    (une colonne) et dans la numérotation des questions. */
@@ -890,8 +892,6 @@ textarea.td-libre { width: 100%; resize: vertical; }
 .td h3.td-exercice-titre code { font-family: inherit; font-size: 1em; }
 .td-exercice-titre .td-exercice-points { float: right; font-family: var(--td-mono); font-size: .85rem; letter-spacing: 0; padding-top: .25rem; }
 
-/* ── Mise en page « 2 » à l'écran : rien ne change, sinon l'introduction d'une partie, plus aérée ── */
-
 @media print {
   /* côte à côte : deux colonnes de la feuille, séparées de 6 mm, chacune avec ses blocs entiers */
   .td-cote-a-cote { display: grid; grid-template-columns: minmax(0, var(--td-p1, 1fr)) minmax(0, var(--td-p2, 1fr)); column-gap: 6mm; margin: .8mm 0 1.6mm; }
@@ -913,7 +913,7 @@ textarea.td-libre { width: 100%; resize: vertical; }
   .td-grille-reponses { display: grid; grid-template-columns: repeat(var(--td-ncol, 3), minmax(0, 1fr)); gap: 0; margin: 1mm 0 2mm;
     border-top: 1px solid #121016; border-left: 1px solid #121016; }
   .td-grille-reponses { align-items: stretch; }
-  .td-grille-reponses > .td-q { margin: 0; padding: 1mm 2mm 2.6mm; border: 0 !important; border-right: 1px solid #121016 !important; border-bottom: 1px solid #121016 !important; break-inside: avoid; }
+  .td-grille-reponses > .td-q, .td .td-grille-reponses > .td-q.td-courte-ligne + .td-q.td-courte-ligne { margin: 0; padding: 1mm 2mm 2.6mm; border: 0 !important; border-right: 1px solid #121016 !important; border-bottom: 1px solid #121016 !important; break-inside: avoid; }
   /* dans chaque case : le numéro et la consigne en haut, la ligne de réponse en bas (alignées d'une case à l'autre) */
   .td-grille-reponses > .td-q, .td-grille-reponses > .td-q.td-courte-ligne { display: grid; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 1.6mm; align-items: start; }
   .td-grille-reponses > .td-q > .td-q-titre { grid-column: 1; grid-row: 1; float: none; margin: 0; }
