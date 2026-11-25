@@ -24,7 +24,6 @@
   var PREFIXE = 'td:';
   var PYODIDE = 'https://cdn.jsdelivr.net/pyodide/v0.29.3/full/pyodide.js';   // Python 3.13
   var DELAI_PYTHON = 6000;                // au-delà : boucle infinie probable
-  var ESSAIS_AVANT_CORRECTION = 2;
 
   /* ── Petits outils ─────────────────────────── */
 
@@ -99,8 +98,23 @@
     var t = String(s).trim().replace(/\s/g, '').replace(',', '.');
     return /^[-+]?(\d+\.?\d*|\.\d+)$/.test(t) ? parseFloat(t) : null;
   }
+  /* mode « commande » (T140, commandes Linux) : comme le shell. La casse compte ; les espaces multiples et l'invite « $ »
+     ne comptent pas ; les options d'une lettre se lisent dans n'importe quel ordre (ls -l -a = ls -al = ls -la) ; un
+     chemin final « dossier/ » vaut « dossier » ; les tubes « | » sont permis (chaque commande est comparée). */
+  function normCommande(s) {
+    return String(s).replace(/[\u00a0\u202f\t]/g, ' ').trim().replace(/^\$\s*/, '').split('|').map(function (seg) {
+      var mots = seg.match(/"[^"]*"|'[^']*'|\S+/g) || [], opts = [], args = [];
+      mots.forEach(function (m, i) {
+        if (i > 0 && /^-[A-Za-z]+$/.test(m)) m.slice(1).split('').forEach(function (c) { opts.push('-' + c); });
+        else if (i > 0 && /^--?[A-Za-z]/.test(m)) opts.push(m);
+        else args.push(m.length > 1 ? m.replace(/\/$/, '') : m);
+      });
+      return args.slice(0, 1).concat(opts.sort(), args.slice(1)).join(' ');
+    }).join(' | ');
+  }
   function egal(reponse, attendu, mode) {
     if (mode === 'code') return normCode(reponse) === normCode(attendu);
+    if (mode === 'commande') return normCommande(reponse) === normCommande(attendu);
     var a = nombre(reponse), b = nombre(attendu);
     if (a !== null && b !== null) return Math.abs(a - b) < 1e-9;
     if (mode === 'exact') return String(reponse).trim() === String(attendu).trim();
@@ -380,7 +394,8 @@
       return '<span class="td-l"><span class="td-num" aria-hidden="true">' + (++num) + '</span>' + (l || ' ') + '</span>';
     }).join('');
     pre.classList.add('td-code-pret');
-    if (lignes.length < 2 || opts.sansNumeros || pre.getAttribute('data-numeros') === 'non') pre.classList.add('td-sans-num');
+    // un texte qui n'est pas du code (data-langage="texte") n'a pas de numéros de ligne (T140)
+    if (lignes.length < 2 || opts.sansNumeros || pre.getAttribute('data-numeros') === 'non' || langue(pre) === 'texte') pre.classList.add('td-sans-num');
     if (lignes.length > CODE_SECABLE) pre.classList.add('td-code-long');     // sur papier : peut passer à la page suivante (T123d)
     return code;
   }
@@ -818,8 +833,23 @@
 
   /* ── Retours bienveillants ─────────────────── */
 
-  var BRAVO = ['Juste. Bien raisonné !', 'C\'est ça : tu as bien suivi le programme.', 'Exact. Tu peux passer à la suite.', 'Juste ! Ton raisonnement tient la route.'];
-  var ENCORE = ['Pas encore. Relis la consigne, puis réessaie.', 'Ce n\'est pas tout à fait ça. Suis le programme ligne par ligne.', 'Pas encore : c\'est en se trompant qu\'on apprend. Un coup de pouce peut t\'aider.', 'Presque ? Vérifie chaque ligne, une par une.'];
+  /* Une échelle d'aide (T140 ; goûts G5, G8 et G59 de l'enseignant, 25/11, pour les trois niveaux). La page dit d'abord
+     seulement si c'est juste, puis aide peu à peu :
+     - avant tout essai : rien (on essaie seul·e ou à deux) ;
+     - 1er essai faux : « Pas encore. Réessaie, seul·e ou avec ton ou ta voisin·e. », rien d'autre ;
+     - à partir du 2e essai faux (seuil 1) : les indices de la question (p.td-aide, gardés dans les pages) deviennent
+       disponibles, au clic, un par un ; ils disent où regarder, jamais la réponse ;
+     - à partir du 3e essai faux (seuil 2), ou dès que tous les indices ont été lus : « Voir la correction », au clic ;
+       l'explication de l'erreur faite (data-si, data-retour, cases fausses, tests…) vient avec la correction. Une
+       question sans indice propose la correction dès le seuil 1.
+     - une réponse rédigée (libre) : la correction après avoir écrit quelque chose.
+     Les seuils se règlent : data-seuils="2 3" sur <main> ou une question (essais faux avant les indices, avant la
+     correction). data-retours="aussitot" : l'explication dès le 1er essai (l'ancien comportement).
+     Les messages ne disent que ce qui est vrai : plus de message tiré au hasard qui parle de « programme » ou de « ligne ». */
+  var BRAVO = ['Juste !'];
+  var ENCORE = ['Pas encore. Réessaie, seul·e ou avec ton ou ta voisin·e.'];
+  var SEUILS = [2, 3];
+  function attributProche(e, nom) { var x = e.closest('[' + nom + ']'); return x ? x.getAttribute(nom) : null; }
 
   /* ── Une question ──────────────────────────── */
 
@@ -881,11 +911,15 @@
   Question.prototype.monterActions = function () {
     var q = this, s = this.s;
     this.aides = Array.prototype.slice.call(s.querySelectorAll('.td-aide'));
+    // l'échelle d'aide (G59) : les seuils, réglables ; les indices ne sont offerts qu'après des essais
+    this.aussitot = attributProche(s, 'data-retours') === 'aussitot';
+    var sv = (attributProche(s, 'data-seuils') || '').trim().split(/\s+/).map(Number);
+    this.seuils = [sv[0] > 0 ? sv[0] : SEUILS[0], sv[1] > 0 ? sv[1] : SEUILS[1]];
     this.correction = s.querySelector('.td-correction');
     this.retours = Array.prototype.slice.call(s.querySelectorAll('.td-retour'));
     this.aides.forEach(function (a, i) {
       a.hidden = i >= q.etat.aides;
-      a.insertBefore(el('b', { class: 'td-aide-num', text: 'Coup de pouce ' + (i + 1) + ' : ' }), a.firstChild);
+      a.insertBefore(el('b', { class: 'td-aide-num', text: 'Indice ' + (i + 1) + ' : ' }), a.firstChild);
     });
     this.retours.forEach(function (r) { r.hidden = true; });
     if (this.correction) {
@@ -913,13 +947,24 @@
     this.zone.appendChild(this.retour);
     this.majBoutons();
   };
+  // l'échelle d'aide (G59) : un indice ? la correction ? (une question juste n'a plus besoin d'aide, mais garde sa correction)
+  Question.prototype.indiceOffert = function () {
+    return this.aides.length > this.etat.aides && !this.juste && this.etat.essais >= this.seuils[0];
+  };
+  Question.prototype.correctionOfferte = function () {
+    if (this.etat.vu) return false;
+    if (this.type === 'libre') return !!(this.correction && String(this.etat.valeur || '').trim());
+    if (this.etat.essais >= this.seuils[1]) return true;
+    if (this.etat.essais < this.seuils[0]) return false;
+    return !this.aides.length || this.etat.aides >= this.aides.length || this.juste;
+  };
   Question.prototype.majBoutons = function () {
     if (this.bAide) {
       var reste = this.aides.length - this.etat.aides;
-      this.bAide.hidden = reste <= 0;
-      this.bAide.textContent = this.etat.aides ? 'Un autre coup de pouce (' + reste + ')' : 'Un coup de pouce';
+      this.bAide.hidden = !this.indiceOffert();
+      this.bAide.textContent = this.etat.aides ? 'Un autre indice (' + reste + ')' : 'Un indice';
     }
-    this.bCorr.hidden = this.type === 'libre' ? !(this.correction && !this.etat.vu) : !(this.etat.essais >= ESSAIS_AVANT_CORRECTION && !this.etat.vu);
+    this.bCorr.hidden = !this.correctionOfferte();
   };
   Question.prototype.aider = function () {
     var a = this.aides[this.etat.aides]; if (!a) return;
@@ -929,10 +974,26 @@
   };
   Question.prototype.voirCorrection = function () {
     this.etat.vu = true;
+    this.montrerDifferes();
     if (this.correction) { this.correction.hidden = false; this.correction.setAttribute('tabindex', '-1'); this.correction.focus(); }
     else this.dire('La bonne réponse : ' + this.attenduTexte(), 'info');
     this.bCorr.setAttribute('aria-expanded', 'true');
     this.majBoutons(); this.enregistrer();
+  };
+  // ce qui en dit plus que « juste ou faux » (une explication, une case marquée, la sortie attendue) : gardé pour le clic
+  // sur « Voir la correction » (goût G8) ; tout de suite avec data-retours="aussitot", ou si la correction est déjà vue
+  Question.prototype.plusTard = function (noeud) {
+    if (this.aussitot || this.etat.vu) { this.retour.appendChild(noeud); return; }
+    (this.differes = this.differes || []).push(noeud);
+  };
+  Question.prototype.montrerDifferes = function () {
+    var d = this.differes || [];
+    if (this.marquer) { this.marquer(); this.marquer = null; }
+    if (!d.length) return;
+    var bloc = el('div', { class: 'td-differes' }, [el('p', { class: 'td-differes-titre', text: 'Ta dernière réponse' })]);
+    d.forEach(function (n) { n.hidden = false; bloc.appendChild(n); });
+    this.retour.appendChild(bloc);
+    this.differes = [];
   };
   Question.prototype.dire = function (html, genre) {
     this.retour.className = 'td-retour-zone ' + (genre || '');
@@ -944,12 +1005,13 @@
     this.juste = juste;
     var n = this.etat.essais + this.rang;
     this.retours.forEach(function (r) { r.hidden = true; });
+    this.differes = []; this.marquer = null;
     if (juste) {
       this.dire('<b>✓ ' + choisir(BRAVO, n) + '</b>', 'juste');
       if (this.surJuste) this.surJuste();
     } else {
-      this.dire('<b>' + choisir(ENCORE, n) + '</b>', 'encore');
-      if (cible) { cible.hidden = false; this.retour.appendChild(cible.cloneNode(true)).hidden = false; cible.hidden = true; }
+      this.dire('<b>' + (this.indiceOffert() ? 'Pas encore. Un indice peut t\'aider.' : this.correctionOfferte() ? 'Pas encore. Réessaie, ou regarde la correction.' : choisir(ENCORE, n)) + '</b>', 'encore');
+      if (cible) { var c = cible.cloneNode(true); c.hidden = false; c.removeAttribute('id'); this.plusTard(c); }
     }
     this.afficherEtat(true);
     this.majBoutons(); this.enregistrer();
@@ -1001,7 +1063,7 @@
   Question.prototype.verifier_courte = function () {
     var v = this.champ.value;
     if (!v.trim()) return this.dire('Écris ta réponse dans la case, puis vérifie.', 'info');
-    var ok = unParmi(v, alternatives(this.s.getAttribute('data-reponse')), this.mode);
+    var ok = unParmi(v, alternatives(this.s.getAttribute('data-reponse')), this.mode) || this.avecMots(v);
     this.conclure(ok, ok ? null : this.retourPour(v, this.mode));
   };
 
@@ -1059,12 +1121,24 @@
     var large = Math.max.apply(null, source.split('\n').map(function (l) { return l.length; }));
     if (cote === 'oui' || large <= 34) this.s.classList.add('td-cote');
   };
+  /* data-unite="bits|bit" : la réponse juste suivie d'une unité est acceptée (« 8 bits ») ; data-avant="en|la case" :
+     précédée de ces mots (« en F12 ») (T140, règle R2 proposée par la Critique) */
+  Question.prototype.avecMots = function (v) {
+    var u = this.s.getAttribute('data-unite'), a = this.s.getAttribute('data-avant');
+    if (!u && !a) return false;
+    var t = normTexte(v), liste = alternatives(this.s.getAttribute('data-reponse')), mode = this.mode;
+    var debuts = a ? alternatives(a).map(normTexte) : [], fins = u ? alternatives(u).map(normTexte) : [];
+    var essais = [t];
+    debuts.forEach(function (d) { if (t.indexOf(d + ' ') === 0) essais.push(t.slice(d.length + 1).trim()); });
+    essais.slice().forEach(function (x) { fins.forEach(function (f) { if (x.length > f.length && x.slice(-f.length) === f) essais.push(x.slice(0, -f.length).trim()); }); });
+    return essais.some(function (x) { return x && unParmi(x, liste, mode); });
+  };
   Question.prototype.verifier_qcu = function () {
     var coche = this.options.filter(function (o) { return o.input.checked; });
     if (!coche.length) return this.dire('Choisis une réponse, puis vérifie.', 'info');
     var o = coche[0], ok = o.juste;
     this.conclure(ok, null);
-    if (!ok && o.retour) this.retour.appendChild(el('p', { text: o.retour }));
+    if (!ok && o.retour) this.plusTard(el('p', { text: o.retour }));
   };
   Question.prototype.verifier_cases = function () {
     var q = this, coche = this.options.filter(function (o) { return o.input.checked; });
@@ -1072,8 +1146,8 @@
     var ok = this.options.every(function (o) { return o.juste === o.input.checked; });
     this.conclure(ok, null);
     if (!ok) {
-      coche.filter(function (o) { return !o.juste && o.retour; }).forEach(function (o) { q.retour.appendChild(el('p', { text: o.retour })); });
-      if (this.options.some(function (o) { return o.juste && !o.input.checked; })) this.retour.appendChild(el('p', { text: 'Il manque au moins une bonne réponse.' }));
+      coche.filter(function (o) { return !o.juste && o.retour; }).forEach(function (o) { q.plusTard(el('p', { text: o.retour })); });
+      if (this.options.some(function (o) { return o.juste && !o.input.checked; })) this.plusTard(el('p', { text: 'Il manque au moins une bonne réponse.' }));
     }
   };
   Question.prototype.attenduTexte_options = function () {
@@ -1148,6 +1222,7 @@
       });
     }
     pre.classList.add('td-code-pret', 'td-code-trous');
+    if (langue(pre) === 'texte' || pre.getAttribute('data-numeros') === 'non') pre.classList.add('td-sans-num');
     if (lignes.length > TROUS_SECABLE) pre.classList.add('td-code-long');     // T123d : un tiers de page
     // largeur du code sur papier (chaque case compte pour sa largeur) : code étroit = réponse à côté
     this.sourceTrous = lignes.map(function (l) { return decouperTrous(l).map(function (m, k) { return k % 2 ? new Array((parTrou ? Math.max.apply(null, alternatives(m).map(function (r) { return r.length; })) : largeurCommune) + 6).join('x') : m; }).join(''); }).join('\n');
@@ -1192,20 +1267,30 @@
       var ok = r.etat === 'ok' && normSortie(r.sortie, ex) === normSortie(attendu, ex);
       q.conclureTrous(ok ? [] : (faux.length ? faux : null));
       if (r.etat === 'trop-long') q.retour.appendChild(el('p', { html: 'Le code rempli tourne encore après ' + DELAI_PYTHON / 1000 + ' secondes : c\'est sans doute une <b>boucle infinie</b>.' }));
-      else if (!ok && !faux.length) q.retour.appendChild(el('p', { text: 'Chaque case, seule, peut sembler juste, mais le programme rempli ne fait pas ce qui est demandé : vérifie que les cases vont ensemble.' }));
+      else if (!ok && !faux.length) q.plusTard(el('p', { text: 'Chaque case, seule, peut sembler juste, mais le programme rempli ne fait pas ce qui est demandé : vérifie que les cases vont ensemble.' }));
     });
   };
   // faux : les cases à marquer ; null : le programme est faux sans qu'une case seule le soit (cases liées)
+  // (échelle d'aide : les cases fausses ne sont marquées qu'avec la correction, ou tout de suite avec data-retours="aussitot")
   Question.prototype.conclureTrous = function (faux) {
-    var juste = faux !== null && !faux.length;
-    this.trous.forEach(function (t) { t.input.setAttribute('aria-invalid', String(!!faux && faux.indexOf(t) >= 0)); });
+    var juste = faux !== null && !faux.length, trous = this.trous;
+    trous.forEach(function (t) { t.input.setAttribute('aria-invalid', 'false'); });
     this.conclure(juste, null);
-    if (faux && faux.length) this.retour.appendChild(el('p', { text: faux.length === 1 ? 'Une case est à revoir (elle est marquée d\'un trait épais).' : faux.length + ' cases sont à revoir (elles sont marquées d\'un trait épais).' }));
+    if (faux && faux.length) {
+      this.marquer = function () { trous.forEach(function (t) { t.input.setAttribute('aria-invalid', String(faux.indexOf(t) >= 0)); }); };
+      if (this.aussitot || this.etat.vu) { this.marquer(); this.marquer = null; }
+      this.plusTard(el('p', { text: faux.length === 1 ? 'Une case est à revoir (elle est marquée d\'un trait épais).' : faux.length + ' cases sont à revoir (elles sont marquées d\'un trait épais).' }));
+    }
   };
   Question.prototype.verifier_trous = function () {
     var vides = this.trous.filter(function (t) { return !t.input.value.trim(); }).length;
     if (vides === this.trous.length) return this.dire('Remplis les cases du code, puis vérifie.', 'info');
     var faux = this.trous.filter(function (t) { return !unParmi(t.input.value, t.rep, 'code'); });
+    // data-distinct : deux cases qui demandent deux éléments différents n'acceptent pas la même réponse (T140)
+    if (this.s.hasAttribute('data-distinct')) {
+      var vus = {};
+      this.trous.forEach(function (t) { var k = normCode(t.input.value); if (!k) return; if (vus[k] && faux.indexOf(t) < 0) faux.push(t); vus[k] = true; });
+    }
     var att = this.s.querySelector('pre.td-attendu');
     var exe = this.s.getAttribute('data-execution');
     if (att && !vides && exe !== 'non' && langue(this.s.querySelector('pre.td-code') || this.s) === 'python' &&
@@ -1213,9 +1298,7 @@
       this.verifierTrousExecutes(faux, att);
       return;
     }
-    this.trous.forEach(function (t) { t.input.setAttribute('aria-invalid', String(faux.indexOf(t) >= 0)); });
-    this.conclure(!faux.length, null);
-    if (faux.length) this.retour.appendChild(el('p', { text: faux.length === 1 ? 'Une case est à revoir (elle est marquée d\'un trait épais).' : faux.length + ' cases sont à revoir (elles sont marquées d\'un trait épais).' }));
+    this.conclureTrous(faux);
   };
   Question.prototype.attenduTexte_trous = function () { return this.trous.map(function (t) { return '<code>' + esc(t.rep[0]) + '</code>'; }).join(', '); };
 
@@ -1247,8 +1330,8 @@
     this.conclure(ok, cible);
     if (!ok) {
       var a = normSortie(v, ex).split('\n'), b = normSortie(this.attendu, ex).split('\n');
-      if (a.length !== b.length) this.retour.appendChild(el('p', { text: 'Compte les lignes : le programme en affiche ' + (a.length < b.length ? 'plus' : 'moins') + ' que toi.' }));
-      else for (var i = 0; i < b.length; i++) if (a[i] !== b[i]) { this.retour.appendChild(el('p', { text: 'Le bon nombre de lignes. Regarde à partir de ta ligne ' + (i + 1) + '.' })); break; }
+      if (a.length !== b.length) this.plusTard(el('p', { text: 'Compte les lignes : le programme en affiche ' + (a.length < b.length ? 'plus' : 'moins') + ' que toi.' }));
+      else for (var i = 0; i < b.length; i++) if (a[i] !== b[i]) { this.plusTard(el('p', { text: 'Le bon nombre de lignes. Regarde à partir de ta ligne ' + (i + 1) + '.' })); break; }
     }
   };
   Question.prototype.attenduTexte_sortie = function () { return '<br>' + esc(this.attendu).replace(/\n/g, '<br>'); };
@@ -1261,7 +1344,7 @@
     this.champ = el('textarea', { id: id, class: 'td-champ td-libre' + (n ? '' : ' td-sans-ligne'), rows: String(Math.max(1, n)), spellcheck: 'true' });
     this.champ.style.setProperty('--td-lignes', String(n));
     this.champ.value = this.etat.valeur || '';
-    this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); });
+    this.champ.addEventListener('input', function () { q.etat.valeur = q.champ.value; q.enregistrer(); if (q.bCorr) q.majBoutons(); });
     this.zone.appendChild(el('div', { class: 'td-ligne-champ td-bloc-champ' }, [
       el('label', { for: id, class: this.support === 'papier' ? 'td-invisible' : (this.s.getAttribute('data-etiquette') ? null : 'td-etiquette-defaut'), text: this.s.getAttribute('data-etiquette') || 'Ta réponse (rédigée, non corrigée ici : compare avec la correction) :' }), this.champ]));
     this.mettreDeCote();       // data-cote : le code à gauche, les lignes à droite (T123c)
@@ -1327,7 +1410,7 @@
     this.conclure(ok, null);
     if (!ok) {
       var bien = this.ordre.filter(function (k, i) { return q.lignesJustes[k] === q.lignesJustes[i]; }).length;
-      this.retour.appendChild(el('p', { text: bien + ' ligne(s) sur ' + this.ordre.length + ' déjà à leur place. Demande-toi : que faut-il préparer avant la boucle ? que doit-elle répéter ? que faire après ?' }));
+      this.plusTard(el('p', { text: bien + ' ligne(s) sur ' + this.ordre.length + ' déjà à leur place. Demande-toi : que faut-il préparer avant la boucle ? que doit-elle répéter ? que faire après ?' }));
     }
   };
   Question.prototype.attenduTexte_ordre = function () { return '<br><code>' + this.lignesJustes.map(esc).join('<br>') + '</code>'; };
@@ -1376,8 +1459,8 @@
       bonneCorr = retraitsValides(L) && (!avecDecalage.length || avecDecalage.some(function (a) { return decalage(a.replace(/\t/g, '    ')) === d; }));
     }
     this.conclure(bonneLigne && bonneCorr, null);
-    if (!bonneLigne) this.retour.appendChild(el('p', { html: 'Ce n\'est pas cette ligne. Le message de Python donne un indice : cherche <code>line …</code>, puis le type d\'erreur sur la dernière ligne.' }));
-    else if (!bonneCorr) this.retour.appendChild(el('p', { text: this.champ.value.trim() ? 'C\'est bien la bonne ligne ! Ta correction n\'est pas encore juste : relis le message d\'erreur.' : 'C\'est bien la bonne ligne ! Écris maintenant la ligne corrigée.' }));
+    if (!bonneLigne) this.plusTard(el('p', { html: 'Ce n\'est pas cette ligne. Le message de Python donne un indice : cherche <code>line …</code>, puis le type d\'erreur sur la dernière ligne.' }));
+    else if (!bonneCorr) this.plusTard(el('p', { text: this.champ.value.trim() ? 'C\'est bien la bonne ligne ! Ta correction n\'est pas encore juste : relis le message d\'erreur.' : 'C\'est bien la bonne ligne ! Écris maintenant la ligne corrigée.' }));
   };
   Question.prototype.attenduTexte_erreur = function () { return 'ligne ' + this.ligneJuste + (this.repLigne ? ' : <code>' + esc(alternatives(this.repLigne)[0]) + '</code>' : ''); };
 
@@ -1464,7 +1547,7 @@
       if (r.etat === 'indisponible') {
         if (window.console) console.warn('TD en ligne : Python indisponible.', r.detail || '');
         q.dire('Python n\'a pas pu se charger (pas de connexion, ou connexion trop lente). Tu peux comparer ton programme avec la correction.', 'info');
-        q.etat.essais = Math.max(q.etat.essais, ESSAIS_AVANT_CORRECTION); q.majBoutons(); q.enregistrer();
+        q.etat.essais = Math.max(q.etat.essais, q.seuils[1]); q.majBoutons(); q.enregistrer();
         return;
       }
       if (r.etat !== 'trop-long') python.charge = true;
@@ -1482,10 +1565,10 @@
       // « n'affiche rien » : seulement si c'est la cause probable (pas après un programme juste vérifié par des tests)
       else if (r.etat === 'ok' && (!ok || (!q.tests.trim() && att === null))) q.retour.appendChild(el('p', { text: 'Ton programme n\'affiche rien. As-tu utilisé print ?' }));
       if (r.etat === 'erreur') blocErreur(r.detail, q.retour);
-      else if (r.etat === 'test') q.retour.appendChild(el('p', { text: r.detail || 'Un test ne passe pas.' }));
+      else if (r.etat === 'test') q.plusTard(el('p', { text: r.detail || 'Un test ne passe pas.' }));
       else if (!ok && att !== null) {
-        q.retour.appendChild(el('p', { class: 'td-etiquette-console', text: 'sortie attendue' }));
-        q.retour.appendChild(console_(att, 'td-console-attendu'));
+        q.plusTard(el('p', { class: 'td-etiquette-console', text: 'sortie attendue' }));
+        q.plusTard(console_(att, 'td-console-attendu'));
       }
     });
   };

@@ -892,7 +892,23 @@ textarea.td-libre { width: 100%; resize: vertical; }
 .td h3.td-exercice-titre code { font-family: inherit; font-size: 1em; }
 .td-exercice-titre .td-exercice-points { float: right; font-family: var(--td-mono); font-size: .85rem; letter-spacing: 0; padding-top: .25rem; }
 
+/* ── Retours (G8) : ce qui en dit plus que « juste ou faux » vient avec la correction, dans un bloc à part ── */
+.td-differes { margin: .5rem 0 .2rem; padding-top: .4rem; border-top: 1px dashed var(--td-trait); }
+.td-differes-titre { font-family: var(--td-mono); font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; margin: 0 0 .2rem !important; }
+
+/* ── Téléphone (T140) : aucune ligne de code ne défile de côté. Une ligne trop longue passe à la ligne, la suite décalée
+   sous le code (retrait suspendu de la largeur des numéros, plus 2 caractères) ; les consoles et messages aussi ── */
+@media screen and (max-width: 560px) {
+  .td pre.td-code, .td pre.td-console, .td pre.td-erreur { white-space: pre-wrap; overflow-wrap: anywhere; overflow-x: visible; }
+  .td pre.td-code:not(.td-sans-num) .td-l { padding-left: calc(2.65em + 2ch); text-indent: calc(-2.65em - 2ch); }
+  .td pre.td-code.td-sans-num .td-l, .td pre.td-console .td-l, .td pre.td-erreur .td-l { padding-left: 2ch; text-indent: -2ch; }
+}
+
 @media print {
+  /* le double soulignement des nombres débordait sur la ligne suivante (Critique T149, A12) : sur papier, un trait simple,
+     collé au texte ; les chaînes, un pointillé plus proche */
+  .tk-nb { text-decoration: underline; text-decoration-thickness: .06em; text-underline-offset: .12em; }
+  .tk-ch { text-underline-offset: .16em; }
   /* côte à côte : deux colonnes de la feuille, séparées de 6 mm, chacune avec ses blocs entiers */
   .td-cote-a-cote { display: grid; grid-template-columns: minmax(0, var(--td-p1, 1fr)) minmax(0, var(--td-p2, 1fr)); column-gap: 6mm; margin: .8mm 0 1.6mm; }
   .td-cote-a-cote > .td-col > :first-child { margin-top: 0; }

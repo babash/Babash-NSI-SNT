@@ -77,6 +77,7 @@
         <p class="td-consigne">Donne le chemin <b>absolu</b> du répertoire <code>nsi</code>.</p>
         <p class="td-retour" data-si="home/eleve/devoirs/nsi">Un chemin absolu part de la racine : il commence par /.</p>
         <p class="td-retour" data-si="~/devoirs/nsi">~ est un raccourci du répertoire personnel : le chemin absolu l'écrit en entier, depuis /.</p>
+        <p class="td-aide">Pars de la racine <code>/</code> et descends l'arbre jusqu'à <code>nsi</code>, en séparant les noms par <code>/</code>.</p>
         <div class="td-correction"><p><code>/home/eleve/devoirs/nsi</code> : on part de la racine, puis <code>home</code>, <code>eleve</code>, <code>devoirs</code> et enfin <code>nsi</code>.</p></div>
       </section>
 
@@ -84,12 +85,15 @@
         <p class="td-consigne">L'utilisateur veut copier le fichier <code>notes.csv</code> (chez <code>prof</code>) dans son dossier <code>projets</code>. Écris la commande, avec uniquement des <b>chemins relatifs</b>.</p>
         <p class="td-retour" data-si="cp /home/prof/notes.csv /home/eleve/projets">Ces deux chemins sont absolus (ils commencent par /). La consigne demande des chemins relatifs, à partir de nsi.</p>
         <p class="td-retour" data-si="cp ../../prof/notes.csv ../../projets">Depuis nsi, ../.. mène à /home/eleve. Pour atteindre prof, il faut remonter d'un cran de plus.</p>
+        <p class="td-aide"><code>cp source destination</code>. Depuis <code>nsi</code>, <code>..</code> mène à <code>devoirs</code>, <code>../..</code> à <code>eleve</code>, <code>../../..</code> à <code>home</code>.</p>
         <div class="td-correction"><p><code>cp ../../../prof/notes.csv ../../projets</code> : trois remontées pour arriver dans <code>home</code>, puis <code>prof/notes.csv</code> ; deux remontées pour arriver dans <code>eleve</code>, puis <code>projets</code>.</p></div>
       </section>
 
       <section class="td-q" data-type="courte" id="q3" data-comparer="exact" data-etiquette="$" data-reponse="touch ../../../prof/examens/exam1.txt|cd ../../../prof/examens &amp;&amp; touch exam1.txt|cd ../../../prof/examens; touch exam1.txt|cd ../../../prof/examens ; touch exam1.txt|touch /home/prof/examens/exam1.txt|cd /home/prof/examens &amp;&amp; touch exam1.txt|cd /home/prof/examens; touch exam1.txt|cd /home/prof/examens ; touch exam1.txt">
         <p class="td-consigne">Tu es toujours dans le dossier <code>nsi</code>. Donne la commande (ou la suite de commandes, sur une ligne) qui crée avec <code>touch</code> un fichier <code>exam1.txt</code> dans le dossier <code>examens</code>.</p>
         <p class="td-retour" data-si="touch exam1.txt">Cette commande crée exam1.txt là où tu es, dans nsi : il faut donner le chemin du dossier examens.</p>
+        <p class="td-aide"><code>examens</code> est dans <code>prof</code>, lui-même dans <code>home</code> : depuis <code>nsi</code>, il faut remonter jusqu'à <code>home</code>.</p>
+        <p class="td-aide">Deux commandes sur une ligne se séparent par <code>;</code> ou <code>&amp;&amp;</code>.</p>
         <div class="td-correction"><p><code>touch ../../../prof/examens/exam1.txt</code>, ou bien <code>cd ../../../prof/examens</code> puis <code>touch exam1.txt</code>. Le chemin absolu <code>/home/prof/examens/exam1.txt</code> marche aussi.</p></div>
       </section>
 
@@ -98,6 +102,8 @@
         <pre class="td-sortie-exemple">
 eleve@serveur:~/devoirs/nsi$ ls ../..</pre>
         <p class="td-retour" data-si="nsi">ls .. afficherait le contenu de devoirs. Ici, on remonte de deux crans.</p>
+        <p class="td-aide">L'invite <code>~/devoirs/nsi</code> dit où tu es. <code>../..</code> remonte de deux crans.</p>
+        <p class="td-aide"><code>ls</code> affiche le contenu du dossier, pas son nom.</p>
         <div class="td-correction"><p><code>../..</code> depuis <code>~/devoirs/nsi</code>, c'est <code>~</code>, soit <code>/home/eleve</code>. Le terminal affiche son contenu : <code>devoirs  projets</code>.</p></div>
       </section>
     </div>
@@ -111,6 +117,7 @@ $ cd devoirs
 $ mv nsi ../archives/
 $ ls ../archives</pre>
     <p class="td-retour" data-si="archives">ls affiche le contenu du dossier archives, pas son nom.</p>
+    <p class="td-aide"><code>mv</code> déplace <code>nsi</code> dans <code>archives</code>, qui était vide.</p>
     <div class="td-correction"><p>On crée <code>archives</code> (vide), on entre dans <code>devoirs</code>, on y prend <code>nsi</code> pour le mettre dans <code>../archives</code>. Le dossier <code>archives</code> contient alors seulement <code>nsi</code>.</p></div>
   </section>
 
@@ -127,6 +134,8 @@ $ ls ../archives</pre>
         <li data-juste>Non aux deux : les autres ont <code>r--</code>, lecture seule.</li>
         <li data-retour="Les autres ont bien un droit : r, la lecture. Ils peuvent lire le fichier.">Non aux deux : il ne peut même pas le lire.</li>
       </ul>
+      <p class="td-aide">Après le premier caractère (<code>-</code> : un fichier), les droits vont par trois : propriétaire, groupe, autres.</p>
+      <p class="td-aide"><code>eleve</code> n'est ni le propriétaire (<code>prof</code>) ni dans le groupe : ce sont les trois derniers caractères.</p>
       <div class="td-correction"><p><code>rwx</code> pour <code>prof</code>, <code>rw-</code> pour le groupe <code>enseignants</code>, <code>r--</code> pour les autres. <code>eleve</code> fait partie des autres : il peut lire le fichier, mais ni le modifier (pas de <code>w</code>) ni l'exécuter (pas de <code>x</code>).</p></div>
     </section>
     <section class="td-q" data-type="libre" data-support="papier" data-lignes="4" id="q6p">
@@ -138,6 +147,7 @@ $ ls ../archives</pre>
       <p class="td-consigne">Donne la commande <code>chmod</code>, en notation <b>octale</b>, qui rend ce fichier lisible et modifiable par tout le monde, mais exécutable par personne.</p>
       <p class="td-retour" data-si="chmod 777 notes.csv">777 donne aussi le droit d'exécution (x = 1) à tout le monde.</p>
       <p class="td-retour" data-si="chmod a=rw notes.csv">C'est juste, mais en notation symbolique. La consigne demande la notation octale (des chiffres).</p>
+      <p class="td-aide">r = 4, w = 2, x = 1 : on additionne les droits voulus, pour chacun des trois groupes.</p>
       <div class="td-correction"><p>Lecture + écriture = 4 + 2 = 6, pour le propriétaire, le groupe et les autres : <code>chmod 666 notes.csv</code>. <code>ls -l</code> affiche alors <code>-rw-rw-rw-</code>.</p></div>
     </section>
   </div>
@@ -157,6 +167,8 @@ $ sudo chown directeur notes.csv</pre>
           <li data-retour="Le fichier ne bouge pas : chown change son propriétaire. Déplacer, c'est mv.">La commande déplace <code>notes.csv</code> chez <code>directeur</code> ; <code>sudo</code> confirme le déplacement.</li>
           <li data-retour="sudo ne change pas d'utilisateur pour la suite : il lance seulement cette commande avec les droits de root.">La commande connecte la session en tant que <code>directeur</code> ; <code>sudo</code> demande son mot de passe.</li>
         </ul>
+        <p class="td-aide"><code>chown</code> : <i>change owner</i>, changer le propriétaire.</p>
+        <p class="td-aide">Un utilisateur ordinaire ne peut pas donner son fichier à un autre : il faut les droits de l'administrateur.</p>
         <div class="td-correction"><p><code>chown directeur notes.csv</code> fait de <code>directeur</code> le nouveau propriétaire du fichier. Seul le super-utilisateur <code>root</code> peut le faire : <code>sudo</code> (<i>super user do</i>) exécute la commande avec ses droits, après avoir demandé le mot de passe de l'administrateur·rice.</p></div>
       </section>
       <section class="td-q" data-type="libre" data-support="papier" data-lignes="4" id="q8p">
@@ -182,6 +194,7 @@ eleve   1215  1050  0  ps -ef</pre>
       <section class="td-q" data-type="courte" id="q9" data-reponse="1050">
         <p class="td-consigne">Quel est le PID du processus parent de <code>python3</code> ?</p>
         <p class="td-retour" data-si="1210">1210 est le PID de python3 lui-même. Son parent est dans la colonne PPID.</p>
+        <p class="td-aide">PPID : <i>Parent Process ID</i>, l'identifiant du processus parent.</p>
         <div class="td-correction"><p>Sur la ligne de <code>python3</code>, la colonne PPID vaut <b>1050</b> : c'est le shell <code>bash</code> qui l'a lancé.</p></div>
       </section>
     </div>
@@ -194,6 +207,7 @@ eleve   1215  1050  0  ps -ef</pre>
           <li data-retour="Lis la colonne PPID : chaque processus a son propre parent, ce n'est pas toujours 1.">1 → 500, 1 → 1050, 1 → 1210 et 1 → 1215</li>
           <li data-retour="Les flèches vont du parent vers l'enfant : init (PID 1) est en haut de l'arbre.">1215 → 1050, 1210 → 1050, 1050 → 500 → 1</li>
         </ul>
+        <p class="td-aide">Pour chaque ligne, trace une flèche de PPID vers PID.</p>
         <div class="td-correction">
           <p><svg width="213" height="174" viewBox="0 0 213 174" role="img" aria-label="Arbre des processus : 1 (/sbin/init) est le parent de 500 (sshd), parent de 1050 (bash) ; 1050 est le parent de 1210 (python3 calcul_pi.py) et de 1215 (ps -ef)." font-family="inherit" font-size="15"><rect x="2" y="4" width="117" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="1.4"/><text x="9" y="21" fill="currentColor">1 /sbin/init</text><rect x="32" y="38" width="83" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="1.4"/><text x="39" y="55" fill="currentColor">500 sshd</text><rect x="62" y="72" width="91" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="1.4"/><text x="69" y="89" fill="currentColor">1050 bash</text><rect x="92" y="106" width="117" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="1.4"/><text x="99" y="123" fill="currentColor">1210 python3</text><rect x="92" y="140" width="109" height="24" rx="5" fill="none" stroke="currentColor" stroke-width="1.4"/><text x="99" y="157" fill="currentColor">1215 ps -ef</text><path d="M14 28V50.0H31" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M31 50.0l-7 -4v8z" fill="currentColor"/><path d="M44 62V84.0H61" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M61 84.0l-7 -4v8z" fill="currentColor"/><path d="M74 96V118.0H91" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M91 118.0l-7 -4v8z" fill="currentColor"/><path d="M74 96V152.0H91" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M91 152.0l-7 -4v8z" fill="currentColor"/></svg></p>
           <p><code>init</code> (PID 1) a lancé <code>sshd</code>, qui a lancé le <code>bash</code> de la connexion ; ce <code>bash</code> a deux enfants, <code>python3</code> et <code>ps</code>.</p>
@@ -211,6 +225,7 @@ eleve   1215  1050  0  ps -ef</pre>
     <section class="td-q" data-type="courte" id="q11" data-reponse="1|init|/sbin/init|1 (/sbin/init)|1 (init)|init (1)|le processus 1">
     <p class="td-consigne">Un processus « orphelin » est un processus dont le parent est terminé. Si l'on tue le processus <code>bash</code> (PID 1050), quel processus devient le nouveau parent du processus 1210 ? Donne son PID ou son nom.</p>
     <p class="td-retour" data-si="500">sshd est le grand-parent, mais le système ne rattache pas un orphelin à son grand-parent.</p>
+    <p class="td-aide">Un orphelin est « adopté » par l'ancêtre de tous les processus.</p>
     <div class="td-correction"><p>Le processus 1210 est adopté par <code>init</code>, le processus de PID <b>1</b>, l'ancêtre de tous les processus (sur beaucoup de systèmes Linux récents, il s'appelle <code>systemd</code>).</p></div>
   </section>
 
@@ -225,6 +240,7 @@ eleve   1215  1050  0  ps -ef</pre>
         <li data-juste>Il envoie la sortie de <code>ps -ef</code> à l'entrée de <code>grep</code> : c'est un tube.</li>
         <li data-retour="Ce n'est pas un « ou » : les deux commandes tournent, et la seconde reçoit le résultat de la première.">Il lance <code>ps -ef</code> ou bien <code>grep</code>, selon celle qui marche.</li>
       </ul>
+      <p class="td-aide">Le symbole s'appelle un tube (<i>pipe</i>).</p>
       <div class="td-correction"><p>Le tube <code>|</code> branche la sortie de la commande de gauche sur l'entrée de la commande de droite : <code>grep</code> ne lit pas un fichier, mais le résultat de <code>ps -ef</code>, et n'en garde que les lignes qui contiennent <code>python3</code>.</p></div>
     </section>
     <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q12p">
@@ -240,6 +256,8 @@ eleve   1215  1050  0  ps -ef</pre>
         <li data-retour="La ligne de bash ne contient pas le mot python3 : grep ne la garde pas.">La ligne de <code>-bash</code> (PID 1050).</li>
         <li data-retour="grep garde des lignes du résultat, il ne fait pas un nouveau tableau complet.">Tout le tableau, avec la ligne de <code>python3</code> en premier.</li>
       </ul>
+      <p class="td-aide"><code>grep "python3"</code> garde chaque ligne qui contient le texte <code>python3</code>, n'importe où.</p>
+      <p class="td-aide">Pendant que <code>ps</code> photographie les processus, <code>grep</code> tourne déjà : il fait partie de la liste.</p>
       <div class="td-correction"><p>La ligne <code>eleve 1210 1050 99 python3 calcul_pi.py</code> s'affiche. En pratique, une deuxième ligne apparaît aussi : celle de la commande <code>grep python3</code>, lancée en même temps que <code>ps</code> et qui contient le mot cherché (essai réel dans <code>source/verifier.py</code>).</p></div>
     </section>
     <section class="td-q" data-type="libre" id="q13-papier" data-support="papier" data-lignes="2">
@@ -267,6 +285,7 @@ eleve   1215  1050  0  ps -ef</pre>
         <li data-retour="ping ne donne pas d'adresse : on lui en donne une (ici 8.8.8.8).">Donner l'adresse IP de son propre ordinateur sur le réseau.</li>
         <li data-retour="ping ne montre pas le chemin des paquets : c'est le rôle de traceroute.">Afficher la liste des routeurs traversés par les paquets.</li>
       </ul>
+      <p class="td-aide">Chaque ligne <code>64 bytes from…</code> est une réponse du serveur, avec un temps.</p>
       <div class="td-correction"><p><code>ping</code> envoie des paquets de test (ICMP) à une machine et attend ses réponses : il dit si elle est joignable et mesure le temps d'aller-retour. <code>-c 3</code> : trois paquets.</p></div>
     </section>
     <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q14p">
@@ -282,6 +301,7 @@ eleve   1215  1050  0  ps -ef</pre>
         <li data-retour="time 2003ms est la durée totale du test (une seconde entre chaque paquet), pas le temps d'un aller-retour.">Elle est très lente : plus de 2 secondes pour chaque paquet.</li>
         <li data-retour="ping teste seulement la liaison avec 8.8.8.8 : il ne dit rien des autres serveurs.">Tous les serveurs d'internet sont joignables depuis l'ordinateur.</li>
       </ul>
+      <p class="td-aide">Lis la dernière ligne : envoyés, reçus, perte.</p>
       <div class="td-correction"><p>Les 3 paquets envoyés ont reçu une réponse (0 % de perte), avec un temps d'aller-retour d'environ 12 à 13 ms : la connexion avec ce serveur fonctionne, et elle est rapide.</p></div>
     </section>
     <section class="td-q" data-type="libre" data-support="papier" data-lignes="3" id="q15p">
@@ -325,6 +345,8 @@ deux = [{"pid": 7, "nom": "a", "cpu": 85.0, "user": "x"}, {"pid": 8, "nom": "b",
         {"pid": 9, "nom": "c", "cpu": 95.5, "user": "y"}]
 assert trouver_critiques(deux) == [7, 9], "Il faut tous les PID au-dessus de 80 (strictement), dans l'ordre de la liste : ici [7, 9]."
 </script>
+    <p class="td-aide">On part d'une liste vide, on parcourt <code>liste_proc</code>, et on ajoute le PID quand c'est critique.</p>
+    <p class="td-aide">Pour un processus <code>p</code> : sa consommation est <code>p["cpu"]</code>, son PID <code>p["pid"]</code>.</p>
     <div class="td-correction"><pre class="td-code" data-verifier="correction">
 def trouver_critiques(liste_proc):
     critiques = []
@@ -345,6 +367,8 @@ def filtrer_par_user(liste_proc, nom_user):
         if p["user"] == [[nom_user]]:
             resultat.append([[p]])
     return resultat</pre>
+    <p class="td-aide">On compare l'utilisateur de chaque processus au paramètre reçu par la fonction.</p>
+    <p class="td-aide">On veut garder les processus eux-mêmes (les dictionnaires), pas seulement leur PID.</p>
     <div class="td-correction"><pre class="td-code">
 def filtrer_par_user(liste_proc, nom_user):
     resultat = []
