@@ -96,7 +96,7 @@ if [ ! -d "$BASE_DIR" ]; then
     mkdir -p "$BASE_DIR/donnees/SQL/archives/2024/temp"
     mkdir -p "$BASE_DIR/.secret"
     echo "AVALON_2026" > "$BASE_DIR/.secret/pass.txt"
-    echo "PROJET_ALPHA: VALIDE\nDETOURNEMENT: 15.000.000$\nBENEFICIAIRE: INCONNU" > "$BASE_DIR/donnees/SQL/archives/2024/temp/rapport_fraude.txt"
+    printf "PROJET_ALPHA: VALIDE\nDETOURNEMENT: 15.000.000$\nBENEFICIAIRE: INCONNU\n" > "$BASE_DIR/donnees/SQL/archives/2024/temp/rapport_fraude.txt"
     echo "AVALON-SRV-01" > "$BASE_DIR/donnees/system_id"
     echo "1:0" > "$PROGRESS_FILE"
 fi

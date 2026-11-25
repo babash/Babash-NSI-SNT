@@ -1,248 +1,69 @@
-<!DOCTYPE html>
-<html lang="fr"><head>
-<meta content="width=device-width, initial-scale=1" name="viewport"><meta charset="utf-8">
-<title>Fiche : commandes et système Linux, corrigé</title>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Commandes Linux (terminale) : corrigé</title>
+<meta name="description" content="Le corrigé de l'enseignant·e, fait à partir des feuilles en ligne (numéros du papier), avec les réponses acceptées en ligne et les erreurs fréquentes.">
+<script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+<link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../assets/signal-commun.css">
 <style>
-
-        :root {
-            --primary: #1a2a6c;
-            --secondary: #b21f1f;
-            --text: #2c3e50;
-            --light-gray: #f8f9fa;
-            --border: #d1d8e0;
-            --answer: #0056b3; /* Couleur pour identifier les réponses */
-        }
-
-        * { box-sizing: border-box; -webkit-print-color-adjust: exact; }
-
-        body { 
-            background: #515151; 
-            font-family: 'Roboto', sans-serif; 
-            margin: 0; padding: 0; 
-            color: var(--text);
-        }
-
-        .page {
-            width: 210mm; min-height: 297mm;
-            padding: 10mm; margin: 10mm auto;
-            background: white; box-shadow: 0 0 15px rgba(0,0,0,0.3);
-            position: relative; overflow: hidden;
-            display: flex; flex-direction: column;
-        }
-
-        header {
-            border-bottom: 3px solid var(--primary);
-            padding-bottom: 5px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: flex-end;
-        }
-
-        h1 { margin: 0; font-size: 1.6rem; color: var(--primary); letter-spacing: -1px; }
-        
-        h2 { 
-            font-size: 1rem; background: var(--light-gray); 
-            padding: 4px 10px; border-left: 5px solid var(--primary);
-            margin: 12px 0 8px 0; text-transform: uppercase;
-        }
-
-        h3 { font-size: 0.9rem; margin: 8px 0 4px 0; color: var(--secondary); border-bottom: 1px dashed var(--border); }
-
-        p, li { font-size: 0.85rem; line-height: 1.3; margin: 4px 0; }
-        
-        .write-zone { border-bottom: 1px dotted #999; min-height: 20px; display: inline-block; width: 100%; color: var(--answer); font-weight: bold; }
-        .small-zone { border-bottom: 1px dotted #999; min-height: 18px; display: inline-block; width: 150px; color: var(--answer); font-weight: bold; }
-
-        table { width: 100%; border-collapse: collapse; margin: 5px 0; font-size: 0.8rem; }
-        th, td { border: 1px solid var(--border); padding: 6px; text-align: left; }
-        th { background: var(--primary); color: white; font-weight: 500; width: 25%; }
-        td:nth-child(2) { width: 45%; }
-
-        .code { font-family: 'Fira Code', monospace; background: #eee; padding: 2px 4px; border-radius: 3px; font-size: 0.8rem; }
-        
-        .info-box {
-            border: 1px solid var(--primary);
-            border-radius: 4px; padding: 8px;
-            margin: 5px 0; background: #f0f4ff;
-            font-size: 0.85rem;
-        }
-
-        .rights-container {
-            display: flex; gap: 10px; margin: 10px 0;
-        }
-        .rights-box {
-            flex: 1; border: 1px solid var(--border); padding: 8px; border-radius: 4px; background: #fff;
-        }
-        .rights-box strong { color: var(--primary); font-size: 0.85rem; }
-
-        @media print {
-            body { background: none; }
-            .page { margin: 0; box-shadow: none; border: none; }
-        }
-    
-        /* T67 : polices du système (aucune requête vers un autre site), pied, écran étroit, impression */
-        body { font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; }
-        code, pre, .code { font-family: 'Fira Code', Consolas, 'DejaVu Sans Mono', 'Courier New', monospace; font-variant-ligatures: none; }
-        @page { size: A4; margin: 0; }
-        @media screen { .page { height: auto; min-height: 297mm; } .layer-box { transition: none; } }
-        @media print { .page { break-after: page; page-break-after: always; } .page:last-child { break-after: auto; page-break-after: auto; } }
-        footer { margin-top: auto; padding-top: 6px; border-top: 1px solid #d1d8e0; font-size: 0.68rem; color: #565c68;
-                 display: flex; flex-wrap: wrap; justify-content: space-between; row-gap: 1px; }
-        footer .credit { flex-basis: 100%; text-align: center; font-size: 0.62rem; overflow-wrap: anywhere; }
-        footer a { color: inherit; }
-        @media screen and (max-width: 230mm) {
-            .page { width: auto; max-width: 210mm; height: auto; min-height: 0; margin: 8px; padding: 14px; }
-            p, li, td, th, .info-box { overflow-wrap: break-word; }
-            code, .code, pre { overflow-wrap: anywhere; white-space: pre-wrap; }
-            footer { flex-direction: column; gap: 2px; }
-            footer .credit { text-align: left; }
-            header { flex-wrap: wrap; gap: 4px; }
-        }
-        @media screen and (max-width: 600px) {
-            h1 { font-size: 1.2rem; }
-            table { font-size: 0.7rem; }
-            th, td { padding: 3px 4px; overflow-wrap: anywhere; }
-            .rights-container { flex-direction: column; }
-            .small-zone, .write-zone, .fill-inline { max-width: 100%; min-width: 0; }
-            .state-diagram, .graph-container { flex-wrap: wrap; gap: 6px; }
-            .state-box { width: auto; }
-            .von-neumann { height: auto; grid-template-columns: 1fr; }
-            .vn-box { min-height: 45px; }
-        }
-        @media print { .page.z97 > :not(footer) { zoom: 0.97; } }
-        @media print { .page.z94 > :not(footer) { zoom: 0.94; } }
-        @media print { .page.z91 > :not(footer) { zoom: 0.91; } }
-        @media print { .page.z88 > :not(footer) { zoom: 0.88; } }
-        @media print { .page.z85 > :not(footer) { zoom: 0.85; } }
-        @media print { .page.z82 > :not(footer) { zoom: 0.82; } }
-    </style>
+body { background: var(--td-fond); color: var(--td-encre); font-family: "Atkinson Hyperlegible", sans-serif; margin: 0; line-height: 1.45; }
+main { max-width: 52rem; margin: 0 auto; padding: 1rem; }
+h1 { font-family: Anton, sans-serif; font-weight: 400; letter-spacing: .02em; margin: .2rem 0; }
+h2 { font-family: Anton, sans-serif; font-weight: 400; border-bottom: 2px solid var(--td-encre); margin-top: 1.6rem; }
+h2, h3 { break-after: avoid; }
+h3 { margin: 1.1rem 0 .4rem; }
+code, pre { font-family: "JetBrains Mono", monospace; overflow-wrap: anywhere; }
+pre { background: var(--td-code-fond); padding: .4rem .6rem; overflow-x: auto; white-space: pre; }
+.q { border-left: 3px solid var(--td-encre); padding: .1rem 0 .1rem .7rem; margin: .7rem 0; break-inside: avoid; }
+.c { margin: .2rem 0; }
+.r p, .v, .e { margin: .25rem 0; }
+.v, .e { font-size: .95em; }
+.avert { border: 1px dashed var(--td-encre); padding: .4rem .7rem; }
+footer { border-top: 1px solid var(--td-encre); margin-top: 2rem; padding-top: .5rem; font-size: .9em; }
+a { color: inherit; }
+@media print { body { background: #fff; color: #000; } main { max-width: none; padding: 0; } @page { size: A4; margin: 14mm 14mm 16mm; } pre { white-space: pre-wrap; } }
+</style>
 </head>
 <body>
-<div class="page">
-<header><h1>Commandes &amp; Système Linux - 1/3 (CORRIGÉ)</h1></header>
-<h2>1. Navigation dans l'Arborescence</h2>
-<div class="info-box">
-<strong>Concepts clés :</strong><br>
-            • <code>.</code> représente <strong>le répertoire courant</strong>  | • <code>..</code> représente <strong>le répertoire parent</strong> (au-dessus) <br>
-            • <code>*</code> est un <strong>joker (wildcard)</strong> qui remplace n'importe quelle suite de caractères (ex: <code>*.txt</code> pour tous les fichiers texte).
-        </div>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>pwd</code></td><td><span class="write-zone">Afficher le chemin du répertoire de travail actuel</span></td><td><code>pwd</code></td></tr>
-<tr><td><code>ls</code></td><td><span class="write-zone">Lister les fichiers et dossiers du répertoire</span></td><td><code>ls -la</code></td></tr>
-<tr><td><code>cd [dir]</code></td><td><span class="write-zone">Changer de répertoire (se déplacer)</span></td><td><code>cd Documents/</code></td></tr>
-<tr><td><code>history</code></td><td><span class="write-zone">Afficher la liste des dernières commandes saisies</span></td><td><code>history</code></td></tr>
-<tr><td><code>clear</code></td><td><span class="write-zone">Effacer le contenu de l'écran du terminal</span></td><td><code>clear</code></td></tr>
-</tbody></table>
-<h2>2. Manipulation de Fichiers et Dossiers</h2>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>touch [file]</code></td><td>Créer un objet / fichier vide </td><td><code>touch notes.txt</code></td></tr>
-<tr><td><code>mkdir [nom]</code></td><td><span class="write-zone">Créer un nouveau répertoire (dossier)</span></td><td><code>mkdir NSI_TP</code></td></tr>
-<tr><td><code>cp [src] [dest]</code></td><td><span class="write-zone">Copier un fichier ou un répertoire</span></td><td><code>cp doc.txt /tmp/</code></td></tr>
-<tr><td><code>mv [src] [dest]</code></td><td><span class="write-zone">Déplacer ou renommer un fichier/répertoire</span></td><td><code>mv ancien.txt nouveau.txt</code></td></tr>
-<tr><td><code>rm [file]</code></td><td><span class="write-zone">Supprimer un fichier</span></td><td><code>rm fichier.temp</code></td></tr>
-<tr><td><code>rmdir [nom]</code></td><td><span class="write-zone">Supprimer un répertoire vide</span></td><td><code>rmdir dossier_vide</code></td></tr>
-<tr><td><code>unzip [file]</code></td><td><span class="write-zone">Extraire les fichiers d'une archive compressée .zip</span></td><td><code>unzip archive.zip</code></td></tr>
-</tbody></table>
-<h2>3. Lecture et Recherche</h2>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>cat [file]</code></td><td><span class="write-zone">Afficher le contenu complet d'un fichier</span></td><td><code>cat config.conf</code></td></tr>
-<tr><td><code>grep [motif] [f]</code></td><td>Trouver les parties d'un texte contenant le motif </td><td><code>grep "IP" logs.txt</code></td></tr>
-<tr><td><code>find [dir] -name [n]</code></td><td><span class="write-zone">Chercher des fichiers par nom dans une arborescence</span></td><td><code>find . -name "*.py"</code></td></tr>
-<tr><td><code>man [cmd]</code></td><td><span class="write-zone">Afficher le manuel d'utilisation d'une commande</span></td><td><code>man grep</code></td></tr>
-<tr><td><code>help</code></td><td><span class="write-zone">Obtenir une aide rapide sur une commande intégrée</span></td><td><code>help cd</code></td></tr>
-</tbody></table>
-<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Corrigé 1/3</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/commandes-terminale-corrige.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
-<div class="page z97">
-<header><h1>Commandes &amp; Système Linux - 2/3 (CORRIGÉ)</h1></header>
-<h2>4. Gestion des Droits et Utilisateurs</h2>
-<div class="rights-container">
-<div class="rights-box">
-<strong>U : User (Propriétaire)</strong><br>
-                L'utilisateur qui possède le fichier.
-            </div>
-<div class="rights-box">
-<strong>G : Group (Groupe)</strong><br>
-                Les utilisateurs membres du groupe du fichier.
-            </div>
-<div class="rights-box">
-<strong>O : Others (Autres)</strong><br>
-                Tous les autres utilisateurs du système.
-            </div>
-</div>
-<div class="info-box">
-<strong>Modifier les droits (chmod) :</strong><br>
-            • <b>Mode Octal :</b> On additionne les valeurs r=4, w=2, x=1. (Ex: 7 = rwx, 5 = r-x).<br>
-            • <b>Mode Relatif :</b> On utilise <code>+</code> ou <code>-</code> pour ajouter/retirer un droit. (Ex: <code>g+x</code> rend le fichier exécutable pour le groupe).
-        </div>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>chmod [mode]</code></td><td><span class="write-zone">Modifier les permissions d'accès d'un fichier</span></td><td><code>chmod 755 script.sh</code></td></tr>
-<tr><td><code>chown [user]</code></td><td><span class="write-zone">Changer le propriétaire d'un fichier</span></td><td><code>chown prof devoirs.py</code></td></tr>
-<tr><td><code>sudo [cmd]</code></td><td>Lancer une commande en tant que super-utilisateur </td><td><code>sudo apt update</code></td></tr>
-<tr><td><code>passwd</code></td><td><span class="write-zone">Modifier le mot de passe de l'utilisateur</span></td><td><code>passwd</code></td></tr>
-</tbody></table>
-<h2>5. Gestion des Processus et Système</h2>
-<p>Un <strong>processus</strong> est un programme en cours d'exécution identifié par son <strong>PID</strong>.</p>
-<div class="info-box">
-<strong>Focus sur kill :</strong><br>
-            La commande <code>kill [PID]</code> demande gentiment au processus de s'arrêter. Si le processus est bloqué, on utilise <code>kill -9 [PID]</code>. Le <b>-9</b> (SIGKILL) force l'arrêt immédiat et brutal par le noyau, sans laisser au programme le temps de sauvegarder.
-        </div>
-<table>
-<tbody><tr><th>Commande</th><th>Action à compléter</th><th>Exemple</th></tr>
-<tr><td><code>ps</code></td><td><span class="write-zone">Lister les processus en cours d'exécution</span></td><td><code>ps -ef</code></td></tr>
-<tr><td><code>top</code></td><td><span class="write-zone">Afficher les processus en temps réel (gestionnaire de tâches)</span></td><td><code>top</code></td></tr>
-<tr><td><code>kill [PID]</code></td><td><span class="write-zone">Envoyer un signal pour arrêter un processus</span></td><td><code>kill 1234</code></td></tr>
-<tr><td><code>df -h</code></td><td><span class="write-zone">Afficher l'espace disque disponible (format lisible)</span></td><td><code>df -h</code></td></tr>
-<tr><td><code>ip addr</code></td><td><span class="write-zone">Afficher les adresses IP et interfaces réseau</span></td><td><code>ip addr</code></td></tr>
-<tr><td><code>ping [host]</code></td><td><span class="write-zone">Tester la connectivité réseau vers une machine</span></td><td><code>ping google.com</code></td></tr>
-</tbody></table>
-<h2>6. Chemins Absolus vs Relatifs</h2>
-<p><strong>Chemin Absolu :</strong> Part toujours <b>de la racine du système</b> identifiée par <code>/</code>.<br>
-<strong>Chemin Relatif :</strong> Part <b>du répertoire courant où se trouve l'utilisateur actuellement.</b></p>
-<div class="info-box" style="margin-top:20px; border-style: dashed;">
-<strong>Astuce :</strong> La touche <code>Tabulation</code> permet l'auto-complétion des noms.
-        </div>
-<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Corrigé 2/3</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/commandes-terminale-corrige.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
-<div class="page z94">
-<header><h1>Feuille d'exercices : Pratique des commandes - 3/3 (CORRIGÉ)</h1></header>
-<h2 style="font-size: 0.9rem">Exercice 1 : Navigation et déplacements (Chemins relatifs &amp; absolus)</h2>
-<p>L'arborescence est la suivante : <code>/ (racine) -&gt; home -&gt; nsi -&gt; [TP1, Projets, Images]</code>.</p>
-<table>
-<tbody><tr><th>Situation (<code>pwd</code>)</th><th>Objectif</th><th>Commande à écrire</th></tr>
-<tr><td><code>/home/nsi/TP1</code></td><td>Aller dans le dossier <code>Projets</code> (relatif)</td><td><code>$ cd ../Projets</code></td></tr>
-<tr><td><code>/home/nsi/Projets</code></td><td>Aller dans <code>/home/nsi</code> (absolu)</td><td><code>$ cd /home/nsi</code></td></tr>
-<tr><td><code>/home/nsi/TP1</code></td><td>Lister le contenu de <code>Images</code></td><td><code>$ ls ../Images</code></td></tr>
-<tr><td><code>/home/nsi/Projets</code></td><td>Copier <code>web.html</code> vers le dossier <code>TP1</code></td><td><code>$ cp web.html ../TP1/</code></td></tr>
-<tr><td><code>/home/nsi</code></td><td>Créer un dossier <code>Archives</code> dans <code>TP1</code></td><td><code>$ mkdir TP1/Archives</code></td></tr>
-</tbody></table>
-<h2 style="font-size: 0.9rem">Exercice 2 : Gestion des processus (ps, top, kill)</h2>
-<p>Voici un extrait représentatif d'une commande <code>top</code> (affichage de l'activité du système) :</p>
-<div class="info-box" style="font-family: 'Fira Code', monospace; font-size: 0.75rem;">
-<code>PID  PPID  USER  %CPU   %MEM   COMMAND</code><br>
-<code>1    0     root  0.0    0.1    systemd</code><br>
-<code>120  1     nsi   0.1    1.2    bash</code><br>
-<code>450  120   nsi   145.2  85.0   python3 calcul_fou.py</code>
-</div>
-<p>1. Quel est le rôle du processus <b>PID 1</b> (systemd) au démarrage du système ?</p>
-<div class="write-zone" style="margin-bottom:5px;">C'est le processus "ancêtre" (init) qui initialise le système et gère tous les autres services.</div>
-<p>2. Le processus 450 affiche <b>145.2% CPU</b>. Comment est-il possible de dépasser les 100% ?</p>
-<div class="write-zone" style="margin-bottom:5px;">Cela signifie que le processus utilise plusieurs cœurs de processeur simultanément (multi-threading).</div>
-<p>3. Si la mémoire vive (RAM) est pleine, quel mécanisme du système prend le relais pour éviter le crash ? </p>
-<div class="write-zone" style="margin-bottom:5px;">C'est la partition d'échange ou "Swap" (mémoire virtuelle sur le disque) qui prend le relais.</div>
-<p>4. Quel est le nom du processus parent du processus <b>450</b> ? <span class="small-zone" style="margin-left: 5px; width: 353px">Le processus "bash" (PID 120)</span></p>
-<p>5. Écrivez la commande pour forcer l'arrêt immédiat du script <code>calcul_fou.py</code>: <span class="small-zone" style="margin-left: 5px; width: 225px"><code>$ kill -9 450</code></span></p>
-<h2 style="font-size: 0.9rem">Exercice 3 : Droits et Permissions (chmod)</h2>
-<p>Résultat de <code>ls -l</code> : <code>-rwxrw-r-- 1 nsi profs 420 mars 16 20:00 script.sh</code></p>
-<p>1. Quels sont les droits du <b>groupe</b> (profs) sur ce fichier ? <span class="small-zone">Lecture et Écriture (rw-)</span></p>
-<p>2. Écrire la commande <b>octale</b> pour donner tous les droits à tout le monde : <code>$ chmod 777 script.sh</code></p>
-<p>3. Écrire la commande pour <b>ajouter</b> le droit d'exécution à Others : <code>$ chmod o+x script.sh</code></p>
-<p>4. Que fait la commande <code>chmod 640 secret.txt</code> ? :<span class="small-zone" style="margin-left: 5px; width: 380px">U: rw- (6), G: r-- (4), O: --- (0)</span></p>
-<h2 style="font-size: 0.9rem">Exercice 4 : Analyse de commandes combinées (*, |, grep)</h2>
-<p>Expliquez avec vos mots ce que tentent de faire ces utilisateurs :</p>
-<p>1. <code>$ rm *.tmp</code> <span class="small-zone" style="margin-left: 5px; width: 612px">Supprimer tous les fichiers dont l'extension est .tmp dans le répertoire courant.</span></p>
-<p>2. <code>$ cat notes.txt | grep "NSI"</code>(Indice : le <code>|</code> transmet le résultat de gauche à la commande de droite)</p>
-<div class="write-zone">Lire le fichier notes.txt et n'afficher que les lignes qui contiennent le mot "NSI".</div>
-<footer><span>NSI — Terminale | Architecture matérielle, systèmes d'exploitation</span><span>Corrigé 3/3</span><span class="credit">Babash - NSI Tani Malandi · <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr" rel="license noopener" target="_blank">CC BY-SA 4.0</a> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-terminale/fichiers/architecture-os/commandes-terminale-corrige.html" rel="noopener" target="_blank">Code source sur GitHub</a></span></footer></div>
-
-</body></html>
+<main>
+<p>Corrigé de l'enseignant·e · Tle NSI · Systèmes d'exploitation</p>
+<h1>Commandes Linux (terminale)</h1>
+<p class="avert">Les numéros sont ceux des feuilles <b>papier</b>. En ligne, chaque question se corrige toute seule : la page dit si c'est juste, puis propose la correction après deux essais. Ce corrigé est fait par un script à partir des feuilles (<code>source/faire-corrige.py</code>) : il ne peut pas en diverger.</p>
+<h2>Feuille 1 : Rappels et outils</h2>
+<h3>1. Rappels : se déplacer, copier, créer</h3>
+<div class="q"><p class="c"><b>Question 1.</b> Depuis <code>/home/eleve/devoirs</code>, va dans <code>projets</code> (chemin <b>relatif</b>).</p><div class="r"><p><code>cd ../projets</code> : <code>..</code> remonte dans <code>eleve</code>, puis on descend dans <code>projets</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>cd projets  ou  cd projets/</code> : <code>projets</code> n'est pas dans <code>devoirs</code> : il faut d'abord remonter au parent.</p><p class="e"><b>Erreur fréquente :</b> <code>cd /home/eleve/projets  ou  cd ~/projets</code> : ce chemin part de la racine (ou de <code>~</code>) : on demande un chemin relatif, qui part de <code>devoirs</code>.</p></div><p class="v">Acceptées en ligne : <code>cd ../projets</code> · <code>cd ../projets/</code> · <code>cd ./../projets</code></p></div>
+<div class="q"><p class="c"><b>Question 2.</b> Depuis <code>/home/eleve/projets</code>, va dans <code>/home/eleve</code> (chemin <b>absolu</b>).</p><div class="r"><p><code>cd /home/eleve</code> : le chemin part de la racine. (<code>cd ..</code> et <code>cd ~</code> y mènent aussi, mais ce ne sont pas des chemins absolus écrits en entier.)</p><p class="e"><b>Erreur fréquente :</b> <code>cd ..  ou  cd ../</code> : c'est juste, mais <code>..</code> est un chemin relatif. On demande un chemin absolu, qui part de <code>/</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>cd ~  ou  cd</code> : c'est juste, mais <code>~</code> est un raccourci : écris le chemin absolu en entier.</p></div><p class="v">Acceptées en ligne : <code>cd /home/eleve</code> · <code>cd /home/eleve/</code></p></div>
+<div class="q"><p class="c"><b>Question 3.</b> Depuis <code>/home/eleve/devoirs</code>, liste le contenu de <code>photos</code>.</p><div class="r"><p><code>ls ../photos</code> (ou, en chemin absolu, <code>ls /home/eleve/photos</code>) : la commande affiche <code>lagon.png</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>ls photos  ou  ls photos/</code> : <code>photos</code> n'est pas dans <code>devoirs</code> : il faut remonter d'un cran.</p><p class="e"><b>Erreur fréquente :</b> <code>cd ../photos</code> : cette commande te déplace, sans rien afficher. Pour voir le contenu, c'est une autre commande.</p></div><p class="v">Acceptées en ligne : <code>ls ../photos</code> · <code>ls ../photos/</code> · <code>ls /home/eleve/photos</code> · <code>ls /home/eleve/photos/</code> · <code>ls ~/photos</code> · <code>ls ~/photos/</code></p></div>
+<div class="q"><p class="c"><b>Question 4.</b> Depuis <code>/home/eleve/projets</code>, copie <code>site.html</code> dans <code>devoirs</code>.</p><div class="r"><p><code>cp site.html ../devoirs/</code> : la source est dans le répertoire courant ; la destination, <code>devoirs</code>, est à côté de <code>projets</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>mv site.html ../devoirs/  ou  mv site.html ../devoirs</code> : <code>mv</code> déplace : <code>site.html</code> disparaîtrait de <code>projets</code>. On veut une copie.</p><p class="e"><b>Erreur fréquente :</b> <code>cp site.html devoirs</code> : <code>devoirs</code> n'est pas dans <code>projets</code> : cette commande crée, dans <code>projets</code>, une copie nommée <code>devoirs</code>.</p></div><p class="v">Acceptées en ligne : <code>cp site.html ../devoirs/</code> · <code>cp site.html ../devoirs</code> · <code>cp site.html ../devoirs/site.html</code> · <code>cp site.html /home/eleve/devoirs/</code> · <code>cp site.html /home/eleve/devoirs</code> · <code>cp site.html ~/devoirs/</code> · <code>cp site.html ~/devoirs</code></p></div>
+<div class="q"><p class="c"><b>Question 5.</b> Depuis <code>/home/eleve</code>, crée un dossier <code>archives</code> dans <code>devoirs</code>.</p><div class="r"><p><code>mkdir devoirs/archives</code> : chemin relatif, depuis <code>eleve</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>mkdir archives</code> : ce dossier serait créé dans <code>eleve</code>, pas dans <code>devoirs</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>touch devoirs/archives</code> : <code>touch</code> crée un fichier ; pour un dossier, c'est <code>mkdir</code>.</p></div><p class="v">Acceptées en ligne : <code>mkdir devoirs/archives</code> · <code>mkdir devoirs/archives/</code> · <code>mkdir ./devoirs/archives</code> · <code>mkdir /home/eleve/devoirs/archives</code> · <code>mkdir ~/devoirs/archives</code></p></div>
+<h3>2. Rappels : la bonne commande</h3>
+<div class="q"><p class="c"><b>Question 6.</b> Quelle commande affiche tout le contenu d'un fichier ?</p><div class="r"><p><code>cat</code> (<code>more</code> et <code>less</code> le montrent aussi, page par page).</p><p class="e"><b>Erreur fréquente :</b> <code>ls</code> : <code>ls</code> affiche le nom des fichiers, pas ce qu'ils contiennent.</p></div><p class="v">Acceptées en ligne : <code>cat</code> · <code>more</code> · <code>less</code></p></div>
+<div class="q"><p class="c"><b>Question 7.</b> Quelle commande supprime un dossier vide ?</p><div class="r"><p><code>rmdir</code> : il refuse un dossier qui n'est pas vide, c'est le plus sûr.</p><p class="e"><b>Erreur fréquente :</b> <code>rm</code> : <code>rm</code> seul refuse de supprimer un dossier (« Is a directory »).</p><p class="e"><b>Erreur fréquente :</b> <code>rm -r</code> : <code>rm -r</code> marche, mais il efface aussi tout ce que contient le dossier : pour un dossier vide, <code>rmdir</code> est plus sûr.</p></div></div>
+<div class="q"><p class="c"><b>Question 8.</b> Quelle commande affiche les lignes d'un fichier qui contiennent un mot ?</p><div class="r"><p><code>grep</code> : <code>grep print tp1.py</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>find</code> : <code>find</code> cherche des fichiers par leur nom, pas dans leur contenu.</p><p class="e"><b>Erreur fréquente :</b> <code>cat</code> : <code>cat</code> affiche tout le fichier, sans trier les lignes.</p></div></div>
+<div class="q"><p class="c"><b>Question 9.</b> Quelle commande affiche le manuel d'une commande ?</p><div class="r"><p><code>man</code> : <code>man ls</code> (on en sort avec la touche <b>q</b>).</p><p class="e"><b>Erreur fréquente :</b> <code>help</code> : <code>help</code> donne une aide courte sur quelques commandes du shell ; le manuel complet, c'est <code>man</code>.</p></div></div>
+<h3>3. Rappels : les droits</h3>
+<div class="q"><p class="c"><b>Question 10.</b> À ton tour : quels droits le groupe <code>nsi</code> a-t-il sur <code>tp1.py</code> ?</p><div class="r"><p><code>-</code> (un fichier), <code>rwx</code> (propriétaire <code>eleve</code>), <code>rw-</code> (groupe <code>nsi</code>), <code>r--</code> (autres) : le groupe peut lire et écrire, pas exécuter.</p><p>« Lire, écrire et exécuter (rwx) » : non. rwx sont les droits du propriétaire, eleve : les trois premiers après le tiret.</p><p>« Lire seulement (r--) » : non. r-- sont les droits des autres : les trois derniers.</p><p>« Lire et exécuter (r-x) » : non. le groupe n'a pas x : sa troisième lettre est un tiret.</p></div></div>
+<div class="q"><p class="c"><b>Question 11.</b> À ton tour : tu es dans <code>nsi</code>. En <b>octal</b>, donne tous les droits à tout le monde sur <code>tp1.py</code>.</p><div class="r"><p><code>chmod 777 tp1.py</code> : 7 = 4 + 2 + 1 = <code>rwx</code>, pour le propriétaire, le groupe et les autres.</p><p class="e"><b>Erreur fréquente :</b> <code>chmod 666 tp1.py</code> : 666 donne lire et écrire, sans exécuter : il manque x = 1.</p><p class="e"><b>Erreur fréquente :</b> <code>chmod a+rwx tp1.py  ou  chmod ugo+rwx tp1.py</code> : c'est juste, mais en symbolique. On demande l'octal.</p></div><p class="v">Acceptées en ligne : <code>chmod 777 tp1.py</code> · <code>chmod 0777 tp1.py</code> · <code>chmod 777 ./tp1.py</code></p></div>
+<div class="q"><p class="c"><b>Question 12.</b> À ton tour : en <b>symbolique</b>, ajoute le droit d'exécution aux autres (<i>others</i>) sur <code>tp1.py</code>.</p><div class="r"><p><code>chmod o+x tp1.py</code> : <code>o</code> (les autres), <code>+</code> (ajouter), <code>x</code> (exécuter). Les droits deviennent <code>-rwxrw-r-x</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>chmod +x tp1.py  ou  chmod a+x tp1.py</code> : sans lettre (ou avec <code>a</code>), le droit est ajouté à tout le monde. Les autres, c'est <code>o</code>.</p><p class="e"><b>Erreur fréquente :</b> <code>chmod g+x tp1.py</code> : <code>g</code> désigne le groupe. Les autres, c'est <code>o</code>.</p></div><p class="v">Acceptées en ligne : <code>chmod o+x tp1.py</code> · <code>chmod o+x ./tp1.py</code></p></div>
+<h3>4. Nouveau : observer la machine</h3>
+<div class="q"><p class="c"><b>Question 13.</b> Complète la colonne « Ce qu'elle fait ». La première ligne est faite : c'est l'exemple.</p><div class="r"><p><code>history</code> : afficher les commandes déjà tapées.</p><p><code>ps</code> (<i>process status</i>) : lister les processus en cours d'exécution.</p><p><code>top</code> : afficher les processus en temps réel, ceux qui consomment le plus en haut.</p><p><code>kill</code> : envoyer un signal à un processus, pour l'arrêter.</p><p><code>df -h</code> (<i>disk free</i>) : afficher la place libre sur les disques, en Go et Mo.</p><p><code>ip addr</code> : afficher les adresses IP de la machine et ses cartes réseau.</p><p><code>ping</code> : tester si une autre machine répond sur le réseau.</p></div></div>
+<h2>Feuille 2 : Processus et tubes</h2>
+<h3>1. Les processus</h3>
+<div class="q"><p class="c"><b>Question 14.</b> À ton tour : quel est le processus parent de <code>python3 marees.py</code> ? Donne son nom ou son PID.</p><div class="r"><p>Le PPID de 450 est 120 : c'est <code>bash</code>, le terminal depuis lequel <code>eleve</code> a lancé le calcul.</p><p class="e"><b>Erreur fréquente :</b> <code>/sbin/init  ou  1  ou  init</code> : le processus 1 est le parent de <code>bash</code> : c'est le « grand-parent » de 450. Lis le PPID de la ligne 450.</p><p class="e"><b>Erreur fréquente :</b> <code>450</code> : 450 est le PID du calcul lui-même ; son parent est dans la colonne PPID.</p></div><p class="v">Acceptées en ligne : <code>bash</code> · <code>-bash</code> · <code>120</code> · <code>bash (120)</code> · <code>120 (bash)</code> · <code>-bash (120)</code> · <code>bash, 120</code> · <code>le processus bash</code> · <code>bash, pid 120</code> · <code>pid 120</code></p></div>
+<div class="q"><p class="c"><b>Question 15.</b> À ton tour : donne les PID de tous les processus créés par <code>bash</code> (PID 120).</p><div class="r"><p>450 et 451 : ce sont les deux lignes dont le PPID vaut 120.</p><p class="e"><b>Erreur fréquente :</b> <code>450</code> : il y en a un autre : regarde toutes les lignes dont le PPID vaut 120.</p><p class="e"><b>Erreur fréquente :</b> <code>1 98  ou  98</code> : ce sont les processus créés par le processus 1 (leur PPID vaut 1).</p></div><p class="v">Acceptées en ligne : <code>450 451</code> · <code>450 et 451</code> · <code>450, 451</code> · <code>450,451</code> · <code>451 450</code> · <code>451 et 450</code> · <code>451, 450</code> · <code>450 ; 451</code></p></div>
+<div class="q"><p class="c"><b>Question 16.</b> Quel est le rôle du processus 1 (<code>/sbin/init</code>, souvent appelé <code>systemd</code>) ?</p><div class="r"><p>Le processus 1 (<code>init</code>, souvent <code>systemd</code>) est lancé par le noyau au démarrage : c'est l'ancêtre de tous les processus. Il démarre et surveille les services.</p><p>« Le premier programme ouvert par l'utilisateur·rice » : non. Le processus 1 est lancé par le noyau, au démarrage, avant toute connexion.</p><p>« Il mesure la consommation du processeur » : non. Il consomme 0.0 % : il ne mesure rien, il organise.</p><p>« Un enfant de bash, qui l'a lancé » : non. Son PPID est 0 : il n'a pas de processus parent, c'est le noyau qui le lance.</p></div></div>
+<div class="q"><p class="c"><b>Question 17.</b> Pourquoi la commande <code>ps</code> apparaît-elle dans sa propre liste ?</p><div class="r"><p>Pendant qu'elle construit la liste, <code>ps</code> est un programme en cours d'exécution : un processus, créé par <code>bash</code> (PPID 120). Elle s'arrête juste après.</p><p>« C'est une erreur d'affichage de la commande ps » : non. Ce n'est pas une erreur : pendant qu'elle s'exécute, ps est un processus comme les autres.</p><p>« Elle reste lancée en permanence, comme cron » : non. ps s'arrête dès que la liste est affichée : elle n'apparaît que dans sa propre liste.</p><p>« Elle a été lancée par le processus 1, au démarrage » : non. Son PPID est 120 : elle a été lancée par bash.</p></div></div>
+<div class="q"><p class="c"><b>Question 18.</b> Le processus 450 utilise 145.2 % du processeur. Comment est-ce possible ?</p><div class="r"><p>Ici, 100 % correspond à un cœur entier. 145.2 % : le calcul utilise plusieurs cœurs du processeur en même temps.</p><p>« C'est une erreur d'affichage de la commande » : non. Ce n'est pas une erreur : ps compte en pourcentage d'un cœur.</p><p>« Il compte aussi la mémoire vive utilisée » : non. La mémoire est dans la colonne %MEM : %CPU parle du processeur.</p><p>« Il fait tourner le processeur plus vite » : non. Un processeur ne dépasse pas sa vitesse : c'est le nombre de cœurs qui compte.</p></div></div>
+<div class="q"><p class="c"><b>Question 19.</b> Le processus 450 occupe 85 % de la mémoire vive. Si elle est pleine, quel mécanisme prend le relais ?</p><div class="r"><p>La zone d'échange, le <i>swap</i> : une partie du disque sert de mémoire, plus lente que la RAM.</p><p>« La mémoire cache, à l'intérieur du processeur » : non. Le cache est une toute petite mémoire du processeur, pas une réserve quand la RAM est pleine.</p><p>« La mémoire morte (ROM) de la carte mère » : non. La mémoire morte ne s'écrit pas pendant l'exécution des programmes.</p><p>« La corbeille, que le système vide alors » : non. Le système n'efface pas les fichiers pour libérer la mémoire.</p></div></div>
+<div class="q"><p class="c"><b>Question 20.</b> À ton tour : écris la commande qui force l'arrêt immédiat du calcul <code>python3 marees.py</code>.</p><div class="r"><p><code>kill -9 450</code> : le signal 9 (SIGKILL) arrête le processus 450 tout de suite.</p><p class="e"><b>Erreur fréquente :</b> <code>kill 450</code> : <code>kill</code> seul demande l'arrêt : un processus bloqué peut ne pas répondre. Pour forcer, ajoute le signal 9.</p><p class="e"><b>Erreur fréquente :</b> <code>kill -9 marees.py  ou  kill -9 python3</code> : <code>kill</code> attend un numéro de processus (PID), pas un nom.</p><p class="e"><b>Erreur fréquente :</b> <code>kill -9 120</code> : 120, c'est <code>bash</code>, le terminal : tu le fermerais. Le calcul a le PID 450.</p></div><p class="v">Acceptées en ligne : <code>kill -9 450</code> · <code>kill -KILL 450</code> · <code>kill -SIGKILL 450</code> · <code>kill -s KILL 450</code> · <code>kill -s 9 450</code> · <code>kill -s SIGKILL 450</code> · <code>sudo kill -9 450</code></p></div>
+<h3>2. Le joker et le tube</h3>
+<div class="q"><p class="c"><b>Question 21.</b> À ton tour : explique ce que fait <code>rm *.tmp</code>.</p><div class="r"><p><code>*.tmp</code> désigne tous les fichiers du répertoire courant qui finissent par <code>.tmp</code> : <code>rm</code> les supprime tous, sans corbeille.</p><p>« Supprimer le fichier nommé exactement *.tmp » : non. Le * est un joker : il ne fait pas partie d'un nom de fichier.</p><p>« Lister les fichiers temporaires du répertoire » : non. rm supprime : il ne liste rien.</p><p>« Supprimer les fichiers .tmp de tout le disque » : non. Sans -r, rm ne descend pas dans les sous-dossiers : seulement le répertoire courant.</p></div></div>
+<div class="q"><p class="c"><b>Question 22.</b> À ton tour : explique ce que fait <code>history | grep cp</code>.</p><div class="r"><p><code>history</code> envoie la liste des commandes déjà tapées dans le tube ; <code>grep cp</code> n'en garde que les lignes qui contiennent <code>cp</code>.</p><p>« Copier l'historique dans un fichier nommé grep » : non. Copier, ce serait la commande cp : ici, cp est le motif cherché par grep.</p><p>« Afficher toutes les commandes déjà tapées » : non. grep fait un tri : seules restent les lignes qui contiennent cp.</p><p>« Relancer la dernière commande cp tapée » : non. Rien n'est relancé : la commande affiche seulement des lignes.</p></div></div>
+<div class="q"><p class="c"><b>Question 23.</b> À ton tour : complète la commande pour n'afficher, dans la liste des processus, que les lignes qui contiennent <code>marees</code>.</p><div class="r"><p><code>ps -ef | grep marees</code> : <code>ps -ef</code> envoie la liste dans le tube, <code>grep</code> garde les lignes qui contiennent <code>marees</code>. (La ligne du <code>grep</code> lui-même apparaît souvent aussi : il contient le mot cherché.)</p><p class="e"><b>Erreur fréquente :</b> <code>grep marees ps</code> : après un tube, <code>grep</code> lit ce qui arrive de la gauche : on ne lui donne pas de fichier.</p><p class="e"><b>Erreur fréquente :</b> <code>find marees  ou  find -name marees</code> : <code>find</code> cherche des fichiers sur le disque, pas des lignes.</p></div><p class="v">Acceptées en ligne : <code>grep marees</code> · <code>grep &quot;marees&quot;</code> · <code>grep &#x27;marees&#x27;</code> · <code>grep marees.py</code> · <code>grep &quot;marees.py&quot;</code></p></div>
+<footer><p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · conçu avec l'aide de l'IA · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-terminale/fichiers/architecture-os">Code source sur GitHub</a></p></footer>
+</main>
+</body>
+</html>

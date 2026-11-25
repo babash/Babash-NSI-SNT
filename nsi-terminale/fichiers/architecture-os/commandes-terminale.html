@@ -1,11 +1,15 @@
 <!doctype html>
 <!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<!-- Jumeau de nsi-premiere/fichiers/commandes-linux-premiere/ (même arborescence, mêmes mots) : toute
+     modification de l'arborescence ou du vocabulaire se reporte dans les deux (T141). -->
+<!-- Jumeau de nsi-premiere/fichiers/commandes-linux-premiere/ (même arborescence, mêmes mots) : toute
+     modification de l'arborescence ou du vocabulaire se reporte dans les deux (T141). -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Commandes et système Linux : TD en ligne</title>
-  <meta name="description" content="TD en ligne, auto-correctif : les commandes Linux (fiche à compléter), feuille 1 sur 2 (Tle NSI).">
+  <title>Commandes Linux (terminale) : TD en ligne</title>
+  <meta name="description" content="Tle NSI, systèmes d'exploitation, feuille 1 sur 2 : rappels de première (chemins, commandes, droits) sur l'arborescence du TD de première, puis les commandes qui observent la machine (ps, top, kill, df, ip, ping, find, history). Feuille auto-corrective et imprimable.">
   <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
@@ -19,7 +23,7 @@
      data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
      data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
      data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
-<main class="td" data-td="tle-commandes-linux" data-auteurs="Babash - NSI Tani Malandi" data-td-version="1" data-ordre="melange" data-code="obligatoire">
+<main class="td" data-td="tle-commandes-linux" data-auteurs="Babash - NSI Tani Malandi" data-td-version="2" data-ordre="melange" data-code="obligatoire">
 
   <header class="td-entete">
     <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
@@ -30,7 +34,7 @@
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Systèmes d&#x27;exploitation</span></p>
         <h1>Commandes Linux</h1>
-        <p class="td-accroche">Fiche : la bonne commande</p>
+        <p class="td-accroche">Rappels et outils</p>
       </div>
       <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=processus" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM14 3h5v1h-5zM22 3h5v1h-5zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h2v1h-2zM17 4h8v1h-8zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM17 5h1v1h-1zM20 5h2v1h-2zM25 5h1v1h-1zM27 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h3v1h-3zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h1v1h-1zM25 8h2v1h-2zM30 8h5v1h-5zM1 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h2v1h-2zM4 10h1v1h-1zM6 10h2v1h-2zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM7 11h3v1h-3zM11 11h1v1h-1zM14 11h2v1h-2zM19 11h4v1h-4zM24 11h1v1h-1zM26 11h1v1h-1zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM4 13h1v1h-1zM9 13h2v1h-2zM12 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h2v1h-2zM5 14h3v1h-3zM9 14h1v1h-1zM13 14h4v1h-4zM18 14h1v1h-1zM22 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h4v1h-4zM5 15h1v1h-1zM7 15h5v1h-5zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h2v1h-2zM12 16h1v1h-1zM18 16h9v1h-9zM28 16h3v1h-3zM32 16h1v1h-1zM34 16h2v1h-2zM4 17h2v1h-2zM7 17h2v1h-2zM10 17h1v1h-1zM12 17h5v1h-5zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM6 18h2v1h-2zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h5v1h-5zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h2v1h-2zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h2v1h-2zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h3v1h-3zM27 19h1v1h-1zM29 19h2v1h-2zM36 19h1v1h-1zM3 20h5v1h-5zM9 20h2v1h-2zM17 20h1v1h-1zM22 20h6v1h-6zM29 20h2v1h-2zM32 20h3v1h-3zM2 21h1v1h-1zM4 21h2v1h-2zM7 21h4v1h-4zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h2v1h-2zM4 22h1v1h-1zM6 22h2v1h-2zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM1 23h1v1h-1zM7 23h1v1h-1zM11 23h2v1h-2zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h7v1h-7zM14 24h3v1h-3zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h8v1h-8zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM7 25h5v1h-5zM13 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM24 25h3v1h-3zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM3 26h5v1h-5zM9 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM4 27h2v1h-2zM7 27h2v1h-2zM11 27h2v1h-2zM15 27h1v1h-1zM19 27h6v1h-6zM27 27h2v1h-2zM31 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h2v1h-2zM15 28h3v1h-3zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h3v1h-3zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h2v1h-2zM11 29h4v1h-4zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h3v1h-3zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h1v1h-1zM12 30h1v1h-1zM15 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h4v1h-4zM14 31h2v1h-2zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h2v1h-2zM11 32h4v1h-4zM18 32h5v1h-5zM25 32h8v1h-8zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h3v1h-3zM15 33h2v1h-2zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h4v1h-4zM17 34h1v1h-1zM20 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h1v1h-1zM11 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h5v1h-5zM14 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
     </div>
@@ -39,318 +43,282 @@
 
     <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
     <div class="td-objectifs">
-      <p class="td-objectif"><b>Objectif :</b> retrouver la commande Linux qui fait une action, pour se servir du terminal.</p>
+      <p class="td-objectif"><b>Objectif :</b> revoir les commandes de première et découvrir celles qui observent la machine.</p>
       <p><b>Je sais :</b></p>
       <ul class="td-criteres">
-        <li>me déplacer dans l'arborescence et lister son contenu ;</li>
-        <li>créer, copier, déplacer et supprimer des fichiers et des dossiers ;</li>
-        <li>lire un fichier, chercher un fichier, trouver de l'aide ;</li>
-        <li>gérer les droits, les processus et le réseau avec la bonne commande.</li>
+        <li>écrire une commande avec un chemin relatif ou absolu ;</li>
+        <li>retrouver la commande de base qui fait une action ;</li>
+        <li>lire et changer des droits ;</li>
+        <li>dire ce que font <code>ps</code>, <code>top</code>, <code>kill</code>, <code>df</code>, <code>ip</code> et <code>ping</code>.</li>
       </ul>
-      <p class="td-duree">45 minutes · 26 questions · fiche 1 sur 2 (la feuille 2 : les exercices) · seul·e ou en binôme</p>
+      <p class="td-duree">1 heure · 19 questions · feuille 1 sur 2 (la feuille 2 : les processus, les tubes) · seul·e ou en binôme</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
-  <p data-support="papier">Pour chaque commande, complète ce qu'elle fait (son action) : l'exemple montre comment on l'écrit. Une fois corrigée, cette fiche est ton aide-mémoire.</p>
-  <p data-support="ecran">Pour chaque action, écris la commande qui la fait (sans ses options ni ses arguments, sauf s'ils font partie de la commande). Une fois corrigée, cette fiche est ton aide-mémoire.</p>
+  <!-- BLOC COMMUN avec les feuilles de première : mêmes mots, même arborescence.
+       « À retenir » : à l'écran et sur papier (deux copies : td-plus-loin ne s'imprime qu'avec data-support="papier") -->
+  <div class="td-plus-loin">
+    <p><b>À retenir</b></p>
+    <ul>
+      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code>eleve@lycee:~/devoirs$</code> se lit « <code>eleve</code>, sur la machine <code>lycee</code>, dans le répertoire <code>~/devoirs</code> ».</li>
+      <li>Les fichiers sont rangés en <b>arborescence</b> de dossiers (ou <b>répertoires</b>) depuis la <b>racine</b> <code>/</code> ; <code>.</code> : le répertoire courant ; <code>..</code> : le parent ; <code>~</code> : le répertoire personnel (<code>/home/eleve</code>).</li>
+      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code>ls -l projets</code>. Les majuscules comptent.</li>
+      <li>Un chemin <b>absolu</b> part de la racine <code>/</code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
+      <li><code>ls -l</code> montre les droits du <b>propriétaire</b> (<code>u</code>), du <b>groupe</b> (<code>g</code>) et des <b>autres</b> (<code>o</code>) : <code>r</code> lire, <code>w</code> écrire, <code>x</code> exécuter. <code>chmod</code> les change, en <b>octal</b> (r = 4, w = 2, x = 1 : <code>chmod 640</code>) ou en <b>symbolique</b> (<code>chmod g+w</code>).</li>
+    </ul>
+  </div>
+  <div class="td-plus-loin" data-support="papier">
+    <p><b>À retenir</b></p>
+    <ul>
+      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code>eleve@lycee:~/devoirs$</code> se lit « <code>eleve</code>, sur la machine <code>lycee</code>, dans le répertoire <code>~/devoirs</code> ».</li>
+      <li>Les fichiers sont rangés en <b>arborescence</b> de dossiers (ou <b>répertoires</b>) depuis la <b>racine</b> <code>/</code> ; <code>.</code> : le répertoire courant ; <code>..</code> : le parent ; <code>~</code> : le répertoire personnel (<code>/home/eleve</code>).</li>
+      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code>ls -l projets</code>. Les majuscules comptent.</li>
+      <li>Un chemin <b>absolu</b> part de la racine <code>/</code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
+      <li><code>ls -l</code> montre les droits du <b>propriétaire</b> (<code>u</code>), du <b>groupe</b> (<code>g</code>) et des <b>autres</b> (<code>o</code>) : <code>r</code> lire, <code>w</code> écrire, <code>x</code> exécuter. <code>chmod</code> les change, en <b>octal</b> (r = 4, w = 2, x = 1 : <code>chmod 640</code>) ou en <b>symbolique</b> (<code>chmod g+w</code>).</li>
+    </ul>
+  </div>
+  <p data-support="ecran"><b>En ligne</b>, écris chaque commande comme dans le terminal : une espace entre la commande et chacun de ses arguments, et les majuscules comptent.</p>
 
-  <h2 class="td-partie">1. Naviguer dans l'arborescence</h2>
-  <p><b>Concepts clés :</b> <code>.</code> représente le répertoire courant ; <code>..</code> représente le répertoire parent (au-dessus) ; <code>*</code> est un joker qui remplace n'importe quelle suite de caractères (<code>*.txt</code> : tous les fichiers texte).</p>
-  <section class="td-q" data-type="libre" id="t1-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
-    <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
-    <tbody>
-      <tr><td><code>pwd</code></td><td></td><td><code>pwd</code></td></tr>
-      <tr><td><code>ls</code></td><td></td><td><code>ls -la</code></td></tr>
-      <tr><td><code>cd [dir]</code></td><td></td><td><code>cd Documents/</code></td></tr>
-      <tr><td><code>history</code></td><td></td><td><code>history</code></td></tr>
-      <tr><td><code>clear</code></td><td></td><td><code>clear</code></td></tr>
-    </tbody>
+  <h2 class="td-partie">1. Rappels : se déplacer, copier, créer</h2>
+  <div data-support="ecran">
+  <p><b>L'arborescence du TD</b> (la même qu'en première), telle que l'affiche la commande <code>tree</code> (les dossiers finissent par <code>/</code>). L'utilisateur·rice <code>eleve</code> et l'enseignant·e <code>prof</code> font partie du même groupe, <code>nsi</code>.</p>
+  <pre class="td-sortie-exemple">
+/
+|-- bin/
+|-- home/
+|   |-- eleve/
+|   |   |-- devoirs/
+|   |   |   `-- nsi/
+|   |   |       `-- tp1.py
+|   |   |-- photos/
+|   |   |   `-- lagon.png
+|   |   `-- projets/
+|   |       `-- site.html
+|   `-- prof/
+|       |-- examens/
+|       `-- notes.csv
+`-- tmp/</pre>
+  <div class="td-plus-loin">
+    <p><b>Pour t'entraîner dans un vrai terminal</b> (facultatif) : ouvre le <a href="https://babash.github.io/mirage/terminal/">terminal d'entraînement d'Opération MIRAGE</a> (rien à installer) ou <a href="https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&amp;mem=192">JSLinux</a> (un vrai Linux dans le navigateur), puis recrée l'arborescence du TD avec ces trois commandes :</p>
+    <pre class="td-sortie-exemple">
+mkdir -p /home/eleve/devoirs/nsi /home/eleve/photos /home/eleve/projets /home/prof/examens
+touch /home/eleve/devoirs/nsi/tp1.py /home/eleve/photos/lagon.png /home/eleve/projets/site.html /home/prof/notes.csv
+cd /home/eleve/devoirs/nsi</pre>
+    <p>Là-bas, tu es <code>root</code> (l'administrateur·rice) : <code>~</code> y désigne <code>/root</code>, et <code>sudo</code> n'y existe pas.</p>
+  </div>
+  <p>Un <b>chemin absolu</b> part toujours de la racine <code>/</code>, d'où que l'on soit : <code>/home/eleve/devoirs/nsi</code>. Un <b>chemin relatif</b> part du répertoire courant et remonte avec <code>..</code> : depuis <code>/home/eleve</code>, <code>devoirs/nsi</code> ou <code>../prof</code>.</p>
+  </div>
+  <!-- papier : l'arborescence à gauche, ce qu'il faut pour la lire à droite (à l'écran : l'un sous l'autre) -->
+  <div class="td-table" data-support="papier"><table data-pleine-largeur>
+    <thead><tr><th data-case-largeur="74">L'arborescence du TD (commande <code>tree</code>)</th><th>Pour la lire, et des exemples</th></tr></thead>
+    <tbody><tr><td><pre class="td-sortie-exemple">/
+|-- bin/
+|-- home/
+|   |-- eleve/
+|   |   |-- devoirs/
+|   |   |   `-- nsi/
+|   |   |       `-- tp1.py
+|   |   |-- photos/
+|   |   |   `-- lagon.png
+|   |   `-- projets/
+|   |       `-- site.html
+|   `-- prof/
+|       |-- examens/
+|       `-- notes.csv
+`-- tmp/</pre></td>
+    <td><p>Les dossiers finissent par <code>/</code>. <code>eleve</code> et <code>prof</code> sont dans le groupe <code>nsi</code>.</p>
+    <p><b>Exemples résolus</b> (à ton tour ensuite, en dessous) :</p>
+    <p>De <code>nsi</code> à <code>photos</code> (relatif) : <code>cd ../../photos</code><br>
+    De <code>photos</code> à <code>projets</code> (absolu) : <code>cd /home/eleve/projets</code><br>
+    De <code>projets</code>, lister <code>nsi</code> : <code>ls ../devoirs/nsi</code><br>
+    De <code>nsi</code>, copier <code>tp1.py</code> dans <code>projets</code> : <code>cp tp1.py ../../projets/</code><br>
+    De <code>eleve</code>, créer <code>brouillons</code> dans <code>photos</code> : <code>mkdir photos/brouillons</code></p></td></tr></tbody>
   </table></div>
-    <div class="td-correction"><p><code>pwd</code> : afficher le chemin du répertoire de travail actuel. Exemple : <code>pwd</code>.</p><p><code>ls</code> : lister les fichiers et dossiers d'un répertoire. Exemple : <code>ls -la</code>.</p><p><code>cd [dir]</code> : changer de répertoire (se déplacer). Exemple : <code>cd Documents/</code>.</p><p><code>history</code> : afficher la liste des dernières commandes saisies. Exemple : <code>history</code>.</p><p><code>clear</code> : effacer le contenu de l'écran du terminal. Exemple : <code>clear</code>.</p></div>
+
+  <p data-support="ecran"><b>Exemples :</b> depuis <code>nsi</code>, aller dans <code>photos</code> en relatif : <code>cd ../../photos</code> · depuis <code>photos</code>, aller dans <code>projets</code> en absolu : <code>cd /home/eleve/projets</code> · depuis <code>projets</code>, lister <code>nsi</code> : <code>ls ../devoirs/nsi</code> · depuis <code>nsi</code>, copier <code>tp1.py</code> dans <code>projets</code> : <code>cp tp1.py ../../projets/</code> · depuis <code>eleve</code>, créer <code>brouillons</code> dans <code>photos</code> : <code>mkdir photos/brouillons</code>.</p>
+
+  <section class="td-q" data-type="courte" id="r1" data-comparer="exact" data-reponse="cd ../projets|cd ../projets/|cd ./../projets" data-etiquette="$">
+    <p class="td-consigne">Depuis <code>/home/eleve/devoirs</code>, va dans <code>projets</code> (chemin <b>relatif</b>).</p>
+    <div class="td-correction"><p><code>cd ../projets</code> : <code>..</code> remonte dans <code>eleve</code>, puis on descend dans <code>projets</code>.</p><p class="td-erreur-frequente" data-si="cd projets|cd projets/"><b>Erreur fréquente :</b> <code>cd projets</code> : <code>projets</code> n'est pas dans <code>devoirs</code> : il faut d'abord remonter au parent.</p><p class="td-erreur-frequente" data-si="cd /home/eleve/projets|cd ~/projets"><b>Erreur fréquente :</b> <code>cd /home/eleve/projets</code> : ce chemin part de la racine (ou de <code>~</code>) : on demande un chemin relatif, qui part de <code>devoirs</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q1" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="pwd">
-    <p class="td-consigne">Quelle commande sert à afficher le chemin du répertoire de travail actuel ?</p>
-    <p class="td-retour" data-si="cd">cd change de répertoire, il n'affiche pas où tu es.</p>
-    <p class="td-aide"><i>print working directory</i> : « affiche le répertoire de travail ».</p>
-    <div class="td-correction"><p><code>pwd</code> : afficher le chemin du répertoire de travail actuel. Exemple : <code>pwd</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r2" data-comparer="exact" data-reponse="cd /home/eleve|cd /home/eleve/" data-etiquette="$">
+    <p class="td-consigne">Depuis <code>/home/eleve/projets</code>, va dans <code>/home/eleve</code> (chemin <b>absolu</b>).</p>
+    <div class="td-correction"><p><code>cd /home/eleve</code> : le chemin part de la racine. (<code>cd ..</code> et <code>cd ~</code> y mènent aussi, mais ce ne sont pas des chemins absolus écrits en entier.)</p><p class="td-erreur-frequente" data-si="cd ..|cd ../"><b>Erreur fréquente :</b> <code>cd ..</code> : c'est juste, mais <code>..</code> est un chemin relatif. On demande un chemin absolu, qui part de <code>/</code>.</p><p class="td-erreur-frequente" data-si="cd ~|cd"><b>Erreur fréquente :</b> <code>cd ~</code> : c'est juste, mais <code>~</code> est un raccourci : écris le chemin absolu en entier.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q2" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="ls|ls -la|ls -l">
-    <p class="td-consigne">Quelle commande sert à lister les fichiers et dossiers d'un répertoire ?</p>
-    <p class="td-retour" data-si="dir">Sous Linux, la commande s'écrit en deux lettres (dir est la commande de Windows).</p>
-    <p class="td-aide"><i>list</i>, en deux lettres.</p>
-    <div class="td-correction"><p><code>ls</code> : lister les fichiers et dossiers d'un répertoire. Exemple : <code>ls -la</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r3" data-comparer="exact" data-reponse="ls ../photos|ls ../photos/|ls /home/eleve/photos|ls /home/eleve/photos/|ls ~/photos|ls ~/photos/" data-etiquette="$">
+    <p class="td-consigne">Depuis <code>/home/eleve/devoirs</code>, liste le contenu de <code>photos</code>.</p>
+    <div class="td-correction"><p><code>ls ../photos</code> (ou, en chemin absolu, <code>ls /home/eleve/photos</code>) : la commande affiche <code>lagon.png</code>.</p><p class="td-erreur-frequente" data-si="ls photos|ls photos/"><b>Erreur fréquente :</b> <code>ls photos</code> : <code>photos</code> n'est pas dans <code>devoirs</code> : il faut remonter d'un cran.</p><p class="td-erreur-frequente" data-si="cd ../photos"><b>Erreur fréquente :</b> <code>cd ../photos</code> : cette commande te déplace, sans rien afficher. Pour voir le contenu, c'est une autre commande.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q3" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="cd">
-    <p class="td-consigne">Quelle commande sert à changer de répertoire (se déplacer) ?</p>
-    <p class="td-retour" data-si="mv">mv déplace un fichier ; toi, tu restes où tu es.</p>
-    <p class="td-aide"><i>change directory</i>.</p>
-    <div class="td-correction"><p><code>cd [dir]</code> : changer de répertoire (se déplacer). Exemple : <code>cd Documents/</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r4" data-comparer="exact" data-reponse="cp site.html ../devoirs/|cp site.html ../devoirs|cp site.html ../devoirs/site.html|cp site.html /home/eleve/devoirs/|cp site.html /home/eleve/devoirs|cp site.html ~/devoirs/|cp site.html ~/devoirs" data-etiquette="$">
+    <p class="td-consigne">Depuis <code>/home/eleve/projets</code>, copie <code>site.html</code> dans <code>devoirs</code>.</p>
+    <div class="td-correction"><p><code>cp site.html ../devoirs/</code> : la source est dans le répertoire courant ; la destination, <code>devoirs</code>, est à côté de <code>projets</code>.</p><p class="td-erreur-frequente" data-si="mv site.html ../devoirs/|mv site.html ../devoirs"><b>Erreur fréquente :</b> <code>mv site.html ../devoirs/</code> : <code>mv</code> déplace : <code>site.html</code> disparaîtrait de <code>projets</code>. On veut une copie.</p><p class="td-erreur-frequente" data-si="cp site.html devoirs"><b>Erreur fréquente :</b> <code>cp site.html devoirs</code> : <code>devoirs</code> n'est pas dans <code>projets</code> : cette commande crée, dans <code>projets</code>, une copie nommée <code>devoirs</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q4" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="history">
-    <p class="td-consigne">Quelle commande sert à afficher la liste des dernières commandes saisies ?</p>
-    <p class="td-aide">Le mot anglais pour « historique ».</p>
-    <div class="td-correction"><p><code>history</code> : afficher la liste des dernières commandes saisies. Exemple : <code>history</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r5" data-comparer="exact" data-reponse="mkdir devoirs/archives|mkdir devoirs/archives/|mkdir ./devoirs/archives|mkdir /home/eleve/devoirs/archives|mkdir ~/devoirs/archives" data-etiquette="$">
+    <p class="td-consigne">Depuis <code>/home/eleve</code>, crée un dossier <code>archives</code> dans <code>devoirs</code>.</p>
+    <div class="td-correction"><p><code>mkdir devoirs/archives</code> : chemin relatif, depuis <code>eleve</code>.</p><p class="td-erreur-frequente" data-si="mkdir archives"><b>Erreur fréquente :</b> <code>mkdir archives</code> : ce dossier serait créé dans <code>eleve</code>, pas dans <code>devoirs</code>.</p><p class="td-erreur-frequente" data-si="touch devoirs/archives"><b>Erreur fréquente :</b> <code>touch devoirs/archives</code> : <code>touch</code> crée un fichier ; pour un dossier, c'est <code>mkdir</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q5" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="clear">
-    <p class="td-consigne">Quelle commande sert à effacer le contenu de l'écran du terminal ?</p>
-    <p class="td-retour" data-si="rm">rm supprime des fichiers ! Pour vider seulement l'écran, c'est une autre commande.</p>
-    <p class="td-aide">Le mot anglais pour « vider, dégager ».</p>
-    <div class="td-correction"><p><code>clear</code> : effacer le contenu de l'écran du terminal. Exemple : <code>clear</code>.</p></div>
+  <h2 class="td-partie">2. Rappels : la bonne commande</h2>
+  <p><b>Exemple :</b> la commande qui affiche le chemin absolu du répertoire courant est <code>pwd</code>.</p>
+
+  <section class="td-q" data-type="courte" id="r6" data-comparer="exact" data-reponse="cat|more|less" data-etiquette="$">
+    <p class="td-consigne">Quelle commande affiche tout le contenu d'un fichier ?</p>
+    <div class="td-correction"><p><code>cat</code> (<code>more</code> et <code>less</code> le montrent aussi, page par page).</p><p class="td-erreur-frequente" data-si="ls"><b>Erreur fréquente :</b> <code>ls</code> : <code>ls</code> affiche le nom des fichiers, pas ce qu'ils contiennent.</p></div>
   </section>
 
-  <h2 class="td-partie">2. Manipuler des fichiers et des dossiers</h2>
-  <p data-support="ecran"><code>touch notes.txt</code> crée un fichier vide (ou met à jour sa date).</p>
-  <section class="td-q" data-type="libre" id="t2-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
-    <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
-    <tbody>
-      <tr><td><code>touch [file]</code></td><td>Créer un objet / fichier vide</td><td><code>touch notes.txt</code></td></tr>
-      <tr><td><code>mkdir [nom]</code></td><td></td><td><code>mkdir NSI_TP</code></td></tr>
-      <tr><td><code>cp [src] [dest]</code></td><td></td><td><code>cp doc.txt /tmp/</code></td></tr>
-      <tr><td><code>mv [src] [dest]</code></td><td></td><td><code>mv ancien.txt nouveau.txt</code></td></tr>
-      <tr><td><code>rm [file]</code></td><td></td><td><code>rm fichier.temp</code></td></tr>
-      <tr><td><code>rmdir [nom]</code></td><td></td><td><code>rmdir dossier_vide</code></td></tr>
-      <tr><td><code>unzip [file]</code></td><td></td><td><code>unzip archive.zip</code></td></tr>
-    </tbody>
-  </table></div>
-    <div class="td-correction"><p><code>mkdir [nom]</code> : créer un nouveau répertoire (dossier). Exemple : <code>mkdir NSI_TP</code>.</p><p><code>cp [src] [dest]</code> : copier un fichier ou un répertoire. Exemple : <code>cp doc.txt /tmp/</code>.</p><p><code>mv [src] [dest]</code> : déplacer ou renommer un fichier ou un répertoire. Exemple : <code>mv ancien.txt nouveau.txt</code>.</p><p><code>rm [file]</code> : supprimer un fichier. Exemple : <code>rm fichier.temp</code>.</p><p><code>rmdir [nom]</code> : supprimer un répertoire vide. Exemple : <code>rmdir dossier_vide</code>.</p><p><code>unzip [file]</code> : extraire les fichiers d'une archive compressée .zip. Exemple : <code>unzip archive.zip</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r7" data-comparer="exact" data-reponse="rmdir" data-etiquette="$">
+    <p class="td-consigne">Quelle commande supprime un dossier vide ?</p>
+    <div class="td-correction"><p><code>rmdir</code> : il refuse un dossier qui n'est pas vide, c'est le plus sûr.</p><p class="td-erreur-frequente" data-si="rm"><b>Erreur fréquente :</b> <code>rm</code> : <code>rm</code> seul refuse de supprimer un dossier (« Is a directory »).</p><p class="td-erreur-frequente" data-si="rm -r"><b>Erreur fréquente :</b> <code>rm -r</code> : <code>rm -r</code> marche, mais il efface aussi tout ce que contient le dossier : pour un dossier vide, <code>rmdir</code> est plus sûr.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q6" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="mkdir">
-    <p class="td-consigne">Quelle commande sert à créer un nouveau répertoire (dossier) ?</p>
-    <p class="td-retour" data-si="touch">touch crée un fichier, pas un dossier.</p>
-    <p class="td-aide"><i>make directory</i>.</p>
-    <div class="td-correction"><p><code>mkdir [nom]</code> : créer un nouveau répertoire (dossier). Exemple : <code>mkdir NSI_TP</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r8" data-comparer="exact" data-reponse="grep" data-etiquette="$">
+    <p class="td-consigne">Quelle commande affiche les lignes d'un fichier qui contiennent un mot ?</p>
+    <div class="td-correction"><p><code>grep</code> : <code>grep print tp1.py</code>.</p><p class="td-erreur-frequente" data-si="find"><b>Erreur fréquente :</b> <code>find</code> : <code>find</code> cherche des fichiers par leur nom, pas dans leur contenu.</p><p class="td-erreur-frequente" data-si="cat"><b>Erreur fréquente :</b> <code>cat</code> : <code>cat</code> affiche tout le fichier, sans trier les lignes.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q7" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="cp">
-    <p class="td-consigne">Quelle commande sert à copier un fichier ou un répertoire ?</p>
-    <p class="td-retour" data-si="mv">mv déplace : l'original disparaît. Pour garder l'original, on copie.</p>
-    <p class="td-aide"><i>copy</i>, en deux lettres.</p>
-    <div class="td-correction"><p><code>cp [src] [dest]</code> : copier un fichier ou un répertoire. Exemple : <code>cp doc.txt /tmp/</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r9" data-comparer="exact" data-reponse="man" data-etiquette="$">
+    <p class="td-consigne">Quelle commande affiche le manuel d'une commande ?</p>
+    <div class="td-correction"><p><code>man</code> : <code>man ls</code> (on en sort avec la touche <b>q</b>).</p><p class="td-erreur-frequente" data-si="help"><b>Erreur fréquente :</b> <code>help</code> : <code>help</code> donne une aide courte sur quelques commandes du shell ; le manuel complet, c'est <code>man</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q8" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="mv">
-    <p class="td-consigne">Quelle commande sert à déplacer ou renommer un fichier ou un répertoire ?</p>
-    <p class="td-retour" data-si="cp">cp garde l'original : ici, l'ancien nom disparaît.</p>
-    <p class="td-aide"><i>move</i>, en deux lettres. La même commande sert à renommer.</p>
-    <div class="td-correction"><p><code>mv [src] [dest]</code> : déplacer ou renommer un fichier ou un répertoire. Exemple : <code>mv ancien.txt nouveau.txt</code>.</p></div>
+  <h2 class="td-partie">3. Rappels : les droits</h2>
+  <p><b>Exemple :</b> <code>chmod 755 tp1.py</code> donne <code>rwxr-xr-x</code> ; <code>chmod g-w tp1.py</code> retire l'écriture au groupe.</p>
+
+  <section class="td-q" data-type="qcu" id="r10" data-support="ecran">
+    <p class="td-consigne">À ton tour : quels droits le groupe <code>nsi</code> a-t-il sur <code>tp1.py</code> ?</p>
+    <pre class="td-sortie-exemple">
+eleve@lycee:~/devoirs/nsi$ ls -l tp1.py
+-rwxrw-r-- 1 eleve nsi 155 Nov 25 10:00 tp1.py</pre>
+    <ul class="td-options">
+      <li data-juste>Lire et écrire (<code>rw-</code>)</li>
+      <li>Lire, écrire et exécuter (<code>rwx</code>)</li>
+      <li>Lire seulement (<code>r--</code>)</li>
+      <li>Lire et exécuter (<code>r-x</code>)</li>
+    </ul>
+    <div class="td-correction"><p><code>-</code> (un fichier), <code>rwx</code> (propriétaire <code>eleve</code>), <code>rw-</code> (groupe <code>nsi</code>), <code>r--</code> (autres) : le groupe peut lire et écrire, pas exécuter.</p><p>« Lire, écrire et exécuter (rwx) » : non. rwx sont les droits du propriétaire, eleve : les trois premiers après le tiret.</p><p>« Lire seulement (r--) » : non. r-- sont les droits des autres : les trois derniers.</p><p>« Lire et exécuter (r-x) » : non. le groupe n'a pas x : sa troisième lettre est un tiret.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="r10p" data-support="papier" data-lignes="1">
+    <p class="td-consigne">À ton tour : quels droits le groupe <code>nsi</code> a-t-il sur <code>tp1.py</code> ?</p>
+    <pre class="td-sortie-exemple">
+eleve@lycee:~/devoirs/nsi$ ls -l tp1.py
+-rwxrw-r-- 1 eleve nsi 155 Nov 25 10:00 tp1.py</pre>
+    <div class="td-correction"><p><code>-</code> (un fichier), <code>rwx</code> (propriétaire <code>eleve</code>), <code>rw-</code> (groupe <code>nsi</code>), <code>r--</code> (autres) : le groupe peut lire et écrire, pas exécuter.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q9" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="rm">
-    <p class="td-consigne">Quelle commande sert à supprimer un fichier ?</p>
-    <p class="td-retour" data-si="rmdir">rmdir supprime un dossier vide, pas un fichier.</p>
-    <p class="td-aide"><i>remove</i>, en deux lettres. Attention : pas de corbeille.</p>
-    <div class="td-correction"><p><code>rm [file]</code> : supprimer un fichier. Exemple : <code>rm fichier.temp</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r11" data-comparer="exact" data-reponse="chmod 777 tp1.py|chmod 0777 tp1.py|chmod 777 ./tp1.py" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code>nsi</code>. En <b>octal</b>, donne tous les droits à tout le monde sur <code>tp1.py</code>.</p>
+    <div class="td-correction"><p><code>chmod 777 tp1.py</code> : 7 = 4 + 2 + 1 = <code>rwx</code>, pour le propriétaire, le groupe et les autres.</p><p class="td-erreur-frequente" data-si="chmod 666 tp1.py"><b>Erreur fréquente :</b> <code>chmod 666 tp1.py</code> : 666 donne lire et écrire, sans exécuter : il manque x = 1.</p><p class="td-erreur-frequente" data-si="chmod a+rwx tp1.py|chmod ugo+rwx tp1.py"><b>Erreur fréquente :</b> <code>chmod a+rwx tp1.py</code> : c'est juste, mais en symbolique. On demande l'octal.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q10" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="rmdir">
-    <p class="td-consigne">Quelle commande sert à supprimer un répertoire vide ?</p>
-    <p class="td-retour" data-si="rm">rm seul refuse de supprimer un dossier : il existe une commande pour les dossiers vides.</p>
-    <p class="td-aide"><i>remove directory</i>.</p>
-    <div class="td-correction"><p><code>rmdir [nom]</code> : supprimer un répertoire vide. Exemple : <code>rmdir dossier_vide</code>.</p></div>
+  <section class="td-q" data-type="courte" id="r12" data-comparer="exact" data-reponse="chmod o+x tp1.py|chmod o+x ./tp1.py" data-etiquette="$">
+    <p class="td-consigne">À ton tour : en <b>symbolique</b>, ajoute le droit d'exécution aux autres (<i>others</i>) sur <code>tp1.py</code>.</p>
+    <div class="td-correction"><p><code>chmod o+x tp1.py</code> : <code>o</code> (les autres), <code>+</code> (ajouter), <code>x</code> (exécuter). Les droits deviennent <code>-rwxrw-r-x</code>.</p><p class="td-erreur-frequente" data-si="chmod +x tp1.py|chmod a+x tp1.py"><b>Erreur fréquente :</b> <code>chmod +x tp1.py</code> : sans lettre (ou avec <code>a</code>), le droit est ajouté à tout le monde. Les autres, c'est <code>o</code>.</p><p class="td-erreur-frequente" data-si="chmod g+x tp1.py"><b>Erreur fréquente :</b> <code>chmod g+x tp1.py</code> : <code>g</code> désigne le groupe. Les autres, c'est <code>o</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q11" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="unzip">
-    <p class="td-consigne">Quelle commande sert à extraire les fichiers d'une archive compressée .zip ?</p>
-    <p class="td-retour" data-si="zip">zip crée une archive ; on veut l'inverse.</p>
-    <p class="td-aide">Le contraire de <i>zip</i>.</p>
-    <div class="td-correction"><p><code>unzip [file]</code> : extraire les fichiers d'une archive compressée .zip. Exemple : <code>unzip archive.zip</code>.</p></div>
-  </section>
-
-  <h2 class="td-partie">3. Lire et chercher</h2>
-  <p data-support="ecran"><code>grep "IP" logs.txt</code> trouve les lignes d'un texte qui contiennent le motif <code>IP</code>.</p>
-  <section class="td-q" data-type="libre" id="t3-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
-    <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
-    <tbody>
-      <tr><td><code>cat [file]</code></td><td></td><td><code>cat config.conf</code></td></tr>
-      <tr><td><code>grep [motif] [f]</code></td><td>Trouver les parties d'un texte contenant le motif</td><td><code>grep &quot;IP&quot; logs.txt</code></td></tr>
-      <tr><td><code>find [dir] -name [n]</code></td><td></td><td><code>find . -name &quot;*.py&quot;</code></td></tr>
-      <tr><td><code>man [cmd]</code></td><td></td><td><code>man grep</code></td></tr>
-      <tr><td><code>help</code></td><td></td><td><code>help cd</code></td></tr>
-    </tbody>
-  </table></div>
-    <div class="td-correction"><p><code>cat [file]</code> : afficher le contenu complet d'un fichier. Exemple : <code>cat config.conf</code>.</p><p><code>find [dir] -name [n]</code> : chercher des fichiers par leur nom dans une arborescence. Exemple : <code>find . -name &quot;*.py&quot;</code>.</p><p><code>man [cmd]</code> : afficher le manuel d'utilisation d'une commande. Exemple : <code>man grep</code>.</p><p><code>help</code> : obtenir une aide rapide sur une commande intégrée au shell. Exemple : <code>help cd</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q12" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="cat">
-    <p class="td-consigne">Quelle commande sert à afficher le contenu complet d'un fichier ?</p>
-    <p class="td-retour" data-si="ls">ls affiche le nom des fichiers, pas ce qu'ils contiennent.</p>
-    <p class="td-aide"><i>concatenate</i>, en trois lettres.</p>
-    <div class="td-correction"><p><code>cat [file]</code> : afficher le contenu complet d'un fichier. Exemple : <code>cat config.conf</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q13" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="find">
-    <p class="td-consigne">Quelle commande sert à chercher des fichiers par leur nom dans une arborescence ?</p>
-    <p class="td-retour" data-si="grep">grep cherche dans le contenu des fichiers, pas dans leurs noms.</p>
-    <p class="td-aide">Le mot anglais pour « trouver ».</p>
-    <div class="td-correction"><p><code>find [dir] -name [n]</code> : chercher des fichiers par leur nom dans une arborescence. Exemple : <code>find . -name &quot;*.py&quot;</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q14" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="man">
-    <p class="td-consigne">Quelle commande sert à afficher le manuel d'utilisation d'une commande ?</p>
-    <p class="td-retour" data-si="help">help donne une aide courte sur les commandes intégrées au shell ; le manuel complet, c'est une autre commande.</p>
-    <p class="td-aide"><i>manual</i>, en trois lettres.</p>
-    <div class="td-correction"><p><code>man [cmd]</code> : afficher le manuel d'utilisation d'une commande. Exemple : <code>man grep</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q15" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="help">
-    <p class="td-consigne">Quelle commande sert à obtenir une aide rapide sur une commande intégrée au shell ?</p>
-    <p class="td-retour" data-si="man">man ouvre le manuel complet. Pour une aide rapide sur cd, c'est une autre commande.</p>
-    <p class="td-aide">Le mot anglais pour « aide ».</p>
-    <div class="td-correction"><p><code>help</code> : obtenir une aide rapide sur une commande intégrée au shell. Exemple : <code>help cd</code>.</p></div>
-  </section>
-
-  <h2 class="td-partie">4. Gérer les droits et les utilisateurs</h2>
-  <p><b>U</b> (<i>User</i>) : le propriétaire ; <b>G</b> (<i>Group</i>) : les membres du groupe du fichier ; <b>O</b> (<i>Others</i>) : tous les autres. <b>Mode octal</b> : on additionne r = 4, w = 2, x = 1 (7 = <code>rwx</code>, 5 = <code>r-x</code>). <b>Mode relatif</b> : <code>+</code> ou <code>-</code> ajoute ou retire un droit (<code>g+x</code> rend le fichier exécutable pour le groupe). <code>sudo [cmd]</code> lance une commande en tant que super-utilisateur (<code>sudo apt update</code>).</p>
+  <h2 class="td-partie">4. Nouveau : observer la machine</h2>
   <section class="td-q" data-type="libre" id="t4-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
+    <p class="td-consigne">Complète la colonne « Ce qu'elle fait ». La première ligne est faite : c'est l'exemple.</p>
     <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
+    <thead><tr><th>Commande</th><th data-case-largeur="78">Ce qu'elle fait</th><th>Exemple</th></tr></thead>
     <tbody>
-      <tr><td><code>chmod [mode]</code></td><td></td><td><code>chmod 755 script.sh</code></td></tr>
-      <tr><td><code>chown [user]</code></td><td></td><td><code>chown prof devoirs.py</code></td></tr>
-      <tr><td><code>sudo [cmd]</code></td><td>Lancer une commande en tant que super-utilisateur</td><td><code>sudo apt update</code></td></tr>
-      <tr><td><code>passwd</code></td><td></td><td><code>passwd</code></td></tr>
-    </tbody>
-  </table></div>
-    <div class="td-correction"><p><code>chmod [mode]</code> : modifier les permissions d'accès d'un fichier. Exemple : <code>chmod 755 script.sh</code>.</p><p><code>chown [user]</code> : changer le propriétaire d'un fichier. Exemple : <code>chown prof devoirs.py</code>.</p><p><code>passwd</code> : modifier le mot de passe de l'utilisateur. Exemple : <code>passwd</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q16" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="chmod">
-    <p class="td-consigne">Quelle commande sert à modifier les permissions d'accès d'un fichier ?</p>
-    <p class="td-retour" data-si="chown">chown change le propriétaire, pas les droits.</p>
-    <p class="td-aide"><i>change mode</i>.</p>
-    <div class="td-correction"><p><code>chmod [mode]</code> : modifier les permissions d'accès d'un fichier. Exemple : <code>chmod 755 script.sh</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q17" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="chown">
-    <p class="td-consigne">Quelle commande sert à changer le propriétaire d'un fichier ?</p>
-    <p class="td-retour" data-si="chmod">chmod change les droits (r, w, x), pas le propriétaire.</p>
-    <p class="td-aide"><i>change owner</i>.</p>
-    <div class="td-correction"><p><code>chown [user]</code> : changer le propriétaire d'un fichier. Exemple : <code>chown prof devoirs.py</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q18" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="passwd">
-    <p class="td-consigne">Quelle commande sert à modifier le mot de passe de l'utilisateur ?</p>
-    <p class="td-retour" data-si="password">Presque : la commande est plus courte, sans « o » ni « r ».</p>
-    <p class="td-aide"><i>password</i>, en abrégé : six lettres.</p>
-    <div class="td-correction"><p><code>passwd</code> : modifier le mot de passe de l'utilisateur. Exemple : <code>passwd</code>.</p></div>
-  </section>
-
-  <h2 class="td-partie">5. Gérer les processus et le système</h2>
-  <p>Un processus est un programme en cours d'exécution, identifié par son PID. <code>kill [PID]</code> demande au processus de s'arrêter ; s'il est bloqué, <code>kill -9 [PID]</code> (le signal SIGKILL) le fait arrêter tout de suite par le noyau, sans lui laisser le temps de sauvegarder.</p>
-  <section class="td-q" data-type="libre" id="t5-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
-    <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
-    <tbody>
+      <tr><td><code>find [dossier] -name [nom]</code></td><td>Chercher des fichiers par leur nom</td><td><code>find ~ -name "*.py"</code></td></tr>
+      <tr><td><code>history</code></td><td></td><td><code>history</code></td></tr>
       <tr><td><code>ps</code></td><td></td><td><code>ps -ef</code></td></tr>
       <tr><td><code>top</code></td><td></td><td><code>top</code></td></tr>
-      <tr><td><code>kill [PID]</code></td><td></td><td><code>kill 1234</code></td></tr>
+      <tr><td><code>kill [PID]</code></td><td></td><td><code>kill 450</code></td></tr>
       <tr><td><code>df -h</code></td><td></td><td><code>df -h</code></td></tr>
       <tr><td><code>ip addr</code></td><td></td><td><code>ip addr</code></td></tr>
-      <tr><td><code>ping [host]</code></td><td></td><td><code>ping google.com</code></td></tr>
+      <tr><td><code>ping [machine]</code></td><td></td><td><code>ping 192.168.1.1</code></td></tr>
     </tbody>
   </table></div>
-    <div class="td-correction"><p><code>ps</code> : lister les processus en cours d'exécution. Exemple : <code>ps -ef</code>.</p><p><code>top</code> : afficher les processus en temps réel (comme un gestionnaire de tâches). Exemple : <code>top</code>.</p><p><code>kill [PID]</code> : envoyer un signal pour arrêter un processus. Exemple : <code>kill 1234</code>.</p><p><code>df -h</code> : afficher l'espace disque disponible, dans un format lisible. Exemple : <code>df -h</code>.</p><p><code>ip addr</code> : afficher les adresses IP et les interfaces réseau. Exemple : <code>ip addr</code>.</p><p><code>ping [host]</code> : tester la connexion réseau vers une machine. Exemple : <code>ping google.com</code>.</p></div>
+    <div class="td-correction"><p><code>history</code> : afficher les commandes déjà tapées.</p><p><code>ps</code> (<i>process status</i>) : lister les processus en cours d'exécution.</p><p><code>top</code> : afficher les processus en temps réel, ceux qui consomment le plus en haut.</p><p><code>kill</code> : envoyer un signal à un processus, pour l'arrêter.</p><p><code>df -h</code> (<i>disk free</i>) : afficher la place libre sur les disques, en Go et Mo.</p><p><code>ip addr</code> : afficher les adresses IP de la machine et ses cartes réseau.</p><p><code>ping</code> : tester si une autre machine répond sur le réseau.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q19" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="ps|ps -ef|ps aux">
-    <p class="td-consigne">Quelle commande sert à lister les processus en cours d'exécution ?</p>
-    <p class="td-retour" data-si="ls">ls liste des fichiers, pas des processus.</p>
-    <p class="td-aide"><i>process status</i>, en deux lettres.</p>
-    <div class="td-correction"><p><code>ps</code> : lister les processus en cours d'exécution. Exemple : <code>ps -ef</code>.</p></div>
-  </section>
+  <p data-support="ecran"><b>Exemple :</b> <code>find [dossier] -name [nom]</code> <b>cherche des fichiers par leur nom</b> : <code>find ~ -name "*.py"</code> affiche <code>/home/eleve/devoirs/nsi/tp1.py</code>. À ton tour, pour les autres commandes.</p>
 
-  <section class="td-q" data-type="courte" id="q20" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="top|htop">
-    <p class="td-consigne">Quelle commande sert à afficher les processus en temps réel (comme un gestionnaire de tâches) ?</p>
-    <p class="td-retour" data-si="ps">ps donne une photo, à un instant : pour suivre en temps réel, c'est une autre commande.</p>
-    <p class="td-aide">Elle montre en haut les processus qui consomment le plus.</p>
-    <div class="td-correction"><p><code>top</code> : afficher les processus en temps réel (comme un gestionnaire de tâches). Exemple : <code>top</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q21" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="kill">
-    <p class="td-consigne">Quelle commande sert à envoyer un signal pour arrêter un processus ?</p>
-    <p class="td-retour" data-si="rm">rm supprime un fichier ; un processus s'arrête avec un signal.</p>
-    <p class="td-aide">Le mot anglais pour « tuer ».</p>
-    <div class="td-correction"><p><code>kill [PID]</code> : envoyer un signal pour arrêter un processus. Exemple : <code>kill 1234</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q22" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="df -h|df">
-    <p class="td-consigne">Quelle commande sert à afficher l'espace disque disponible, dans un format lisible ?</p>
-    <p class="td-retour" data-si="du">du mesure la place prise par des fichiers ; l'espace libre des disques, c'est df.</p>
-    <p class="td-aide"><i>disk free</i> ; l'option <code>-h</code> : <i>human-readable</i>.</p>
-    <div class="td-correction"><p><code>df -h</code> : afficher l'espace disque disponible, dans un format lisible. Exemple : <code>df -h</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q23" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="ip addr|ip a|ip address">
-    <p class="td-consigne">Quelle commande sert à afficher les adresses IP et les interfaces réseau ?</p>
-    <p class="td-retour" data-si="ping">ping teste une autre machine ; on veut les adresses de son propre ordinateur.</p>
-    <p class="td-aide">La commande <code>ip</code>, suivie de <code>addr</code>.</p>
-    <div class="td-correction"><p><code>ip addr</code> : afficher les adresses IP et les interfaces réseau. Exemple : <code>ip addr</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q24" data-support="ecran" data-comparer="exact" data-etiquette="$" data-reponse="ping">
-    <p class="td-consigne">Quelle commande sert à tester la connexion réseau vers une machine ?</p>
-    <p class="td-retour" data-si="ip addr">ip addr affiche tes propres adresses ; elle ne teste pas une autre machine.</p>
-    <p class="td-aide">Comme une balle de ping-pong : un aller, un retour.</p>
-    <div class="td-correction"><p><code>ping [host]</code> : tester la connexion réseau vers une machine. Exemple : <code>ping google.com</code>.</p></div>
-  </section>
-
-  <h2 class="td-partie">6. Chemins absolus et chemins relatifs</h2>
-
-  <section class="td-q" data-type="qcu" id="q25" data-support="ecran">
-    <p class="td-consigne">D'où part toujours un chemin absolu ?</p>
+  <section class="td-q" data-type="qcu" id="n1" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>history</code> ?</p>
     <ul class="td-options">
-      <li data-juste>Du sommet de l'arborescence : la racine <code>/</code>.</li>
-      <li data-retour="C'est le chemin relatif qui part du répertoire courant.">Du répertoire courant, là où l'on se trouve.</li>
-      <li data-retour="~ est un raccourci du répertoire personnel ; un chemin absolu commence par /.">Du répertoire personnel de l'utilisateur, noté <code>~</code>.</li>
-      <li data-retour="Le parent (..) sert dans les chemins relatifs.">Du répertoire parent, noté <code>..</code>.</li>
+      <li data-juste>Afficher les commandes déjà tapées</li>
+      <li>Afficher le contenu des fichiers récents</li>
+      <li>Annuler la dernière commande tapée</li>
+      <li>Afficher les fichiers modifiés aujourd'hui</li>
     </ul>
-    <p class="td-aide">Un chemin absolu marche quel que soit l'endroit où l'on est.</p>
-    <div class="td-correction"><p>Un chemin absolu part toujours de la racine, <code>/</code> : par exemple <code>/home/nsi/TP1</code>.</p></div>
-  </section>
-  <section class="td-q" data-type="libre" id="q25-papier" data-support="papier" data-lignes="1">
-    <p class="td-consigne">Complète la phrase : « Un chemin absolu part toujours … <code>/</code> »</p>
-    <div class="td-correction"><p>… de la racine, <code>/</code>.</p></div>
+    <div class="td-correction"><p><code>history</code> affiche la liste des commandes déjà tapées, numérotées.</p><p>« Afficher le contenu des fichiers récents » : non. history ne lit aucun fichier de l'utilisateur·rice : elle liste les commandes tapées.</p><p>« Annuler la dernière commande tapée » : non. Il n'y a pas d'annulation dans le terminal : history affiche seulement.</p><p>« Afficher les fichiers modifiés aujourd'hui » : non. Pour des fichiers, on utiliserait ls ou find : history parle des commandes.</p></div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="q26" data-support="ecran">
-    <p class="td-consigne">D'où part un chemin relatif ?</p>
+  <section class="td-q" data-type="qcu" id="n2" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>ps</code> ? Exemple : <code>ps -ef</code></p>
     <ul class="td-options">
-      <li data-retour="C'est le chemin absolu qui part de la racine.">De la racine <code>/</code>, comme un chemin absolu.</li>
-      <li data-juste>Du répertoire courant, où l'on se trouve.</li>
-      <li data-retour="Il peut partir de n'importe quel dossier : celui où l'on se trouve à ce moment.">Toujours du dossier <code>/home</code>, où que l'on soit.</li>
-      <li data-retour="Un chemin relatif part de là où l'on est, pas de l'endroit du fichier cherché.">Du dossier qui contient le fichier cherché.</li>
+      <li data-juste>Lister les processus en cours d'exécution</li>
+      <li>Lister les fichiers du répertoire courant</li>
+      <li>Afficher la place libre sur le disque</li>
+      <li>Arrêter tous les processus de l'utilisateur·rice</li>
     </ul>
-    <p class="td-aide"><code>../Projets</code> n'a pas le même sens selon l'endroit où l'on tape la commande.</p>
-    <div class="td-correction"><p>Un chemin relatif part du répertoire courant (celui que donne <code>pwd</code>). Astuce : la touche Tabulation complète les noms tout seule.</p></div>
-  </section>
-  <section class="td-q" data-type="libre" id="q26-papier" data-support="papier" data-lignes="1">
-    <p class="td-consigne">Complète la phrase : « Un chemin relatif part … »</p>
-    <div class="td-correction"><p>… du répertoire courant, là où l'on se trouve (celui que donne <code>pwd</code>).</p></div>
+    <div class="td-correction"><p><code>ps</code> (<i>process status</i>) liste les processus en cours d'exécution ; <code>ps -ef</code> les montre tous, avec leur PID et leur PPID.</p><p>« Lister les fichiers du répertoire courant » : non. Lister des fichiers, c'est ls.</p><p>« Afficher la place libre sur le disque » : non. La place libre, c'est df -h.</p><p>« Arrêter tous les processus de l'utilisateur·rice » : non. Arrêter un processus, c'est kill : ps ne fait qu'afficher.</p></div>
   </section>
 
-  <p class="td-ecran-seul"><b>La suite :</b> <a href="commandes-terminale-2.html">feuille 2 sur 2, les exercices : pratique des commandes</a>.</p>
-
-  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
-  <section class="td-memo">
-    <h2>Mémo</h2>
-    <p>Se repérer : <code>pwd</code>, <code>ls</code>, <code>cd</code>. Fichiers : <code>touch</code>, <code>mkdir</code>, <code>cp</code>, <code>mv</code>, <code>rm</code>. Lire : <code>cat</code>, <code>grep</code>. Droits : <code>chmod</code>, <code>chown</code>. Processus : <code>ps</code>, <code>top</code>, <code>kill</code>.</p>
-    <p>En cas de doute : <code>man commande</code>.</p>
+  <section class="td-q" data-type="qcu" id="n3" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>top</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Afficher les processus en temps réel</li>
+      <li>Afficher les fichiers les plus gros</li>
+      <li>Afficher le haut d'un fichier texte</li>
+      <li>Remonter à la racine de l'arborescence</li>
+    </ul>
+    <div class="td-correction"><p><code>top</code> affiche les processus en temps réel, ceux qui consomment le plus en haut (comme un gestionnaire de tâches) ; on en sort avec <b>q</b>.</p><p>« Afficher les fichiers les plus gros » : non. top parle des processus, pas des fichiers.</p><p>« Afficher le haut d'un fichier texte » : non. Le début d'un fichier, c'est head.</p><p>« Remonter à la racine de l'arborescence » : non. Remonter à la racine, c'est cd /.</p></div>
   </section>
+
+  <section class="td-q" data-type="qcu" id="n4" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>kill [PID]</code> ? Exemple : <code>kill 450</code></p>
+    <ul class="td-options">
+      <li data-juste>Envoyer un signal d'arrêt au processus</li>
+      <li>Supprimer le fichier numéro 450</li>
+      <li>Éteindre l'ordinateur tout de suite</li>
+      <li>Afficher les informations du processus</li>
+    </ul>
+    <div class="td-correction"><p><code>kill</code> envoie un signal au processus dont on donne le PID, pour lui demander de s'arrêter.</p><p>« Supprimer le fichier numéro 450 » : non. kill ne touche pas aux fichiers : 450 est le numéro (PID) d'un processus.</p><p>« Éteindre l'ordinateur tout de suite » : non. kill vise un seul processus, celui dont on donne le PID.</p><p>« Afficher les informations du processus » : non. Afficher les processus, c'est ps ou top.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="n5" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>df -h</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Afficher la place libre sur les disques</li>
+      <li>Effacer les fichiers inutiles du disque</li>
+      <li>Afficher l'aide d'une commande</li>
+      <li>Afficher la mémoire vive libre</li>
+    </ul>
+    <div class="td-correction"><p><code>df</code> (<i>disk free</i>) affiche la place libre sur les disques ; <code>-h</code> l'écrit en Go et Mo.</p><p>« Effacer les fichiers inutiles du disque » : non. df ne supprime rien : il affiche.</p><p>« Afficher l'aide d'une commande » : non. L'aide, c'est man (ou --help). Ici -h veut dire human-readable, « lisible ».</p><p>« Afficher la mémoire vive libre » : non. La mémoire vive se lit avec top (ou free) ; df parle des disques.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="n6" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>ip addr</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Afficher les adresses IP de la machine</li>
+      <li>Tester si une autre machine répond</li>
+      <li>Changer l'adresse IP de la machine</li>
+      <li>Afficher le nom de l'utilisateur·rice</li>
+    </ul>
+    <div class="td-correction"><p><code>ip addr</code> affiche les adresses IP de la machine et ses cartes réseau.</p><p>« Tester si une autre machine répond » : non. Tester une autre machine, c'est ping.</p><p>« Changer l'adresse IP de la machine » : non. ip addr seul ne change rien : il affiche.</p><p>« Afficher le nom de l'utilisateur·rice » : non. Le nom de l'utilisateur·rice, c'est whoami.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="n7" data-support="ecran">
+    <p class="td-consigne">Que fait la commande <code>ping [machine]</code> ? Exemple : <code>ping 192.168.1.1</code></p>
+    <ul class="td-options">
+      <li data-juste>Tester si une machine répond sur le réseau</li>
+      <li>Afficher les adresses IP de sa machine</li>
+      <li>Envoyer un message à l'utilisateur·rice</li>
+      <li>Télécharger un fichier depuis la machine</li>
+    </ul>
+    <div class="td-correction"><p><code>ping</code> envoie un petit paquet à une machine et attend sa réponse : elle dit si la machine est joignable, et en combien de millisecondes.</p><p>« Afficher les adresses IP de sa machine » : non. Ses propres adresses, c'est ip addr.</p><p>« Envoyer un message à l'utilisateur·rice » : non. ping n'envoie aucun message lisible : seulement un petit paquet, et attend la réponse.</p><p>« Télécharger un fichier depuis la machine » : non. ping ne transfère aucun fichier.</p></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="commandes-terminale-2.html">feuille 2 sur 2 : les processus, les jokers et les tubes</a>.</p>
 
   <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">
