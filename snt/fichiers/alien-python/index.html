@@ -93,7 +93,7 @@ td.code{font-size:1.2em}
 .al-legende{margin:.3em 10px 0;font-size:.86rem;color:var(--td-encre-douce)}
 .al-trait{display:inline-block;width:2.2em;height:0;vertical-align:middle;border-top:2.4px solid var(--td-accent);margin-right:.35em}
 .al-trait.el{border-top:2.4px dashed var(--td-focus)}
-.al-fb-grille{display:none;margin:0 0 10px}.al-fb-grille button{margin-top:6px;min-height:44px}@media(max-width:760px){.al-fb-grille{display:block}}
+#al-verdict,#al-carte-grille{scroll-margin:16px}.al-fb-grille{display:none;margin:0 0 10px}.al-fb-grille button{margin-top:6px;min-height:44px}@media(max-width:760px){.al-fb-grille{display:block}}
 @media (prefers-reduced-motion:reduce){.al-ac,.g-alien{transition:none!important}}
 </style>
 </head>
@@ -303,18 +303,21 @@ if(r.etat=="indisponible"){
 c0.trajet=r.pas;c0.errLigne=0;
 if(r.etat=="erreur"){res.erreur=r.detail;c0.errLigne=r.ligne;res.msg="Python s’est arrêté sur une erreur"+(r.ligne?", ligne "+r.ligne:"")+". Voici son message :"}
 else if(r.etat=="hors"){var h=r.hors;c0.errLigne=h[0];res.msg="Ligne "+h[0]+" : "+h[1]+"("+h[2]+") enverrait ton alien hors de la grille (elle va de A1 à O15). Il s’arrête en "+cell(h[3],h[4])+"."}
-else if(r.etat=="trop-long"){c0.errLigne=r.ligne;res.msg="Ton programme ne s’arrête pas : Python l’a arrêté"+(r.ligne?" à la ligne "+r.ligne:"")+", après "+(r.pas.length>5000?"5 000 déplacements":"20 000 lignes exécutées")+". Une boucle qui ne finit jamais ? Vérifie ce qui doit l’arrêter."}
+else if(r.etat=="trop-long"){c0.errLigne=r.ligne;res.msg="Ton programme ne s’arrête pas : Python l’a arrêté"+(r.ligne?" à la ligne "+r.ligne:"")+", après "+(r.delai?"8 secondes":r.pas.length>5000?"5 000 déplacements":"20 000 lignes exécutées")+". Une boucle qui ne finit jamais ? Vérifie ce qui doit l’arrêter."}
 else res.msg=r.pas.length?"Ton alien a suivi ton programme : "+r.pas.length+" déplacement"+(r.pas.length>1?"s":"")+", il finit en "+cell(r.x,r.y)+".":"Ton programme s’est exécuté, mais ton alien n’a pas bougé : il reste en H8.";
 if(r.sortie)res.sortie=r.sortie;c0.res=res;
 if(valider){var cmp=AlienPython.comparer(e2,code,r);if(cmp.juste)res.msg=cmp.remarque||"";else if(r.etat=="erreur")res.msg="";
  conclure(c0,id2,cmp.juste,before,cmp.juste?null:r.etat=="ok"?cmp.message+" Compare avec le parcours, ou demande un coup de pouce.":"Pas encore : "+MSG_PY[r.etat]+(cmp.message?" "+cmp.message:""))}
 else if(vu){draw();annoncer(res.msg)}
 if(vu){if(valider)voirVerdict(r.pas.length>0);else if(r.pas.length&&window.innerWidth<=760){var g=$("#al-gr");if(g){var b=g.getBoundingClientRect();if(b.top<0||b.bottom>window.innerHeight)g.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}}animer(r.pas,true)}})}
-/* après « Valider », sur un écran étroit (une seule colonne : la grille est sous le programme) : on fait voir le verdict ;
-   s'il y a un trajet à suivre, on descend à la grille, où le verdict est redit en haut, avec « Revenir à mon programme » */
+/* après « Valider », à toutes les largeurs : le verdict est amené à l'écran s'il n'y est pas ; sur une seule colonne
+   (la grille sous le programme), s'il y a un trajet à suivre, on descend à la grille, où le verdict est redit en haut,
+   avec « Revenir à mon programme » */
 function doux(){return matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}
-function voirVerdict(trajet){if(window.innerWidth>760)return;var el=trajet?$("#al-carte-grille"):$("#al-verdict");if(!el)return;var b=el.getBoundingClientRect();
-if(trajet)el.scrollIntoView({block:"start",behavior:doux()});else if(b.top<0||b.bottom>window.innerHeight)el.scrollIntoView({block:"nearest",behavior:doux()})}
+function voirVerdict(trajet){var v=$("#al-verdict"),gc=$("#al-carte-grille");if(!v)return;
+var une=gc&&gc.getBoundingClientRect().top>=v.getBoundingClientRect().bottom;   // une seule colonne : la grille est sous le verdict
+if(trajet&&une){gc.scrollIntoView({block:"start",behavior:doux()});return}
+var b=v.getBoundingClientRect();if(b.top<0||b.bottom>window.innerHeight)v.scrollIntoView({block:b.height>window.innerHeight?"start":"nearest",behavior:doux()})}
 /* revoir l'alien exécuter le programme d'un exercice déjà réussi (ou dont la correction est ouverte) */
 function rejouer(){var c0=cur,id2=cur.id;c0.enCours=true;c0.res={attente:true,msg:AlienPython.etat().charge?"L’alien se prépare…":"Python se charge… La première fois, cela peut prendre quelques secondes."};draw();
 AlienPython.lancer(EX[id2].c).then(function(r){c0.enCours=false;if(cur!==c0)return;

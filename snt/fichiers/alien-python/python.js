@@ -7,7 +7,10 @@
    - Le message d'erreur est celui de Python, tel quel (seules les lignes du programme de
      l'élève sont gardées dans la trace) ; « Explique-moi cette erreur » le dit en français.
    - Une boucle qui ne s'arrête pas est arrêtée au bout de 20 000 lignes exécutées
-     (ou de 5 000 déplacements), avec un message.
+     (ou de 5 000 déplacements, ou de 8 secondes), avec un message.
+   - Le programme de l'élève ne peut importer ni js, ni pyodide, ni ce qui y mène (sys, gc,
+     importlib…), et un message qu'il enverrait n'est pas pris pour un résultat (le secret du
+     Worker) : il ne peut pas se déclarer juste lui-même (le README dit ce qui reste ouvert).
    - Un programme juste écrit autrement est accepté : on compare le trajet de l'alien
      case par case, pas le texte.
 
@@ -27,6 +30,22 @@
     '    pass',
     'class ProgrammeTropLong(Exception):',
     '    pass',
+    // les modules que le programme de l'élève ne peut pas importer (T145, Gardien 42) : ceux qui mènent à JavaScript
+    // (js, pyodide…) et ceux qui permettent d'aller les chercher (sys, gc, importlib, inspect, ctypes…)
+    '_ALIEN_BLOQUES = {"js", "pyodide", "pyodide_js", "_pyodide", "_pyodide_core", "micropip", "sys", "gc", "importlib",',
+    '                  "_imp", "_frozen_importlib", "_frozen_importlib_external", "builtins", "inspect", "ctypes", "_ctypes",',
+    '                  "os", "posix", "subprocess", "types", "code", "codeop", "runpy", "pickle", "marshal", "__main__"}',
+    'import builtins as _alien_b',
+    'def _alien_garde(name, globals=None, locals=None, fromlist=(), level=0):',
+    '    if level == 0 and str(name).split(".")[0] in _ALIEN_BLOQUES:',
+    '        raise ImportError("module \'%s\' is not available in Alien Python" % name, name=name)',
+    '    return _alien_b.__import__(name, globals, locals, fromlist, level)',
+    '_ALIEN_BUILTINS = dict(vars(_alien_b), __import__=_alien_garde)',
+    // pendant l’exécution, ces modules sont aussi ôtés de sys.modules (gardés côté JavaScript, rendus après)
+    'def _alien_cacher():',
+    '    return {k: sys.modules.pop(k) for k in list(sys.modules) if k.split(".")[0] in _ALIEN_BLOQUES - {"sys", "builtins", "os", "posix", "types"}}',
+    'def _alien_rendre(pris):',
+    '    sys.modules.update(pris)',
     'def _alien_lancer(src, nom, x0=8, y0=8, max_lignes=20000, max_pas=5000):',
     '    linecache.cache[nom] = (len(src), None, src.splitlines(True), nom)',
     '    pos = [x0, y0]',
@@ -85,7 +104,7 @@
     '        te = traceback.TracebackException(type(e), e, e.__traceback__)',
     '        te.stack = traceback.StackSummary.from_list([f for f in te.stack if f.filename == nom])',
     '        return "".join(te.format())',
-    '    g = {"__name__": "__main__", "haut": haut, "bas": bas, "gauche": gauche, "droite": droite, "colonne": colonne, "ligne": ligne}',
+    '    g = {"__name__": "__main__", "__builtins__": _ALIEN_BUILTINS, "haut": haut, "bas": bas, "gauche": gauche, "droite": droite, "colonne": colonne, "ligne": ligne}',
     '    vrais = (sys.stdout, sys.stderr)',
     '    sys.stdout = sys.stderr = Flux()',
     '    try:',
@@ -123,22 +142,32 @@
     '    return res'
   ].join('\n');
 
+  /* Le Worker. Son tout premier message, envoyé dès sa création (avant qu'un programme d'élève ait pu tourner), lui
+     donne un secret qu'il garde dans sa fermeture et ne renvoie qu'avec ses résultats ; la page ignore tout message
+     qui ne le porte pas. Un programme qui atteindrait JavaScript (en remontant les cadres de Python, par exemple)
+     peut écouter les messages suivants, mais n'y trouve jamais le secret : il ne peut pas fabriquer un résultat. */
   function sourceWorker(url) {
     return [
+      'var envoyer = self.postMessage.bind(self), secret = null;',
       'importScripts(' + JSON.stringify(url) + ');',
       'var py = loadPyodide({ indexURL: ' + JSON.stringify(url.replace(/[^/]*$/, '')) + ' }).then(function (p) {',
       '  p.runPython(' + JSON.stringify(PY) + ');',
       '  p.setStdin({ error: true });',
       '  return p;',
       '});',
-      'self.onmessage = function (e) {',
-      '  var d = e.data;',
+      'function executer(d) {',
+      '  var id = d.id;',
       '  py.then(function (p) {',
-      '    var f = p.globals.get("_alien_lancer"), r = f(d.code, ' + JSON.stringify(NOM) + ');',
-      '    var o = r.toJs({ dict_converter: Object.fromEntries }); r.destroy(); f.destroy();',
-      '    o.id = d.id; self.postMessage(o);',
-      '  }).catch(function (err) { self.postMessage({ id: d.id, etat: "indisponible", detail: String(err) }); });',
-      '};'
+      '    var f = p.globals.get("_alien_lancer"), cacher = p.globals.get("_alien_cacher"), rendre = p.globals.get("_alien_rendre");',
+      '    var pris = cacher(), r;',
+      '    try { r = f(String(d.code), ' + JSON.stringify(NOM) + '); } finally { rendre(pris); pris.destroy(); cacher.destroy(); rendre.destroy(); f.destroy(); }',
+      '    var o = r.toJs({ dict_converter: Object.fromEntries }); r.destroy();',
+      '    o.id = id; o.secret = secret; envoyer(o);',
+      '  }).catch(function (err) { envoyer({ id: id, secret: secret, etat: "indisponible", detail: String(err) }); });',
+      '}',
+      // le premier message (le secret) arrive avant tout programme : les messages ne sont lus qu'une fois ce script fini
+      'self.onmessage = function (e) { e.stopImmediatePropagation(); if (secret === null) secret = String(e.data && e.data.secret); else executer(e.data); };',
+      'Object.defineProperty(self, "onmessage", { writable: false, configurable: false });'
     ].join('\n');
   }
 
@@ -146,13 +175,16 @@
   function demarrer(url) {
     var blob = new Blob([sourceWorker(url)], { type: 'text/javascript' });
     python.worker = new Worker(URL.createObjectURL(blob));
+    python.secret = Array.prototype.map.call(crypto.getRandomValues(new Uint32Array(4)), function (v) { return v.toString(36); }).join('-');
+    python.worker.postMessage({ secret: python.secret });
     python.worker.onmessage = function (e) {
-      var f = python.attente[e.data.id]; delete python.attente[e.data.id];
-      if (f) f(e.data);
+      var d = e.data || {}, a = python.attente[d.id];
+      if (!a || d.secret !== python.secret) return;      // un message sans le secret du Worker n'est pas un résultat
+      delete d.secret; delete python.attente[d.id]; a.f(d);
     };
     python.worker.onerror = function (e) {
       if (e && e.preventDefault) e.preventDefault();
-      Object.keys(python.attente).forEach(function (k) { python.attente[k]({ etat: 'indisponible' }); });
+      Object.keys(python.attente).forEach(function (k) { python.attente[k].f({ etat: 'indisponible' }); });
       python.attente = {}; python.worker = null; python.charge = false;
     };
   }
@@ -168,14 +200,14 @@
         delete python.attente[id];
         try { python.worker.terminate(); } catch (e) { }
         python.worker = null; python.charge = false; python.enCharge = false;
-        resoudre({ etat: premier ? 'indisponible' : 'trop-long', ligne: 0, pas: [] });
+        resoudre({ etat: premier ? 'indisponible' : 'trop-long', ligne: 0, pas: [], delai: !premier });
       }, premier ? DELAI_CHARGEMENT : DELAI);
-      python.attente[id] = function (r) {
+      python.attente[id] = { f: function (r) {
         clearTimeout(limite); python.enCharge = false;
         if (r.etat !== 'indisponible') python.charge = true;
         r.pas = r.pas || [];
         resoudre(r);
-      };
+      } };
       python.worker.postMessage({ id: id, code: String(code) });
     });
   }
@@ -259,10 +291,14 @@
   }
 
   /* Le programme ramené à sa forme (sans Python) : niveaux de décalage calculés comme CPython, et chaque ligne
-     sans les espaces collés à un signe (jamais entre deux signes : « = = » n'est pas « == »). Deux programmes de
+     sans les espaces qui touchent un signe, sauf l'espace entre deux signes qui, collés, feraient un autre
+     opérateur de Python (« = = » n'est pas « == », mais « ) : » est bien « ): »). Deux programmes de
      même forme font la même chose ; une forme vaut null si Python refuserait le programme (décalage, ou un
      caractère hors ASCII : espace insécable, guillemet typographique…), et null n'est égal à rien. */
   var SIGNES = '():,=<>!+\\-*/%';
+  // les couples de signes qui, collés, forment un opérateur de Python (les opérateurs de 3 signes, « **= », « //= »,
+  // « <<= », « >>= », sont faits de ces couples) : l'espace entre eux est gardé
+  var COLLES = ['==', '!=', '<=', '>=', '**', '//', '->', '+=', '-=', '*=', '/=', '%=', ':=', '<<', '>>'];
   function forme(code) {
     if (/[^\x20-\x7e\t\r\n]/.test(code)) return null;
     var L = niveaux(String(code).replace(/\r/g, ''));
@@ -270,8 +306,11 @@
     var sg = new RegExp('[' + SIGNES + ']');
     return L.map(function (l) {
       var s = l.t.trim().replace(/[ \t]+/g, ' '), o = '';
-      for (var i = 0; i < s.length; i++) {        // un espace ne s'ôte que s'il touche un signe d'un côté, et pas de l'autre
-        if (s[i] === ' ') { var g = sg.test(s[i - 1] || ''), d = sg.test(s[i + 1] || ''); if (g !== d) continue; }
+      for (var i = 0; i < s.length; i++) {        // un espace s'ôte s'il touche un signe, sauf entre deux signes de COLLES
+        if (s[i] === ' ') {
+          var a = s[i - 1] || '', b = s[i + 1] || '', g = sg.test(a), d = sg.test(b);
+          if ((g || d) && !(g && d && COLLES.indexOf(a + b) >= 0)) continue;
+        }
         o += s[i];
       }
       return l.n + '|' + o;
@@ -315,6 +354,7 @@
   /* ── Les erreurs, expliquées en français (les mêmes mots que les TD en ligne, et ceux d'Alien Python) ── */
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   var ERREURS = [
+    [/ImportError: module '[^']*' is not available in Alien Python/, 'Ce module n’est pas disponible dans Alien Python : ton programme guide l’alien avec <code>haut()</code>, <code>bas()</code>, <code>gauche()</code> et <code>droite()</code>, et peut utiliser des modules comme <code>math</code>, <code>random</code> ou <code>time</code>.'],
     [/SyntaxError: expected ':'/, 'Il manque les <b>deux-points</b> <code>:</code> à la fin de la ligne. Ils sont obligatoires après <code>for</code>, <code>while</code>, <code>if</code>, <code>else</code> et <code>def</code>.'],
     [/SyntaxError: '(\(|\[|\{)' was never closed/, 'Une <b>parenthèse</b> est ouverte mais jamais fermée : chaque <code>(</code> a besoin de sa <code>)</code>, sur la même ligne.'],
     [/SyntaxError: unmatched '(.)'/, 'Il y a une parenthèse <b>fermante en trop</b>.'],
