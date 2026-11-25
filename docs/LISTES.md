@@ -17,6 +17,14 @@ sur le site.
   titre est celui du programme) ou porte un titre libre (« Préparer le bac », « Sites
   ressources »…). Le sommaire de gauche et l'adresse (`…/nsi-premiere/#types-construits`) en
   viennent.
+- **Les ressources de l'enseignant d'abord** (décision de l'enseignant du 25 novembre 2026). Une
+  ressource externe (dont la fiche n'a pas l'origine « Ma création » : un autre site, un·e
+  collègue, une institution, la communauté) n'est pas mise en avant : dans un thème, elle vient
+  après les ressources de l'enseignant, le plus souvent dans une sous-section « Ailleurs sur le
+  web » en fin de thème, et elle reste dans la bibliothèque. Exceptions, chacune à son niveau
+  seulement : Compute-it en SNT, Algoréa en NSI Première, Terminus et CyberCase en NSI Terminale.
+  Les sections hors programme faites de ressources externes (« Sites ressources », « Bureautique »)
+  viennent après les thèmes du programme.
 - **La ligne « Au programme »** sous une section : les contenus du programme pour un thème
   officiel (en SNT et en NSI). Pour une section libre, ce sont les titres de ses sous-sections qui
   n'ont pas encore de ressource, comme les trois lignes de « Orientation » en Professeur principal.
@@ -29,17 +37,18 @@ sur le site.
   - les autres documents de la fiche, en liens annexes (corrigé, version PDF, code source…) ;
   - ses étiquettes, tirées de la fiche (En ligne, À imprimer, Débranché, Connexion ENT, Cours, Jeu,
     Python, SQL, Notebook, Rien à installer, Pour aller plus loin, À adapter). « À la une » et son
-    étiquette (« Ressource du mois ») sont retirées depuis le 25/11/2026. « Cours » vient du type de la
-    fiche, « Notebook » d'un document montré au format notebook (un fichier `.ipynb`, une page de
-    nbviewer ou un notebook Capytale), « Rien à installer » de l'usage `sans-installation` : on
+    étiquette (« Ressource du mois ») sont retirées depuis le 25 novembre 2026 : l'enseignant ne
+    veut ni mise en avant ni promotion. « Cours » vient du type de la fiche, « Notebook » d'un
+    document montré au format notebook (un fichier `.ipynb`, une page de nbviewer ou un notebook
+    Capytale), « Rien à installer » de l'usage `sans-installation` : on
     programme ou on tape des commandes dans le navigateur, là où il faudrait d'habitude installer un
     logiciel (décision de l'enseignant du 18 novembre 2026) ;
   - son site d'origine, ou « Sur ce site » pour un fichier déposé.
 - Une ressource dont tous les documents sont cachés pour l'extérieur n'apparaît pas.
 
 La recherche de la page d'accueil fouille les titres, textes, étiquettes et thèmes de toutes les
-rubriques ; on peut la partager : `…/Babash-NSI-SNT/?q=débranché`. Pour chercher plus loin (synonymes, notions, texte des
-documents, filtres) : l'onglet Bibliothèque.
+rubriques ; on peut la partager : `…/Babash-NSI-SNT/?q=débranché`. Pour chercher plus loin
+(synonymes, notions, texte des documents, filtres) : l'onglet Bibliothèque.
 
 ## La règle des liens
 

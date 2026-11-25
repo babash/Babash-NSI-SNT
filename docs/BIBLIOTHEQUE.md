@@ -118,9 +118,13 @@ Pour l'instant, on ne cache rien : tous les documents sont visibles de l'extéri
 élèves, et l'enseignant réglera lui-même la visibilité, à la main (consigne du 12 novembre 2026).
 La fiche signale aussi si la ressource collecte des données d'élèves (`donnees_eleves`).
 Elle crédite ses auteurs et autrices (`auteurs`, `credits`) ; une ressource reprise et
-modifiée crédite toute la chaîne. Par exemple, la fiche de CyberCase cite Etienne Clave
-(exomorphisme.fr, lycée de Sada), l'idée de Marion Dufour, le moteur SQL Noir de Hristo
-Bogoev, puis la reprise par Babash - NSI Tani Malandi.
+modifiée crédite toute la chaîne. Par exemple, la fiche de la version notebook (Capytale) de
+SQL Murder Mystery cite le jeu de Joon Park et Cathy He (Knight Lab, Northwestern University),
+son adaptation pour le Web par Joe Germuska, son adaptation en notebook par Germain Becker,
+puis la copie hébergée sur ce site. Une ressource externe à laquelle l'enseignant n'a pas
+participé est créditée à son site d'origine, sans « reprise » : CyberCase est d'Etienne Clave
+(exomorphisme.fr), et s'inspire de The SQL Murder Mystery de Joon Park et Cathy He ; un lien
+avec le moteur SQL Noir reste à confirmer, et n'est donc pas crédité.
 
 Une fiche range aussi la ressource selon ce qu'elle fait apprendre, plus finement que le
 programme : ses **notions** (`notions`), tirées du thésaurus `referentiels/notions.json`, avec

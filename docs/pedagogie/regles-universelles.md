@@ -167,7 +167,7 @@ Les règles propres à un type (TD, quiz, application de jeu…) sont dans [le d
 
 - **La règle.** Les documents pédagogiques de l'auteur sont sous CC BY-SA 4.0, le code de ses applications sous MIT, avec l'auteur affiché « Babash - NSI Tani Malandi ». Une ressource externe est créditée à son site d'origine. Une ressource reprise et modifiée crédite toute la chaîne de ses autrices et auteurs.
 - **La raison.** Le partage ne tient que si chacun·e sait ce qu'il ou elle a le droit de faire, et à qui dire merci.
-- **Un exemple.** [CyberCase](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=cybercase) est crédité à Etienne Clave (exomorphisme.fr), d'après une idée de Marion Dufour et le moteur SQL Noir de Hristo Bogoev.
+- **Un exemple.** [La version notebook de SQL Murder Mystery](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=sql-murder-mystery-capytale) crédite toute sa chaîne : le jeu de Joon Park et Cathy He (Knight Lab, Northwestern University), adapté pour le Web par Joe Germuska, puis en notebook par Germain Becker. [CyberCase](https://babash.github.io/Babash-NSI-SNT/bibliotheque/?r=cybercase), lui, est une ressource externe d'Etienne Clave (exomorphisme.fr), inspirée de The SQL Murder Mystery : l'auteur de ce site n'y a pas participé.
 
 ### 4.5 L'usage de l'IA est dit
 
