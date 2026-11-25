@@ -33,7 +33,10 @@ Les 78 exercices viennent d'Alien-Python (voir « Licence »). Ils sont rangés 
 | 7 | Fonctions, compteurs et complexité |
 
 - **Exercices 1 à 62** : l'élève lit le programme et clique sur la case d'arrivée de l'alien.
-- **Séries inversées A et B** : c'est le contraire. L'élève complète le programme pour que l'alien suive le trajet demandé.
+- **Séries inversées A et B** : c'est le contraire. L'élève complète le programme pour que l'alien suive le trajet demandé. « Lancer » exécute le programme avec Python (dans la page) : l'alien le suit sur la grille, en tirets par-dessus le parcours demandé, et la ligne exécutée est surlignée. « Valider » accepte toute solution juste, même écrite autrement : c'est le trajet de l'alien, case par case, qui est comparé, et les lignes données par l'énoncé doivent rester.
+- **L'éditeur** (comme dans Lagon Arena et les TD en ligne) : coloration, guides d'indentation, Entrée qui décale après « : », Tab et Maj+Tab, propositions des mots de l'exercice (`haut`, `for`, `range`, `if`… et les variables du programme), au clavier ou du doigt. Échap puis Tab sort du champ.
+- **Les erreurs** : le message de Python, tel quel, avec la ligne en cause surlignée ; « Explique-moi cette erreur » le dit en français (deux-points oubliés, décalage, nom inconnu, parenthèse, points laissés dans un trou…). Une boucle qui ne s'arrête pas est arrêtée, avec un message.
+- **Au clavier** : la case d'arrivée s'écrit (« H8 ») ou se choisit avec les flèches sur la grille, et Entrée valide.
 - **Validation immédiate**, coups de pouce, correction, badges (par exemple « Autonome : 5 réussis sans aide ») et page « Ma classe » où chacun·e voit l'avancement de ses camarades.
 
 ## Pour quels usages
@@ -66,8 +69,10 @@ Les tables sont verrouillées (RLS) : le site n'y accède que par des fonctions 
 ### Installer sa propre base
 Dans un projet Supabase : *SQL Editor*, coller le contenu de [`supabase.sql`](supabase.sql), *Run*. Puis mettre l'URL du projet et la clé « anon public » (publique par conception) dans [`config.js`](config.js). Les tables et fonctions sont préfixées `alien_`, pour cohabiter avec d'autres applications dans le même projet. Pour publier sa copie : GitHub Pages, branche `main`, dossier `/ (root)`.
 
+### Python dans la page
+Le programme est exécuté par **Pyodide 0.29.3** (Python 3.13 dans le navigateur, licence [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/)), la version des TD en ligne du site, chargé depuis jsDelivr au premier « Lancer » ou « Valider » (une seule fois, environ 10 Mo) et jamais copié dans le dépôt. Rien n'est envoyé : le programme ne quitte pas l'appareil. Sans connexion, le programme est comparé à la correction, ligne à ligne (espaces autour des signes non comptés, décalages comptés). Les fichiers : `python.js` (lancer le programme, comparer le trajet, expliquer l'erreur) et `editeur.js` (l'éditeur).
+
 ### Limites actuelles
-- Dans les séries inversées, le programme complété est comparé à la solution attendue (espaces ignorés) ; une solution équivalente mais écrite autrement est refusée, et la correction reste disponible. Le programme n'est pas exécuté : aucune erreur de Python n'est affichée.
 - Pas de mot de passe élève, et pas de suppression d'élève depuis le site.
 
 ## Contact
@@ -79,7 +84,7 @@ Une question, une idée, un bug ? Les [issues GitHub](https://github.com/babash/
 
 **D'après** [Alien-Python](https://forge.apps.education.fr/DegrangeM/alien-python), de Mathieu Degrange (MIT). Cette version ajoute la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
 
-- **Le code** (`index.html`, `config.js`, `supabase.sql`) est sous licence MIT ([fichier `LICENSE` du site](../../../LICENSE)). C'est lui qui apporte la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
+- **Le code** (`index.html`, `python.js`, `editeur.js`, `config.js`, `supabase.sql`) est sous licence MIT ([fichier `LICENSE` du site](../../../LICENSE)). C'est lui qui apporte la validation, les coups de pouce, la correction, les badges et le suivi de la classe.
 - **Les documents** (ce README) sont sous licence [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.fr).
 - **Les exercices** (`data.js`, qui contient les 78 exercices et leur rangement en fiches) viennent d'Alien-Python : © 2021 Mathieu Degrange, licence MIT, notice dans [`LICENCE.txt`](LICENCE.txt), à garder avec `data.js` en cas de copie. Les images d'aliens du projet d'origine (Kenney, CC0) ne sont pas reprises : ici, l'alien est un emoji.
 
