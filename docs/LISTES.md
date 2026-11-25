@@ -28,8 +28,8 @@ sur le site.
     (décision de l'enseignant du 17 novembre 2026) ;
   - les autres documents de la fiche, en liens annexes (corrigé, version PDF, code source…) ;
   - ses étiquettes, tirées de la fiche (En ligne, À imprimer, Débranché, Connexion ENT, Cours, Jeu,
-    Python, SQL, Notebook, Rien à installer, Pour aller plus loin, À adapter), et en tête l'étiquette
-    que la vitrine lui donne « À la une », comme « Ressource du mois ». « Cours » vient du type de la
+    Python, SQL, Notebook, Rien à installer, Pour aller plus loin, À adapter). « À la une » et son
+    étiquette (« Ressource du mois ») sont retirées depuis le 25/11/2026. « Cours » vient du type de la
     fiche, « Notebook » d'un document montré au format notebook (un fichier `.ipynb`, une page de
     nbviewer ou un notebook Capytale), « Rien à installer » de l'usage `sans-installation` : on
     programme ou on tape des commandes dans le navigateur, là où il faudrait d'habitude installer un
@@ -38,8 +38,7 @@ sur le site.
 - Une ressource dont tous les documents sont cachés pour l'extérieur n'apparaît pas.
 
 La recherche de la page d'accueil fouille les titres, textes, étiquettes et thèmes de toutes les
-rubriques ; on peut la partager : `…/Babash-NSI-SNT/?q=débranché`. Chercher « ressource du mois »
-retrouve la ressource mise à la une. Pour chercher plus loin (synonymes, notions, texte des
+rubriques ; on peut la partager : `…/Babash-NSI-SNT/?q=débranché`. Pour chercher plus loin (synonymes, notions, texte des
 documents, filtres) : l'onglet Bibliothèque.
 
 ## La règle des liens

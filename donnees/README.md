@@ -63,7 +63,7 @@ mot de passe, d'identifiant (ceux de démonstration de CyberCase compris) ni de 
 sections dans l'ordre, et dans chaque section la liste ordonnée des ressources à montrer. Une section suit
 un thème du programme (« Internet », « Structures de données ») ou porte un titre libre (« Sites
 ressources », « Préparer le bac »). Une même ressource peut être à plusieurs endroits : CyberCase est en SNT
-et en NSI Terminale. « À la une » met quelques ressources en avant sur l'accueil (la ressource du mois).
+et en NSI Terminale. « À la une » (la ressource du mois sur l'accueil) est abandonnée depuis le 25/11/2026 : la liste reste vide.
 
 **Les programmes** sont rangés comme les textes officiels, chaque thème et chaque contenu ayant un
 identifiant qui ne changera plus (`snt-2019.internet.dns`). Quand la SNT révisée arrivera (annoncée pour
@@ -125,8 +125,8 @@ plateformes restera possible. Les `mots_cles` libres restent.
   et une fiche qui porte les deux est refusée par la validation (le script et l'admin).
 - **Étiquettes des onglets** (sous chaque ressource des rubriques) : tirées de la fiche, avec les libellés des
   anciennes listes : En ligne, À imprimer, Débranché, Connexion ENT, Cours (type), Jeu (type), Python, SQL,
-  Notebook (un document montré au format `notebook`), Rien à installer, Pour aller plus loin, À adapter, et
-  l'étiquette de « À la une » (`vitrine.json`). La liste est `ETIQUETTES`, dans `assets/site.js`.
+  Notebook (un document montré au format `notebook`), Rien à installer, Pour aller plus loin, À adapter ;
+  l'étiquette de « À la une » est retirée depuis le 25/11/2026. La liste est `ETIQUETTES`, dans `assets/site.js`.
 - **Compétences Pix** (facultatif, ressources de SNT) : `competences_pix`, identifiants de
   `referentiels/competences-pix.json` (les 16 compétences du cadre de référence, par exemple `programmer`).
   Les pages affichent les intitulés de la plateforme Pix, que voient les élèves.

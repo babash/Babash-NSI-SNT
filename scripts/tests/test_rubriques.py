@@ -196,7 +196,7 @@ def main():
         print("Étiquettes (T85 : Cours, Notebook, Rien à installer)")
         biblio = lire(d, "donnees", "bibliotheque.json")
         publiques = {f["id"]: f for f in biblio["ressources"]}
-        une = {u["ressource"]: u["etiquette"] for u in v["a_la_une"] if u.get("etiquette")}
+        une = {}   # « À la une » et son étiquette sont retirées (25/11) : aucune étiquette de plus
         for rub in v["rubriques"]:
             ids = [x for s_ in rub["sections"] for x in s_["ressources"] + [y for ss in s_.get("sous_sections", []) for y in ss["ressources"]]]
             ids = [x for x in ids if x in publiques]
@@ -207,7 +207,7 @@ def main():
             verifier(f"{rub['id']} : les étiquettes de chaque ressource suivent sa fiche", not ecarts and len(vues) == len(ids), ecarts[:3])
             ctx.close()
 
-        print("Sections libres et « À la une »")
+        print("Sections libres ; « À la une » retirée")
         for rub in v["rubriques"]:
             ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{rub['id']}/")
             for s in rub["sections"]:
@@ -221,23 +221,13 @@ def main():
                 if nb:
                     verifier(f"{rub['id']} #{s['id']} : des ressources, jamais « Rien ici »", sec.locator("p.vide").count() == 0)
             ctx.close()
-        une = [u for u in v["a_la_une"] if u.get("etiquette")]
-        for u in une:
-            titre = lire(d, "donnees", "ressources", u["ressource"] + ".json")["titre"]
-            for rub in v["rubriques"]:
-                ids = [x for s in rub["sections"] for x in s["ressources"] + [y for ss in s.get("sous_sections", []) for y in ss["ressources"]]]
-                if u["ressource"] not in ids:
-                    continue
-                ctx, page, erreurs = ouvrir(nav, f"{srv.base}/{rub['id']}/")
-                li = page.locator("li.res", has=page.locator(".titre", has_text=titre)).first
-                tags = [x.strip() for x in li.locator(".tags span:not(.site)").all_inner_texts()]
-                verifier(f"{rub['id']} : « {u['etiquette']} » en tête des étiquettes de {u['ressource']}", tags[:1] == [u["etiquette"]], tags)
-                ctx.close()
-        if une:
+        # « À la une » est retirée (décision du 25/11) : même si la vitrine en garde une, aucune étiquette ne s'affiche
+        for u in [u for u in v["a_la_une"] if u.get("etiquette")]:
             ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
-            page.fill(".intro .recherche", une[0]["etiquette"].lower())
+            page.fill(".intro .recherche", u["ressource"].split("-")[0])
             page.wait_for_timeout(200)
-            verifier(f"accueil : la recherche « {une[0]['etiquette'].lower()} » trouve la ressource", page.locator("li.res").count() >= 1)
+            tags = [x.strip() for x in page.locator("li.res .tags span:not(.site)").all_inner_texts()]
+            verifier(f"accueil : plus d'étiquette « {u['etiquette']} »", u["etiquette"] not in tags, tags[:5])
             ctx.close()
 
         ctx, page, erreurs = ouvrir(nav, f"{srv.base}/")
