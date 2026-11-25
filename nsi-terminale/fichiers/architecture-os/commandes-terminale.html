@@ -1,21 +1,31 @@
 <!doctype html>
 <!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
-<!-- Jumeau de nsi-premiere/fichiers/commandes-linux-premiere/ (même arborescence, mêmes mots) : toute
-     modification de l'arborescence ou du vocabulaire se reporte dans les deux (T141). -->
-<!-- Jumeau de nsi-premiere/fichiers/commandes-linux-premiere/ (même arborescence, mêmes mots) : toute
-     modification de l'arborescence ou du vocabulaire se reporte dans les deux (T141). -->
+<!-- Jumeau des feuilles « Commandes Linux » de l'autre niveau (même arborescence, mêmes mots, même forme).
+     Les quatre feuilles sont écrites par un même script (T141) : une modification de l'arborescence ou
+     du vocabulaire se reporte dans les quatre. -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Commandes Linux (terminale) : TD en ligne</title>
-  <meta name="description" content="Tle NSI, systèmes d'exploitation, feuille 1 sur 2 : rappels de première (chemins, commandes, droits) sur l'arborescence du TD de première, puis les commandes qui observent la machine (ps, top, kill, df, ip, ping, find, history). Feuille auto-corrective et imprimable.">
+  <meta name="description" content="Tle NSI, systèmes d&#x27;exploitation, feuille 1 sur 2 : les rappels de première qui tombent au bac (cd et les chemins, ls, cat, man, touch, mkdir, cp, mv, rm, rmdir, ls -l, chmod, sudo, chown), sur l&#x27;arborescence du TD de première. Feuille auto-corrective et imprimable.">
   <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
   <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
   <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
   <script src="../../../assets/td-en-ligne.js" defer></script>
+  <style>
+    /* T141, en attendant le moteur commun (demandé au Designer) : une commande, un chemin ou des droits ne se coupent
+       qu'à une espace, jamais au milieu (« -rw-r----- », « ../../projets/ ») ; sur un téléphone, une sortie de
+       terminal tient en entier dans la largeur (sa police se réduit, 8,5 px au plus petit). */
+    .td code .td-insecable { white-space: nowrap; }
+    .t141-ensemble { break-inside: avoid; }
+    .t141-sortie { container-type: inline-size; }
+    @media screen and (max-width: 480px) {
+      .t141-sortie pre.td-console { font-size: max(8.5px, min(.86rem, calc((100cqw - 24px) / (var(--l) * .6)))); }
+    }
+  </style>
 </head>
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
@@ -23,7 +33,7 @@
      data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
      data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
      data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
-<main class="td" data-td="tle-commandes-linux" data-auteurs="Babash - NSI Tani Malandi" data-td-version="2" data-ordre="melange" data-code="obligatoire">
+<main class="td" data-td="tle-commandes-linux" data-td-version="3" data-auteurs="Babash - NSI Tani Malandi" data-ordre="fixe" data-code="obligatoire">
 
   <header class="td-entete">
     <!-- BANDEAU : paysage n° 4 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
@@ -34,7 +44,7 @@
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Systèmes d&#x27;exploitation</span></p>
         <h1>Commandes Linux</h1>
-        <p class="td-accroche">Rappels et outils</p>
+        <p class="td-accroche">Rappels de première</p>
       </div>
       <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=processus" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM14 3h5v1h-5zM22 3h5v1h-5zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h2v1h-2zM17 4h8v1h-8zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM17 5h1v1h-1zM20 5h2v1h-2zM25 5h1v1h-1zM27 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h3v1h-3zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h1v1h-1zM25 8h2v1h-2zM30 8h5v1h-5zM1 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h2v1h-2zM4 10h1v1h-1zM6 10h2v1h-2zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM7 11h3v1h-3zM11 11h1v1h-1zM14 11h2v1h-2zM19 11h4v1h-4zM24 11h1v1h-1zM26 11h1v1h-1zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM4 13h1v1h-1zM9 13h2v1h-2zM12 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h2v1h-2zM5 14h3v1h-3zM9 14h1v1h-1zM13 14h4v1h-4zM18 14h1v1h-1zM22 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h4v1h-4zM5 15h1v1h-1zM7 15h5v1h-5zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h2v1h-2zM12 16h1v1h-1zM18 16h9v1h-9zM28 16h3v1h-3zM32 16h1v1h-1zM34 16h2v1h-2zM4 17h2v1h-2zM7 17h2v1h-2zM10 17h1v1h-1zM12 17h5v1h-5zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM6 18h2v1h-2zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h5v1h-5zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h2v1h-2zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h2v1h-2zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h3v1h-3zM27 19h1v1h-1zM29 19h2v1h-2zM36 19h1v1h-1zM3 20h5v1h-5zM9 20h2v1h-2zM17 20h1v1h-1zM22 20h6v1h-6zM29 20h2v1h-2zM32 20h3v1h-3zM2 21h1v1h-1zM4 21h2v1h-2zM7 21h4v1h-4zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h2v1h-2zM4 22h1v1h-1zM6 22h2v1h-2zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM1 23h1v1h-1zM7 23h1v1h-1zM11 23h2v1h-2zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h7v1h-7zM14 24h3v1h-3zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h8v1h-8zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM7 25h5v1h-5zM13 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM24 25h3v1h-3zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM3 26h5v1h-5zM9 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM4 27h2v1h-2zM7 27h2v1h-2zM11 27h2v1h-2zM15 27h1v1h-1zM19 27h6v1h-6zM27 27h2v1h-2zM31 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h2v1h-2zM15 28h3v1h-3zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h3v1h-3zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h2v1h-2zM11 29h4v1h-4zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h3v1h-3zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h1v1h-1zM12 30h1v1h-1zM15 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h4v1h-4zM14 31h2v1h-2zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h2v1h-2zM11 32h4v1h-4zM18 32h5v1h-5zM25 32h8v1h-8zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h3v1h-3zM15 33h2v1h-2zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h4v1h-4zM17 34h1v1h-1zM20 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h1v1h-1zM11 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h5v1h-5zM14 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
     </div>
@@ -43,282 +53,387 @@
 
     <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
     <div class="td-objectifs">
-      <p class="td-objectif"><b>Objectif :</b> revoir les commandes de première et découvrir celles qui observent la machine.</p>
+      <p class="td-objectif"><b>Objectif :</b> revoir les commandes de première qui tombent au bac : chemins, fichiers, droits.</p>
       <p><b>Je sais :</b></p>
       <ul class="td-criteres">
-        <li>écrire une commande avec un chemin relatif ou absolu ;</li>
-        <li>retrouver la commande de base qui fait une action ;</li>
-        <li>lire et changer des droits ;</li>
-        <li>dire ce que font <code>ps</code>, <code>top</code>, <code>kill</code>, <code>df</code>, <code>ip</code> et <code>ping</code>.</li>
+        <li>dire ce que fait chaque commande de base ;</li>
+        <li>écrire une commande depuis un dossier donné, en chemin relatif ou absolu ;</li>
+        <li>prévoir l'arborescence après des commandes ;</li>
+        <li>lire et changer des droits (<code><span class="td-insecable">ls</span> <span class="td-insecable">-l</span></code>, <code><span class="td-insecable">chmod</span></code>).</li>
       </ul>
-      <p class="td-duree">1 heure · 19 questions · feuille 1 sur 2 (la feuille 2 : les processus, les tubes) · seul·e ou en binôme</p>
+      <p class="td-duree">30 min · 21 questions · feuille 1 sur 2 (la feuille 2 : les processus) · seul·e ou en binôme</p>
+      <p><b>Dans la séance :</b> à l'écran, <a href="https://babash.github.io/mirage/terminal/">Opération MIRAGE</a>, missions 1 à 10 ; puis cette feuille, sur papier ou en ligne, qui reprend ces commandes comme au bac.</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
-  <!-- BLOC COMMUN avec les feuilles de première : mêmes mots, même arborescence.
-       « À retenir » : à l'écran et sur papier (deux copies : td-plus-loin ne s'imprime qu'avec data-support="papier") -->
-  <div class="td-plus-loin">
+  <!-- À RETENIR : à l'écran et sur papier (G6) -->
+  <div class="td-plus-loin" data-support="ecran">
     <p><b>À retenir</b></p>
     <ul>
-      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code>eleve@lycee:~/devoirs$</code> se lit « <code>eleve</code>, sur la machine <code>lycee</code>, dans le répertoire <code>~/devoirs</code> ».</li>
-      <li>Les fichiers sont rangés en <b>arborescence</b> de dossiers (ou <b>répertoires</b>) depuis la <b>racine</b> <code>/</code> ; <code>.</code> : le répertoire courant ; <code>..</code> : le parent ; <code>~</code> : le répertoire personnel (<code>/home/eleve</code>).</li>
-      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code>ls -l projets</code>. Les majuscules comptent.</li>
-      <li>Un chemin <b>absolu</b> part de la racine <code>/</code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
-      <li><code>ls -l</code> montre les droits du <b>propriétaire</b> (<code>u</code>), du <b>groupe</b> (<code>g</code>) et des <b>autres</b> (<code>o</code>) : <code>r</code> lire, <code>w</code> écrire, <code>x</code> exécuter. <code>chmod</code> les change, en <b>octal</b> (r = 4, w = 2, x = 1 : <code>chmod 640</code>) ou en <b>symbolique</b> (<code>chmod g+w</code>).</li>
+      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code><span class="td-insecable">eleve@lycee:~/devoirs$</span></code> se lit « <code><span class="td-insecable">eleve</span></code>, sur la machine <code><span class="td-insecable">lycee</span></code>, dans le dossier <code><span class="td-insecable">~/devoirs</span></code> ».</li>
+      <li>Tout est rangé en <b>arborescence</b> depuis la <b>racine</b> <code><span class="td-insecable">/</span></code>. <code><span class="td-insecable">.</span></code> : le répertoire courant ; <code><span class="td-insecable">..</span></code> : son parent ; <code><span class="td-insecable">~</span></code> : le dossier personnel (<code><span class="td-insecable">/home/eleve</span></code>).</li>
+      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code><span class="td-insecable">ls</span> <span class="td-insecable">-l</span> <span class="td-insecable">projets</span></code>. Les majuscules comptent.</li>
+      <li>Un chemin <b>absolu</b> part de la racine <code><span class="td-insecable">/</span></code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
+      <li><code><span class="td-insecable">cp</span></code> copie (l'original reste) ; <code><span class="td-insecable">mv</span></code> déplace ou renomme (l'original quitte sa place).</li>
+      <li><code><span class="td-insecable">ls</span> <span class="td-insecable">-l</span></code> montre les droits : le type (<code><span class="td-insecable">d</span></code> dossier, <code><span class="td-insecable">-</span></code> fichier), puis trois lettres pour le <b>propriétaire</b> (<code><span class="td-insecable">u</span></code>), le <b>groupe</b> (<code><span class="td-insecable">g</span></code>), les <b>autres</b> (<code><span class="td-insecable">o</span></code>) : <code><span class="td-insecable">r</span></code> lire, <code><span class="td-insecable">w</span></code> écrire, <code><span class="td-insecable">x</span></code> exécuter, <code><span class="td-insecable">-</span></code> : le droit manque.</li>
+      <li><code><span class="td-insecable">chmod</span></code> en <b>octal</b> : un chiffre par catégorie, r = 4, w = 2, x = 1 : <code><span class="td-insecable">chmod</span> <span class="td-insecable">640</span></code> donne <code><span class="td-insecable">rw-r-----</span></code>.</li>
+      <li><code><span class="td-insecable">chmod</span></code> en <b>symbolique</b> : qui (<code><span class="td-insecable">u</span></code>, <code><span class="td-insecable">g</span></code>, <code><span class="td-insecable">o</span></code>), puis <code><span class="td-insecable">+</span></code> (ajouter) ou <code><span class="td-insecable">-</span></code> (retirer), puis le droit : <code><span class="td-insecable">chmod</span> <span class="td-insecable">g+w</span></code>.</li>
     </ul>
   </div>
   <div class="td-plus-loin" data-support="papier">
     <p><b>À retenir</b></p>
     <ul>
-      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code>eleve@lycee:~/devoirs$</code> se lit « <code>eleve</code>, sur la machine <code>lycee</code>, dans le répertoire <code>~/devoirs</code> ».</li>
-      <li>Les fichiers sont rangés en <b>arborescence</b> de dossiers (ou <b>répertoires</b>) depuis la <b>racine</b> <code>/</code> ; <code>.</code> : le répertoire courant ; <code>..</code> : le parent ; <code>~</code> : le répertoire personnel (<code>/home/eleve</code>).</li>
-      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code>ls -l projets</code>. Les majuscules comptent.</li>
-      <li>Un chemin <b>absolu</b> part de la racine <code>/</code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
-      <li><code>ls -l</code> montre les droits du <b>propriétaire</b> (<code>u</code>), du <b>groupe</b> (<code>g</code>) et des <b>autres</b> (<code>o</code>) : <code>r</code> lire, <code>w</code> écrire, <code>x</code> exécuter. <code>chmod</code> les change, en <b>octal</b> (r = 4, w = 2, x = 1 : <code>chmod 640</code>) ou en <b>symbolique</b> (<code>chmod g+w</code>).</li>
+      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code><span class="td-insecable">eleve@lycee:~/devoirs$</span></code> se lit « <code><span class="td-insecable">eleve</span></code>, sur la machine <code><span class="td-insecable">lycee</span></code>, dans le dossier <code><span class="td-insecable">~/devoirs</span></code> ».</li>
+      <li>Tout est rangé en <b>arborescence</b> depuis la <b>racine</b> <code><span class="td-insecable">/</span></code>. <code><span class="td-insecable">.</span></code> : le répertoire courant ; <code><span class="td-insecable">..</span></code> : son parent ; <code><span class="td-insecable">~</span></code> : le dossier personnel (<code><span class="td-insecable">/home/eleve</span></code>).</li>
+      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code><span class="td-insecable">ls</span> <span class="td-insecable">-l</span> <span class="td-insecable">projets</span></code>. Les majuscules comptent.</li>
+      <li>Un chemin <b>absolu</b> part de la racine <code><span class="td-insecable">/</span></code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
+      <li><code><span class="td-insecable">cp</span></code> copie (l'original reste) ; <code><span class="td-insecable">mv</span></code> déplace ou renomme (l'original quitte sa place).</li>
+      <li><code><span class="td-insecable">ls</span> <span class="td-insecable">-l</span></code> montre les droits : le type (<code><span class="td-insecable">d</span></code> dossier, <code><span class="td-insecable">-</span></code> fichier), puis trois lettres pour le <b>propriétaire</b> (<code><span class="td-insecable">u</span></code>), le <b>groupe</b> (<code><span class="td-insecable">g</span></code>), les <b>autres</b> (<code><span class="td-insecable">o</span></code>) : <code><span class="td-insecable">r</span></code> lire, <code><span class="td-insecable">w</span></code> écrire, <code><span class="td-insecable">x</span></code> exécuter, <code><span class="td-insecable">-</span></code> : le droit manque.</li>
+      <li><code><span class="td-insecable">chmod</span></code> en <b>octal</b> : un chiffre par catégorie, r = 4, w = 2, x = 1 : <code><span class="td-insecable">chmod</span> <span class="td-insecable">640</span></code> donne <code><span class="td-insecable">rw-r-----</span></code>.</li>
+      <li><code><span class="td-insecable">chmod</span></code> en <b>symbolique</b> : qui (<code><span class="td-insecable">u</span></code>, <code><span class="td-insecable">g</span></code>, <code><span class="td-insecable">o</span></code>), puis <code><span class="td-insecable">+</span></code> (ajouter) ou <code><span class="td-insecable">-</span></code> (retirer), puis le droit : <code><span class="td-insecable">chmod</span> <span class="td-insecable">g+w</span></code>.</li>
     </ul>
   </div>
-  <p data-support="ecran"><b>En ligne</b>, écris chaque commande comme dans le terminal : une espace entre la commande et chacun de ses arguments, et les majuscules comptent.</p>
 
-  <h2 class="td-partie">1. Rappels : se déplacer, copier, créer</h2>
-  <div data-support="ecran">
-  <p><b>L'arborescence du TD</b> (la même qu'en première), telle que l'affiche la commande <code>tree</code> (les dossiers finissent par <code>/</code>). L'utilisateur·rice <code>eleve</code> et l'enseignant·e <code>prof</code> font partie du même groupe, <code>nsi</code>.</p>
-  <pre class="td-sortie-exemple">
-/
-|-- bin/
-|-- home/
-|   |-- eleve/
-|   |   |-- devoirs/
-|   |   |   `-- nsi/
-|   |   |       `-- tp1.py
-|   |   |-- photos/
-|   |   |   `-- lagon.png
-|   |   `-- projets/
-|   |       `-- site.html
-|   `-- prof/
-|       |-- examens/
-|       `-- notes.csv
-`-- tmp/</pre>
-  <div class="td-plus-loin">
-    <p><b>Pour t'entraîner dans un vrai terminal</b> (facultatif) : ouvre le <a href="https://babash.github.io/mirage/terminal/">terminal d'entraînement d'Opération MIRAGE</a> (rien à installer) ou <a href="https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&amp;mem=192">JSLinux</a> (un vrai Linux dans le navigateur), puis recrée l'arborescence du TD avec ces trois commandes :</p>
-    <pre class="td-sortie-exemple">
-mkdir -p /home/eleve/devoirs/nsi /home/eleve/photos /home/eleve/projets /home/prof/examens
-touch /home/eleve/devoirs/nsi/tp1.py /home/eleve/photos/lagon.png /home/eleve/projets/site.html /home/prof/notes.csv
-cd /home/eleve/devoirs/nsi</pre>
-    <p>Là-bas, tu es <code>root</code> (l'administrateur·rice) : <code>~</code> y désigne <code>/root</code>, et <code>sudo</code> n'y existe pas.</p>
-  </div>
-  <p>Un <b>chemin absolu</b> part toujours de la racine <code>/</code>, d'où que l'on soit : <code>/home/eleve/devoirs/nsi</code>. Un <b>chemin relatif</b> part du répertoire courant et remonte avec <code>..</code> : depuis <code>/home/eleve</code>, <code>devoirs/nsi</code> ou <code>../prof</code>.</p>
-  </div>
-  <!-- papier : l'arborescence à gauche, ce qu'il faut pour la lire à droite (à l'écran : l'un sous l'autre) -->
-  <div class="td-table" data-support="papier"><table data-pleine-largeur>
-    <thead><tr><th data-case-largeur="74">L'arborescence du TD (commande <code>tree</code>)</th><th>Pour la lire, et des exemples</th></tr></thead>
-    <tbody><tr><td><pre class="td-sortie-exemple">/
-|-- bin/
-|-- home/
-|   |-- eleve/
-|   |   |-- devoirs/
-|   |   |   `-- nsi/
-|   |   |       `-- tp1.py
-|   |   |-- photos/
-|   |   |   `-- lagon.png
-|   |   `-- projets/
-|   |       `-- site.html
-|   `-- prof/
-|       |-- examens/
-|       `-- notes.csv
-`-- tmp/</pre></td>
-    <td><p>Les dossiers finissent par <code>/</code>. <code>eleve</code> et <code>prof</code> sont dans le groupe <code>nsi</code>.</p>
-    <p><b>Exemples résolus</b> (à ton tour ensuite, en dessous) :</p>
-    <p>De <code>nsi</code> à <code>photos</code> (relatif) : <code>cd ../../photos</code><br>
-    De <code>photos</code> à <code>projets</code> (absolu) : <code>cd /home/eleve/projets</code><br>
-    De <code>projets</code>, lister <code>nsi</code> : <code>ls ../devoirs/nsi</code><br>
-    De <code>nsi</code>, copier <code>tp1.py</code> dans <code>projets</code> : <code>cp tp1.py ../../projets/</code><br>
-    De <code>eleve</code>, créer <code>brouillons</code> dans <code>photos</code> : <code>mkdir photos/brouillons</code></p></td></tr></tbody>
-  </table></div>
+  <h2 class="td-partie">1. Les commandes de base</h2>
+  <p><b>Pour chaque commande, dis ce qu'elle fait.</b> Exemple : la commande <code><span class="td-insecable">whoami</span></code> affiche le nom de l'utilisateur·rice connecté·e (ici, <code><span class="td-insecable">eleve</span></code>).</p>
 
-  <p data-support="ecran"><b>Exemples :</b> depuis <code>nsi</code>, aller dans <code>photos</code> en relatif : <code>cd ../../photos</code> · depuis <code>photos</code>, aller dans <code>projets</code> en absolu : <code>cd /home/eleve/projets</code> · depuis <code>projets</code>, lister <code>nsi</code> : <code>ls ../devoirs/nsi</code> · depuis <code>nsi</code>, copier <code>tp1.py</code> dans <code>projets</code> : <code>cp tp1.py ../../projets/</code> · depuis <code>eleve</code>, créer <code>brouillons</code> dans <code>photos</code> : <code>mkdir photos/brouillons</code>.</p>
-
-  <section class="td-q" data-type="courte" id="r1" data-comparer="exact" data-reponse="cd ../projets|cd ../projets/|cd ./../projets" data-etiquette="$">
-    <p class="td-consigne">Depuis <code>/home/eleve/devoirs</code>, va dans <code>projets</code> (chemin <b>relatif</b>).</p>
-    <div class="td-correction"><p><code>cd ../projets</code> : <code>..</code> remonte dans <code>eleve</code>, puis on descend dans <code>projets</code>.</p><p class="td-erreur-frequente" data-si="cd projets|cd projets/"><b>Erreur fréquente :</b> <code>cd projets</code> : <code>projets</code> n'est pas dans <code>devoirs</code> : il faut d'abord remonter au parent.</p><p class="td-erreur-frequente" data-si="cd /home/eleve/projets|cd ~/projets"><b>Erreur fréquente :</b> <code>cd /home/eleve/projets</code> : ce chemin part de la racine (ou de <code>~</code>) : on demande un chemin relatif, qui part de <code>devoirs</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r2" data-comparer="exact" data-reponse="cd /home/eleve|cd /home/eleve/" data-etiquette="$">
-    <p class="td-consigne">Depuis <code>/home/eleve/projets</code>, va dans <code>/home/eleve</code> (chemin <b>absolu</b>).</p>
-    <div class="td-correction"><p><code>cd /home/eleve</code> : le chemin part de la racine. (<code>cd ..</code> et <code>cd ~</code> y mènent aussi, mais ce ne sont pas des chemins absolus écrits en entier.)</p><p class="td-erreur-frequente" data-si="cd ..|cd ../"><b>Erreur fréquente :</b> <code>cd ..</code> : c'est juste, mais <code>..</code> est un chemin relatif. On demande un chemin absolu, qui part de <code>/</code>.</p><p class="td-erreur-frequente" data-si="cd ~|cd"><b>Erreur fréquente :</b> <code>cd ~</code> : c'est juste, mais <code>~</code> est un raccourci : écris le chemin absolu en entier.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r3" data-comparer="exact" data-reponse="ls ../photos|ls ../photos/|ls /home/eleve/photos|ls /home/eleve/photos/|ls ~/photos|ls ~/photos/" data-etiquette="$">
-    <p class="td-consigne">Depuis <code>/home/eleve/devoirs</code>, liste le contenu de <code>photos</code>.</p>
-    <div class="td-correction"><p><code>ls ../photos</code> (ou, en chemin absolu, <code>ls /home/eleve/photos</code>) : la commande affiche <code>lagon.png</code>.</p><p class="td-erreur-frequente" data-si="ls photos|ls photos/"><b>Erreur fréquente :</b> <code>ls photos</code> : <code>photos</code> n'est pas dans <code>devoirs</code> : il faut remonter d'un cran.</p><p class="td-erreur-frequente" data-si="cd ../photos"><b>Erreur fréquente :</b> <code>cd ../photos</code> : cette commande te déplace, sans rien afficher. Pour voir le contenu, c'est une autre commande.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r4" data-comparer="exact" data-reponse="cp site.html ../devoirs/|cp site.html ../devoirs|cp site.html ../devoirs/site.html|cp site.html /home/eleve/devoirs/|cp site.html /home/eleve/devoirs|cp site.html ~/devoirs/|cp site.html ~/devoirs" data-etiquette="$">
-    <p class="td-consigne">Depuis <code>/home/eleve/projets</code>, copie <code>site.html</code> dans <code>devoirs</code>.</p>
-    <div class="td-correction"><p><code>cp site.html ../devoirs/</code> : la source est dans le répertoire courant ; la destination, <code>devoirs</code>, est à côté de <code>projets</code>.</p><p class="td-erreur-frequente" data-si="mv site.html ../devoirs/|mv site.html ../devoirs"><b>Erreur fréquente :</b> <code>mv site.html ../devoirs/</code> : <code>mv</code> déplace : <code>site.html</code> disparaîtrait de <code>projets</code>. On veut une copie.</p><p class="td-erreur-frequente" data-si="cp site.html devoirs"><b>Erreur fréquente :</b> <code>cp site.html devoirs</code> : <code>devoirs</code> n'est pas dans <code>projets</code> : cette commande crée, dans <code>projets</code>, une copie nommée <code>devoirs</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r5" data-comparer="exact" data-reponse="mkdir devoirs/archives|mkdir devoirs/archives/|mkdir ./devoirs/archives|mkdir /home/eleve/devoirs/archives|mkdir ~/devoirs/archives" data-etiquette="$">
-    <p class="td-consigne">Depuis <code>/home/eleve</code>, crée un dossier <code>archives</code> dans <code>devoirs</code>.</p>
-    <div class="td-correction"><p><code>mkdir devoirs/archives</code> : chemin relatif, depuis <code>eleve</code>.</p><p class="td-erreur-frequente" data-si="mkdir archives"><b>Erreur fréquente :</b> <code>mkdir archives</code> : ce dossier serait créé dans <code>eleve</code>, pas dans <code>devoirs</code>.</p><p class="td-erreur-frequente" data-si="touch devoirs/archives"><b>Erreur fréquente :</b> <code>touch devoirs/archives</code> : <code>touch</code> crée un fichier ; pour un dossier, c'est <code>mkdir</code>.</p></div>
-  </section>
-
-  <h2 class="td-partie">2. Rappels : la bonne commande</h2>
-  <p><b>Exemple :</b> la commande qui affiche le chemin absolu du répertoire courant est <code>pwd</code>.</p>
-
-  <section class="td-q" data-type="courte" id="r6" data-comparer="exact" data-reponse="cat|more|less" data-etiquette="$">
-    <p class="td-consigne">Quelle commande affiche tout le contenu d'un fichier ?</p>
-    <div class="td-correction"><p><code>cat</code> (<code>more</code> et <code>less</code> le montrent aussi, page par page).</p><p class="td-erreur-frequente" data-si="ls"><b>Erreur fréquente :</b> <code>ls</code> : <code>ls</code> affiche le nom des fichiers, pas ce qu'ils contiennent.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r7" data-comparer="exact" data-reponse="rmdir" data-etiquette="$">
-    <p class="td-consigne">Quelle commande supprime un dossier vide ?</p>
-    <div class="td-correction"><p><code>rmdir</code> : il refuse un dossier qui n'est pas vide, c'est le plus sûr.</p><p class="td-erreur-frequente" data-si="rm"><b>Erreur fréquente :</b> <code>rm</code> : <code>rm</code> seul refuse de supprimer un dossier (« Is a directory »).</p><p class="td-erreur-frequente" data-si="rm -r"><b>Erreur fréquente :</b> <code>rm -r</code> : <code>rm -r</code> marche, mais il efface aussi tout ce que contient le dossier : pour un dossier vide, <code>rmdir</code> est plus sûr.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r8" data-comparer="exact" data-reponse="grep" data-etiquette="$">
-    <p class="td-consigne">Quelle commande affiche les lignes d'un fichier qui contiennent un mot ?</p>
-    <div class="td-correction"><p><code>grep</code> : <code>grep print tp1.py</code>.</p><p class="td-erreur-frequente" data-si="find"><b>Erreur fréquente :</b> <code>find</code> : <code>find</code> cherche des fichiers par leur nom, pas dans leur contenu.</p><p class="td-erreur-frequente" data-si="cat"><b>Erreur fréquente :</b> <code>cat</code> : <code>cat</code> affiche tout le fichier, sans trier les lignes.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r9" data-comparer="exact" data-reponse="man" data-etiquette="$">
-    <p class="td-consigne">Quelle commande affiche le manuel d'une commande ?</p>
-    <div class="td-correction"><p><code>man</code> : <code>man ls</code> (on en sort avec la touche <b>q</b>).</p><p class="td-erreur-frequente" data-si="help"><b>Erreur fréquente :</b> <code>help</code> : <code>help</code> donne une aide courte sur quelques commandes du shell ; le manuel complet, c'est <code>man</code>.</p></div>
-  </section>
-
-  <h2 class="td-partie">3. Rappels : les droits</h2>
-  <p><b>Exemple :</b> <code>chmod 755 tp1.py</code> donne <code>rwxr-xr-x</code> ; <code>chmod g-w tp1.py</code> retire l'écriture au groupe.</p>
-
-  <section class="td-q" data-type="qcu" id="r10" data-support="ecran">
-    <p class="td-consigne">À ton tour : quels droits le groupe <code>nsi</code> a-t-il sur <code>tp1.py</code> ?</p>
-    <pre class="td-sortie-exemple">
-eleve@lycee:~/devoirs/nsi$ ls -l tp1.py
--rwxrw-r-- 1 eleve nsi 155 Nov 25 10:00 tp1.py</pre>
+  <section class="td-q" data-type="qcu" id="c-ls" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">ls</span> <span class="td-insecable">[dossier]</span></code> ? Exemple : <code><span class="td-insecable">ls</span></code> · <code><span class="td-insecable">ls</span> <span class="td-insecable">..</span></code></p>
     <ul class="td-options">
-      <li data-juste>Lire et écrire (<code>rw-</code>)</li>
-      <li>Lire, écrire et exécuter (<code>rwx</code>)</li>
-      <li>Lire seulement (<code>r--</code>)</li>
-      <li>Lire et exécuter (<code>r-x</code>)</li>
+      <li>Afficher le contenu d'un fichier</li>
+      <li data-juste>Lister le contenu d'un dossier</li>
+      <li>Afficher le chemin du dossier</li>
+      <li>Effacer l'écran du terminal</li>
     </ul>
-    <div class="td-correction"><p><code>-</code> (un fichier), <code>rwx</code> (propriétaire <code>eleve</code>), <code>rw-</code> (groupe <code>nsi</code>), <code>r--</code> (autres) : le groupe peut lire et écrire, pas exécuter.</p><p>« Lire, écrire et exécuter (rwx) » : non. rwx sont les droits du propriétaire, eleve : les trois premiers après le tiret.</p><p>« Lire seulement (r--) » : non. r-- sont les droits des autres : les trois derniers.</p><p>« Lire et exécuter (r-x) » : non. le groupe n'a pas x : sa troisième lettre est un tiret.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">ls</span></code> (<i>list</i>) <b>liste le contenu</b> du répertoire courant, ou du dossier indiqué : <code><span class="td-insecable">ls</span> <span class="td-insecable">..</span></code> liste le parent.<p>« Afficher le contenu d'un fichier » : non. Afficher un fichier, c'est <code><span class="td-insecable">cat</span></code>.</p><p>« Afficher le chemin du dossier » : non. Afficher le chemin, c'est <code><span class="td-insecable">pwd</span></code>.</p><p>« Effacer l'écran du terminal » : non. <code><span class="td-insecable">ls</span></code> n'efface rien : il affiche une liste de noms.</p></div>
   </section>
-  <section class="td-q" data-type="libre" id="r10p" data-support="papier" data-lignes="1">
-    <p class="td-consigne">À ton tour : quels droits le groupe <code>nsi</code> a-t-il sur <code>tp1.py</code> ?</p>
-    <pre class="td-sortie-exemple">
-eleve@lycee:~/devoirs/nsi$ ls -l tp1.py
--rwxrw-r-- 1 eleve nsi 155 Nov 25 10:00 tp1.py</pre>
-    <div class="td-correction"><p><code>-</code> (un fichier), <code>rwx</code> (propriétaire <code>eleve</code>), <code>rw-</code> (groupe <code>nsi</code>), <code>r--</code> (autres) : le groupe peut lire et écrire, pas exécuter.</p></div>
+  <section class="td-q" data-type="libre" id="c-lsp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">ls</span> <span class="td-insecable">[dossier]</span></code> · exemple : <code><span class="td-insecable">ls</span></code> · <code><span class="td-insecable">ls</span> <span class="td-insecable">..</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">ls</span></code> (<i>list</i>) <b>liste le contenu</b> du répertoire courant, ou du dossier indiqué : <code><span class="td-insecable">ls</span> <span class="td-insecable">..</span></code> liste le parent.</div>
   </section>
 
-  <section class="td-q" data-type="courte" id="r11" data-comparer="exact" data-reponse="chmod 777 tp1.py|chmod 0777 tp1.py|chmod 777 ./tp1.py" data-etiquette="$">
-    <p class="td-consigne">À ton tour : tu es dans <code>nsi</code>. En <b>octal</b>, donne tous les droits à tout le monde sur <code>tp1.py</code>.</p>
-    <div class="td-correction"><p><code>chmod 777 tp1.py</code> : 7 = 4 + 2 + 1 = <code>rwx</code>, pour le propriétaire, le groupe et les autres.</p><p class="td-erreur-frequente" data-si="chmod 666 tp1.py"><b>Erreur fréquente :</b> <code>chmod 666 tp1.py</code> : 666 donne lire et écrire, sans exécuter : il manque x = 1.</p><p class="td-erreur-frequente" data-si="chmod a+rwx tp1.py|chmod ugo+rwx tp1.py"><b>Erreur fréquente :</b> <code>chmod a+rwx tp1.py</code> : c'est juste, mais en symbolique. On demande l'octal.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="r12" data-comparer="exact" data-reponse="chmod o+x tp1.py|chmod o+x ./tp1.py" data-etiquette="$">
-    <p class="td-consigne">À ton tour : en <b>symbolique</b>, ajoute le droit d'exécution aux autres (<i>others</i>) sur <code>tp1.py</code>.</p>
-    <div class="td-correction"><p><code>chmod o+x tp1.py</code> : <code>o</code> (les autres), <code>+</code> (ajouter), <code>x</code> (exécuter). Les droits deviennent <code>-rwxrw-r-x</code>.</p><p class="td-erreur-frequente" data-si="chmod +x tp1.py|chmod a+x tp1.py"><b>Erreur fréquente :</b> <code>chmod +x tp1.py</code> : sans lettre (ou avec <code>a</code>), le droit est ajouté à tout le monde. Les autres, c'est <code>o</code>.</p><p class="td-erreur-frequente" data-si="chmod g+x tp1.py"><b>Erreur fréquente :</b> <code>chmod g+x tp1.py</code> : <code>g</code> désigne le groupe. Les autres, c'est <code>o</code>.</p></div>
-  </section>
-
-  <h2 class="td-partie">4. Nouveau : observer la machine</h2>
-  <section class="td-q" data-type="libre" id="t4-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Ce qu'elle fait ». La première ligne est faite : c'est l'exemple.</p>
-    <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="78">Ce qu'elle fait</th><th>Exemple</th></tr></thead>
-    <tbody>
-      <tr><td><code>find [dossier] -name [nom]</code></td><td>Chercher des fichiers par leur nom</td><td><code>find ~ -name "*.py"</code></td></tr>
-      <tr><td><code>history</code></td><td></td><td><code>history</code></td></tr>
-      <tr><td><code>ps</code></td><td></td><td><code>ps -ef</code></td></tr>
-      <tr><td><code>top</code></td><td></td><td><code>top</code></td></tr>
-      <tr><td><code>kill [PID]</code></td><td></td><td><code>kill 450</code></td></tr>
-      <tr><td><code>df -h</code></td><td></td><td><code>df -h</code></td></tr>
-      <tr><td><code>ip addr</code></td><td></td><td><code>ip addr</code></td></tr>
-      <tr><td><code>ping [machine]</code></td><td></td><td><code>ping 192.168.1.1</code></td></tr>
-    </tbody>
-  </table></div>
-    <div class="td-correction"><p><code>history</code> : afficher les commandes déjà tapées.</p><p><code>ps</code> (<i>process status</i>) : lister les processus en cours d'exécution.</p><p><code>top</code> : afficher les processus en temps réel, ceux qui consomment le plus en haut.</p><p><code>kill</code> : envoyer un signal à un processus, pour l'arrêter.</p><p><code>df -h</code> (<i>disk free</i>) : afficher la place libre sur les disques, en Go et Mo.</p><p><code>ip addr</code> : afficher les adresses IP de la machine et ses cartes réseau.</p><p><code>ping</code> : tester si une autre machine répond sur le réseau.</p></div>
-  </section>
-
-  <p data-support="ecran"><b>Exemple :</b> <code>find [dossier] -name [nom]</code> <b>cherche des fichiers par leur nom</b> : <code>find ~ -name "*.py"</code> affiche <code>/home/eleve/devoirs/nsi/tp1.py</code>. À ton tour, pour les autres commandes.</p>
-
-  <section class="td-q" data-type="qcu" id="n1" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>history</code> ?</p>
+  <section class="td-q" data-type="qcu" id="c-cd" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">cd</span> <span class="td-insecable">[chemin]</span></code> ? Exemple : <code><span class="td-insecable">cd</span> <span class="td-insecable">projets</span></code></p>
     <ul class="td-options">
-      <li data-juste>Afficher les commandes déjà tapées</li>
-      <li>Afficher le contenu des fichiers récents</li>
-      <li>Annuler la dernière commande tapée</li>
-      <li>Afficher les fichiers modifiés aujourd'hui</li>
+      <li data-juste>Aller dans le dossier indiqué</li>
+      <li>Créer le dossier indiqué, vide</li>
+      <li>Copier le dossier indiqué</li>
+      <li>Lister le contenu du dossier indiqué</li>
     </ul>
-    <div class="td-correction"><p><code>history</code> affiche la liste des commandes déjà tapées, numérotées.</p><p>« Afficher le contenu des fichiers récents » : non. history ne lit aucun fichier de l'utilisateur·rice : elle liste les commandes tapées.</p><p>« Annuler la dernière commande tapée » : non. Il n'y a pas d'annulation dans le terminal : history affiche seulement.</p><p>« Afficher les fichiers modifiés aujourd'hui » : non. Pour des fichiers, on utiliserait ls ou find : history parle des commandes.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">cd</span></code> (<i>change directory</i>) <b>change de répertoire courant</b> : on se déplace dans l'arborescence.<p>« Créer le dossier indiqué, vide » : non. Créer un dossier, c'est <code><span class="td-insecable">mkdir</span></code>.</p><p>« Copier le dossier indiqué » : non. Copier, c'est <code><span class="td-insecable">cp</span></code>.</p><p>« Lister le contenu du dossier indiqué » : non. Lister, c'est <code><span class="td-insecable">ls</span></code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-cdp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">cd</span> <span class="td-insecable">[chemin]</span></code> · exemple : <code><span class="td-insecable">cd</span> <span class="td-insecable">projets</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">cd</span></code> (<i>change directory</i>) <b>change de répertoire courant</b> : on se déplace dans l'arborescence.</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="n2" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>ps</code> ? Exemple : <code>ps -ef</code></p>
+  <section class="td-q" data-type="qcu" id="c-cat" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">cat</span> <span class="td-insecable">[fichier]</span></code> ? Exemple : <code><span class="td-insecable">cat</span> <span class="td-insecable">tp1.py</span></code></p>
     <ul class="td-options">
-      <li data-juste>Lister les processus en cours d'exécution</li>
-      <li>Lister les fichiers du répertoire courant</li>
-      <li>Afficher la place libre sur le disque</li>
-      <li>Arrêter tous les processus de l'utilisateur·rice</li>
+      <li>Afficher le nom des fichiers du dossier</li>
+      <li>Chercher un mot à l'intérieur d'un fichier</li>
+      <li>Créer un fichier, puis l'ouvrir</li>
+      <li data-juste>Afficher tout le contenu d'un fichier</li>
     </ul>
-    <div class="td-correction"><p><code>ps</code> (<i>process status</i>) liste les processus en cours d'exécution ; <code>ps -ef</code> les montre tous, avec leur PID et leur PPID.</p><p>« Lister les fichiers du répertoire courant » : non. Lister des fichiers, c'est ls.</p><p>« Afficher la place libre sur le disque » : non. La place libre, c'est df -h.</p><p>« Arrêter tous les processus de l'utilisateur·rice » : non. Arrêter un processus, c'est kill : ps ne fait qu'afficher.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">cat</span></code> <b>affiche tout le contenu</b> d'un fichier dans le terminal.<p>« Afficher le nom des fichiers du dossier » : non. Les noms, c'est <code><span class="td-insecable">ls</span></code>.</p><p>« Chercher un mot à l'intérieur d'un fichier » : non. Chercher un mot, c'est <code><span class="td-insecable">grep</span></code>.</p><p>« Créer un fichier, puis l'ouvrir » : non. Créer un fichier vide, c'est <code><span class="td-insecable">touch</span></code> ; <code><span class="td-insecable">cat</span></code> n'ouvre aucun éditeur.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-catp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">cat</span> <span class="td-insecable">[fichier]</span></code> · exemple : <code><span class="td-insecable">cat</span> <span class="td-insecable">tp1.py</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">cat</span></code> <b>affiche tout le contenu</b> d'un fichier dans le terminal.</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="n3" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>top</code> ?</p>
+  <section class="td-q" data-type="qcu" id="c-man" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">man</span> <span class="td-insecable">[commande]</span></code> ? Exemple : <code><span class="td-insecable">man</span> <span class="td-insecable">ls</span></code></p>
     <ul class="td-options">
-      <li data-juste>Afficher les processus en temps réel</li>
-      <li>Afficher les fichiers les plus gros</li>
-      <li>Afficher le haut d'un fichier texte</li>
-      <li>Remonter à la racine de l'arborescence</li>
+      <li data-juste>Afficher le manuel d'une commande</li>
+      <li>Exécuter une commande en tant que root</li>
+      <li>Afficher l'utilisateur·rice connecté·e</li>
+      <li>Interrompre une commande bloquée</li>
     </ul>
-    <div class="td-correction"><p><code>top</code> affiche les processus en temps réel, ceux qui consomment le plus en haut (comme un gestionnaire de tâches) ; on en sort avec <b>q</b>.</p><p>« Afficher les fichiers les plus gros » : non. top parle des processus, pas des fichiers.</p><p>« Afficher le haut d'un fichier texte » : non. Le début d'un fichier, c'est head.</p><p>« Remonter à la racine de l'arborescence » : non. Remonter à la racine, c'est cd /.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">man</span></code> <b>affiche le manuel</b> d'une commande (on en sort avec la touche <b>q</b>).<p>« Exécuter une commande en tant que root » : non. C'est <code><span class="td-insecable">sudo</span></code>.</p><p>« Afficher l'utilisateur·rice connecté·e » : non. C'est <code><span class="td-insecable">whoami</span></code>.</p><p>« Interrompre une commande bloquée » : non. C'est la touche Ctrl+C.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-manp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">man</span> <span class="td-insecable">[commande]</span></code> · exemple : <code><span class="td-insecable">man</span> <span class="td-insecable">ls</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">man</span></code> <b>affiche le manuel</b> d'une commande (on en sort avec la touche <b>q</b>).</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="n4" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>kill [PID]</code> ? Exemple : <code>kill 450</code></p>
+  <section class="td-q" data-type="qcu" id="c-mkdir" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">mkdir</span> <span class="td-insecable">[dossier]</span></code> ? Exemple : <code><span class="td-insecable">mkdir</span> <span class="td-insecable">archives</span></code></p>
     <ul class="td-options">
-      <li data-juste>Envoyer un signal d'arrêt au processus</li>
-      <li>Supprimer le fichier numéro 450</li>
-      <li>Éteindre l'ordinateur tout de suite</li>
-      <li>Afficher les informations du processus</li>
+      <li>Créer un fichier vide</li>
+      <li>Supprimer un dossier</li>
+      <li data-juste>Créer un dossier</li>
+      <li>Aller dans un dossier</li>
     </ul>
-    <div class="td-correction"><p><code>kill</code> envoie un signal au processus dont on donne le PID, pour lui demander de s'arrêter.</p><p>« Supprimer le fichier numéro 450 » : non. kill ne touche pas aux fichiers : 450 est le numéro (PID) d'un processus.</p><p>« Éteindre l'ordinateur tout de suite » : non. kill vise un seul processus, celui dont on donne le PID.</p><p>« Afficher les informations du processus » : non. Afficher les processus, c'est ps ou top.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">mkdir</span></code> (<i>make directory</i>) <b>crée un dossier</b>.<p>« Créer un fichier vide » : non. Un fichier vide, c'est <code><span class="td-insecable">touch</span></code>.</p><p>« Supprimer un dossier » : non. Supprimer un dossier vide, c'est <code><span class="td-insecable">rmdir</span></code>.</p><p>« Aller dans un dossier » : non. Se déplacer, c'est <code><span class="td-insecable">cd</span></code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-mkdirp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">mkdir</span> <span class="td-insecable">[dossier]</span></code> · exemple : <code><span class="td-insecable">mkdir</span> <span class="td-insecable">archives</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">mkdir</span></code> (<i>make directory</i>) <b>crée un dossier</b>.</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="n5" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>df -h</code> ?</p>
+  <section class="td-q" data-type="qcu" id="c-cp" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">cp</span> <span class="td-insecable">[source]</span> <span class="td-insecable">[destination]</span></code> ? Exemple : <code><span class="td-insecable">cp</span> <span class="td-insecable">notes.csv</span> <span class="td-insecable">projets/</span></code></p>
     <ul class="td-options">
-      <li data-juste>Afficher la place libre sur les disques</li>
-      <li>Effacer les fichiers inutiles du disque</li>
-      <li>Afficher l'aide d'une commande</li>
-      <li>Afficher la mémoire vive libre</li>
+      <li data-juste>Copier, en gardant l'original</li>
+      <li>Déplacer, sans garder l'original</li>
+      <li>Renommer le fichier indiqué</li>
+      <li>Comparer les deux fichiers</li>
     </ul>
-    <div class="td-correction"><p><code>df</code> (<i>disk free</i>) affiche la place libre sur les disques ; <code>-h</code> l'écrit en Go et Mo.</p><p>« Effacer les fichiers inutiles du disque » : non. df ne supprime rien : il affiche.</p><p>« Afficher l'aide d'une commande » : non. L'aide, c'est man (ou --help). Ici -h veut dire human-readable, « lisible ».</p><p>« Afficher la mémoire vive libre » : non. La mémoire vive se lit avec top (ou free) ; df parle des disques.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">cp</span></code> (<i>copy</i>) <b>copie</b> la source vers la destination : l'original reste à sa place.<p>« Déplacer, sans garder l'original » : non. Si l'original disparaît, c'est <code><span class="td-insecable">mv</span></code>.</p><p>« Renommer le fichier indiqué » : non. Renommer, c'est <code><span class="td-insecable">mv</span></code>.</p><p>« Comparer les deux fichiers » : non. <code><span class="td-insecable">cp</span></code> ne compare rien : il fabrique une copie.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-cpp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">cp</span> <span class="td-insecable">[source]</span> <span class="td-insecable">[destination]</span></code> · exemple : <code><span class="td-insecable">cp</span> <span class="td-insecable">notes.csv</span> <span class="td-insecable">projets/</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">cp</span></code> (<i>copy</i>) <b>copie</b> la source vers la destination : l'original reste à sa place.</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="n6" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>ip addr</code> ?</p>
+  <section class="td-q" data-type="qcu" id="c-mv" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">mv</span> <span class="td-insecable">[source]</span> <span class="td-insecable">[destination]</span></code> ? Exemple : <code><span class="td-insecable">mv</span> <span class="td-insecable">nsi</span> <span class="td-insecable">../archives/</span></code></p>
     <ul class="td-options">
-      <li data-juste>Afficher les adresses IP de la machine</li>
-      <li>Tester si une autre machine répond</li>
-      <li>Changer l'adresse IP de la machine</li>
-      <li>Afficher le nom de l'utilisateur·rice</li>
+      <li>Copier, en gardant l'original</li>
+      <li>Supprimer un fichier</li>
+      <li data-juste>Déplacer ou renommer</li>
+      <li>Créer la destination</li>
     </ul>
-    <div class="td-correction"><p><code>ip addr</code> affiche les adresses IP de la machine et ses cartes réseau.</p><p>« Tester si une autre machine répond » : non. Tester une autre machine, c'est ping.</p><p>« Changer l'adresse IP de la machine » : non. ip addr seul ne change rien : il affiche.</p><p>« Afficher le nom de l'utilisateur·rice » : non. Le nom de l'utilisateur·rice, c'est whoami.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">mv</span></code> (<i>move</i>) <b>déplace ou renomme</b> : l'original quitte sa place.<p>« Copier, en gardant l'original » : non. Garder l'original, c'est <code><span class="td-insecable">cp</span></code>.</p><p>« Supprimer un fichier » : non. C'est <code><span class="td-insecable">rm</span></code>.</p><p>« Créer la destination » : non. Créer un dossier, c'est <code><span class="td-insecable">mkdir</span></code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-mvp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">mv</span> <span class="td-insecable">[source]</span> <span class="td-insecable">[destination]</span></code> · exemple : <code><span class="td-insecable">mv</span> <span class="td-insecable">nsi</span> <span class="td-insecable">../archives/</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">mv</span></code> (<i>move</i>) <b>déplace ou renomme</b> : l'original quitte sa place.</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="n7" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>ping [machine]</code> ? Exemple : <code>ping 192.168.1.1</code></p>
+  <section class="td-q" data-type="qcu" id="c-rm" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">rm</span> <span class="td-insecable">[fichier]</span></code> ? Exemple : <code><span class="td-insecable">rm</span> <span class="td-insecable">brouillon.txt</span></code></p>
     <ul class="td-options">
-      <li data-juste>Tester si une machine répond sur le réseau</li>
-      <li>Afficher les adresses IP de sa machine</li>
-      <li>Envoyer un message à l'utilisateur·rice</li>
-      <li>Télécharger un fichier depuis la machine</li>
+      <li>Mettre un fichier à la corbeille</li>
+      <li>Vider un fichier, sans le supprimer</li>
+      <li>Renommer un fichier</li>
+      <li data-juste>Supprimer un fichier, pour de bon</li>
     </ul>
-    <div class="td-correction"><p><code>ping</code> envoie un petit paquet à une machine et attend sa réponse : elle dit si la machine est joignable, et en combien de millisecondes.</p><p>« Afficher les adresses IP de sa machine » : non. Ses propres adresses, c'est ip addr.</p><p>« Envoyer un message à l'utilisateur·rice » : non. ping n'envoie aucun message lisible : seulement un petit paquet, et attend la réponse.</p><p>« Télécharger un fichier depuis la machine » : non. ping ne transfère aucun fichier.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">rm</span></code> (<i>remove</i>) <b>supprime</b> un fichier, définitivement.<p>« Mettre un fichier à la corbeille » : non. Il n'y a pas de corbeille dans le terminal : le fichier est perdu.</p><p>« Vider un fichier, sans le supprimer » : non. <code><span class="td-insecable">rm</span></code> ne garde rien : le fichier disparaît.</p><p>« Renommer un fichier » : non. C'est <code><span class="td-insecable">mv</span></code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-rmp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">rm</span> <span class="td-insecable">[fichier]</span></code> · exemple : <code><span class="td-insecable">rm</span> <span class="td-insecable">brouillon.txt</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">rm</span></code> (<i>remove</i>) <b>supprime</b> un fichier, définitivement.</div>
   </section>
 
-  <p class="td-ecran-seul"><b>La suite :</b> <a href="commandes-terminale-2.html">feuille 2 sur 2 : les processus, les jokers et les tubes</a>.</p>
+  <section class="td-q" data-type="qcu" id="c-rmr" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span> <span class="td-insecable">[dossier]</span></code> ? Exemple : <code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span> <span class="td-insecable">archives</span></code></p>
+    <ul class="td-options">
+      <li>Supprimer un dossier, s'il est vide</li>
+      <li data-juste>Supprimer un dossier et son contenu</li>
+      <li>Renommer un dossier et son contenu</li>
+      <li>Vider un dossier, en le gardant</li>
+    </ul>
+    <div class="td-correction"><code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span></code> (<i>récursif</i>) <b>supprime un dossier et tout ce qu'il contient</b>, sans corbeille.<p>« Supprimer un dossier, s'il est vide » : non. Un dossier vide seulement, c'est <code><span class="td-insecable">rmdir</span></code>.</p><p>« Renommer un dossier et son contenu » : non. Renommer, c'est <code><span class="td-insecable">mv</span></code>.</p><p>« Vider un dossier, en le gardant » : non. <code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span></code> supprime aussi le dossier lui-même.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-rmrp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span> <span class="td-insecable">[dossier]</span></code> · exemple : <code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span> <span class="td-insecable">archives</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span></code> (<i>récursif</i>) <b>supprime un dossier et tout ce qu'il contient</b>, sans corbeille.</div>
+  </section>
+
+  <h2 class="td-partie">2. Chemins</h2>
+  <p><b>L'arborescence du TD</b> (D : dossier ; F : fichier). L'utilisateur·rice connecté·e est <code><span class="td-insecable">eleve</span></code> ; son dossier personnel est <code><span class="td-insecable">/home/eleve</span></code>. <code><span class="td-insecable">eleve</span></code> et l'enseignant·e <code><span class="td-insecable">prof</span></code> sont dans le même groupe, <code><span class="td-insecable">info</span></code> : <code><span class="td-insecable">prof</span></code> lui a donné le droit de lire <code><span class="td-insecable">notes.csv</span></code> et d'écrire dans <code><span class="td-insecable">examens</span></code>.</p>
+<div class="t141-sortie" style="--l:30"><pre class="td-sortie-exemple">
+/ (racine)
+|-- bin/ (D)
+|-- home/ (D)
+|   |-- eleve/ (D)
+|   |   |-- devoirs/ (D)
+|   |   |   `-- nsi/ (D)
+|   |   |       `-- tp1.py (F)
+|   |   `-- projets/ (D)
+|   `-- prof/ (D)
+|       |-- examens/ (D)
+|       `-- notes.csv (F)
+`-- tmp/ (D)</pre></div>
+  <p><b>Exemple :</b> depuis <code><span class="td-insecable">/home/eleve</span></code>, <code><span class="td-insecable">cd</span> <span class="td-insecable">projets</span></code>, <code><span class="td-insecable">cd</span> <span class="td-insecable">./projets</span></code> et <code><span class="td-insecable">cd</span> <span class="td-insecable">/home/eleve/projets</span></code> mènent toutes dans <code><span class="td-insecable">projets</span></code> ; <code><span class="td-insecable">cd</span> <span class="td-insecable">/projets</span></code>, non : il n'y a pas de dossier <code><span class="td-insecable">projets</span></code> sous la racine.</p>
+
+  <section class="td-q" data-type="cases" id="t-cases">
+    <p class="td-consigne">À ton tour : tu es dans <code>/home/eleve/devoirs</code>. Coche les commandes qui mènent dans <code>nsi</code>.</p>
+    <ul class="td-options">
+      <li data-juste><code><span class="td-insecable">cd</span> <span class="td-insecable">nsi</span></code></li>
+      <li><code><span class="td-insecable">cd</span> <span class="td-insecable">/nsi</span></code></li>
+      <li data-juste><code><span class="td-insecable">cd</span> <span class="td-insecable">./nsi</span></code></li>
+      <li><code><span class="td-insecable">cd</span> <span class="td-insecable">devoirs/nsi</span></code></li>
+      <li data-juste><code><span class="td-insecable">cd</span> <span class="td-insecable">/home/eleve/devoirs/nsi</span></code></li>
+      <li data-juste><code><span class="td-insecable">cd</span> <span class="td-insecable">~/devoirs/nsi</span></code></li>
+    </ul>
+    <div class="td-correction"><p><code><span class="td-insecable">cd</span> <span class="td-insecable">nsi</span></code> et <code><span class="td-insecable">cd</span> <span class="td-insecable">./nsi</span></code> (relatifs : <code><span class="td-insecable">nsi</span></code> est dans <code><span class="td-insecable">devoirs</span></code>), <code><span class="td-insecable">cd</span> <span class="td-insecable">/home/eleve/devoirs/nsi</span></code> (absolu), <code><span class="td-insecable">cd</span> <span class="td-insecable">~/devoirs/nsi</span></code> (<code><span class="td-insecable">~</span></code> vaut <code><span class="td-insecable">/home/eleve</span></code>).</p><p><code><span class="td-insecable">cd</span> <span class="td-insecable">/nsi</span></code> cherche <code><span class="td-insecable">nsi</span></code> sous la racine ; <code><span class="td-insecable">cd</span> <span class="td-insecable">devoirs/nsi</span></code> cherche un dossier <code><span class="td-insecable">devoirs</span></code> dans <code><span class="td-insecable">devoirs</span></code> : ni l'un ni l'autre n'existe.</p></div>
+  </section>
+
+  <p><b>Exemple :</b> depuis <code><span class="td-insecable">projets</span></code>, pour afficher le contenu de <code><span class="td-insecable">nsi</span></code> : <code><span class="td-insecable">ls</span> <span class="td-insecable">../devoirs/nsi</span></code>.</p>
+
+  <section class="td-q" data-type="courte" id="t-ls" data-comparer="exact" data-reponse="ls ../../prof|ls ../../prof/|ls ./../../prof|ls ./../../prof/|ls /home/prof|ls /home/prof/|ls ~/../prof|ls ~/../prof/|ls -l ../../prof|ls -l ../../prof/|ls -l ./../../prof|ls -l ./../../prof/|ls -l /home/prof|ls -l /home/prof/|ls -l ~/../prof|ls -l ~/../prof/" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code><span class="td-insecable">/home/eleve/devoirs</span></code>. Affiche le contenu du dossier <code><span class="td-insecable">prof</span></code>.</p>
+    <p class="td-retour" data-si="ls prof|ls prof/|ls ../prof|ls ../prof/">Depuis <code><span class="td-insecable">devoirs</span></code>, combien de crans faut-il remonter pour trouver <code><span class="td-insecable">prof</span></code> ?</p>
+    <p class="td-retour" data-si="cd ../../prof|cd /home/prof">Cette commande te déplace : affiche-t-elle quelque chose ?</p>
+    <p class="td-retour" data-si="cat ../../prof|cat /home/prof"><code><span class="td-insecable">cat</span></code> affiche le contenu d'un fichier. Et pour le contenu d'un dossier ?</p>
+    <p class="td-retour" data-si="ls /prof|ls /prof/">Dans l'arborescence, <code><span class="td-insecable">prof</span></code> est-il juste sous la racine <code><span class="td-insecable">/</span></code> ?</p>
+    <div class="td-correction"><code><span class="td-insecable">ls</span> <span class="td-insecable">../../prof</span></code> (ou <code><span class="td-insecable">ls</span> <span class="td-insecable">/home/prof</span></code>) : depuis <code><span class="td-insecable">devoirs</span></code>, <code><span class="td-insecable">../..</span></code> mène à <code><span class="td-insecable">home</span></code>, qui contient <code><span class="td-insecable">prof</span></code>. La commande affiche <code><span class="td-insecable">examens</span> <span class="td-insecable">notes.csv</span></code>.</div>
+  </section>
+
+  <p><b>Exemple :</b> depuis <code><span class="td-insecable">projets</span></code>, pour copier <code><span class="td-insecable">notes.csv</span></code> (chez <code><span class="td-insecable">prof</span></code>) dans <code><span class="td-insecable">devoirs</span></code>, en chemins relatifs : <code><span class="td-insecable">cp</span> <span class="td-insecable">../../prof/notes.csv</span> <span class="td-insecable">../devoirs/</span></code>.</p>
+
+  <section class="td-q" data-type="courte" id="t-cp" data-comparer="exact" data-reponse="cp ../../../prof/notes.csv ../../projets|cp ../../../prof/notes.csv ../../projets/|cp ../../../prof/notes.csv ../../projets/.|cp ../../../prof/notes.csv ../../projets/notes.csv|cp ../../../prof/notes.csv ./../../projets|cp ../../../prof/notes.csv ./../../projets/|cp ../../../prof/notes.csv ./../../projets/.|cp ../../../prof/notes.csv ./../../projets/notes.csv|cp ./../../../prof/notes.csv ../../projets|cp ./../../../prof/notes.csv ../../projets/|cp ./../../../prof/notes.csv ../../projets/.|cp ./../../../prof/notes.csv ../../projets/notes.csv|cp ./../../../prof/notes.csv ./../../projets|cp ./../../../prof/notes.csv ./../../projets/|cp ./../../../prof/notes.csv ./../../projets/.|cp ./../../../prof/notes.csv ./../../projets/notes.csv" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code><span class="td-insecable">nsi</span></code>. Copie <code><span class="td-insecable">notes.csv</span></code> (chez <code><span class="td-insecable">prof</span></code>) dans <code><span class="td-insecable">projets</span></code>, en <b>chemins relatifs</b>.</p>
+    <p class="td-retour" data-si="cp ../../prof/notes.csv ../../projets/|cp ../../prof/notes.csv ../../projets|cp ../../prof/notes.csv ../projets/|cp ../../prof/notes.csv ../projets|cp ../prof/notes.csv ../../projets/|cp ../prof/notes.csv ../../projets|cp ../prof/notes.csv ../projets/|cp ../prof/notes.csv ../projets|cp ../../../prof/notes.csv ../projets/|cp ../../../prof/notes.csv ../projets|cp ../../../prof/notes.csv projets/|cp ../../../prof/notes.csv projets">Depuis <code><span class="td-insecable">nsi</span></code>, où mène <code><span class="td-insecable">..</span></code> ? Et <code><span class="td-insecable">../..</span></code> ? Compte les crans sur l'arborescence.</p>
+    <p class="td-retour" data-si="cp /home/prof/notes.csv /home/eleve/projets/|cp /home/prof/notes.csv /home/eleve/projets|cp /home/prof/notes.csv ~/projets/|cp /home/prof/notes.csv ~/projets|cp /home/prof/notes.csv ../../projets/|cp /home/prof/notes.csv ../../projets|cp ~/../prof/notes.csv /home/eleve/projets/|cp ~/../prof/notes.csv /home/eleve/projets|cp ~/../prof/notes.csv ~/projets/|cp ~/../prof/notes.csv ~/projets|cp ~/../prof/notes.csv ../../projets/|cp ~/../prof/notes.csv ../../projets|cp ../../../prof/notes.csv /home/eleve/projets/|cp ../../../prof/notes.csv /home/eleve/projets|cp ../../../prof/notes.csv ~/projets/|cp ../../../prof/notes.csv ~/projets">Ta commande marche, mais un de tes chemins part de <code><span class="td-insecable">/</span></code> ou de <code><span class="td-insecable">~</span></code> : est-ce un chemin relatif, qui part de <code><span class="td-insecable">nsi</span></code> ?</p>
+    <p class="td-retour" data-si="mv ../../../prof/notes.csv ../../projets/|mv ../../../prof/notes.csv ../../projets|mv ./../../../prof/notes.csv ../../projets/|mv ./../../../prof/notes.csv ../../projets">Après ta commande, <code><span class="td-insecable">notes.csv</span></code> serait-il encore chez <code><span class="td-insecable">prof</span></code> ?</p>
+    <p class="td-retour" data-si="cp ../../projets/ ../../../prof/notes.csv|cp ../../projets ../../../prof/notes.csv">Dans <code><span class="td-insecable">cp</span></code>, qu'écrit-on d'abord : ce qu'on copie, ou l'endroit où on le met ?</p>
+    <p class="td-retour" data-si="../../../prof/notes.csv ../../projets/|../../../prof/notes.csv ../../projets">Par quoi commence une ligne de commande ?</p>
+    <div class="td-correction"><code><span class="td-insecable">cp</span> <span class="td-insecable">../../../prof/notes.csv</span> <span class="td-insecable">../../projets/</span></code> : depuis <code><span class="td-insecable">nsi</span></code>, <code><span class="td-insecable">..</span></code> mène à <code><span class="td-insecable">devoirs</span></code>, <code><span class="td-insecable">../..</span></code> à <code><span class="td-insecable">eleve</span></code>, <code><span class="td-insecable">../../..</span></code> à <code><span class="td-insecable">home</span></code>, d'où l'on descend dans <code><span class="td-insecable">prof</span></code>. La destination, <code><span class="td-insecable">../../projets/</span></code>, est à côté de <code><span class="td-insecable">devoirs</span></code>.</div>
+  </section>
+
+  <p><b>Exemple :</b> depuis <code><span class="td-insecable">eleve</span></code>, pour créer <code><span class="td-insecable">brouillons</span></code> dans <code><span class="td-insecable">projets</span></code> : <code><span class="td-insecable">mkdir</span> <span class="td-insecable">projets/brouillons</span></code>.</p>
+
+  <section class="td-q" data-type="courte" id="t-mkdir" data-comparer="exact" data-reponse="mkdir devoirs/archives|mkdir devoirs/archives/|mkdir ./devoirs/archives|mkdir ./devoirs/archives/|mkdir /home/eleve/devoirs/archives|mkdir /home/eleve/devoirs/archives/|mkdir ~/devoirs/archives|mkdir ~/devoirs/archives/|mkdir -p devoirs/archives|mkdir -p devoirs/archives/|mkdir -p ./devoirs/archives|mkdir -p ./devoirs/archives/|mkdir -p /home/eleve/devoirs/archives|mkdir -p /home/eleve/devoirs/archives/|mkdir -p ~/devoirs/archives|mkdir -p ~/devoirs/archives/" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code><span class="td-insecable">/home/eleve</span></code>. Crée un dossier <code><span class="td-insecable">archives</span></code> dans <code><span class="td-insecable">devoirs</span></code>.</p>
+    <p class="td-retour" data-si="mkdir archives|mkdir archives/">Où ta commande crée-t-elle <code><span class="td-insecable">archives</span></code> : dans <code><span class="td-insecable">eleve</span></code>, ou dans <code><span class="td-insecable">devoirs</span></code> ?</p>
+    <p class="td-retour" data-si="touch devoirs/archives|touch archives"><code><span class="td-insecable">touch</span></code> crée-t-il un fichier, ou un dossier ?</p>
+    <p class="td-retour" data-si="mkdir /devoirs/archives|mkdir /archives">Ton chemin part de la racine <code><span class="td-insecable">/</span></code> : y a-t-il un <code><span class="td-insecable">devoirs</span></code> sous la racine ?</p>
+    <p class="td-retour" data-si="mkdir devoirs archives">Combien de dossiers ta commande crée-t-elle ? L'espace sépare deux arguments.</p>
+    <div class="td-correction"><code><span class="td-insecable">mkdir</span> <span class="td-insecable">devoirs/archives</span></code> : chemin relatif, depuis <code><span class="td-insecable">eleve</span></code>.</div>
+  </section>
+
+  <h2 class="td-partie">Réorganiser</h2>
+  <p><b>Exemple :</b> depuis <code><span class="td-insecable">/home/eleve</span></code>, après <code><span class="td-insecable">mkdir</span> <span class="td-insecable">test</span></code>, la commande <code><span class="td-insecable">ls</span></code> affiche <code><span class="td-insecable">devoirs</span> <span class="td-insecable">projets</span> <span class="td-insecable">test</span></code>.</p>
+
+  <p>On repart de l'arborescence du TD. Depuis <code>/home/eleve</code>, on tape :</p>
+<div class="t141-sortie" style="--l:21"><pre class="td-sortie-exemple">
+$ mkdir archives
+$ cd devoirs
+$ mv nsi ../archives/
+$ ls ../archives</pre></div>
+  <section class="td-q" data-type="courte" id="t-archives" data-comparer="exact" data-reponse="nsi|nsi/|nsi.|nsi/.|le dossier nsi|le dossier nsi.|le dossier nsi/|Le dossier nsi|Le dossier nsi.|un dossier nsi|le répertoire nsi|Le répertoire nsi" data-etiquette="Affichage :">
+    <p class="td-consigne">À ton tour : qu'affiche la dernière commande, <code><span class="td-insecable">ls</span> <span class="td-insecable">../archives</span></code> ?</p>
+    <p class="td-retour" data-si="rien|vide|aucun|Rien|Vide|(rien)|le dossier est vide|rien du tout">Qu'a fait <code><span class="td-insecable">mv</span></code> juste avant ? Où se trouve <code><span class="td-insecable">nsi</span></code>, maintenant ?</p>
+    <p class="td-retour" data-si="archives|archives/|Archives"><code><span class="td-insecable">ls</span></code> affiche-t-il le nom du dossier, ou ce qu'il contient ?</p>
+    <p class="td-retour" data-si="tp1.py|nsi tp1.py|nsi/tp1.py|nsi/ tp1.py"><code><span class="td-insecable">ls</span></code> montre ce qui est directement dans <code><span class="td-insecable">archives</span></code> : <code><span class="td-insecable">tp1.py</span></code> y est-il, ou dans un de ses dossiers ?</p>
+    <p class="td-retour" data-si="NSI|Nsi|NSI/">Les majuscules comptent : comment s'écrit ce dossier dans l'arborescence ?</p>
+    <div class="td-correction"><code><span class="td-insecable">nsi</span></code> : le dossier <code><span class="td-insecable">nsi</span></code> a été déplacé dans <code><span class="td-insecable">archives</span></code> (<code><span class="td-insecable">tp1.py</span></code> est dans <code><span class="td-insecable">nsi</span></code>, un cran plus bas : <code><span class="td-insecable">ls</span></code> ne l'affiche pas).</div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="t-dessin">
+    <p class="td-consigne">Quelle est l'arborescence sous <code><span class="td-insecable">/home/eleve</span></code> après ces commandes ?</p>
+    <div data-support="papier">
+<div class="t141-sortie" style="--l:21"><pre class="td-sortie-exemple">
+$ mkdir archives
+$ cd devoirs
+$ mv nsi ../archives/
+$ ls ../archives</pre></div>
+    </div>
+    <ul class="td-options">
+      <li><code><span class="td-insecable">devoirs/</span></code> contient <code><span class="td-insecable">archives/</span></code>, qui contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">projets/</span></code></li>
+      <li><code><span class="td-insecable">archives/</span></code> contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">devoirs/</span></code> contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">projets/</span></code></li>
+      <li><code><span class="td-insecable">archives/</span></code> est vide ; <code><span class="td-insecable">devoirs/</span></code> contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">projets/</span></code></li>
+      <li data-juste><code><span class="td-insecable">archives/</span></code> contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">devoirs/</span></code> est vide ; <code><span class="td-insecable">projets/</span></code></li>
+    </ul>
+    <div class="td-correction">Le dossier <code><span class="td-insecable">nsi</span></code> (avec <code><span class="td-insecable">tp1.py</span></code>) est passé de <code><span class="td-insecable">devoirs</span></code> à <code><span class="td-insecable">archives</span></code> :</p><pre class="td-sortie-exemple">
+eleve/
+|-- archives/
+|   `-- nsi/
+|       `-- tp1.py
+|-- devoirs/
+`-- projets/</pre><p><p>« <code><span class="td-insecable">devoirs/</span></code> contient <code><span class="td-insecable">archives/</span></code>, qui contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">projets/</span></code> » : non. <code><span class="td-insecable">mkdir</span> <span class="td-insecable">archives</span></code> est tapé depuis <code><span class="td-insecable">/home/eleve</span></code>, avant <code><span class="td-insecable">cd</span> <span class="td-insecable">devoirs</span></code> : <code><span class="td-insecable">archives</span></code> est créé à côté de <code><span class="td-insecable">devoirs</span></code>.</p><p>« <code><span class="td-insecable">archives/</span></code> contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">devoirs/</span></code> contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">projets/</span></code> » : non. <code><span class="td-insecable">mv</span></code> déplace : <code><span class="td-insecable">nsi</span></code> n'est plus dans <code><span class="td-insecable">devoirs</span></code> (garder l'original, c'est <code><span class="td-insecable">cp</span></code>).</p><p>« <code><span class="td-insecable">archives/</span></code> est vide ; <code><span class="td-insecable">devoirs/</span></code> contient <code><span class="td-insecable">nsi/</span></code> ; <code><span class="td-insecable">projets/</span></code> » : non. Depuis <code><span class="td-insecable">devoirs</span></code>, <code><span class="td-insecable">../archives</span></code> désigne <code><span class="td-insecable">/home/eleve/archives</span></code> : le déplacement a bien eu lieu.</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="t-rmdir" data-support="ecran">
+    <p class="td-consigne">À ton tour : après ces commandes, on tape la commande ci-dessous depuis <code><span class="td-insecable">/home/eleve</span></code>. Pourquoi ce refus ?</p>
+<div class="t141-sortie" style="--l:35"><pre class="td-sortie-exemple">
+eleve@lycee:~$ rmdir archives
+rmdir: failed to remove &#x27;archives&#x27;:
+Directory not empty</pre></div>
+    <ul class="td-options">
+      <li><code><span class="td-insecable">eleve</span></code> n'a pas le droit de supprimer <code><span class="td-insecable">archives</span></code></li>
+      <li>Il faut écrire <code><span class="td-insecable">rmdir</span> <span class="td-insecable">archives/</span></code></li>
+      <li data-juste><code><span class="td-insecable">archives</span></code> n'est pas vide : il contient <code><span class="td-insecable">nsi</span></code></li>
+      <li><code><span class="td-insecable">rmdir</span></code> ne supprime que les fichiers</li>
+    </ul>
+    <div class="td-correction"><code><span class="td-insecable">rmdir</span></code> ne supprime qu'un dossier vide : <code><span class="td-insecable">archives</span></code> contient <code><span class="td-insecable">nsi</span></code> (et <code><span class="td-insecable">tp1.py</span></code>), d'où « Directory not empty ».<p>« <code><span class="td-insecable">eleve</span></code> n'a pas le droit de supprimer <code><span class="td-insecable">archives</span></code> » : non. <code><span class="td-insecable">archives</span></code> est à <code><span class="td-insecable">eleve</span></code>, dans son dossier : le message parle d'un dossier « pas vide ».</p><p>« Il faut écrire <code><span class="td-insecable">rmdir</span> <span class="td-insecable">archives/</span></code> » : non. Le <code><span class="td-insecable">/</span></code> final ne change rien : le message dit pourquoi le dossier reste.</p><p>« <code><span class="td-insecable">rmdir</span></code> ne supprime que les fichiers » : non. <code><span class="td-insecable">rmdir</span></code> supprime des dossiers, mais seulement s'ils sont vides.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="t-rmdirp" data-support="papier" data-lignes="1">
+    <p class="td-consigne">À ton tour : après ces commandes, on tape la commande ci-dessous depuis <code><span class="td-insecable">/home/eleve</span></code>. Pourquoi ce refus ?</p>
+<div class="t141-sortie" style="--l:35"><pre class="td-sortie-exemple">
+eleve@lycee:~$ rmdir archives
+rmdir: failed to remove &#x27;archives&#x27;:
+Directory not empty</pre></div>
+    <div class="td-correction"><code><span class="td-insecable">rmdir</span></code> ne supprime qu'un dossier vide : <code><span class="td-insecable">archives</span></code> contient <code><span class="td-insecable">nsi</span></code> (et <code><span class="td-insecable">tp1.py</span></code>), d'où « Directory not empty ».</div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="t-rmr" data-comparer="exact" data-reponse="rm -r archives|rm -r archives/|rm -r ./archives|rm -r /home/eleve/archives|rm -r ~/archives|rm -R archives|rm -R archives/|rm -R ./archives|rm -R /home/eleve/archives|rm -R ~/archives|rm -rf archives|rm -rf archives/|rm -rf ./archives|rm -rf /home/eleve/archives|rm -rf ~/archives|rm -fr archives|rm -fr archives/|rm -fr ./archives|rm -fr /home/eleve/archives|rm -fr ~/archives|rm -Rf archives|rm -Rf archives/|rm -Rf ./archives|rm -Rf /home/eleve/archives|rm -Rf ~/archives|rm -r -f archives|rm -r -f archives/|rm -r -f ./archives|rm -r -f /home/eleve/archives|rm -r -f ~/archives|rm -f -r archives|rm -f -r archives/|rm -f -r ./archives|rm -f -r /home/eleve/archives|rm -f -r ~/archives" data-etiquette="$">
+    <p class="td-consigne">Écris la commande qui supprime <code><span class="td-insecable">archives</span></code> et tout ce qu'il contient.</p>
+    <p class="td-retour" data-si="rm archives|rm archives/|rm ./archives|rm /home/eleve/archives|rm ~/archives|rmdir archives|rmdir archives/|rmdir ./archives|rmdir /home/eleve/archives|rmdir ~/archives|rm -f archives|rm -f archives/|rm -f ./archives|rm -f /home/eleve/archives|rm -f ~/archives">Le dossier n'est pas vide : quelle option de <code><span class="td-insecable">rm</span></code> supprime aussi ce qu'il contient ?</p>
+    <p class="td-retour" data-si="rmdir -r archives|rmdir -r archives/|rmdir -r ./archives|rmdir -r /home/eleve/archives|rmdir -r ~/archives|rm r archives|rm r archives/|rm r ./archives|rm r /home/eleve/archives|rm r ~/archives">Relis la ligne <code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span></code> du tableau des commandes : quelle commande, quelle option ?</p>
+    <div class="td-correction"><code><span class="td-insecable">rm</span> <span class="td-insecable">-r</span> <span class="td-insecable">archives</span></code> (<i>récursif</i>) : il supprime le dossier, ses sous-dossiers et leurs fichiers, sans corbeille.</div>
+  </section>
+
+  <h2 class="td-partie">3. Les droits</h2>
+<div class="t141-sortie" style="--l:50"><pre class="td-sortie-exemple">
+eleve@lycee:~$ ls -l /home/prof
+total 8
+drwxrwx--- 2 prof info 4096 Nov 25 10:00 examens
+-rw-r----- 1 prof info   38 Nov 25 10:00 notes.csv</pre></div>
+  <p><b>Exemple :</b> dans la ligne de <code><span class="td-insecable">examens</span></code>, <code><span class="td-insecable">d</span></code> : un dossier ; <code><span class="td-insecable">rwx</span></code> pour le propriétaire, <code><span class="td-insecable">prof</span></code> ; <code><span class="td-insecable">rwx</span></code> pour le groupe, <code><span class="td-insecable">info</span></code> ; <code><span class="td-insecable">---</span></code> pour les autres.</p>
+
+  <section class="td-q" data-type="qcu" id="t-groupe" data-support="ecran">
+    <p class="td-consigne">À ton tour : quels droits le groupe <code><span class="td-insecable">info</span></code> a-t-il sur <code><span class="td-insecable">notes.csv</span></code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Lire seulement (<code><span class="td-insecable">r--</span></code>)</li>
+      <li>Lire et écrire (<code><span class="td-insecable">rw-</span></code>)</li>
+      <li>Aucun droit (<code><span class="td-insecable">---</span></code>)</li>
+      <li>Lire et exécuter (<code><span class="td-insecable">r-x</span></code>)</li>
+    </ul>
+    <div class="td-correction"><code><span class="td-insecable">-</span></code> (un fichier), <code><span class="td-insecable">rw-</span></code> (le propriétaire, <code><span class="td-insecable">prof</span></code>), <code><span class="td-insecable">r--</span></code> (le groupe, <code><span class="td-insecable">info</span></code>), <code><span class="td-insecable">---</span></code> (les autres) : le groupe peut lire le fichier, pas le modifier.<p>« Lire et écrire (<code><span class="td-insecable">rw-</span></code>) » : non. <code><span class="td-insecable">rw-</span></code> sont les droits du propriétaire, <code><span class="td-insecable">prof</span></code> : les trois premières lettres après le tiret.</p><p>« Aucun droit (<code><span class="td-insecable">---</span></code>) » : non. <code><span class="td-insecable">---</span></code> sont les droits des autres : les trois dernières lettres.</p><p>« Lire et exécuter (<code><span class="td-insecable">r-x</span></code>) » : non. Il n'y a aucun <code><span class="td-insecable">x</span></code> dans <code><span class="td-insecable">-rw-r-----</span></code> : personne ne peut l'exécuter.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="t-groupep" data-support="papier" data-lignes="1">
+    <p class="td-consigne">À ton tour : quels droits le groupe <code><span class="td-insecable">info</span></code> a-t-il sur <code><span class="td-insecable">notes.csv</span></code> ?</p>
+    <div class="td-correction"><code><span class="td-insecable">-</span></code> (un fichier), <code><span class="td-insecable">rw-</span></code> (le propriétaire, <code><span class="td-insecable">prof</span></code>), <code><span class="td-insecable">r--</span></code> (le groupe, <code><span class="td-insecable">info</span></code>), <code><span class="td-insecable">---</span></code> (les autres) : le groupe peut lire le fichier, pas le modifier.</div>
+  </section>
+
+  <p><b>Exemple :</b> <code><span class="td-insecable">chmod</span> <span class="td-insecable">750</span> <span class="td-insecable">tp1.py</span></code> donne <code><span class="td-insecable">rwxr-x---</span></code> : 7 = 4 + 2 + 1 (<code><span class="td-insecable">rwx</span></code>), 5 = 4 + 1 (<code><span class="td-insecable">r-x</span></code>), 0 (<code><span class="td-insecable">---</span></code>).</p>
+
+  <section class="td-q" data-type="courte" id="t-octal" data-comparer="exact" data-reponse="chmod 600 tp1.py|chmod 600 ./tp1.py|chmod 600 /home/eleve/devoirs/nsi/tp1.py|chmod 600 ~/devoirs/nsi/tp1.py|chmod 0600 tp1.py|chmod 0600 ./tp1.py|chmod 0600 /home/eleve/devoirs/nsi/tp1.py|chmod 0600 ~/devoirs/nsi/tp1.py" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code><span class="td-insecable">nsi</span></code>. En <b>octal</b>, rends <code><span class="td-insecable">tp1.py</span></code> lisible et modifiable par son propriétaire (toi), sans aucun droit ni pour le groupe ni pour les autres.</p>
+    <p class="td-retour" data-si="chmod 700 tp1.py|chmod 700 ./tp1.py|chmod 700 /home/eleve/devoirs/nsi/tp1.py|chmod 700 ~/devoirs/nsi/tp1.py">On demande lire et écrire : combien vaut r ? et w ? Faut-il x ?</p>
+    <p class="td-retour" data-si="chmod 006 tp1.py|chmod 006 ./tp1.py|chmod 006 /home/eleve/devoirs/nsi/tp1.py|chmod 006 ~/devoirs/nsi/tp1.py|chmod 060 tp1.py|chmod 060 ./tp1.py|chmod 060 /home/eleve/devoirs/nsi/tp1.py|chmod 060 ~/devoirs/nsi/tp1.py">Dans quel ordre se lisent les trois chiffres ?</p>
+    <p class="td-retour" data-si="chmod 644 tp1.py|chmod 644 ./tp1.py|chmod 644 /home/eleve/devoirs/nsi/tp1.py|chmod 644 ~/devoirs/nsi/tp1.py|chmod 640 tp1.py|chmod 640 ./tp1.py|chmod 640 /home/eleve/devoirs/nsi/tp1.py|chmod 640 ~/devoirs/nsi/tp1.py|chmod 660 tp1.py|chmod 660 ./tp1.py|chmod 660 /home/eleve/devoirs/nsi/tp1.py|chmod 660 ~/devoirs/nsi/tp1.py|chmod 666 tp1.py|chmod 666 ./tp1.py|chmod 666 /home/eleve/devoirs/nsi/tp1.py|chmod 666 ~/devoirs/nsi/tp1.py|chmod 604 tp1.py|chmod 604 ./tp1.py|chmod 604 /home/eleve/devoirs/nsi/tp1.py|chmod 604 ~/devoirs/nsi/tp1.py">Le groupe et les autres doivent-ils garder un droit ?</p>
+    <p class="td-retour" data-si="chmod 600|chmod tp1.py 600">Qu'écrit-on après <code><span class="td-insecable">chmod</span></code> : les droits, puis quoi ?</p>
+    <p class="td-retour" data-si="chmod u=rw,go= tp1.py|chmod u=rw,go= ./tp1.py|chmod u=rw,go= /home/eleve/devoirs/nsi/tp1.py|chmod u=rw,go= ~/devoirs/nsi/tp1.py|chmod u=rw,go-rwx tp1.py|chmod u=rw,go-rwx ./tp1.py|chmod u=rw,go-rwx /home/eleve/devoirs/nsi/tp1.py|chmod u=rw,go-rwx ~/devoirs/nsi/tp1.py|chmod go-rwx tp1.py|chmod go-rwx ./tp1.py|chmod go-rwx /home/eleve/devoirs/nsi/tp1.py|chmod go-rwx ~/devoirs/nsi/tp1.py">C'est du symbolique : on demande l'octal, avec des chiffres.</p>
+    <div class="td-correction"><code><span class="td-insecable">chmod</span> <span class="td-insecable">600</span> <span class="td-insecable">tp1.py</span></code> : 6 = 4 + 2 (<code><span class="td-insecable">rw-</span></code>) pour le propriétaire, 0 (<code><span class="td-insecable">---</span></code>) pour le groupe et pour les autres.</div>
+  </section>
+
+  <p><b>Exemple :</b> <code><span class="td-insecable">chmod</span> <span class="td-insecable">g+w</span> <span class="td-insecable">notes.csv</span></code> ajoute l'écriture au groupe : <code><span class="td-insecable">-rw-r-----</span></code> devient <code><span class="td-insecable">-rw-rw----</span></code>.</p>
+
+  <section class="td-q" data-type="courte" id="t-symb" data-comparer="exact" data-reponse="chmod u+x tp1.py|chmod u+x ./tp1.py|chmod u+x /home/eleve/devoirs/nsi/tp1.py|chmod u+x ~/devoirs/nsi/tp1.py" data-etiquette="$">
+    <p class="td-consigne">À ton tour : en <b>symbolique</b>, ajoute le droit d'exécution au propriétaire de <code><span class="td-insecable">tp1.py</span></code> (tu es dans <code><span class="td-insecable">nsi</span></code>), sans changer les autres droits.</p>
+    <p class="td-retour" data-si="chmod +x tp1.py|chmod +x ./tp1.py|chmod +x /home/eleve/devoirs/nsi/tp1.py|chmod +x ~/devoirs/nsi/tp1.py|chmod a+x tp1.py|chmod a+x ./tp1.py|chmod a+x /home/eleve/devoirs/nsi/tp1.py|chmod a+x ~/devoirs/nsi/tp1.py|chmod ugo+x tp1.py|chmod ugo+x ./tp1.py|chmod ugo+x /home/eleve/devoirs/nsi/tp1.py|chmod ugo+x ~/devoirs/nsi/tp1.py">À qui ton <code><span class="td-insecable">+x</span></code> donne-t-il le droit ? Avec quelle lettre désigne-t-on le seul propriétaire ?</p>
+    <p class="td-retour" data-si="chmod o+x tp1.py|chmod o+x ./tp1.py|chmod o+x /home/eleve/devoirs/nsi/tp1.py|chmod o+x ~/devoirs/nsi/tp1.py|chmod g+x tp1.py|chmod g+x ./tp1.py|chmod g+x /home/eleve/devoirs/nsi/tp1.py|chmod g+x ~/devoirs/nsi/tp1.py">Quelle lettre désigne le propriétaire : <code><span class="td-insecable">o</span></code>, <code><span class="td-insecable">g</span></code> ou <code><span class="td-insecable">u</span></code> ?</p>
+    <p class="td-retour" data-si="chmod x+u tp1.py|chmod x+u ./tp1.py|chmod x+u /home/eleve/devoirs/nsi/tp1.py|chmod x+u ~/devoirs/nsi/tp1.py|chmod u-x tp1.py|chmod u-x ./tp1.py|chmod u-x /home/eleve/devoirs/nsi/tp1.py|chmod u-x ~/devoirs/nsi/tp1.py|chmod +u tp1.py|chmod +u ./tp1.py|chmod +u /home/eleve/devoirs/nsi/tp1.py|chmod +u ~/devoirs/nsi/tp1.py">Dans quel ordre écrit-on : qui, le signe, le droit ?</p>
+    <p class="td-retour" data-si="chmod 700 tp1.py|chmod 700 ./tp1.py|chmod 700 /home/eleve/devoirs/nsi/tp1.py|chmod 700 ~/devoirs/nsi/tp1.py|chmod 744 tp1.py|chmod 744 ./tp1.py|chmod 744 /home/eleve/devoirs/nsi/tp1.py|chmod 744 ~/devoirs/nsi/tp1.py|chmod 755 tp1.py|chmod 755 ./tp1.py|chmod 755 /home/eleve/devoirs/nsi/tp1.py|chmod 755 ~/devoirs/nsi/tp1.py|chmod 764 tp1.py|chmod 764 ./tp1.py|chmod 764 /home/eleve/devoirs/nsi/tp1.py|chmod 764 ~/devoirs/nsi/tp1.py">C'est de l'octal, et il change aussi d'autres droits : on demande le symbolique.</p>
+    <p class="td-retour" data-si="chmod U+x tp1.py|chmod U+x ./tp1.py|chmod U+x /home/eleve/devoirs/nsi/tp1.py|chmod U+x ~/devoirs/nsi/tp1.py|chmod u+X tp1.py|chmod u+X ./tp1.py|chmod u+X /home/eleve/devoirs/nsi/tp1.py|chmod u+X ~/devoirs/nsi/tp1.py">Les majuscules comptent : comment s'écrivent <code><span class="td-insecable">u</span></code> et <code><span class="td-insecable">x</span></code> ?</p>
+    <div class="td-correction"><code><span class="td-insecable">chmod</span> <span class="td-insecable">u+x</span> <span class="td-insecable">tp1.py</span></code> : <code><span class="td-insecable">u</span></code> (<i>user</i>, le propriétaire), <code><span class="td-insecable">+</span></code> (ajouter), <code><span class="td-insecable">x</span></code> (exécution).</div>
+  </section>
+
+  <p><b>Exemple :</b> pour donner <code><span class="td-insecable">tp1.py</span></code> à <code><span class="td-insecable">prof</span></code> : <code><span class="td-insecable">sudo</span> <span class="td-insecable">chown</span> <span class="td-insecable">prof</span> <span class="td-insecable">tp1.py</span></code>.</p>
+
+  <section class="td-q" data-type="courte" id="t-sudo" data-comparer="exact" data-reponse="sudo chown direction notes.csv|sudo chown direction ./notes.csv|sudo chown direction /home/prof/notes.csv|sudo chown direction:info notes.csv|sudo chown direction:info ./notes.csv|sudo chown direction:info /home/prof/notes.csv" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es <code><span class="td-insecable">prof</span></code>, dans <code><span class="td-insecable">/home/prof</span></code>. Donne <code><span class="td-insecable">notes.csv</span></code> à <code><span class="td-insecable">direction</span></code>.</p>
+    <p class="td-retour" data-si="chown direction notes.csv|chown direction ./notes.csv|chown direction /home/prof/notes.csv">Changer le propriétaire est réservé à <code><span class="td-insecable">root</span></code> : que faut-il ajouter devant ta commande ?</p>
+    <p class="td-retour" data-si="sudo chown notes.csv direction|sudo chown ./notes.csv direction|sudo chown /home/prof/notes.csv direction|chown notes.csv direction|chown ./notes.csv direction|chown /home/prof/notes.csv direction">Dans <code><span class="td-insecable">chown</span></code>, qu'écrit-on d'abord : le nouveau propriétaire, ou le fichier ?</p>
+    <p class="td-retour" data-si="sudo chmod direction notes.csv|sudo chmod direction ./notes.csv|sudo chmod direction /home/prof/notes.csv|chmod direction notes.csv|chmod direction ./notes.csv|chmod direction /home/prof/notes.csv"><code><span class="td-insecable">chmod</span></code> change les droits. Quelle commande change le propriétaire ?</p>
+    <p class="td-retour" data-si="Sudo chown direction notes.csv|sudo chown Direction notes.csv|sudo Chown direction notes.csv">Les majuscules comptent : comment s'écrivent la commande et le nom ?</p>
+    <div class="td-correction"><code><span class="td-insecable">sudo</span> <span class="td-insecable">chown</span> <span class="td-insecable">direction</span> <span class="td-insecable">notes.csv</span></code> : <code><span class="td-insecable">chown</span></code> (<i>change owner</i>) change le propriétaire, et <code><span class="td-insecable">sudo</span></code> lui donne les droits de <code><span class="td-insecable">root</span></code>.</div>
+  </section>
+
+  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus (celui de la feuille d'origine) -->
+  <section class="td-memo">
+    <h2>Mémo</h2>
+    <p><code><span class="td-insecable">pwd</span></code> : où suis-je ? · <code><span class="td-insecable">ls</span></code> : qu'y a-t-il ici ? · <code><span class="td-insecable">cd</span></code> : aller ailleurs. Un chemin <b>absolu</b> part de <code><span class="td-insecable">/</span></code> ; un chemin <b>relatif</b> part du répertoire courant, et <code><span class="td-insecable">..</span></code> remonte d'un niveau.</p>
+  </section>
+
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="commandes-terminale-2.html">feuille 2 sur 2 : les processus</a>.</p>
 
   <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">

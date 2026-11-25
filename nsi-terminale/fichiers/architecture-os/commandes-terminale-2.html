@@ -1,17 +1,31 @@
 <!doctype html>
 <!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<!-- Jumeau des feuilles « Commandes Linux » de l'autre niveau (même arborescence, mêmes mots, même forme).
+     Les quatre feuilles sont écrites par un même script (T141) : une modification de l'arborescence ou
+     du vocabulaire se reporte dans les quatre. -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Commandes Linux (terminale), feuille 2 : TD en ligne</title>
-  <meta name="description" content="Tle NSI, systèmes d'exploitation, feuille 2 sur 2 : lire une liste de processus (PID, PPID), arrêter un processus avec kill, le joker * et le tube | (ps -ef | grep). Feuille auto-corrective et imprimable.">
+  <meta name="description" content="Tle NSI, systèmes d&#x27;exploitation, feuille 2 sur 2 : lire une liste de processus (ps -ef, PID, PPID), dessiner l&#x27;arbre des processus, arrêter un processus avec kill, filtrer avec le tube et grep. Feuille auto-corrective et imprimable.">
   <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
   <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
   <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
   <script src="../../../assets/td-en-ligne.js" defer></script>
+  <style>
+    /* T141, en attendant le moteur commun (demandé au Designer) : une commande, un chemin ou des droits ne se coupent
+       qu'à une espace, jamais au milieu (« -rw-r----- », « ../../projets/ ») ; sur un téléphone, une sortie de
+       terminal tient en entier dans la largeur (sa police se réduit, 8,5 px au plus petit). */
+    .td code .td-insecable { white-space: nowrap; }
+    .t141-ensemble { break-inside: avoid; }
+    .t141-sortie { container-type: inline-size; }
+    @media screen and (max-width: 480px) {
+      .t141-sortie pre.td-console { font-size: max(8.5px, min(.86rem, calc((100cqw - 24px) / (var(--l) * .6)))); }
+    }
+  </style>
 </head>
 <body class="td-page">
 <!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
@@ -19,7 +33,7 @@
      data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
      data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
      data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
-<main class="td" data-td="tle-commandes-linux-2" data-premiere-question="20" data-premiere-question-papier="14" data-auteurs="Babash - NSI Tani Malandi" data-td-version="2" data-ordre="melange" data-code="obligatoire" data-feuille="2" data-nouvelle-page>
+<main class="td" data-td="tle-commandes-linux-2" data-premiere-question="22" data-td-version="3" data-auteurs="Babash - NSI Tani Malandi" data-ordre="fixe" data-code="obligatoire" data-feuille="2" data-nouvelle-page>
 
   <header class="td-entete">
     <!-- BANDEAU : paysage n° 2 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
@@ -30,7 +44,7 @@
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">Tle NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Systèmes d&#x27;exploitation</span></p>
         <h1>Commandes Linux</h1>
-        <p class="td-accroche">Processus et tubes</p>
+        <p class="td-accroche">Les processus</p>
       </div>
       <a class="td-qr" href="https://babash.github.io/quizz-nsi/revision.html?cours=processus" aria-label="Le cours-quiz du chapitre (QR code)"><svg viewBox="-2 -2 41 41" shape-rendering="crispEdges" aria-hidden="true"><path d="M0 0h7v1h-7zM9 0h2v1h-2zM13 0h1v1h-1zM15 0h3v1h-3zM28 0h1v1h-1zM30 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h1v1h-1zM16 1h1v1h-1zM18 1h1v1h-1zM20 1h1v1h-1zM22 1h7v1h-7zM30 1h1v1h-1zM36 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h3v1h-3zM12 2h1v1h-1zM14 2h2v1h-2zM21 2h3v1h-3zM26 2h1v1h-1zM28 2h1v1h-1zM30 2h1v1h-1zM32 2h3v1h-3zM36 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM11 3h1v1h-1zM14 3h5v1h-5zM22 3h5v1h-5zM30 3h1v1h-1zM32 3h3v1h-3zM36 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h4v1h-4zM13 4h2v1h-2zM17 4h8v1h-8zM28 4h1v1h-1zM30 4h1v1h-1zM32 4h3v1h-3zM36 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h2v1h-2zM17 5h1v1h-1zM20 5h2v1h-2zM25 5h1v1h-1zM27 5h1v1h-1zM30 5h1v1h-1zM36 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h1v1h-1zM24 6h1v1h-1zM26 6h1v1h-1zM28 6h1v1h-1zM30 6h7v1h-7zM8 7h2v1h-2zM11 7h1v1h-1zM13 7h1v1h-1zM15 7h1v1h-1zM17 7h3v1h-3zM21 7h3v1h-3zM26 7h1v1h-1zM28 7h1v1h-1zM0 8h1v1h-1zM2 8h5v1h-5zM13 8h4v1h-4zM21 8h1v1h-1zM23 8h1v1h-1zM25 8h2v1h-2zM30 8h5v1h-5zM1 9h1v1h-1zM9 9h1v1h-1zM11 9h1v1h-1zM13 9h1v1h-1zM15 9h1v1h-1zM17 9h2v1h-2zM20 9h3v1h-3zM24 9h2v1h-2zM28 9h2v1h-2zM31 9h1v1h-1zM33 9h3v1h-3zM0 10h2v1h-2zM4 10h1v1h-1zM6 10h2v1h-2zM10 10h1v1h-1zM12 10h1v1h-1zM15 10h3v1h-3zM19 10h1v1h-1zM21 10h1v1h-1zM27 10h1v1h-1zM30 10h4v1h-4zM35 10h2v1h-2zM2 11h1v1h-1zM7 11h3v1h-3zM11 11h1v1h-1zM14 11h2v1h-2zM19 11h4v1h-4zM24 11h1v1h-1zM26 11h1v1h-1zM31 11h2v1h-2zM36 11h1v1h-1zM2 12h1v1h-1zM4 12h1v1h-1zM6 12h2v1h-2zM9 12h1v1h-1zM11 12h2v1h-2zM14 12h2v1h-2zM17 12h1v1h-1zM19 12h2v1h-2zM22 12h1v1h-1zM24 12h4v1h-4zM29 12h2v1h-2zM32 12h1v1h-1zM34 12h3v1h-3zM0 13h2v1h-2zM4 13h1v1h-1zM9 13h2v1h-2zM12 13h1v1h-1zM16 13h1v1h-1zM19 13h2v1h-2zM22 13h2v1h-2zM26 13h1v1h-1zM31 13h1v1h-1zM2 14h2v1h-2zM5 14h3v1h-3zM9 14h1v1h-1zM13 14h4v1h-4zM18 14h1v1h-1zM22 14h1v1h-1zM26 14h2v1h-2zM29 14h5v1h-5zM35 14h2v1h-2zM0 15h4v1h-4zM5 15h1v1h-1zM7 15h5v1h-5zM14 15h2v1h-2zM19 15h2v1h-2zM24 15h1v1h-1zM26 15h2v1h-2zM29 15h4v1h-4zM2 16h1v1h-1zM4 16h1v1h-1zM6 16h2v1h-2zM12 16h1v1h-1zM18 16h9v1h-9zM28 16h3v1h-3zM32 16h1v1h-1zM34 16h2v1h-2zM4 17h2v1h-2zM7 17h2v1h-2zM10 17h1v1h-1zM12 17h5v1h-5zM21 17h1v1h-1zM26 17h1v1h-1zM28 17h2v1h-2zM31 17h1v1h-1zM35 17h1v1h-1zM6 18h2v1h-2zM14 18h1v1h-1zM17 18h2v1h-2zM20 18h5v1h-5zM26 18h2v1h-2zM30 18h4v1h-4zM35 18h2v1h-2zM0 19h2v1h-2zM3 19h1v1h-1zM8 19h1v1h-1zM10 19h2v1h-2zM14 19h1v1h-1zM16 19h1v1h-1zM18 19h1v1h-1zM21 19h3v1h-3zM27 19h1v1h-1zM29 19h2v1h-2zM36 19h1v1h-1zM3 20h5v1h-5zM9 20h2v1h-2zM17 20h1v1h-1zM22 20h6v1h-6zM29 20h2v1h-2zM32 20h3v1h-3zM2 21h1v1h-1zM4 21h2v1h-2zM7 21h4v1h-4zM12 21h1v1h-1zM16 21h6v1h-6zM23 21h1v1h-1zM28 21h1v1h-1zM33 21h1v1h-1zM1 22h2v1h-2zM4 22h1v1h-1zM6 22h2v1h-2zM11 22h2v1h-2zM15 22h3v1h-3zM20 22h2v1h-2zM24 22h2v1h-2zM27 22h2v1h-2zM30 22h4v1h-4zM36 22h1v1h-1zM1 23h1v1h-1zM7 23h1v1h-1zM11 23h2v1h-2zM17 23h2v1h-2zM20 23h4v1h-4zM26 23h1v1h-1zM31 23h2v1h-2zM0 24h2v1h-2zM3 24h1v1h-1zM6 24h7v1h-7zM14 24h3v1h-3zM19 24h1v1h-1zM21 24h1v1h-1zM23 24h8v1h-8zM32 24h1v1h-1zM34 24h2v1h-2zM0 25h1v1h-1zM2 25h2v1h-2zM5 25h1v1h-1zM7 25h5v1h-5zM13 25h1v1h-1zM15 25h1v1h-1zM18 25h1v1h-1zM20 25h1v1h-1zM22 25h1v1h-1zM24 25h3v1h-3zM28 25h2v1h-2zM31 25h1v1h-1zM34 25h1v1h-1zM0 26h1v1h-1zM3 26h5v1h-5zM9 26h1v1h-1zM14 26h3v1h-3zM19 26h1v1h-1zM21 26h1v1h-1zM27 26h2v1h-2zM30 26h3v1h-3zM35 26h2v1h-2zM0 27h1v1h-1zM4 27h2v1h-2zM7 27h2v1h-2zM11 27h2v1h-2zM15 27h1v1h-1zM19 27h6v1h-6zM27 27h2v1h-2zM31 27h2v1h-2zM36 27h1v1h-1zM0 28h1v1h-1zM4 28h1v1h-1zM6 28h1v1h-1zM8 28h1v1h-1zM10 28h2v1h-2zM15 28h3v1h-3zM19 28h1v1h-1zM22 28h1v1h-1zM24 28h3v1h-3zM28 28h7v1h-7zM36 28h1v1h-1zM8 29h2v1h-2zM11 29h4v1h-4zM16 29h1v1h-1zM19 29h1v1h-1zM22 29h3v1h-3zM26 29h1v1h-1zM28 29h1v1h-1zM32 29h2v1h-2zM0 30h7v1h-7zM9 30h1v1h-1zM12 30h1v1h-1zM15 30h2v1h-2zM18 30h1v1h-1zM22 30h1v1h-1zM24 30h2v1h-2zM28 30h1v1h-1zM30 30h1v1h-1zM32 30h1v1h-1zM34 30h3v1h-3zM0 31h1v1h-1zM6 31h1v1h-1zM8 31h4v1h-4zM14 31h2v1h-2zM19 31h1v1h-1zM23 31h2v1h-2zM26 31h1v1h-1zM28 31h1v1h-1zM32 31h2v1h-2zM35 31h1v1h-1zM0 32h1v1h-1zM2 32h3v1h-3zM6 32h1v1h-1zM8 32h2v1h-2zM11 32h4v1h-4zM18 32h5v1h-5zM25 32h8v1h-8zM34 32h2v1h-2zM0 33h1v1h-1zM2 33h3v1h-3zM6 33h1v1h-1zM8 33h1v1h-1zM11 33h3v1h-3zM15 33h2v1h-2zM23 33h1v1h-1zM26 33h1v1h-1zM29 33h2v1h-2zM32 33h1v1h-1zM34 33h1v1h-1zM36 33h1v1h-1zM0 34h1v1h-1zM2 34h3v1h-3zM6 34h1v1h-1zM8 34h4v1h-4zM17 34h1v1h-1zM20 34h1v1h-1zM26 34h2v1h-2zM33 34h1v1h-1zM35 34h2v1h-2zM0 35h1v1h-1zM6 35h1v1h-1zM9 35h1v1h-1zM11 35h1v1h-1zM14 35h1v1h-1zM16 35h1v1h-1zM18 35h1v1h-1zM21 35h1v1h-1zM26 35h1v1h-1zM28 35h1v1h-1zM30 35h1v1h-1zM32 35h2v1h-2zM36 35h1v1h-1zM0 36h7v1h-7zM8 36h5v1h-5zM14 36h1v1h-1zM17 36h1v1h-1zM20 36h1v1h-1zM22 36h1v1h-1zM24 36h4v1h-4zM29 36h1v1h-1zM32 36h1v1h-1zM34 36h3v1h-3z" fill="#121016"/></svg><span>Cours-quiz</span></a>
     </div>
@@ -43,174 +57,250 @@
       <p><b>Je sais :</b></p>
       <ul class="td-criteres">
         <li>lire une liste de processus : PID, PPID, parent, enfants ;</li>
-        <li>arrêter un processus avec <code>kill</code> ;</li>
-        <li>expliquer le joker <code>*</code> et le tube <code>|</code> ;</li>
-        <li>filtrer une liste avec <code>grep</code>.</li>
+        <li>dessiner l'arbre des processus ;</li>
+        <li>arrêter un processus avec <code><span class="td-insecable">kill</span></code> ;</li>
+        <li>filtrer une liste avec le tube <code><span class="td-insecable">|</span></code> et <code><span class="td-insecable">grep</span></code>.</li>
       </ul>
-      <p class="td-duree">1 heure · 10 questions · feuille 2 sur 2 · seul·e ou en binôme</p>
+      <p class="td-duree">30 min · 10 questions · feuille 2 sur 2 · seul·e ou en binôme</p>
+      <p><b>Dans la séance :</b> à l'écran, <a href="https://babash.github.io/mirage/terminal/">Opération MIRAGE</a>, missions 11 à 15 (<code><span class="td-insecable">ps</span></code> et <code><span class="td-insecable">kill</span></code>, <code><span class="td-insecable">ls</span> <span class="td-insecable">--help</span></code>, <code><span class="td-insecable">cat</span> <span class="td-insecable">|</span> <span class="td-insecable">grep</span></code>) ; puis cette feuille, sur papier ou en ligne, qui prépare le TD type bac.</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
-  <!-- BLOC COMMUN : « À retenir » à l'écran et sur papier (deux copies) -->
-  <div class="td-plus-loin">
+  <!-- À RETENIR : à l'écran et sur papier (G6) -->
+  <div class="td-plus-loin" data-support="ecran">
     <p><b>À retenir</b></p>
     <ul>
       <li>Un <b>processus</b> est un programme en cours d'exécution ; le système lui donne un numéro, son <b>PID</b>.</li>
-      <li>Chaque processus est créé par un autre, son <b>parent</b> : son <b>PPID</b> est le PID du parent. Le processus 1 est lancé par le noyau au démarrage.</li>
-      <li><code>ps -ef</code> liste les processus ; <code>top</code> les montre en temps réel.</li>
-      <li><code>kill PID</code> demande à un processus de s'arrêter ; <code>kill -9 PID</code> l'arrête tout de suite, sans lui laisser le temps de sauvegarder.</li>
-      <li>Le joker <code>*</code> remplace n'importe quelle suite de caractères : <code>*.py</code>, ce sont tous les fichiers du répertoire courant qui finissent par <code>.py</code>.</li>
-      <li>Le tube <code>|</code> envoie ce qu'affiche la commande de gauche à la commande de droite : <code>ps -ef | grep cron</code> ne garde que les lignes qui contiennent <code>cron</code>.</li>
+      <li>Chaque processus est créé par un autre, son <b>parent</b> : son <b>PPID</b> est le PID du parent. Le processus 1 est lancé par le noyau au démarrage : c'est l'ancêtre de tous les autres.</li>
+      <li><code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> liste tous les processus, avec leur PID et leur PPID.</li>
+      <li><code><span class="td-insecable">kill</span> <span class="td-insecable">PID</span></code> demande à un processus de s'arrêter ; <code><span class="td-insecable">kill</span> <span class="td-insecable">-9</span> <span class="td-insecable">PID</span></code> l'arrête de force, sans lui laisser le temps de sauvegarder.</li>
+      <li>Le tube <code><span class="td-insecable">|</span></code> envoie ce qu'affiche la commande de gauche à la commande de droite : <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span> <span class="td-insecable">|</span> <span class="td-insecable">grep</span> <span class="td-insecable">cron</span></code> ne garde que les lignes qui contiennent <code><span class="td-insecable">cron</span></code>.</li>
     </ul>
   </div>
   <div class="td-plus-loin" data-support="papier">
     <p><b>À retenir</b></p>
     <ul>
       <li>Un <b>processus</b> est un programme en cours d'exécution ; le système lui donne un numéro, son <b>PID</b>.</li>
-      <li>Chaque processus est créé par un autre, son <b>parent</b> : son <b>PPID</b> est le PID du parent. Le processus 1 est lancé par le noyau au démarrage.</li>
-      <li><code>ps -ef</code> liste les processus ; <code>top</code> les montre en temps réel.</li>
-      <li><code>kill PID</code> demande à un processus de s'arrêter ; <code>kill -9 PID</code> l'arrête tout de suite, sans lui laisser le temps de sauvegarder.</li>
-      <li>Le joker <code>*</code> remplace n'importe quelle suite de caractères : <code>*.py</code>, ce sont tous les fichiers du répertoire courant qui finissent par <code>.py</code>.</li>
-      <li>Le tube <code>|</code> envoie ce qu'affiche la commande de gauche à la commande de droite : <code>ps -ef | grep cron</code> ne garde que les lignes qui contiennent <code>cron</code>.</li>
+      <li>Chaque processus est créé par un autre, son <b>parent</b> : son <b>PPID</b> est le PID du parent. Le processus 1 est lancé par le noyau au démarrage : c'est l'ancêtre de tous les autres.</li>
+      <li><code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> liste tous les processus, avec leur PID et leur PPID.</li>
+      <li><code><span class="td-insecable">kill</span> <span class="td-insecable">PID</span></code> demande à un processus de s'arrêter ; <code><span class="td-insecable">kill</span> <span class="td-insecable">-9</span> <span class="td-insecable">PID</span></code> l'arrête de force, sans lui laisser le temps de sauvegarder.</li>
+      <li>Le tube <code><span class="td-insecable">|</span></code> envoie ce qu'affiche la commande de gauche à la commande de droite : <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span> <span class="td-insecable">|</span> <span class="td-insecable">grep</span> <span class="td-insecable">cron</span></code> ne garde que les lignes qui contiennent <code><span class="td-insecable">cron</span></code>.</li>
     </ul>
   </div>
-  <p data-support="ecran"><b>En ligne</b>, écris chaque commande comme dans le terminal : une espace entre la commande et chacun de ses arguments, et les majuscules comptent. Le fichier <code>tp1.py</code> et les dossiers sont ceux de la <a href="commandes-terminale.html">feuille 1</a>.</p>
-  <div class="td-plus-loin">
-    <p><b>Pour t'entraîner dans un vrai terminal</b> (facultatif) : dans le <a href="https://babash.github.io/mirage/terminal/">terminal d'entraînement d'Opération MIRAGE</a>, <code>ps -ef</code> montre un processus espion : la mission Q11 demande de le trouver, puis de l'arrêter avec <code>kill</code>.</p>
-  </div>
 
-  <h2 class="td-partie">1. Les processus</h2>
-  <p><code>eleve</code> lance un calcul des marées en arrière-plan (le <code>&amp;</code> rend la main tout de suite), puis demande la liste des processus avec quelques colonnes : PID, PPID, utilisateur·rice, part du processeur, part de la mémoire, commande. En voici un extrait :</p>
-  <pre class="td-sortie-exemple">
-eleve@lycee:~$ python3 marees.py &
-eleve@lycee:~$ ps -eo pid,ppid,user,%cpu,%mem,args
-  PID  PPID USER      %CPU %MEM COMMAND
-    1     0 root       0.0  0.1 /sbin/init
-   98     1 root       0.0  0.3 /usr/sbin/cron
-  120     1 eleve      0.1  1.2 -bash
-  450   120 eleve    145.2 85.0 python3 marees.py
-  451   120 eleve      0.0  0.1 ps -eo pid,ppid,user,%cpu,%mem,args</pre>
-  <p><b>Exemple :</b> la ligne de <code>cron</code> a pour PPID 1 : <code>cron</code> a été créé par le processus 1, <code>/sbin/init</code>.</p>
+  <h2 class="td-partie">1. Les commandes</h2>
+  <p><b>Pour chaque commande, dis ce qu'elle fait.</b> Exemple : <code><span class="td-insecable">man</span> <span class="td-insecable">ps</span></code> affiche le manuel d'une commande.</p>
 
-  <section class="td-q" data-type="courte" id="p1" data-reponse="bash|-bash|120|bash (120)|120 (bash)|-bash (120)|bash, 120|le processus bash|bash, pid 120|pid 120" data-etiquette="Parent :">
-    <p class="td-consigne">À ton tour : quel est le processus parent de <code>python3 marees.py</code> ? Donne son nom ou son PID.</p>
-    <div class="td-correction"><p>Le PPID de 450 est 120 : c'est <code>bash</code>, le terminal depuis lequel <code>eleve</code> a lancé le calcul.</p><p class="td-erreur-frequente" data-si="/sbin/init|1|init"><b>Erreur fréquente :</b> <code>/sbin/init</code> : le processus 1 est le parent de <code>bash</code> : c'est le « grand-parent » de 450. Lis le PPID de la ligne 450.</p><p class="td-erreur-frequente" data-si="450"><b>Erreur fréquente :</b> <code>450</code> : 450 est le PID du calcul lui-même ; son parent est dans la colonne PPID.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="p2" data-reponse="450 451|450 et 451|450, 451|450,451|451 450|451 et 450|451, 450|450 ; 451" data-etiquette="PID :">
-    <p class="td-consigne">À ton tour : donne les PID de tous les processus créés par <code>bash</code> (PID 120).</p>
-    <div class="td-correction"><p>450 et 451 : ce sont les deux lignes dont le PPID vaut 120.</p><p class="td-erreur-frequente" data-si="450"><b>Erreur fréquente :</b> <code>450</code> : il y en a un autre : regarde toutes les lignes dont le PPID vaut 120.</p><p class="td-erreur-frequente" data-si="1 98|98"><b>Erreur fréquente :</b> <code>1 98</code> : ce sont les processus créés par le processus 1 (leur PPID vaut 1).</p></div>
-  </section>
-
-  <section class="td-q" data-type="qcu" id="p3" data-support="ecran">
-    <p class="td-consigne">Quel est le rôle du processus 1 (<code>/sbin/init</code>, souvent appelé <code>systemd</code>) ?</p>
+  <section class="td-q" data-type="qcu" id="c-ps" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> ? Exemple : <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code></p>
     <ul class="td-options">
-      <li data-juste>L'ancêtre de tous les processus : il lance les services</li>
-      <li>Le premier programme ouvert par l'utilisateur·rice</li>
-      <li>Il mesure la consommation du processeur</li>
-      <li>Un enfant de bash, qui l'a lancé</li>
+      <li>Lister les fichiers du dossier</li>
+      <li>Arrêter les processus en cours</li>
+      <li>Afficher la place libre du disque</li>
+      <li data-juste>Lister les processus en cours</li>
     </ul>
-    <div class="td-correction"><p>Le processus 1 (<code>init</code>, souvent <code>systemd</code>) est lancé par le noyau au démarrage : c'est l'ancêtre de tous les processus. Il démarre et surveille les services.</p><p>« Le premier programme ouvert par l'utilisateur·rice » : non. Le processus 1 est lancé par le noyau, au démarrage, avant toute connexion.</p><p>« Il mesure la consommation du processeur » : non. Il consomme 0.0 % : il ne mesure rien, il organise.</p><p>« Un enfant de bash, qui l'a lancé » : non. Son PPID est 0 : il n'a pas de processus parent, c'est le noyau qui le lance.</p></div>
+    <div class="td-correction"><code><span class="td-insecable">ps</span></code> (<i>process status</i>) <b>liste les processus</b> ; <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> les montre tous, avec leur PID et leur PPID.<p>« Lister les fichiers du dossier » : non. C'est <code><span class="td-insecable">ls</span></code>.</p><p>« Arrêter les processus en cours » : non. Arrêter un processus, c'est <code><span class="td-insecable">kill</span></code> : <code><span class="td-insecable">ps</span></code> affiche seulement.</p><p>« Afficher la place libre du disque » : non. <code><span class="td-insecable">ps</span></code> parle des processus, pas du disque.</p></div>
   </section>
-  <section class="td-q" data-type="libre" id="p3p" data-support="papier" data-lignes="2">
-    <p class="td-consigne">Quel est le rôle du processus 1 (<code>/sbin/init</code>, souvent appelé <code>systemd</code>) ?</p>
-    <div class="td-correction"><p>Le processus 1 (<code>init</code>, souvent <code>systemd</code>) est lancé par le noyau au démarrage : c'est l'ancêtre de tous les processus. Il démarre et surveille les services.</p></div>
+  <section class="td-q" data-type="libre" id="c-psp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> · exemple : <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">ps</span></code> (<i>process status</i>) <b>liste les processus</b> ; <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> les montre tous, avec leur PID et leur PPID.</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="p4" data-support="ecran">
-    <p class="td-consigne">Pourquoi la commande <code>ps</code> apparaît-elle dans sa propre liste ?</p>
+  <section class="td-q" data-type="qcu" id="c-kill" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">kill</span> <span class="td-insecable">[PID]</span></code> ? Exemple : <code><span class="td-insecable">kill</span> <span class="td-insecable">450</span></code></p>
     <ul class="td-options">
-      <li data-juste>C'est un processus elle aussi, lancé par bash</li>
-      <li>C'est une erreur d'affichage de la commande ps</li>
-      <li>Elle reste lancée en permanence, comme cron</li>
+      <li data-juste>Demander l'arrêt d'un processus</li>
+      <li>Supprimer le fichier numéro 450</li>
+      <li>Éteindre l'ordinateur tout de suite</li>
+      <li>Afficher les infos du processus</li>
+    </ul>
+    <div class="td-correction"><code><span class="td-insecable">kill</span></code> <b>envoie un signal au processus</b> dont on donne le PID, pour qu'il s'arrête ; <code><span class="td-insecable">kill</span> <span class="td-insecable">-9</span></code> le force.<p>« Supprimer le fichier numéro 450 » : non. 450 est un PID : le numéro d'un processus.</p><p>« Éteindre l'ordinateur tout de suite » : non. <code><span class="td-insecable">kill</span></code> vise un seul processus, celui du PID.</p><p>« Afficher les infos du processus » : non. Afficher les processus, c'est <code><span class="td-insecable">ps</span></code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-killp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">kill</span> <span class="td-insecable">[PID]</span></code> · exemple : <code><span class="td-insecable">kill</span> <span class="td-insecable">450</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">kill</span></code> <b>envoie un signal au processus</b> dont on donne le PID, pour qu'il s'arrête ; <code><span class="td-insecable">kill</span> <span class="td-insecable">-9</span></code> le force.</div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="c-tube" data-support="ecran">
+    <p class="td-consigne">Que fait le tube <code><span class="td-insecable">|</span></code> ? Exemple : <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span> <span class="td-insecable">|</span> <span class="td-insecable">grep</span> <span class="td-insecable">cron</span></code></p>
+    <ul class="td-options">
+      <li>Lancer les deux commandes ensemble</li>
+      <li>Enregistrer la sortie dans un fichier</li>
+      <li data-juste>Envoyer la sortie de gauche à droite</li>
+      <li>Lancer la droite si la gauche réussit</li>
+    </ul>
+    <div class="td-correction">Le tube <code><span class="td-insecable">|</span></code> <b>envoie ce qu'affiche la commande de gauche à la commande de droite</b> : ici, <code><span class="td-insecable">grep</span> <span class="td-insecable">cron</span></code> ne garde que les lignes de <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> qui contiennent <code><span class="td-insecable">cron</span></code>.<p>« Lancer les deux commandes ensemble » : non. Elles ne sont pas indépendantes : celle de droite lit ce qu'affiche celle de gauche.</p><p>« Enregistrer la sortie dans un fichier » : non. Enregistrer dans un fichier, c'est <code><span class="td-insecable">&gt;</span></code>.</p><p>« Lancer la droite si la gauche réussit » : non. C'est <code><span class="td-insecable">&amp;&amp;</span></code>.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-tubep" data-support="papier" data-lignes="1">
+    <p class="td-consigne">le tube <code><span class="td-insecable">|</span></code> · exemple : <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span> <span class="td-insecable">|</span> <span class="td-insecable">grep</span> <span class="td-insecable">cron</span></code></p>
+    <div class="td-correction">Le tube <code><span class="td-insecable">|</span></code> <b>envoie ce qu'affiche la commande de gauche à la commande de droite</b> : ici, <code><span class="td-insecable">grep</span> <span class="td-insecable">cron</span></code> ne garde que les lignes de <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> qui contiennent <code><span class="td-insecable">cron</span></code>.</div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="c-ping" data-support="ecran">
+    <p class="td-consigne">Que fait <code><span class="td-insecable">ping</span> <span class="td-insecable">[machine]</span></code> ? Exemple : <code><span class="td-insecable">ping</span> <span class="td-insecable">8.8.8.8</span></code></p>
+    <ul class="td-options">
+      <li>Afficher ses propres adresses IP</li>
+      <li>Envoyer un message à la machine</li>
+      <li data-juste>Tester si une machine répond</li>
+      <li>Télécharger un fichier de la machine</li>
+    </ul>
+    <div class="td-correction"><code><span class="td-insecable">ping</span></code> envoie de petits paquets à une machine et attend leur retour : il dit <b>si elle répond</b>, et en combien de millisecondes.<p>« Afficher ses propres adresses IP » : non. C'est <code><span class="td-insecable">ip</span> <span class="td-insecable">addr</span></code>.</p><p>« Envoyer un message à la machine » : non. <code><span class="td-insecable">ping</span></code> n'envoie aucun message lisible : un petit paquet, qui revient.</p><p>« Télécharger un fichier de la machine » : non. <code><span class="td-insecable">ping</span></code> ne transfère aucun fichier.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="c-pingp" data-support="papier" data-lignes="1">
+    <p class="td-consigne"><code><span class="td-insecable">ping</span> <span class="td-insecable">[machine]</span></code> · exemple : <code><span class="td-insecable">ping</span> <span class="td-insecable">8.8.8.8</span></code></p>
+    <div class="td-correction"><code><span class="td-insecable">ping</span></code> envoie de petits paquets à une machine et attend leur retour : il dit <b>si elle répond</b>, et en combien de millisecondes.</div>
+  </section>
+
+  <h2 class="td-partie">2. Lire une liste de processus</h2>
+  <p><code>eleve</code> s'est connecté·e au serveur <code>lycee</code> à distance (par <code>ssh</code>), a lancé un calcul des marées (<code>python3 marees.py</code>), puis la commande <code>ps -ef</code>. En voici un extrait (les colonnes STIME, TTY et TIME sont retirées) :</p>
+<div class="t141-sortie" style="--l:38"><pre class="td-sortie-exemple">
+eleve@lycee:~$ ps -ef
+UID     PID  PPID  C CMD
+root      1     0  0 /sbin/init
+root     98     1  0 /usr/sbin/cron
+root    105     1  0 /usr/sbin/sshd
+eleve   118   105  0 sshd: eleve@pts/0
+eleve   120   118  0 -bash
+eleve   450   120 97 python3 marees.py
+eleve   451   120  0 ps -ef</pre></div>
+  <p><b>Exemple :</b> la ligne de <code><span class="td-insecable">cron</span></code> a pour PPID 1 : <code><span class="td-insecable">cron</span></code> a été créé par le processus 1, <code><span class="td-insecable">/sbin/init</span></code>.</p>
+
+  <section class="td-q" data-type="courte" id="pr-parent" data-reponse="bash|-bash|120|bash (120)|120 (bash)|-bash (120)|bash 120|bash, 120|bash, pid 120|bash, de pid 120|pid 120|le pid 120|le processus 120|le processus bash|le processus -bash|c&#x27;est bash|c&#x27;est -bash|c&#x27;est le processus 120|le shell bash|bash, le shell|le shell|bash pid 120|120 bash|120 -bash" data-etiquette="Parent :">
+    <p class="td-consigne">À ton tour : quel est le processus parent de <code><span class="td-insecable">python3</span> <span class="td-insecable">marees.py</span></code> ? Donne son nom ou son PID.</p>
+    <p class="td-retour" data-si="1|/sbin/init|init|le processus 1">Le processus 1 est un ancêtre. Quel nombre lis-tu dans la colonne PPID de la ligne du calcul ?</p>
+    <p class="td-retour" data-si="450|451">Ce nombre est un PID de la liste : celui du calcul, ou celui de son parent ? Dans quelle colonne lit-on le parent ?</p>
+    <p class="td-retour" data-si="118|sshd|sshd: eleve@pts/0|105">C'est un ancêtre plus lointain : quel processus porte le PID écrit dans la colonne PPID du calcul ?</p>
+    <p class="td-retour" data-si="python3|marees.py">C'est le calcul lui-même : qui l'a lancé ?</p>
+    <div class="td-correction"><code><span class="td-insecable">-bash</span></code> (PID 120) : la ligne de <code><span class="td-insecable">python3</span> <span class="td-insecable">marees.py</span></code> a pour PPID 120. C'est le shell depuis lequel <code><span class="td-insecable">eleve</span></code> a lancé le calcul.</div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="pr-enfants" data-reponse="450 451|451 450|450, 451|451, 450|450,451|451,450|450 ; 451|451 ; 450|450;451|451;450|450 et 451|451 et 450|450 / 451|451 / 450|450-451|451-450|450 - 451|451 - 450|les processus 450 et 451|les pid 450 et 451|450 (python3) et 451 (ps)|python3 et ps|python3 marees.py et ps -ef|450 et 451.|pid 450 et 451" data-etiquette="PID :">
+    <p class="td-consigne">À ton tour : donne les PID de tous les processus créés par <code><span class="td-insecable">-bash</span></code> (PID 120).</p>
+    <p class="td-retour" data-si="450|451">Y a-t-il une seule ligne dont le PPID vaut 120 ? Regarde toutes les lignes.</p>
+    <p class="td-retour" data-si="1 98 105|98 105|98, 105|98 et 105">Ce sont les enfants du processus 1. Quelles lignes ont 120 dans la colonne PPID ?</p>
+    <p class="td-retour" data-si="118|120|450 451 120|120 450 451">Le PID 120 est le parent lui-même. Lesquels ont 120 comme PPID ?</p>
+    <div class="td-correction">450 et 451 : ce sont les deux lignes dont le PPID vaut 120 (le calcul, et <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> lui-même).</div>
+  </section>
+
+  <div class="t141-ensemble">
+  <p><b>Exemple :</b> le début de l'arbre des processus : chaque processus est relié à son parent, au-dessus de lui.</p>
+
+<div class="t141-sortie" style="--l:14"><pre class="td-sortie-exemple">
+1 (/sbin/init)
+|-- 98 (cron)
+`-- 105 (sshd)
+    `-- ...</pre></div>
+  </div>
+  <section class="td-q" data-type="qcu" id="pr-arbre" data-support="ecran">
+    <p class="td-consigne">À ton tour : quel est l'arbre des processus de l'extrait ?</p>
+    <ul class="td-options">
+      <li><div class="t141-sortie" style="--l:21"><pre class="td-sortie-exemple">
+1 (init)
+|-- 98 (cron)
+|-- 105 (sshd)
+|-- 118 (sshd: eleve)
+`-- 120 (-bash)
+    |-- 450 (python3)
+    `-- 451 (ps -ef)</pre></div></li>
+      <li data-juste><div class="t141-sortie" style="--l:29"><pre class="td-sortie-exemple">
+1 (init)
+|-- 98 (cron)
+`-- 105 (sshd)
+    `-- 118 (sshd: eleve)
+        `-- 120 (-bash)
+            |-- 450 (python3)
+            `-- 451 (ps -ef)</pre></div></li>
+      <li><div class="t141-sortie" style="--l:32"><pre class="td-sortie-exemple">
+1 (init)
+|-- 98 (cron)
+`-- 105 (sshd)
+    `-- 118 (sshd: eleve)
+        `-- 120 (-bash)
+            `-- 450 (python3)
+                `-- 451 (ps -ef)</pre></div></li>
+      <li><div class="t141-sortie" style="--l:25"><pre class="td-sortie-exemple">
+1 (init)
+|-- 98 (cron)
+`-- 105 (sshd)
+    |-- 118 (sshd: eleve)
+    |-- 120 (-bash)
+    |-- 450 (python3)
+    `-- 451 (ps -ef)</pre></div></li>
+    </ul>
+    <div class="td-correction"><p>On relie chaque ligne à son PPID : 98 et 105 à 1 ; 118 à 105 ; 120 à 118 ; 450 et 451 à 120.</p><div class="t141-sortie" style="--l:29"><pre class="td-sortie-exemple">
+1 (init)
+|-- 98 (cron)
+`-- 105 (sshd)
+    `-- 118 (sshd: eleve)
+        `-- 120 (-bash)
+            |-- 450 (python3)
+            `-- 451 (ps -ef)</pre></div><p>Les autres arbres relient un processus à un ancêtre (118 et 120 à 1, ou à 105), ou font de <code>ps -ef</code> un enfant du calcul (son PPID est 120).</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="pr-arbrep" data-support="papier" data-lignes="8">
+    <p class="td-consigne">À ton tour : dessine l'arbre des processus de l'extrait (le PID, et la commande).</p>
+<div class="t141-sortie" style="--l:38"><pre class="td-sortie-exemple">
+eleve@lycee:~$ ps -ef
+UID     PID  PPID  C CMD
+root      1     0  0 /sbin/init
+root     98     1  0 /usr/sbin/cron
+root    105     1  0 /usr/sbin/sshd
+eleve   118   105  0 sshd: eleve@pts/0
+eleve   120   118  0 -bash
+eleve   450   120 97 python3 marees.py
+eleve   451   120  0 ps -ef</pre></div>
+    <div class="td-correction"><div class="t141-sortie" style="--l:29"><pre class="td-sortie-exemple">
+1 (init)
+|-- 98 (cron)
+`-- 105 (sshd)
+    `-- 118 (sshd: eleve)
+        `-- 120 (-bash)
+            |-- 450 (python3)
+            `-- 451 (ps -ef)</pre></div></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="pr-ps" data-support="ecran">
+    <p class="td-consigne">Pourquoi la commande <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> apparaît-elle dans sa propre liste ?</p>
+    <ul class="td-options">
+      <li data-juste>C'est un processus elle aussi, lancé par <code><span class="td-insecable">-bash</span></code></li>
+      <li>C'est une erreur d'affichage de la commande</li>
+      <li>Elle reste lancée en permanence, comme <code><span class="td-insecable">cron</span></code></li>
       <li>Elle a été lancée par le processus 1, au démarrage</li>
     </ul>
-    <div class="td-correction"><p>Pendant qu'elle construit la liste, <code>ps</code> est un programme en cours d'exécution : un processus, créé par <code>bash</code> (PPID 120). Elle s'arrête juste après.</p><p>« C'est une erreur d'affichage de la commande ps » : non. Ce n'est pas une erreur : pendant qu'elle s'exécute, ps est un processus comme les autres.</p><p>« Elle reste lancée en permanence, comme cron » : non. ps s'arrête dès que la liste est affichée : elle n'apparaît que dans sa propre liste.</p><p>« Elle a été lancée par le processus 1, au démarrage » : non. Son PPID est 120 : elle a été lancée par bash.</p></div>
+    <div class="td-correction">Pendant qu'elle construit la liste, <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> est un programme en cours d'exécution : un processus, créé par <code><span class="td-insecable">-bash</span></code> (PPID 120). Elle s'arrête juste après.<p>« C'est une erreur d'affichage de la commande » : non. Pendant qu'elle s'exécute, <code><span class="td-insecable">ps</span></code> est un processus comme les autres.</p><p>« Elle reste lancée en permanence, comme <code><span class="td-insecable">cron</span></code> » : non. <code><span class="td-insecable">ps</span></code> s'arrête dès que la liste est affichée.</p><p>« Elle a été lancée par le processus 1, au démarrage » : non. Son PPID est 120 : elle a été lancée par <code><span class="td-insecable">-bash</span></code>.</p></div>
   </section>
-  <section class="td-q" data-type="libre" id="p4p" data-support="papier" data-lignes="2">
-    <p class="td-consigne">Pourquoi la commande <code>ps</code> apparaît-elle dans sa propre liste ?</p>
-    <div class="td-correction"><p>Pendant qu'elle construit la liste, <code>ps</code> est un programme en cours d'exécution : un processus, créé par <code>bash</code> (PPID 120). Elle s'arrête juste après.</p></div>
-  </section>
-
-  <section class="td-q" data-type="qcu" id="p5" data-support="ecran">
-    <p class="td-consigne">Le processus 450 utilise 145.2 % du processeur. Comment est-ce possible ?</p>
-    <ul class="td-options">
-      <li data-juste>Il utilise plusieurs cœurs à la fois</li>
-      <li>C'est une erreur d'affichage de la commande</li>
-      <li>Il compte aussi la mémoire vive utilisée</li>
-      <li>Il fait tourner le processeur plus vite</li>
-    </ul>
-    <div class="td-correction"><p>Ici, 100 % correspond à un cœur entier. 145.2 % : le calcul utilise plusieurs cœurs du processeur en même temps.</p><p>« C'est une erreur d'affichage de la commande » : non. Ce n'est pas une erreur : ps compte en pourcentage d'un cœur.</p><p>« Il compte aussi la mémoire vive utilisée » : non. La mémoire est dans la colonne %MEM : %CPU parle du processeur.</p><p>« Il fait tourner le processeur plus vite » : non. Un processeur ne dépasse pas sa vitesse : c'est le nombre de cœurs qui compte.</p></div>
-  </section>
-  <section class="td-q" data-type="libre" id="p5p" data-support="papier" data-lignes="2">
-    <p class="td-consigne">Le processus 450 utilise 145.2 % du processeur. Comment est-ce possible ?</p>
-    <div class="td-correction"><p>Ici, 100 % correspond à un cœur entier. 145.2 % : le calcul utilise plusieurs cœurs du processeur en même temps.</p></div>
+  <section class="td-q" data-type="libre" id="pr-psp" data-support="papier" data-lignes="2">
+    <p class="td-consigne">Pourquoi la commande <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> apparaît-elle dans sa propre liste ?</p>
+    <div class="td-correction">Pendant qu'elle construit la liste, <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> est un programme en cours d'exécution : un processus, créé par <code><span class="td-insecable">-bash</span></code> (PPID 120). Elle s'arrête juste après.</div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="p6" data-support="ecran">
-    <p class="td-consigne">Le processus 450 occupe 85 % de la mémoire vive. Si elle est pleine, quel mécanisme prend le relais ?</p>
-    <ul class="td-options">
-      <li data-juste>La zone d'échange (swap) sur le disque</li>
-      <li>La mémoire cache, à l'intérieur du processeur</li>
-      <li>La mémoire morte (ROM) de la carte mère</li>
-      <li>La corbeille, que le système vide alors</li>
-    </ul>
-    <div class="td-correction"><p>La zone d'échange, le <i>swap</i> : une partie du disque sert de mémoire, plus lente que la RAM.</p><p>« La mémoire cache, à l'intérieur du processeur » : non. Le cache est une toute petite mémoire du processeur, pas une réserve quand la RAM est pleine.</p><p>« La mémoire morte (ROM) de la carte mère » : non. La mémoire morte ne s'écrit pas pendant l'exécution des programmes.</p><p>« La corbeille, que le système vide alors » : non. Le système n'efface pas les fichiers pour libérer la mémoire.</p></div>
-  </section>
-  <section class="td-q" data-type="libre" id="p6p" data-support="papier" data-lignes="1">
-    <p class="td-consigne">Le processus 450 occupe 85 % de la mémoire vive. Si elle est pleine, quel mécanisme prend le relais ?</p>
-    <div class="td-correction"><p>La zone d'échange, le <i>swap</i> : une partie du disque sert de mémoire, plus lente que la RAM.</p></div>
+  <p><b>Exemple :</b> pour arrêter le processus 98 (<code><span class="td-insecable">cron</span></code>) : <code><span class="td-insecable">sudo</span> <span class="td-insecable">kill</span> <span class="td-insecable">98</span></code> (il appartient à <code><span class="td-insecable">root</span></code>).</p>
+
+  <section class="td-q" data-type="courte" id="pr-kill" data-comparer="exact" data-reponse="kill 450|kill -9 450|kill -15 450|kill -KILL 450|kill -SIGKILL 450|kill -TERM 450|kill -SIGTERM 450|kill -s KILL 450|kill -s 9 450|kill -s SIGKILL 450|kill -s TERM 450|kill -s 15 450|sudo kill 450|sudo kill -9 450|sudo kill -15 450|sudo kill -KILL 450|sudo kill -SIGKILL 450|sudo kill -TERM 450|sudo kill -SIGTERM 450|sudo kill -s KILL 450|sudo kill -s 9 450|sudo kill -s SIGKILL 450|sudo kill -s TERM 450|sudo kill -s 15 450" data-etiquette="$">
+    <p class="td-consigne">À ton tour : écris la commande qui arrête le calcul <code><span class="td-insecable">python3</span> <span class="td-insecable">marees.py</span></code>.</p>
+    <p class="td-retour" data-si="kill 120|kill 451|kill 118|kill -9 120|kill -9 451|kill -9 118">Ce PID est-il celui du calcul ? Relis la ligne de <code><span class="td-insecable">python3</span> <span class="td-insecable">marees.py</span></code>.</p>
+    <p class="td-retour" data-si="kill marees.py|kill python3|kill python3 marees.py|kill -9 marees.py|kill -9 python3|kill -9 python3 marees.py">Qu'écrit-on après <code><span class="td-insecable">kill</span></code> : un nom, ou un numéro ?</p>
+    <p class="td-retour" data-si="Kill 450|KILL 450|kill -9 PID|kill PID">Les majuscules comptent, et <code><span class="td-insecable">kill</span></code> attend le vrai numéro du processus.</p>
+    <p class="td-retour" data-si="kill 9 450">Ta commande arrête bien le calcul, mais elle essaie aussi d'arrêter le processus 9 : pour forcer, comment s'écrit l'option ?</p>
+    <div class="td-correction"><code><span class="td-insecable">kill</span> <span class="td-insecable">450</span></code> : <code><span class="td-insecable">kill</span></code> envoie au processus 450 le signal de s'arrêter. S'il ne répond plus, <code><span class="td-insecable">kill</span> <span class="td-insecable">-9</span> <span class="td-insecable">450</span></code> l'arrête de force.</div>
   </section>
 
-  <p><b>Exemple :</b> pour demander au processus 300 de s'arrêter : <code>kill 300</code> ; s'il ne répond plus, pour le forcer : <code>kill -9 300</code>.</p>
+  <h2 class="td-partie">3. Le tube</h2>
+  <p><b>Exemple :</b> <code><span class="td-insecable">cat</span> <span class="td-insecable">tp1.py</span> <span class="td-insecable">|</span> <span class="td-insecable">grep</span> <span class="td-insecable">barge</span></code> : <code><span class="td-insecable">cat</span></code> envoie tout le fichier dans le tube, et <code><span class="td-insecable">grep</span></code> n'en garde que les lignes qui contiennent <code><span class="td-insecable">barge</span></code>.</p>
 
-  <section class="td-q" data-type="courte" id="p7" data-comparer="exact" data-reponse="kill -9 450|kill -KILL 450|kill -SIGKILL 450|kill -s KILL 450|kill -s 9 450|kill -s SIGKILL 450|sudo kill -9 450" data-etiquette="$">
-    <p class="td-consigne">À ton tour : écris la commande qui force l'arrêt immédiat du calcul <code>python3 marees.py</code>.</p>
-    <div class="td-correction"><p><code>kill -9 450</code> : le signal 9 (SIGKILL) arrête le processus 450 tout de suite.</p><p class="td-erreur-frequente" data-si="kill 450"><b>Erreur fréquente :</b> <code>kill 450</code> : <code>kill</code> seul demande l'arrêt : un processus bloqué peut ne pas répondre. Pour forcer, ajoute le signal 9.</p><p class="td-erreur-frequente" data-si="kill -9 marees.py|kill -9 python3"><b>Erreur fréquente :</b> <code>kill -9 marees.py</code> : <code>kill</code> attend un numéro de processus (PID), pas un nom.</p><p class="td-erreur-frequente" data-si="kill -9 120"><b>Erreur fréquente :</b> <code>kill -9 120</code> : 120, c'est <code>bash</code>, le terminal : tu le fermerais. Le calcul a le PID 450.</p></div>
+  <section class="td-q" data-type="courte" id="pr-tube" data-comparer="exact" data-reponse="grep marees|grep &quot;marees&quot;|grep &#x27;marees&#x27;|grep marees.py|grep &quot;marees.py&quot;|grep &#x27;marees.py&#x27;" data-etiquette="$ ps -ef |">
+    <p class="td-consigne">À ton tour : complète la commande pour n'afficher, dans la liste des processus, que les lignes qui contiennent <code><span class="td-insecable">marees</span></code>.</p>
+    <p class="td-retour" data-si="grep marees ps|grep ps marees|grep marees ps -ef">Après le tube, <code><span class="td-insecable">grep</span></code> lit ce qui arrive de la gauche : faut-il lui donner autre chose que le mot cherché ?</p>
+    <p class="td-retour" data-si="find marees|find -name marees|cat marees">Quelle commande garde seulement les lignes qui contiennent un mot ?</p>
+    <p class="td-retour" data-si="grep Marees|Grep marees|grep MAREES">Les majuscules comptent : comment s'écrit le mot dans la liste ?</p>
+    <div class="td-correction"><code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span> <span class="td-insecable">|</span> <span class="td-insecable">grep</span> <span class="td-insecable">marees</span></code> : <code><span class="td-insecable">ps</span> <span class="td-insecable">-ef</span></code> envoie la liste dans le tube, <code><span class="td-insecable">grep</span></code> garde les lignes qui contiennent <code><span class="td-insecable">marees</span></code>. (La ligne du <code><span class="td-insecable">grep</span></code> lui-même apparaît souvent aussi : elle contient le mot cherché.)</div>
   </section>
 
-  <h2 class="td-partie">2. Le joker et le tube</h2>
-  <p><b>Exemple :</b> dans <code>nsi</code>, <code>ls *.py</code> affiche <code>tp1.py</code> : tous les fichiers qui finissent par <code>.py</code>.</p>
+  <div class="td-plus-loin" data-support="ecran">
+    <p><b>Pour t'entraîner</b> : dans le <a href="https://babash.github.io/mirage/terminal/">terminal d'entraînement d'Opération MIRAGE</a>, <code>ps</code> montre un processus espion : la mission Q11 demande de le trouver, puis de l'arrêter avec <code>kill</code>.</p>
+  </div>
 
-  <section class="td-q" data-type="qcu" id="j1" data-support="ecran">
-    <p class="td-consigne">À ton tour : que fait <code>rm *.tmp</code> ?</p>
-    <ul class="td-options">
-      <li data-juste>Supprimer les fichiers .tmp du répertoire courant</li>
-      <li>Supprimer le fichier nommé exactement *.tmp</li>
-      <li>Lister les fichiers temporaires du répertoire</li>
-      <li>Supprimer les fichiers .tmp de tout le disque</li>
-    </ul>
-    <div class="td-correction"><p><code>*.tmp</code> désigne tous les fichiers du répertoire courant qui finissent par <code>.tmp</code> : <code>rm</code> les supprime tous, sans corbeille.</p><p>« Supprimer le fichier nommé exactement *.tmp » : non. Le * est un joker : il ne fait pas partie d'un nom de fichier.</p><p>« Lister les fichiers temporaires du répertoire » : non. rm supprime : il ne liste rien.</p><p>« Supprimer les fichiers .tmp de tout le disque » : non. Sans -r, rm ne descend pas dans les sous-dossiers : seulement le répertoire courant.</p></div>
-  </section>
-  <section class="td-q" data-type="libre" id="j1p" data-support="papier" data-lignes="2">
-    <p class="td-consigne">À ton tour : explique ce que fait <code>rm *.tmp</code>.</p>
-    <div class="td-correction"><p><code>*.tmp</code> désigne tous les fichiers du répertoire courant qui finissent par <code>.tmp</code> : <code>rm</code> les supprime tous, sans corbeille.</p></div>
-  </section>
-
-  <p><b>Exemple :</b> <code>cat tp1.py | grep barge</code> : <code>cat</code> envoie tout le fichier dans le tube, et <code>grep</code> n'en garde que les lignes qui contiennent <code>barge</code>.</p>
-
-  <section class="td-q" data-type="qcu" id="j2" data-support="ecran">
-    <p class="td-consigne">À ton tour : que fait <code>history | grep cp</code> ?</p>
-    <ul class="td-options">
-      <li data-juste>Afficher les commandes tapées contenant cp</li>
-      <li>Copier l'historique dans un fichier nommé grep</li>
-      <li>Afficher toutes les commandes déjà tapées</li>
-      <li>Relancer la dernière commande cp tapée</li>
-    </ul>
-    <div class="td-correction"><p><code>history</code> envoie la liste des commandes déjà tapées dans le tube ; <code>grep cp</code> n'en garde que les lignes qui contiennent <code>cp</code>.</p><p>« Copier l'historique dans un fichier nommé grep » : non. Copier, ce serait la commande cp : ici, cp est le motif cherché par grep.</p><p>« Afficher toutes les commandes déjà tapées » : non. grep fait un tri : seules restent les lignes qui contiennent cp.</p><p>« Relancer la dernière commande cp tapée » : non. Rien n'est relancé : la commande affiche seulement des lignes.</p></div>
-  </section>
-  <section class="td-q" data-type="libre" id="j2p" data-support="papier" data-lignes="2">
-    <p class="td-consigne">À ton tour : explique ce que fait <code>history | grep cp</code>.</p>
-    <div class="td-correction"><p><code>history</code> envoie la liste des commandes déjà tapées dans le tube ; <code>grep cp</code> n'en garde que les lignes qui contiennent <code>cp</code>.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="j3" data-comparer="exact" data-reponse="grep marees|grep &quot;marees&quot;|grep 'marees'|grep marees.py|grep &quot;marees.py&quot;" data-etiquette="$ ps -ef |">
-    <p class="td-consigne">À ton tour : complète la commande pour n'afficher, dans la liste des processus, que les lignes qui contiennent <code>marees</code>.</p>
-    <div class="td-correction"><p><code>ps -ef | grep marees</code> : <code>ps -ef</code> envoie la liste dans le tube, <code>grep</code> garde les lignes qui contiennent <code>marees</code>. (La ligne du <code>grep</code> lui-même apparaît souvent aussi : il contient le mot cherché.)</p><p class="td-erreur-frequente" data-si="grep marees ps"><b>Erreur fréquente :</b> <code>grep marees ps</code> : après un tube, <code>grep</code> lit ce qui arrive de la gauche : on ne lui donne pas de fichier.</p><p class="td-erreur-frequente" data-si="find marees|find -name marees"><b>Erreur fréquente :</b> <code>find marees</code> : <code>find</code> cherche des fichiers sur le disque, pas des lignes.</p></div>
-  </section>
-
-  <p class="td-ecran-seul"><b>Avant :</b> <a href="commandes-terminale.html">feuille 1 sur 2 : rappels de première, observer la machine</a>.</p>
+  <p class="td-ecran-seul"><b>Avant :</b> <a href="commandes-terminale.html">feuille 1 sur 2 : les rappels de première</a>.</p>
 
   <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">
