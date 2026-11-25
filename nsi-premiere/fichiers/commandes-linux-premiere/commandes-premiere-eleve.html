@@ -1,11 +1,13 @@
 <!doctype html>
 <!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<!-- Jumeau de nsi-terminale/fichiers/architecture-os/commandes-terminale.html (même arborescence, mêmes mots) :
+     toute modification de l'arborescence ou du vocabulaire se reporte dans les deux (T141). -->
 <html lang="fr">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Commandes Linux : TD en ligne</title>
-  <meta name="description" content="1re NSI, systèmes d'exploitation : les commandes du terminal Linux (pwd, ls, cd, cat, grep, man, touch, mkdir, cp, mv, rm, sudo), chemins absolus et relatifs. Feuille auto-corrective et imprimable.">
+  <meta name="description" content="1re NSI, systèmes d'exploitation : les commandes de base du terminal Linux, les chemins absolus et relatifs, les droits (ls -l, chmod, sudo). Feuille auto-corrective et imprimable.">
   <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
   <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
   <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
@@ -19,7 +21,7 @@
      data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
      data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
      data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
-<main class="td" data-td="nsi1-commandes-linux" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi" data-ordre="melange" data-code="obligatoire">
+<main class="td" data-td="nsi1-commandes-linux" data-td-version="2" data-auteurs="Babash - NSI Tani Malandi" data-ordre="melange" data-code="obligatoire">
 
   <header class="td-entete">
     <!-- BANDEAU : paysage n° 3 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
@@ -30,9 +32,9 @@
       <div class="td-bandeau-texte">
         <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Systèmes d&#x27;exploitation</span></p>
         <h1>Commandes Linux</h1>
-        <p class="td-accroche">Le terminal et l&#x27;arborescence</p>
+        <p class="td-accroche">Terminal, chemins, droits</p>
       </div>
-      
+
     </div>
     <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
     <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
@@ -44,378 +46,354 @@
       <ul class="td-criteres">
         <li>dire ce que fait chaque commande de base ;</li>
         <li>écrire un chemin absolu et un chemin relatif ;</li>
-        <li>prévoir ce qu'affiche <code>ls</code> après des déplacements ;</li>
-        <li>expliquer le rôle de <code>sudo</code>.</li>
+        <li>écrire une commande qui copie ou qui se déplace ;</li>
+        <li>prévoir ce qu'affiche <code>ls</code> après <code>mkdir</code> et <code>mv</code>.</li>
       </ul>
-      <p class="td-duree">1 heure · 23 questions · seul·e ou en binôme</p>
+      <p class="td-duree">1 heure · 19 questions · feuille 1 sur 2 (la feuille 2 : chercher, les droits) · seul·e ou en binôme</p>
     </div>
     <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
   </header>
 
-  <p>Le <b>terminal</b> (le <i>shell</i>) contrôle le système d'exploitation par des commandes écrites. Tout est rangé en <b>arborescence</b>, depuis la <b>racine</b> <code>/</code>.</p>
-  <p>Symboles essentiels : <code>.</code> (répertoire courant) · <code>..</code> (répertoire parent) · <code>~</code> (dossier personnel de l'utilisateur·rice).</p>
+  <!-- BLOC COMMUN avec les feuilles de terminale : mêmes mots, même arborescence.
+       « À retenir » : à l'écran et sur papier (deux copies : td-plus-loin ne s'imprime qu'avec data-support="papier") -->
+  <div class="td-plus-loin">
+    <p><b>À retenir</b></p>
+    <ul>
+      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code>eleve@lycee:~/devoirs$</code> se lit « <code>eleve</code>, sur la machine <code>lycee</code>, dans le répertoire <code>~/devoirs</code> ».</li>
+      <li>Les fichiers sont rangés en <b>arborescence</b> de dossiers (ou <b>répertoires</b>) depuis la <b>racine</b> <code>/</code> ; <code>.</code> : le répertoire courant ; <code>..</code> : le parent ; <code>~</code> : le répertoire personnel (<code>/home/eleve</code>).</li>
+      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code>ls -l projets</code>. Les majuscules comptent.</li>
+      <li>Un chemin <b>absolu</b> part de la racine <code>/</code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
+      <li><code>cp</code> copie (l'original reste) ; <code>mv</code> déplace ou renomme (l'original quitte sa place) : depuis <code>/home/eleve</code>, <code>mv projets/site.html photos/</code> vide <code>projets</code>.</li>
+      <li>Au clavier : <b>Tab</b> complète les noms, <b>↑</b> rappelle la commande précédente, <b>Ctrl</b>+<b>C</b> interrompt une commande.</li>
+    </ul>
+  </div>
+  <div class="td-plus-loin" data-support="papier">
+    <p><b>À retenir</b></p>
+    <ul>
+      <li>Dans le <b>terminal</b>, on tape une commande après l'<b>invite</b> : <code>eleve@lycee:~/devoirs$</code> se lit « <code>eleve</code>, sur la machine <code>lycee</code>, dans le répertoire <code>~/devoirs</code> ».</li>
+      <li>Les fichiers sont rangés en <b>arborescence</b> de dossiers (ou <b>répertoires</b>) depuis la <b>racine</b> <code>/</code> ; <code>.</code> : le répertoire courant ; <code>..</code> : le parent ; <code>~</code> : le répertoire personnel (<code>/home/eleve</code>).</li>
+      <li>Une commande, puis ses options, puis ses arguments, séparés par une espace : <code>ls -l projets</code>. Les majuscules comptent.</li>
+      <li>Un chemin <b>absolu</b> part de la racine <code>/</code> ; un chemin <b>relatif</b> part du répertoire courant.</li>
+      <li><code>cp</code> copie (l'original reste) ; <code>mv</code> déplace ou renomme (l'original quitte sa place) : depuis <code>/home/eleve</code>, <code>mv projets/site.html photos/</code> vide <code>projets</code>.</li>
+      <li>Au clavier : <b>Tab</b> complète les noms, <b>↑</b> rappelle la commande précédente, <b>Ctrl</b>+<b>C</b> interrompt une commande.</li>
+    </ul>
+  </div>
+  <p data-support="ecran"><b>En ligne</b>, écris chaque commande comme dans le terminal : une espace entre la commande et chacun de ses arguments, et les majuscules comptent.</p>
 
-  <h2 class="td-partie">1. Navigation dans l'arborescence</h2>
-  <p data-support="papier">Pour chaque commande, écris ce qu'elle fait (son action) ; l'exemple montre comment on l'écrit.</p>
+  <h2 class="td-partie">1. Les commandes de base</h2>
   <section class="td-q" data-type="libre" id="t1-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
+    <p class="td-consigne">Complète la colonne « Ce qu'elle fait ». La première ligne est faite : c'est l'exemple.</p>
     <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
+    <thead><tr><th>Commande</th><th data-case-largeur="78">Ce qu'elle fait</th><th>Exemple</th></tr></thead>
     <tbody>
-      <tr><td><code>pwd</code></td><td></td><td><code>pwd</code> → <code>/home/eleve/devoirs/nsi</code></td></tr>
-      <tr><td><code>ls</code></td><td></td><td><code>ls</code><br><code>ls ..</code></td></tr>
-      <tr><td><code>cd [chemin]</code></td><td></td><td><code>cd Documents/</code></td></tr>
-      <tr><td><code>cd ..</code></td><td></td><td><code>cd ../../home</code></td></tr>
+      <tr><td><code>pwd</code></td><td>Afficher le chemin absolu du répertoire courant</td><td><code>pwd</code></td></tr>
+      <tr><td><code>ls [dossier]</code></td><td></td><td><code>ls</code> · <code>ls ..</code></td></tr>
+      <tr><td><code>cd [dossier]</code></td><td></td><td><code>cd projets</code></td></tr>
+      <tr><td><code>cd ..</code></td><td></td><td><code>cd ../..</code></td></tr>
       <tr><td><code>cd ~</code></td><td></td><td><code>cd ~</code></td></tr>
+      <tr><td><code>cat [fichier]</code></td><td></td><td><code>cat tp1.py</code></td></tr>
+      <tr><td><code>grep [mot] [fichier]</code></td><td></td><td><code>grep print tp1.py</code></td></tr>
+      <tr><td><code>man [commande]</code></td><td></td><td><code>man ls</code></td></tr>
+      <tr><td><code>touch [fichier]</code></td><td></td><td><code>touch exam1.txt</code></td></tr>
+      <tr><td><code>mkdir [dossier]</code></td><td></td><td><code>mkdir archives</code></td></tr>
+      <tr><td><code>cp [source] [cible]</code></td><td></td><td><code>cp tp1.py ../../projets/</code></td></tr>
+      <tr><td><code>mv [source] [cible]</code></td><td></td><td><code>mv nsi ../archives/</code></td></tr>
+      <tr><td><code>rm [fichier]</code></td><td></td><td><code>rm brouillon.txt</code></td></tr>
+      <tr><td><code>rmdir [dossier]</code></td><td></td><td><code>rmdir archives</code></td></tr>
     </tbody>
   </table></div>
-    <div class="td-correction"><p><code>pwd</code> (<i>Print Working Directory</i>) affiche le <b>chemin absolu du répertoire de travail</b> actuel.</p><p><code>ls</code> (<i>list</i>) <b>liste le contenu</b> (fichiers et dossiers) du répertoire courant, ou du répertoire indiqué : <code>ls ..</code> liste le parent.</p><p><code>cd</code> (<i>Change Directory</i>) <b>change de répertoire</b> : on se déplace dans l'arborescence.</p><p><code>cd ..</code> <b>remonte d'un niveau</b>, vers le répertoire parent. <code>cd ../../home</code> remonte de deux niveaux, puis entre dans <code>home</code>.</p><p><code>cd ~</code> <b>ramène directement dans le dossier personnel</b> de l'utilisateur·rice (ici <code>/home/eleve</code>), d'où que l'on soit.</p></div>
+    <div class="td-correction"><p><code>ls</code> (<i>list</i>) <b>liste le contenu</b> du répertoire courant, ou du dossier indiqué : <code>ls ..</code> liste le parent.</p><p><code>cd</code> (<i>change directory</i>) <b>change de répertoire</b> : on se déplace dans l'arborescence.</p><p><code>cd ..</code> <b>remonte d'un niveau</b>, vers le répertoire parent ; <code>cd ../..</code> remonte de deux niveaux.</p><p><code>cd ~</code> <b>ramène dans le répertoire personnel</b> (ici <code>/home/eleve</code>), d'où que l'on soit.</p><p><code>cat</code> <b>affiche tout le contenu</b> d'un fichier.</p><p><code>grep</code> <b>cherche un motif</b> (un mot) et affiche les lignes du fichier qui le contiennent.</p><p><code>man</code> <b>affiche le manuel</b> d'une commande (on en sort avec la touche <b>q</b>).</p><p><code>touch</code> <b>crée un fichier vide</b> ; si le fichier existe déjà, il change seulement sa date.</p><p><code>mkdir</code> (<i>make directory</i>) <b>crée un dossier</b>.</p><p><code>cp</code> (<i>copy</i>) <b>copie</b> un fichier vers une destination : l'original reste à sa place.</p><p><code>mv</code> (<i>move</i>) <b>déplace ou renomme</b> un fichier ou un dossier.</p><p><code>rm</code> (<i>remove</i>) <b>supprime</b> un fichier, pour de bon : il n'y a pas de corbeille.</p><p><code>rmdir</code> (<i>remove directory</i>) <b>supprime un dossier vide</b>.</p></div>
   </section>
 
-  <section class="td-q" data-type="qcu" id="q1" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>pwd</code> ? Exemple : <code>pwd</code> → <code>/home/eleve/devoirs/nsi</code></p>
-    <ul class="td-options">
-      <li data-juste>Afficher le chemin absolu du répertoire courant</li>
-      <li data-retour="Changer de répertoire, c'est cd. pwd ne déplace pas : il dit où tu es.">Changer de répertoire</li>
-      <li data-retour="Lister le contenu, c'est ls. pwd affiche un seul chemin, pas une liste.">Lister le contenu du répertoire courant</li>
-      <li data-retour="pwd veut dire Print Working Directory (« affiche le répertoire de travail »), pas password.">Afficher le mot de passe de l'utilisateur·rice</li>
-    </ul>
-    <p class="td-aide">Regarde l'exemple : la commande affiche un chemin qui part de <code>/</code>.</p>
-    <div class="td-correction"><p><code>pwd</code> (<i>Print Working Directory</i>) affiche le <b>chemin absolu du répertoire de travail</b> actuel.</p></div>
-  </section>
+  <p data-support="ecran"><b>Exemple :</b> que fait la commande <code>pwd</code> ? Elle <b>affiche le chemin absolu du répertoire courant</b> (<i>print working directory</i>) : depuis <code>nsi</code>, elle affiche <code>/home/eleve/devoirs/nsi</code>. À ton tour, pour les autres commandes.</p>
 
   <section class="td-q" data-type="qcu" id="q2" data-support="ecran">
     <p class="td-consigne">Que fait la commande <code>ls</code> ? Exemples : <code>ls</code> · <code>ls ..</code></p>
     <ul class="td-options">
-      <li data-retour="Afficher le contenu d'un fichier, c'est cat.">Afficher le contenu d'un fichier texte</li>
-      <li data-retour="Afficher le chemin du répertoire courant, c'est pwd.">Afficher le chemin du répertoire courant</li>
-      <li data-juste>Lister le contenu d'un répertoire</li>
-      <li data-retour="ls n'efface rien : il affiche une liste.">Effacer tout l'écran du terminal</li>
+      <li>Afficher le contenu d'un fichier texte</li>
+      <li>Afficher le chemin du répertoire courant</li>
+      <li data-juste>Lister le contenu d'un dossier</li>
+      <li>Effacer tout l'écran du terminal</li>
     </ul>
-    <p class="td-aide"><code>ls ..</code> agit sur le répertoire parent : il en montre le contenu.</p>
-    <div class="td-correction"><p><code>ls</code> (<i>list</i>) <b>liste le contenu</b> (fichiers et dossiers) du répertoire courant, ou du répertoire indiqué : <code>ls ..</code> liste le parent.</p></div>
+    <div class="td-correction"><p><code>ls</code> (<i>list</i>) <b>liste le contenu</b> du répertoire courant, ou du dossier indiqué : <code>ls ..</code> liste le parent.</p><p>« Afficher le contenu d'un fichier texte » : non. Afficher le contenu d'un fichier, c'est cat.</p><p>« Afficher le chemin du répertoire courant » : non. Afficher le chemin du répertoire courant, c'est pwd.</p><p>« Effacer tout l'écran du terminal » : non. ls n'efface rien : il affiche une liste. Vider l'écran, c'est clear.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q3" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>cd [chemin]</code> ? Exemple : <code>cd Documents/</code></p>
+    <p class="td-consigne">Que fait la commande <code>cd [dossier]</code> ? Exemple : <code>cd projets</code></p>
     <ul class="td-options">
-      <li data-retour="Créer un répertoire, c'est mkdir.">Créer le répertoire indiqué</li>
-      <li data-juste>Se déplacer dans le répertoire indiqué</li>
-      <li data-retour="Copier, c'est cp.">Copier le répertoire indiqué</li>
-      <li data-retour="Lister le contenu, c'est ls.">Afficher le contenu du répertoire indiqué</li>
+      <li>Créer le dossier indiqué</li>
+      <li data-juste>Se déplacer dans le dossier indiqué</li>
+      <li>Copier le dossier indiqué</li>
+      <li>Afficher le contenu du dossier indiqué</li>
     </ul>
-    <p class="td-aide"><code>cd</code> vient de l'anglais <i>Change Directory</i>.</p>
-    <div class="td-correction"><p><code>cd</code> (<i>Change Directory</i>) <b>change de répertoire</b> : on se déplace dans l'arborescence.</p></div>
+    <div class="td-correction"><p><code>cd</code> (<i>change directory</i>) <b>change de répertoire</b> : on se déplace dans l'arborescence.</p><p>« Créer le dossier indiqué » : non. Créer un dossier, c'est mkdir.</p><p>« Copier le dossier indiqué » : non. Copier, c'est cp.</p><p>« Afficher le contenu du dossier indiqué » : non. Lister le contenu, c'est ls.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q4" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>cd ..</code> ? Exemple : <code>cd ../../home</code></p>
+    <p class="td-consigne">Que fait la commande <code>cd ..</code> ?</p>
     <ul class="td-options">
-      <li data-retour="Pour revenir au dossier personnel, c'est cd ~.">Revenir au dossier personnel</li>
-      <li data-retour="Pour aller à la racine, c'est cd /.">Aller à la racine du système</li>
+      <li>Revenir au répertoire personnel</li>
+      <li>Aller à la racine du système</li>
       <li data-juste>Remonter au répertoire parent</li>
-      <li data-retour="Un seul point, c'est le répertoire courant (cd . ne bouge pas). Deux points, c'est le parent.">Rester dans le répertoire courant</li>
+      <li>Rester dans le répertoire courant</li>
     </ul>
-    <p class="td-aide">Relis les symboles essentiels en haut de la feuille : <code>..</code> désigne…</p>
-    <div class="td-correction"><p><code>cd ..</code> <b>remonte d'un niveau</b>, vers le répertoire parent. <code>cd ../../home</code> remonte de deux niveaux, puis entre dans <code>home</code>.</p></div>
+    <div class="td-correction"><p><code>cd ..</code> <b>remonte d'un niveau</b>, vers le répertoire parent ; <code>cd ../..</code> remonte de deux niveaux.</p><p>« Revenir au répertoire personnel » : non. Pour revenir au répertoire personnel, c'est cd ~.</p><p>« Aller à la racine du système » : non. Pour aller à la racine, c'est cd /.</p><p>« Rester dans le répertoire courant » : non. Un seul point, c'est le répertoire courant (cd . ne bouge pas). Deux points, c'est le parent.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q5" data-support="ecran">
     <p class="td-consigne">Que fait la commande <code>cd ~</code> ?</p>
     <ul class="td-options">
-      <li data-retour="La racine, c'est /. Le tilde ~ désigne autre chose.">Aller à la racine <code>/</code></li>
-      <li data-retour="Remonter d'un niveau, c'est cd ..">Remonter d'un niveau, vers le parent</li>
-      <li data-retour="Revenir au répertoire précédent, c'est cd - (avec un tiret).">Revenir au répertoire où l'on était avant</li>
-      <li data-juste>Aller dans son dossier personnel</li>
+      <li>Aller à la racine <code>/</code></li>
+      <li>Remonter d'un niveau, vers le parent</li>
+      <li>Revenir au répertoire où l'on était avant</li>
+      <li data-juste>Aller dans son répertoire personnel</li>
     </ul>
-    <p class="td-aide">Relis les symboles essentiels en haut de la feuille : <code>~</code> désigne…</p>
-    <div class="td-correction"><p><code>cd ~</code> <b>ramène directement dans le dossier personnel</b> de l'utilisateur·rice (ici <code>/home/eleve</code>), d'où que l'on soit.</p></div>
+    <div class="td-correction"><p><code>cd ~</code> <b>ramène dans le répertoire personnel</b> (ici <code>/home/eleve</code>), d'où que l'on soit.</p><p>« Aller à la racine / » : non. La racine, c'est /. Le tilde ~ désigne autre chose.</p><p>« Remonter d'un niveau, vers le parent » : non. Remonter d'un niveau, c'est cd ..</p><p>« Revenir au répertoire où l'on était avant » : non. Revenir au répertoire précédent, c'est cd - (avec un tiret).</p></div>
   </section>
 
-  <p><b>Chemin absolu</b> : il part toujours de la racine <code>/</code>, quel que soit le répertoire courant. Exemple : <code>/home/eleve/devoirs/nsi</code>.<br>
-  <b>Chemin relatif</b> : il part du répertoire courant (<code>pwd</code>) et utilise <code>..</code> pour remonter. Exemples, depuis <code>/home/eleve</code> : <code>devoirs/nsi</code> ou <code>../prof</code>.</p>
-
-  <h2 class="td-partie">2. Lecture de fichiers</h2>
-  <section class="td-q" data-type="libre" id="t2-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
-    <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
-    <tbody>
-      <tr><td><code>cat [fichier]</code></td><td></td><td><code>cat notes.csv</code></td></tr>
-      <tr><td><code>grep [motif] [fichier]</code></td><td></td><td><code>grep "password" L.txt</code></td></tr>
-      <tr><td><code>man [commande]</code></td><td></td><td><code>man ls</code></td></tr>
-    </tbody>
-  </table></div>
-    <div class="td-correction"><p><code>cat</code> <b>affiche le contenu complet</b> d'un fichier dans le terminal.</p><p><code>grep</code> <b>recherche un motif</b> (un mot-clé) et affiche les lignes du fichier qui le contiennent.</p><p><code>man</code> <b>affiche le manuel</b> d'une commande (on en sort avec la touche <b>q</b>).</p></div>
-  </section>
 
   <section class="td-q" data-type="qcu" id="q6" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>cat [fichier]</code> ? Exemple : <code>cat notes.csv</code></p>
+    <p class="td-consigne">Que fait la commande <code>cat [fichier]</code> ? Exemple : <code>cat tp1.py</code></p>
     <ul class="td-options">
       <li data-juste>Afficher tout le contenu d'un fichier</li>
-      <li data-retour="Créer un fichier vide, c'est touch.">Créer un fichier vide</li>
-      <li data-retour="Chercher un mot, c'est grep : il n'affiche que les lignes qui le contiennent.">Chercher un mot dans un fichier</li>
-      <li data-retour="Lister les fichiers, c'est ls.">Lister les fichiers d'un répertoire</li>
+      <li>Créer un fichier vide</li>
+      <li>Chercher un mot dans un fichier</li>
+      <li>Lister les fichiers d'un dossier</li>
     </ul>
-    <p class="td-aide">Avec <code>cat notes.csv</code>, on voit les notes écrites dans le fichier.</p>
-    <div class="td-correction"><p><code>cat</code> <b>affiche le contenu complet</b> d'un fichier dans le terminal.</p></div>
+    <div class="td-correction"><p><code>cat</code> <b>affiche tout le contenu</b> d'un fichier.</p><p>« Créer un fichier vide » : non. Créer un fichier vide, c'est touch.</p><p>« Chercher un mot dans un fichier » : non. Chercher un mot, c'est grep : il n'affiche que les lignes qui le contiennent.</p><p>« Lister les fichiers d'un dossier » : non. Lister les fichiers, c'est ls.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q7" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>grep [motif] [fichier]</code> ? Exemple : <code>grep "password" L.txt</code></p>
+    <p class="td-consigne">Que fait la commande <code>grep [motif] [fichier]</code> ? Exemple : <code>grep print tp1.py</code></p>
     <ul class="td-options">
-      <li data-retour="Tout afficher, c'est cat. grep fait un tri.">Afficher tout le fichier, ligne par ligne</li>
+      <li>Afficher tout le fichier, ligne par ligne</li>
       <li data-juste>Afficher les lignes qui contiennent le motif</li>
-      <li data-retour="grep ne modifie jamais le fichier : il affiche seulement des lignes.">Remplacer le motif partout dans le fichier</li>
-      <li data-retour="Chercher un fichier par son nom, c'est find. grep cherche dans le contenu.">Chercher un fichier par son nom</li>
+      <li>Remplacer le motif partout dans le fichier</li>
+      <li>Chercher un fichier par son nom</li>
     </ul>
-    <p class="td-aide">Le motif est le mot cherché ; le fichier est l'endroit où on le cherche.</p>
-    <div class="td-correction"><p><code>grep</code> <b>recherche un motif</b> (un mot-clé) et affiche les lignes du fichier qui le contiennent.</p></div>
+    <div class="td-correction"><p><code>grep</code> <b>cherche un motif</b> (un mot) et affiche les lignes du fichier qui le contiennent.</p><p>« Afficher tout le fichier, ligne par ligne » : non. Tout afficher, c'est cat. grep fait un tri.</p><p>« Remplacer le motif partout dans le fichier » : non. grep ne modifie jamais le fichier : il affiche seulement des lignes.</p><p>« Chercher un fichier par son nom » : non. Chercher un fichier par son nom, c'est find. grep cherche dans le contenu.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q8" data-support="ecran">
     <p class="td-consigne">Que fait la commande <code>man [commande]</code> ? Exemple : <code>man ls</code></p>
     <ul class="td-options">
-      <li data-retour="Exécuter avec les droits d'administrateur·rice, c'est sudo.">Exécuter une commande en administrateur·rice</li>
-      <li data-retour="Afficher le nom de l'utilisateur·rice connecté·e, c'est whoami.">Afficher l'utilisateur·rice connecté·e</li>
-      <li data-retour="Interrompre une commande, c'est Ctrl+C.">Interrompre une commande qui ne répond plus</li>
+      <li>Exécuter une commande en administrateur·rice</li>
+      <li>Afficher l'utilisateur·rice connecté·e</li>
+      <li>Interrompre une commande qui ne répond plus</li>
       <li data-juste>Afficher le manuel d'utilisation d'une commande</li>
     </ul>
-    <p class="td-aide"><code>man</code> est le début d'un mot anglais : <i>manual</i>.</p>
-    <div class="td-correction"><p><code>man</code> <b>affiche le manuel</b> d'une commande (on en sort avec la touche <b>q</b>).</p></div>
+    <div class="td-correction"><p><code>man</code> <b>affiche le manuel</b> d'une commande (on en sort avec la touche <b>q</b>).</p><p>« Exécuter une commande en administrateur·rice » : non. Exécuter une commande en administrateur·rice, c'est sudo.</p><p>« Afficher l'utilisateur·rice connecté·e » : non. Afficher l'utilisateur·rice connecté·e, c'est whoami.</p><p>« Interrompre une commande qui ne répond plus » : non. Interrompre une commande, c'est Ctrl+C.</p></div>
   </section>
 
-  <h2 class="td-partie">3. Création et manipulation de fichiers</h2>
-  <section class="td-q" data-type="libre" id="t3-papier" data-support="papier" data-lignes="0">
-    <p class="td-consigne">Complète la colonne « Action » : ce que fait chaque commande.</p>
-    <div class="td-table"><table data-pleine-largeur data-case-hauteur="1">
-    <thead><tr><th>Commande</th><th data-case-largeur="88">Action à compléter</th><th>Exemple</th></tr></thead>
-    <tbody>
-      <tr><td><code>touch [fichier]</code></td><td></td><td><code>touch exam1.txt</code></td></tr>
-      <tr><td><code>mkdir [dossier]</code></td><td></td><td><code>mkdir archives</code></td></tr>
-      <tr><td><code>cp [source] [destination]</code></td><td></td><td><code>cp notes.csv projets/</code></td></tr>
-      <tr><td><code>mv [source] [destination]</code></td><td></td><td><code>mv nsi ../archives/</code></td></tr>
-      <tr><td><code>rm [fichier]</code></td><td></td><td><code>rm temp.txt</code></td></tr>
-      <tr><td><code>sudo [commande]</code></td><td></td><td><code>sudo chown eleve fich.</code></td></tr>
-    </tbody>
-  </table></div>
-    <div class="td-correction"><p><code>touch</code> <b>crée un fichier vide</b> ; si le fichier existe déjà, il met à jour sa date de modification.</p><p><code>mkdir</code> (<i>MaKe DIRectory</i>) <b>crée un nouveau dossier</b>.</p><p><code>cp</code> (<i>CoPy</i>) <b>copie</b> un fichier ou un dossier vers une destination : l'original reste à sa place.</p><p><code>mv</code> (<i>MoVe</i>) <b>déplace ou renomme</b> un fichier ou un dossier.</p><p><code>rm</code> (<i>ReMove</i>) <b>supprime définitivement</b> un fichier : c'est irréversible !</p><p><code>sudo</code> <b>exécute une commande avec les droits d'administrateur·rice</b> (le super-utilisateur <code>root</code>).</p></div>
-  </section>
 
   <section class="td-q" data-type="qcu" id="q9" data-support="ecran">
     <p class="td-consigne">Que fait la commande <code>touch [fichier]</code> ? Exemple : <code>touch exam1.txt</code></p>
     <ul class="td-options">
-      <li data-retour="Créer un dossier, c'est mkdir.">Créer un dossier vide, prêt à remplir</li>
+      <li>Créer un dossier vide, prêt à remplir</li>
       <li data-juste>Créer un fichier vide (ou changer sa date)</li>
-      <li data-retour="touch n'ouvre aucun éditeur : il crée le fichier, vide, et rend la main.">Ouvrir un fichier dans un éditeur pour l'écrire</li>
-      <li data-retour="Afficher le contenu, c'est cat.">Afficher le contenu d'un fichier</li>
+      <li>Ouvrir un fichier dans un éditeur pour l'écrire</li>
+      <li>Afficher le contenu d'un fichier</li>
     </ul>
-    <p class="td-aide">Après <code>touch exam1.txt</code>, <code>ls</code> montre un nouveau fichier.</p>
-    <div class="td-correction"><p><code>touch</code> <b>crée un fichier vide</b> ; si le fichier existe déjà, il met à jour sa date de modification.</p></div>
+    <div class="td-correction"><p><code>touch</code> <b>crée un fichier vide</b> ; si le fichier existe déjà, il change seulement sa date.</p><p>« Créer un dossier vide, prêt à remplir » : non. Créer un dossier, c'est mkdir.</p><p>« Ouvrir un fichier dans un éditeur pour l'écrire » : non. touch n'ouvre aucun éditeur : il crée le fichier, vide, et rend la main.</p><p>« Afficher le contenu d'un fichier » : non. Afficher le contenu, c'est cat.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q10" data-support="ecran">
     <p class="td-consigne">Que fait la commande <code>mkdir [dossier]</code> ? Exemple : <code>mkdir archives</code></p>
     <ul class="td-options">
-      <li data-retour="Créer un fichier vide, c'est touch.">Créer un fichier vide</li>
-      <li data-retour="Supprimer un dossier vide, c'est rmdir.">Supprimer un dossier</li>
+      <li>Créer un fichier vide</li>
+      <li>Supprimer un dossier</li>
       <li data-juste>Créer un dossier</li>
-      <li data-retour="Se déplacer, c'est cd.">Se déplacer dans un dossier</li>
+      <li>Se déplacer dans un dossier</li>
     </ul>
-    <p class="td-aide"><code>mkdir</code> : <i>MaKe DIRectory</i>.</p>
-    <div class="td-correction"><p><code>mkdir</code> (<i>MaKe DIRectory</i>) <b>crée un nouveau dossier</b>.</p></div>
+    <div class="td-correction"><p><code>mkdir</code> (<i>make directory</i>) <b>crée un dossier</b>.</p><p>« Créer un fichier vide » : non. Créer un fichier vide, c'est touch.</p><p>« Supprimer un dossier » : non. Supprimer un dossier vide, c'est rmdir.</p><p>« Se déplacer dans un dossier » : non. Se déplacer, c'est cd.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q11" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>cp [source] [destination]</code> ? Exemple : <code>cp notes.csv projets/</code></p>
+    <p class="td-consigne">Que fait la commande <code>cp [source] [destination]</code> ? Exemple : <code>cp tp1.py ../../projets/</code></p>
     <ul class="td-options">
       <li data-juste>Copier vers la destination : l'original reste</li>
-      <li data-retour="Si l'original disparaît, c'est un déplacement : mv.">Déplacer vers la destination : l'original disparaît</li>
-      <li data-retour="Renommer, c'est mv.">Renommer un fichier</li>
-      <li data-retour="cp ne compare rien : il fabrique une copie.">Comparer deux fichiers</li>
+      <li>Déplacer vers la destination : l'original disparaît</li>
+      <li>Renommer un fichier, sans le copier</li>
+      <li>Comparer deux fichiers, ligne par ligne</li>
     </ul>
-    <p class="td-aide"><code>cp</code> : <i>CoPy</i>.</p>
-    <div class="td-correction"><p><code>cp</code> (<i>CoPy</i>) <b>copie</b> un fichier ou un dossier vers une destination : l'original reste à sa place.</p></div>
+    <div class="td-correction"><p><code>cp</code> (<i>copy</i>) <b>copie</b> un fichier vers une destination : l'original reste à sa place.</p><p>« Déplacer vers la destination : l'original disparaît » : non. Si l'original disparaît, c'est un déplacement : mv.</p><p>« Renommer un fichier, sans le copier » : non. Renommer, c'est mv.</p><p>« Comparer deux fichiers, ligne par ligne » : non. cp ne compare rien : il fabrique une copie.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q12" data-support="ecran">
     <p class="td-consigne">Que fait la commande <code>mv [source] [destination]</code> ? Exemple : <code>mv nsi ../archives/</code></p>
     <ul class="td-options">
-      <li data-retour="Copier en gardant l'original, c'est cp.">Copier un fichier, en gardant l'original</li>
-      <li data-retour="Supprimer, c'est rm.">Supprimer un fichier ou un dossier</li>
-      <li data-retour="Créer un dossier, c'est mkdir.">Créer un dossier à la destination</li>
+      <li>Copier un fichier, en gardant l'original</li>
+      <li>Supprimer un fichier ou un dossier</li>
+      <li>Créer un dossier à la destination</li>
       <li data-juste>Déplacer ou renommer (fichier, dossier)</li>
     </ul>
-    <p class="td-aide"><code>mv</code> : <i>MoVe</i>. Renommer, c'est « déplacer » vers un autre nom.</p>
-    <div class="td-correction"><p><code>mv</code> (<i>MoVe</i>) <b>déplace ou renomme</b> un fichier ou un dossier.</p></div>
+    <div class="td-correction"><p><code>mv</code> (<i>move</i>) <b>déplace ou renomme</b> un fichier ou un dossier.</p><p>« Copier un fichier, en gardant l'original » : non. Copier en gardant l'original, c'est cp.</p><p>« Supprimer un fichier ou un dossier » : non. Supprimer, c'est rm.</p><p>« Créer un dossier à la destination » : non. Créer un dossier, c'est mkdir.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q13" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>rm [fichier]</code> ? Exemple : <code>rm temp.txt</code></p>
+    <p class="td-consigne">Que fait la commande <code>rm [fichier]</code> ? Exemple : <code>rm brouillon.txt</code></p>
     <ul class="td-options">
-      <li data-retour="Dans le terminal, il n'y a pas de corbeille : le fichier est perdu.">Mettre le fichier à la corbeille du bureau</li>
+      <li>Mettre le fichier à la corbeille du bureau</li>
       <li data-juste>Supprimer le fichier, pour de bon</li>
-      <li data-retour="Renommer, c'est mv.">Renommer le fichier en temp.txt</li>
-      <li data-retour="rm ne garde rien : le fichier lui-même disparaît.">Vider le fichier, en le gardant</li>
+      <li>Renommer le fichier en brouillon.txt</li>
+      <li>Vider le fichier, en le gardant</li>
     </ul>
-    <p class="td-aide"><code>rm</code> : <i>ReMove</i>.</p>
-    <div class="td-correction"><p><code>rm</code> (<i>ReMove</i>) <b>supprime définitivement</b> un fichier : c'est irréversible !</p></div>
+    <div class="td-correction"><p><code>rm</code> (<i>remove</i>) <b>supprime</b> un fichier, pour de bon : il n'y a pas de corbeille.</p><p>« Mettre le fichier à la corbeille du bureau » : non. Dans le terminal, il n'y a pas de corbeille : le fichier est perdu.</p><p>« Renommer le fichier en brouillon.txt » : non. Renommer, c'est mv.</p><p>« Vider le fichier, en le gardant » : non. rm ne garde rien : le fichier lui-même disparaît.</p></div>
   </section>
 
   <section class="td-q" data-type="qcu" id="q14" data-support="ecran">
-    <p class="td-consigne">Que fait la commande <code>sudo [commande]</code> ? Exemple : <code>sudo chown eleve fich.</code></p>
+    <p class="td-consigne">Que fait la commande <code>rmdir [dossier]</code> ? Exemple : <code>rmdir archives</code></p>
     <ul class="td-options">
-      <li data-retour="Changer le propriétaire, c'est chown (la commande de l'exemple). sudo lui donne seulement les droits nécessaires.">Changer le propriétaire d'un fichier ou dossier</li>
-      <li data-retour="Afficher le manuel, c'est man.">Afficher le manuel de la commande qui suit</li>
-      <li data-juste>Exécuter une commande en administrateur·rice</li>
-      <li data-retour="sudo n'arrête rien : il lance la commande qui le suit.">Arrêter l'ordinateur proprement, en root</li>
+      <li>Créer un dossier, s'il n'existe pas encore</li>
+      <li>Supprimer un dossier et tout ce qu'il contient</li>
+      <li data-juste>Supprimer un dossier, seulement s'il est vide</li>
+      <li>Renommer un dossier, sans toucher à son contenu</li>
     </ul>
-    <p class="td-aide">Dans l'exemple, <code>sudo</code> est suivi d'une autre commande : il change la façon dont elle s'exécute.</p>
-    <div class="td-correction"><p><code>sudo</code> <b>exécute une commande avec les droits d'administrateur·rice</b> (le super-utilisateur <code>root</code>).</p></div>
+    <div class="td-correction"><p><code>rmdir</code> (<i>remove directory</i>) <b>supprime un dossier vide</b> ; si le dossier contient quelque chose, il refuse.</p><p>« Créer un dossier, s'il n'existe pas encore » : non. Créer un dossier, c'est mkdir.</p><p>« Supprimer un dossier et tout ce qu'il contient » : non. rmdir refuse un dossier qui n'est pas vide (« Directory not empty ») : il ne supprime rien d'autre que le dossier.</p><p>« Renommer un dossier, sans toucher à son contenu » : non. Renommer, c'est mv.</p></div>
   </section>
 
-  <p><b>Astuces</b> : <b>Tab</b> complète les noms · <b>↑</b> rappelle la dernière commande · <b>Ctrl</b>+<b>C</b> interrompt une commande.</p>
-
-  <h2 class="td-partie">4. Navigation et chemins</h2>
-  <p><b>Arborescence de référence</b> : l'utilisateur·rice connecté·e est <code>eleve</code> ; son répertoire personnel est <code>/home/eleve</code>. <code>prof</code> a donné à <code>eleve</code> le droit de lire <code>notes.csv</code> et d'écrire dans <code>examens</code>. (D) : dossier ; (F) : fichier.</p>
+  <h2 class="td-partie">2. Chemins absolus et relatifs</h2>
+  <div data-support="ecran">
+  <p><b>L'arborescence du TD</b>, telle que l'affiche la commande <code>tree</code> (les dossiers finissent par <code>/</code>). L'utilisateur·rice <code>eleve</code> et l'enseignant·e <code>prof</code> font partie du même groupe, <code>nsi</code>.</p>
   <pre class="td-sortie-exemple">
-/ (racine)
-|-- bin/ (D)
-`-- home/ (D)
-    |-- prof/ (D)
-    |   |-- examens/ (D)
-    |   `-- notes.csv (F)
-    `-- eleve/ (D)
-        |-- devoirs/ (D)
-        |   `-- nsi/ (D)
-        `-- projets/ (D)</pre>
-  <p>L'utilisateur·rice <code>eleve</code> se trouve dans le dossier <code>nsi</code>.</p>
-
-  <section class="td-q" data-type="courte" id="q15" data-reponse="/home/eleve/devoirs/nsi|/home/eleve/devoirs/nsi/" data-etiquette="$ pwd →">
-    <p class="td-consigne">Donne le <b>chemin absolu</b> du répertoire <code>nsi</code>.</p>
-    <p class="td-retour" data-si="home/eleve/devoirs/nsi|~/devoirs/nsi|devoirs/nsi">Un chemin absolu part toujours de la racine : il commence par <code>/</code>.</p>
-    <p class="td-aide">Pars de la racine <code>/</code> et descends dossier par dossier jusqu'à <code>nsi</code>.</p>
-    <div class="td-correction"><p><code>/home/eleve/devoirs/nsi</code></p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q16" data-reponse="../../../prof/notes.csv ../../projets/|../../../prof/notes.csv ../../projets|cp ../../../prof/notes.csv ../../projets/|cp ../../../prof/notes.csv ../../projets" data-etiquette="$ cp">
-    <p class="td-consigne">Copie <code>notes.csv</code> (chez <code>prof</code>) vers <code>projets</code>, en <b>chemins relatifs</b> (on est dans <code>nsi</code>).</p>
-    <p class="td-retour" data-si="../../prof/notes.csv ../../projets/|../../prof/notes.csv ../../projets|cp ../../prof/notes.csv ../../projets/|cp ../../prof/notes.csv ../../projets">Presque : <code>../..</code> depuis <code>nsi</code> mène à <code>eleve</code>, pas à <code>home</code>. Il faut remonter d'un niveau de plus pour trouver <code>prof</code>.</p>
-    <p class="td-retour" data-si="/home/prof/notes.csv /home/eleve/projets/|/home/prof/notes.csv /home/eleve/projets|cp /home/prof/notes.csv /home/eleve/projets/|cp /home/prof/notes.csv /home/eleve/projets">Ta commande marche, mais avec des chemins <b>absolus</b>. La consigne demande des chemins relatifs, qui partent de <code>nsi</code>.</p>
-    <p class="td-aide">Depuis <code>nsi</code> : <code>..</code> mène à <code>devoirs</code>, <code>../..</code> à <code>eleve</code>, <code>../../..</code> à <code>home</code>.</p>
-    <p class="td-aide">La source est <code>../../../prof/notes.csv</code>. Il reste la destination.</p>
-    <div class="td-correction"><p><code>cp ../../../prof/notes.csv ../../projets/</code></p><p>Depuis <code>nsi</code> : <code>../..</code> → <code>eleve</code> ; <code>../../..</code> → <code>home</code> ; <code>../../../prof/notes.csv</code> est la source ; <code>../../projets/</code> est la destination.</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q17" data-reponse="cd ../../../prof/examens|cd ../../../prof/examens/|cd /home/prof/examens|cd /home/prof/examens/|cd ~/../prof/examens|cd ~/../prof/examens/" data-etiquette="$">
-    <p class="td-consigne">Tu veux créer le fichier <code>exam1.txt</code> dans <code>examens</code> (on est dans <code>nsi</code>). Écris la commande qui manque avant <code>touch exam1.txt</code>.</p>
+/
+|-- bin/
+|-- home/
+|   |-- eleve/
+|   |   |-- devoirs/
+|   |   |   `-- nsi/
+|   |   |       `-- tp1.py
+|   |   |-- photos/
+|   |   |   `-- lagon.png
+|   |   `-- projets/
+|   |       `-- site.html
+|   `-- prof/
+|       |-- examens/
+|       `-- notes.csv
+`-- tmp/</pre>
+  <div class="td-plus-loin">
+    <p><b>Pour t'entraîner dans un vrai terminal</b> (facultatif) : ouvre le <a href="https://babash.github.io/mirage/terminal/">terminal d'entraînement d'Opération MIRAGE</a> (rien à installer) ou <a href="https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&amp;mem=192">JSLinux</a> (un vrai Linux dans le navigateur), puis recrée l'arborescence du TD avec ces trois commandes :</p>
     <pre class="td-sortie-exemple">
-$ ...
-$ touch exam1.txt</pre>
-    <p class="td-retour" data-si="cd ../../prof/examens|cd ../../prof/examens/">Depuis <code>nsi</code>, <code>../..</code> mène à <code>eleve</code>. Pour trouver <code>prof</code>, il faut remonter jusqu'à <code>home</code>.</p>
-    <p class="td-retour" data-si="cd examens|cd examens/">Le dossier <code>examens</code> n'est pas dans <code>nsi</code> : <code>cd</code> ne le trouvera pas. Donne le chemin complet, relatif ou absolu.</p>
-    <p class="td-aide"><code>touch exam1.txt</code> crée le fichier dans le répertoire courant : il faut d'abord aller dans <code>examens</code>.</p>
-    <p class="td-aide">En chemin absolu, <code>examens</code> est dans <code>/home/prof</code>.</p>
-    <div class="td-correction"><p><code>cd ../../../prof/examens</code> (ou, en chemin absolu, <code>cd /home/prof/examens</code>), puis <code>touch exam1.txt</code>.</p></div>
+mkdir -p /home/eleve/devoirs/nsi /home/eleve/photos /home/eleve/projets /home/prof/examens
+touch /home/eleve/devoirs/nsi/tp1.py /home/eleve/photos/lagon.png /home/eleve/projets/site.html /home/prof/notes.csv
+cd /home/eleve/devoirs/nsi</pre>
+    <p>Là-bas, tu es <code>root</code> (l'administrateur·rice) : <code>~</code> y désigne <code>/root</code>, et <code>sudo</code> n'y existe pas.</p>
+  </div>
+  <p>Un <b>chemin absolu</b> part toujours de la racine <code>/</code>, d'où que l'on soit : <code>/home/eleve/devoirs/nsi</code>. Un <b>chemin relatif</b> part du répertoire courant et remonte avec <code>..</code> : depuis <code>/home/eleve</code>, <code>devoirs/nsi</code> ou <code>../prof</code>.</p>
+  </div>
+  <!-- papier : l'arborescence à gauche, ce qu'il faut pour la lire à droite (à l'écran : l'un sous l'autre) -->
+  <div class="td-table" data-support="papier"><table data-pleine-largeur>
+    <thead><tr><th data-case-largeur="74">L'arborescence du TD (commande <code>tree</code>)</th><th>Pour la lire, et des exemples</th></tr></thead>
+    <tbody><tr><td><pre class="td-sortie-exemple">/
+|-- bin/
+|-- home/
+|   |-- eleve/
+|   |   |-- devoirs/
+|   |   |   `-- nsi/
+|   |   |       `-- tp1.py
+|   |   |-- photos/
+|   |   |   `-- lagon.png
+|   |   `-- projets/
+|   |       `-- site.html
+|   `-- prof/
+|       |-- examens/
+|       `-- notes.csv
+`-- tmp/</pre></td>
+    <td><p>Les dossiers finissent par <code>/</code>. <code>eleve</code> et <code>prof</code> sont dans le groupe <code>nsi</code>.</p>
+    <p><b>Exemples résolus</b> (à ton tour ensuite, en dessous) :</p>
+    <p>L'invite affiche <code>eleve@lycee:~/photos$</code> : le chemin absolu du répertoire courant est <code>/home/eleve/photos</code>.</p>
+    <p>Depuis <code>projets</code>, copier <code>site.html</code> dans <code>photos</code> : <code>cp site.html ../photos/</code></p>
+    <p>Depuis <code>nsi</code>, créer <code>liste.txt</code> dans <code>photos</code> : <code>cd ../../photos</code>, puis <code>touch liste.txt</code>.</p>
+    <p>Depuis <code>projets</code>, <code>ls ../photos</code> affiche <code>lagon.png</code>.</p></td></tr></tbody>
+  </table></div>
+
+  <p data-support="ecran"><b>Exemple :</b> l'invite affiche <code>eleve@lycee:~/photos$</code>. Le chemin absolu du répertoire courant est <code>/home/eleve/photos</code> (<code>~</code> remplacé par <code>/home/eleve</code>).</p>
+  <section class="td-q" data-type="courte" id="q15" data-comparer="exact" data-reponse="/home/eleve/devoirs/nsi|/home/eleve/devoirs/nsi/" data-etiquette="Chemin :">
+    <p class="td-consigne">À ton tour : l'invite affiche <code>eleve@lycee:~/devoirs/nsi$</code>. Donne le <b>chemin absolu</b> du répertoire courant.</p>
+    <div class="td-correction"><p><code>/home/eleve/devoirs/nsi</code> : c'est ce qu'afficherait <code>pwd</code>.</p><p class="td-erreur-frequente" data-si="~/devoirs/nsi|~/devoirs/nsi/"><b>Erreur fréquente :</b> <code>~/devoirs/nsi</code> : c'est ce qu'écrit l'invite : <code>~</code> est un raccourci. Le chemin absolu part de la racine <code>/</code> : remplace <code>~</code> par le répertoire personnel.</p><p class="td-erreur-frequente" data-si="home/eleve/devoirs/nsi|devoirs/nsi|/devoirs/nsi"><b>Erreur fréquente :</b> <code>home/eleve/devoirs/nsi</code> : un chemin absolu part de la racine et donne tous les dossiers : il commence par <code>/home</code>.</p></div>
   </section>
 
-  <section class="td-q" data-type="courte" id="q18" data-reponse="devoirs projets|projets devoirs|devoirs/ projets/" data-etiquette="Affichage :">
-    <p class="td-consigne">Depuis <code>nsi</code>, on tape la commande ci-dessous. Qu'affiche-t-elle ?</p>
-    <pre class="td-sortie-exemple">
-eleve@serveur:~/devoirs/nsi$ ls ../..</pre>
-    <p class="td-retour" data-si="nsi">Ça, c'est le contenu de <code>..</code> (le dossier <code>devoirs</code>). <code>../..</code> remonte de deux niveaux.</p>
-    <p class="td-retour" data-si="eleve prof|prof eleve">Ça, c'est le contenu de <code>home</code>, trois niveaux plus haut. <code>../..</code> remonte de deux niveaux seulement.</p>
-    <p class="td-aide">Depuis <code>nsi</code>, <code>..</code> est <code>devoirs</code> et <code>../..</code> est <code>eleve</code>.</p>
-    <div class="td-correction"><p><code>devoirs    projets</code> : <code>../..</code> depuis <code>nsi</code> remonte à <code>/home/eleve</code>, et <code>ls</code> en liste le contenu.</p></div>
+  <p data-support="ecran"><b>Exemple :</b> tu es dans <code>projets</code> ; pour copier <code>site.html</code> dans <code>photos</code>, en chemins relatifs : <code>cp site.html ../photos/</code> (<code>..</code> mène à <code>eleve</code>, qui contient <code>photos</code>).</p>
+  <section class="td-q" data-type="courte" id="q16" data-comparer="exact" data-reponse="cp ../../../prof/notes.csv ../../projets/|cp ../../../prof/notes.csv ../../projets|cp ../../../prof/notes.csv ../../projets/notes.csv|cp ../../../prof/notes.csv ../../projets/." data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code>nsi</code>. Copie <code>notes.csv</code> (chez <code>prof</code>) dans <code>projets</code>, avec des <b>chemins relatifs</b>.</p>
+    <div class="td-correction"><p><code>cp ../../../prof/notes.csv ../../projets/</code></p><p>Depuis <code>nsi</code>, <code>../../..</code> mène à <code>home</code> : la source est <code>../../../prof/notes.csv</code> ; <code>../..</code> mène à <code>eleve</code> : la destination est <code>../../projets/</code>.</p><p class="td-erreur-frequente" data-si="cp ../../prof/notes.csv ../../projets/|cp ../../prof/notes.csv ../../projets"><b>Erreur fréquente :</b> <code>cp ../../prof/notes.csv ../../projets/</code> : presque : depuis <code>nsi</code>, <code>../..</code> mène à <code>eleve</code>, pas à <code>home</code>. Il faut remonter d'un niveau de plus pour trouver <code>prof</code>.</p><p class="td-erreur-frequente" data-si="cp /home/prof/notes.csv /home/eleve/projets/|cp /home/prof/notes.csv /home/eleve/projets|cp /home/prof/notes.csv ../../projets/|cp ../../../prof/notes.csv /home/eleve/projets/"><b>Erreur fréquente :</b> <code>cp /home/prof/notes.csv /home/eleve/projets/</code> : ta commande marche, mais au moins un chemin est <b>absolu</b> (il commence par <code>/</code>). La consigne demande deux chemins relatifs, qui partent de <code>nsi</code>.</p><p class="td-erreur-frequente" data-si="mv ../../../prof/notes.csv ../../projets/|mv ../../../prof/notes.csv ../../projets"><b>Erreur fréquente :</b> <code>mv ../../../prof/notes.csv ../../projets/</code> : mv déplacerait le fichier : il disparaîtrait de chez <code>prof</code>. On veut une copie.</p></div>
   </section>
 
-  <h2 class="td-partie">5. Réorganisation de l'arborescence</h2>
-  <p>On repart de l'arborescence de référence. L'administrateur·rice exécute, depuis <code>/home/eleve</code> :</p>
+  <p data-support="ecran"><b>Exemple :</b> tu es dans <code>nsi</code> ; pour créer <code>liste.txt</code> dans <code>photos</code>, on va d'abord dans <code>photos</code> : <code>cd ../../photos</code>, puis <code>touch liste.txt</code>.</p>
+  <section class="td-q" data-type="courte" id="q17" data-comparer="exact" data-reponse="cd ../../../prof/examens|cd ../../../prof/examens/|cd /home/prof/examens|cd /home/prof/examens/|cd ~/../prof/examens|cd ~/../prof/examens/" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code>nsi</code>. Écris la commande à taper avant <code>touch exam1.txt</code> pour créer ce fichier dans <code>examens</code>.</p>
+    <div class="td-correction"><p><code>cd ../../../prof/examens</code> (ou, en chemin absolu, <code>cd /home/prof/examens</code>), puis <code>touch exam1.txt</code>.</p><p class="td-erreur-frequente" data-si="cd ../../prof/examens|cd ../../prof/examens/"><b>Erreur fréquente :</b> <code>cd ../../prof/examens</code> : depuis <code>nsi</code>, <code>../..</code> mène à <code>eleve</code>. Pour trouver <code>prof</code>, il faut remonter jusqu'à <code>home</code>.</p><p class="td-erreur-frequente" data-si="cd examens|cd examens/|cd /prof/examens|cd /prof/examens/"><b>Erreur fréquente :</b> <code>cd examens</code> : le dossier <code>examens</code> n'est pas là où tu le cherches : regarde l'arborescence. Donne le chemin complet, relatif ou absolu.</p></div>
+  </section>
+
+  <p data-support="ecran"><b>Exemple :</b> tu es dans <code>projets</code> et tu tapes <code>ls ../photos</code> : la commande affiche <code>lagon.png</code>, le contenu de <code>photos</code>.</p>
+  <section class="td-q" data-type="courte" id="q18" data-reponse="devoirs photos projets|devoirs projets photos|photos devoirs projets|photos projets devoirs|projets devoirs photos|projets photos devoirs|devoirs/ photos/ projets/" data-etiquette="Affichage :">
+    <p class="td-consigne">À ton tour : tu es dans <code>nsi</code> et tu tapes <code>ls ../..</code>. Qu'affiche la commande ?</p>
+    <div class="td-correction"><p><code>devoirs  photos  projets</code> : depuis <code>nsi</code>, <code>../..</code> désigne <code>/home/eleve</code>, et <code>ls</code> en liste le contenu (par ordre alphabétique).</p><p class="td-erreur-frequente" data-si="nsi"><b>Erreur fréquente :</b> <code>nsi</code> : ça, c'est le contenu de <code>..</code> (le dossier <code>devoirs</code>). <code>../..</code> remonte de deux niveaux.</p><p class="td-erreur-frequente" data-si="eleve prof|prof eleve"><b>Erreur fréquente :</b> <code>eleve prof</code> : ça, c'est le contenu de <code>home</code>, trois niveaux plus haut. <code>../..</code> remonte de deux niveaux seulement.</p><p class="td-erreur-frequente" data-si="tp1.py"><b>Erreur fréquente :</b> <code>tp1.py</code> : ça, c'est le contenu de <code>nsi</code> lui-même (<code>ls</code> seul).</p></div>
+  </section>
+
+  <h2 class="td-partie">3. Réorganiser l'arborescence</h2>
+  <p data-support="ecran"><b>Exemple :</b> depuis <code>/home/eleve</code>, <code>mv projets/site.html photos/</code> déplace <code>site.html</code> : <code>projets</code> devient vide, et <code>photos</code> contient <code>lagon.png</code> et <code>site.html</code>.</p>
+  <p>À ton tour : on repart de l'arborescence du TD. Depuis <code>/home/eleve</code>, on tape :</p>
   <pre class="td-sortie-exemple">
-$ mkdir archives
-$ cd devoirs
-$ mv nsi ../archives/
-$ ls ../archives</pre>
+eleve@lycee:~$ mkdir archives
+eleve@lycee:~$ cd devoirs
+eleve@lycee:~/devoirs$ mv nsi ../archives/
+eleve@lycee:~/devoirs$ ls ../archives</pre>
 
   <section class="td-q" data-type="courte" id="q19" data-reponse="nsi|nsi/" data-etiquette="Affichage :">
-    <p class="td-consigne">Qu'affiche la commande <code>ls ../archives</code> ?</p>
-    <p class="td-retour" data-si="rien|vide|aucun">Le dossier <code>archives</code> n'est plus vide : la commande <code>mv</code> vient d'y mettre quelque chose.</p>
-    <p class="td-retour" data-si="archives">On liste le <b>contenu</b> de <code>archives</code>, pas son nom.</p>
-    <p class="td-aide">Après <code>cd devoirs</code>, <code>..</code> désigne <code>/home/eleve</code> : <code>../archives</code> est le dossier qu'on vient de créer.</p>
-    <div class="td-correction"><p><code>nsi</code> : le dossier <code>nsi</code> a été déplacé dans <code>archives</code>.</p></div>
+    <p class="td-consigne">Qu'affiche la dernière commande, <code>ls ../archives</code> ?</p>
+    <div class="td-correction"><p><code>nsi</code> : le dossier <code>nsi</code> (avec son fichier <code>tp1.py</code>) a été déplacé dans <code>archives</code>.</p><p class="td-erreur-frequente" data-si="rien|vide|aucun"><b>Erreur fréquente :</b> <code>rien</code> : Le dossier <code>archives</code> n'est plus vide : la commande <code>mv</code> vient d'y mettre quelque chose.</p><p class="td-erreur-frequente" data-si="archives"><b>Erreur fréquente :</b> <code>archives</code> : On liste le <b>contenu</b> de <code>archives</code>, pas son nom.</p><p class="td-erreur-frequente" data-si="tp1.py"><b>Erreur fréquente :</b> <code>tp1.py</code> : <code>ls</code> montre le contenu d'<code>archives</code> sur un seul niveau : le dossier qu'il contient, pas ce qu'il y a dedans.</p></div>
   </section>
 
   <section class="td-q" data-support="ecran" data-type="qcu" id="q20">
-    <p class="td-consigne">Quelle est l'arborescence sous <code>/home/eleve</code> après ces commandes ?</p>
+    <p class="td-consigne">Que contient <code>/home/eleve</code> après ces commandes ?</p>
     <ul class="td-options">
-      <li data-retour="mkdir archives est lancé depuis /home/eleve, avant cd devoirs : archives est créé à côté de devoirs, pas dedans."><code>devoirs/</code> contient <code>archives/</code>, qui contient <code>nsi/</code> ; <code>projets/</code></li>
-      <li data-retour="mv déplace : nsi n'est plus dans devoirs. Garder l'original, c'est ce que fait cp."><code>archives/</code> contient <code>nsi/</code> ; <code>devoirs/</code> contient <code>nsi/</code> ; <code>projets/</code></li>
-      <li data-juste><code>archives/</code> contient <code>nsi/</code> ; <code>devoirs/</code> est vide ; <code>projets/</code></li>
-      <li data-retour="Depuis devoirs, ../archives désigne /home/eleve/archives : le déplacement a bien eu lieu."><code>archives/</code> est vide ; <code>devoirs/</code> contient <code>nsi/</code> ; <code>projets/</code></li>
+      <li><code>devoirs/</code>, qui contient <code>archives/nsi/</code> ; <code>photos/</code> ; <code>projets/</code></li>
+      <li><code>archives/nsi/</code> ; <code>devoirs/nsi/</code> ; <code>photos/</code> ; <code>projets/</code></li>
+      <li data-juste><code>archives/nsi/</code> ; <code>devoirs/</code>, vide ; <code>photos/</code> ; <code>projets/</code></li>
+      <li><code>archives/</code>, vide ; <code>devoirs/nsi/</code> ; <code>photos/</code> ; <code>projets/</code></li>
     </ul>
-    <p class="td-aide"><code>mv</code> déplace : l'original quitte sa place.</p>
     <div class="td-correction"><pre class="td-sortie-exemple">
 eleve/
 |-- archives/
 |   `-- nsi/
-|-- devoirs/   (vide)
-`-- projets/</pre></div>
+|       `-- tp1.py
+|-- devoirs/
+|-- photos/
+|   `-- lagon.png
+`-- projets/
+    `-- site.html</pre><p>« devoirs/, qui contient archives/nsi/ ; photos/ ; projets/ » : non. mkdir archives est lancé depuis /home/eleve, avant cd devoirs : archives est créé à côté de devoirs, pas dedans.</p><p>« archives/nsi/ ; devoirs/nsi/ ; photos/ ; projets/ » : non. mv déplace : nsi n'est plus dans devoirs. Garder l'original, c'est ce que fait cp.</p><p>« archives/, vide ; devoirs/nsi/ ; photos/ ; projets/ » : non. Depuis devoirs, ../archives désigne /home/eleve/archives : le déplacement a bien eu lieu.</p></div>
   </section>
 
-  <section class="td-q" data-support="papier" data-type="libre" data-lignes="6" id="q20p">
-    <p class="td-consigne">Dessine l'arborescence modifiée sous <code>/home/eleve</code>.</p>
+  <!-- papier : l'arborescence de départ à gauche (data-cote), la place pour dessiner à droite -->
+  <section class="td-q" data-support="papier" data-type="libre" data-lignes="5" data-cote="oui" id="q20p">
+    <p class="td-consigne">À gauche, <code>/home/eleve</code> avant les commandes. Dessine-le à droite, après les commandes.</p>
+    <pre class="td-code" data-langage="texte">
+eleve/
+|-- devoirs/
+|   `-- nsi/
+|       `-- tp1.py
+|-- photos/
+|   `-- lagon.png
+`-- projets/
+    `-- site.html</pre>
     <div class="td-correction"><pre class="td-sortie-exemple">
 eleve/
 |-- archives/
 |   `-- nsi/
-|-- devoirs/   (vide)
-`-- projets/</pre></div>
+|       `-- tp1.py
+|-- devoirs/
+|-- photos/
+|   `-- lagon.png
+`-- projets/
+    `-- site.html</pre></div>
   </section>
 
-  <h2 class="td-partie">6. Recherche et <code>sudo</code></h2>
-
-  <section class="td-q" data-type="courte" id="q21" data-reponse="grep password L.txt|grep &quot;password&quot; L.txt|grep 'password' L.txt" data-etiquette="$">
-    <p class="td-consigne">Tu es dans <code>/home/eleve/projets</code>. Cherche le mot <code>password</code> dans le fichier <code>L.txt</code>.</p>
-    <p class="td-retour" data-si="grep L.txt password|grep L.txt &quot;password&quot;">L'ordre compte : d'abord le motif cherché, puis le fichier.</p>
-    <p class="td-retour" data-si="cat L.txt|cat password L.txt"><code>cat</code> affiche tout le fichier. Pour n'avoir que les lignes qui contiennent un mot, une autre commande existe.</p>
-    <p class="td-aide">Relis l'exemple de <code>grep</code> dans la partie 2.</p>
-    <div class="td-correction"><p><code>grep password L.txt</code> (les guillemets autour de <code>password</code> sont permis).</p></div>
-  </section>
-
-  <section class="td-q" data-support="ecran" data-type="qcu" id="q22">
-    <p class="td-consigne">Le fichier <code>notes.csv</code> appartient à <code>prof</code>. Pourquoi faut-il <code>sudo</code> pour le donner à l'utilisateur·rice <code>directeur</code> ?</p>
-    <ul class="td-options">
-      <li data-retour="Non : la plupart des commandes (ls, cd, cat…) se lancent sans sudo.">Parce que <code>sudo</code> est obligatoire devant toutes les commandes</li>
-      <li data-juste>Parce que changer le propriétaire demande les droits de <code>root</code></li>
-      <li data-retour="Le nouveau propriétaire s'écrit après chown. sudo, lui, donne les droits pour exécuter la commande.">Parce que <code>sudo</code> sert à écrire le nom du nouveau propriétaire</li>
-      <li data-retour="chown n'efface jamais un fichier : sans les droits, il refuse simplement d'agir.">Parce que, sans <code>sudo</code>, <code>chown</code> efface le fichier</li>
-    </ul>
-    <p class="td-aide">Sur un système partagé, peut-on donner ses fichiers (ou ceux des autres) à n'importe qui ?</p>
-    <div class="td-correction"><p><code>sudo</code> exécute une commande avec les droits du super-utilisateur (<code>root</code>, l'administrateur·rice). Ils sont nécessaires pour les opérations du système : changer un propriétaire, modifier des fichiers du système…</p></div>
-  </section>
-
-  <section class="td-q" data-support="papier" data-type="libre" data-lignes="4" id="q22p">
-    <p class="td-consigne">Explique le rôle de <code>sudo</code>.</p>
-    <div class="td-correction"><p><code>sudo</code> exécute une commande avec les droits du super-utilisateur (<code>root</code>, l'administrateur·rice). Ils sont nécessaires pour les opérations du système : changer un propriétaire, modifier des fichiers du système…</p></div>
-  </section>
-
-  <section class="td-q" data-type="courte" id="q23" data-reponse="chown directeur notes.csv|sudo chown directeur notes.csv|chown directeur /home/prof/notes.csv|sudo chown directeur /home/prof/notes.csv" data-etiquette="$ sudo">
-    <p class="td-consigne">Écris la commande qui transfère la propriété de <code>notes.csv</code> à l'utilisateur·rice <code>directeur</code> (on est dans <code>/home/prof</code>).</p>
-    <p class="td-retour" data-si="chown notes.csv directeur|sudo chown notes.csv directeur">L'ordre compte : d'abord le nouveau propriétaire, puis le fichier.</p>
-    <p class="td-retour" data-si="chmod directeur notes.csv|sudo chmod directeur notes.csv">chmod change les <b>droits</b> (lecture, écriture…). Pour changer le <b>propriétaire</b>, c'est une autre commande.</p>
-    <p class="td-aide">Relis l'exemple de <code>sudo</code> dans la partie 3 : <code>sudo chown eleve fich.</code></p>
-    <div class="td-correction"><p><code>sudo chown directeur notes.csv</code> (<code>chown</code> : <i>CHange OWNer</i>, « change le propriétaire »).</p></div>
-  </section>
-
-  <!-- MÉMO : l'essentiel à retenir, en 3 lignes au plus -->
-  <section class="td-memo">
-    <h2>Mémo</h2>
-    <p><code>pwd</code> : où suis-je ? · <code>ls</code> : qu'y a-t-il ici ? · <code>cd</code> : aller ailleurs. Un chemin <b>absolu</b> part de <code>/</code> ; un chemin <b>relatif</b> part du répertoire courant, et <code>..</code> remonte d'un niveau.</p>
-  </section>
+  <p class="td-ecran-seul"><b>La suite :</b> <a href="commandes-premiere-eleve-2.html">feuille 2 sur 2 : chercher, les droits</a>.</p>
 
   <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
   <footer class="td-pied">
-    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/blob/main/nsi-premiere/fichiers/commandes-linux-premiere/commandes-premiere-eleve.html">Code source sur GitHub</a></p>
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-premiere/fichiers/commandes-linux-premiere">Code source sur GitHub</a></p>
   </footer>
 </main>
 </body>

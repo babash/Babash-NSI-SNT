@@ -1,0 +1,231 @@
+<!doctype html>
+<!-- TD créé par charte/nouveau-td.py ; mode d'emploi : charte/gabarit-td/LISEZMOI.md -->
+<!-- Jumeau de nsi-terminale/fichiers/architecture-os/commandes-terminale.html (même arborescence, mêmes mots) :
+     toute modification de l'arborescence ou du vocabulaire se reporte dans les deux (T141). -->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Commandes Linux, feuille 2 : TD en ligne</title>
+  <meta name="description" content="1re NSI, systèmes d'exploitation, feuille 2 sur 2 : chercher dans un fichier avec grep, lire et changer les droits (ls -l, chmod, sudo, chown). Feuille auto-corrective et imprimable.">
+  <!-- l'affichage clair ou obscur choisi sur le site, appliqué avant l'affichage -->
+  <script>try { var t = localStorage.getItem('theme'); if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t); } catch (e) { }</script>
+  <link rel="icon" href="../../../assets/favicon.svg" type="image/svg+xml">
+  <!-- les polices sont hébergées sur le site (assets/fonts/) : aucun lien vers un serveur de polices -->
+  <link rel="stylesheet" href="../../../assets/td-en-ligne.css">
+  <script src="../../../assets/td-en-ligne.js" defer></script>
+</head>
+<body class="td-page">
+<!-- data-td : identifiant UNIQUE et STABLE de la feuille (stockage sur l'appareil, futur compte commun).
+     data-td-version : à augmenter si les questions changent (l'avancement gardé est alors ignoré).
+     data-ordre="melange" : les options des choix sont mélangées (data-ordre="fixe" sur une question pour la garder).
+     data-code="obligatoire" : « Écris le programme » compte pour valider la feuille (data-bonus pour un bonus).
+     data-auteurs : tous les noms, repris dans le pied de chaque page imprimée. -->
+<main class="td" data-td="nsi1-commandes-linux-2" data-premiere-question="20" data-premiere-question-papier="8" data-td-version="1" data-auteurs="Babash - NSI Tani Malandi" data-ordre="melange" data-code="obligatoire" data-feuille="2" data-nouvelle-page>
+  <header class="td-entete">
+    <!-- BANDEAU : paysage n° 1 (1 à 4 : la rotation de nouveau-td.py, sans lien avec le chapitre). Titre, niveau, chapitre à gauche ;
+         QR code du cours-quiz à droite (absent si le chapitre n'a pas de cours-quiz).
+         Le margouillat est caché à une place qui dépend de l'identifiant (data-cachette). -->
+    <div class="td-bandeau" data-bandeau="1">
+      <div class="td-bandeau-decor" aria-hidden="true"><span class="td-margouillat" data-cachette="b2" style="--x:55.12%;--y:83.04%;--r:-84deg;--l:3.08%;--s:1"></span></div>
+      <div class="td-bandeau-texte">
+        <p class="td-sur-titre"><span class="td-puce">TD</span> <span class="td-niveau">1re NSI</span> <span aria-hidden="true">·</span> <span class="td-chapitre">Systèmes d&#x27;exploitation</span></p>
+        <h1>Commandes Linux</h1>
+        <p class="td-accroche">Chercher, les droits</p>
+      </div>
+      
+    </div>
+    <!-- sur papier seulement (la feuille se rend à l'enseignant·e) ; la page en ligne ne demande rien -->
+    <p class="td-nom td-papier-seul" aria-hidden="true"><span>Nom et prénom :</span><span>Classe :</span></p>
+
+    <!-- OBJECTIF ET CRITÈRES DE RÉUSSITE : une phrase d'objectif, 3 à 5 « Je sais » vérifiables -->
+    <div class="td-objectifs">
+      <p class="td-objectif"><b>Objectif :</b> chercher dans un fichier, lire et changer les droits d'un fichier.</p>
+      <p><b>Je sais :</b></p>
+      <ul class="td-criteres">
+        <li>chercher les lignes d'un fichier avec <code>grep</code> ;</li>
+        <li>lire les droits affichés par <code>ls -l</code> ;</li>
+        <li>changer des droits avec <code>chmod</code>, en octal et en symbolique.</li>
+      </ul>
+      <p class="td-duree">1 heure · 9 questions · feuille 2 sur 2 · seul·e ou en binôme</p>
+    </div>
+    <noscript><p><b>JavaScript est désactivé :</b> la feuille se lit et s'imprime, mais ne se corrige pas.</p></noscript>
+  </header>
+
+  <!-- BLOC COMMUN avec la feuille 1 et les feuilles de terminale : mêmes mots, même arborescence -->
+  <div class="td-plus-loin">
+    <p><b>À retenir</b></p>
+    <ul>
+      <li><code>grep motif fichier</code> affiche les lignes du fichier qui contiennent le motif.</li>
+      <li><code>ls -l</code> montre les droits : le type (<code>d</code> dossier, <code>-</code> fichier), puis trois lettres pour le <b>propriétaire</b> (<code>u</code>), le <b>groupe</b> (<code>g</code>), les <b>autres</b> (<code>o</code>) : <code>r</code> lire, <code>w</code> écrire, <code>x</code> exécuter, <code>-</code> le droit manque.</li>
+      <li><code>chmod</code> en <b>octal</b> : un chiffre par catégorie, r = 4, w = 2, x = 1 : <code>chmod 640</code> donne <code>rw-r-----</code>.</li>
+      <li><code>chmod</code> en <b>symbolique</b> : qui, puis <code>+</code> ou <code>-</code>, puis le droit : <code>chmod g+w</code>.</li>
+      <li><code>root</code>, l'administrateur·rice, a tous les droits ; <code>sudo commande</code> agit en son nom ; changer le propriétaire (<code>chown</code>) lui est réservé.</li>
+    </ul>
+  </div>
+  <div class="td-plus-loin" data-support="papier">
+    <p><b>À retenir</b></p>
+    <ul>
+      <li><code>grep motif fichier</code> affiche les lignes du fichier qui contiennent le motif.</li>
+      <li><code>ls -l</code> montre les droits : le type (<code>d</code> dossier, <code>-</code> fichier), puis trois lettres pour le <b>propriétaire</b> (<code>u</code>), le <b>groupe</b> (<code>g</code>), les <b>autres</b> (<code>o</code>) : <code>r</code> lire, <code>w</code> écrire, <code>x</code> exécuter, <code>-</code> le droit manque.</li>
+      <li><code>chmod</code> en <b>octal</b> : un chiffre par catégorie, r = 4, w = 2, x = 1 : <code>chmod 640</code> donne <code>rw-r-----</code>.</li>
+      <li><code>chmod</code> en <b>symbolique</b> : qui, puis <code>+</code> ou <code>-</code>, puis le droit : <code>chmod g+w</code>.</li>
+      <li><code>root</code>, l'administrateur·rice, a tous les droits ; <code>sudo commande</code> agit en son nom ; changer le propriétaire (<code>chown</code>) lui est réservé.</li>
+    </ul>
+  </div>
+  <p data-support="ecran"><b>En ligne</b>, écris chaque commande comme dans le terminal : une espace entre la commande et chacun de ses arguments, et les majuscules comptent.</p>
+
+  <div data-support="ecran">
+  <p><b>L'arborescence du TD</b> (la même qu'à la feuille 1), telle que l'affiche la commande <code>tree</code> (les dossiers finissent par <code>/</code>). L'utilisateur·rice <code>eleve</code> et l'enseignant·e <code>prof</code> font partie du même groupe, <code>nsi</code>.</p>
+  <pre class="td-sortie-exemple">
+/
+|-- bin/
+|-- home/
+|   |-- eleve/
+|   |   |-- devoirs/
+|   |   |   `-- nsi/
+|   |   |       `-- tp1.py
+|   |   |-- photos/
+|   |   |   `-- lagon.png
+|   |   `-- projets/
+|   |       `-- site.html
+|   `-- prof/
+|       |-- examens/
+|       `-- notes.csv
+`-- tmp/</pre>
+  <p>Pour t'entraîner dans un vrai terminal : voir l'encadré de la <a href="commandes-premiere-eleve.html">feuille 1</a>.</p>
+  <p>Un <b>chemin absolu</b> part toujours de la racine <code>/</code>, d'où que l'on soit : <code>/home/eleve/devoirs/nsi</code>. Un <b>chemin relatif</b> part du répertoire courant et remonte avec <code>..</code> : depuis <code>/home/eleve</code>, <code>devoirs/nsi</code> ou <code>../prof</code>.</p>
+  </div>
+
+  <h2 class="td-partie">1. Chercher dans un fichier</h2>
+  <p>Le fichier <code>tp1.py</code> (dans <code>nsi</code>), affiché par <code>cat</code> :</p>
+  <pre class="td-sortie-exemple">
+eleve@lycee:~/devoirs/nsi$ cat tp1.py
+# TP 1 : les horaires de la barge
+depart = 6
+print("Première barge à", depart, "h")
+arrivee = depart + 1
+print("Arrivée à Mamoudzou à", arrivee, "h")</pre>
+
+  <p><b>Exemple :</b> <code>grep depart tp1.py</code> affiche les trois lignes qui contiennent <code>depart</code>, où qu'il soit dans la ligne :</p>
+  <pre class="td-sortie-exemple">
+eleve@lycee:~/devoirs/nsi$ grep depart tp1.py
+depart = 6
+print("Première barge à", depart, "h")
+arrivee = depart + 1</pre>
+  <section class="td-q" data-type="courte" id="q21" data-comparer="exact" data-reponse="grep print tp1.py|grep &quot;print&quot; tp1.py|grep 'print' tp1.py|grep print ./tp1.py|grep &quot;print&quot; ./tp1.py|grep print /home/eleve/devoirs/nsi/tp1.py" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code>nsi</code>. Écris la commande qui affiche seulement les lignes de <code>tp1.py</code> qui contiennent <code>print</code>.</p>
+    <div class="td-correction"><p><code>grep print tp1.py</code> (les guillemets autour de <code>print</code> sont permis).</p><p class="td-erreur-frequente" data-si="grep tp1.py print|grep tp1.py &quot;print&quot;"><b>Erreur fréquente :</b> <code>grep tp1.py print</code> : L'ordre compte : d'abord le motif cherché, puis le fichier.</p><p class="td-erreur-frequente" data-si="cat tp1.py|cat print tp1.py"><b>Erreur fréquente :</b> <code>cat tp1.py</code> : <code>cat</code> affiche tout le fichier. Pour n'avoir que les lignes qui contiennent un mot, une autre commande existe.</p><p class="td-erreur-frequente" data-si="grep print|grep print tp1|grep print tp1.txt"><b>Erreur fréquente :</b> <code>grep print</code> : Il manque le nom exact du fichier, extension comprise : <code>tp1.py</code>.</p></div>
+  </section>
+
+  <section class="td-q" data-type="sortie" id="q22" data-langage="texte">
+    <p class="td-consigne">À ton tour : qu'affiche cette commande ?</p>
+    <pre class="td-code">
+grep barge tp1.py</pre>
+    <pre class="td-attendu">
+# TP 1 : les horaires de la barge
+print("Première barge à", depart, "h")</pre>
+    <div class="td-correction"><p>La ligne 1 (le commentaire) et la ligne 3 : ce sont les deux lignes qui contiennent <code>barge</code>. <code>grep</code> les affiche entières, dans l'ordre du fichier.</p></div>
+  </section>
+
+  <h2 class="td-partie">2. Les droits</h2>
+  <p><b>Exemple :</b> dans la ligne <code>drwxrwx--- 2 prof nsi 4096 Nov 25 10:00 examens</code>, <code>d</code> : un dossier ; <code>rwx</code> pour le propriétaire <code>prof</code> ; <code>rwx</code> pour le groupe <code>nsi</code> ; <code>---</code> pour les autres.</p>
+
+  <section class="td-q" data-type="qcu" id="q23" data-support="ecran">
+    <p class="td-consigne">À ton tour : quels droits le groupe <code>nsi</code> a-t-il sur <code>notes.csv</code> ?</p>
+    <pre class="td-sortie-exemple">
+eleve@lycee:~$ ls -l /home/prof
+total 8
+drwxrwx--- 2 prof nsi 4096 Nov 25 10:00 examens
+-rw-r----- 1 prof nsi   38 Nov 25 10:00 notes.csv</pre>
+    <ul class="td-options">
+      <li>Lire et écrire (<code>rw-</code>)</li>
+      <li data-juste>Lire seulement (<code>r--</code>)</li>
+      <li>Aucun droit (<code>---</code>)</li>
+      <li>Lire et exécuter (<code>r-x</code>)</li>
+    </ul>
+    <div class="td-correction"><p><code>-</code> (un fichier), <code>rw-</code> (propriétaire <code>prof</code>), <code>r--</code> (groupe <code>nsi</code>), <code>---</code> (autres) : le groupe peut lire le fichier, mais pas le modifier.</p><p>« Lire et écrire (rw-) » : non. rw- sont les droits du propriétaire, prof : les trois premiers après le tiret.</p><p>« Aucun droit (---) » : non. --- sont les droits des autres : les trois derniers.</p><p>« Lire et exécuter (r-x) » : non. Il n'y a aucun x dans -rw-r----- : personne ne peut l'exécuter.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q23p" data-support="papier" data-lignes="1">
+    <p class="td-consigne">À ton tour : quels droits le groupe <code>nsi</code> a-t-il sur <code>notes.csv</code> ?</p>
+    <pre class="td-sortie-exemple">
+eleve@lycee:~$ ls -l /home/prof
+total 8
+drwxrwx--- 2 prof nsi 4096 Nov 25 10:00 examens
+-rw-r----- 1 prof nsi   38 Nov 25 10:00 notes.csv</pre>
+    <div class="td-correction"><p>Lire seulement (<code>r--</code>).</p></div>
+  </section>
+
+  <section class="td-q" data-type="qcu" id="q24" data-support="ecran">
+    <p class="td-consigne"><code>eleve</code> est dans le groupe <code>nsi</code>. Pourquoi peut-il copier <code>notes.csv</code> ?</p>
+    <ul class="td-options">
+      <li data-juste>Copier demande seulement de lire : le groupe a <code>r</code></li>
+      <li>Parce que <code>eleve</code> est le propriétaire du fichier</li>
+      <li>Parce que <code>cp</code> ne regarde jamais les droits</li>
+      <li>Parce que le groupe peut écrire dans le fichier</li>
+    </ul>
+    <div class="td-correction"><p>Pour copier, il suffit de <b>lire</b> l'original : le groupe <code>nsi</code> a le droit <code>r</code>. Il ne pourrait pas le modifier (pas de <code>w</code>).</p><p>« Parce que eleve est le propriétaire du fichier » : non. eleve n'est pas le propriétaire : c'est prof, le nom écrit juste après le nombre de liens.</p><p>« Parce que cp ne regarde jamais les droits » : non. Les droits comptent toujours : sans r, cp répondrait « Permission denied ».</p><p>« Parce que le groupe peut écrire dans le fichier » : non. Le groupe n'a pas w : il ne peut pas modifier notes.csv. Et copier ne demande pas d'écrire dans l'original.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q24p" data-support="papier" data-lignes="2">
+    <p class="td-consigne"><code>eleve</code> est dans le groupe <code>nsi</code>. Pourquoi peut-il copier <code>notes.csv</code> ?</p>
+    <div class="td-correction"><p>Copier demande seulement de lire l'original, et le groupe <code>nsi</code> a le droit de lecture <code>r</code>.</p></div>
+  </section>
+
+  <p><b>Exemple :</b> <code>chmod 750 tp1.py</code> donne <code>rwxr-x---</code> : 7 = 4 + 2 + 1 (<code>rwx</code>), 5 = 4 + 1 (<code>r-x</code>), 0 (<code>---</code>).</p>
+  <section class="td-q" data-type="qcu" id="q25" data-support="ecran">
+    <p class="td-consigne">À ton tour : quels droits donne <code>chmod 754 tp1.py</code> ?</p>
+    <ul class="td-options">
+      <li data-juste><code>rwxr-xr--</code></li>
+      <li><code>rwxrw-r--</code></li>
+      <li><code>r--r-xrwx</code></li>
+      <li><code>rwxr-xr-x</code></li>
+    </ul>
+    <div class="td-correction"><p>7 = <code>rwx</code> pour le propriétaire, 5 = <code>r-x</code> pour le groupe, 4 = <code>r--</code> pour les autres : <code>-rwxr-xr--</code>.</p><p>« rwxrw-r-- » : non. 5 = 4 + 1 : lecture et exécution, pas écriture.</p><p>« r--r-xrwx » : non. Les chiffres se lisent dans l'ordre propriétaire, groupe, autres.</p><p>« rwxr-xr-x » : non. 4 = lecture seule : r--. Le 4 des autres ne donne pas l'exécution.</p></div>
+  </section>
+  <section class="td-q" data-type="libre" id="q25p" data-support="papier" data-lignes="1">
+    <p class="td-consigne">À ton tour : quels droits donne <code>chmod 754 tp1.py</code> ? Écris-les comme <code>ls -l</code> : 9 caractères.</p>
+    <div class="td-correction"><p><code>rwxr-xr--</code></p></div>
+  </section>
+
+  <section class="td-q" data-type="courte" id="q26" data-comparer="exact" data-reponse="chmod 600 tp1.py|chmod 600 ./tp1.py|chmod 0600 tp1.py|chmod 600 /home/eleve/devoirs/nsi/tp1.py" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code>nsi</code>. En <b>octal</b>, rends <code>tp1.py</code> lisible et modifiable par toi seul·e (le propriétaire), sans aucun droit pour les autres.</p>
+    <div class="td-correction"><p><code>chmod 600 tp1.py</code> : 6 = <code>rw-</code> pour le propriétaire, 0 = <code>---</code> pour le groupe et pour les autres.</p><p class="td-erreur-frequente" data-si="chmod 700 tp1.py"><b>Erreur fréquente :</b> <code>chmod 700 tp1.py</code> : 7 donne aussi l'exécution (x = 1). On ne demande que lire et écrire : 4 + 2.</p><p class="td-erreur-frequente" data-si="chmod 006 tp1.py"><b>Erreur fréquente :</b> <code>chmod 006 tp1.py</code> : Les chiffres sont dans l'ordre propriétaire, groupe, autres : tu as donné les droits aux autres.</p><p class="td-erreur-frequente" data-si="chmod 644 tp1.py|chmod 640 tp1.py|chmod 660 tp1.py"><b>Erreur fréquente :</b> <code>chmod 644 tp1.py</code> : Le groupe ou les autres gardent un droit : seul le premier chiffre doit être différent de 0.</p></div>
+  </section>
+
+  <p><b>Exemple :</b> <code>chmod g+w notes.csv</code> ajoute l'écriture au groupe : <code>-rw-r-----</code> devient <code>-rw-rw----</code>.</p>
+  <section class="td-q" data-type="courte" id="q27" data-comparer="exact" data-reponse="chmod u+x tp1.py|chmod u+x ./tp1.py|chmod u+x /home/eleve/devoirs/nsi/tp1.py" data-etiquette="$">
+    <p class="td-consigne">À ton tour : en <b>symbolique</b>, ajoute le droit d'exécution au propriétaire de <code>tp1.py</code>, sans changer les autres droits.</p>
+    <div class="td-correction"><p><code>chmod u+x tp1.py</code> : <code>u</code> (<i>user</i>, le propriétaire), <code>+</code> (ajouter), <code>x</code> (exécution).</p><p class="td-erreur-frequente" data-si="chmod +x tp1.py|chmod a+x tp1.py"><b>Erreur fréquente :</b> <code>chmod +x tp1.py</code> : Sans lettre (ou avec <code>a</code>), le droit est ajouté à tout le monde. Précise pour qui : <code>u</code> pour le propriétaire.</p><p class="td-erreur-frequente" data-si="chmod o+x tp1.py|chmod g+x tp1.py"><b>Erreur fréquente :</b> <code>chmod o+x tp1.py</code> : <code>o</code>, ce sont les autres ; <code>g</code>, le groupe. Le propriétaire, c'est <code>u</code> (<i>user</i>).</p><p class="td-erreur-frequente" data-si="chmod x+u tp1.py|chmod u-x tp1.py"><b>Erreur fréquente :</b> <code>chmod x+u tp1.py</code> : L'ordre est : qui, puis <code>+</code> (ajouter), puis le droit.</p><p class="td-erreur-frequente" data-si="chmod 700 tp1.py"><b>Erreur fréquente :</b> <code>chmod 700 tp1.py</code> : C'est le mode octal, et il change aussi les droits du groupe et des autres. On demande le mode symbolique.</p></div>
+  </section>
+
+
+  <section class="td-q" data-support="ecran" data-type="qcu" id="q28">
+    <p class="td-consigne">Dans <code>/home/prof</code>, <code>prof</code> tape <code>chown direction notes.csv</code> et lit : <code>chown: changing ownership of 'notes.csv': Operation not permitted</code>. Pourquoi ?</p>
+    <ul class="td-options">
+      <li>Parce que <code>sudo</code> est obligatoire devant chaque commande</li>
+      <li data-juste>Parce que changer le propriétaire demande les droits de <code>root</code></li>
+      <li>Parce que <code>direction</code> et <code>notes.csv</code> sont dans le mauvais ordre</li>
+      <li>Parce que <code>notes.csv</code> n'existe pas dans <code>/home/prof</code></li>
+    </ul>
+    <div class="td-correction"><p>Changer le propriétaire est réservé à l'administrateur·rice, <code>root</code> : même <code>prof</code>, propriétaire du fichier, ne le peut pas. Il faut <code>sudo</code>.</p><p>« Parce que sudo est obligatoire devant chaque commande » : non. Non : la plupart des commandes (ls, cd, cat…) se lancent sans sudo.</p><p>« Parce que direction et notes.csv sont dans le mauvais ordre » : non. L'ordre est le bon : d'abord le nouveau propriétaire, puis le fichier.</p><p>« Parce que notes.csv n'existe pas dans /home/prof » : non. Le message parle de permission (permitted), pas d'un fichier introuvable : notes.csv est bien là.</p></div>
+  </section>
+  <section class="td-q" data-support="papier" data-type="libre" data-lignes="2" id="q28p">
+    <p class="td-consigne">Dans <code>/home/prof</code>, <code>prof</code> tape <code>chown direction notes.csv</code> et lit : <code>chown: changing ownership of 'notes.csv': Operation not permitted</code>. Pourquoi ce refus ?</p>
+    <div class="td-correction"><p><code>sudo</code> lance une commande avec les droits de l'administrateur·rice (<code>root</code>), nécessaires pour les opérations réservées au système, comme changer le propriétaire d'un fichier.</p></div>
+  </section>
+
+  <p><b>Exemple :</b> <code>sudo chown prof tp1.py</code> donne <code>tp1.py</code> à <code>prof</code>, avec les droits de <code>root</code>.</p>
+  <section class="td-q" data-type="courte" id="q29" data-comparer="exact" data-reponse="sudo chown direction notes.csv|sudo chown direction ./notes.csv|sudo chown direction /home/prof/notes.csv" data-etiquette="$">
+    <p class="td-consigne">À ton tour : tu es dans <code>/home/prof</code>. Écris la commande qui donne <code>notes.csv</code> à l'utilisateur·rice <code>direction</code>.</p>
+    <div class="td-correction"><p><code>sudo chown direction notes.csv</code></p><p class="td-erreur-frequente" data-si="chown direction notes.csv"><b>Erreur fréquente :</b> <code>chown direction notes.csv</code> : C'est la commande de la question précédente : elle est refusée. Il manque ce qui donne les droits de <code>root</code>.</p><p class="td-erreur-frequente" data-si="sudo chown notes.csv direction"><b>Erreur fréquente :</b> <code>sudo chown notes.csv direction</code> : L'ordre compte : d'abord le nouveau propriétaire, puis le fichier.</p><p class="td-erreur-frequente" data-si="sudo chmod direction notes.csv"><b>Erreur fréquente :</b> <code>sudo chmod direction notes.csv</code> : <code>chmod</code> change les <b>droits</b> (r, w, x). Pour changer le <b>propriétaire</b>, c'est une autre commande.</p></div>
+  </section>
+
+  <p class="td-ecran-seul"><b>Avant :</b> <a href="commandes-premiere-eleve.html">feuille 1 sur 2 : les commandes de base, les chemins, réorganiser</a>.</p>
+
+  <!-- PIED DE PAGE : auteur, licence, mention de l'IA, code source (obligatoires) -->
+  <footer class="td-pied">
+    <p>Babash - NSI Tani Malandi · Texte sous licence <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.fr">CC BY-SA 4.0</a> · <span class="td-ia">conçu avec l'aide de l'IA</span> · <a href="https://github.com/babash/Babash-NSI-SNT/tree/main/nsi-premiere/fichiers/commandes-linux-premiere">Code source sur GitHub</a></p>
+  </footer>
+</main>
+</body>
+</html>
