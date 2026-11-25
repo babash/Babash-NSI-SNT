@@ -93,6 +93,7 @@ td.code{font-size:1.2em}
 .al-legende{margin:.3em 10px 0;font-size:.86rem;color:var(--td-encre-douce)}
 .al-trait{display:inline-block;width:2.2em;height:0;vertical-align:middle;border-top:2.4px solid var(--td-accent);margin-right:.35em}
 .al-trait.el{border-top:2.4px dashed var(--td-focus)}
+.al-fb-grille{display:none;margin:0 0 10px}.al-fb-grille button{margin-top:6px;min-height:44px}@media(max-width:760px){.al-fb-grille{display:block}}
 @media (prefers-reduced-motion:reduce){.al-ac,.g-alien{transition:none!important}}
 </style>
 </head>
@@ -200,7 +201,8 @@ var corr=cur.corr?'<div class="fb no"><b>Correction</b><br>'+(iv?bloc(e.s):'Case
 return nav+'<h1>Exercice '+id+' <small class="muted">· Fiche '+(k+1)+'</small></h1><div class="col2"><div class="card">'+left+
 '<div class="row"><button data-act="ok"'+occ+'>Valider</button>'+(iv?'<button class="alt" data-act="run"'+occ+'>Lancer</button>':full?'<button class="alt" data-act="rejouer"'+occ+'>Voir l’alien suivre le programme</button>':'')+'<button class="alt" data-act="help">Un coup de pouce</button><button class="ghost" data-act="corr">Correction</button></div>'+
 (iv?'<p class="muted"><small>« Lancer » montre ce que fait ton programme, sans compter d’essai. Python se charge au premier lancement (une seule fois, environ '+POIDS_PYTHON+').</small></p>':'')+
-(cur.fb?'<div class="fb'+(cur.fb[0]?"":" no")+'">'+esc(cur.fb[1])+'</div>':'')+vRes()+help+corr+'</div><div class="card">'+
+(cur.fb?'<div class="fb'+(cur.fb[0]?"":" no")+'" id="al-verdict">'+esc(cur.fb[1])+'</div>':'')+vRes()+help+corr+'</div><div class="card" id="al-carte-grille">'+
+(cur.fb&&iv?'<div class="fb al-fb-grille'+(cur.fb[0]?"":" no")+'"><span aria-hidden="true">'+esc(cur.fb[1])+'</span> <button class="ghost" data-act="retour">↑ Revenir à mon programme</button></div>':'')+
 grid({id:id,click:!iv&&!fige,pick:iv?null:cur.pick,n:iv||full?null:cur.n,final:iv||full,eleve:cur.trajet,alien:cur.trajet&&cur.trajet.length?cur.trajet[cur.trajet.length-1].slice(1):null,legende:iv})+'</div></div>'}
 /* ce que Python a dit du programme (T145) : un message, ce qu'il affiche, l'erreur telle quelle et son explication à la demande */
 var POIDS_PYTHON="10 Mo";
@@ -249,7 +251,7 @@ if(c){c.setAttribute("cx",10*p[0]+5);c.setAttribute("cy",10*p[1]+5);c.removeAttr
 if(f&&document.activeElement!==f){f.value=cell(p[0],p[1]);f.removeAttribute("aria-invalid")}
 if(dire)annoncer("Case choisie : "+cell(p[0],p[1]))}
 app.addEventListener("keydown",function(e){var t=e.target;
-if(t.id=="al-case"&&e.key=="Enter"){e.preventDefault();var c=lireCase(t.value);if(t.value.trim()&&!c){t.setAttribute("aria-invalid","true");annoncer("Cette case n’existe pas : une lettre de A à O, puis un nombre de 1 à 15.");return}if(c)cur.pick=c;validerLecture()}
+if(t.id=="al-case"&&e.key=="Enter"){e.preventDefault();if(t.readOnly)return;var c=lireCase(t.value);if(t.value.trim()&&!c){t.setAttribute("aria-invalid","true");annoncer("Cette case n’existe pas : une lettre de A à O, puis un nombre de 1 à 15.");return}if(c)cur.pick=c;validerLecture()}
 else if(t.id=="al-gr"){var d={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[e.key];
 if(d){e.preventDefault();var p=cur.pick||[8,8];cur.pick=[Math.min(15,Math.max(1,p[0]+d[0])),Math.min(15,Math.max(1,p[1]+d[1]))];majChoix(true)}
 else if(e.key=="Enter"||e.key==" "){e.preventDefault();if(!cur.pick){cur.pick=[8,8];majChoix(true)}else validerLecture()}}});
@@ -272,6 +274,7 @@ else if(a=="ok"){if(cur.enCours)return;if(inv(cur.id))executer(true);else valide
 else if(a=="run"){if(!cur.enCours)executer(false)}
 else if(a=="rejouer"){if(!cur.enCours)rejouer()}
 else if(a=="exp"){cur.exp=!cur.exp;draw()}
+else if(a=="retour"){var v=$("#al-verdict")||$("#txt");if(v)v.scrollIntoView({block:"center",behavior:doux()});var bo=$("[data-act=ok]");if(bo)bo.focus({preventScroll:true})}
 else if(a=="cls"){cur={cls:null};V="cls";draw();rpc("alien_class_view",{p_class:S.c,p_code:S.k}).then(function(d){cur.cls=d;draw()}).catch(function(er){go("home");note(er.message)})}
 else if(a=="refresh")teacher(T.c,T.t).catch(function(er){note(er.message)});
 else if(a=="tout"){T=null;try{sessionStorage.removeItem("ap_t")}catch(x){};go("prof")}});
@@ -282,18 +285,19 @@ var BRAVO=["Bravo, c’est exact !","Bien joué, l’alien est arrivé à bon po
 function conclure(c0,id2,good,before,faux){if(good){c0.ok=true;c0.fb=[true,pick(BRAVO)];save(id2,{solved:true,attempt:true,hints:c0.h});var nw=earned().filter(function(x){return before.indexOf(x)<0});if(nw.length)setTimeout(function(){note("🏅 Nouveau badge : "+nw.join(", "))},300)}
 else{c0.fb=[false,faux||(inv(id2)?"Ce n’est pas tout à fait ça. Compare avec le parcours, ou demande un coup de pouce.":pick(["Pas tout à fait… refais le trajet ligne par ligne.","Presque ! Essaie de suivre l’alien étape par étape (coup de pouce).","Ce n’est pas la bonne case, mais continue !"]))];save(id2,{attempt:true,hints:c0.h})}
 if(cur===c0){draw();annoncer(c0.fb[1]+(c0.res&&c0.res.msg&&!c0.res.attente?" "+c0.res.msg:""))}}
-function validerLecture(){var id2=cur.id,before=earned();if(cur.ok||cur.corr){var f0=$("#al-case");if(f0&&f0.readOnly)return}
+/* comme sur main : « Valider » juge la case choisie et l'enregistre, même après la réussite ou la correction */
+function validerLecture(){var id2=cur.id,before=earned();
 if(!cur.pick){cur.fb=[false,"Choisis d’abord la case où tu penses que l’alien arrive : clique sur la grille, ou écris-la."];draw();annoncer(cur.fb[1]);return}
-var en=endOf(id2);conclure(cur,id2,cur.pick[0]==en[0]&&cur.pick[1]==en[1],before)}
+var en=endOf(id2);conclure(cur,id2,cur.pick[0]==en[0]&&cur.pick[1]==en[1],before);voirVerdict(false)}
 var MSG_PY={erreur:"Python s’est arrêté sur une erreur. Lis son message ci-dessous.",hors:"ton alien sort de la grille.","trop-long":"ton programme ne s’arrête pas."};
 function executer(valider){var c0=cur,id2=cur.id,e2=EX[id2],code=cur.txt,before=earned();
 // la solution elle-même (même forme : mêmes lignes, mêmes décalages, espaces autour des signes non comptés) : juste tout de suite, sans attendre Python
-if(valider&&AlienPython.memeForme(code,e2.s)){c0.trajet=AlienPython.pasAttendus(e2.p);c0.res=null;c0.errLigne=0;conclure(c0,id2,true,before);animer(c0.trajet,null);return}
+if(valider&&AlienPython.memeForme(code,e2.s)){c0.trajet=AlienPython.pasAttendus(e2.p);c0.res=null;c0.errLigne=0;conclure(c0,id2,true,before);voirVerdict(true);animer(c0.trajet,null);return}
 c0.enCours=true;c0.exp=false;c0.res={attente:true,msg:AlienPython.etat().charge?"Ton programme tourne…":"Python se charge… La première fois, cela peut prendre quelques secondes."};draw();
 var lent=setTimeout(function(){if(c0.enCours&&cur===c0){c0.res={attente:true,msg:"Python se charge encore : la connexion est lente. Patiente un peu…"};draw()}},15000);
 AlienPython.lancer(code).then(function(r){clearTimeout(lent);c0.enCours=false;var res={code:code,ligne:r.ligne||0},vu=cur===c0;
 if(r.etat=="indisponible"){
- if(valider){var good=AlienPython.memeForme(code,e2.s);res.msg="Python n’a pas pu se charger (pas de connexion, ou connexion trop lente) : ton programme a été comparé à la correction, ligne à ligne (les espaces autour des signes ne comptent pas, les décalages si). Avec Python, une solution juste écrite autrement est aussi acceptée.";c0.res=res;conclure(c0,id2,good,before)}
+ if(valider){var good=AlienPython.memeForme(code,e2.s);res.msg="Python n’a pas pu se charger (pas de connexion, ou connexion trop lente) : ton programme a été comparé à la correction, ligne à ligne (les espaces autour des signes ne comptent pas, les décalages si). Avec Python, une solution juste écrite autrement est aussi acceptée.";c0.res=res;conclure(c0,id2,good,before);if(cur===c0)voirVerdict(false)}
  else{res.msg="Python n’a pas pu se charger (pas de connexion, ou connexion trop lente) : ton programme ne peut pas être lancé pour l’instant. Tu peux quand même le valider.";c0.res=res;if(vu){draw();annoncer(res.msg)}}
  return}
 c0.trajet=r.pas;c0.errLigne=0;
@@ -305,7 +309,12 @@ if(r.sortie)res.sortie=r.sortie;c0.res=res;
 if(valider){var cmp=AlienPython.comparer(e2,code,r);if(cmp.juste)res.msg=cmp.remarque||"";else if(r.etat=="erreur")res.msg="";
  conclure(c0,id2,cmp.juste,before,cmp.juste?null:r.etat=="ok"?cmp.message+" Compare avec le parcours, ou demande un coup de pouce.":"Pas encore : "+MSG_PY[r.etat]+(cmp.message?" "+cmp.message:""))}
 else if(vu){draw();annoncer(res.msg)}
-if(vu){if(!valider&&r.pas.length&&window.innerWidth<=760){var g=$("#al-gr");if(g){var b=g.getBoundingClientRect();if(b.top<0||b.bottom>window.innerHeight)g.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}}animer(r.pas,true)}})}
+if(vu){if(valider)voirVerdict(r.pas.length>0);else if(r.pas.length&&window.innerWidth<=760){var g=$("#al-gr");if(g){var b=g.getBoundingClientRect();if(b.top<0||b.bottom>window.innerHeight)g.scrollIntoView({block:"center",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"})}}animer(r.pas,true)}})}
+/* après « Valider », sur un écran étroit (une seule colonne : la grille est sous le programme) : on fait voir le verdict ;
+   s'il y a un trajet à suivre, on descend à la grille, où le verdict est redit en haut, avec « Revenir à mon programme » */
+function doux(){return matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}
+function voirVerdict(trajet){if(window.innerWidth>760)return;var el=trajet?$("#al-carte-grille"):$("#al-verdict");if(!el)return;var b=el.getBoundingClientRect();
+if(trajet)el.scrollIntoView({block:"start",behavior:doux()});else if(b.top<0||b.bottom>window.innerHeight)el.scrollIntoView({block:"nearest",behavior:doux()})}
 /* revoir l'alien exécuter le programme d'un exercice déjà réussi (ou dont la correction est ouverte) */
 function rejouer(){var c0=cur,id2=cur.id;c0.enCours=true;c0.res={attente:true,msg:AlienPython.etat().charge?"L’alien se prépare…":"Python se charge… La première fois, cela peut prendre quelques secondes."};draw();
 AlienPython.lancer(EX[id2].c).then(function(r){c0.enCours=false;if(cur!==c0)return;

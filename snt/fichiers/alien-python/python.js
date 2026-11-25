@@ -197,41 +197,87 @@
   // le trajet attendu d'un exercice (liste plate x, y, x, y… des arrêts de l'alien)
   function pasAttendus(p) { var out = []; for (var i = 0; i < p.length; i += 2) out.push([0, p[i], p[i + 1]]); return out; }
 
-  // les lignes données par l'énoncé (sans « .. ») doivent rester, dans le même ordre (espaces ignorés)
-  function lignesDonnees(modele) {
-    return String(modele).split('\n').map(function (l) { return l.replace(/\s+/g, ''); })
-      .filter(function (l) { return l && l.indexOf('..') < 0; });
+  /* Les niveaux de décalage, calculés comme CPython (tokenizer.c) : une tabulation compte jusqu'au multiple de 8
+     suivant (« col ») et aussi pour 1 (« altcol ») ; si les deux mesures ne disent pas la même chose, Python
+     refuse le programme (TabError), et ici aussi. Rend [{t: texte sans les blancs du début, n: niveau}] pour les
+     lignes non vides qui ne sont pas un commentaire seul, ou null quand Python refuserait le décalage (retrait sur un niveau jamais ouvert, mélange
+     de tabulations et d'espaces ambigu, ligne décalée au tout début). */
+  function niveaux(code) {
+    var pile = [[0, 0]], out = [], ok = true;
+    String(code).split('\n').forEach(function (l) {
+      if (!ok || !l.trim() || /^[ \t]*#/.test(l)) return;   // Python ne mesure pas le décalage d'une ligne vide ou d'un commentaire seul
+      var col = 0, alt = 0, i = 0;
+      for (; i < l.length && (l[i] === ' ' || l[i] === '\t'); i++) {
+        if (l[i] === ' ') { col++; alt++; } else { col = (Math.floor(col / 8) + 1) * 8; alt++; }
+      }
+      var h = pile[pile.length - 1];
+      if (col === h[0]) { if (alt !== h[1]) ok = false; }
+      else if (col > h[0]) { if (alt <= h[1] || !out.length) ok = false; else pile.push([col, alt]); }
+      else {
+        while (pile.length > 1 && col < pile[pile.length - 1][0]) pile.pop();
+        h = pile[pile.length - 1];
+        if (col !== h[0] || alt !== h[1]) ok = false;
+      }
+      out.push({ t: l.slice(i), n: pile.length - 1 });
+    });
+    return ok ? out : null;
   }
+
+  /* Les lignes données par l'énoncé (non vides, sans « .. ») doivent rester, dans le même ordre, au même niveau
+     de bloc et dans le même bloc (T145, après le Gardien 42). Règle exacte :
+       modèle M (lignes non vides, avec leur niveau), programme P (idem) ;
+       texte(l) = la ligne sans aucun blanc ;
+       parent(l) = la ligne la plus proche AU-DESSUS de l, dans le même texte, de niveau plus petit (ou aucune) ;
+       k = 0 ; image = {} ;
+       pour chaque ligne m de M, dans l'ordre, si texte(m) ne contient pas « .. » :
+         j = le plus petit indice >= k de P tel que
+               texte(P[j]) = texte(m)  et  niveau(P[j]) = niveau(m)
+               et, si parent(m) existe et est une ligne donnée : parent(P[j]) = image[parent(m)] ;
+         si aucun j : m manque ; sinon image[m] = j ; k = j + 1.
+     Le programme est accepté si aucune ligne ne manque (et si son trajet est le bon). Si Python refuserait le
+     décalage du programme, toutes les lignes données « manquent » (le programme est de toute façon refusé). */
+  function parents(L) {
+    return L.map(function (l, i) { for (var j = i - 1; j >= 0; j--) if (L[j].n < l.n) return j; return -1; });
+  }
+  function sansBlancs(s) { return s.replace(/\s+/g, ''); }
   function lignesManquantes(modele, programme) {
-    var donnees = lignesDonnees(modele), lp = String(programme).split('\n').map(function (l) { return l.replace(/\s+/g, ''); });
-    var k = 0, manque = [];
-    donnees.forEach(function (d) {
-      var j = lp.indexOf(d, k);
-      if (j < 0) manque.push(d); else k = j + 1;
+    var M = niveaux(modele) || [], P = niveaux(programme), manque = [];
+    var donnees = M.map(function (l) { return sansBlancs(l.t).indexOf('..') < 0; });
+    if (!P) return M.filter(function (l, i) { return donnees[i]; }).map(function (l) { return sansBlancs(l.t); });
+    var pM = parents(M), pP = parents(P), image = {}, k = 0;
+    M.forEach(function (m, i) {
+      if (!donnees[i]) return;
+      var tm = sansBlancs(m.t), pere = pM[i] >= 0 && donnees[pM[i]] ? pM[i] : -1, j;
+      for (j = k; j < P.length; j++) {
+        if (sansBlancs(P[j].t) !== tm || P[j].n !== m.n) continue;
+        if (pere >= 0 && pP[j] !== image[pere]) continue;
+        break;
+      }
+      if (j >= P.length) manque.push(tm); else { image[i] = j; k = j + 1; }
     });
     return manque;
   }
 
-  // le programme ramené à sa forme (sans Python) : les niveaux de décalage (et non le nombre d'espaces),
-  // et chaque ligne sans espaces autour des signes. Deux programmes de même forme font la même chose ;
-  // l'ancienne comparaison ôtait tous les blancs, décalages compris, et acceptait un bloc mal décalé.
+  /* Le programme ramené à sa forme (sans Python) : niveaux de décalage calculés comme CPython, et chaque ligne
+     sans les espaces collés à un signe (jamais entre deux signes : « = = » n'est pas « == »). Deux programmes de
+     même forme font la même chose ; une forme vaut null si Python refuserait le programme (décalage, ou un
+     caractère hors ASCII : espace insécable, guillemet typographique…), et null n'est égal à rien. */
+  var SIGNES = '():,=<>!+\\-*/%';
   function forme(code) {
-    var pile = [0], out = [];
-    String(code).split('\n').forEach(function (l) {
-      if (!l.trim()) return;
-      var d = l.match(/^[ \t]*/)[0].replace(/\t/g, '    ').length;
-      var haut_ = pile[pile.length - 1], niveau;
-      if (d > haut_) { pile.push(d); niveau = pile.length - 1; }
-      else if (d === haut_) niveau = pile.length - 1;
-      else {                       // on recule : il faut retomber sur un décalage déjà ouvert, sinon Python refuse
-        while (pile.length > 1 && d < pile[pile.length - 1]) pile.pop();
-        if (d === pile[pile.length - 1]) niveau = pile.length - 1; else { niveau = '!'; pile.push(d); }
+    if (/[^\x20-\x7e\t\r\n]/.test(code)) return null;
+    var L = niveaux(String(code).replace(/\r/g, ''));
+    if (!L) return null;
+    var sg = new RegExp('[' + SIGNES + ']');
+    return L.map(function (l) {
+      var s = l.t.trim().replace(/[ \t]+/g, ' '), o = '';
+      for (var i = 0; i < s.length; i++) {        // un espace ne s'ôte que s'il touche un signe d'un côté, et pas de l'autre
+        if (s[i] === ' ') { var g = sg.test(s[i - 1] || ''), d = sg.test(s[i + 1] || ''); if (g !== d) continue; }
+        o += s[i];
       }
-      out.push(niveau + '|' + l.trim().replace(/\s*([():,=<>+\-*\/%])\s*/g, '$1').replace(/\s+/g, ' '));
-    });
-    return out.join('\n');
+      return l.n + '|' + o;
+    }).join('\n');
   }
-  function memeForme(a, b) { return forme(a) === forme(b); }
+  function memeForme(a, b) { var fa = forme(a); return fa !== null && fa === forme(b); }
 
   var SENS = { '1,0': 'vers la droite', '-1,0': 'vers la gauche', '0,-1': 'vers le haut', '0,1': 'vers le bas' };
   function nomCase(c) { return String.fromCharCode(64 + c[0]) + c[1]; }
@@ -246,9 +292,11 @@
     var memeTrajet = k === att.length && k === f.length;
     if (memeTrajet && r.etat === 'ok') {
       var manque = ex.c ? lignesManquantes(ex.c, programme) : [];
-      if (manque.length) return { juste: false, ligne: 0, message: 'Le trajet est bon, mais une ligne donnée a changé ou disparu : « ' + manque[0] + ' » (espaces non comptés). Garde les lignes données et remplace seulement les points.' };
-      var remarque = '';
-      if (ex.s && /\bfor\b/.test(ex.s) && !/\bfor\b/.test(programme)) remarque = 'Ton programme est juste. La correction est plus courte : elle répète le motif avec une boucle for.';
+      if (manque.length) return { juste: false, ligne: 0, message: 'Le trajet est bon, mais une ligne donnée a changé, a disparu ou a changé de bloc : « ' + manque[0] + ' ». Garde les lignes données, avec leur décalage, et remplace seulement les points.' };
+      // la remarque n'est dite que si elle est vraie : la correction a une boucle for, le programme n'a aucune boucle,
+      // et il a plus de lignes que la correction
+      var remarque = '', nl = function (s) { return String(s).split('\n').filter(function (l) { return l.trim(); }).length; };
+      if (ex.s && /\bfor\b/.test(ex.s) && !/\b(for|while)\b/.test(programme) && nl(programme) > nl(ex.s)) remarque = 'Ton programme est juste. La correction est plus courte : elle répète le motif avec une boucle for.';
       return { juste: true, ligne: 0, message: '', remarque: remarque };
     }
     var depart = k ? nomCase(f[k - 1]) : 'H8';
