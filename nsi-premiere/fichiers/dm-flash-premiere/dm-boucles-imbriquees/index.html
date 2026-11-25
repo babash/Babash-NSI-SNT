@@ -140,6 +140,32 @@ x = 5
 </pre>
     <pre class="td-attendu">
 120</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("factorielle.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+_r = _essai('x = 5', 'x = 6')
+assert _r is None or _norm(_r) == _norm('720'), "Avec x = 6, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+_r = _essai('x = 5', 'x = 1')
+assert _r is None or _norm(_r) == _norm('1'), "Avec x = 1, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+</script>
     <p class="td-aide">Une variable <code>fact</code> commence à 1 (et pas à 0 : tout produit par 0 vaut 0).</p>
     <p class="td-aide">Une boucle <code>for k in range(1, x + 1):</code> donne 1, 2, …, x. À chaque tour, multiplie <code>fact</code> par <code>k</code>.</p>
     <div class="td-correction">
