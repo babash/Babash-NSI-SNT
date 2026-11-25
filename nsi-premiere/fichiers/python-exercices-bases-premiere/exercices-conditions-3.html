@@ -97,6 +97,35 @@ print(f"Le mois de {mois} a {jours} jours.")</pre></div>
     <p class="td-consigne">Écris un programme qui affiche le plus grand des trois nombres <code>a</code>, <code>b</code> et <code>c</code>, sans utiliser <code>max</code>. (Sur papier, tu peux les demander avec <code>input</code>.)</p>
     <pre class="td-attendu">
 31</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("maximum.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+assert "max(" not in _src, "La consigne demande de trouver le plus grand sans utiliser max."
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+_r = _essai('a = 12\nb = 31\nc = 7', 'a = 40\nb = 5\nc = 9')
+assert _r is None or _norm(_r) == _norm('40'), "Avec a = 40, b = 5 et c = 9, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+_r = _essai('a = 12\nb = 31\nc = 7', 'a = 3\nb = 8\nc = 20')
+assert _r is None or _norm(_r) == _norm('20'), "Avec a = 3, b = 8 et c = 20, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+_r = _essai('a = 12\nb = 31\nc = 7', 'a = 7\nb = 2\nc = 7')
+assert _r is None or _norm(_r) == _norm('7'), "Avec a = 7, b = 2 et c = 7, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+</script>
     <pre class="td-depart">
 a = 12
 b = 31
@@ -175,6 +204,36 @@ else: # deux solutions réelles
     <pre class="td-attendu">
 Delta est positif.
 2.0 1.0</pre>
+    <script type="text/x-python" class="td-tests">
+import ast as _ast, io as _io, contextlib as _ctx, linecache as _lc
+_src = "".join(_lc.getlines("delta.py"))
+_noeuds = list(_ast.walk(_ast.parse(_src))) if _src.strip() else []
+import unicodedata as _ud, re as _re
+def _norm(t):
+    # comme la page compare les sorties : majuscules, accents, espaces et point final ne comptent pas
+    t = _ud.normalize("NFD", str(t))
+    t = "".join(c for c in t if not _ud.combining(c)).lower().replace(chr(34), "'")
+    l = [_re.sub(r"[.!]$", "", " ".join(x.split())).strip() for x in t.split(chr(10))]
+    return chr(10).join(x for x in l if x)
+def _essai(ancien, nouveau, g=None):
+    if ancien not in _src:
+        return None
+    _f = _io.StringIO()
+    try:
+        with _ctx.redirect_stdout(_f):
+            exec(_src.replace(ancien, nouveau, 1), g if g is not None else {"__name__": "__main__"})
+    except Exception as _e:
+        return _f.getvalue().strip() + " (puis l'erreur " + type(_e).__name__ + ")"
+    return _f.getvalue().strip()
+_r = _essai('a = 1\nb = -3\nc = 2', 'a = 1\nb = -5\nc = 6')
+assert _r is None or _norm(_r) == _norm('Delta est positif.\n3.0 2.0'), "Avec a = 1, b = −5 et c = 6, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+_r = _essai('a = 1\nb = -3\nc = 2', 'a = 1\nb = 2\nc = 1')
+assert _r is None or _norm(_r) == _norm('Delta est nul.\n-1.0'), "Avec a = 1, b = 2 et c = 1, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+_r = _essai('a = 1\nb = -3\nc = 2', 'a = 2\nb = -2\nc = -4')
+assert _r is None or _norm(_r) == _norm('Delta est positif.\n2.0 -1.0'), "Avec a = 2, b = −2 et c = −4, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+_r = _essai('a = 1\nb = -3\nc = 2', 'a = 1\nb = 0\nc = 1')
+assert _r is None or _norm(_r) == _norm('Delta est négatif. Les solutions sont complexes (non réelles).'), "Avec a = 1, b = 0 et c = 1, ton programme affiche « " + str(_r).replace(chr(10), " / ") + " » : il doit marcher pour d'autres valeurs que celles de la feuille."
+</script>
     <pre class="td-depart">
 import math
 a = 1
