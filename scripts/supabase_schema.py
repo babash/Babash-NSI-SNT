@@ -3,7 +3,8 @@
 
 supabase/schema.sql réunit, dans une seule transaction, le texte des migrations
 0001-droits-par-defaut.sql (les droits par défaut), 0003-schema-commun.sql (le schéma
-commun) et 0005-registre-court-circuit.sql (Court-circuit dans le registre), sans le contrôle
+commun) et 0005-registre-court-circuit.sql (Court-circuit dans le registre), puis 0009, 0007, 0008
+et 0013 (les avis anonymes des élèves), sans le contrôle
 du projet de l'enseignant : un·e collègue le lance dans son propre projet Supabase. Le texte
 des migrations est recopié tel quel ; seul ce contrôle est retiré (pour 0005, tout son
 garde-fou : celui de 0003, en tête, vérifie déjà le rôle et l'origine du registre).
@@ -37,7 +38,8 @@ ENTETE = """begin;
 --   E. le compte commun des élèves : codes, avatar, hauts faits, XP et
 --      crédits (migration 0007, version 2.3) ;
 --   F. l'espace commun des enseignant·e·s et les classes communes
---      (migration 0008).
+--      (migration 0008) ;
+--   G. les avis anonymes des élèves sur les ressources (migration 0013).
 --  La migration 0002 n'y est pas : elle corrige les droits d'objets qui
 --  existaient déjà dans le projet de l'enseignant.
 --
@@ -47,7 +49,7 @@ ENTETE = """begin;
 --  dans une seule transaction, et le sel n'est jamais tiré deux fois.
 --
 --  NE PAS MODIFIER À LA MAIN : ce fichier est fabriqué à partir de 0001,
---  0003, 0005, 0009, 0007 et 0008 par scripts/supabase_schema.py (même texte, sans le
+--  0003, 0005, 0009, 0007, 0008 et 0013 par scripts/supabase_schema.py (même texte, sans le
 --  contrôle du projet de l'enseignant). Il change dans le même commit qu'eux
 --  (règle M2).
 --  Détails : LISEZMOI.md.
@@ -96,6 +98,9 @@ def fabriquer():
         sys.exit("0007 : le contrôle du projet est introuvable dans le garde-fou : adapter scripts/supabase_schema.py.")
     eleves = projet7.sub("", eleves).replace("-- Garde-fou : le bon rôle, le bon projet, le socle 0003", "-- Garde-fou : le bon rôle, le socle 0003", 1)
     profs = entre(p8, "do $$", "\ncommit;", "0008")
+    avis = entre(lire("0013-retours-eleves.sql"), "do $$", "\ncommit;", "0013")
+    for n in range(1, 6):
+        avis = re.sub(rf"^-- {n}\. ", f"-- G{n}. ", avis, count=1, flags=re.M)
     for n in range(1, 10):
         eleves = re.sub(rf"^-- {n}\. ", f"-- E{n}. ", eleves, count=1, flags=re.M)
     for n in range(1, 6):
@@ -108,7 +113,8 @@ def fabriquer():
             + barre + "-- C. Le registre : Court-circuit en plus (migration 0005)\n" + barre + registre.rstrip() + "\n\n"
             + barre + "-- D. Le registre : le Calendrier des vacances (migration 0009)\n" + barre + vacances.rstrip() + "\n\n"
             + barre + "-- E. Le compte commun des élèves (migration 0007, version 2.3)\n" + barre + eleves.rstrip() + "\n\n"
-            + barre + "-- F. L'espace commun des enseignant·e·s et les classes communes (migration 0008)\n" + barre + profs.rstrip()
+            + barre + "-- F. L'espace commun des enseignant·e·s et les classes communes (migration 0008)\n" + barre + profs.rstrip() + "\n\n"
+            + barre + "-- G. Les avis anonymes des élèves sur les ressources (migration 0013)\n" + barre + avis.rstrip()
             + "\n\ncommit;\n")
 
 
@@ -120,7 +126,7 @@ def main():
             print("supabase/schema.sql n'est pas à jour : lancer python3 scripts/supabase_schema.py et le commiter "
                   "avec les migrations (règle M2).")
             return 1
-        print("supabase/schema.sql est à jour (0001 + 0003 + 0005 + 0009 + 0007 + 0008).")
+        print("supabase/schema.sql est à jour (0001 + 0003 + 0005 + 0009 + 0007 + 0008 + 0013).")
         return 0
     with open(CIBLE, "w", encoding="utf-8") as f:
         f.write(texte)

@@ -42,6 +42,15 @@ reglages({
   // Vrai après l'application de la migration 0010 (catalogue des avatars) : « Offrir un trophée » et « Archiver la classe ».
   COMPTE_COMMUN_CATALOGUE: true,
 
+  // L'avis anonyme des élèves à la fin d'une ressource en ligne (T163, assets/retour-eleve.js ;
+  // supabase/LISEZMOI.md, « 0013 »). false : rien ne s'affiche, rien n'est envoyé (ajouter ?retour=essai à
+  // l'adresse d'une page pour voir le bloc sans rien envoyer). true : seulement après le collage de la
+  // migration supabase/0013-retours-eleves.sql ; il utilise l'adresse et la clé publique de compte_commun.
+  RETOURS_ELEVES: false,
+  // Le mot libre (140 caractères, avec le lien de la classe seulement, lu par l'enseignant·e de la classe) :
+  // false le retire de toutes les pages (il reste alors les étoiles, les trois questions et les remarques).
+  RETOURS_ELEVES_MOT: true,
+
   // Les rubriques. Depuis T51b, le site prend la liste et l'ordre des rubriques dans la vitrine
   // (donnees/vitrine.json, réglée dans l'admin) : cette liste n'est plus lue par les pages.
   // Elle reste pour les outils qui la citent encore ; à garder identique à la vitrine.

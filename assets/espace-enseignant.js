@@ -18,6 +18,8 @@
   var cat = null, K = null;
   var espace = null;                 // ce que rend commun_prof_ouvrir
   var tableauxDeBord = null;         // les applications et l'adresse de leur tableau de bord
+  var fichesBib = {};                // les fiches de la bibliothèque, par identifiant (titres des avis)
+  var sequencesBib = [];             // les séquences de la bibliothèque, si elle en a (T153)
   var modeTableau = false;           // masque codes, XP et crédits (écran projeté)
   var messageClasse = null;          // le message d'une action, montré une fois après le rechargement de la classe
   var NIVEAUX = [];
@@ -64,6 +66,8 @@
       if (!t || !Array.isArray(t.applications)) throw new Error('contenu inattendu');
       var fiches = {};
       ((b && b.ressources) || []).forEach(function (f) { fiches[f.id] = f; });
+      fichesBib = fiches;
+      sequencesBib = (b && Array.isArray(b.sequences)) ? b.sequences : [];
       var problemes = [];
       var apps = t.applications.map(function (a, i) {
         if (!a || typeof a.application !== 'string' || typeof a.nom !== 'string') {
@@ -242,6 +246,7 @@
       el('ul', { class: 'cc-classes' }, fermees.map(carteClasse))]));
     main.appendChild(formNouvelleClasse());
     main.appendChild(blocTableaux());
+    if (CC.disponible('commun_prof_retours')) main.appendChild(blocAvis(null));
     main.appendChild(blocReglages());
     titre.focus();
   }
@@ -386,6 +391,7 @@
       main.appendChild(blocTableauxClasse(c));
       main.appendChild(blocEleves(c, rep.eleves, journal));
       main.appendChild(blocJournal(journal));
+      if (CC.disponible('commun_prof_retours')) main.appendChild(blocAvis(c));
       main.appendChild(blocReglagesClasse(c));
       titre.focus();
     });
@@ -632,6 +638,203 @@
         return el('li', null, [el('span', { class: 'cc-journal-date' }, P.date(j.le)), el('span', { class: 'cc-journal-quoi' }, [el('strong', null, j.pseudo), ' · ', quoi]),
           el('span', { class: 'cc-journal-nb' + (j.xp < 0 ? ' cc-moins' : '') }, (j.xp > 0 ? '+' : '−') + Math.abs(j.xp))]);
       })) : el('p', { class: 'vide' }, 'Rien encore.')]);
+  }
+
+  /* ── Les avis anonymes des élèves (T163, migration 0013) ──────────
+     Par paquets d'au moins 5, des semaines finies : la base ne rend rien d'autre.
+     Aucun classement, aucune comparaison entre classes : une classe, ou tout le monde. */
+
+  var AVIS_Q = [
+    { id: 'difficulte', titre: 'C\'était…', valeurs: [['trop_facile', 'trop facile'], ['bien', 'bien'], ['trop_dur', 'trop dur']] },
+    { id: 'compris', titre: 'J\'ai compris', valeurs: [['oui', 'oui'], ['a_peu_pres', 'à peu près'], ['non', 'non']] },
+    { id: 'fini', titre: 'J\'ai fini', valeurs: [['oui', 'oui'], ['presque', 'presque'], ['non', 'non']] },
+    { id: 'plu', titre: 'Ça m\'a plu', valeurs: [['1', '1 ★'], ['2', '2 ★'], ['3', '3 ★'], ['4', '4 ★'], ['5', '5 ★']] }
+  ];
+  var AVIS_REMARQUES = { consignes: 'Consignes pas claires', trop_de_texte: 'Trop de texte à lire', exemples: 'Il faut plus d\'exemples',
+    bug: 'Quelque chose ne marchait pas', telephone: 'Pas pratique sur téléphone', encore: 'J\'en veux d\'autres comme ça' };
+
+  function titreAvis(g) {
+    if (g.ressource.indexOf('sequence:') === 0) {
+      var sid = g.ressource.slice(9), s = sequencesBib.filter(function (x) { return x.id === sid; })[0];
+      return 'Séquence : ' + (s ? s.titre : sid);
+    }
+    var f = fichesBib[g.ressource];
+    return f ? f.titre : g.ressource;
+  }
+  function partieAvis(g) {
+    if (!g.partie) return '';
+    var m = g.partie.match(/-(\d+)$/);
+    return m ? 'feuille ' + m[1] : g.partie;
+  }
+  /* Additionne des paquets : le total d'une ressource, ou d'une séquence */
+  function sommeLots(lots) {
+    var s = { n: 0, plu: {}, difficulte: {}, compris: {}, fini: {}, remarques: {} };
+    lots.forEach(function (l) {
+      s.n += l.n;
+      ['plu', 'difficulte', 'compris', 'fini', 'remarques'].forEach(function (k) {
+        Object.keys(l[k] || {}).forEach(function (v) { s[k][v] = (s[k][v] || 0) + (l[k][v] || 0); });
+      });
+    });
+    return s;
+  }
+  function pc(a, n) { return n ? Math.round(100 * a / n) : 0; }
+
+  /* Une ligne par question : barre empilée (décorative) et le texte des nombres (l'essentiel, sans la couleur).
+     Plein : ce qu'on vise (bien, oui, 4-5 étoiles) ; hachuré : entre les deux ; pointillé : ce qui alerte. */
+  function barreAvis(q, s) {
+    var rep = s[q.id] || {}, total = q.valeurs.reduce(function (a, v) { return a + (rep[v[0]] || 0); }, 0);
+    var barre = el('div', { class: 'cc-avis-barre', 'aria-hidden': 'true' }, q.valeurs.map(function (v, i) {
+      var x = rep[v[0]] || 0;
+      return x ? el('span', { class: 'cc-avis-seg cc-avis-seg-' + (q.id === 'plu' ? 'p' + v[0] : q.id === 'difficulte' ? [1, 0, 2][i] : i), style: 'width:' + (100 * x / total) + '%' }) : null;
+    }).filter(Boolean));
+    var texte = total ? q.valeurs.map(function (v) { return v[1] + ' ' + (rep[v[0]] || 0) + ' (' + pc(rep[v[0]] || 0, total) + ' %)'; }).join(' · ') : 'pas de réponse';
+    return el('div', { class: 'cc-avis-ligne' }, [el('p', { class: 'cc-avis-q' }, [el('strong', null, q.titre), ' : ' + texte + (total && total < s.n ? ' (' + total + ' réponses)' : '')]), total ? barre : null]);
+  }
+
+  function carteAvis(g, avecMots, recharger) {
+    var s = sommeLots(g.lots);
+    var titre = titreAvis(g), partie = partieAvis(g);
+    var rem = Object.keys(AVIS_REMARQUES).filter(function (k) { return s.remarques[k]; })
+      .sort(function (a, b) { return s.remarques[b] - s.remarques[a]; })
+      .map(function (k) { return el('li', null, AVIS_REMARQUES[k] + ' : ' + s.remarques[k]); });
+    var enfants = [
+      el('h3', { class: 'cc-avis-titre' }, [titre, partie ? el('span', { class: 'petit' }, ' · ' + partie) : null]),
+      el('p', { class: 'petit' }, s.n + ' avis' + (g.lots.length > 1 ? ', en ' + g.lots.length + ' paquets' : '') + ' · jusqu\'à la semaine du ' + P.date(g.lots[g.lots.length - 1].semaine))
+    ].concat(AVIS_Q.map(function (q) { return barreAvis(q, s); }));
+    if (rem.length) enfants.push(el('div', { class: 'cc-avis-ligne' }, [el('p', { class: 'cc-avis-q' }, el('strong', null, 'Remarques choisies')), el('ul', { class: 'cc-avis-rem' }, rem)]));
+    if (g.lots.length > 1) {
+      enfants.push(el('details', { class: 'cc-avis-evolution' }, [el('summary', null, 'L\'évolution, paquet par paquet'),
+        el('div', { class: 'cc-table-defile' }, el('table', { class: 'cc-avis-table' }, [
+          el('thead', null, el('tr', null, ['Jusqu\'à la semaine du', 'Avis', 'Trop dur', 'Compris : oui', 'Fini : oui'].map(function (x) { return el('th', { scope: 'col' }, x); }))),
+          el('tbody', null, g.lots.map(function (l) {
+            return el('tr', null, [el('td', null, P.date(l.semaine)), el('td', null, String(l.n)), el('td', null, pc(l.difficulte.trop_dur, l.n) + ' %'),
+              el('td', null, pc(l.compris.oui, l.n) + ' %'), el('td', null, pc(l.fini.oui, l.n) + ' %')]);
+          }))]))]));
+    }
+    if (avecMots && g.mots && g.mots.length) {
+      var m = P.zoneMessage();
+      enfants.push(el('div', { class: 'cc-avis-ligne cc-masquable-bloc' }, [
+        el('p', { class: 'cc-avis-q' }, [el('strong', null, 'Les mots (' + g.mots.length + ')'), ' : lus par toi seul·e, dans un ordre mélangé.']),
+        el('ul', { class: 'cc-avis-mots' }, g.mots.map(function (x) {
+          var b = P.bouton('Effacer', { classe: 'cc-discret' });
+          b.setAttribute('aria-label', 'Effacer le mot « ' + x.mot + ' »');
+          b.addEventListener('click', function () {
+            Prof.effacerMotRetour(x.id).then(function (rep) { if (!rep.ok) { P.message(m, rep.message, 'erreur'); return; } recharger('Le mot est effacé.'); });
+          });
+          return el('li', null, [el('q', null, x.mot), ' ', b]);
+        })), m]));
+    }
+    return el('article', { class: 'cc-avis-carte' }, enfants);
+  }
+
+  /* Regrouper par séquence (si la bibliothèque a des séquences) : une ressource compte dans chaque séquence qui la cite */
+  function parSequence(groupes) {
+    var res = [];
+    sequencesBib.forEach(function (s) {
+      var ids = [];
+      (s.etapes || []).forEach(function (e) { (e.ressources || []).forEach(function (r) { ids.push(typeof r === 'string' ? r : r && r.ressource); }); });
+      var lots = [], noms = [];
+      groupes.forEach(function (g) {
+        if (ids.indexOf(g.ressource) >= 0 || g.ressource === 'sequence:' + s.id) { lots = lots.concat(g.lots); noms.push(titreAvis(g) + (g.partie ? ' · ' + partieAvis(g) : '')); }
+      });
+      if (lots.length) res.push({ titre: s.titre, noms: noms, total: sommeLots(lots) });
+    });
+    return res;
+  }
+
+  /* L'export, pour mettre en regard le verdict du ou de la Critique : une ligne par paquet, question et valeur */
+  function exporter(donnees, c, format) {
+    var lignes = [];
+    donnees.ressources.forEach(function (g) {
+      g.lots.forEach(function (l) {
+        ['plu', 'difficulte', 'compris', 'fini', 'remarques'].forEach(function (q) {
+          Object.keys(l[q] || {}).forEach(function (v) {
+            lignes.push({ portee: c ? 'classe' : 'tous', classe: c ? c.nom : '', ressource: g.ressource, titre: titreAvis(g), partie: g.partie,
+              semaine: l.semaine, avis_du_paquet: l.n, question: q, valeur: v, nombre: l[q][v] });
+          });
+        });
+      });
+    });
+    var nom = 'avis-eleves-' + (c ? c.code : 'tous') + '-' + new Date().toISOString().slice(0, 10);
+    var contenu, type;
+    if (format === 'json') {
+      contenu = JSON.stringify({ exporte_le: new Date().toISOString(), portee: c ? 'classe' : 'tous', seuil: donnees.seuil, lignes: lignes }, null, 2);
+      type = 'application/json';
+    } else {
+      var cols = ['portee', 'classe', 'ressource', 'titre', 'partie', 'semaine', 'avis_du_paquet', 'question', 'valeur', 'nombre'];
+      var champ = function (x) { x = String(x == null ? '' : x); return /[";\n]/.test(x) ? '"' + x.replace(/"/g, '""') + '"' : x; };
+      contenu = String.fromCharCode(0xFEFF) + [cols.join(';')].concat(lignes.map(function (l) { return cols.map(function (k) { return champ(l[k]); }).join(';'); })).join('\r\n');
+      type = 'text/csv;charset=utf-8';
+    }
+    var a = el('a', { href: URL.createObjectURL(new Blob([contenu], { type: type })), download: nom + '.' + format });
+    document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+
+  /* Le lien d'une ressource pour la classe : l'adresse, plus ?classe=CODE (les avis portent alors la classe) */
+  function outilLien(c) {
+    var champ = P.champ({ etiquette: 'Adresse d\'une ressource en ligne', aide: 'Colle l\'adresse d\'une feuille de TD ou d\'une séquence du site.', max: 300,
+      exemple: 'https://babash.github.io/Babash-NSI-SNT/…' });
+    var sortie = el('div', { class: 'cc-avis-lien' });
+    var m = P.zoneMessage();
+    var f = P.formulaire([champ, P.bouton('Faire le lien de la classe', { type: 'submit' }), m, sortie], function () {
+      O.vider(sortie);
+      var u;
+      try { u = new URL(champ.input.value.trim()); } catch (e) { u = null; }
+      if (!u || !/^https:$/.test(u.protocol) || !/(^|\.)babash\.github\.io$/.test(u.hostname)) { P.message(m, 'Colle une adresse du site (https://babash.github.io/…).', 'erreur'); return; }
+      u.searchParams.set('classe', c.code);
+      P.message(m, '', 'ok');
+      var qr = qrSvg(u.href);
+      sortie.appendChild(el('p', { class: 'cc-lien-url' }, el('a', { href: u.href }, u.href)));
+      if (qr) sortie.appendChild(el('div', { class: 'cc-qr', role: 'img', 'aria-label': 'QR code de ce lien', html: qr }));
+    });
+    return el('details', { class: 'cc-avis-outil' }, [el('summary', null, 'Le lien d\'une ressource pour cette classe'),
+      el('p', { class: 'petit' }, 'Les élèves qui ouvrent la ressource par ce lien (ou son QR code) donnent un avis rattaché à la classe, jamais à leur nom. Sans ce lien, leur avis compte pour « tout le monde ».'), f]);
+  }
+
+  function blocAvis(c) {
+    var corps = el('div', { class: 'cc-avis-corps' });
+    var details = el('details', { class: 'cc-carte cc-avis' }, [
+      el('summary', null, c ? 'Les avis des élèves sur les ressources (anonymes)' : 'Les avis des élèves de tout le monde (anonymes)'),
+      el('p', { class: 'petit' }, c
+        ? 'À la fin d\'une ressource en ligne, chaque élève peut donner un avis en dix secondes, sans nom ni code. Ils s\'affichent par paquets d\'au moins 5, le lundi qui suit leur semaine : personne ne peut savoir qui a répondu quoi.'
+        : 'Les avis de toutes les classes et des élèves sans classe, par paquets d\'au moins 5, sans aucun mot. Les avis d\'une classe sont sur sa page.'),
+      c ? outilLien(c) : null,
+      corps]);
+    var charge = false;
+    function charger(message) {
+      O.vider(corps);
+      corps.appendChild(el('p', { class: 'vide' }, 'Chargement des avis…'));
+      Prof.retours(c ? c.id : null).then(function (rep) {
+        O.vider(corps);
+        if (message) corps.appendChild(el('p', { class: 'cc-message cc-ok', role: 'status' }, message));
+        if (!rep.ok) { corps.appendChild(el('p', { class: 'cc-message cc-erreur', role: 'alert' }, rep.message)); return; }
+        var groupes = (rep.ressources || []).filter(function (g) { return g.lots && g.lots.length; });
+        if (!groupes.length) {
+          corps.appendChild(el('p', { class: 'vide' }, 'Pas encore d\'avis à montrer : il en faut au moins 5 pour une ressource, d\'une semaine finie.'));
+          return;
+        }
+        groupes.sort(function (a, b) { return (titreAvis(a) + a.partie).localeCompare(titreAvis(b) + b.partie, 'fr'); });
+        var exp = el('div', { class: 'cc-actions' });
+        var bCsv = P.bouton('Exporter (CSV)'), bJson = P.bouton('Exporter (JSON)');
+        bCsv.addEventListener('click', function () { exporter(rep, c, 'csv'); });
+        bJson.addEventListener('click', function () { exporter(rep, c, 'json'); });
+        exp.appendChild(bCsv); exp.appendChild(bJson);
+        corps.appendChild(exp);
+        var seqs = parSequence(groupes);
+        if (seqs.length) {
+          corps.appendChild(el('h3', { class: 'cc-avis-sous-titre' }, 'Par séquence'));
+          corps.appendChild(el('div', { class: 'cc-avis-grille' }, seqs.map(function (s) {
+            return el('article', { class: 'cc-avis-carte' }, [el('h3', { class: 'cc-avis-titre' }, s.titre),
+              el('p', { class: 'petit' }, s.total.n + ' avis · ' + s.noms.join(', '))].concat(AVIS_Q.map(function (q) { return barreAvis(q, s.total); })));
+          })));
+          corps.appendChild(el('h3', { class: 'cc-avis-sous-titre' }, 'Par ressource'));
+        }
+        corps.appendChild(el('div', { class: 'cc-avis-grille' }, groupes.map(function (g) { return carteAvis(g, !!c, charger); })));
+      });
+    }
+    details.addEventListener('toggle', function () { if (details.open && !charge) { charge = true; charger(); } });
+    return details;
   }
 
   function blocReglagesClasse(c) {

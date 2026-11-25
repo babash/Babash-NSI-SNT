@@ -76,8 +76,9 @@ On ne fait jamais d'essai sur une table de données d'élèves de la base en lig
 | `0007-compte-commun.sql` (v2.3, et son inverse) | cible | `base_unique_0007_compte_commun` | Le compte commun des élèves : 16 tables, 19 fonctions internes, 12 fonctions `commun_` pour `anon`. **En base depuis le 24/11** (collé à la main). L'inverse refuse si `0008` est là, ou si une application s'est branchée. |
 | `0008-enseignants-communs.sql` (et son inverse) | cible | `base_unique_0008_enseignants_communs` | L'espace commun des enseignant·e·s (code de 3 mots et 4 chiffres, gardé en empreinte), les classes communes (code de 4 lettres, lien, QR code) : 5 tables, 8 fonctions internes, 21 fonctions `commun_`. **En base depuis le 24/11.** Inverse : avant celui de `0007`. |
 | `2026-11-24-retour-avant-socle.sql` | cible | (aucun : pièce du 24/11) | Retrait de la version 1 du compte commun avant `0007` v2.3 (voir plus haut). Ne se relance pas : il s'arrête sans rien modifier sur la base d'aujourd'hui. |
+| `0013-retours-eleves.sql` (son inverse et sa vérification) | cible | `base_unique_0013_retours_eleves` | Les avis anonymes des élèves à la fin d'une ressource en ligne (T163) : 1 table, 3 fonctions internes, 4 fonctions `commun_` pour `anon`. **Proposé, pas collé** (voir « 0013 » plus bas). Suppose `0007` et `0008` ; indépendant de `0010`, `0011` et `0012`. Inverse : avant celui de `0008`. |
 | `NNNN-…-inverse.sql` | le même | `…_inverse` | Le SQL inverse de chaque migration. |
-| `schema.sql` | un projet neuf | — | Le script complet du socle (0001, 0003, 0005, 0009, puis le compte commun 0007 et 0008), pour la copie d'un·e collègue. Fabriqué par `scripts/supabase_schema.py`. |
+| `schema.sql` | un projet neuf | — | Le script complet du socle (0001, 0003, 0005, 0009, puis le compte commun 0007 et 0008, et les avis des élèves 0013), pour la copie d'un·e collègue. Fabriqué par `scripts/supabase_schema.py`. |
 
 Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne. Il se colle d'un bloc dans l'éditeur SQL. Par `apply_migration`, on retire seulement ces deux lignes : le reste est appliqué tel quel.
 
@@ -157,6 +158,41 @@ Chaque fichier commence par `begin;` et finit par `commit;`, chacun sur sa ligne
 - **Un contrôle à la fin** arrête tout si la vue s'ouvre à `anon` ou à `authenticated`, si elle perd `security_invoker`, ou si une table de `court_circuit` n'y est pas rangée.
 - **L'inverse** rend la vue et les deux commentaires exactement comme `0003` les a créés. Il n'efface rien : les tables de Court-circuit restent, simplement absentes du registre.
 - **Pour la prochaine application :** la même petite migration, avec son schéma et son préfixe (voir « Pour une application » plus bas).
+
+### 0013 : les avis anonymes des élèves (T163, 25/11, proposé)
+
+**La demande de l'enseignant (25/11)** : à la fin d'une ressource en ligne, des « petits trucs » rapides et le plus anonymes possible (« ce que j'en ai pensé », des étoiles), pour voir « ce qui marche en pratique ». Il l'a permis sans autorisation pour la page ; le SQL reste soumis à la règle M4 (il voit le fichier avant de le coller).
+
+**Ce que voit l'élève** (`assets/retour-eleve.js`, activé par `<section data-retour="<id de la fiche>">`, éteint tant que `RETOURS_ELEVES` vaut `false` dans `reglages.js`) : « Ça t'a plu ? » (1 à 5 étoiles), « C'était… » (trop facile, bien pour moi, trop dur), « J'ai compris ? » (oui, à peu près, non), « J'ai fini ? » (oui, presque, non) ; repliés, des remarques à cocher (consignes pas claires, trop de texte à lire, il me faut plus d'exemples, quelque chose ne marchait pas, pas pratique sur téléphone, j'en veux d'autres comme ça) et, **seulement avec le lien de la classe**, un mot de 140 caractères pour l'enseignant·e. Tout est facultatif ; un avis par appareil et par ressource, modifiable ou retirable pendant la semaine ; « Un·e autre élève sur cet appareil ? » pour les postes partagés.
+
+**Ce qui est gardé** (table `commun.retours`), colonne par colonne :
+
+| Colonne | Ce que c'est |
+|---|---|
+| `id` | tiré au hasard ; sert seulement à effacer un mot |
+| `ressource`, `partie` | l'identifiant de la fiche (ou `sequence:<id>`), et la feuille de TD (`data-td`) |
+| `classe_id` | la classe commune dont le lien portait le code (`?classe=ABCD`), sinon vide ; vidé si la classe est supprimée |
+| `semaine` | le lundi de la semaine (heure de Mayotte) : **aucune heure, aucune date plus fine** |
+| `plu`, `difficulte`, `compris`, `fini`, `remarques` | les réponses, valeurs d'une liste fermée |
+| `mot` | le mot libre (140 caractères, ni adresse, ni lien, ni numéro), seulement avec une classe |
+| `cle_empreinte` | l'empreinte de la clé tirée au hasard par l'appareil pour cette ressource ; **effacée dès la semaine finie** |
+| `lot_classe`, `lot_tous` | le paquet où l'avis est montré, une fois publié |
+
+**Ce qui n'est jamais gardé** : ni compte, ni code, ni pseudo, ni jeton du compte commun (la page ne le lit pas), ni adresse IP, ni heure. Le plafond par réseau passe par `commun.essais` (application `retours`, empreinte du réseau qui change chaque jour, effacée après 24 h, sans lien avec l'avis).
+
+**L'anonymat, même pour l'enseignant·e** : rien de la semaine en cours n'est montré ; les avis d'une semaine finie sont publiés **par paquets d'au moins 5** (par classe et ressource ; et par ressource pour « tout le monde ») ; un paquet publié ne change plus, ce qui reste sous 5 attend les semaines suivantes. Ainsi aucune différence entre deux lectures ne porte sur moins de 5 avis. Les mots sont rendus dans un ordre mélangé, et seulement à l'enseignant·e de la classe ; la vue « tout le monde » n'a aucun mot.
+
+**Limites assumées** : un mot peut se reconnaître à son contenu ou à son style (d'où le rappel « n'écris aucun nom » et l'effacement par l'enseignant·e) ; les journaux techniques de Supabase (adresse et heure de chaque appel, gardés 1 jour sur l'offre gratuite) ne contiennent pas le contenu des avis, mais l'administrateur·rice du projet qui les fouillerait le jour même pourrait rapprocher un appel d'avis d'un autre appel du même réseau ; un appareil peut donner un avis par semaine et par ressource (la clé est oubliée de la base à la fin de la semaine) : la page, elle, ne repropose rien après un envoi, sauf « Un·e autre élève sur cet appareil ? ».
+
+**Contre les abus** : 300 envois par heure et par réseau (une classe de 35 derrière la même box passe largement), 1 500 avis par ressource et par semaine, 20 000 par semaine, 300 000 en tout ; 30 codes de classe inconnus par heure et par réseau. Au-delà, l'avis attend sur l'appareil, sans message inquiétant.
+
+**Effacement** : chaque avis part deux ans après sa semaine (au ménage que fait chaque lecture de l'enseignant·e) ; l'élève retire le sien pendant la semaine ; l'enseignant·e efface un mot ; une classe supprimée laisse ses avis à « tout le monde » et efface ses mots.
+
+**Les fonctions** (anon seul, `security definer`, `search_path` vide) : `commun_retour_donner(p_cle, p_ressource, p_partie, p_classe, p_plu, p_difficulte, p_compris, p_fini, p_remarques, p_mot)`, `commun_retour_effacer(p_cle)`, `commun_prof_retours(p_code, p_classe)` (une classe, ou `null` pour tout le monde), `commun_prof_retour_effacer_mot(p_code, p_retour)`. L'espace enseignant·e (`enseignant/`) montre les répartitions, l'évolution paquet par paquet, les remarques et les mots, et exporte en CSV ou JSON (sans les mots) ; il fabrique aussi le lien d'une ressource pour la classe (`…?classe=ABCD`, avec son QR code).
+
+**Après le collage** : `0013-retours-eleves-verification.sql` (lecture seule, 16 contrôles « ok »), puis `RETOURS_ELEVES: true` dans `reglages.js` (publication de la page). Pour couper sans rien effacer : `RETOURS_ELEVES: false`. Retour en arrière : `0013-retours-eleves-inverse.sql`, qui s'arrête s'il reste des avis (les exporter, puis `delete from commun.retours;` si l'enseignant le décide), et qui passe **avant** l'inverse de `0008` (sinon celui-ci s'arrête sur une erreur de dépendance, sans rien modifier).
+
+**Essayé** sur une base locale Postgres 17.11 reconstruite comme la base réelle du 25/11 (socle, `0007`, `0008`) : 60 essais SQL (`scripts/tests/retours_eleves.sql`), 23 essais de la page avec la base imitée, et `scripts/tests/test_retours_eleves.py` pour le parcours de bout en bout dans le navigateur, 22 contrôles) ; `0013` passe avant et après `0010`, `0012`, `0011` ; relancé, il s'arrête ; sans `0008`, il s'arrête ; l'inverse refuse tant qu'il reste des avis, puis retire tout, et `0013` se réapplique.
 
 ## Avant
 

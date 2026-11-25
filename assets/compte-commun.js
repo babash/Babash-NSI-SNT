@@ -123,13 +123,17 @@
     commun_prof_offrir: 'Offrir un trophée arrive avec le catalogue des avatars (migration 0010).',
     commun_prof_archiver_classe: 'Archiver une classe arrive avec la migration 0010 : pour l\'instant, on ferme seulement ses inscriptions.',
     commun_prof_niveau_eleve: 'Le niveau arrive avec sa migration (T132e) : rien n\'est envoyé pour l\'instant.',
-    commun_prof_niveau_classe: 'Le niveau arrive avec sa migration (T132e) : rien n\'est envoyé pour l\'instant.'
+    commun_prof_niveau_classe: 'Le niveau arrive avec sa migration (T132e) : rien n\'est envoyé pour l\'instant.',
+    commun_prof_retours: 'Les avis des élèves arrivent avec leur migration (0013) et le réglage RETOURS_ELEVES.',
+    commun_prof_retour_effacer_mot: 'Les avis des élèves arrivent avec leur migration (0013) et le réglage RETOURS_ELEVES.'
   };
 
   /* Le réglage qui ouvre chaque fonction à venir, une fois sa migration appliquée */
   var catalogueEnBase = null;        // null : pas lu ou lecture ratée ; vrai seulement si commun_catalogue rend des objets à prix (0010)
   function ouverte(fonction) {
     if (/niveau/.test(fonction)) return !!reglage.niveau;
+    /* Les avis des élèves (0013) : le réglage RETOURS_ELEVES */
+    if (/_retour/.test(fonction)) return !!reglage.retours;
     /* Les fonctions de 0010 : le réglage COMPTE_COMMUN_CATALOGUE, et le catalogue vraiment en base (des objets
        à prix) ; ainsi, réglage à true trop tôt ou base revenue en arrière, la page ne propose rien d'impossible */
     if (fonction === 'commun_prof_offrir' || fonction === 'commun_prof_archiver_classe') return !!reglage.catalogue && catalogueEnBase === true;
@@ -446,6 +450,43 @@
     var MAUVAIS_PROF = { ok: false, message: 'Ce code d\'enseignant·e n\'existe pas.' };
     var PAS_A_TOI = { ok: false, message: 'Cette classe n\'est pas à toi.' };
 
+    /* Les avis de démonstration : le lundi d'il y a n semaines, et des paquets tirés d'une graine fixe */
+    D.motsEffaces = [];
+    function lundi(n) {
+      var t = new Date(Date.now() + 3 * 3600e3), j = (t.getUTCDay() + 6) % 7;
+      return new Date(Date.UTC(t.getUTCFullYear(), t.getUTCMonth(), t.getUTCDate() - j - 7 * n)).toISOString().slice(0, 10);
+    }
+    function avisDemo(classe) {
+      var graine = classe ? 7 : 3;
+      function hasard() { graine = (graine * 9301 + 49297) % 233280; return graine / 233280; }
+      function repartir(n, cles, poids) {
+        var o = {}, reste = n;
+        cles.forEach(function (k, i) {
+          var v = i === cles.length - 1 ? reste : Math.min(reste, Math.round(n * poids[i] * (0.7 + 0.6 * hasard())));
+          o[k] = v; reste -= v;
+        });
+        return o;
+      }
+      var mots = ['La question 3 était dure', 'J\'ai bien aimé l\'exercice des billets', 'Trop long pour une heure', 'Un exemple de plus avant la récursivité, svp',
+        'Le code ne se lançait pas sur mon téléphone', 'C\'était clair'];
+      var liste = [['td-bac-abr', 'tle-td-bac-abr-1', [0.15, 0.55, 0.3]], ['td-bac-abr', 'tle-td-bac-abr-2', [0.05, 0.4, 0.55]],
+        ['td-bac-piles-files', '', [0.2, 0.6, 0.2]], ['quizznsi-abr', '', [0.3, 0.6, 0.1]], ['sequence:tle-piles-files', '', [0.2, 0.6, 0.2]]];
+      return liste.map(function (x, i) {
+        var lots = [], nb = classe ? 1 + (i % 2) : 2 + (i % 3);
+        for (var k = nb; k >= 1; k--) {
+          var n = (classe ? 5 : 9) + Math.floor(hasard() * (classe ? 8 : 25));
+          var d = repartir(n, ['trop_facile', 'bien', 'trop_dur'], x[2]);
+          lots.push({ semaine: lundi(k * 2 - 1), n: n, plu: repartir(n, ['1', '2', '3', '4', '5'], [0.05, 0.1, 0.25, 0.35, 0.25]), difficulte: d,
+            compris: repartir(n, ['oui', 'a_peu_pres', 'non'], [0.45, 0.4, 0.15]), fini: repartir(n, ['oui', 'presque', 'non'], [0.4, 0.35, 0.25]),
+            remarques: { consignes: Math.floor(n * 0.1), trop_de_texte: Math.floor(n * 0.2 * hasard()), exemples: Math.floor(n * 0.3 * hasard()),
+              bug: i === 1 ? 2 : 0, telephone: Math.floor(n * 0.1 * hasard()), encore: Math.floor(n * 0.25 * hasard()) } });
+        }
+        var m = !classe || i > 1 ? [] : mots.slice(i * 3, i * 3 + 3).map(function (t, j) { return { id: 'demo-mot-' + i + '-' + j, mot: t }; })
+          .filter(function (o) { return D.motsEffaces.indexOf(o.id) < 0; });
+        return { ressource: x[0], partie: x[1], lots: lots, mots: m };
+      });
+    }
+
     var F = {
       /* ── L'élève (0007) ── */
       commun_creer: function (p) {
@@ -711,6 +752,20 @@
               cle: j.cle };
           }) };
       },
+      /* Les avis des élèves (0013) : des paquets fictifs, tirés d'une graine fixe ; des mots inventés, sans aucun nom */
+      commun_prof_retours: function (p) {
+        var pid = prof(p.p_code);
+        if (!pid) return MAUVAIS_PROF;
+        if (p.p_classe && !classeDuProf(pid, p.p_classe)) return PAS_A_TOI;
+        return { ok: true, portee: p.p_classe ? 'classe' : 'tous', semaine: lundi(0), seuil: 5, ressources: avisDemo(p.p_classe) };
+      },
+      commun_prof_retour_effacer_mot: function (p) {
+        var pid = prof(p.p_code);
+        if (!pid) return MAUVAIS_PROF;
+        if (D.motsEffaces.indexOf(p.p_retour) >= 0) return { ok: false, message: 'Ce mot n\'est pas dans tes classes, ou il est déjà effacé.' };
+        D.motsEffaces.push(p.p_retour);
+        return { ok: true, message: 'Le mot est effacé.' };
+      },
       /* Proposition T101b (fonction à ajouter en 0010) : offrir un trophée (un objet qui ne s'achète pas)
          à un·e élève de ses classes, avec un motif court, que l'élève lit dans sa planque */
       commun_prof_offrir: function (p) {
@@ -948,7 +1003,8 @@
     var url = cc.url || '', cle = cc.cle_publique || '';
     reglage = { en_ligne: false, probleme: null, niveau: r.COMPTE_COMMUN_NIVEAU === true || r.niveau === true,
       catalogue: r.COMPTE_COMMUN_CATALOGUE === true || r.catalogue === true,
-      applications: r.COMPTE_COMMUN_APPLICATIONS === true || r.applications === true };
+      applications: r.COMPTE_COMMUN_APPLICATIONS === true || r.applications === true,
+      retours: r.RETOURS_ELEVES === true || r.retours === true };
     if (!enLigne) { impl = implementationDemo(); return mode(); }
     if (!/^https:\/\/[a-z0-9]+\.supabase\.co\/?$/.test(url) || !cle) {
       reglage.probleme = 'COMPTE_COMMUN_EN_LIGNE vaut true, mais l\'adresse du projet (compte_commun.url) ou sa clé publique '
@@ -1117,6 +1173,9 @@
       });
     },
     debloquerReseau: function () { return avecProf('commun_prof_debloquer_reseau', {}); },
+    /* Les avis anonymes des élèves (0013, T163) : par paquets d'au moins 5, des semaines finies */
+    retours: function (classe) { return avecProf('commun_prof_retours', { p_classe: classe || null }); },
+    effacerMotRetour: function (retour) { return avecProf('commun_prof_retour_effacer_mot', { p_retour: retour }); },
     supprimerEspace: function (confirmation) {
       return avecProf('commun_prof_supprimer_espace', { p_confirmation: confirmation }).then(function (rep) {
         if (rep.ok) Prof.fermer();
